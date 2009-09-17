@@ -1,0 +1,52 @@
+{
+    layout: 'A4 portrait',
+    title: 'A simple example',
+    srs: 'EPSG:4326',
+    dpi: 190,
+    units: 'degrees',
+    layers: [
+        {
+            type: 'WMS',
+            layers: ['basic'],
+            baseURL: 'http://labs.metacarta.com/wms/vmap0',
+            format: 'image/jpeg'
+        },
+        {
+            type: 'WMS',
+            layers: ['routes'],
+            baseURL: 'http://www.camptocamp.org/cgi-bin/mapserv_c2corg',
+            format: 'image/png'
+        }
+    ],
+    pages: [
+        {
+            center: [6, 45.5],
+            scale: 4000000,
+            mapTitle: "First map",
+            comment: "This is the first page selected by the user.",
+            rotation: 0,
+            data: {
+                data: [
+                    {id:1, name: 'blah', icon: 'icon_pan', nameBackgroundColor: 'red', nameBorderColor: 'blue'},
+                    {id:2, name: 'blip', icon: 'icon_zoomin', nameBackgroundColor: 'yellow', nameBorderColor: 'green'}
+                ],
+                columns: ['id', 'name', 'icon']
+            }
+        },
+        {
+            center: [6, 45.5],
+            scale: 4000000,
+            dpi: 190,
+            mapTitle: "Second map",
+            comment: "This is the same position, but rotated by 30°.",
+            rotation: 30,
+            data: {
+                data: [
+                    {id:1, name: 'blah', icon: 'icon_pan', nameBackgroundColor: 'red', nameBorderColor: 'blue'},
+                    {id:2, name: 'blip', icon: 'icon_zoomin', nameBackgroundColor: 'yellow', nameBorderColor: 'green'}
+                ],
+                columns: ['id', 'icon', 'name']
+            }
+        }
+    ]
+}

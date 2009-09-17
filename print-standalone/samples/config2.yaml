@@ -1,0 +1,105 @@
+#===========================================================================
+# allowed DPIs
+#===========================================================================
+dpis:
+  - 254
+  - 190
+  - 127
+  - 56
+
+#===========================================================================
+# the allowed scales
+#===========================================================================
+scales:
+  - 25000
+  - 50000
+  - 100000
+  - 200000
+  - 500000
+  - 1000000
+  - 2000000
+  - 4000000
+
+#===========================================================================
+# the list of allowed hosts
+#===========================================================================
+hosts:
+  - !dnsMatch
+    host: labs.metacarta.com
+    port: 80
+  - !dnsMatch
+    host: www.camptocamp.org
+    port: 80
+
+
+layouts:
+  #===========================================================================
+  A4 portrait:
+  #===========================================================================
+    mainPage:
+      pageSize: A4
+      rotation: true
+      backgroundPdf: '${configDir}/lameBackground.pdf'
+      items:
+        - !columns
+          # columns can have an absolute position. In that case, they need a width.
+          absoluteX: 50
+          absoluteY: 773
+          width: 500
+          items:
+            - !text
+              font: Helvetica
+              fontSize: 30
+              align: center
+              text: '${mapTitle}'
+        - !map
+          absoluteX: 75
+          absoluteY: 690
+          width: 440
+          height: 503
+        - !columns
+          absoluteX: 80
+          absoluteY: 213
+          width: 180
+          items:
+            - !scalebar
+              align: left
+              maxSize: 180
+              type: 'bar sub'
+              intervals: 5
+        - !columns
+          absoluteX: 485
+          absoluteY: 227
+          width: 30
+          items:
+            - !image
+              maxWidth: 30
+              maxHeight: 30
+              url: 'file://${configDir}/Arrow_North_CFCF.svg'
+              rotation: '${rotation}'
+        - !columns
+          absoluteX: 70
+          absoluteY: 145
+          width: 455
+          widths: [375,80]
+          items:
+            - !text
+              text: |
+                ${comment}
+                
+                Angle: ${rotation}°   Scale: 1:${format %,d scale}
+            - !map
+              width: 80
+              height: 80
+              overviewMap: 6
+      footer:
+        height: 30
+        items:
+          - !columns
+            items:
+              - !text
+                align: left
+                text: ©Camptocamp SA
+              - !text
+                align: right
+                text: 'Page ${pageNum}'

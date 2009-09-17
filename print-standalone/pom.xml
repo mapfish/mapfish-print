@@ -1,0 +1,76 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>print-standalone</artifactId>
+  <packaging>jar</packaging>
+  <version>${theVersion}</version>
+
+  <name>print-standalone</name>
+  <description>The standalone JAR for the MapFish print module</description>
+
+  <parent>
+    <groupId>org.mapfish.print</groupId>
+    <artifactId>print-root</artifactId>
+    <version>0.0-SNAPSHOT</version> <!-- this version is a fake, don't touch it -->
+  </parent>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <configuration>
+          <finalName>${project.artifactId}</finalName>
+          <artifactSet>
+            <excludes>
+              <exclude>bouncycastle:bcmail-jdk14</exclude>
+              <exclude>bouncycastle:bcprov-jdk14</exclude>
+            </excludes>
+          </artifactSet>
+          <filters>
+            <filter>
+              <artifact>xerces:xercesImpl</artifact>
+              <excludes>
+                <exclude>org/w3c/dom/xpath/XPathEvaluator</exclude>
+                <exclude>org/w3c/dom/ls/DOMImplementationLS.class</exclude>
+                <exclude>org/w3c/dom/ls/LS*.class</exclude>
+              </excludes>
+            </filter>
+            <filter>
+              <artifact>xml-apis:xml-apis</artifact>
+              <excludes>
+                <exclude>org/w3c/dom/events/**</exclude>
+              </excludes>
+            </filter>
+          </filters>
+        </configuration>
+        <executions>
+          <execution>
+            <id>create-standalone-jar</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.mapfish.print</groupId>
+      <artifactId>print-lib</artifactId>
+      <version>${version}</version>
+    </dependency>
+  </dependencies>
+</project>

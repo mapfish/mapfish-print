@@ -1,0 +1,137 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.mapfish.print</groupId>
+  <artifactId>print-root</artifactId>
+  <packaging>pom</packaging>
+
+  <!-- see: http://ceki.blogspot.com/2006/11/solution-to-maven2-version-number.html
+       to understand what follows -->
+  <version>0.0-SNAPSHOT</version> <!-- this version is a fake, don't touch it -->
+  <properties>
+    <!-- this is the real version -->
+    <theVersion>1.2-SNAPSHOT</theVersion>
+  </properties>
+
+  <name>Print</name>
+  <description>The root project for the MapFish print module</description>
+  <url>http://www.mapfish.org/</url>
+  <organization>
+    <name>Camptocamp SA</name>
+    <url>http://www.camptocamp.com/</url>
+  </organization>
+  <issueManagement>
+    <url>https://www.mapfish.org/trac/mapfish/report</url>
+  </issueManagement>
+  <mailingLists>
+    <mailingList>
+      <name>Users</name>
+      <subscribe>users-subscribe@mapfish.org</subscribe>
+      <unsubscribe>users-subscribe@mapfish.org</unsubscribe>
+      <post>users@mapfish.org</post>
+      <archive>http://www.mapfish.org/pipermail/users/</archive>
+    </mailingList>
+    <mailingList>
+      <name>Dev</name>
+      <subscribe>dev-subscribe@mapfish.org</subscribe>
+      <unsubscribe>dev-subscribe@mapfish.org</unsubscribe>
+      <post>dev@mapfish.org</post>
+      <archive>http://www.mapfish.org/pipermail/dev/</archive>
+    </mailingList>
+    <mailingList>
+      <name>Commits</name>
+      <subscribe>commits-subscribe@mapfish.org</subscribe>
+      <unsubscribe>commits-subscribe@mapfish.org</unsubscribe>
+      <post>commits@mapfish.org</post>
+      <archive>http://www.mapfish.org/pipermail/commits/</archive>
+    </mailingList>
+    <mailingList>
+      <name>Trac</name>
+      <subscribe>trac-subscribe@mapfish.org</subscribe>
+      <unsubscribe>trac-subscribe@mapfish.org</unsubscribe>
+      <post>trac@mapfish.org</post>
+      <archive>http://www.mapfish.org/pipermail/trac/</archive>
+    </mailingList>
+  </mailingLists>
+  <developers>
+    <developer>
+      <name>Patrick Valsecchi</name>
+      <id>pvalsecc</id>
+      <email>patrick.valsecchi@camptocamp.com</email>
+      <organizationUrl>http://www.camptocamp.com/</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Eric Lemoine</name>
+      <id>elemoine</id>
+      <email>eric.lemoine@camptocamp.com</email>
+      <organizationUrl>http://www.camptocamp.com/</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <licenses>
+    <license>
+      <name>BSD License</name>
+      <url>http://www.opensource.org/licenses/bsd-license.php</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <modules>
+    <module>print-lib</module>
+    <module>print-standalone</module>
+    <module>print-servlet</module>
+  </modules>
+
+  <repositories>
+    <repository>
+      <id>org.mapfish</id>
+      <url>http://dev.mapfish.org/maven/repository</url>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+       <id>org.mapfish</id>
+       <url>http://dev.mapfish.org/maven/repository</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <scm>
+    <connection>
+      scm:svn:http://www.mapfish.org/svn/mapfish/trunk/MapFish/server/java/print
+    </connection>
+    <developerConnection>
+      scm:svn:http://www.mapfish.org/svn/mapfish/trunk/MapFish/server/java/print
+    </developerConnection>
+    <tag>HEAD</tag>
+    <url>
+      https://www.mapfish.org/trac/mapfish/browser/trunk/MapFish/server/java/print
+    </url>
+  </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>org.mapfish</id>
+      <url>
+        scpexe://admin@dev.mapfish.org/var/www/dev.mapfish.org/htdocs/maven/repository
+      </url>
+    </repository>
+    <site>
+      <id>org.mapfish</id>
+      <name>MapFish Maven Projects</name>
+      <url>
+        scpexe://admin@dev.mapfish.org/var/www/dev.mapfish.org/htdocs/maven/site/print
+      </url>
+    </site>
+    <downloadUrl>http://dev.mapfish.org/maven/repository</downloadUrl>
+  </distributionManagement>
+</project>

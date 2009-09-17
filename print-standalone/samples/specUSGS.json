@@ -1,0 +1,31 @@
+{
+    layout: 'A4 portrait',
+    title: 'A simple example',
+    srs: 'EPSG:4326',
+    units: 'degrees',
+    layers: [
+        {
+            type: 'WMS',
+            layers: ['DRG'],
+            baseURL: 'http://terraservice.net/OgcMap.ashx',
+            format: 'image/png'
+        }
+    ],
+    pages: [
+        {
+            center: [-106, 34],
+            scale: 100000,
+            dpi: 190,
+            mapTitle: "First map",
+            comment: "This is the first page selected by the user.",
+            rotation: 0,
+            data: {
+                data: [
+                    {id:1, name: 'blah', icon: 'icon_pan', nameBackgroundColor: 'red', nameBorderColor: 'blue'},
+                    {id:2, name: 'blip', icon: 'icon_zoomin', nameBackgroundColor: 'yellow', nameBorderColor: 'green'}
+                ],
+                columns: ['id', 'name', 'icon']
+            }
+        }
+    ]
+}

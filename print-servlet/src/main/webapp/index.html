@@ -1,0 +1,59 @@
+<html>
+  <body>
+    <h1>Test page</h1>
+
+    <form action="pdf/print.pdf">
+      <textarea name="spec" cols="80" rows="30">
+{
+    layout: 'A4 portrait',
+    title: 'A simple example',
+    srs: 'EPSG:4326',
+    units: 'dd',
+    layers: [
+        {
+            type: 'WMS',
+            format: 'image/png',
+            layers: ['basic'],
+            baseURL: 'http://labs.metacarta.com/wms/vmap0'
+        },
+        {
+            type: 'WMS',
+            format: 'image/png',
+            layers: ['routes'],
+            baseURL: 'http://www.camptocamp.org/cgi-bin/mapserv_c2corg',
+            customParams: {TRANSPARENT:true}
+        }
+    ],
+    pages: [
+        {
+            center: [6, 45.5],
+            scale: 4000000,
+            dpi: 190,
+            mapTitle: "First map",
+            comment: "The \"routes\" layer is not shown (the scale is too small)",
+            data: [
+                {id:1, name: 'blah', icon: 'icon_pan'},
+                {id:2, name: 'blip', icon: 'icon_zoomin'}
+            ]
+        },
+        {
+            center: [6.9, 46.2],
+            scale: 500000,
+            dpi: 190,
+            mapTitle: "Second map",
+            comment: "This is a zoomed in version of the first map. Since the scale is more appropriate, we show the \"routes\" layer.",
+            data: [
+                {id:1, name: 'blah', icon: 'icon_pan'},
+                {id:2, name: 'blip', icon: 'icon_zoomin'}
+            ]
+        }
+    ]
+}
+      </textarea><br>
+      <button name="Print">Print</button>
+    </form>
+    <p>
+      To get informations: <a href="pdf/info.json">printInfo</a>
+    </p>
+  </body>
+</html>
