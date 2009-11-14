@@ -151,7 +151,7 @@ layouts:
                 align: center
                 maxWidth: 15
                 maxHeight: 15
-                url: 'http://www.mapfish.org/svn/mapfish/trunk/MapFish/client/mfbase/mapfish/img/${icon}.png'
+                url: 'http://www.mapfish.org/svn/mapfish/framework/client/trunk/mfbase/mapfish/img/${icon}.png'
         - !text
           font: Helvetica
           fontSize: 9
