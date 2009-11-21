@@ -30,6 +30,9 @@ hosts:
   - !dnsMatch
     host: terraservice.net
     port: 80
+  - !dnsMatch
+    host: tile.openstreetmap.org
+    port: 80
 
 layouts:
   #===========================================================================
