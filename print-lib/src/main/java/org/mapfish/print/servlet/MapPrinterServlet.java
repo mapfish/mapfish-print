@@ -65,7 +65,7 @@ public class MapPrinterServlet extends BaseMapServlet {
         } else if (additionalPath.equals(INFO_URL)) {
             getInfo(httpServletRequest, httpServletResponse, getBaseUrl(httpServletRequest));
         } else if (additionalPath.startsWith("/") && additionalPath.endsWith(TEMP_FILE_SUFFIX)) {
-            getPDF(httpServletResponse, additionalPath.substring(1, additionalPath.length() - 4));
+            getPDF(httpServletRequest, httpServletResponse, additionalPath.substring(1, additionalPath.length() - 4));
         } else {
             error(httpServletResponse, "Unknown method: " + additionalPath, 404);
         }
@@ -124,7 +124,7 @@ public class MapPrinterServlet extends BaseMapServlet {
         File tempFile = null;
         try {
             tempFile = doCreatePDFFile(spec, httpServletRequest);
-            sendPdfFile(httpServletResponse, tempFile);
+            sendPdfFile(httpServletResponse, tempFile, Boolean.parseBoolean(httpServletRequest.getParameter("inline")));
         } catch (Throwable e) {
             error(httpServletResponse, e);
         } finally {
@@ -190,8 +190,9 @@ public class MapPrinterServlet extends BaseMapServlet {
 
     /**
      * To get the PDF created previously.
+     * @param httpServletRequest 
      */
-    protected void getPDF(HttpServletResponse httpServletResponse, String id) throws IOException {
+    protected void getPDF(HttpServletRequest req, HttpServletResponse httpServletResponse, String id) throws IOException {
         final File file;
         synchronized (tempFiles) {
             file = tempFiles.get(id);
@@ -200,8 +201,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             error(httpServletResponse, "File with id=" + id + " unknown", 404);
             return;
         }
-
-        sendPdfFile(httpServletResponse, file);
+        sendPdfFile(httpServletResponse, file, Boolean.parseBoolean(req.getParameter("inline")));
     }
 
     /**
@@ -268,11 +268,13 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * copy the PDF into the output stream
      */
-    protected void sendPdfFile(HttpServletResponse httpServletResponse, File tempFile) throws IOException {
+    protected void sendPdfFile(HttpServletResponse httpServletResponse, File tempFile, boolean inline) throws IOException {
         FileInputStream pdf = new FileInputStream(tempFile);
         final OutputStream response = httpServletResponse.getOutputStream();
         httpServletResponse.setContentType("application/pdf");
-        httpServletResponse.setHeader("Content-disposition", "attachment; filename=" + tempFile.getName());
+        if (inline != true) {
+            httpServletResponse.setHeader("Content-disposition", "attachment; filename=" + tempFile.getName());
+        }
         FileUtilities.copyStream(pdf, response);
         pdf.close();
         response.close();
