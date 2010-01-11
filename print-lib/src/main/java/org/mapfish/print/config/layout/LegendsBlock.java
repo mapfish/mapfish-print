@@ -26,6 +26,7 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
+import org.apache.log4j.Logger;
 import org.mapfish.print.PDFUtils;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.InvalidValueException;
@@ -40,6 +41,8 @@ import java.net.URI;
  * See http://trac.mapfish.org/trac/mapfish/wiki/PrintModuleServer#Legendsblock
  */
 public class LegendsBlock extends Block {
+    public static final Logger LOGGER = Logger.getLogger(LegendsBlock.class);
+
     private double maxIconWidth = 0;
     private double maxIconHeight = 8;
     private double classIndentation = 20;
@@ -85,12 +88,24 @@ public class LegendsBlock extends Block {
     private PdfPCell createLine(RenderingContext context, double indent, PJsonObject node, Font pdfFont, PJsonObject params) throws DocumentException {
         final String name = node.getString("name");
         final String icon = node.optString("icon");
+        final PJsonArray icons = node.optJSONArray("icons");
 
         final Paragraph result = new Paragraph();
         result.setFont(pdfFont);
         if (icon != null) {
             result.add(PDFUtils.createImageChunk(context, maxIconWidth, maxIconHeight, URI.create(icon), 0.0f));
             result.add(" ");
+        }
+        if (icons != null) {
+            for (int i = 0; i < icons.size(); ++i) {
+                String iconItem = icons.getString(i);
+                try {
+                    result.add(PDFUtils.createImageChunk(context, maxIconWidth, maxIconHeight, URI.create(iconItem), 0.0f));
+                    result.add(" ");
+                } catch (InvalidValueException e) {
+                    LOGGER.warn("Failed to create image chunk: " + e.getMessage());
+                }
+            }
         }
         result.add(name);
 
