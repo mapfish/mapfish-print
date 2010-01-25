@@ -51,6 +51,8 @@ public abstract class MapReader {
             TileCacheMapReader.create(target, context, params);
         } else if ("Osm".equalsIgnoreCase(type)) {
             OsmMapReader.create(target, context, params);
+        } else if ("Tms".equalsIgnoreCase(type)) {
+            TmsMapReader.create(target, context, params);
         } else if ("Vector".equalsIgnoreCase(type)) {
             VectorMapReader.create(target, context, params);
         } else if ("Image".equalsIgnoreCase(type)) {
