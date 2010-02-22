@@ -56,7 +56,7 @@ public class WMSMapReader extends TileableMapReader {
     protected TileRenderer.Format getFormat() {
         if (format.equals("image/svg+xml")) {
             return TileRenderer.Format.SVG;
-        } else if (format.equals("application/x-pdf")) {
+        } else if (format.equals("application/pdf") || format.equals("application/x-pdf")) {
             return TileRenderer.Format.PDF;
         } else {
             return TileRenderer.Format.BITMAP;
