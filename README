@@ -2,15 +2,23 @@ Please read the documentation available here:
 http://trac.mapfish.org/trac/mapfish/wiki/PrintModuleDoc
 
 
-To build:
-
-Install Gradle (http://www.gradle.org/)
-
-Execute the following command():
-  gradle
+== build ==
+- Install Gradle (http://www.gradle.org/)
+- Execute the following command():
+  > gradle
 
 This will build three artifacts:  print-servlet-xxx.war, print-lib.jar, print-standalone.jar
 
-To deploy:
+== Deploy ==
+The following command will build and upload all artifacts to the dev.mapfish.org repository.
+  > gradle upload -DsshPassphrase=... 
 
-> gradle upload -DsshPassphrase=... 
+To use in eclipse:
+- Create eclipse project metadata:
+  > gradle eclipse
+- Import project into eclipse
+
+== Run from commandline ==
+The following command will run the mapfish printer.  If you do no supply any -Dxxx args then all argument options will be listed.
+  > gradle run -Dconfig=samples/config.yaml -Dspec=samples/spec.json -Doutput=/tmp/print-out.pdf
+  

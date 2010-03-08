@@ -65,7 +65,10 @@ task standalone (dependsOn: compileJava, type: Jar) {
     archivePath.delete()
 
     ant.jar(destfile: "${archivePath}", manifest: "$dest/META-INF/MANIFEST.MF") {
-      fileset(dir: dest, excludes: "META-INF/,LICENSE")
+      fileset(dir: dest) {
+        exclude(name: "META-INF/")
+        exclude(name: "LICENSE")
+      }
     }
     ant.delete(dir: dest)
   }
@@ -103,9 +106,46 @@ uploadArchives {
     }
   }
 }
+def prop(key) {
+  return System.getProperty(key) == null ? null : "--${key}=${System.getProperty(key)}"
+}
+
+task run(dependesOn: compileJava) << {
+  String warning = """[WARNING] config parameter is required. 
+  
+  Usage:
+    gradle run -Dconfig={value} [-Dspec={value}] [-Dverbose={value}] [-Doutput={value}] [-DclientConfig] [-Dreferer={value}] [-Dlog4jConfig={value}]
+  Params:
+    -Dconfig={String}: Filename for the configuration (templates&CO)
+    -Dspec={String}: The location of the description of what has to be printed. By default, STDIN (defaults to [null])
+    -Dverbose={int}: Used only if log4jConfig is not specified. 3 if you want everything, 2 if you want the debug information (stacktraces are shown), 1 for infos and 0 for only warnings and errors (defaults to [1])
+    -Doutput={String}: The destination file. By default, STDOUT (defaults to [null])
+    -DclientConfig={on|off}: Get the config for the client form. Doesn't generate a PDF (defaults to [off])
+    -Dreferer={String}: Referer address to use when doing queries (defaults to [null])
+    -Dlog4jConfig={String}: Property file for the log4j configuration (defaults to [null])
+    
+  Example:
+    gradle run -Dconfig=samples/config.yaml -Dspec=samples/spec.json -Doutput=/tmp/print-out.pdf
+    
+    
+  """
+
+  args = [prop("config"),prop("spec"),prop("output"),prop("verbose"),prop("clientConfig"),prop("referer"),prop("log4jConfig")]
+  if(prop("config") == null) {
+    println(warning)
+  } else {  
+    ant.java(classname: 'org.mapfish.print.ShellMapPrinter', fork: false, logError: false,
+             classpath: "${sourceSets.main.runtimeClasspath.asPath}")  {
+        for(a in args.findAll {it!=null}){
+          arg(value: a)
+        }
+     }
+   }
+}
 
 /*
-This task is not ready for prime time
+This task is not ready for prime time.  I do not know what parameters the class expects
+
 task runWarTest(dependsOn: jettyRunWar) << {
   description = "run load test on embedded jetty"
   try {
@@ -124,3 +164,25 @@ task runWarTest(dependsOn: jettyRunWar) << {
   }
 }*/
 
+
+/*
+task install(overwrite: true) << {
+  env = System.getenv()
+  sep = File.separator
+  localRepo = env['MAVEN_REPO'] ?: env['HOME']+"${sep}.m2${sep}repository"
+  repository(url: "file://"+localRepo)
+  snapshotRepository(url: "file://"+localRepo)
+  
+  addFilter('lib') { artifact, file ->
+    artifact.name.contains 'print-lib'
+  }
+  
+  addFilter('standalone') { artifact, file ->
+    artifact.name.contains 'print-standalone'
+  }
+  
+  addFilter('war') { artifact, file ->
+    artifact.name.contains 'print-servlet'
+  }
+}
+*/
