@@ -1,2 +1,16 @@
 Please read the documentation available here:
 http://trac.mapfish.org/trac/mapfish/wiki/PrintModuleDoc
+
+
+To build:
+
+Install Gradle (http://www.gradle.org/)
+
+Execute the following command():
+  gradle
+
+This will build three artifacts:  print-servlet-xxx.war, print-lib.jar, print-standalone.jar
+
+To deploy:
+
+> gradle upload -DsshPassphrase=... 

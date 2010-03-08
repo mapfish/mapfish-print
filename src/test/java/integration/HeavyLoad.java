@@ -17,7 +17,7 @@
  * along with MapFish Server.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.servlet;
+package integration;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;

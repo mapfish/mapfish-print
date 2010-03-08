@@ -1,0 +1,126 @@
+group = 'org.mapfish.print'
+version = '1.2-SNAPSHOT'
+
+usePlugin 'java'
+usePlugin 'war'
+usePlugin 'jetty'
+usePlugin 'eclipse'
+usePlugin 'maven'
+
+defaultTasks 'jar', 'war', 'standalone'
+
+repositories {
+  mavenCentral()
+  mavenRepo urls: 'http://dev.mapfish.org/maven/repository'
+}
+
+configurations {
+    deployerJars
+    compile.transitive = true
+    deployerJars.transitive = true
+}
+
+dependencies {  
+  compile ('com.lowagie:itext:2.1.5', 'xerces:xercesImpl:2.4.0', 'org.json:json:20080701', 'org.jyaml:jyaml:1.3',
+           'ch.thus:pvalsecc:0.9.2', 'xalan:xalan:2.7.0', 'log4j:log4j:1.2.14', 'com.vividsolutions:jts:1.8',
+           "org.mapfish.geo:mapfish-geo-lib:$version", 'commons-httpclient:commons-httpclient:3.1')
+  compile ('org.apache.xmlgraphics:batik-transcoder:1.7'){
+    exclude module: 'fop'
+  }
+  providedCompile 'javax.servlet:servlet-api:2.5'
+  testCompile 'junit:junit:4.7'
+  
+  deployerJars "org.apache.maven.wagon:wagon-ssh:1.0-beta-2"
+}
+
+manifest.mainAttributes('Main-Class':'org.mapfish.print.ShellMapPrinter')
+
+sourceCompatibility = 1.5
+targetCompatibility = 1.5
+
+jar {
+  enabled = true
+  baseName = "print-lib"
+}
+
+war {
+  baseName = "print-servlet"
+}
+
+task standalone (dependsOn: compileJava, type: Jar) {
+  baseName = "print-standalone"
+
+  fileSet {
+    sourceSets.main.classes.asFileTree.matching {include '**/*.class'}
+  }
+  for(file in configurations.compile.resolve()) {
+    merge(file)
+  }
+  
+  doLast {
+    def dest = "$buildDir/.standalone"
+    ant.delete(dir: dest)
+    ant.unzip(src: "$archivePath", dest: dest)
+
+    archivePath.delete()
+
+    ant.jar(destfile: "${archivePath}", manifest: "$dest/META-INF/MANIFEST.MF") {
+      fileset(dir: dest, excludes: "META-INF/,LICENSE")
+    }
+    ant.delete(dir: dest)
+  }
+}
+
+artifacts {
+  archives jar, war, standalone
+}
+
+uploadArchives {
+  def ssl = new SSL()
+  
+  repositories.mavenDeployer {
+    name = 'dev.mapfish.org deployer'
+    configuration = configurations.deployerJars
+    
+    logger.debug("Using ${ssl.privateKey()} for privateKey file")
+    logger.debug("Using ${ssl.passphrase()} for privateKey passphrase")
+
+    repository(url: "scp://dev.mapfish.org/var/www/dev.mapfish.org/htdocs/maven/site/print") {
+      authentication( userName: "admin", privateKey: ssl.privateKey(), passphrase: ssl.passphrase())
+    }
+    snapshotRepository(url: "scp://dev.mapfish.org/var/www/dev.mapfish.org/htdocs/maven/site/print")  {
+      authentication( userName: "admin", privateKey: ssl.privateKey(), passphrase: ssl.passphrase())
+    }
+    
+    addFilter('lib') { artifact, file ->
+      artifact.name.contains 'print-lib'
+    }
+    addFilter('standalone') { artifact, file ->
+      artifact.name.contains 'print-standalone'
+    }
+    addFilter('war') { artifact, file ->
+      artifact.name.contains 'print-servlet'
+    }
+  }
+}
+
+/*
+This task is not ready for prime time
+task runWarTest(dependsOn: jettyRunWar) << {
+  description = "run load test on embedded jetty"
+  try {
+    
+    testServer = System.properties('testServer') :? 
+    def constructor
+    ant.java(
+      classname: 'integration.HeavyLoad', fork:false,
+      classpath: "${configurations.testCompile.asPath}") 
+      {
+        arg(value: "http://localhost:$httpPort/print")
+        arg(value: "samples/spec.json")
+      }
+  } finally {
+    jettyStop.execute()
+  }
+}*/
+

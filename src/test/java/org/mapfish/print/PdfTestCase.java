@@ -53,11 +53,12 @@ public abstract class PdfTestCase extends PrintTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        PJsonObject spec = MapPrinter.parseSpec(FileUtilities.readWholeTextFile(new File("../print-standalone/samples/spec.json")));
+        PJsonObject spec = MapPrinter.parseSpec(FileUtilities.readWholeTextFile(new File("samples/spec.json")));
         spec.getInternalObj().put("units", "meters");
 
         doc = new Document(PageSize.A4);
-        outFile = new FileOutputStream("target/" + getClass().getSimpleName() + "_" + getName() + ".pdf");
+        String baseDir = PdfTestCase.class.getClassLoader().getResource(".").getFile();
+        outFile = new FileOutputStream(baseDir + getClass().getSimpleName() + "_" + getName() + ".pdf");
         writer = PdfWriter.getInstance(doc, outFile);
         writer.setFullCompression();
         createContext(spec);

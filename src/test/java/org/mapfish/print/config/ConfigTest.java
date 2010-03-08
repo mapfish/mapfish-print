@@ -33,7 +33,7 @@ public class ConfigTest extends PrintTestCase {
     }
 
     public void testParse() throws FileNotFoundException {
-        Config config = Config.fromYaml(new File("../print-standalone/samples/config.yaml"));
+        Config config = Config.fromYaml(new File("samples/config.yaml"));
     }
 
     public void testBestScale() {
