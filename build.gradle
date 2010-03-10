@@ -148,6 +148,7 @@ task run(dependesOn: compileJava) << {
 
 task wrapper(type: Wrapper) { 
   gradleVersion = '0.8'
+  jarPath = 'wrapper'
 }
 /*
 This task is not ready for prime time.  I do not know what parameters the class expects
