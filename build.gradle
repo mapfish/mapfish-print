@@ -1,3 +1,5 @@
+import com.camptocamp.gradle.*
+
 group = 'org.mapfish.print'
 version = '1.2-SNAPSHOT'
 
@@ -6,6 +8,7 @@ usePlugin 'war'
 usePlugin 'jetty'
 usePlugin 'eclipse'
 usePlugin 'maven'
+usePlugin ByteCodeQuality
 
 defaultTasks 'jar', 'war', 'standalone'
 
@@ -143,6 +146,9 @@ task run(dependesOn: compileJava) << {
    }
 }
 
+task wrapper(type: Wrapper) { 
+  gradleVersion = '0.8'
+}
 /*
 This task is not ready for prime time.  I do not know what parameters the class expects
 
@@ -164,25 +170,3 @@ task runWarTest(dependsOn: jettyRunWar) << {
   }
 }*/
 
-
-/*
-task install(overwrite: true) << {
-  env = System.getenv()
-  sep = File.separator
-  localRepo = env['MAVEN_REPO'] ?: env['HOME']+"${sep}.m2${sep}repository"
-  repository(url: "file://"+localRepo)
-  snapshotRepository(url: "file://"+localRepo)
-  
-  addFilter('lib') { artifact, file ->
-    artifact.name.contains 'print-lib'
-  }
-  
-  addFilter('standalone') { artifact, file ->
-    artifact.name.contains 'print-standalone'
-  }
-  
-  addFilter('war') { artifact, file ->
-    artifact.name.contains 'print-servlet'
-  }
-}
-*/
