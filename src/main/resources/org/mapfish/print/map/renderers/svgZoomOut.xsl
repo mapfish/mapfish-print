@@ -17,8 +17,12 @@
 
   <xsl:template match="/*">
     <svg:svg xmlns:svg="http://www.w3.org/2000/svg"
-             xmlns:xlink="http://www.w3.org/1999/xlink"
-             version="{@version}" width="{@width}" height="{@height}">
+             xmlns:xlink="http://www.w3.org/1999/xlink">
+      <xsl:for-each select="@*">
+        <xsl:attribute name="{name(.)}">
+          <xsl:value-of select="."/>
+        </xsl:attribute>
+      </xsl:for-each>
       <xsl:apply-templates/>
     </svg:svg>
   </xsl:template>
