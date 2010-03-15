@@ -9,13 +9,14 @@ usePlugin 'jetty'
 usePlugin 'eclipse'
 usePlugin 'maven'
 usePlugin ByteCodeQuality
-usePlugin Cobertura
+//usePlugin Cobertura
 
 defaultTasks 'jar', 'war', 'standalone'
 
+MAPFISH_REPO='http://dev.mapfish.org/maven/repository'
 repositories {
   mavenCentral()
-  mavenRepo urls: 'http://dev.mapfish.org/maven/repository'
+  mavenRepo urls: MAPFISH_REPO
 }
 
 configurations {
@@ -92,10 +93,10 @@ uploadArchives {
     logger.debug("Using ${ssl.privateKey()} for privateKey file")
     logger.debug("Using ${ssl.passphrase()} for privateKey passphrase")
 
-    repository(url: "scp://dev.mapfish.org/var/www/dev.mapfish.org/htdocs/maven/site/print") {
+    repository(url: "scp://dev.mapfish.org/var/www/dev.mapfish.org/htdocs/maven/repository") {
       authentication( userName: "admin", privateKey: ssl.privateKey(), passphrase: ssl.passphrase())
     }
-    snapshotRepository(url: "scp://dev.mapfish.org/var/www/dev.mapfish.org/htdocs/maven/site/print")  {
+    snapshotRepository(url: "scp://dev.mapfish.org/var/www/dev.mapfish.org/htdocs/maven/repository")  {
       authentication( userName: "admin", privateKey: ssl.privateKey(), passphrase: ssl.passphrase())
     }
     
