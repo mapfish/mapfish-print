@@ -9,6 +9,7 @@ usePlugin 'jetty'
 usePlugin 'eclipse'
 usePlugin 'maven'
 usePlugin ByteCodeQuality
+usePlugin Cobertura
 
 defaultTasks 'jar', 'war', 'standalone'
 

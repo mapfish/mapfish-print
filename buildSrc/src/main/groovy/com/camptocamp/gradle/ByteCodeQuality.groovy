@@ -37,13 +37,13 @@ class ByteCodeQuality implements Plugin {
                 taskdef(name:'findbugs', classname:'edu.umd.cs.findbugs.anttask.FindBugsTask', 
                         classpath: project.configurations.findbugsConf.asPath)
 
-                findbugs(home: home.path, output:'html', outputFile: "$project.buildDir/findbugs.html") {
+                findbugs(home: home.path, output:'html', outputFile: "$project.buildDir/reports/findbugs.html") {
                     sourcePath(path: sourceSets.main.java)
                     "class"(location: sourceSets.main.classes.asPath)
                 }
             }
-            
-            println(result)
-        }   
+        }
+        
+        project.build.dependsOn 'findbugs'
     }
 }
