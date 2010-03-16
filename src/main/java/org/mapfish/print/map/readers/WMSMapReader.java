@@ -21,6 +21,7 @@ package org.mapfish.print.map.readers;
 
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.Transformer;
+import org.mapfish.print.map.ParallelMapTileLoader;
 import org.mapfish.print.map.renderers.TileRenderer;
 import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
@@ -61,6 +62,18 @@ public class WMSMapReader extends TileableMapReader {
         } else {
             return TileRenderer.Format.BITMAP;
         }
+    }
+
+    public void render(Transformer transformer, ParallelMapTileLoader parallelMapTileLoader, String srs, boolean first) {
+        PJsonObject customParams = params.optJSONObject("customParams");
+        if (customParams != null) {
+            // native WMS rotation - only works in singleTile mode
+            if (customParams.optString("angle") != null) {
+                transformer.setRotation(0);
+            }
+        }
+
+        super.render(transformer, parallelMapTileLoader, srs, first);
     }
 
     protected void addCommonQueryParams(Map<String, List<String>> result, Transformer transformer, String srs, boolean first) {
