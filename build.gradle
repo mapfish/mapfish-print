@@ -98,6 +98,7 @@ uploadArchives {
     }
     snapshotRepository(url: "scp://dev.mapfish.org/var/www/dev.mapfish.org/htdocs/maven/repository")  {
       authentication( userName: "admin", privateKey: ssl.privateKey(), passphrase: ssl.passphrase())
+      uniqueVersion = false
     }
     
     addFilter('lib') { artifact, file ->
