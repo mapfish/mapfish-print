@@ -21,3 +21,7 @@ To use in eclipse:
 The following command will run the mapfish printer.  If you do no supply any -Dxxx args then all argument options will be listed.
   > ./gradlew run -Dconfig=samples/config.yaml -Dspec=samples/spec.json -Doutput=/tmp/print-out.pdf
   
+== Run in eclipse ==
+- Create new Java Run Configuration
+- Main class is org.mapfish.print.ShellMapPrinter
+- Program arguments: --config=samples/config.yaml --spec=samples/spec.json --output=$HOME/print.pdf
