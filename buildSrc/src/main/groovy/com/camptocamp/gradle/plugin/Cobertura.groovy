@@ -1,11 +1,10 @@
-package com.camptocamp.gradle;
+package com.camptocamp.gradle.plugin;
 
 import org.gradle.api.*;
-import org.gradle.api.plugins.*;
 
-class Cobertura implements Plugin {  
+class Cobertura implements Plugin<Project> {  
 
-    def void use(Project project, org.gradle.api.plugins.ProjectPluginsContainer container) {
+    def void apply(Project project) {
         def cobSerFile="${project.buildDir}/cobertura.ser"
         def srcOriginal="${project.sourceSets.main.classesDir}"
         def srcCopy="${srcOriginal}-copy"

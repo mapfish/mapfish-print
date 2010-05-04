@@ -60,7 +60,7 @@ public class SVGTileRenderer extends TileRenderer {
     static {
         DOMParser parser = new DOMParser();
         try {
-            final InputStream stream = SVGTileRenderer.class.getResourceAsStream("/org/mapfish/print/map/renderers/svgZoomOut.xsl");
+            final InputStream stream = SVGTileRenderer.class.getResourceAsStream("svgZoomOut.xsl");
             if (stream == null) {
                 throw new RuntimeException("Cannot find the SVG transformation XSLT");
             }

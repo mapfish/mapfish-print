@@ -1,0 +1,21 @@
+apply id: 'scala'
+
+tasks.addRule("Pattern: ~<ID>") { String taskName ->
+    if (taskName.startsWith ("~")){
+        task(taskName) << {
+            doFirst {
+                def targetName = taskName.substring(1)
+                def found = getTasksByName(targetName,false)
+                println("found: $found")
+                if(found.size() == 0) {
+                    throw new AssertionError("$targetName is not a known task")
+                } else if (found.size() > 1){
+                    throw new AssertionError("$targetName matches multiple tasks: $found")
+                }
+
+                println("continuous $targetName")
+                def taskToExec = found.iterator().next()
+            }
+        }
+    }
+}

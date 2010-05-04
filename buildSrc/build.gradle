@@ -1,0 +1,16 @@
+import org.apache.ivy.plugins.resolver.*
+
+apply plugin: 'groovy'
+
+repositories {
+    mavenRepo(urls: 'http://gradle.artifactoryonline.com/gradle/libs')
+}
+
+jetty_depends = ["org.mortbay.jetty:jetty:6.1.22@jar", "org.mortbay.jetty:jetty-util:6.1.22@jar",
+        "javax.servlet:servlet-api:2.5@jar"]
+dependencies {
+    compile jetty_depends, 'org.mortbay.jetty:jetty:6.1.22@jar'
+    compile gradleApi()
+    // todo Actually it should be only groovy, but without junit we get a strange error. We need to understand this.
+    groovy localGroovy()
+}

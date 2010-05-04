@@ -1,22 +1,23 @@
+import com.camptocamp.gradle.plugin.*
 import com.camptocamp.gradle.*
 
 group = 'org.mapfish.print'
 version = '1.2-SNAPSHOT'
 
-usePlugin 'java'
-usePlugin 'war'
-usePlugin 'jetty'
-usePlugin 'eclipse'
-usePlugin 'maven'
-usePlugin ByteCodeQuality
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'jetty'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+apply plugin: ByteCodeQuality
 //usePlugin Cobertura
 
 defaultTasks 'jar', 'war', 'standalone'
 
 MAPFISH_REPO='http://dev.mapfish.org/maven/repository'
 repositories {
-  mavenCentral()
   mavenRepo urls: MAPFISH_REPO
+  mavenCentral()
 }
 
 configurations {
@@ -55,14 +56,25 @@ war {
 task standalone (dependsOn: compileJava, type: Jar) {
   baseName = "print-standalone"
 
-  fileSet {
-    sourceSets.main.classes.asFileTree.matching {include '**/*.class'}
+  from {
+    sourceSets.main.classes.asFileTree
   }
-  for(file in configurations.compile.resolve()) {
-    merge(file)
+  def dependencies = configurations.compile.resolve().findAll{ file ->
+      return !file.name.contains("servlet-api")
   }
   
-  doLast {
+  for(file in dependencies) {
+    def files = zipTree(file).matching {
+        exclude 'META-INF/**'
+        exclude 'LICENSE'
+    }
+    
+    from files
+  }
+  
+  into "."
+  
+/*  doLast {
     def dest = "$buildDir/.standalone"
     ant.delete(dir: dest)
     ant.unzip(src: "$archivePath", dest: dest)
@@ -76,7 +88,7 @@ task standalone (dependsOn: compileJava, type: Jar) {
       }
     }
     ant.delete(dir: dest)
-  }
+  }*/
 }
 
 artifacts {
@@ -149,10 +161,6 @@ task run(dependesOn: compileJava) << {
    }
 }
 
-task wrapper(type: Wrapper) { 
-  gradleVersion = '0.8'
-  jarPath = 'wrapper'
-}
 /*
 This task is not ready for prime time.  I do not know what parameters the class expects
 
