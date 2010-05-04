@@ -56,9 +56,10 @@ war {
 task standalone (dependsOn: compileJava, type: Jar) {
   baseName = "print-standalone"
 
-  from {
-    sourceSets.main.classes.asFileTree
-  }
+  manifest = jar.manifest
+
+  from sourceSets.main.classes
+
   def dependencies = configurations.compile.resolve().findAll{ file ->
       return !file.name.contains("servlet-api")
   }
@@ -72,25 +73,13 @@ task standalone (dependsOn: compileJava, type: Jar) {
     from files
   }
   
-  into "."
+  into ""
   
-/*  doLast {
-    def dest = "$buildDir/.standalone"
-    ant.delete(dir: dest)
-    ant.unzip(src: "$archivePath", dest: dest)
-
-    archivePath.delete()
-
-    ant.jar(destfile: "${archivePath}", manifest: "$dest/META-INF/MANIFEST.MF") {
-      fileset(dir: dest) {
-        exclude(name: "META-INF/")
-        exclude(name: "LICENSE")
-      }
-    }
-    ant.delete(dir: dest)
-  }*/
 }
 
+task show {
+//    sourceSets.main.classes.asFileTree.each {println it}
+}
 artifacts {
   archives jar, war, standalone
 }
