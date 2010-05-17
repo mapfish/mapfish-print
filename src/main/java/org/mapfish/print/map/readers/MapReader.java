@@ -57,6 +57,8 @@ public abstract class MapReader {
             VectorMapReader.create(target, context, params);
         } else if ("Image".equalsIgnoreCase(type)) {
             ImageMapReader.create(target, context, params);
+        } else if ("Google".equalsIgnoreCase(type)) {
+            GoogleMapReader.create(target, context, params);
         } else {
             throw new InvalidJsonValueException(params, "type", type);
         }

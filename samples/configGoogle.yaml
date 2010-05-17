@@ -1,0 +1,66 @@
+#===========================================================================
+# allowed DPIs
+#===========================================================================
+dpis: [254, 190, 127, 56]
+
+#===========================================================================
+# the allowed scales
+#===========================================================================
+scales:
+  - 25000
+  - 50000
+  - 100000
+  - 200000
+  - 500000
+  - 1000000
+  - 2000000
+  - 4000000
+
+#===========================================================================
+# the list of allowed hosts
+#===========================================================================
+hosts:
+  - !localMatch
+    dummy: true
+  - !dnsMatch
+    host: maps.google.com
+    port: 80 
+  - !dnsMatch
+    host: tile.openstreetmap.org  
+    port: 80 
+      
+    
+
+layouts:
+  #===========================================================================
+  A4 portrait:
+  #===========================================================================
+    metaData:
+      title: '${title}'
+
+    #-------------------------------------------------------------------------
+    mainPage:
+      pageSize: A4
+      rotation: true
+      header:
+        height: 50
+        items:
+          - !text
+            font: Helvetica
+            fontSize: 30
+            align: right
+            text: '${mapTitle}'
+      items:
+        - !map
+          spacingAfter: 30
+          width: 440
+          height: 483
+        - !text
+          text: '${comment}'
+          spacingAfter: 30
+        - !text
+          font: Helvetica
+          fontSize: 9
+          align: right
+          text: '1:${scale} ${now MM.dd.yyyy}'
+      footer: *commonFooter
