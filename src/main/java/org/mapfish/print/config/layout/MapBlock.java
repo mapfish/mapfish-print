@@ -123,8 +123,21 @@ public class MapBlock extends Block {
             throw new InvalidJsonValueException(params, "scale", scale);
         }
 
-        return new Transformer(centerX, centerY, width, height,
-                scale, dpi, unitEnum, params.optFloat("rotation", 0.0F) * Math.PI / 180.0);
+        String srs = null;
+        if (params.optBool("geodetic", false)
+                || context.getGlobalParams().optBool("geodetic", false)) {
+            srs = params.optString("srs");
+            if (srs == null) {
+                srs = context.getGlobalParams().optString("srs");
+            }
+            if (srs == null) {
+                throw new RuntimeException(
+                        "When geodetic is true the srs is value is required");
+            }
+        }
+        double rotation = params.optFloat("rotation", 0.0F) * Math.PI / 180.0;
+        return new Transformer(centerX, centerY, width, height, scale, dpi,
+                unitEnum, rotation, srs);
     }
 
     public void setHeight(String height) {

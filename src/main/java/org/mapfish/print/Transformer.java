@@ -19,16 +19,44 @@
 
 package org.mapfish.print;
 
-import com.lowagie.text.pdf.PdfContentByte;
-import org.mapfish.print.utils.DistanceUnit;
-
 import java.awt.geom.AffineTransform;
+
+import org.geotools.geometry.DirectPosition2D;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.GeodeticCalculator;
+import org.mapfish.print.utils.DistanceUnit;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import com.lowagie.text.pdf.PdfContentByte;
 
 /**
  * Class that deals with the geometric tranformation between the geographic,
  * bitmap, and paper space for a map rendering.
  */
 public class Transformer implements Cloneable {
+	private static final String GOOGLE_WKT = "PROJCS[\"Google Mercator\","
+		+ "GEOGCS[\"WGS 84\","
+		+ "DATUM[\"World Geodetic System 1984\","
+		+ "SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]],"
+		+ "AUTHORITY[\"EPSG\",\"6326\"]],"
+		+ "PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]],"
+		+ "UNIT[\"degree\", 0.017453292519943295],"
+		+ "AXIS[\"Geodetic latitude\", NORTH],"
+		+ "AXIS[\"Geodetic longitude\", EAST],"
+		+ "AUTHORITY[\"EPSG\",\"4326\"]],"
+		+ "PROJECTION[\"Mercator_1SP\"],"
+		+ "PARAMETER[\"semi_minor\", 6378137.0],"
+		+ "PARAMETER[\"latitude_of_origin\", 0.0],"
+		+ "PARAMETER[\"central_meridian\", 0.0],"
+		+ "PARAMETER[\"scale_factor\", 1.0],"
+		+ "PARAMETER[\"false_easting\", 0.0],"
+		+ "PARAMETER[\"false_northing\", 0.0],"
+		+ "UNIT[\"m\", 1.0]," + "AXIS[\"Easting\", EAST],"
+		+ "AXIS[\"Northing\", NORTH],"
+		+ "AUTHORITY[\"EPSG\",\"900913\"]]";
+
+	
+	
     private int svgFactor;
     public float minGeoX;
     public float minGeoY;
@@ -46,7 +74,14 @@ public class Transformer implements Cloneable {
      */
     private double rotation;
 
-    public Transformer(float centerX, float centerY, int paperWidth, int paperHeight, int scale, int dpi, DistanceUnit unitEnum, double rotation) {
+    /**
+     * @param geodeticSRS
+     *            if not null then it is a the srs to use with the geodetic
+     *            calculator. if null it is assumed that it is non-geodetic
+     */
+    public Transformer(float centerX, float centerY, int paperWidth,
+            int paperHeight, int scale, int dpi, DistanceUnit unitEnum,
+            double rotation, String geodeticSRS) {
         pixelPerGeoUnit = (float) (unitEnum.convertTo(dpi, DistanceUnit.IN) / scale);
 
         float geoWidth = paperWidth * dpi / 72.0f / pixelPerGeoUnit;
@@ -55,14 +90,53 @@ public class Transformer implements Cloneable {
         //target at least 600DPI for the SVG precision
         svgFactor = Math.max((600 + dpi - 1) / dpi, 1);
 
-        minGeoX = centerX - geoWidth / 2.0f;
-        minGeoY = centerY - geoHeight / 2.0f;
-        maxGeoX = minGeoX + geoWidth;
-        maxGeoY = minGeoY + geoHeight;
         this.paperWidth = paperWidth;
         this.paperHeight = paperHeight;
         this.scale = scale;
         this.rotation = rotation;
+        
+        if (geodeticSRS != null) {
+            computeGeodeticBBox(geoWidth, geoHeight, centerX, centerY, dpi,
+                    geodeticSRS);
+        } else {
+            this.minGeoX = centerX - geoWidth / 2.0f;
+            this.minGeoY = centerY - geoHeight / 2.0f;
+            this.maxGeoX = minGeoX + geoWidth;
+            this.maxGeoY = minGeoY + geoHeight;
+        }
+    }
+
+    private void computeGeodeticBBox(float geoWidth, float geoHeight,
+            float centerX, float centerY, float dpi, String srsCode) {
+        try {
+            CoordinateReferenceSystem crs;
+            if (srsCode.equalsIgnoreCase("EPSG:900913")) {
+                crs = CRS.parseWKT(GOOGLE_WKT);
+            } else {
+                crs = CRS.decode(srsCode, true);
+            }
+            GeodeticCalculator calc = new GeodeticCalculator(crs);
+            DirectPosition2D directPosition2D = new DirectPosition2D(centerX,
+                    centerY);
+            directPosition2D.setCoordinateReferenceSystem(crs);
+            calc.setStartingPosition(directPosition2D);
+
+            calc.setDirection(-90, geoWidth / 2.0f);
+            minGeoX = (float) calc.getDestinationPosition().getOrdinate(0);
+
+            calc.setDirection(90, geoWidth / 2.0f);
+            maxGeoX = (float) calc.getDestinationPosition().getOrdinate(0);
+
+            calc.setDirection(180, geoHeight / 2.0f);
+            minGeoY = (float) calc.getDestinationPosition().getOrdinate(1);
+
+            calc.setDirection(0, geoHeight / 2.0f);
+            maxGeoY = (float) calc.getDestinationPosition().getOrdinate(1);
+
+            pixelPerGeoUnit = (paperWidth * dpi) / 72.0f / (maxGeoX - minGeoX);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public float getGeoW() {
@@ -256,7 +330,6 @@ public class Transformer implements Cloneable {
         maxGeoY = cY + destH / 2.0f;
     }
 
-    @SuppressWarnings({"CloneDoesntDeclareCloneNotSupportedException"})
     public Transformer clone() {
         try {
             return (Transformer) super.clone();

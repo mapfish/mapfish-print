@@ -27,7 +27,7 @@ public class TransformerTest extends PrintTestCase {
     }
 
     public void testStraight() {
-        Transformer t = new Transformer(0, 0, 100, 70, 10, 2, DistanceUnit.fromString("m"), 0);
+        Transformer t = new Transformer(0, 0, 100, 70, 10, 2, DistanceUnit.fromString("m"), 0, null);
         assertEquals(100.0F, t.getPaperW());
         assertEquals(70.0F, t.getPaperH());
 
@@ -37,6 +37,33 @@ public class TransformerTest extends PrintTestCase {
         assertEquals(geoH, t.getGeoH(), .000001);
         assertEquals(geoW, t.getRotatedGeoW(), .000001);
         assertEquals(geoH, t.getRotatedGeoH(), .000001);
-
     }
+
+    public void testGeodetic() {
+        DistanceUnit unitEnum = DistanceUnit.fromString("m");
+		int dpi = 2;
+		int scale = 10;
+		Transformer t = new Transformer(0, 0, 100, 70, scale, dpi, unitEnum, 0, "epsg:4326");
+        assertEquals(100.0F, t.getPaperW());
+        assertEquals(70.0F, t.getPaperH());
+
+        float pixelPerGeoUnit = (float) (unitEnum.convertTo(dpi, DistanceUnit.IN) / scale);
+        
+        assertFalse(pixelPerGeoUnit - t.getGeoH() < .000001);
+    }
+    
+
+    public void testGoogle() {
+        DistanceUnit unitEnum = DistanceUnit.fromString("m");
+		int dpi = 2;
+		int scale = 10;
+		Transformer t = new Transformer(0, 0, 100, 70, scale, dpi, unitEnum, 0, "EPSG:900913");
+        assertEquals(100.0F, t.getPaperW());
+        assertEquals(70.0F, t.getPaperH());
+
+        float pixelPerGeoUnit = (float) (unitEnum.convertTo(dpi, DistanceUnit.IN) / scale);
+        
+        assertFalse(pixelPerGeoUnit - t.getGeoH() < .000001);
+    }
+
 }
