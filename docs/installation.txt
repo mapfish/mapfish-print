@@ -1,0 +1,177 @@
+Installation
+************
+
+Compilation
+-----------
+
+To build this project, you need:
+
+* JDK >= 1.5, make sure you use Sun's JDK (sun-java6-jdk on Ubuntu 8.04) and not GCJ
+* Download MapFish Print from SVN
+
+  * On Debian::
+
+      svn checkout http://www.mapfish.org/svn/mapfish/print/trunk/
+
+The other external libs are taken care of by maven.
+
+The build command to use is:
+
+* On Linux::
+
+    cd %MAPFISH_DIR%/trunk/
+    ./gradlew build
+
+* On Windows::
+
+    cd %MAPFISH_DIR%/trunk/
+    gradlew.bat build
+
+You might get an error like:
+
+.. code-block:: bash
+
+    ....
+    .....
+    FAILURE: Could not determine which tasks to execute.
+    
+    * What went wrong:
+    
+    Task 'build' not found in root project 'src'.
+    
+    * Try:
+  	
+    Run with -t to get a list of available tasks.
+    
+    BUILD FAILED
+    ....
+    .....
+
+Then try::
+
+  cd %MAPFISH_DIR%/trunk/
+  ./gradlew clean build
+
+Print module installation
+--------------------------
+
+The PDF generation requires some code to run on your web server. This page describes how to install it.
+
+Depending on what language/framework you want to use on your server and what performance you need, multiple solutions are available. The next sections will describe them.
+
+In every cases, **you have to modify the print.yaml file** to customize it. At least to add the list of hosts that can be used to get the maps from.
+
+Python
+~~~~~~
+
+1. Edit the development.ini file and add two lines like that to the [DEFAULT] section (change the strings "%....%" by something relevant)::
+
+    print.jar = %MAPFISHDIR%/trunk/print-standalone/target/print-standalone.jar
+    print.config = %PROJECT_DIR%/print/config.yaml
+
+2. Edit the config.yaml file in your %PROJECT_DIR%/print/ directory as documented in the `Print Module Server <server_side_configuration.html>`_ page. 
+3. Edit the MY_PROJECT/config/routing.py file and add those 2 lines (just after the "CUSTOM ROUTES HERE")::
+
+    from mapfish.controllers import printer
+    printer.addRoutes(map, '/print/', 'printer')
+
+4. Create a MY_PROJECT/controllers/printer.py file with this single line as content::
+
+    from mapfish.controllers.printer import PrinterController
+
+5. If you use the MapFish deploy architecture, add this to your "defaults" file, at the end of the post_fetch_project function and re-deploy::
+
+    (cd $PROJECT_MAPFISH_DIR/server/java/print/; ./gradlew build || echo "Cannot compile the print module!!!!!!")
+
+6. If you use WSGI, you must add the following line into %PROJECT_DIR%/%PROJECT_NAME%/%PROJECT_NAME%.wsgi (or .wsgi.in) before the "loadapp" call::
+
+    # configure the logging system
+    from paste.script.util.logging_config import fileConfig
+    fileConfig('%PASTE_CONFIG%')
+
+Java servlet
+~~~~~~~~~~~~
+
+This method will give you the best performance.
+
+The separate WAR way
+++++++++++++++++++++
+
+For that you need to install tomcat5.5 or higher.
+
+Note: some people have experienced problems when deploying the MapFish Print WAR in the Tomcat packaged in Ubuntu, it looks like these problems are due to additional security constraints in the Ubuntu package. If you have such problems and don't know how to solve them you can download Tomcat from the Apache web site, for example MapFish Print is known to work well with apache-tomcat-6.0.20.tar.gz is known.
+
+In my system, tomcat is installed in **/var/lib/tomcat5.5** and the %WEBAPPS% directory is in **/var/lib/tomcat5.5/webapps**.
+
+1. copy the WAR file in your %WEBAPPS% directory. This is can be obtained from `%MAPFISH_DIR%/trunk/print-servlet/target/print-servlet-*.war` if you compiled the print module or you can get it from the `maven repository <http://dev.mapfish.org/maven/repository/org/mapfish/print/print-servlet/1.1/print-servlet-1.1.war>`_. 
+2. Edit the config.yaml file in your `%WEAPPS%/print-servlet-*/` directory as documented in the `Print Module Server <server_side_configuration.html>`_ page. 
+3. If needed, edit the web.xml and log4j.properties files. 
+
+If your web pages are not served by the tomcat server, you may need to configure a proxy to work around the `same origin policy <http://en.wikipedia.org/wiki/Same_origin_policy>`_. See `Configure Proxy <http://trac.mapfish.org/trac/mapfish/wiki/ConfigureProxy>`_ for examples on how you may do that.
+
+Included into another web application
++++++++++++++++++++++++++++++++++++++
+
+If you are developping a web application, you can include the print module in it. This explanation works only if you use Maven to build your project. For others, you'll have to include the print-lib JAR file and all its dependencies.
+
+1. Add the print-lib dependency to your WAR project by adding these two elements to your pom.xml file (adjust the version)::
+
+        ...
+        <dependencies>
+          <dependency>
+            <groupId>org.mapfish.print</groupId>
+            <artifactId>print-lib</artifactId>
+            <version>1.2-SNAPSHOT</version>
+          </dependency>
+          ...
+        </dependencies>
+        ...
+        <repositories>
+          <repository>
+            <id>org.mapfish</id>
+            <url>http://dev.mapfish.org/maven/repository</url>
+          </repository>
+          ...
+        </repositories>
+        ...
+
+2. Add these two sections (correct the paths and URLs in function of your needs) to your WEB-INF/web.xml file::
+
+        ...
+        <servlet>
+          <servlet-name>mapfish.print</servlet-name>
+          <servlet-class>org.mapfish.print.servlet.MapPrinterServlet</servlet-class>
+          <init-param>
+            <param-name>config</param-name>
+            <param-value>config.yaml</param-value>
+          </init-param>
+        </servlet>
+        <servlet-mapping>
+          <servlet-name>mapfish.print</servlet-name>
+          <url-pattern>/pdf/*</url-pattern>
+        </servlet-mapping>
+         ...
+
+3. Add a config.yaml file (from the `samples <https://trac.mapfish.org/trac/mapfish/browser/print/trunk/print-standalone/samples>`_, for example) to the root of your web application. 
+
+Ruby on rails
+++++++++++++++
+
+TODO write the doc.
+
+Command line
++++++++++++++
+
+For debugging or calling from other environments, you can run the print module from the command line.
+
+Example of command (from the directory %MAPFISHDIR%/server/java/print/print-standalone):
+
+.. code-block:: java
+
+  java -Djava.awt.headless=true -cp target/print-standalone.jar org.mapfish.print.ShellMapPrinter --config=samples/config.yaml --spec=samples/spec.json --output=$HOME/print.pdf
+
+Help about the command line's option can be obtained like that:
+
+.. code-block:: java
+
+  java -Djava.awt.headless=true -cp target/print-standalone.jar org.mapfish.print.ShellMapPrinter

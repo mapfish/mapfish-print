@@ -1,0 +1,94 @@
+@import "basic.css";
+@import "pygments.css";
+@import "sphinxdoc.css";
+
+body {
+    background-color: #eeeeee;
+    color: #333333;
+}
+
+div.sphinxsidebar h3, div.sphinxsidebar h4 {
+    border: 1px solid #ff5c00;
+    background-color: #ff5c00;
+}
+
+div.footer {
+    color: white !important;
+}
+
+div.footer a {
+    color: white !important;
+}
+
+div.admonition, div.warning {
+    border: 1px solid #ff5c00;
+}
+
+div.warning p.admonition-title {
+    border-bottom: 1px solid #ff5c00;
+    background-color: #ff5c00;
+}
+
+h1 {
+    color: #ff5c00;
+}
+
+div.related ul li a:hover {
+    color: #ff5c00;
+}
+
+div.footer {
+    background-color: #ff5c00;
+}
+
+div.admonition p.admonition-title,
+div.warning p.admonition-title {
+    border-bottom: 1px solid #ff5c00;
+    font-weight: bold;
+    background-color: #ff5c00;
+}
+
+a:hover {
+   color:#ff5c00 !important;
+}
+
+a {
+   color:#FF9900 !important;
+}
+
+div.sphinxsidebar input {
+    border: 1px solid #bbbbbb;
+}
+
+div.bodywrapper {
+    margin: 0 380px 0 0 !important;
+}
+
+div.sphinxsidebar {
+    width: 350px;
+}
+
+.logo {
+    padding-left:40px;
+}
+
+div.sphinxsidebar h3 a {
+   color:white !important;
+}
+
+.navigation-links {
+   padding-left:5px;
+   padding-right:5px;
+   padding-top:3px;
+   padding-bottom:6px; 
+   background-color:white;
+   position:absolute;
+   right:485px;
+   top:37px;
+   color: #ff5c00 !important;
+}
+
+.navigation-links a {
+    color: #ff5c00 !important;
+    font-weight:bold;
+}
