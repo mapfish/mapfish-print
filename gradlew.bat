@@ -31,7 +31,7 @@ if exist "%SystemRoot%\command\find.exe" set FIND_EXE="%SystemRoot%\command\find
 
 :check_JAVA_HOME
 @rem Make sure we have a valid JAVA_HOME
-if not "%JAVA_HOME%" == "" goto have_JAVA_HOME
+if not ""%JAVA_HOME%"" == """" goto have_JAVA_HOME
 
 echo.
 echo ERROR: Environment variable JAVA_HOME has not been set.
@@ -100,7 +100,7 @@ set CMD_LINE_ARGS=%$
 :execute
 @rem Setup the command line
 
-set STARTER_MAIN_CLASS=org.gradle.wrapper.WrapperMain
+set STARTER_MAIN_CLASS=org.gradle.wrapper.GradleWrapperMain
 set CLASSPATH=%DIRNAME%\wrapper\gradle-wrapper.jar
 set WRAPPER_PROPERTIES=%DIRNAME%\wrapper\gradle-wrapper.properties
 set JAVA_EXE=%JAVA_HOME%\bin\java.exe
