@@ -31,7 +31,7 @@ if exist "%SystemRoot%\command\find.exe" set FIND_EXE="%SystemRoot%\command\find
 
 :check_JAVA_HOME
 @rem Make sure we have a valid JAVA_HOME
-if not ""%JAVA_HOME%"" == """" goto have_JAVA_HOME
+if not "%JAVA_HOME%" == "" goto have_JAVA_HOME
 
 echo.
 echo ERROR: Environment variable JAVA_HOME has not been set.
