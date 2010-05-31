@@ -43,13 +43,12 @@ public class TransformerTest extends PrintTestCase {
         DistanceUnit unitEnum = DistanceUnit.fromString("m");
 		int dpi = 2;
 		int scale = 10;
-		Transformer t = new Transformer(0, 0, 100, 70, scale, dpi, unitEnum, 0, "epsg:4326");
-        assertEquals(100.0F, t.getPaperW());
-        assertEquals(70.0F, t.getPaperH());
+        Transformer geodetic = new Transformer(0, 0, 100, 70, scale, dpi, unitEnum, 0, "EPSG:4326");
+        Transformer linear = new Transformer(0, 0, 100, 70, scale, dpi, unitEnum, 0, null);
+        assertEquals(linear.getPaperW(), geodetic.getPaperW());
+        assertEquals(linear.getPaperH(), geodetic.getPaperH());
 
-        float pixelPerGeoUnit = (float) (unitEnum.convertTo(dpi, DistanceUnit.IN) / scale);
-        
-        assertFalse(pixelPerGeoUnit - t.getGeoH() < .000001);
+        assertTrue(Math.abs(linear.getGeoH() - geodetic.getGeoH()) > 0.00000001);
     }
     
 
@@ -57,13 +56,13 @@ public class TransformerTest extends PrintTestCase {
         DistanceUnit unitEnum = DistanceUnit.fromString("m");
 		int dpi = 2;
 		int scale = 10;
-		Transformer t = new Transformer(0, 0, 100, 70, scale, dpi, unitEnum, 0, "EPSG:900913");
-        assertEquals(100.0F, t.getPaperW());
-        assertEquals(70.0F, t.getPaperH());
+        Transformer geodetic = new Transformer(731033.0f,5864001.0f, 100, 70, scale, dpi, unitEnum, 0, "EPSG:900913");
+        Transformer linear = new Transformer(6.566981170957462f, 46.51954387957121f, 100, 70, scale, dpi, unitEnum, 0, null);
+        assertEquals(linear.getPaperW(), geodetic.getPaperW());
+        assertEquals(linear.getPaperH(), geodetic.getPaperH());
 
-        float pixelPerGeoUnit = (float) (unitEnum.convertTo(dpi, DistanceUnit.IN) / scale);
+        assertTrue(Math.abs(linear.getGeoH() - geodetic.getGeoH()) > 0.00000001);
         
-        assertFalse(pixelPerGeoUnit - t.getGeoH() < .000001);
     }
 
 }

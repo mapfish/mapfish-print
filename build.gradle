@@ -9,7 +9,6 @@ apply plugin: 'war'
 apply plugin: 'jetty'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
-apply plugin: ByteCodeQuality
 //usePlugin Cobertura
 
 defaultTasks 'jar', 'war', 'standalone'
@@ -55,7 +54,7 @@ war {
   baseName = "print-servlet"
 }
 
-task standalone (dependsOn: compileJava, type: Jar) {
+task standalone (dependsOn: test, type: Jar) {
   baseName = "print-standalone"
 
   manifest = jar.manifest
