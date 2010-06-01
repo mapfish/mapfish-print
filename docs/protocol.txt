@@ -46,7 +46,8 @@ This can be loaded through an HTML script tag like that::
   <script type="text/javascript"
         src="http://localhost:5000/print/info.json?var=printConfig"></script>
 
-Or through an AJAX request by omitting the "var" query parameter. All the print widget implementations have a "configUrl" parameter. If this parameter is set, the widget will do this request by AJAX automatically.
+or through an AJAX request, in this case the ``var`` query parameter will be
+omitted.
 
 The "url" query parameter is here to help the print servlet to know what URL is used by the browser to access the servlet. This parameter is here because the servlet can be behind a proxy, hiding the real URL.
 
