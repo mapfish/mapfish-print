@@ -79,11 +79,7 @@ Python
 
     from mapfish.controllers.printer import PrinterController
 
-5. If you use the MapFish deploy architecture, add this to your "defaults" file, at the end of the post_fetch_project function and re-deploy::
-
-    (cd $PROJECT_MAPFISH_DIR/server/java/print/; ./gradlew build || echo "Cannot compile the print module!!!!!!")
-
-6. If you use WSGI, you must add the following line into %PROJECT_DIR%/%PROJECT_NAME%/%PROJECT_NAME%.wsgi (or .wsgi.in) before the "loadapp" call::
+5. If you use WSGI, you must add the following line into %PROJECT_DIR%/%PROJECT_NAME%/%PROJECT_NAME%.wsgi (or .wsgi.in) before the "loadapp" call::
 
     # configure the logging system
     from paste.script.util.logging_config import fileConfig
