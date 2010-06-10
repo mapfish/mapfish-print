@@ -79,11 +79,13 @@ Python
 
     from mapfish.controllers.printer import PrinterController
 
-5. If you use WSGI, you must add the following line into %PROJECT_DIR%/%PROJECT_NAME%/%PROJECT_NAME%.wsgi (or .wsgi.in) before the "loadapp" call::
+5. If you use Apache mod_wsgi, you can add the following before the "loadapp" call in the WSGI script::
 
     # configure the logging system
     from paste.script.util.logging_config import fileConfig
     fileConfig('%PASTE_CONFIG%')
+
+   where ``%%PASTE_CONFIG%`` is the path to the application's configuration file (.ini).
 
 Java servlet
 ~~~~~~~~~~~~
