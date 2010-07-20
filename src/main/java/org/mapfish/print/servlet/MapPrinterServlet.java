@@ -154,8 +154,9 @@ public class MapPrinterServlet extends BaseMapServlet {
 
         final String id = generateId(tempFile);
         httpServletResponse.setContentType("application/json; charset=utf-8");
+        PrintWriter writer = null;
         try {
-            final PrintWriter writer = httpServletResponse.getWriter();
+            writer = httpServletResponse.getWriter();
             JSONWriter json = new JSONWriter(writer);
             json.object();
             {
@@ -168,6 +169,10 @@ public class MapPrinterServlet extends BaseMapServlet {
         } catch (IOException e) {
             deleteFile(tempFile);
             throw new ServletException(e);
+        } finally {
+            if(writer != null) {
+                writer.close();
+            }
         }
         addTempFile(tempFile, id);
     }
@@ -180,17 +185,22 @@ public class MapPrinterServlet extends BaseMapServlet {
 
     protected String getSpecFromPostBody(HttpServletRequest httpServletRequest) throws IOException {
         BufferedReader data = httpServletRequest.getReader();
-        StringBuilder spec = new StringBuilder();
-        String cur;
-        while ((cur = data.readLine()) != null) {
-            spec.append(cur).append("\n");
+        try {
+            StringBuilder spec = new StringBuilder();
+            String cur;
+            while ((cur = data.readLine()) != null) {
+                spec.append(cur).append("\n");
+            }
+            return spec.toString();
+        } finally {
+            if(data != null) {
+                data.close();
+            }
         }
-        return spec.toString();
     }
 
     /**
      * To get the PDF created previously.
-     * @param httpServletRequest 
      */
     protected void getPDF(HttpServletRequest req, HttpServletResponse httpServletResponse, String id) throws IOException {
         final File file;
@@ -212,27 +222,30 @@ public class MapPrinterServlet extends BaseMapServlet {
         resp.setContentType("application/json; charset=utf-8");
         final PrintWriter writer = resp.getWriter();
 
-        final String var = req.getParameter("var");
-        if (var != null) {
-            writer.print(var + "=");
-        }
-
-        JSONWriter json = new JSONWriter(writer);
         try {
-            json.object();
-            {
-                printer.printClientConfig(json);
-                json.key("printURL").value(basePath + PRINT_URL);
-                json.key("createURL").value(basePath + CREATE_URL);
+            final String var = req.getParameter("var");
+            if (var != null) {
+                writer.print(var + "=");
             }
-            json.endObject();
-        } catch (JSONException e) {
-            throw new ServletException(e);
+
+            JSONWriter json = new JSONWriter(writer);
+            try {
+                json.object();
+                {
+                    printer.printClientConfig(json);
+                    json.key("printURL").value(basePath + PRINT_URL);
+                    json.key("createURL").value(basePath + CREATE_URL);
+                }
+                json.endObject();
+            } catch (JSONException e) {
+                throw new ServletException(e);
+            }
+            if (var != null) {
+                writer.print(";");
+            }
+        } finally {
+            writer.close();
         }
-        if (var != null) {
-            writer.print(";");
-        }
-        writer.close();
     }
 
 
@@ -247,11 +260,11 @@ public class MapPrinterServlet extends BaseMapServlet {
         String referer = httpServletRequest.getHeader("Referer");
         //create a temporary file that will contain the PDF
         TempFile tempFile = new TempFile(File.createTempFile(TEMP_FILE_PREFIX, TEMP_FILE_SUFFIX, getTempDir()));
+        FileOutputStream out = null;
         try {
-            FileOutputStream out = new FileOutputStream(tempFile);
-
+            out = new FileOutputStream(tempFile);
             getMapPrinter().print(spec, out, referer);
-            out.close();
+
             return tempFile;
         } catch (IOException e) {
             deleteFile(tempFile);
@@ -262,6 +275,9 @@ public class MapPrinterServlet extends BaseMapServlet {
         } catch (ServletException e) {
             deleteFile(tempFile);
             throw e;
+        } finally {
+            if (out != null)
+                out.close();
         }
     }
 
@@ -271,30 +287,40 @@ public class MapPrinterServlet extends BaseMapServlet {
     protected void sendPdfFile(HttpServletResponse httpServletResponse, File tempFile, boolean inline) throws IOException {
         FileInputStream pdf = new FileInputStream(tempFile);
         final OutputStream response = httpServletResponse.getOutputStream();
+        try {
         httpServletResponse.setContentType("application/pdf");
         if (inline != true) {
             httpServletResponse.setHeader("Content-disposition", "attachment; filename=" + tempFile.getName());
         }
         FileUtilities.copyStream(pdf, response);
-        pdf.close();
-        response.close();
+        } finally {
+            try {
+                pdf.close();
+            } finally{
+                response.close();
+            }
+        }
     }
 
     /**
      * Send an error XXX to the client with an exception
      */
     protected void error(HttpServletResponse httpServletResponse, Throwable e) {
+        PrintWriter out = null;
         try {
             httpServletResponse.setContentType("text/plain");
             httpServletResponse.setStatus(500);
-            PrintWriter out = httpServletResponse.getWriter();
+            out = httpServletResponse.getWriter();
             out.println("Error while generating PDF:");
             e.printStackTrace(out);
-            out.close();
 
             LOGGER.error("Error while generating PDF", e);
         } catch (IOException ex) {
             throw new RuntimeException(e);
+        } finally {
+            if (out != null) {
+                out.close();
+            }
         }
     }
 
@@ -302,16 +328,21 @@ public class MapPrinterServlet extends BaseMapServlet {
      * Send an error XXX to the client with a message
      */
     protected void error(HttpServletResponse httpServletResponse, String message, int code) {
+        PrintWriter out = null;
         try {
             httpServletResponse.setContentType("text/plain");
             httpServletResponse.setStatus(code);
-            PrintWriter out = httpServletResponse.getWriter();
+            out = httpServletResponse.getWriter();
             out.println("Error while generating PDF:");
             out.println(message);
-            out.close();
+
             LOGGER.error("Error while generating PDF: " + message);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
+        } finally {
+            if (out != null) {
+                out.close();
+            }
         }
     }
 

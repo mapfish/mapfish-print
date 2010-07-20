@@ -89,22 +89,26 @@ public class ShellMapPrinter {
 
     public void run() throws IOException, JSONException, DocumentException {
         final OutputStream outFile = getOutputStream();
-        if (clientConfig) {
-            final OutputStreamWriter writer = new OutputStreamWriter(outFile, Charset.forName("UTF-8"));
-            JSONWriter json = new JSONWriter(writer);
-            json.object();
-            {
-                printer.printClientConfig(json);
+        try {
+            if (clientConfig) {
+                final OutputStreamWriter writer = new OutputStreamWriter(outFile, Charset.forName("UTF-8"));
+                JSONWriter json = new JSONWriter(writer);
+                json.object();
+                {
+                    printer.printClientConfig(json);
+                }
+                json.endObject();
+
+                writer.close();
+
+            } else {
+                final InputStream inFile = getInputStream();
+                printer.print(FileUtilities.readWholeTextStream(inFile, "UTF-8"), outFile, referer);
             }
-            json.endObject();
-
-            writer.close();
-
-        } else {
-            final InputStream inFile = getInputStream();
-            printer.print(FileUtilities.readWholeTextStream(inFile, "UTF-8"), outFile, referer);
+        } finally {
+            outFile.close();
+            printer.stop();
         }
-        printer.stop();
     }
 
     private void configureLogs() {
