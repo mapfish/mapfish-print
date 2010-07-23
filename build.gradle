@@ -40,7 +40,7 @@ dependencies {
   deployerJars "org.apache.maven.wagon:wagon-ssh:1.0-beta-2"
 }
 
-manifest.mainAttributes('Main-Class':'org.mapfish.print.ShellMapPrinter')
+manifest.mainAttributes('Main-Class':'org.mapfish.print.ShellMapPrinter', 'Build-Time': new Date().getDateTimeString())
 
 sourceCompatibility = 1.5
 targetCompatibility = 1.5
@@ -52,12 +52,14 @@ jar {
 
 war {
   baseName = "print-servlet"
+  manifest.mainAttributes('Build-Time': new Date().getDateTimeString())
 }
 
 task standalone (dependsOn: test, type: Jar) {
   baseName = "print-standalone"
 
   manifest = jar.manifest
+
 
   from sourceSets.main.classes
 
