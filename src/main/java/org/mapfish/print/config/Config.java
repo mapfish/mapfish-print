@@ -86,6 +86,7 @@ public class Config {
      * chunks
      */
     private OrderedResultsExecutor<MapTileTask> mapRenderingExecutor = null;
+    private MultiThreadedHttpConnectionManager connectionManager;
 
     public Config() {
         hosts.add(new LocalHostMatcher());
@@ -266,7 +267,7 @@ public class Config {
             mapRenderingExecutor.stop();
         }
 
-        MultiThreadedHttpConnectionManager.shutdownAll();
+        connectionManager.shutdown();
     }
 
     public void setGlobalParallelFetches(int globalParallelFetches) {
@@ -307,12 +308,14 @@ public class Config {
     }
 
     private synchronized MultiThreadedHttpConnectionManager getConnectionManager() {
-        MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-        final HttpConnectionManagerParams params = connectionManager.getParams();
-        params.setDefaultMaxConnectionsPerHost(perHostParallelFetches);
-        params.setMaxTotalConnections(globalParallelFetches);
-        params.setSoTimeout(socketTimeout);
-        params.setConnectionTimeout(connectionTimeout);
+        if(connectionManager == null) {
+            connectionManager = new MultiThreadedHttpConnectionManager();
+            final HttpConnectionManagerParams params = connectionManager.getParams();
+            params.setDefaultMaxConnectionsPerHost(perHostParallelFetches);
+            params.setMaxTotalConnections(globalParallelFetches);
+            params.setSoTimeout(socketTimeout);
+            params.setConnectionTimeout(connectionTimeout);
+        }
         return connectionManager;
     }
 
