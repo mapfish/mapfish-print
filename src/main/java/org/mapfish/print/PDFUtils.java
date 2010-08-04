@@ -108,31 +108,34 @@ public class PDFUtils {
                 context.getConfig().getHttpClient(uri).executeMethod(method);
                 int code = method.getStatusCode();
                 final String contentType = method.getResponseHeader("Content-Type").getValue();
-                if (code < 200 || code >= 300 || contentType.startsWith("text/") || contentType.equals("application/vnd.ogc.se_xml")) {
+
+                if (code == 204) {
+                    // returns a transparent image
+                    if (LOGGER.isDebugEnabled()) LOGGER.debug("creating a transparent image for: " + uri);
+                    try {
+                        byte maskr[] = {(byte)255};
+                        Image mask = Image.getInstance(1,1,1,1,maskr);
+                        mask.makeMask();
+                        byte data[] = new byte[1*1*3];
+                        Image image = Image.getInstance(1, 1, 3, 8, data);
+                        image.setImageMask(mask);
+                        return image;
+                    } catch (DocumentException e) {
+                        LOGGER.warn("Couldn't generate a transparent image");
+                        throw e;
+                    }                 
+                } else if (code < 200 || code >= 300 || contentType.startsWith("text/") || contentType.equals("application/vnd.ogc.se_xml")) {
                     if (LOGGER.isDebugEnabled()) LOGGER.debug("Server returned an error for " + uri + ": " + method.getResponseBodyAsString());
                     if (code < 200 || code >= 300) {
                         throw new IOException("Error (status=" + code + ") while reading the image from " + uri + ": " + method.getStatusText());
-                    } else if (code == 204) {
-                        // returns a transparent image
-                        try {
-                            byte maskr[] = {(byte)255};
-                            Image mask = Image.getInstance(1,1,1,1,maskr);
-                            mask.makeMask();
-                            byte data[] = new byte[1*1*3];
-                            Image image = Image.getInstance(1, 1, 3, 8, data);
-                            image.setImageMask(mask);
-                            return image;
-                        } catch (DocumentException e) {
-                            LOGGER.warn("Couldn't generate a transparent image");
-                            throw e;
-                        }
                     } else {
                         throw new IOException("Didn't receive an image while reading: " + uri);
                     }
+                } else {
+                    final Image result = Image.getInstance(method.getResponseBody());
+                    if (LOGGER.isDebugEnabled()) LOGGER.debug("loaded image: "+uri);
+                    return result;
                 }
-                final Image result = Image.getInstance(method.getResponseBody());
-                if (LOGGER.isDebugEnabled()) LOGGER.debug("loaded image: "+uri);
-                return result;
             } catch (IOException e) {
                 LOGGER.warn("Server returned an error for " + uri + ": " + e.getMessage());
                 throw e;
