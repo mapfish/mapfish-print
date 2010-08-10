@@ -43,6 +43,7 @@ public abstract class MapReader {
     public abstract void render(Transformer transformer, ParallelMapTileLoader parallelMapTileLoader, String srs, boolean first);
 
     public static void create(List<MapReader> target, String type, RenderingContext context, PJsonObject params) {
+        // TODO add plugin architecture.  considering looking at OSGE
         if ("WMS".equalsIgnoreCase(type)) {
             WMSMapReader.create(target, context, params);
         } else if ("MapServer".equalsIgnoreCase(type)) {
@@ -59,6 +60,10 @@ public abstract class MapReader {
             ImageMapReader.create(target, context, params);
         } else if ("Google".equalsIgnoreCase(type)) {
             GoogleMapReader.create(target, context, params);
+        } else if ("KaMapCache".equalsIgnoreCase(type)) {
+            KaMapCacheMapReader.create(target, context, params);
+        } else if ("KaMap".equalsIgnoreCase(type)) {
+            KaMapMapReader.create(target, context, params);
         } else {
             throw new InvalidJsonValueException(params, "type", type);
         }

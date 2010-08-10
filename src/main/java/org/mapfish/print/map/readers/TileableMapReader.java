@@ -60,8 +60,28 @@ public abstract class TileableMapReader extends HTTPMapReader {
             bitmapTileH = tileCacheLayerInfo.getHeight();
             final float tileGeoWidth = transformer.getResolution() * bitmapTileW;
             final float tileGeoHeight = transformer.getResolution() * bitmapTileH;
-            float tileMinGeoX = (float) (Math.floor((minGeoX - tileCacheLayerInfo.getMinX()) / tileGeoWidth) * tileGeoWidth) + tileCacheLayerInfo.getMinX();
-            float tileMinGeoY = (float) (Math.floor((minGeoY - tileCacheLayerInfo.getMinY()) / tileGeoHeight) * tileGeoHeight) + tileCacheLayerInfo.getMinY();
+
+
+            // TODO I would like to do this sort of thing by extension points for plugins
+            
+            // the tileMinGeoSize is not calculated the same way in TileCache
+            // and KaMap, so they are treated differently here.
+            final float tileMinGeoX;
+            final float tileMinGeoY;
+            if (this instanceof TileCacheMapReader) {
+                tileMinGeoX = (float) (Math.floor((minGeoX - tileCacheLayerInfo.getMinX()) / tileGeoWidth) * tileGeoWidth) + tileCacheLayerInfo.getMinX();
+                tileMinGeoY = (float) (Math.floor((minGeoY - tileCacheLayerInfo.getMinY()) / tileGeoHeight) * tileGeoHeight) + tileCacheLayerInfo.getMinY();
+            } else if (this instanceof KaMapCacheMapReader || this instanceof KaMapMapReader) {
+                tileMinGeoX = (float) (Math.floor((minGeoX) / tileGeoWidth) * tileGeoWidth);
+                tileMinGeoY = (float) (Math.floor((minGeoY) / tileGeoHeight) * tileGeoHeight);
+            } else {
+                tileMinGeoX = 0;
+                tileMinGeoY = 0;
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Reader unsuported");
+                }
+            }
+
             offsetX = (minGeoX - tileMinGeoX) / transformer.getResolution();
             offsetY = (minGeoY - tileMinGeoY) / transformer.getResolution();
             for (float geoY = tileMinGeoY; geoY < maxGeoY; geoY += tileGeoHeight) {

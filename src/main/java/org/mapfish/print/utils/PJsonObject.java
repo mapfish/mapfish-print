@@ -189,4 +189,13 @@ public class PJsonObject extends PJsonElement {
     public JSONObject getInternalObj() {
         return obj;
     }
+
+    public boolean has(String key) {
+        String result = obj.optString(key, null);
+        if (result == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
