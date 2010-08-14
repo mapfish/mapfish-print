@@ -267,7 +267,9 @@ public class Config {
             mapRenderingExecutor.stop();
         }
 
-        connectionManager.shutdown();
+        if(connectionManager != null) {
+            connectionManager.shutdown();
+        }
     }
 
     public void setGlobalParallelFetches(int globalParallelFetches) {
