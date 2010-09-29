@@ -43,7 +43,7 @@ public abstract class MapReader {
     public abstract void render(Transformer transformer, ParallelMapTileLoader parallelMapTileLoader, String srs, boolean first);
 
     public static void create(List<MapReader> target, String type, RenderingContext context, PJsonObject params) {
-        // TODO add plugin architecture.  considering looking at OSGE
+        // TODO add plugin architecture.  considering looking at OSGI
         if ("WMS".equalsIgnoreCase(type)) {
             WMSMapReader.create(target, context, params);
         } else if ("MapServer".equalsIgnoreCase(type)) {
