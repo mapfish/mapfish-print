@@ -69,17 +69,23 @@ public abstract class TileableMapReader extends HTTPMapReader {
             final float tileMinGeoX;
             final float tileMinGeoY;
             if (this instanceof TileCacheMapReader) {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("TileCacheMapReader min geo x and y calculation used");
+                }
                 tileMinGeoX = (float) (Math.floor((minGeoX - tileCacheLayerInfo.getMinX()) / tileGeoWidth) * tileGeoWidth) + tileCacheLayerInfo.getMinX();
                 tileMinGeoY = (float) (Math.floor((minGeoY - tileCacheLayerInfo.getMinY()) / tileGeoHeight) * tileGeoHeight) + tileCacheLayerInfo.getMinY();
             } else if (this instanceof KaMapCacheMapReader || this instanceof KaMapMapReader) {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Kamap min geo x and y calculation used");
+                }
                 tileMinGeoX = (float) (Math.floor((minGeoX) / tileGeoWidth) * tileGeoWidth);
                 tileMinGeoY = (float) (Math.floor((minGeoY) / tileGeoHeight) * tileGeoHeight);
             } else {
-                tileMinGeoX = 0;
-                tileMinGeoY = 0;
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Reader unsuported");
+                    LOGGER.debug("Default min geo x and y calculation used");
                 }
+                tileMinGeoX = (float) (Math.floor((minGeoX - tileCacheLayerInfo.getMinX()) / tileGeoWidth) * tileGeoWidth) + tileCacheLayerInfo.getMinX();
+                tileMinGeoY = (float) (Math.floor((minGeoY - tileCacheLayerInfo.getMinY()) / tileGeoHeight) * tileGeoHeight) + tileCacheLayerInfo.getMinY();
             }
 
             offsetX = (minGeoX - tileMinGeoX) / transformer.getResolution();
