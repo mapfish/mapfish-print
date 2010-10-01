@@ -39,10 +39,15 @@ hosts:
     host: demo.mapfish.org
     port: 80
 
+# the default fileName for the files downloaded from the servlet
+outputFilename: MapFish_PrintOut
+
 layouts:
   #===========================================================================
   A4 portrait:
   #===========================================================================
+    # override the default outputFileName defined above
+#    outputFilename: A4_Layout
     mainPage:
       rotation: true
       pageSize: A4

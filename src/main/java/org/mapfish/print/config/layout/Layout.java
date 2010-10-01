@@ -25,6 +25,7 @@ import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.InvalidValueException;
+import org.mapfish.print.config.Config;
 import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
 
@@ -39,6 +40,8 @@ public class Layout {
     private MainPage mainPage;
 
     private LastPage lastPage;
+
+    private String outputFilename;
 
     public void render(PJsonObject params, RenderingContext context) throws DocumentException {
         if (metaData != null) {
@@ -108,5 +111,13 @@ public class Layout {
 
         if(titlePage!=null) titlePage.validate();
         if(lastPage !=null) lastPage.validate();
+    }
+
+    public String getOutputFilename() {
+        return outputFilename;
+    }
+
+    public void setOutputFilename(String outputFilename) {
+        this.outputFilename = outputFilename;
     }
 }

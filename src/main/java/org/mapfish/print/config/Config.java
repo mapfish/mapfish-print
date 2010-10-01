@@ -75,6 +75,8 @@ public class Config {
 
     private boolean tilecacheMerging = false;
 
+    private String outputFilename = "mapfish-print.pdf";
+
     /**
      * How much of the asked map we tolerate to be outside of the printed area.
      * Used only in case of bbox printing (use by the PrintAction JS component).
@@ -335,5 +337,38 @@ public class Config {
 
     public void setConnectionTimeout(int connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
+    }
+
+    public String getOutputFilename(String layoutName) {
+        Layout layout = layouts.get(layoutName);
+        String name = null;
+        if(layout != null) {
+            name = processPdfName(layout.getOutputFilename());
+        }
+
+        return name == null ? outputFilename : name;
+    }
+
+    public String getOutputFilename() {
+        return outputFilename;
+    }
+
+    public void setOutputFilename(String outputFilename) {
+        this.outputFilename = processPdfName(outputFilename);
+    }
+
+    public static String processPdfName(String name) {
+        final String outputFilename;
+        if(name != null && !name.toLowerCase().endsWith(".pdf")) {
+            if(name.trim().length() == 0) {
+                outputFilename = null;
+            } else {
+                outputFilename = name + ".pdf";
+            }
+        } else {
+            outputFilename = name;
+        }
+
+        return outputFilename;
     }
 }

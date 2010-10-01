@@ -22,7 +22,10 @@ package org.mapfish.print.servlet;
 import com.lowagie.text.DocumentException;
 import org.json.JSONException;
 import org.json.JSONWriter;
+import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
+import org.mapfish.print.config.Config;
+import org.mapfish.print.utils.PJsonObject;
 import org.pvalsecc.misc.FileUtilities;
 
 import javax.servlet.ServletException;
@@ -51,7 +54,6 @@ public class MapPrinterServlet extends BaseMapServlet {
      * Tells if a thread is alread purging the old temporary files or not.
      */
     private AtomicBoolean purging = new AtomicBoolean(false);
-
     /**
      * Map of temporary files.
      */
@@ -121,7 +123,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             return;
         }
 
-        File tempFile = null;
+        TempFile tempFile = null;
         try {
             tempFile = doCreatePDFFile(spec, httpServletRequest);
             sendPdfFile(httpServletResponse, tempFile, Boolean.parseBoolean(httpServletRequest.getParameter("inline")));
@@ -202,8 +204,8 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * To get the PDF created previously.
      */
-    protected void getPDF(HttpServletRequest req, HttpServletResponse httpServletResponse, String id) throws IOException {
-        final File file;
+    protected void getPDF(HttpServletRequest req, HttpServletResponse httpServletResponse, String id) throws IOException, ServletException {
+        final TempFile file;
         synchronized (tempFiles) {
             file = tempFiles.get(id);
         }
@@ -257,13 +259,18 @@ public class MapPrinterServlet extends BaseMapServlet {
             LOGGER.debug("Generating PDF for spec=" + spec);
         }
 
+        PJsonObject specJson = MapPrinter.parseSpec(spec);
+
         String referer = httpServletRequest.getHeader("Referer");
         //create a temporary file that will contain the PDF
-        TempFile tempFile = new TempFile(File.createTempFile(TEMP_FILE_PREFIX, TEMP_FILE_SUFFIX, getTempDir()));
+        final String outputFileName = specJson.optString(Constants.OUTPUT_FILENAME_KEY);
+        final String printedLayoutName = specJson.optString(Constants.JSON_LAYOUT_KEY, "");
+        final File tempJavaFile = File.createTempFile(TEMP_FILE_PREFIX, TEMP_FILE_SUFFIX, getTempDir());
+        TempFile tempFile = new TempFile(tempJavaFile, outputFileName, printedLayoutName);
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(tempFile);
-            getMapPrinter().print(spec, out, referer);
+            getMapPrinter().print(specJson, out, referer);
 
             return tempFile;
         } catch (IOException e) {
@@ -284,13 +291,14 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * copy the PDF into the output stream
      */
-    protected void sendPdfFile(HttpServletResponse httpServletResponse, File tempFile, boolean inline) throws IOException {
+    protected void sendPdfFile(HttpServletResponse httpServletResponse, TempFile tempFile, boolean inline) throws IOException, ServletException {
         FileInputStream pdf = new FileInputStream(tempFile);
         final OutputStream response = httpServletResponse.getOutputStream();
         try {
         httpServletResponse.setContentType("application/pdf");
         if (inline != true) {
-            httpServletResponse.setHeader("Content-disposition", "attachment; filename=" + tempFile.getName());
+            final String fileName = tempFile.getOutputFileName(getMapPrinter());
+            httpServletResponse.setHeader("Content-disposition", "attachment; filename=" + fileName);
         }
         FileUtilities.copyStream(pdf, response);
         } finally {
@@ -414,10 +422,22 @@ public class MapPrinterServlet extends BaseMapServlet {
 
     protected static class TempFile extends File {
         private final long creationTime;
+        public final String printedLayoutName;
+        public final String outputFileName;
 
-        public TempFile(File tempFile) {
+        public TempFile(File tempFile, String outputFileName, String printedLayoutName) {
             super(tempFile.getAbsolutePath());
             creationTime = System.currentTimeMillis();
+            this.outputFileName = Config.processPdfName(outputFileName);
+            this.printedLayoutName = printedLayoutName;
+        }
+
+        public String getOutputFileName(MapPrinter mapPrinter) {
+            if(outputFileName != null) {
+                return outputFileName;
+            } else {
+                return mapPrinter.getOutputFilename(printedLayoutName, getName());
+            }
         }
     }
 }

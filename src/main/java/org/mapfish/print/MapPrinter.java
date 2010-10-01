@@ -107,6 +107,7 @@ public class MapPrinter {
         }
     }
 
+
     /**
      * Generate the PDF using the given spec.
      *
@@ -114,8 +115,18 @@ public class MapPrinter {
      */
     public RenderingContext print(String spec, OutputStream outFile, String referer) throws DocumentException {
         final PJsonObject jsonSpec = parseSpec(spec);
+        return print(jsonSpec, outFile, referer);
+    }
 
-        final String layoutName = jsonSpec.getString("layout");
+    /**
+     * Generate the PDF using the given spec.
+     *
+     * @return The context that was used for printing.
+     */
+    public RenderingContext print(PJsonObject jsonSpec, OutputStream outFile, String referer) throws DocumentException {
+
+
+        final String layoutName = jsonSpec.getString(Constants.JSON_LAYOUT_KEY);
         Layout layout = config.getLayout(layoutName);
         if (layout == null) {
             throw new RuntimeException("Unknown layout '" + layoutName + "'");
@@ -159,5 +170,10 @@ public class MapPrinter {
      */
     public void stop() {
         config.stop();
+    }
+
+    public String getOutputFilename(String layout, String defaultName) {
+        final String name = config.getOutputFilename(layout);
+        return name == null ? defaultName : name;
     }
 }
