@@ -35,14 +35,16 @@ import org.mapfish.print.utils.PJsonObject;
  */
 public class TextBlock extends FontBlock {
     private String text = "";
+    private double lineSpacing = 1.0;
 
     public void render(PJsonObject params, PdfElement target, final RenderingContext context) throws DocumentException {
         Paragraph paragraph = new Paragraph();
 
         final Font pdfFont = getPdfFont();
         paragraph.setFont(pdfFont);
+        paragraph.setLeading(0f, (float)lineSpacing);
 
-        final Phrase text = PDFUtils.renderString(context, params, this.text, pdfFont);
+        final String text = PDFUtils.renderString(context, params, this.text, pdfFont);
         paragraph.add(text);
 
         if (getAlign() != null) paragraph.setAlignment(getAlign().getCode());
@@ -62,4 +64,9 @@ public class TextBlock extends FontBlock {
         super.validate();
         if (text == null) throw new InvalidValueException("text", "null");
     }
+    
+    public void setLineSpacing(double lineSpacing) {
+        this.lineSpacing = lineSpacing;
+    }
+    
 }
