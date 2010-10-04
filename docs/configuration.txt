@@ -47,6 +47,8 @@ Here is the general structure:
 
 Optional parts are shown with a question mark in the left margin. The question marks must not be put in the configuration file. Their default values is shown.
 
+A chosen DPI value from the above configuration is used in WMS requests as an added format_options parameter. This is used by Geoserver 2.1 for symbol/label-rescaling suitable for high resolution printouts, see `Geoserver format_options specification <http://docs.geoserver.org/latest/en/user/services/wms/vendor.html>`_ for more information.
+
 In general, PDF dimensions and positions are specified in points. 72 points == 1 inch == 25.4 mm.
 
 The list of {HOST_WHITELIST_DEFINITION} defines the allowed URLs for getting maps. Its format will be defined in `the next sub-section <server_side_configuration.html#host-whitelist-definition>`_.
