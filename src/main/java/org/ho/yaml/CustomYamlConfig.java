@@ -30,6 +30,7 @@ import org.mapfish.print.config.AddressHostMatcher;
 import org.mapfish.print.config.ColorWrapper;
 import org.mapfish.print.config.CustomEnumWrapper;
 import org.mapfish.print.config.DnsHostMatcher;
+import org.mapfish.print.config.Key;
 import org.mapfish.print.config.LocalHostMatcher;
 import org.mapfish.print.config.layout.*;
 import org.mapfish.print.scalebar.Direction;
@@ -74,6 +75,8 @@ public class CustomYamlConfig extends YamlConfig {
         transfers.put("localMatch", LocalHostMatcher.class.getName());
         transfers.put("ipMatch", AddressHostMatcher.class.getName());
         transfers.put("dnsMatch", DnsHostMatcher.class.getName());
+
+        transfers.put("key", Key.class.getName());
 
         setTransfers(transfers);
     }

@@ -59,4 +59,31 @@ public class DnsHostMatcher extends HostMatcher {
     public void setHost(String host) {
         this.host = host;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((host == null) ? 0 : host.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        DnsHostMatcher other = (DnsHostMatcher) obj;
+        if (host == null) {
+            if (other.host != null)
+                return false;
+        } else if (!host.equals(other.host))
+            return false;
+        return true;
+    }
+    
+    
 }

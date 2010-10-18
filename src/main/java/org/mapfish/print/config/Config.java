@@ -47,10 +47,7 @@ import java.net.SocketException;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Bean mapping the root of the configuration file.
@@ -59,14 +56,11 @@ public class Config {
     public static final Logger LOGGER = Logger.getLogger(Config.class);
 
     private Layouts layouts;
-
     private TreeSet<Integer> dpis;
-
     private TreeSet<Integer> scales;
-
     private TreeSet<String> fonts = null;
-
     private List<HostMatcher> hosts = new ArrayList<HostMatcher>();
+    private TreeSet<Key> keys;
 
     private int globalParallelFetches = 5;
     private int perHostParallelFetches = 5;
@@ -190,6 +184,16 @@ public class Config {
         return fonts;
     }
 
+    public void setKeys(TreeSet<Key> keys) {
+        this.keys = keys;
+    }
+
+    public TreeSet<Key> getKeys() {
+        TreeSet<Key> k = keys;
+        if(k == null) k = new TreeSet<Key>();
+        return k;
+    }
+
     /**
      * Make sure an URI is authorized
      */
@@ -237,6 +241,11 @@ public class Config {
         if (connectionTimeout < 0) {
             throw new InvalidValueException("connectionTimeout", connectionTimeout);
         }
+
+        for (Key key : getKeys()) {
+            key.validate();
+        }
+
     }
 
     /**

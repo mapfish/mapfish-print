@@ -1,0 +1,43 @@
+{
+    layout: 'A4 portrait',
+    title: 'Google Maps Print',
+    srs: 'EPSG:900913',
+    dpi: 254,
+    geodetic: true,
+
+    units: 'm',
+    layers: [
+         {
+        	baseURL: 'http://maps.google.com/maps/api/staticmap',
+        	type : 'Google',
+        	maxExtent: [-20037508.3392,-20037508.3392,20037508.3392,20037508.3392],
+        	tileSize: [256,256],
+        	resolutions: [156543.0339,78271.51695,39135.758475,19567.8792375,9783.93961875,4891.969809375,2445.9849046875,1222.99245234375,611.496226171875,305.7481130859375,152.87405654296876,76.43702827148438,38.21851413574219,19.109257067871095,9.554628533935547,4.777314266967774,2.388657133483887,1.1943285667419434,0.5971642833709717],
+        	extension : 'png',
+        	format : 'png32',
+        	sensor: 'false',
+        	language: 'german',
+        	markers: [
+        	    'color:blue|label:S|46.5195933305192,6.566684726913701'
+        	],
+        	path: 'color:0x0000ff|weight:5|46.5095933305192,6.506684726913701|46.5195933305192,6.526684726913701|46.5395933305192,6.536684726913701|46.5695933305192,6.576684726913701',
+        	maptype: 'street'
+        }
+    ],
+    pages: [
+        {
+            center: [731000,5864000],
+            scale: 100000,
+            mapTitle: "Google Map",
+            comment: "This is the first page selected by the user.",
+            rotation: 0,
+            data: {
+                data: [
+                    {id:1, name: 'blah', icon: 'icon_pan', nameBackgroundColor: 'red', nameBorderColor: 'blue'},
+                    {id:2, name: 'blip', icon: 'icon_zoomin', nameBackgroundColor: 'yellow', nameBorderColor: 'green'}
+                ],
+                columns: ['id', 'name', 'icon']
+            }
+        }
+    ]
+}

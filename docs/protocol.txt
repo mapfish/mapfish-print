@@ -132,3 +132,18 @@ HTTP command::
   GET {PRINT_URL}/{ID}.pdf
 
 Returns the PDF. Can be called only during a limited time since the server side temporary file is deleted afterwards.
+
+Custom Params
+*************
+Google
+------
+The google map reader has several custom parameters that can be added to the request in summary they are:
+* maptype (Required) - type of map to display: http://code.google.com/apis/maps/documentation/staticmaps/#MapTypes
+* sensor  (Optional) - specifies whether the application requesting the static map is using a sensor to determine the user's location
+* language (Optional) - language of labels.
+* markers (Optional) - add markers to the map: http://code.google.com/apis/maps/documentation/staticmaps/#Markers
+  .. code-block:: javascript
+    markers: ['color:blue|label:S|46.5195933305192,6.566684726913701']
+* path (Optional) - add a path to the map: http://code.google.com/apis/maps/documentation/staticmaps/#Paths
+  .. code-block:: javascript
+    path: 'color:0x0000ff|weight:5|46.5095933305192,6.506684726913701|46.5195933305192,6.526684726913701|46.5395933305192,6.536684726913701|46.5695933305192,6.576684726913701',

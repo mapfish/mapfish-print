@@ -19,8 +19,6 @@
 
 package org.mapfish.print.config;
 
-import org.apache.log4j.Logger;
-
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -54,7 +52,6 @@ public class AddressHostMatcher extends InetHostMatcher {
         this.mask = mask;
     }
 
-
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("AddressHostMatcher");
@@ -71,4 +68,43 @@ public class AddressHostMatcher extends InetHostMatcher {
         sb.append('}');
         return sb.toString();
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((ip == null) ? 0 : ip.hashCode());
+        result = prime * result + ((mask == null) ? 0 : mask.hashCode());
+        result = prime * result
+                + ((maskAddress == null) ? 0 : maskAddress.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        AddressHostMatcher other = (AddressHostMatcher) obj;
+        if (ip == null) {
+            if (other.ip != null)
+                return false;
+        } else if (!ip.equals(other.ip))
+            return false;
+        if (mask == null) {
+            if (other.mask != null)
+                return false;
+        } else if (!mask.equals(other.mask))
+            return false;
+        if (maskAddress == null) {
+            if (other.maskAddress != null)
+                return false;
+        } else if (!maskAddress.equals(other.maskAddress))
+            return false;
+        return true;
+    }
+    
 }

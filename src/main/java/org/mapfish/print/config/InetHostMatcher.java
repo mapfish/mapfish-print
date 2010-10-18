@@ -22,6 +22,7 @@ package org.mapfish.print.config;
 import org.apache.log4j.Logger;
 
 import java.net.*;
+import java.util.Arrays;
 
 /**
  * Allows to check that a given URL matches an IP address (numeric format)
@@ -107,4 +108,26 @@ public abstract class InetHostMatcher extends HostMatcher {
     }
 
     protected abstract byte[][] getAuthorizedIPs(InetAddress mask) throws UnknownHostException, SocketException;
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + Arrays.hashCode(authorizedIPs);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        InetHostMatcher other = (InetHostMatcher) obj;
+        if (!Arrays.equals(authorizedIPs, other.authorizedIPs))
+            return false;
+        return true;
+    }
 }

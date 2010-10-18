@@ -23,6 +23,8 @@ import org.mapfish.print.InvalidJsonValueException;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.Transformer;
 import org.mapfish.print.map.ParallelMapTileLoader;
+import org.mapfish.print.map.readers.google.GoogleMapReader;
+import org.mapfish.print.map.readers.google.GoogleMapTileReader;
 import org.mapfish.print.utils.PJsonObject;
 
 import java.util.List;
@@ -58,6 +60,8 @@ public abstract class MapReader {
             VectorMapReader.create(target, context, params);
         } else if ("Image".equalsIgnoreCase(type)) {
             ImageMapReader.create(target, context, params);
+        } else if ("TiledGoogle".equalsIgnoreCase(type)) {
+            GoogleMapTileReader.create(target, context, params);
         } else if ("Google".equalsIgnoreCase(type)) {
             GoogleMapReader.create(target, context, params);
         } else if ("KaMapCache".equalsIgnoreCase(type)) {

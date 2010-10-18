@@ -24,12 +24,15 @@ hosts:
     dummy: true
   - !dnsMatch
     host: maps.google.com
-    port: 80 
+    port: 80
   - !dnsMatch
-    host: tile.openstreetmap.org  
-    port: 80 
+    host: labs.metacarta.com
+    port: 80
       
-    
+keys: 
+  - !key
+    key: x_pdIEkdzsd_ddx
+    id: gme-xxccy
 
 layouts:
   #===========================================================================
@@ -42,25 +45,9 @@ layouts:
     mainPage:
       pageSize: A4
       rotation: true
-      header:
-        height: 50
-        items:
-          - !text
-            font: Helvetica
-            fontSize: 30
-            align: right
-            text: '${mapTitle}'
       items:
         - !map
           spacingAfter: 30
           width: 440
           height: 483
-        - !text
-          text: '${comment}'
-          spacingAfter: 30
-        - !text
-          font: Helvetica
-          fontSize: 9
-          align: right
-          text: '1:${scale} ${now MM.dd.yyyy}'
       footer: *commonFooter

@@ -17,8 +17,9 @@
  * along with MapFish Server.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.map.readers;
+package org.mapfish.print.map.readers.google;
 
+import org.mapfish.print.map.readers.TileCacheLayerInfo;
 import org.mapfish.print.utils.PJsonArray;
 
 /**

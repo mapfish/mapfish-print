@@ -17,47 +17,45 @@
  * along with MapFish Server.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.map.readers;
-
-import org.mapfish.print.RenderingContext;
-import org.mapfish.print.Transformer;
-import org.mapfish.print.map.renderers.TileRenderer;
-import org.mapfish.print.utils.PJsonArray;
-import org.mapfish.print.utils.PJsonObject;
-import org.pvalsecc.misc.URIUtils;
+package org.mapfish.print.map.readers.google;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.*;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mapfish.print.RenderingContext;
+import org.mapfish.print.Transformer;
+import org.mapfish.print.map.readers.MapReader;
+import org.mapfish.print.map.readers.TileableMapReader;
+import org.mapfish.print.map.renderers.TileRenderer;
+import org.mapfish.print.utils.PJsonArray;
+import org.mapfish.print.utils.PJsonObject;
+import org.pvalsecc.misc.URIUtils;
+
 /**
  * Support for the protocol using directly the content of a Google Map Static API directory.
  */
-public class GoogleMapReader extends TileableMapReader {
+public class GoogleMapTileReader extends TileableMapReader {
     protected final String layer;
-    private final String format;
-    private final String sensor;
-    private final String maptype;
+    private GoogleConfig config;
 
-    protected GoogleMapReader(String layer, RenderingContext context, PJsonObject params) {
+
+    protected GoogleMapTileReader(String layer, RenderingContext context, PJsonObject params) {
         super(context, params);
         this.layer = layer;
         PJsonArray maxExtent = params.getJSONArray("maxExtent");
-        tileCacheLayerInfo = new GoogleLayerInfo(params.getJSONArray("resolutions"), 256, 256, maxExtent.getFloat(0), maxExtent.getFloat(1), maxExtent.getFloat(2), maxExtent.getFloat(3), params.getString("extension"));
-        format = params.getString("format");
-        sensor = params.getString("sensor");
-        // Possible values: roadmap, satellite, hybrid, terrain
-        maptype = params.getString("maptype");
+        tileCacheLayerInfo = new GoogleLayerInfo(params.getJSONArray("resolutions"), 640, 640, maxExtent.getFloat(0), maxExtent.getFloat(1), maxExtent.getFloat(2), maxExtent.getFloat(3), params.getString("extension"));
+        config = new GoogleConfig(context,params,LOGGER, baseUrl, false);
     }
 
     protected TileRenderer.Format getFormat() {
         return TileRenderer.Format.BITMAP;
     }
-
 
     protected URI getTileUri(URI commonUri, Transformer transformer, float minGeoX, float minGeoY, float maxGeoX, float maxGeoY, long w, long h) throws URISyntaxException, UnsupportedEncodingException {
     	float targetResolution = (maxGeoX - minGeoX) / w;
@@ -82,15 +80,18 @@ public class GoogleMapReader extends TileableMapReader {
         URIUtils.addParamOverride(tileParams, "center", center);
         URIUtils.addParamOverride(tileParams, "size", size);
         URIUtils.addParamOverride(tileParams, "zoom", Integer.toString(resolution.index));
-        //URIUtils.addParamOverride(tileParams, "zoom", "2");
-        URIUtils.addParamOverride(tileParams, "sensor", this.sensor);
-        URIUtils.addParamOverride(tileParams, "format", this.format);
-        URIUtils.addParamOverride(tileParams, "maptype", this.maptype);
-        return URIUtils.addParams(commonUri, tileParams, OVERRIDE_ALL);  
+        URI uri = URIUtils.addParams(commonUri, tileParams, OVERRIDE_ALL);
+
+        if(config.signer != null) {
+            return config.signURI(uri);
+        } else {
+            return uri;
+        }
     }
 
-    protected static void create(List<MapReader> target, RenderingContext context, PJsonObject params) {
-        target.add(new GoogleMapReader("t", context, params));
+
+    public static void create(List<MapReader> target, RenderingContext context, PJsonObject params) {
+        target.add(new GoogleMapTileReader("t", context, params));
     }
 
     public boolean testMerge(MapReader other) {
@@ -108,7 +109,14 @@ public class GoogleMapReader extends TileableMapReader {
 	@Override
 	protected void addCommonQueryParams(Map<String, List<String>> result,
 			Transformer transformer, String srs, boolean first) {
-		// TODO Auto-generated method stub
-		
+        if(config.signer != null) {
+            URIUtils.addParamOverride(result, "client", config.signer.clientId());
+        }
+        URIUtils.addParamOverride(result, "sensor", config.sensor);
+        URIUtils.addParamOverride(result, "format", config.format);
+        URIUtils.addParamOverride(result, "maptype", config.maptype);
+        if(config.language != null) URIUtils.addParamOverride(result, "language", config.language);
+        if(config.markers.size() > 0) result.put("markers", config.markers);
+        if(config.path != null) URIUtils.addParamOverride(result, "path", config.path);
 	}
 }
