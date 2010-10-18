@@ -35,7 +35,7 @@ import java.lang.reflect.Modifier;
  * </ul>
  */
 public class ColorWrapper extends AbstractWrapper implements SimpleObjectWrapper {
-    public ColorWrapper(Class type) {
+    public ColorWrapper(Class<?> type) {
         super(type);
     }
 
@@ -47,7 +47,7 @@ public class ColorWrapper extends AbstractWrapper implements SimpleObjectWrapper
         }
     }
 
-    public Class expectedArgType() {
+    public Class<?> expectedArgType() {
         return String.class;
     }
 

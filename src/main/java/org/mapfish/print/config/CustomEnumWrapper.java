@@ -29,7 +29,7 @@ import org.ho.yaml.wrapper.EnumWrapper;
  * </ul>
  */
 public class CustomEnumWrapper extends EnumWrapper {
-    public CustomEnumWrapper(Class type) {
+    public CustomEnumWrapper(Class<?> type) {
         super(type);
     }
 

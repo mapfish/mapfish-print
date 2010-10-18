@@ -45,7 +45,7 @@ public enum DistanceUnit {
     YD(DistanceUnit.FT, 3.0, 25.4 / 1000.0 * 12.0 * 3.0, new String[]{"yd", "yard", "yards"}),
     MI(DistanceUnit.FT, 5280.0, 25.4 / 1000.0 * 12.0 * 5280.0, new String[]{"mi", "mile", "miles"}),
 
-    DEGREES(null, 1.0, 40041470.0 / 360.0, new String[]{"°", "dd", "degree", "degrees"}),
+    DEGREES(null, 1.0, 40041470.0 / 360.0, new String[]{"\u00B0", "dd", "degree", "degrees"}),
     MINUTE(DistanceUnit.DEGREES, 1.0 / 60.0, 40041470.0 / 360.0, new String[]{"min", "minute", "minutes"}),
     SECOND(DistanceUnit.DEGREES, 1.0 / 3600.0, 40041470.0 / 360.0, new String[]{"sec", "second", "seconds"});
 

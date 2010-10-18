@@ -21,6 +21,8 @@ package org.mapfish.print.utils;
 
 import org.mapfish.print.PrintTestCase;
 
+import java.nio.charset.Charset;
+
 public class DistanceUnitTest extends PrintTestCase {
     public DistanceUnitTest(String name) {
         super(name);
@@ -31,7 +33,7 @@ public class DistanceUnitTest extends PrintTestCase {
         assertEquals("m", DistanceUnit.fromString("meter").toString());
         assertEquals("m", DistanceUnit.fromString("meterS").toString());
         assertEquals("m", DistanceUnit.fromString("m").toString());
-        assertEquals("°", DistanceUnit.fromString("degree").toString());
+        assertEquals("\u00B0", DistanceUnit.fromString("degree").toString());
     }
 
     public void testConvert() {

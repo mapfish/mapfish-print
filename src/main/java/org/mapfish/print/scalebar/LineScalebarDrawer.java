@@ -52,7 +52,7 @@ public class LineScalebarDrawer extends ScalebarDrawer {
             for (int j = 1; j < subIntervals; ++j) {
                 pos += intervalWidth / subIntervals;
                 dc.moveTo(pos, barSize);
-                dc.lineTo(pos, barSize / 2);
+                dc.lineTo(pos, (float)barSize / 2);
             }
         }
         dc.stroke();

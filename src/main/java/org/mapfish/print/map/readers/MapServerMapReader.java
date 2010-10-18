@@ -44,11 +44,11 @@ public class MapServerMapReader extends HTTPMapReader {
         format = params.getString("format");
     }
 
-    protected void renderTiles(TileRenderer formater, Transformer transformer, URI commonUri, ParallelMapTileLoader parallelMapTileLoader) throws IOException {
+    protected void renderTiles(TileRenderer formatter, Transformer transformer, URI commonUri, ParallelMapTileLoader parallelMapTileLoader) throws IOException {
         //tiling not supported and not really needed (tilecache doesn't support this protocol) for MapServer protocol...
         List<URI> uris = new ArrayList<URI>(1);
         uris.add(commonUri);
-        formater.render(transformer, uris, parallelMapTileLoader, context, opacity, 1, 0, 0,
+        formatter.render(transformer, uris, parallelMapTileLoader, context, opacity, 1, 0, 0,
                 transformer.getRotatedBitmapW(), transformer.getRotatedBitmapH());
     }
 

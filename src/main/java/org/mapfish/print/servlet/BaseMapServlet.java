@@ -31,6 +31,8 @@ import java.io.FileNotFoundException;
  * Base class for MapPrinter servlets (deals with the configuration loading)
  */
 public abstract class BaseMapServlet extends HttpServlet {
+    private static final long serialVersionUID = -6342262849725708850L;
+
     public static final Logger LOGGER = Logger.getLogger(BaseMapServlet.class);
 
     private MapPrinter printer = null;
@@ -77,7 +79,7 @@ public abstract class BaseMapServlet extends HttpServlet {
     }
 
     @Override
-    public void destroy() {
+    public synchronized void destroy() {
         printer.stop();
         super.destroy();
     }

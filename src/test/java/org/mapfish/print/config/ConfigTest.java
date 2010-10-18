@@ -24,7 +24,6 @@ import org.mapfish.print.PrintTestCase;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.TreeSet;
-import java.util.Collections;
 import java.util.Arrays;
 
 public class ConfigTest extends PrintTestCase {

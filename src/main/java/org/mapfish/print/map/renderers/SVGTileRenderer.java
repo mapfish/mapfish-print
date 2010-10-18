@@ -59,21 +59,29 @@ public class SVGTileRenderer extends TileRenderer {
 
     static {
         DOMParser parser = new DOMParser();
+        String svgZoomFileName = "svgZoomOut.xsl";
+        final InputStream stream = SVGTileRenderer.class.getResourceAsStream(svgZoomFileName);
+        if (stream == null) {
+            String file = SVGTileRenderer.class.getResource(".").getPath() + svgZoomFileName;
+            throw new RuntimeException("Cannot find the SVG transformation XSLT: expected it to be in: "+file);
+        }
         try {
-            final InputStream stream = SVGTileRenderer.class.getResourceAsStream("svgZoomOut.xsl");
-            if (stream == null) {
-                throw new RuntimeException("Cannot find the SVG transformation XSLT");
-            }
             final InputSource inputSource = new InputSource(stream);
             inputSource.setSystemId(".");
             parser.parse(inputSource);
 
             svgZoomOut = parser.getDocument();
 
-            stream.close();
-
         } catch (Exception e) {
             throw new RuntimeException("Cannot parse the SVG transformation XSLT", e);
+        } finally {
+            if(stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e2) {
+                    e2.printStackTrace();
+                }
+            }
         }
     }
 

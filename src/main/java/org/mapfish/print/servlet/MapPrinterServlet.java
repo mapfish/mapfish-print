@@ -41,6 +41,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Main print servlet.
  */
 public class MapPrinterServlet extends BaseMapServlet {
+    private static final long serialVersionUID = -4706371598927161642L;
+    
     private static final String INFO_URL = "/info.json";
     private static final String PRINT_URL = "/print.pdf";
     private static final String CREATE_URL = "/create.json";
@@ -421,6 +423,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     }
 
     protected static class TempFile extends File {
+        private static final long serialVersionUID = 455104129549002361L;
         private final long creationTime;
         public final String printedLayoutName;
         public final String outputFileName;

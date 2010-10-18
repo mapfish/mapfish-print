@@ -139,7 +139,7 @@ public class HeavyLoad {
         }
     }
 
-    private static class ServerStats implements Comparable {
+    private static class ServerStats implements Comparable<Object> {
         private final String server;
         private Integer curUsage = 0;
         private Integer totUsage = 0;
