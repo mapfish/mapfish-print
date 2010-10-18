@@ -83,7 +83,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     }
 
     public void init() throws ServletException {
-        //get rid of the temporary files that were present before the applet was started.
+        //get rid of the temporary files that were present before the servlet was started.
         File dir = getTempDir();
         File[] files = dir.listFiles();
         for (int i = 0; i < files.length; ++i) {
