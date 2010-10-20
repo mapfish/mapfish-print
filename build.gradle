@@ -66,6 +66,12 @@ task standalone (dependsOn: test, type: Jar) {
   def dependencies = configurations.compile.resolve().findAll{ file ->
       return !file.name.contains("servlet-api")
   }
+
+  
+  def serviceDir = new File("$buildDir/META-INF/services")
+  serviceDir.deleteDir()
+  serviceDir.mkdirs()
+  def services = []
   
   for(file in dependencies) {
     def files = zipTree(file).matching {
@@ -73,8 +79,14 @@ task standalone (dependsOn: test, type: Jar) {
         exclude 'LICENSE'
     }
     
+    def serviceFiles = zipTree(file).matching {include 'META-INF/services/*'}.each {f ->
+            new File(serviceDir,f.name) << f.getText("UTF-8")
+    }
+    
     from files
   }
+  
+  from fileTree(buildDir).matching{include 'META-INF/services/*'}
   
   into ""
   
@@ -87,7 +99,7 @@ artifacts {
   archives jar, war, standalone
 }
 
-uploadArchives {
+uploadArchives << {
   def ssl = new SSL()
   
   repositories.mavenDeployer {
