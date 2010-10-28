@@ -5,11 +5,12 @@ group = 'org.mapfish.print'
 version = '1.2-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'osgi'
 apply plugin: 'war'
 apply plugin: 'jetty'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
-//usePlugin Cobertura
+apply plugin: 'project-report'
 
 defaultTasks 'jar', 'war', 'standalone'
 
@@ -40,12 +41,19 @@ dependencies {
   deployerJars "org.apache.maven.wagon:wagon-ssh:1.0-beta-2"
 }
 
-manifest.mainAttributes('Main-Class':'org.mapfish.print.ShellMapPrinter', 'Build-Time': new Date().getDateTimeString())
-
 sourceCompatibility = 1.5
 targetCompatibility = 1.5
 
 jar {
+  manifest {
+    mainAttributes('Main-Class':'org.mapfish.print.ShellMapPrinter', 'Build-Time': new Date().getDateTimeString())
+    name = 'mapfish-print'
+    instruction 'Private-Package','*'
+    instruction 'Bundle-Activator', 'org.mapfile.print.osgi.Activator'
+    instruction 'Bundle-Vendor', 'CamptoCamp SA'
+    instruction 'Bundle-Description', 'Mapfish Print module'
+    instruction 'Bundle-DocURL', 'http://www.mapfish.org'
+  }
   enabled = true
   baseName = "print-lib"
 }
@@ -67,6 +75,11 @@ task standalone (dependsOn: test, type: Jar) {
       return !file.name.contains("servlet-api")
   }
 
+  
+  def serviceDir = new File("$buildDir/META-INF/services")
+  serviceDir.deleteDir()
+  serviceDir.mkdirs()
+  def services = []
   
   def serviceDir = new File("$buildDir/META-INF/services")
   serviceDir.deleteDir()
