@@ -39,7 +39,7 @@ public class PdfOutput implements OutputFormat, OutputFormatFactory {
     }
 
     public RenderingContext print(MapPrinter printer, PJsonObject jsonSpec, OutputStream out, String referer) throws DocumentException {
-        final TimeLogger timeLog = TimeLogger.info(Logger.getLogger(PdfOutput.class), "Pdf to image conversion");
+        final TimeLogger timeLog = TimeLogger.info(Logger.getLogger(PdfOutput.class), "PDF Creation");
         final RenderingContext context = printer.print(jsonSpec, out, referer);
         timeLog.done();
         
