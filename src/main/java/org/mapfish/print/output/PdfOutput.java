@@ -8,13 +8,35 @@ import org.mapfish.print.TimeLogger;
 import org.mapfish.print.utils.PJsonObject;
 
 import java.io.OutputStream;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * User: jeichar
  * Date: Oct 18, 2010
  * Time: 2:00:30 PM
  */
-public class PdfOutput extends OutputFormat {
+public class PdfOutput implements OutputFormat, OutputFormatFactory {
+
+    public String contentType() {
+        return "application/pdf";
+    }
+
+    public String fileSuffix() {
+        return "pdf";
+    }
+
+    public List<String> formats() {
+        return Collections.singletonList("pdf");
+    }
+
+    public String enablementStatus() {
+        return null;
+    }
+
+    public OutputFormat create(String format) {
+        return this;
+    }
 
     public RenderingContext print(MapPrinter printer, PJsonObject jsonSpec, OutputStream out, String referer) throws DocumentException {
         final TimeLogger timeLog = TimeLogger.info(Logger.getLogger(PdfOutput.class), "Pdf to image conversion");
@@ -23,9 +45,5 @@ public class PdfOutput extends OutputFormat {
         
         return context;
 
-    }
-
-    public boolean accepts(String id) {
-        return id.equalsIgnoreCase("pdf");
     }
 }

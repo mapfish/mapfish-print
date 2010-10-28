@@ -1,0 +1,71 @@
+{
+   "units" : "m",
+   "srs" : "EPSG:2180",
+   "layout" : "A4 portrait",
+   "title": 'A simple example',
+   "dpi" : 127,
+   "layers" :
+      [
+         {
+            "type" : "Vector",
+            "styles" :
+               {
+                  "1" :
+                     {
+                        "label" : "17 30'E",
+                        "labelAlign" : "cb",
+                        "labelXOffset" : 0,
+                        "labelYOffset" : 2,
+                        "stroke" : false,
+                        "fill" : false
+                     }
+               },
+            "styleProperty" : "_gx_style",
+            "geoJson" :
+               {
+                  "type" : "FeatureCollection",
+                  "features" :
+                     [
+                        {
+                           "type" : "Feature",
+                           "id" : "1",
+                           "properties" :
+                              {
+                                 "_gx_style" : 1,
+                                 "value" : 17.50999999999999,
+                                 "label" : "17 30'E",
+                                 "labelAlign" : "cb",
+                                 "xOffset" : 0,
+                                 "yOffset" : 2
+                              },
+                           "geometry" :
+                              {
+                                 "type" : "Point",
+                                 "coordinates" :
+                                    [
+                                       402029.98741816444,
+                                       666857.00094122
+                                    ]
+                              }
+                        }
+                     ]
+               },
+            "name" : "Graticule",
+            "opacity" : 1
+         }
+      ],
+   "pages" :
+      [
+         {
+            "center" :
+               [
+                  408995.99837939,
+                  669033.99976756
+               ],
+            "scale" : 500000,
+            "rotation" : 0,
+            "mapTitle" : "Moja mapa",
+            "comment" : "Notatki do mapy"
+         }
+      ]
+}

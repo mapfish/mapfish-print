@@ -68,6 +68,7 @@ public class Transformer implements Cloneable {
     private float pixelPerGeoUnit;
     private float paperPosX;
     private float paperPosY;
+    private final int dpi;
 
     /**
      * angle in radian
@@ -82,6 +83,7 @@ public class Transformer implements Cloneable {
     public Transformer(float centerX, float centerY, int paperWidth,
             int paperHeight, int scale, int dpi, DistanceUnit unitEnum,
             double rotation, String geodeticSRS) {
+        this.dpi = dpi;
         pixelPerGeoUnit = (float) (unitEnum.convertTo(dpi, DistanceUnit.IN) / scale);
 
         float geoWidth = paperWidth * dpi / 72.0f / pixelPerGeoUnit;
@@ -378,5 +380,9 @@ public class Transformer implements Cloneable {
 
     public void setResolution(float resolution) {
         this.pixelPerGeoUnit = 1 / resolution;
+    }
+
+    public int getDpi() {
+        return dpi;
     }
 }

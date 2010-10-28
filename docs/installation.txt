@@ -59,7 +59,7 @@ The PDF generation requires some code to run on your web server. This page descr
 
 Depending on what language/framework you want to use on your server and what performance you need, multiple solutions are available. The next sections will describe them.
 
-In every cases, **you have to modify the print.yaml file** to customize it. At least to add the list of hosts that can be used to get the maps from.
+In all cases, **you have to modify the print.yaml file** to customize it. At least to add the list of hosts that can be used to get the maps from.
 
 Python
 ~~~~~~

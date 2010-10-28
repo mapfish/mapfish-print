@@ -88,7 +88,7 @@ public class WMSMapReader extends TileableMapReader {
             URIUtils.addParamOverride(result, "TRANSPARENT", "true");
         }
         URIUtils.addParamOverride(result, "STYLES", StringUtils.join(styles, ","));
-        URIUtils.addParamOverride(result, "format_options", "dpi:" + context.getGlobalParams().getString("dpi"));
+        URIUtils.addParamOverride(result, "format_options", "dpi:" + transformer.getDpi());
     }
 
     protected static void create(List<MapReader> target, RenderingContext context, PJsonObject params) {

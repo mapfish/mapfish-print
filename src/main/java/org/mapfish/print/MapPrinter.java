@@ -33,6 +33,7 @@ import org.mapfish.print.config.layout.Layout;
 import org.mapfish.print.utils.PJsonObject;
 
 import java.io.*;
+import java.util.List;
 import java.util.TreeSet;
 
 /**
@@ -164,5 +165,9 @@ public class MapPrinter {
     public String getOutputFilename(String layout, String defaultName) {
         final String name = config.getOutputFilename(layout);
         return name == null ? defaultName : name;
+    }
+
+    public Config getConfig() {
+        return config;
     }
 }

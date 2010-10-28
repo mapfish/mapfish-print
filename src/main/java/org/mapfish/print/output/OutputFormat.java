@@ -14,11 +14,8 @@ import java.io.OutputStream;
  * Date: Oct 18, 2010
  * Time: 1:49:41 PM
  */
-public abstract class OutputFormat {
-    public final RenderingContext print(MapPrinter printer, String spec, OutputStream out, String referer) throws DocumentException {
-        final PJsonObject jsonSpec = printer.parseSpec(spec);
-        return print(printer,jsonSpec,out, referer);
-    }
-    public abstract RenderingContext print(MapPrinter printer, PJsonObject jsonSpec, OutputStream out, String referer) throws DocumentException;
-    public abstract boolean accepts(String id);
+public interface OutputFormat {
+    RenderingContext print(MapPrinter printer, PJsonObject jsonSpec, OutputStream out, String referer) throws DocumentException;
+    String contentType();
+    String fileSuffix();
 }

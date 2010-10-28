@@ -19,6 +19,7 @@
 
 package org.mapfish.print.config;
 
+import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -34,6 +35,8 @@ import org.mapfish.print.config.layout.Layout;
 import org.mapfish.print.config.layout.Layouts;
 import org.mapfish.print.map.MapTileTask;
 import org.mapfish.print.map.readers.WMSServerInfo;
+import org.mapfish.print.output.OutputFactory;
+import org.mapfish.print.output.OutputFormat;
 import org.pvalsecc.concurrent.OrderedResultsExecutor;
 
 import java.io.File;
@@ -83,6 +86,7 @@ public class Config {
      */
     private OrderedResultsExecutor<MapTileTask> mapRenderingExecutor = null;
     private MultiThreadedHttpConnectionManager connectionManager;
+    private TreeSet<String> formats;
 
     public Config() {
         hosts.add(new LocalHostMatcher());
@@ -145,6 +149,15 @@ public class Config {
             json.object();
             json.key("name").value(dpi.toString());
             json.key("value").value(dpi.toString());
+            json.endObject();
+        }
+        json.endArray();
+
+        json.key("outputFormats");
+        json.array();
+        for (String format : OutputFactory.getSupportedFormats(this)) {
+            json.object();
+            json.key("name").value(format);
             json.endObject();
         }
         json.endArray();
@@ -352,7 +365,7 @@ public class Config {
         Layout layout = layouts.get(layoutName);
         String name = null;
         if(layout != null) {
-            name = processPdfName(layout.getOutputFilename());
+            name = layout.getOutputFilename();
         }
 
         return name == null ? outputFilename : name;
@@ -363,21 +376,15 @@ public class Config {
     }
 
     public void setOutputFilename(String outputFilename) {
-        this.outputFilename = processPdfName(outputFilename);
+        this.outputFilename = outputFilename;
     }
 
-    public static String processPdfName(String name) {
-        final String outputFilename;
-        if(name != null && !name.toLowerCase().endsWith(".pdf")) {
-            if(name.trim().length() == 0) {
-                outputFilename = null;
-            } else {
-                outputFilename = name + ".pdf";
-            }
-        } else {
-            outputFilename = name;
-        }
+    public TreeSet<String> getFormats() {
+        if(formats == null) return new TreeSet<String>();
+        return formats;
+    }
 
-        return outputFilename;
+    public void setFormats(TreeSet<String> formats) {
+        this.formats = formats;
     }
 }

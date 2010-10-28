@@ -69,7 +69,6 @@ public class PDFUtils {
             cache.put(uri, template);
         }
 
-
         //fix the size/aspect ratio of the image in function of what is specified by the user
         if (w == 0.0f) {
             if (h == 0.0f) {

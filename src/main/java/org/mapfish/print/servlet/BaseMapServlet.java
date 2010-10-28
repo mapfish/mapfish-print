@@ -80,7 +80,9 @@ public abstract class BaseMapServlet extends HttpServlet {
 
     @Override
     public synchronized void destroy() {
-        printer.stop();
+        if(printer != null) {
+            printer.stop();
+        }
         super.destroy();
     }
 }

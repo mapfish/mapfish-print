@@ -25,9 +25,8 @@ import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.output.OutputFactory;
 import org.mapfish.print.output.OutputFormat;
-import org.mapfish.print.output.PdfOutput;
+import org.mapfish.print.utils.PJsonObject;
 import org.pvalsecc.misc.FileUtilities;
-import org.pvalsecc.misc.UnitUtilities;
 import org.pvalsecc.opts.GetOptions;
 import org.pvalsecc.opts.InvalidOption;
 import org.pvalsecc.opts.Option;
@@ -64,7 +63,6 @@ public class ShellMapPrinter {
     private String log4jConfig = null;
 
     private final MapPrinter printer;
-    private final OutputFormat outputFormat;
 
     public ShellMapPrinter(String[] args) throws IOException {
         try {
@@ -74,7 +72,6 @@ public class ShellMapPrinter {
         }
         configureLogs();
         printer = new MapPrinter(new File(config));
-        outputFormat = OutputFactory.create(output.substring(output.lastIndexOf('.')+1)); 
     }
 
     @SuppressWarnings({"UseOfSystemOutOrSystemErr"})
@@ -93,9 +90,10 @@ public class ShellMapPrinter {
     }
 
     public void run() throws IOException, JSONException, DocumentException {
-        final OutputStream outFile = getOutputStream();
+        OutputStream outFile = null;
         try {
             if (clientConfig) {
+                outFile = getOutputStream("");
                 final OutputStreamWriter writer = new OutputStreamWriter(outFile, Charset.forName("UTF-8"));
                 JSONWriter json = new JSONWriter(writer);
                 json.object();
@@ -108,14 +106,18 @@ public class ShellMapPrinter {
 
             } else {
                 final InputStream inFile = getInputStream();
-                final String jsonSpec = FileUtilities.readWholeTextStream(inFile, "UTF-8");
+                final PJsonObject jsonSpec = printer.parseSpec(FileUtilities.readWholeTextStream(inFile, "UTF-8"));
+                final OutputFormat outputFormat = OutputFactory.create(printer.getConfig(), jsonSpec);
+                outFile = getOutputStream(jsonSpec.optString("outputFormat", "pdf"));
                 outputFormat.print(printer, jsonSpec, outFile, referer);
             }
         } finally {
-            outFile.close();
-            printer.stop();
+            if(outFile != null) outFile.close();
+            if(printer != null) printer.stop();
         }
     }
+
+
 
     private void configureLogs() {
         if (log4jConfig != null) {
@@ -147,9 +149,12 @@ public class ShellMapPrinter {
         }
     }
 
-    private OutputStream getOutputStream() throws FileNotFoundException {
+    private OutputStream getOutputStream(String suffix) throws FileNotFoundException {
         final OutputStream outFile;
         if (output != null) {
+            if(!output.endsWith("."+suffix)) {
+                output = output + "."+suffix;
+            }
             outFile = new FileOutputStream(output);
         } else {
             //noinspection UseOfSystemOutOrSystemErr
