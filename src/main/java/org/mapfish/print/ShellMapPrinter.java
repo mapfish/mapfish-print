@@ -23,6 +23,9 @@ import com.lowagie.text.DocumentException;
 import org.apache.log4j.*;
 import org.json.JSONException;
 import org.json.JSONWriter;
+import org.mapfish.print.output.OutputFactory;
+import org.mapfish.print.output.OutputFormat;
+import org.mapfish.print.output.PdfOutput;
 import org.pvalsecc.misc.FileUtilities;
 import org.pvalsecc.misc.UnitUtilities;
 import org.pvalsecc.opts.GetOptions;
@@ -61,6 +64,7 @@ public class ShellMapPrinter {
     private String log4jConfig = null;
 
     private final MapPrinter printer;
+    private final OutputFormat outputFormat;
 
     public ShellMapPrinter(String[] args) throws IOException {
         try {
@@ -70,6 +74,7 @@ public class ShellMapPrinter {
         }
         configureLogs();
         printer = new MapPrinter(new File(config));
+        outputFormat = OutputFactory.create(output.substring(output.lastIndexOf('.')+1)); 
     }
 
     @SuppressWarnings({"UseOfSystemOutOrSystemErr"})
@@ -103,7 +108,8 @@ public class ShellMapPrinter {
 
             } else {
                 final InputStream inFile = getInputStream();
-                printer.print(FileUtilities.readWholeTextStream(inFile, "UTF-8"), outFile, referer);
+                final String jsonSpec = FileUtilities.readWholeTextStream(inFile, "UTF-8");
+                outputFormat.print(printer, jsonSpec, outFile, referer);
             }
         } finally {
             outFile.close();
@@ -131,6 +137,7 @@ public class ShellMapPrinter {
                     level = Level.DEBUG;
                     Logger.getLogger("httpclient").setLevel(Level.INFO);
                     Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.INFO);
+                    Logger.getLogger("org.apache.pdfbox").setLevel(Level.INFO);
                     break;
                 default:
                     level = Level.TRACE;

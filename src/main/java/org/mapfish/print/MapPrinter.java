@@ -107,17 +107,6 @@ public class MapPrinter {
         }
     }
 
-
-    /**
-     * Generate the PDF using the given spec.
-     *
-     * @return The context that was used for printing.
-     */
-    public RenderingContext print(String spec, OutputStream outFile, String referer) throws DocumentException {
-        final PJsonObject jsonSpec = parseSpec(spec);
-        return print(jsonSpec, outFile, referer);
-    }
-
     /**
      * Generate the PDF using the given spec.
      *

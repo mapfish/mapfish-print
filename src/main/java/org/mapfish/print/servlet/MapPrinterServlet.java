@@ -25,6 +25,8 @@ import org.json.JSONWriter;
 import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.config.Config;
+import org.mapfish.print.output.OutputFormat;
+import org.mapfish.print.output.PdfOutput;
 import org.mapfish.print.utils.PJsonObject;
 import org.pvalsecc.misc.FileUtilities;
 
@@ -272,7 +274,9 @@ public class MapPrinterServlet extends BaseMapServlet {
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(tempFile);
-            getMapPrinter().print(specJson, out, referer);
+
+        OutputFormat outputFormat = new PdfOutput();
+            outputFormat.print(getMapPrinter(), specJson, out, referer);
 
             return tempFile;
         } catch (IOException e) {

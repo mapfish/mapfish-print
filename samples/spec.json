@@ -2,7 +2,7 @@
     layout: 'A4 portrait',
     title: 'A simple example',
     srs: 'EPSG:4326',
-    dpi: 190,
+    dpi: 254,
     units: 'degrees',
     layers: [
         {
@@ -32,20 +32,18 @@
                 ],
                 columns: ['id', 'name', 'icon']
             }
-        },
-        {
+        },{
             center: [6, 45.5],
             scale: 4000000,
-            dpi: 190,
-            mapTitle: "Second map",
-            comment: "This is the same position, but rotated by 30°.",
-            rotation: 30,
+            mapTitle: "First map",
+            comment: "This is the first page selected by the user.",
+            rotation: 0,
             data: {
                 data: [
                     {id:1, name: 'blah', icon: 'icon_pan', nameBackgroundColor: 'red', nameBorderColor: 'blue'},
                     {id:2, name: 'blip', icon: 'icon_zoomin', nameBackgroundColor: 'yellow', nameBorderColor: 'green'}
                 ],
-                columns: ['id', 'icon', 'name']
+                columns: ['id', 'name', 'icon']
             }
         }
     ]
