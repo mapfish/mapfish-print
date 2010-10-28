@@ -136,7 +136,7 @@ public class ImageOutputFactory implements OutputFormatFactory {
                 List<PDPage> pages = pdf.getDocumentCatalog().getAllPages();
 
                 for (PDPage page : pages) {
-                    BufferedImage img = page.convertToImage(BufferedImage.TYPE_4BYTE_ABGR, context.calculateDPI(jsonSpec));
+                    BufferedImage img = page.convertToImage(BufferedImage.TYPE_4BYTE_ABGR, calculateDPI(context, jsonSpec));
                     images.add(img);
                 }
             } finally {

@@ -138,22 +138,6 @@ public class ImageOutputScalableFactory extends ImageOutputFactory {
             return images;
         }
 
-        private int calculateDPI(RenderingContext context, PJsonObject jsonSpec) {
-            final int MISSING_VALUE = -1;
-            int dpi = jsonSpec.optInt("dpi", MISSING_VALUE);
-            dpi = Math.max(dpi, context.getGlobalParams().optInt("dpi", MISSING_VALUE));
-            PJsonArray pages = jsonSpec.optJSONArray("pages");
-            if (pages != null) {
-                for (int i = 0; i < pages.size(); i++) {
-                    PJsonObject page = pages.getJSONObject(i);
-                    dpi = Math.max(dpi, page.optInt("dpi", MISSING_VALUE));
-                }
-            }
-            if (dpi < 0) {
-                throw new IllegalArgumentException("unable to calculation DPI of maps");
-            }
-            return dpi;
-        }
     }
 
     static class ImageInfo {

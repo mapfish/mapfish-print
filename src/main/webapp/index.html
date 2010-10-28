@@ -1,8 +1,27 @@
 <html>
+  <head>
+      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+      <script type="text/javascript">
+          function post() {
+          var data = $('#spec').serialize(true);
+          $.ajax({
+              type: 'POST',
+              url: 'pdf/create.json',
+              data: data,
+              success: function (data) {
+                var result = jQuery.parseJSON(data)
+                location.href = result.getURL;
+              },
+              dataType: 'application/json'
+            });
+
+          }
+      </script>
+  </head>
   <body>
     <h1>Test page</h1>
 
-    <form action="pdf/print.pdf">
+    <form id="spec" action="pdf/print.pdf">
       <textarea name="spec" cols="80" rows="30">
           {
              layout: 'A4 portrait',
@@ -45,7 +64,8 @@
              ]
           }
       </textarea><br>
-      <button name="Print">Print</button>
+        <button name="Print">Get Print</button>
+        <button name="Post Print" type="button" onclick="javascript:post()">Post Print</button>
     </form>
     <p>
       To get informations: <a href="pdf/info.json">printInfo</a>

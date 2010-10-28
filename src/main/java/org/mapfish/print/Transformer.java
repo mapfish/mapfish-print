@@ -106,6 +106,7 @@ public class Transformer implements Cloneable {
             this.maxGeoX = minGeoX + geoWidth;
             this.maxGeoY = minGeoY + geoHeight;
         }
+
     }
 
     private void computeGeodeticBBox(float geoWidth, float geoHeight,

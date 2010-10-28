@@ -131,15 +131,4 @@ public class RenderingContext {
     public Object getPdfLock() {
         return pdfLock;
     }
-
-    public Integer calculateDPI(PJsonObject params) {
-        Integer dpi = params.optInt("dpi");
-        if (dpi == null) {
-            dpi = getGlobalParams().getInt("dpi");
-        }
-        if (!getConfig().getDpis().contains(dpi)) {
-            throw new InvalidJsonValueException(params, "dpi", dpi);
-        }
-        return dpi;
-    }
 }

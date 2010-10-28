@@ -33,7 +33,6 @@ import org.mapfish.print.config.layout.Layout;
 import org.mapfish.print.utils.PJsonObject;
 
 import java.io.*;
-import java.util.List;
 import java.util.TreeSet;
 
 /**

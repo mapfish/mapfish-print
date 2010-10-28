@@ -71,7 +71,13 @@ public class MapBlock extends Block {
      * Creates the transformer in function of the JSON parameters and the block's config
      */
     public Transformer createTransformer(RenderingContext context, PJsonObject params) {
-        Integer dpi = context.calculateDPI(params);
+        Integer dpi = params.optInt("dpi");
+        if (dpi == null) {
+            dpi = context.getGlobalParams().getInt("dpi");
+        }
+        if (!context.getConfig().getDpis().contains(dpi)) {
+            throw new InvalidJsonValueException(params, "dpi", dpi);
+        }
 
         String units = context.getGlobalParams().getString("units");
         final DistanceUnit unitEnum = DistanceUnit.fromString(units);

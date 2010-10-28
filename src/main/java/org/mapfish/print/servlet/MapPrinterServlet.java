@@ -49,7 +49,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     private static final String PRINT_URL = "/print.pdf";
     private static final String CREATE_URL = "/create.json";
     protected static final String TEMP_FILE_PREFIX = "mapfish-print";
-    private static final String TEMP_FILE_SUFFIX = "printout";
+    private static final String TEMP_FILE_SUFFIX = ".printout";
 
     private static final int TEMP_FILE_PURGE_SECONDS = 10 * 60;
 
@@ -70,8 +70,8 @@ public class MapPrinterServlet extends BaseMapServlet {
             createAndGetPDF(httpServletRequest, httpServletResponse);
         } else if (additionalPath.equals(INFO_URL)) {
             getInfo(httpServletRequest, httpServletResponse, getBaseUrl(httpServletRequest));
-        } else if (additionalPath.startsWith("/")) {
-            getFile(httpServletRequest, httpServletResponse, additionalPath.substring(1, additionalPath.length() - 4));
+        } else if (additionalPath.startsWith("/") && additionalPath.endsWith(TEMP_FILE_SUFFIX)) {
+            getFile(httpServletRequest, httpServletResponse, additionalPath.substring(1, additionalPath.length() - TEMP_FILE_SUFFIX.length()));
         } else {
             error(httpServletResponse, "Unknown method: " + additionalPath, 404);
         }
@@ -185,6 +185,9 @@ public class MapPrinterServlet extends BaseMapServlet {
     }
 
     protected String getSpecFromPostBody(HttpServletRequest httpServletRequest) throws IOException {
+        if(httpServletRequest.getParameter("spec") != null) {
+            return httpServletRequest.getParameter("spec");
+        }
         BufferedReader data = httpServletRequest.getReader();
         try {
             StringBuilder spec = new StringBuilder();
@@ -264,7 +267,7 @@ public class MapPrinterServlet extends BaseMapServlet {
 
         final OutputFormat outputFormat = OutputFactory.create(getMapPrinter().getConfig(),specJson);
         //create a temporary file that will contain the PDF
-        final File tempJavaFile = File.createTempFile(TEMP_FILE_PREFIX, TEMP_FILE_SUFFIX, getTempDir());
+        final File tempJavaFile = File.createTempFile(TEMP_FILE_PREFIX, "."+outputFormat.fileSuffix()+TEMP_FILE_SUFFIX, getTempDir());
         TempFile tempFile = new TempFile(tempJavaFile, specJson, outputFormat);
 
         FileOutputStream out = null;
