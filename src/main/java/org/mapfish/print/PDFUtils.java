@@ -183,28 +183,27 @@ public class PDFUtils {
 
     private static final Pattern VAR_REGEXP = Pattern.compile("\\$\\{([^}]+)\\}");
 
-    public static String renderString(RenderingContext context, PJsonObject params, String val,
-                                      com.lowagie.text.Font font) throws BadElementException {
-        StringBuilder result = new StringBuilder();
+    public static Phrase renderString(RenderingContext context, PJsonObject params, String val, com.lowagie.text.Font font) throws BadElementException {
+        Phrase result = new Phrase();
         while (true) {
             Matcher matcher = VAR_REGEXP.matcher(val);
             if (matcher.find()) {
-                result.append(val.substring(0, matcher.start()));
+                result.add(val.substring(0, matcher.start()));
                 final String value;
                 final String varName = matcher.group(1);
                 if (varName.equals("pageTot")) {
-                    result.append(context.getCustomBlocks().getOrCreateTotalPagesBlock(font));
+                    result.add(context.getCustomBlocks().getOrCreateTotalPagesBlock(font));
                 } else {
                     value = getContextValue(context, params, varName);
-                    result.append(value);
+                    result.add(value);
                 }
                 val = val.substring(matcher.end());
             } else {
                 break;
             }
         }
-        result.append(val);
-        return result.toString();
+        result.add(val);
+        return result;
     }
 
     /**
@@ -346,11 +345,9 @@ public class PDFUtils {
                 if (element instanceof PdfPTable) {
                     cell[0] = new PdfPCell((PdfPTable) element);
                 } else {
-                    cell[0] = new PdfPCell();
-                    // add in composite mode to keep leading/margin/etc of element
-                    cell[0].addElement(element);
-                    // avoid leading before first line
-                    cell[0].setUseAscender(true);
+                    final Phrase phrase = new Phrase();
+                    phrase.add(element);
+                    cell[0] = new PdfPCell(phrase);
                 }
                 cell[0].setBorder(PdfPCell.NO_BORDER);
                 cell[0].setPadding(0);

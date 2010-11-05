@@ -275,7 +275,6 @@ Text block
   ?         align: left
   ?         vertAlign: middle
   ?         backgroundColor: #FFFFFF
-  ?         lineSpacing: 1.0
             text: 'Blahblah'
 
 Typical "fontEncoding" values are:
@@ -285,11 +284,9 @@ Typical "fontEncoding" values are:
 * Cp1257
 * Identity-H (horizontal UTF-8)
 * Identity-V (vertical UTF-8)
-* MacRoman
+* MacRoman 
 
 The "font" must refer to a standard PDF font or a `declared font <server_side_configuration.html#Fonts-definition>`_.
-
-A lineSpacing of 1.0 represents 1 character height with regard to the selected font 
 
 Image block
 -----------
