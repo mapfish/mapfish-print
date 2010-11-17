@@ -150,7 +150,7 @@ If you are developping a web application, you can include the print module in it
         </servlet-mapping>
          ...
 
-3. Add a config.yaml file (from the `samples <https://trac.mapfish.org/trac/mapfish/browser/print/trunk/print-standalone/samples>`_, for example) to the root of your web application. 
+3. Add a config.yaml file (from the `samples <https://trac.mapfish.org/trac/mapfish/browser/print/trunk/samples>`_, for example) to the root of your web application. 
 
 Ruby on rails
 ++++++++++++++
