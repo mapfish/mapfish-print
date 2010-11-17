@@ -69,7 +69,7 @@ Python
     print.jar = %MAPFISHDIR%/trunk/build/libs/print-standalone-%VERSION%.jar
     print.config = %PROJECT_DIR%/print/config.yaml
 
-2. Edit the config.yaml file in your %PROJECT_DIR%/print/ directory as documented in the `Print Module Server <server_side_configuration.html>`_ page. 
+2. Edit the config.yaml file in your %PROJECT_DIR%/print/ directory as documented in the `Print Module Server <configuration.html>`_ page. 
 3. Edit the MY_PROJECT/config/routing.py file and add those 2 lines (just after the "CUSTOM ROUTES HERE")::
 
     from mapfish.controllers import printer
