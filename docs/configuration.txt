@@ -77,11 +77,11 @@ A chosen DPI value from the above configuration is used in WMS requests as an ad
 
 In general, PDF dimensions and positions are specified in points. 72 points == 1 inch == 25.4 mm.
 
-The list of {HOST_WHITELIST_DEFINITION} defines the allowed URLs for getting maps. Its format will be defined in `the next sub-section <server_side_configuration.html#host-whitelist-definition>`_.
+The list of {HOST_WHITELIST_DEFINITION} defines the allowed URLs for getting maps. Its format will be defined in `the next sub-section <configuration.html#host-whitelist-definition>`_.
 
 The outputFormats element lists the values formats that the server permits.  If omitted only 'pdf' is permitted.  If the single element '*' is present then all formats that the server can produce can be requested.  The formats the server can produce depends to a large degree on how the Java is configured.  PDF is supported on all systems but for image output formats JAI and ImageIO is used which means both must be on the server for them to be available.  You can get the list of supported formats by running the standalone client with the --clientConfig flag enabled (you will need to supply a yaml config file as well).  If you are using the servlet then do a get info request to see the list of formats (with the '*' as the outputFormats parameter in the config file).
 
-You can have as many layouts as you want. Their name must be unique and will be used on the client side. A layout can have a "titlePage" that will be added at the beginning of the generated document. It cannot contain any map. Same for the "lastPage", but for the end of the document. The "mainPage" section is mandatory and will be used once for each page requested. The details of a {PAGE_DEFINITION} section can be found `in another sub-section of this document <server_side_configuration.html#Page-definition>`_.
+You can have as many layouts as you want. Their name must be unique and will be used on the client side. A layout can have a "titlePage" that will be added at the beginning of the generated document. It cannot contain any map. Same for the "lastPage", but for the end of the document. The "mainPage" section is mandatory and will be used once for each page requested. The details of a {PAGE_DEFINITION} section can be found `in another sub-section of this document <configuration.html#Page-definition>`_.
 
 If you want to let the user rotate the map (for a given layout), you have to set the "rotate" field to "true" in the corresponding "mainPage" section.
 
@@ -98,7 +98,7 @@ Keys
 ----
 Google maps currently requires a private key to be used (we only support users Google maps premium accounts).
 
-The keys section allows a key to be mapped to hosts.  The hosts are identified with host matchers that are described in the <server_side_configuration.html#host-whitelist-definition> sub-section.
+The keys section allows a key to be mapped to hosts.  The hosts are identified with host matchers that are described in the <configuration.html#host-whitelist-definition> sub-section.
 
 In addition a domain hostmatcher can be used to select a key based on the domain of the local server.  This can be useful if the same configuration is used in a test environment and a production environment with differing domains.  For example mapfish.org and mapfish.net.
 
@@ -183,7 +183,7 @@ The structure is like that:
     ?     creator: ''
     ?     supportLegacyReader: false
 
-All fields are optional and can use global variables, as defined in the `Block definition <server_side_configuration.html#Block-definition>`_ chapter. Page specific variables are not accessible.
+All fields are optional and can use global variables, as defined in the `Block definition <configuration.html#Block-definition>`_ chapter. Page specific variables are not accessible.
 
 Page definition
 ---------------
@@ -286,7 +286,7 @@ Typical "fontEncoding" values are:
 * Identity-V (vertical UTF-8)
 * MacRoman 
 
-The "font" must refer to a standard PDF font or a `declared font <server_side_configuration.html#Fonts-definition>`_.
+The "font" must refer to a standard PDF font or a `declared font <configuration.html#Fonts-definition>`_.
 
 Image block
 -----------
@@ -450,7 +450,7 @@ Allowed only within a *mainPage*.
                 cell: {BLOCK_DEFINITION}
               {...}
 
-Look `here <server_side_configuration.html#Table-configuration>`_ for how to specify the *tableConfig* field.
+Look `here <configuration.html#Table-configuration>`_ for how to specify the *tableConfig* field.
 
 The *columnWeigth* (MF_V1.2 only) allows to define a weight for the column width. If you specify it for one column, you have to specify it for all of them. The width of a given column is tableWidth*columnWeight/sum(columnWeight).
 
