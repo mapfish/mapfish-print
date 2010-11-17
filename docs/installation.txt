@@ -66,7 +66,7 @@ Python
 
 1. Edit the development.ini file and add two lines like that to the [DEFAULT] section (change the strings "%....%" by something relevant)::
 
-    print.jar = %MAPFISHDIR%/trunk/print-standalone/target/print-standalone.jar
+    print.jar = %MAPFISHDIR%/trunk/build/libs/print-standalone-%VERSION%.jar
     print.config = %PROJECT_DIR%/print/config.yaml
 
 2. Edit the config.yaml file in your %PROJECT_DIR%/print/ directory as documented in the `Print Module Server <server_side_configuration.html>`_ page. 
@@ -101,7 +101,7 @@ Note: some people have experienced problems when deploying the MapFish Print WAR
 
 In my system, tomcat is installed in **/var/lib/tomcat5.5** and the %WEBAPPS% directory is in **/var/lib/tomcat5.5/webapps**.
 
-1. copy the WAR file in your %WEBAPPS% directory. This is can be obtained from `%MAPFISH_DIR%/trunk/print-servlet/target/print-servlet-*.war` if you compiled the print module or you can get it from the `maven repository <http://dev.mapfish.org/maven/repository/org/mapfish/print/print-servlet/1.1/print-servlet-1.1.war>`_. 
+1. copy the WAR file in your %WEBAPPS% directory. This is can be obtained from `%MAPFISH_DIR%/trunk/build/libs/print-servlet-*.war` if you compiled the print module or you can get it from the `maven repository <http://dev.mapfish.org/maven/repository/org/mapfish/print/print-servlet/1.1/print-servlet-1.1.war>`_. 
 2. Edit the config.yaml file in your `%WEAPPS%/print-servlet-*/` directory as documented in the `Print Module Server <server_side_configuration.html>`_ page. 
 3. If needed, edit the web.xml and log4j.properties files. 
 
@@ -162,14 +162,29 @@ Command line
 
 For debugging or calling from other environments, you can run the print module from the command line.
 
-Example of command (from the directory %MAPFISHDIR%/server/java/print/print-standalone):
+Examples are assumed to be ran from the directory %MAPFISHDIR%/server/java/print.
+
+The fastest way is to call to gradle to run the application.  
 
 .. code-block:: java
-
-  java -Djava.awt.headless=true -cp target/print-standalone.jar org.mapfish.print.ShellMapPrinter --config=samples/config.yaml --spec=samples/spec.json --output=$HOME/print.pdf
+  ./gradlew run -Dconfig=samples/config.yaml -Dspec=samples/spec.json -Doutput=/tmp/print-out.pdf
 
 Help about the command line's option can be obtained like that:
 
 .. code-block:: java
 
-  java -Djava.awt.headless=true -cp target/print-standalone.jar org.mapfish.print.ShellMapPrinter
+./gradlew run
+
+If you have previously built you can run the existing jar using the following commands:
+
+.. code-block:: java
+
+  java -Djava.awt.headless=true -cp build/libs/print-standalone-%VERSION%.jar org.mapfish.print.ShellMapPrinter --config=samples/config.yaml --spec=samples/spec.json --output=$HOME/print.pdf
+
+Help about the command line's option can be obtained like that:
+
+.. code-block:: java
+
+  java -Djava.awt.headless=true -cp build/libs/print-standalone-%VERSION%.jar org.mapfish.print.ShellMapPrinter
+  
+
