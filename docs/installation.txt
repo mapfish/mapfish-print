@@ -102,7 +102,7 @@ Note: some people have experienced problems when deploying the MapFish Print WAR
 In my system, tomcat is installed in **/var/lib/tomcat5.5** and the %WEBAPPS% directory is in **/var/lib/tomcat5.5/webapps**.
 
 1. copy the WAR file in your %WEBAPPS% directory. This is can be obtained from `%MAPFISH_DIR%/trunk/build/libs/print-servlet-*.war` if you compiled the print module or you can get it from the `maven repository <http://dev.mapfish.org/maven/repository/org/mapfish/print/print-servlet/1.1/print-servlet-1.1.war>`_. 
-2. Edit the config.yaml file in your `%WEAPPS%/print-servlet-*/` directory as documented in the `Print Module Server <server_side_configuration.html>`_ page. 
+2. Edit the config.yaml file in your `%WEAPPS%/print-servlet-*/` directory as documented in the `Print Module Server <configuration.html>`_ page. 
 3. If needed, edit the web.xml and log4j.properties files. 
 
 If your web pages are not served by the tomcat server, you may need to configure a proxy to work around the `same origin policy <http://en.wikipedia.org/wiki/Same_origin_policy>`_. See `Configure Proxy <http://trac.mapfish.org/trac/mapfish/wiki/ConfigureProxy>`_ for examples on how you may do that.
