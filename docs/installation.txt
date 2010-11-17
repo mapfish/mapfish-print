@@ -97,7 +97,7 @@ The separate WAR way
 
 For that you need to install tomcat5.5 or higher.
 
-Note: some people have experienced problems when deploying the MapFish Print WAR in the Tomcat packaged in Ubuntu, it looks like these problems are due to additional security constraints in the Ubuntu package. If you have such problems and don't know how to solve them you can download Tomcat from the Apache web site, for example MapFish Print is known to work well with apache-tomcat-6.0.20.tar.gz is known.
+Note: some people have experienced problems when deploying the MapFish Print WAR in the Tomcat packaged in Ubuntu, it looks like these problems are due to additional security constraints in the Ubuntu package. If you have such problems and don't know how to solve them you can download Tomcat from the Apache web site, for example MapFish Print is known to work well with apache-tomcat-6.0.20.tar.gz.
 
 In my system, tomcat is installed in **/var/lib/tomcat5.5** and the %WEBAPPS% directory is in **/var/lib/tomcat5.5/webapps**.
 
