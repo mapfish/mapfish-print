@@ -167,6 +167,7 @@ Examples are assumed to be ran from the directory %MAPFISHDIR%/server/java/print
 The fastest way is to call to gradle to run the application.  
 
 .. code-block:: java
+
   ./gradlew run -Dconfig=samples/config.yaml -Dspec=samples/spec.json -Doutput=/tmp/print-out.pdf
 
 Help about the command line's option can be obtained like that:
