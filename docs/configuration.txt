@@ -64,11 +64,13 @@ Optional parts are shown with a question mark in the left margin. The question m
 
 Note: Sets of values like DPI can be entered in one of two forms:
 .. code-block:: yaml
+
   dpi: [1,2,3,...]
 
 or
 
 .. code-block:: yaml
+
   dpis:
     - 254
     - 190
@@ -105,6 +107,7 @@ In addition a domain hostmatcher can be used to select a key based on the domain
 Finally google maps (for example) requires a client id as well that is associated with the private key.  There for in the case of google premium services a legal key would be:
 
 .. code-block:: yaml
+
   keys:
     - !key
       key: yxcvyxvcyxvyx
