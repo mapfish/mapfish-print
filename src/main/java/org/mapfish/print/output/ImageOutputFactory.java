@@ -34,8 +34,12 @@ import java.util.List;
 public class ImageOutputFactory implements OutputFormatFactory {
 
     public List<String> formats() {
-        String[] formats = ImageIO.getWriterFormatNames();
-        return Arrays.asList(formats);
+	try {
+	    String[] formats = ImageIO.getWriterFormatNames();
+	    return Arrays.asList(formats);
+	} catch (Throwable t) {
+	    return new ArrayList<String>();
+	}
     }
 
     public OutputFormat create(String format) {
