@@ -83,9 +83,6 @@ task standalone (dependsOn: test, type: Jar) {
             new File(serviceDir,f.name) << f.getText("UTF-8")
     }
 
-files.each { println (it)}
-println("\n\n")
-    
     from files
   }
   
