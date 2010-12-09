@@ -74,15 +74,17 @@ task standalone (dependsOn: test, type: Jar) {
   serviceDir.mkdirs()
 
   for(file in dependencies) {
-    def files = zipTree(file).matching {
+    def files = zipTree(file).matching { 
         exclude 'META-INF/**'
         exclude 'LICENSE'
-        include 'META-INF/services/**'
     }
     
     zipTree(file).matching {include 'META-INF/services/*'}.each {f ->
             new File(serviceDir,f.name) << f.getText("UTF-8")
     }
+
+files.each { println (it)}
+println("\n\n")
     
     from files
   }
