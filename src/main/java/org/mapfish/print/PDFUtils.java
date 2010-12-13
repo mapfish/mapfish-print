@@ -225,7 +225,16 @@ public class PDFUtils {
             }
         }
         result.append(val);
-        return result.toString();
+        String uri = result.toString();
+
+        if(System.getProperty("os.name").toLowerCase().indexOf("win") >= 0){
+            uri = uri.replace("\\", "/");
+            if(uri.matches("file://\\w:(/.*)?")) {
+                return "file:/"+uri.substring(7);
+            }
+        }
+
+        return uri;
     }
 
     private static final Pattern FORMAT_PATTERN = Pattern.compile("^format\\s+(%[-+# 0,(]*\\d*(\\.\\d*)?(d))\\s+(.*)$");
