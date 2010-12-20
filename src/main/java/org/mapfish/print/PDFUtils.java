@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.mapfish.print.config.layout.*;
 import org.mapfish.print.utils.PJsonObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.text.SimpleDateFormat;
@@ -95,6 +96,8 @@ public class PDFUtils {
         if (!uri.isAbsolute()) {
             //non-absolute URI are local, so we can use the normal iText method
             return Image.getInstance(uri.toString());
+        } else if("file".equalsIgnoreCase(uri.getScheme())) {
+            return Image.getInstance(new File(uri).toURI().toURL());
         } else {
             //read the whole image content in memory, then give that to iText
             GetMethod method = new GetMethod(uri.toString());
@@ -122,7 +125,7 @@ public class PDFUtils {
                     } catch (DocumentException e) {
                         LOGGER.warn("Couldn't generate a transparent image");
                         throw e;
-                    }                 
+                    }
                 } else if (code < 200 || code >= 300 || contentType.startsWith("text/") || contentType.equals("application/vnd.ogc.se_xml")) {
                     if (LOGGER.isDebugEnabled()) LOGGER.debug("Server returned an error for " + uri + ": " + method.getResponseBodyAsString());
                     if (code < 200 || code >= 300) {
@@ -395,7 +398,7 @@ public class PDFUtils {
         }
         return image;
     }
-    
+
 	public static BaseFont getBaseFont(String fontFamily, String fontSize,
 			String fontWeight) {
 		int myFontValue;
@@ -425,7 +428,7 @@ public class PDFUtils {
 		BaseFont bf = pdfFont.getCalculatedBaseFont(false);
 		return bf;
 	}
-	
+
 	public static int getHorizontalAlignment(String labelAlign) {
 		/* Valid values for horizontal alignment: "l"=left, "c"=center, "r"=right. */
 		int myAlignment = PdfContentByte.ALIGN_LEFT;
@@ -440,7 +443,7 @@ public class PDFUtils {
 		}
 		return myAlignment;
 	}
-	
+
 	public static float getVerticalOffset(String labelAlign, float fontHeight) {
 		/* Valid values for vertical alignment: "t"=top, "m"=middle, "b"=bottom. */
 		float myOffset = (float) 0.0;
