@@ -44,7 +44,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class MapPrinterServlet extends BaseMapServlet {
     private static final long serialVersionUID = -4706371598927161642L;
-    
+    private static final String CONTEXT_TEMPDIR = "javax.servlet.context.tempdir";
+
     private static final String INFO_URL = "/info.json";
     private static final String PRINT_URL = "/print.pdf";
     private static final String CREATE_URL = "/create.json";
@@ -363,9 +364,16 @@ public class MapPrinterServlet extends BaseMapServlet {
      */
     protected File getTempDir() {
         if (tempDir == null) {
-            tempDir = new File((File) getServletContext().
-                    getAttribute("javax.servlet.context.tempdir"), "mapfish-print");
-            tempDir.mkdirs();
+            String tempDirPath = getInitParameter("tempdir");
+            if (tempDirPath != null) {
+                tempDir = new File(tempDirPath);
+            } else {
+                tempDir = (File) getServletContext().getAttribute(CONTEXT_TEMPDIR);
+            }
+            if (!tempDir.exists() && !tempDir.mkdirs()) {
+                throw new RuntimeException("unable to create dir:" + tempDir);
+            }
+
         }
         LOGGER.debug("Using '" + tempDir.getAbsolutePath() + "' as temporary directory");
         return tempDir;

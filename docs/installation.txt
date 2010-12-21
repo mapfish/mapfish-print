@@ -152,13 +152,17 @@ If you are developping a web application, you can include the print module in it
 
 3. Add a config.yaml file (from the `samples <https://trac.mapfish.org/trac/mapfish/browser/print/trunk/samples>`_, for example) to the root of your web application. 
 
+Configuring Servlet Temp Directory
+++++++++++++++++++++++++++++++++++
+By default the default servlet temporary directory will be used but that behaviour can be overridden setting the init-param *tempdir*.  If this parameter is set the servlet must have write access to the directory.
+
 Ruby on rails
-++++++++++++++
+~~~~~~~~~~~~~
 
 TODO write the doc.
 
 Command line
-+++++++++++++
+~~~~~~~~~~~~
 
 For debugging or calling from other environments, you can run the print module from the command line.
 
