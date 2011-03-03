@@ -45,7 +45,12 @@ public class TmsMapReader extends TileableMapReader {
         PJsonArray tileSize = params.getJSONArray("tileSize");
         format = params.getString("format");
         serviceVersion = "1.0.0";
-        extension = format.substring(0,format.indexOf(";"));
+        int formatSemicolon = format.indexOf(";");
+        if(formatSemicolon > 0) {
+          extension = format.substring(0,formatSemicolon).trim();
+        } else {
+          extension = format.trim();
+        }
         layerName = params.getString("layer");
         tileCacheLayerInfo = new TmsLayerInfo(params.getJSONArray("resolutions"), tileSize.getInt(0), tileSize.getInt(1), maxExtent.getFloat(0), maxExtent.getFloat(1), maxExtent.getFloat(2), maxExtent.getFloat(3), extension);
     }
