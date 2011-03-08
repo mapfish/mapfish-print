@@ -25,10 +25,6 @@ import org.mapfish.print.utils.PJsonArray;
  * Holds the information we need to manage an TSM layer.
  */
 public class TmsLayerInfo extends TileCacheLayerInfo {
-    /**
-     * Tolerance we accept when trying to determine the nearest resolution.
-     */
-    protected static final double RESOLUTION_TOLERANCE = 1.9;
 
     public TmsLayerInfo(String resolutions, int width, int height, float minX, float minY, float maxX, float maxY, String format) {
         super(resolutions, width, height, minX, minY, maxX, maxY, format);
@@ -38,17 +34,9 @@ public class TmsLayerInfo extends TileCacheLayerInfo {
         super(resolutions, width, height, minX, minY, maxX, maxY, extension);
     }
 
-    public ResolutionInfo getNearestResolution(float targetResolution) {
-        int pos = resolutions.length - 1;
-        float result = resolutions[pos];
-        for (int i = resolutions.length - 1; i >= 0; --i) {
-            float cur = resolutions[i];
-            if (cur <= targetResolution * RESOLUTION_TOLERANCE) {
-                result = cur;
-                pos = i;
-            }
-        }
-        return new ResolutionInfo(pos, result);
+    @Override
+    protected float resolutionTolerance() {
+        return 1.9f;
     }
 }
 
