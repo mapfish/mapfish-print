@@ -25,15 +25,29 @@ import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfTemplate;
+
+import org.apache.batik.bridge.BridgeContext;
+import org.apache.batik.bridge.DocumentLoader;
+import org.apache.batik.bridge.GVTBuilder;
+import org.apache.batik.bridge.UserAgent;
+import org.apache.batik.bridge.UserAgentAdapter;
+import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
+import org.apache.batik.dom.svg.SVGDocumentFactory;
+import org.apache.batik.gvt.GraphicsNode;
+import org.apache.batik.util.XMLResourceDescriptor;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 import org.mapfish.print.config.layout.*;
 import org.mapfish.print.utils.PJsonObject;
+import org.w3c.dom.svg.SVGDocument;
 
+import java.awt.Graphics2D;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -458,4 +472,44 @@ public class PDFUtils {
 		}
 		return myOffset;
 	}
+
+	public static Image createImageFromSVG(RenderingContext context, String iconItem, double maxIconWidth, double maxIconHeight) throws IOException {
+        Image image = null;
+        try {
+            PdfContentByte dc = context.getDirectContent();
+            URI uri = URI.create(iconItem);
+            URL url = uri.toURL();
+            SVGDocumentFactory factory = new SAXSVGDocumentFactory(XMLResourceDescriptor.getXMLParserClassName());
+            UserAgent userAgent = new UserAgentAdapter();
+            DocumentLoader loader = new DocumentLoader(userAgent);
+            BridgeContext ctx = new BridgeContext(userAgent, loader);
+            ctx.setDynamicState(BridgeContext.DYNAMIC);
+            SVGDocument svgDoc = factory.createSVGDocument(null, url.openStream());
+            GVTBuilder builder = new GVTBuilder();
+            GraphicsNode graphics = builder.build(ctx, svgDoc);
+            String svgWidthString = svgDoc.getDocumentElement().getAttribute("width");
+            String svgHeightString = svgDoc.getDocumentElement().getAttribute("height");
+            float svgWidth = Float.valueOf(svgWidthString.substring(0, svgWidthString.length() - 2));
+            float svgHeight = Float.valueOf(svgHeightString.substring(0, svgHeightString.length() - 2));
+            /**
+             * svgFactor needs to be calculated depending on the screen DPI by the PDF DPI
+             * This is 96 / 72 = 4 / 3 ~= 1.3333333 on Windows, but might be different on *nix.
+             */
+            final float svgFactor = 25.4f / userAgent.getPixelUnitToMillimeter() / 72f; // 25.4 mm = 1 inch TODO: Might need to get 72 from somewhere else?
+            //float svgFactor = (float) Toolkit.getDefaultToolkit().getScreenResolution() / 72f; // this only works with AWT, i.e. when a window environment is running
+            PdfTemplate map = dc.createTemplate(svgWidth * svgFactor, svgHeight * svgFactor);
+            Graphics2D g2d = map.createGraphics(svgWidth * svgFactor, svgHeight * svgFactor);
+            graphics.paint(g2d);
+            g2d.dispose();
+            image = Image.getInstance(map);
+            image.scaleToFit((float) maxIconWidth, (float) maxIconHeight);
+        } catch (BadElementException bee) {
+            LOGGER.warn("Bad Element " + iconItem + " with " + bee.getMessage());
+        } catch (MalformedURLException mue) {
+            LOGGER.warn("Malformed URL " + iconItem + " with " + mue.getMessage());
+        } catch (IOException ioe) {
+            throw ioe;
+        }
+        return image;
+    }
 }

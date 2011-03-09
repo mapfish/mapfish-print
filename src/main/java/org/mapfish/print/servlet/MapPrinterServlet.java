@@ -24,7 +24,6 @@ import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
-import org.mapfish.print.config.Config;
 import org.mapfish.print.output.OutputFactory;
 import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.utils.PJsonObject;

@@ -22,17 +22,27 @@ package org.mapfish.print.config.layout;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
+import com.lowagie.text.Image;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfTemplate;
+
+import org.apache.batik.bridge.BridgeContext;
+import org.apache.batik.bridge.GVTBuilder;
+import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
+import org.apache.batik.gvt.GraphicsNode;
 import org.apache.log4j.Logger;
 import org.mapfish.print.PDFUtils;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.InvalidValueException;
 import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
+import org.w3c.dom.svg.SVGDocument;
 
+import java.awt.Graphics2D;
+import java.io.IOException;
 import java.net.URI;
 
 /**
@@ -90,6 +100,8 @@ public class LegendsBlock extends Block {
         final String icon = node.optString("icon");
         final PJsonArray icons = node.optJSONArray("icons");
 
+        Image image = null;
+
         final Paragraph result = new Paragraph();
         result.setFont(pdfFont);
         if (icon != null) {
@@ -100,8 +112,14 @@ public class LegendsBlock extends Block {
             for (int i = 0; i < icons.size(); ++i) {
                 String iconItem = icons.getString(i);
                 try {
-                    result.add(PDFUtils.createImageChunk(context, maxIconWidth, maxIconHeight, URI.create(iconItem), 0.0f));
+                    if (iconItem.indexOf("image%2Fsvg%2Bxml") != -1) { // TaODO: make this cleaner
+                        image = PDFUtils.createImageFromSVG(context, iconItem, maxIconWidth, maxIconHeight);
+                    } else {
+                        result.add(PDFUtils.createImageChunk(context, maxIconWidth, maxIconHeight, URI.create(iconItem), 0.0f));
+                    }
                     result.add(" ");
+                } catch (IOException ioe) {
+                    LOGGER.warn("Failed to load " + iconItem + " with " + ioe.getMessage());
                 } catch (InvalidValueException e) {
                     LOGGER.warn("Failed to create image chunk: " + e.getMessage());
                 }
@@ -113,6 +131,9 @@ public class LegendsBlock extends Block {
         cell.setBorder(PdfPCell.NO_BORDER);
         cell.setPadding(0f);
         cell.setPaddingLeft((float) indent);
+        if (image != null) {
+            cell.addElement(image);
+        }
 
         if (getBackgroundColorVal(context, params) != null) {
             cell.setBackgroundColor(getBackgroundColorVal(context, params));
