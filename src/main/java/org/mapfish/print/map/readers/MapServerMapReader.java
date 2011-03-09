@@ -63,6 +63,11 @@ public class MapServerMapReader extends HTTPMapReader {
     }
 
     protected void addCommonQueryParams(Map<String, List<String>> result, Transformer transformer, String srs, boolean first) {
+        
+        // Use mapserver rotation
+        URIUtils.addParamOverride(result, "map_angle", String.valueOf(-Math.toDegrees(transformer.getRotation())));
+        transformer.setRotation(0);
+
         final long w;
         final long h;
         if (format.equals("image/svg+xml")) {
@@ -83,6 +88,7 @@ public class MapServerMapReader extends HTTPMapReader {
         //URIUtils.addParamOverride(result, "SRS", srs);
         URIUtils.addParamOverride(result, "MAP_SIZE", String.format("%d %d", w, h));
         URIUtils.addParamOverride(result, "MAPEXT", String.format("%s %s %s %s", transformer.getRotatedMinGeoX(), transformer.getRotatedMinGeoY(), transformer.getRotatedMaxGeoX(), transformer.getRotatedMaxGeoY()));
+        URIUtils.addParamOverride(result, "map_resolution", String.valueOf(transformer.getDpi()));
         if (!first) {
             URIUtils.addParamOverride(result, "TRANSPARENT", "true");
         }
