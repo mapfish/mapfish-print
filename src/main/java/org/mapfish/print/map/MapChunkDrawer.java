@@ -95,7 +95,21 @@ public class MapChunkDrawer extends ChunkDrawer {
             PJsonObject layer = layers.getJSONObject(i);
             if (mainTransformer == null || layer.optBool("overview", true)) {
                 final String type = layer.getString("type");
-                MapReader.create(readers, type, context, layer);
+
+                // Don't create a reader if the layer is out of scale!!
+                float minScale = layer.optFloat("minScaleDenominator", -1f);
+                float maxScale = layer.optFloat("maxScaleDenominator", -1f);
+                boolean bPrint = true;
+                if (minScale > -1f) {
+                    bPrint = (minScale - transformer.getScale() > 0 ? false : true);
+                }
+                if (maxScale > -1f) {
+                    bPrint = (maxScale - transformer.getScale() < 0 ? false : true);
+
+                }
+                if (bPrint) {
+                    MapReader.create(readers, type, context, layer);
+                }
             }
         }
 
