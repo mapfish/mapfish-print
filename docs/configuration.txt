@@ -400,6 +400,7 @@ Allowed only within a **mainPage**.
   ?         align: left
   ?         vertAlign: middle
   ?         backgroundColor: #FFFFFF
+  ?         lockUnits: true
 
 The scalebar, will adapt its width up to `maxSize` (includes the labels) in order to have a multiple of 1, 2 or 5 values at each graduation. For example:
 
@@ -416,7 +417,7 @@ Units can be any of:
 * ft (in, ft, yd, mi)
 * degrees (min, sec, °) 
 
-If the value is too big or too small, the module will switch to one of the unit in parenthesis (the same unit is used for every intervals).
+If the value is too big or too small, the module will switch to one of the unit in parenthesis (the same unit is used for every intervals).  If this behaviour is not desired, the lockUnits parameter will force the declared unit (or map unit if no unit is declared) to be used for the scalebar.
 
 The number of `intervals` can be set to anything >=2. Labels are drawn only at main intervals. If there is no space to display a label at a certain interval, this label won't be displayed. If `subIntervals` are enabled, their number will depend on the length of an interval.
 

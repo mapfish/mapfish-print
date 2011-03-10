@@ -19,10 +19,15 @@
 
 package org.mapfish.print.config.layout;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Font;
-import com.lowagie.text.pdf.BaseFont;
-import org.mapfish.print.*;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.mapfish.print.ChunkDrawer;
+import org.mapfish.print.InvalidJsonValueException;
+import org.mapfish.print.InvalidValueException;
+import org.mapfish.print.PDFUtils;
+import org.mapfish.print.RenderingContext;
 import org.mapfish.print.config.ColorWrapper;
 import org.mapfish.print.scalebar.Direction;
 import org.mapfish.print.scalebar.Label;
@@ -31,9 +36,9 @@ import org.mapfish.print.scalebar.Type;
 import org.mapfish.print.utils.DistanceUnit;
 import org.mapfish.print.utils.PJsonObject;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Font;
+import com.lowagie.text.pdf.BaseFont;
 
 /**
  * Block for drawing a !scalebar block.
@@ -50,6 +55,8 @@ public class ScalebarBlock extends FontBlock {
     private boolean subIntervals = false;
 
     private DistanceUnit units = null;
+
+    private boolean lockUnits = false;
 
     private Integer barSize = null;
 
@@ -90,12 +97,12 @@ public class ScalebarBlock extends FontBlock {
      */
     private void tryLayout(RenderingContext context, PdfElement target, Font pdfFont, DistanceUnit scaleUnit, int scale, double intervalDistance, int tryNumber) throws DocumentException {
         if (tryNumber > 3) {
-            //noinspection ThrowableInstanceNeverThrown
+            // no inspection ThrowableInstanceNeverThrown
             context.addError(new InvalidValueException("maxSize too small", maxSize));
             return;
         }
 
-        DistanceUnit intervalUnit = DistanceUnit.getBestUnit(intervalDistance, scaleUnit);
+        DistanceUnit intervalUnit = bestUnit(scaleUnit, intervalDistance);
         final float intervalPaperWidth = (float) scaleUnit.convertTo(intervalDistance / scale, DistanceUnit.PT);
 
         //compute the label positions
@@ -132,6 +139,15 @@ public class ScalebarBlock extends FontBlock {
             //not enough room because of the labels, try a smaller bar
             double nextIntervalDistance = getNearestNiceValue(intervalDistance * 0.9, scaleUnit);
             tryLayout(context, target, pdfFont, scaleUnit, scale, nextIntervalDistance, tryNumber + 1);
+        }
+    }
+
+    private DistanceUnit bestUnit(DistanceUnit scaleUnit,
+            double intervalDistance) {
+        if(lockUnits) {
+            return scaleUnit;
+        } else {
+            return DistanceUnit.getBestUnit(intervalDistance, scaleUnit);
         }
     }
 
@@ -178,8 +194,17 @@ public class ScalebarBlock extends FontBlock {
      * Format the label text.
      */
     private String createLabelText(DistanceUnit scaleUnit, double value, DistanceUnit intervalUnit) {
-        final double scaledValue = scaleUnit.convertTo(value, intervalUnit);
-        return Long.toString(Math.round(scaledValue));
+        double scaledValue = scaleUnit.convertTo(value, intervalUnit);
+
+        //we shouldn't have interval smaller then 0.0001, right?
+        scaledValue = Math.round(scaledValue * 10000) / 10000;
+        String decimals = Double.toString(scaledValue).split("\\.")[1];
+
+        if (Double.valueOf(decimals) == 0) {
+            return Long.toString(Math.round(scaledValue));
+        } else {
+            return Double.toString(scaledValue);
+        }
     }
 
     /**
@@ -187,11 +212,11 @@ public class ScalebarBlock extends FontBlock {
      * with 1, 2 or 5.
      */
     private double getNearestNiceValue(double value, DistanceUnit scaleUnit) {
-        DistanceUnit bestUnit = DistanceUnit.getBestUnit(value, scaleUnit);
+        DistanceUnit bestUnit = bestUnit(scaleUnit, value);
         double factor = scaleUnit.convertTo(1.0, bestUnit);
 
         // nearest power of 10 lower than value
-        int digits = (int) (Math.log(value * factor) / Math.log(10));
+        int digits = (int) Math.floor((Math.log(value * factor) / Math.log(10)));
         double pow10 = Math.pow(10, digits);
 
         // ok, find first character
@@ -259,6 +284,10 @@ public class ScalebarBlock extends FontBlock {
 
     public void setUnits(DistanceUnit units) {
         this.units = units;
+    }
+
+    public void setLockUnits(boolean lock) {
+        this.lockUnits = lock;
     }
 
     public void setBarSize(int barSize) {
