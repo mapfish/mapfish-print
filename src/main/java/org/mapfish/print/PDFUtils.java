@@ -35,6 +35,8 @@ import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.dom.svg.SVGDocumentFactory;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.util.XMLResourceDescriptor;
+import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
@@ -108,11 +110,7 @@ public class PDFUtils {
      * Gets an iText image. Avoids doing the query twice.
      */
     protected static Image getImageDirect(RenderingContext context, URI uri) throws IOException, DocumentException {
-        boolean isInvalidURL = false;
-        try   {uri.toURL();}
-        catch (Exception e) {isInvalidURL = true;}
-
-        if (isInvalidURL) {
+        if (!uri.isAbsolute()) {
             //Assumption is that the file is on the local file system
             return Image.getInstance(uri.toString());
         } else if("file".equalsIgnoreCase(uri.getScheme())) {
@@ -130,7 +128,14 @@ public class PDFUtils {
                 if (LOGGER.isDebugEnabled()) LOGGER.debug("loading image: "+uri);
                 context.getConfig().getHttpClient(uri).executeMethod(method);
                 int code = method.getStatusCode();
-                final String contentType = method.getResponseHeader("Content-Type").getValue();
+                final String contentType;
+
+                Header contentTypeHeader = method.getResponseHeader("Content-Type");
+                if(contentTypeHeader == null) {
+                    contentType = "";
+                } else {
+                    contentType = contentTypeHeader.getValue();
+                }
 
                 if (code == 204) {
                     // returns a transparent image
