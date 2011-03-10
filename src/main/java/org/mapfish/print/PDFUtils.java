@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -107,11 +108,17 @@ public class PDFUtils {
      * Gets an iText image. Avoids doing the query twice.
      */
     protected static Image getImageDirect(RenderingContext context, URI uri) throws IOException, DocumentException {
-        if (!uri.isAbsolute()) {
-            //non-absolute URI are local, so we can use the normal iText method
+        boolean isInvalidURL = false;
+        try   {uri.toURL();}
+        catch (Exception e) {isInvalidURL = true;}
+
+        if (isInvalidURL) {
+            //Assumption is that the file is on the local file system
             return Image.getInstance(uri.toString());
         } else if("file".equalsIgnoreCase(uri.getScheme())) {
-            return Image.getInstance(new File(uri).toURI().toURL());
+            String path = uri.getHost() + uri.getPath();
+            path = path.replace("/", File.separator);
+            return Image.getInstance(new File(path).toURI().toURL());
         } else {
             //read the whole image content in memory, then give that to iText
             GetMethod method = new GetMethod(uri.toString());

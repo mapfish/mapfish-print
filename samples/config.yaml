@@ -67,6 +67,12 @@ layouts:
           spacingAfter: 100
           align: center
           url: http://trac.mapfish.org/trac/mapfish/attachment/ticket/3/logo_v8_sphere.svg?format=raw
+        - !image
+          maxWidth: 160
+          maxHeight: 160
+          spacingAfter: 100
+          align: center
+          url: 'file://${configDir}/logo-camptocamp.png'
         - !text
           font: Helvetica
           fontSize: 14
@@ -85,9 +91,13 @@ layouts:
               cells:
                 - paddingBottom: 5   
             items:
-              - !text
+              - !image
+                maxWidth: 40
                 backgroundColor: #FF0000
                 align: left
+                url: '${configDir}/small-logo-camptocamp.png'
+              - !text
+                backgroundColor: #FF0000
                 text: ©Camptocamp SA
               - !text
                 align: right
