@@ -72,7 +72,7 @@ layouts:
           maxHeight: 160
           spacingAfter: 100
           align: center
-          url: 'file://${configDir}/logo-camptocamp.png'
+          url: 'file://${configDir}/logo-camptocamp-transparent.png'
         - !text
           font: Helvetica
           fontSize: 14
