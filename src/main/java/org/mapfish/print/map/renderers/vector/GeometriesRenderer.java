@@ -19,16 +19,22 @@
 
 package org.mapfish.print.map.renderers.vector;
 
-import com.vividsolutions.jts.geom.*;
-import com.lowagie.text.pdf.PdfContentByte;
-
-import java.util.Map;
 import java.util.HashMap;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
+import java.util.Map;
 
-import org.mapfish.print.utils.PJsonObject;
 import org.mapfish.print.RenderingContext;
+import org.mapfish.print.utils.PJsonObject;
+
+import com.lowagie.text.pdf.PdfContentByte;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * iText renderer for JTS geometries.
@@ -57,6 +63,7 @@ public abstract class GeometriesRenderer<T extends Geometry> {
         dc.saveState();
         try {
             renderer.renderImpl(context, dc, style, geometry);
+            LabelRenderer.applyStyle(context, dc, style, geometry);
         } finally {
             dc.restoreState();
         }

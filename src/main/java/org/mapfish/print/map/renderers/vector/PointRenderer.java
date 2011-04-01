@@ -19,24 +19,23 @@
 
 package org.mapfish.print.map.renderers.vector;
 
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfGState;
-import com.lowagie.text.BadElementException;
-import com.lowagie.text.Image;
-import com.lowagie.text.DocumentException;
-import org.mapfish.print.RenderingContext;
-import org.mapfish.print.PDFUtils;
-import org.mapfish.print.InvalidValueException;
-import org.mapfish.print.config.ColorWrapper;
-import org.mapfish.print.utils.PJsonObject;
-
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+
+import org.mapfish.print.InvalidValueException;
+import org.mapfish.print.PDFUtils;
+import org.mapfish.print.RenderingContext;
+import org.mapfish.print.utils.PJsonObject;
+
+import com.lowagie.text.BadElementException;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Image;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfGState;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Point;
 
 /**
  * Render point geometries. Support for the 3 OL stylings:
@@ -91,20 +90,6 @@ public class PointRenderer extends GeometriesRenderer<Point> {
         float height = style.optFloat("graphicHeight", pointRadius * 2.0f);
         float offsetX = style.optFloat("graphicXOffset", -width / 2.0f);
         float offsetY = style.optFloat("graphicYOffset", -height / 2.0f);
-		// See Feature/Vector.js for more information about labels
-		String label = style.optString("label");
-		String labelAlign = style.optString("labelAlign", "lb");
-		/*
-		 * Valid values for horizontal alignment: "l"=left, "c"=center, "r"=right. 
-		 * Valid values for vertical alignment: "t"=top, "m"=middle, "b"=bottom.
-		 */
-		float labelXOffset = style.optFloat("labelXOffset", (float) 0.0);
-		float labelYOffset = style.optFloat("labelYOffset", (float) 0.0);
-		String fontColor = style.optString("fontColor", "#000000");
-		/* Supported itext fonts: COURIER, HELVETICA, TIMES_ROMAN */
-		String fontFamily = style.optString("fontFamily", "HELVETICA");
-		String fontSize = style.optString("fontSize", "12");
-		String fontWeight = style.optString("fontWeight", "normal");
 
         if (style.optString("externalGraphic") != null) {
             float opacity = style.optFloat("graphicOpacity", style.optFloat("fillOpacity", 1.0f));
@@ -123,8 +108,7 @@ public class PointRenderer extends GeometriesRenderer<Point> {
                 context.addError(e);
             }
 
-        } else
-        if (graphicName != null && !graphicName.equalsIgnoreCase("circle")) {
+        } else if (graphicName != null && !graphicName.equalsIgnoreCase("circle")) {
             PolygonRenderer.applyStyle(context, dc, style, state);
             float[] symbol = SYMBOLS.get(graphicName);
             if (symbol == null) {
@@ -134,23 +118,10 @@ public class PointRenderer extends GeometriesRenderer<Point> {
             dc.moveTo((float) coordinate.x + symbol[0] * width * f + offsetX * f, (float) coordinate.y + symbol[1] * height * f + offsetY * f);
             for (int i = 2; i < symbol.length - 2; i += 2) {
                 dc.lineTo((float) coordinate.x + symbol[i] * width * f + offsetX * f, (float) coordinate.y + symbol[i + 1] * height * f + offsetY * f);
-
             }
             dc.closePath();
             dc.fillStroke();
 
-        } else if (label != null && label.length() > 0) {
-			BaseFont bf = PDFUtils.getBaseFont(fontFamily, fontSize, fontWeight);
-			float fontHeight = (float) Double.parseDouble(fontSize.toLowerCase().replaceAll("px", "")) * f;
-			dc.setFontAndSize(bf, fontHeight);
-			dc.setColorFill(ColorWrapper.convertColor(fontColor));
-			state.setFillOpacity((float) 1.0);
-			dc.setGState(state);
-			dc.beginText();
-			dc.setTextMatrix((float) coordinate.x + labelXOffset * f, (float) coordinate.y + labelYOffset * f);
-			dc.setGState(state);
-			dc.showTextAligned(PDFUtils.getHorizontalAlignment(labelAlign), label, (float) coordinate.x + labelXOffset * f, (float) coordinate.y + labelYOffset * f - PDFUtils.getVerticalOffset(labelAlign, fontHeight), 0);
-			dc.endText();
 		} else {
             PolygonRenderer.applyStyle(context, dc, style, state);
             dc.setGState(state);
