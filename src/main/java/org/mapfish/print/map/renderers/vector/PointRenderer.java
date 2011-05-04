@@ -90,7 +90,10 @@ public class PointRenderer extends GeometriesRenderer<Point> {
         float height = style.optFloat("graphicHeight", pointRadius * 2.0f);
         float offsetX = style.optFloat("graphicXOffset", -width / 2.0f);
         float offsetY = style.optFloat("graphicYOffset", -height / 2.0f);
-
+        
+        // See Feature/Vector.js for more information about labels 
+        String label = style.optString("label");
+        
         if (style.optString("externalGraphic") != null) {
             float opacity = style.optFloat("graphicOpacity", style.optFloat("fillOpacity", 1.0f));
             state.setFillOpacity(opacity);
@@ -121,8 +124,9 @@ public class PointRenderer extends GeometriesRenderer<Point> {
             }
             dc.closePath();
             dc.fillStroke();
-
-		} else {
+        } else if (label != null && label.length() > 0) {
+            // rendered by LabelRenderer
+        } else {
             PolygonRenderer.applyStyle(context, dc, style, state);
             dc.setGState(state);
 
