@@ -1,11 +1,14 @@
 package org.mapfish.print.output;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.apache.log4j.Logger;
-import org.mapfish.print.MapPrinter;
 import org.mapfish.print.config.Config;
 import org.mapfish.print.utils.PJsonObject;
-
-import java.util.*;
 
 /**
  * User: jeichar
@@ -17,9 +20,12 @@ public class OutputFactory {
     private final static List<OutputFormatFactory> formats = new ArrayList<OutputFormatFactory>();
 
     static {
-
         // order matters.  first match will get used
         formats.add(new PdfOutput());
+        String useImageMagik = System.getProperties().getProperty("USE_IMAGEMAGICK");
+        if (useImageMagik != null && "true".equals(useImageMagik.toLowerCase())) {
+            formats.add(new ImageOutputImageMagickFactory());
+        }
         formats.add(new ImageOutputScalableFactory());
         formats.add(new ImageOutputFactory());
     }
