@@ -1,0 +1,33 @@
+{
+    "units": "m",
+    "srs": "EPSG:21781",
+    "layout": "A4 portrait",
+    "dpi": 254,
+    "layers": [{
+        "baseURL": "http://wmts9.geo.admin.ch/",
+        "layer": "ch.swisstopo.pixelkarte-farbe",
+        "opacity": 0.8,
+        "type": "WMTS",
+        "version": "1.0.0",
+        "requestEncoding": "REST",
+        "tileOrigin": [420000, 350000],
+        "tileSize": [256,256],
+        "style": "default",
+        "formatSuffix": "jpeg",
+        "dimensions": ["TIME"],
+        "params": {
+            "TIME": "2009"
+        },
+        "maxExtent": [420000, 30000, 900000, 350000],
+        "matrixSet": "21781",
+        "zoomOffset": 14,
+        "resolutions": [650, 500, 250, 100, 50, 20, 10, 5, 2.5, 2, 1, 0.5]
+    }],
+    "pages": [{
+        "center": [561280, 185250],
+        "scale": 25000,
+        "rotation": 0,
+        "dataOwner": "(c) Data: swisstopo",
+        "langen": true
+    }]
+}

@@ -68,6 +68,8 @@ public abstract class MapReader {
             KaMapCacheMapReader.create(target, context, params);
         } else if ("KaMap".equalsIgnoreCase(type)) {
             KaMapMapReader.create(target, context, params);
+        } else if ("WMTS".equalsIgnoreCase(type)) {
+            WMTSMapReader.create(target, context, params);
         } else {
             throw new InvalidJsonValueException(params, "type", type);
         }
