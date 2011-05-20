@@ -80,6 +80,12 @@ public abstract class TileableMapReader extends HTTPMapReader {
                 }
                 tileMinGeoX = (float) (Math.floor((minGeoX) / tileGeoWidth) * tileGeoWidth);
                 tileMinGeoY = (float) (Math.floor((minGeoY) / tileGeoHeight) * tileGeoHeight);
+            } else if (this instanceof WMTSMapReader) {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("WMTS min geo x and y calculation used");
+                }
+                tileMinGeoX = (float) (Math.floor((minGeoX - tileCacheLayerInfo.getMinX()) / tileGeoWidth) * tileGeoWidth) + tileCacheLayerInfo.getMinX();
+                tileMinGeoY = (float) (tileCacheLayerInfo.getMaxY() - ((Math.ceil((tileCacheLayerInfo.getMaxY() - minGeoY) / tileGeoHeight)) * tileGeoHeight));
             } else {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("Default min geo x and y calculation used");

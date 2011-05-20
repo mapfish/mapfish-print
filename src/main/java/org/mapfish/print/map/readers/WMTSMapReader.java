@@ -90,16 +90,15 @@ public class WMTSMapReader extends TileableMapReader {
         float targetResolution = (maxGeoX - minGeoX) / w;
         WMTSLayerInfo.ResolutionInfo resolution = tileCacheLayerInfo.getNearestResolution(targetResolution);
 
-        int col = (int) Math.round(Math.floor((minGeoX-tileOrigin.getFloat(0)) / (resolution.value * w)));
-        int row = (int) Math.round(Math.floor((tileOrigin.getFloat(1)-minGeoY) / (resolution.value * h)));
+        int col = (int) Math.round(Math.floor(((maxGeoX + minGeoX)/2-tileOrigin.getFloat(0)) / (resolution.value * w)));
+        int row = (int) Math.round(Math.floor((tileOrigin.getFloat(1)-(maxGeoY + minGeoY)/2) / (resolution.value * h)));
         
         StringBuilder path = new StringBuilder();
         if (!commonUri.getPath().endsWith("/")) {
             path.append('/');
         }
         if (requestEncoding.compareTo("REST") == 0) {
-        	path.append("wmts");
-        	path.append('/').append(version);
+        	path.append(version);
         	path.append('/').append(layer);
         	path.append('/').append(style);
         	// Add dimensions
