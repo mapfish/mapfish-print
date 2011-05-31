@@ -63,8 +63,8 @@ public class Transformer implements Cloneable {
     public float maxGeoX;
     public float maxGeoY;
     private final int scale;
-    private final int paperWidth;
-    private final int paperHeight;
+    private final float paperWidth;
+    private final float paperHeight;
     private float pixelPerGeoUnit;
     private float paperPosX;
     private float paperPosY;
@@ -80,8 +80,8 @@ public class Transformer implements Cloneable {
      *            if not null then it is a the srs to use with the geodetic
      *            calculator. if null it is assumed that it is non-geodetic
      */
-    public Transformer(float centerX, float centerY, int paperWidth,
-            int paperHeight, int scale, int dpi, DistanceUnit unitEnum,
+    public Transformer(float centerX, float centerY, float paperWidth,
+            float paperHeight, int scale, int dpi, DistanceUnit unitEnum,
             double rotation, String geodeticSRS) {
         this.dpi = dpi;
         pixelPerGeoUnit = (float) (unitEnum.convertTo(dpi, DistanceUnit.IN) / scale);

@@ -53,8 +53,8 @@ public class MapBlock extends Block {
         final MapChunkDrawer drawer = new MapChunkDrawer(context.getCustomBlocks(), transformer, overviewMap, params, context, getBackgroundColorVal(context, params), name);
 
         if (isAbsolute()) {
-            final int absX = getAbsoluteX(context, params);
-            final int absY = getAbsoluteY(context, params);
+            final float absX = getAbsoluteX(context, params);
+            final float absY = getAbsoluteY(context, params);
             context.getCustomBlocks().addAbsoluteDrawer(new PDFCustomBlocks.AbsoluteDrawer() {
                 public void render(PdfContentByte dc) {
                     final Rectangle rectangle = new Rectangle(absX, absY - transformer.getPaperH(),
@@ -89,8 +89,8 @@ public class MapBlock extends Block {
         final float centerX;
         final float centerY;
 
-        final int width = getWidth(context, params);
-        final int height = getHeight(context, params);
+        final float width = getWidth(context, params);
+        final float height = getHeight(context, params);
         final PJsonArray center = params.optJSONArray("center");
         if (center != null) {
             //normal mode
@@ -145,8 +145,8 @@ public class MapBlock extends Block {
         this.height = height;
     }
 
-    public int getHeight(RenderingContext context, PJsonObject params) {
-        return Integer.parseInt(PDFUtils.evalString(context, params, height));
+    public float getHeight(RenderingContext context, PJsonObject params) {
+        return Float.parseFloat(PDFUtils.evalString(context, params, height));
     }
 
     public void setWidth(String width) {
@@ -154,8 +154,8 @@ public class MapBlock extends Block {
         this.width = width;
     }
 
-    public int getWidth(RenderingContext context, PJsonObject params) {
-        return Integer.parseInt(PDFUtils.evalString(context, params, width));
+    public float getWidth(RenderingContext context, PJsonObject params) {
+        return Float.parseFloat(PDFUtils.evalString(context, params, width));
     }
 
     public boolean isAbsolute() {
@@ -167,16 +167,17 @@ public class MapBlock extends Block {
         this.absoluteX = absoluteX;
     }
 
-    public int getAbsoluteX(RenderingContext context, PJsonObject params) {
-        return Integer.parseInt(PDFUtils.evalString(context, params, absoluteX));
+    public float getAbsoluteX(RenderingContext context, PJsonObject params) {
+        //return Integer.parseInt(PDFUtils.evalString(context, params, absoluteX));
+      return Float.parseFloat(PDFUtils.evalString(context, params, absoluteX));
     }
 
     public void setAbsoluteY(String absoluteY) {
         this.absoluteY = absoluteY;
     }
 
-    public int getAbsoluteY(RenderingContext context, PJsonObject params) {
-        return Integer.parseInt(PDFUtils.evalString(context, params, absoluteY));
+    public float getAbsoluteY(RenderingContext context, PJsonObject params) {
+        return Float.parseFloat(PDFUtils.evalString(context, params, absoluteY));
     }
 
     public MapBlock getMap() {

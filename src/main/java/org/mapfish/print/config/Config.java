@@ -19,7 +19,7 @@
 
 package org.mapfish.print.config;
 
-import org.apache.commons.httpclient.HostConfiguration;
+//import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -36,7 +36,7 @@ import org.mapfish.print.config.layout.Layouts;
 import org.mapfish.print.map.MapTileTask;
 import org.mapfish.print.map.readers.WMSServerInfo;
 import org.mapfish.print.output.OutputFactory;
-import org.mapfish.print.output.OutputFormat;
+//import org.mapfish.print.output.OutputFormat;
 import org.pvalsecc.concurrent.OrderedResultsExecutor;
 
 import java.io.File;
@@ -61,6 +61,13 @@ public class Config {
     private Layouts layouts;
     private TreeSet<Integer> dpis;
     private TreeSet<Integer> scales;
+    private String maxSvgWidth = "";
+    private String maxSvgHeight = "";
+    private double maxSvgW = Double.MAX_VALUE;
+    private double maxSvgH = Double.MAX_VALUE;
+    
+    private List<String> overlayLayers = null;
+    
     private TreeSet<String> fonts = null;
     private List<HostMatcher> hosts = new ArrayList<HostMatcher>();
     private TreeSet<Key> keys;
@@ -86,7 +93,7 @@ public class Config {
      */
     private OrderedResultsExecutor<MapTileTask> mapRenderingExecutor = null;
     private MultiThreadedHttpConnectionManager connectionManager;
-    private TreeSet<String> formats;
+    private TreeSet<String> formats; // private int svgMaxWidth = -1; private int svgMaxHeight = -1;
 
     public Config() {
         hosts.add(new LocalHostMatcher());
@@ -127,7 +134,29 @@ public class Config {
     public void setDpis(TreeSet<Integer> dpis) {
         this.dpis = dpis;
     }
-
+    
+    public void setMaxSvgWidth(String maxSvgWidth) {
+    	this.maxSvgWidth = maxSvgWidth;
+    	this.maxSvgW = Double.parseDouble(maxSvgWidth);
+    }
+    public String getMaxSvgWidth() {
+    	return this.maxSvgWidth;
+    }
+    public void setMaxSvgHeight(String maxSvgHeight) {
+    	this.maxSvgHeight = maxSvgHeight;
+    	this.maxSvgH = Double.parseDouble(maxSvgHeight);
+    }
+    public String getMaxSvgHeight() {
+    	return this.maxSvgHeight;
+    }
+    
+    public double getMaxSvgW() {
+    	return this.maxSvgW;
+    }
+    public double getMaxSvgH() {
+    	return this.maxSvgH;
+    }
+    
     public TreeSet<Integer> getDpis() {
         return dpis;
     }
@@ -386,5 +415,13 @@ public class Config {
 
     public void setFormats(TreeSet<String> formats) {
         this.formats = formats;
+    }
+
+    public void setOverlayLayers(List<String> overlayLayers) {
+      this.overlayLayers = overlayLayers;
+    }
+
+    public List<String> getOverlayLayers() {
+      return overlayLayers;
     }
 }

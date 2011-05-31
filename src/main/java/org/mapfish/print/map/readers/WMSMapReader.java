@@ -19,6 +19,8 @@
 
 package org.mapfish.print.map.readers;
 
+import org.apache.batik.bridge.UserAgent;
+import org.apache.batik.bridge.UserAgentAdapter;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.Transformer;
 import org.mapfish.print.map.ParallelMapTileLoader;
@@ -153,8 +155,29 @@ public class WMSMapReader extends TileableMapReader {
 
         Map<String, List<String>> tileParams = new HashMap<String, List<String>>();
         if (format.equals("image/svg+xml")) {
-            URIUtils.addParamOverride(tileParams, "WIDTH", Long.toString(transformer.getRotatedSvgW()));
-            URIUtils.addParamOverride(tileParams, "HEIGHT", Long.toString(transformer.getRotatedSvgH()));
+        	double maxW = context.getConfig().getMaxSvgW(); // config setting in YAML called maxSvgWidth
+        	double maxH = context.getConfig().getMaxSvgH(); // config setting in YAML called maxSvgHeight
+        	double divisor = 1;
+        	double width = transformer.getRotatedSvgW(); // width of the vector map
+        	double height = transformer.getRotatedSvgH(); // height of the vector map
+        	
+        	if (maxW < width || maxH < height) {
+	        	/**
+	        	 *  need to use maxW as divisor, smaller quotient for width means 
+	        	 *  more constraining factor is max width 
+	        	 */
+	        	if (maxW / maxH < width / height) {
+	        		divisor = width / maxW;
+	        		width = maxW;
+	        		height = height / divisor;
+	        	} else {
+	        		divisor = height / maxH;
+	        		height = maxH;
+	        		width = width / divisor;
+	        	}
+        	}
+            URIUtils.addParamOverride(tileParams, "WIDTH", Long.toString((long) Math.round(width)));
+            URIUtils.addParamOverride(tileParams, "HEIGHT", Long.toString((long) Math.round(height)));
         } else {
             URIUtils.addParamOverride(tileParams, "WIDTH", Long.toString(w));
             URIUtils.addParamOverride(tileParams, "HEIGHT", Long.toString(h));

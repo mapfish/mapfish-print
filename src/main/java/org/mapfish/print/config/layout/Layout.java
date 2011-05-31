@@ -25,7 +25,6 @@ import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.InvalidValueException;
-import org.mapfish.print.config.Config;
 import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
 

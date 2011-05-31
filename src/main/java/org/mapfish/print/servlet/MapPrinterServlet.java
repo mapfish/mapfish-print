@@ -50,6 +50,8 @@ public class MapPrinterServlet extends BaseMapServlet {
     private static final String CREATE_URL = "/create.json";
     protected static final String TEMP_FILE_PREFIX = "mapfish-print";
     private static final String TEMP_FILE_SUFFIX = ".printout";
+    
+    private String app = null;
 
     private static final int TEMP_FILE_PURGE_SECONDS = 10 * 60;
 
@@ -222,7 +224,10 @@ public class MapPrinterServlet extends BaseMapServlet {
      * To get (in JSON) the information about the available formats and CO.
      */
     protected void getInfo(HttpServletRequest req, HttpServletResponse resp, String basePath) throws ServletException, IOException {
-        MapPrinter printer = getMapPrinter();
+    	app = req.getParameter("app");
+    	//System.out.println("app = "+app);
+    	
+        MapPrinter printer = getMapPrinter(app);
         resp.setContentType("application/json; charset=utf-8");
         final PrintWriter writer = resp.getWriter();
 
@@ -239,6 +244,9 @@ public class MapPrinterServlet extends BaseMapServlet {
                     printer.printClientConfig(json);
                     json.key("printURL").value(basePath + PRINT_URL);
                     json.key("createURL").value(basePath + CREATE_URL);
+                    if (app != null) {
+                    	json.key("app").value(app);
+                    }
                 }
                 json.endObject();
             } catch (JSONException e) {
@@ -262,10 +270,15 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
 
         PJsonObject specJson = MapPrinter.parseSpec(spec);
+        if (specJson.has("app")) {
+        	app = specJson.getString("app");
+        } else {
+        	app = null;
+        }
 
         String referer = httpServletRequest.getHeader("Referer");
 
-        final OutputFormat outputFormat = OutputFactory.create(getMapPrinter().getConfig(),specJson);
+        final OutputFormat outputFormat = OutputFactory.create(getMapPrinter(app).getConfig(),specJson);
         //create a temporary file that will contain the PDF
         final File tempJavaFile = File.createTempFile(TEMP_FILE_PREFIX, "."+outputFormat.fileSuffix()+TEMP_FILE_SUFFIX, getTempDir());
         TempFile tempFile = new TempFile(tempJavaFile, specJson, outputFormat);
@@ -274,7 +287,7 @@ public class MapPrinterServlet extends BaseMapServlet {
         try {
             out = new FileOutputStream(tempFile);
 
-            outputFormat.print(getMapPrinter(), specJson, out, referer);
+            outputFormat.print(getMapPrinter(app), specJson, out, referer);
 
             return tempFile;
         } catch (IOException e) {
@@ -301,7 +314,7 @@ public class MapPrinterServlet extends BaseMapServlet {
         try {
             httpServletResponse.setContentType(tempFile.contentType());
             if (inline != true) {
-                final String fileName = tempFile.getOutputFileName(getMapPrinter());
+                final String fileName = tempFile.getOutputFileName(getMapPrinter(app));
                 httpServletResponse.setHeader("Content-disposition", "attachment; filename=" + fileName);
             }
             FileUtilities.copyStream(pdf, response);

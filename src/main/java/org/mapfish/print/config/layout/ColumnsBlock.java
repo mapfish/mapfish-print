@@ -38,9 +38,14 @@ import java.util.List;
 public class ColumnsBlock extends Block {
     private List<Block> items;
     private int[] widths = null;
+    /*
     private int absoluteX = Integer.MIN_VALUE;
     private int absoluteY = Integer.MIN_VALUE;
     private int width = Integer.MIN_VALUE;
+    */
+    private float absoluteX = Float.MIN_VALUE;
+    private float absoluteY = Float.MIN_VALUE;
+    private float width = Float.MIN_VALUE;
     private int nbColumns = Integer.MIN_VALUE;
     private TableConfig config = null;
 
@@ -83,15 +88,15 @@ public class ColumnsBlock extends Block {
         this.widths = widths;
     }
 
-    public void setAbsoluteX(int absoluteX) {
+    public void setAbsoluteX(float absoluteX) {
         this.absoluteX = absoluteX;
     }
 
-    public void setAbsoluteY(int absoluteY) {
+    public void setAbsoluteY(float absoluteY) {
         this.absoluteY = absoluteY;
     }
 
-    public void setWidth(int width) {
+    public void setWidth(float width) {
         this.width = width;
     }
 
@@ -100,9 +105,9 @@ public class ColumnsBlock extends Block {
     }
 
     public boolean isAbsolute() {
-        return absoluteX != Integer.MIN_VALUE &&
-                absoluteY != Integer.MIN_VALUE &&
-                width != Integer.MIN_VALUE;
+        return absoluteX != Float.MIN_VALUE &&
+                absoluteY != Float.MIN_VALUE &&
+                width != Float.MIN_VALUE;
     }
 
     public MapBlock getMap() {
@@ -124,8 +129,8 @@ public class ColumnsBlock extends Block {
         if (items == null) throw new InvalidValueException("items", "null");
         if (items.size() < 1) throw new InvalidValueException("items", "[]");
 
-        if (!((absoluteX != Integer.MIN_VALUE && absoluteY != Integer.MIN_VALUE && width != Integer.MIN_VALUE) ||
-                (absoluteX == Integer.MIN_VALUE && absoluteY == Integer.MIN_VALUE && width == Integer.MIN_VALUE))) {
+        if (!((absoluteX != Float.MIN_VALUE && absoluteY != Float.MIN_VALUE && width != Float.MIN_VALUE) ||
+                (absoluteX == Float.MIN_VALUE && absoluteY == Float.MIN_VALUE && width == Float.MIN_VALUE))) {
             throw new InvalidValueException("absoluteX, absoluteY or width", "all of them must be defined or none");
         }
 
