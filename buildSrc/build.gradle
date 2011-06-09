@@ -1,3 +1,8 @@
+/**
+ * Creative commons license
+ * Copyright (C) 2009  Camptocamp
+ */
+
 import org.apache.ivy.plugins.resolver.*
 
 apply plugin: 'groovy'
