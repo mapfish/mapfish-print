@@ -33,10 +33,5 @@ public class WMTSLayerInfo extends TileCacheLayerInfo {
     public WMTSLayerInfo(PJsonArray resolutions, int width, int height, float minX, float minY, float maxX, float maxY, String extension) {
         super(resolutions, width, height, minX, minY, maxX, maxY, extension);
     }
-
-    @Override
-    protected float resolutionTolerance() {
-        return 1.9f;
-    }
 }
 
