@@ -11,6 +11,8 @@ MapFish Print allows printing maps as PDFs.
 MapFish Print is written in Java. It is typically executed as a servlet in a
 servlet container such as `Apache Tomcat <http://tomcat.apache.org/>`_.
 
+MapFish Print is released under the GPLv3 license.
+
 `GeoExt <http://www.geoext.org>`_ includes print components for use with
 MapFish Print.
 
