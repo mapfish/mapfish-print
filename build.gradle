@@ -103,6 +103,14 @@ uploadArchives << {
   def ssl = new SSL()
   
   repositories.mavenDeployer {
+		pom.project {
+      licenses {
+        license {
+          name 'GNU General Public License V3'
+          url 'http://www.gnu.org/licenses/'
+        }
+      }
+    }
     name = 'dev.mapfish.org deployer'
     configuration = configurations.deployerJars
     
