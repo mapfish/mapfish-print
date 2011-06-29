@@ -40,6 +40,7 @@ public abstract class BaseMapServlet extends HttpServlet {
     private MapPrinter printer = null;
     private Map<String, MapPrinter> printers = null;
     private long lastModified = 0L;
+    private long defaultLastModified = 0L;
     private Map<String,Long> lastModifieds = null;
 
     /**
@@ -57,34 +58,46 @@ public abstract class BaseMapServlet extends HttpServlet {
         if (configPath == null) {
             throw new ServletException("Missing configuration in web.xml 'web-app/servlet/init-param[param-name=config]' or 'web-app/context-param[param-name=config]'");
         }
+        //String debugPath = "";
 
         File configFile = null;
         if (app != null) {
         	if (lastModifieds == null) {
         		lastModifieds = new HashMap<String, Long>();
+        		//debugPath += "new HashMap\n";
         	}
-        	try {
-        		printer = printers.get(app);
-        	} catch (Exception e) {
-				printer = null;
-			}
+    		if (printers instanceof HashMap &&  printers.containsKey(app)) {
+    			printer = printers.get(app);
+    			//debugPath += "get printer from hashmap\n";
+    		} else {
+    			printer = null;
+    			//debugPath += "printer = null 1\n";
+    		}
        		configFile = new File(app +".yaml");
         } else {
         	configFile = new File(configPath);
+        	//debugPath += "configFile = new ..., 1\n";
         }
         if (!configFile.isAbsolute()) {
         	if (app != null) {
+        		//debugPath += "config is absolute app = "+app+"\n";
         		configFile = new File(getServletContext().getRealPath(app +".yaml"));
         	} else {
         		configFile = new File(getServletContext().getRealPath(configPath));
+        		//debugPath += "config is absolute app DEFAULT\n";
         	}
         }
         if (app != null) {
-        	try {
+        	if (lastModifieds instanceof HashMap && lastModifieds.containsKey(app)) {
         		lastModified = lastModifieds.get(app);
-        	} catch (Exception e) {
-				lastModified = 0L;
-			}
+        		//debugPath += "app = "+app+" lastModifieds has key and gotten: "+ lastModified +"\n";
+        	} else {
+        		lastModified = 0L;
+        		//debugPath += "app = "+app+" lastModifieds has NOT key and gotten: "+ lastModified +" (0L)\n";
+        	}
+        } else {
+        	lastModified = defaultLastModified; // this is a fix for when configuration files have changed
+        	//debugPath += "app = NULL lastModifieds from defaultLastModified: "+ lastModified +"\n";
         }
 
         if (printer != null && configFile.lastModified() != lastModified) {
@@ -92,29 +105,57 @@ public abstract class BaseMapServlet extends HttpServlet {
             LOGGER.info("Configuration file modified. Reloading...");
             try {
             	printer.stop();
+            	
+            	//debugPath += "printer stopped, setting NULL\n";
             } catch (NullPointerException npe) {
-            	LOGGER.info("BaseMapServlet.java: printer was not stopped. This happens when a switch between applications happens.");
+            	LOGGER.info("BaseMapServlet.java: printer was not stopped. This happens when a switch between applications happens.\n"+ npe);
             }
             
             printer = null;
+            if (app != null) {
+            	LOGGER.info("Printer for "+ app +" stopped");
+            	printers.put(app, null);
+            }
         }
 
         if (printer == null) {
             lastModified = configFile.lastModified();
+            //debugPath += "printer == null, lastModified from configFile = "+lastModified+"\n";
             try {
                 LOGGER.info("Loading configuration file: " + configFile.getAbsolutePath());
                 printer = new MapPrinter(configFile);
                 if (app != null) {
                 	if (printers == null) {
                 		printers = new HashMap<String, MapPrinter>();
+                		//debugPath += "printers = new HashMap , printer == null, app = "+app+"\n";
                 	}
                 	printers.put(app, printer);
                 	lastModifieds.put(app, lastModified);
+                	//debugPath += "putting app = "+app+" HashMaps: printer and lastModified: "+lastModified+"\n";
+                } else {
+                	defaultLastModified = lastModified; // need this for default application
+                	//debugPath += "defaultLastModified = "+defaultLastModified+" 123\n";
                 }
             } catch (FileNotFoundException e) {
                 throw new ServletException("Cannot read configuration file: " + configPath, e);
             }
         }
+        
+        //LOGGER.info(debugPath);
+        /*
+        try {
+            if (app == null) {
+            	throw new Exception("Just to see the stack trace");
+            }
+           	throw new Exception("Just to see the stack trace");
+        } catch (Exception e) {
+        	StackTraceElement stelements[] = e.getStackTrace();
+        	for (StackTraceElement s : stelements) {
+        		LOGGER.warn("StackTraceElement ASD: "+ s.toString());
+        	}
+        	//LOGGER.warn("app == NULL:\n"+ e.getStackTrace());
+        }
+        */
         return printer;
     }
 

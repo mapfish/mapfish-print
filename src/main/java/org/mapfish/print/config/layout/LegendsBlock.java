@@ -22,7 +22,6 @@ package org.mapfish.print.config.layout;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
-import com.lowagie.text.Image;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfPCell;
@@ -93,20 +92,28 @@ public class LegendsBlock extends Block {
         final String icon = node.optString("icon");
         final PJsonArray icons = node.optJSONArray("icons");
 
-        Image image = null;
-
         final Paragraph result = new Paragraph();
         result.setFont(pdfFont);
         if (icon != null) {
-            result.add(PDFUtils.createImageChunk(context, maxIconWidth, maxIconHeight, URI.create(icon), 0.0f));
-            result.add(" ");
+        	try {
+	        	if (icon.indexOf("image%2Fsvg%2Bxml") != -1) { // TaODO: make this cleaner
+	        		result.add(PDFUtils.createImageChunkFromSVG(context, icon, maxIconWidth, maxIconHeight));
+	        	} else {
+	        		result.add(PDFUtils.createImageChunk(context, maxIconWidth, maxIconHeight, URI.create(icon), 0.0f));
+	        	}
+	            result.add(" ");
+        	} catch (IOException ioe) {
+                LOGGER.warn("Failed to load " + icon + " with " + ioe.getMessage());
+            } catch (InvalidValueException e) {
+                LOGGER.warn("Failed to create image chunk: " + e.getMessage());
+            }
         }
         if (icons != null) {
             for (int i = 0; i < icons.size(); ++i) {
                 String iconItem = icons.getString(i);
                 try {
                     if (iconItem.indexOf("image%2Fsvg%2Bxml") != -1) { // TaODO: make this cleaner
-                        image = PDFUtils.createImageFromSVG(context, iconItem, maxIconWidth, maxIconHeight);
+                    	result.add(PDFUtils.createImageChunkFromSVG(context, iconItem, maxIconWidth, maxIconHeight));
                     } else {
                         result.add(PDFUtils.createImageChunk(context, maxIconWidth, maxIconHeight, URI.create(iconItem), 0.0f));
                     }
@@ -118,15 +125,13 @@ public class LegendsBlock extends Block {
                 }
             }
         }
-        result.add(name);
 
         final PdfPCell cell = new PdfPCell(result);
         cell.setBorder(PdfPCell.NO_BORDER);
         cell.setPadding(0f);
         cell.setPaddingLeft((float) indent);
-        if (image != null) {
-            cell.addElement(image);
-        }
+
+        result.add(name);
 
         if (getBackgroundColorVal(context, params) != null) {
             cell.setBackgroundColor(getBackgroundColorVal(context, params));

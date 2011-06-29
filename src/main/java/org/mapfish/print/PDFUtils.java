@@ -35,7 +35,6 @@ import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.dom.svg.SVGDocumentFactory;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.util.XMLResourceDescriptor;
-import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -50,7 +49,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -483,6 +481,10 @@ public class PDFUtils {
 			myOffset = (float) 0.0;
 		}
 		return myOffset;
+	}
+	
+	public static Chunk createImageChunkFromSVG(RenderingContext context, String iconItem, double maxIconWidth, double maxIconHeight) throws IOException {
+		return new Chunk(PDFUtils.createImageFromSVG(context, iconItem, maxIconWidth, maxIconHeight), 0f, 0f, true);		
 	}
 
 	public static Image createImageFromSVG(RenderingContext context, String iconItem, double maxIconWidth, double maxIconHeight) throws IOException {

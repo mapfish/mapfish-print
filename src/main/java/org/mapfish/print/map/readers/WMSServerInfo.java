@@ -87,6 +87,11 @@ public class WMSServerInfo {
                 result = requestInfo(uri, context);
             } catch (Exception e) {
                 LOGGER.info("Error while getting capabilities for "+uri+". The print module will assume it's a standard WMS.");
+                String stackTrace = "";
+                for (StackTraceElement el : e.getStackTrace()) {
+                	stackTrace += el.toString() +"\n";
+                }
+                LOGGER.info(stackTrace);
                 result = new WMSServerInfo();
             }
             if (LOGGER.isDebugEnabled()) {

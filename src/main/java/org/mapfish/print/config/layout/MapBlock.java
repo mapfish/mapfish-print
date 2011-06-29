@@ -185,18 +185,21 @@ public class MapBlock extends Block {
     }
 
     public void printClientConfig(JSONWriter json) throws JSONException {
+        /**
+         * Changed width and height to be double from int to accomodate double values in yaml config
+         */
         json.object();
-        int w;
+        double w; //int w;
         try {
-            w = Integer.parseInt(width);
+        	w = Math.round(Double.parseDouble(width)); //w = Integer.parseInt(width);
         } catch (NumberFormatException e) {
             w = 0;
         }
         json.key("width").value(w);
 
-        int h;
+        double h; //int h;
         try {
-            h = Integer.parseInt(height);
+        	h = Math.round(Double.parseDouble(height)); //h = Integer.parseInt(height);
         } catch (NumberFormatException e) {
             h = 0;
         }

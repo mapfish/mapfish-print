@@ -74,8 +74,8 @@ public class Config {
 
     private int globalParallelFetches = 5;
     private int perHostParallelFetches = 5;
-    private int socketTimeout = 3*60*1000;
-    private int connectionTimeout = 30*1000;
+    private int socketTimeout = 40*60*1000; // 40 minutes //3*60*1000;
+    private int connectionTimeout = 40*60*1000; // 40 minutes //30*1000;
 
     private boolean tilecacheMerging = false;
 

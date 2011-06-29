@@ -55,9 +55,12 @@ import java.net.URLConnection;
 public class SVGTileRenderer extends TileRenderer {
     public static final Logger LOGGER = Logger.getLogger(SVGTileRenderer.class);
 
-    private static final Document svgZoomOut;
+    private static Document svgZoomOut;
 
     static {
+    	makeSvgZoomOut();
+    }
+    private static void makeSvgZoomOut() {
         DOMParser parser = new DOMParser();
         String svgZoomFileName = "svgZoomOut.xsl";
         final InputStream stream = SVGTileRenderer.class.getResourceAsStream(svgZoomFileName);
@@ -139,10 +142,14 @@ public class SVGTileRenderer extends TileRenderer {
     private TranscoderInput getTranscoderInput(URL url, Transformer transformer, RenderingContext context) {
         final float zoomFactor = transformer.getSvgFactor() * context.getStyleFactor();
         if (svgZoomOut != null && zoomFactor != 1.0f) {
+        	javax.xml.transform.Transformer xslt = null;
             try {
                 DOMResult transformedSvg = new DOMResult();
                 final TransformerFactory factory = TransformerFactory.newInstance();
-                javax.xml.transform.Transformer xslt = factory.newTransformer(new DOMSource(svgZoomOut));
+                if (svgZoomOut.getTextContent() == null) {
+                	makeSvgZoomOut(); // a bit of a hack
+                }
+                xslt = factory.newTransformer(new DOMSource(svgZoomOut));
 
                 //TODO: may want a different zoom factor in function of the layer and the type (symbol, line or font)
                 xslt.setParameter("zoomFactor", zoomFactor);
@@ -167,6 +174,14 @@ public class SVGTileRenderer extends TileRenderer {
                 return new TranscoderInput(doc);
 
             } catch (Exception e) {
+            	if (xslt == null) {
+            		// some more information about the error
+            		LOGGER.error("xslt = NULL, zoomFactor = "+ 
+            				zoomFactor +", svgZoomOut = "+ svgZoomOut
+            				+"\nsvgZoomOut.getTextContent() = "+ svgZoomOut.getTextContent()
+            				+"\nsvgZoomOut.getChildNodes().getLength() = "+ svgZoomOut.getChildNodes().getLength());
+            	}
+            	
                 context.addError(e);
                 return null;
             }

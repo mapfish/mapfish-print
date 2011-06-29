@@ -43,9 +43,9 @@ public class ColumnsBlock extends Block {
     private int absoluteY = Integer.MIN_VALUE;
     private int width = Integer.MIN_VALUE;
     */
-    private float absoluteX = Float.MIN_VALUE;
-    private float absoluteY = Float.MIN_VALUE;
-    private float width = Float.MIN_VALUE;
+    private double absoluteX = Double.MIN_VALUE;
+    private double absoluteY = Double.MIN_VALUE;
+    private double width = Double.MIN_VALUE;
     private int nbColumns = Integer.MIN_VALUE;
     private TableConfig config = null;
 
@@ -56,14 +56,14 @@ public class ColumnsBlock extends Block {
                 public void render(PdfContentByte dc) throws DocumentException {
                     final PdfPTable table = PDFUtils.buildTable(items, params, context, nbColumns, config);
                     if (table != null) {
-                        table.setTotalWidth(width);
+                        table.setTotalWidth((float) width);
                         table.setLockedWidth(true);
 
                         if (widths != null) {
                             table.setWidths(widths);
                         }
 
-                        table.writeSelectedRows(0, -1, absoluteX, absoluteY, dc);
+                        table.writeSelectedRows(0, -1, (float) absoluteX, (float) absoluteY, dc);
                     }
                 }
             });
@@ -88,11 +88,11 @@ public class ColumnsBlock extends Block {
         this.widths = widths;
     }
 
-    public void setAbsoluteX(float absoluteX) {
+    public void setAbsoluteX(double absoluteX) {
         this.absoluteX = absoluteX;
     }
 
-    public void setAbsoluteY(float absoluteY) {
+    public void setAbsoluteY(double absoluteY) {
         this.absoluteY = absoluteY;
     }
 
@@ -105,9 +105,9 @@ public class ColumnsBlock extends Block {
     }
 
     public boolean isAbsolute() {
-        return absoluteX != Float.MIN_VALUE &&
-                absoluteY != Float.MIN_VALUE &&
-                width != Float.MIN_VALUE;
+        return absoluteX != Double.MIN_VALUE &&
+                absoluteY != Double.MIN_VALUE &&
+                width != Double.MIN_VALUE;
     }
 
     public MapBlock getMap() {
@@ -129,8 +129,8 @@ public class ColumnsBlock extends Block {
         if (items == null) throw new InvalidValueException("items", "null");
         if (items.size() < 1) throw new InvalidValueException("items", "[]");
 
-        if (!((absoluteX != Float.MIN_VALUE && absoluteY != Float.MIN_VALUE && width != Float.MIN_VALUE) ||
-                (absoluteX == Float.MIN_VALUE && absoluteY == Float.MIN_VALUE && width == Float.MIN_VALUE))) {
+        if (!((absoluteX != Double.MIN_VALUE && absoluteY != Double.MIN_VALUE && width != Double.MIN_VALUE) ||
+                (absoluteX == Double.MIN_VALUE && absoluteY == Double.MIN_VALUE && width == Double.MIN_VALUE))) {
             throw new InvalidValueException("absoluteX, absoluteY or width", "all of them must be defined or none");
         }
 

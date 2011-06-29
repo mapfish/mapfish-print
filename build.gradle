@@ -56,7 +56,7 @@ war {
   manifest.mainAttributes('Build-Time': new Date().getDateTimeString())
 }
 
-task standalone (dependsOn: test, type: Jar) {
+task standalone (type: Jar) {
   baseName = "print-standalone"
 
   manifest = jar.manifest

@@ -1,6 +1,20 @@
-.gradle
+.gradle/
 build/
 .DS_Store
 .classpath
-.project
+.project/
 .settings/
+depfile.txt
+docs
+lib/
+print-lib/
+print-servlet/
+print-standalone/
+samples/
+todo
+.svn/
+src/main/webapp/.smap.yaml.swp
+src/main/webapp/Copy of configVector.yaml
+src/main/webapp/portal.yaml~
+src/main/webapp/smap.yaml~
+build.sbt
