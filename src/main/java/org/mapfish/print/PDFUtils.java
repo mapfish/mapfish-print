@@ -265,6 +265,32 @@ public class PDFUtils {
     }
 
     private static final Pattern FORMAT_PATTERN = Pattern.compile("^format\\s+(%[-+# 0,(]*\\d*(\\.\\d*)?(d))\\s+(.*)$");
+    
+    public static String getValueFromString(String val) {
+    	String str = val;
+        while (true) {
+            Matcher matcher = VAR_REGEXP.matcher(val);
+            if (matcher.find()) {
+                str = val.substring(0, matcher.start());
+                final String varName = matcher.group(1); // varName == key
+                str += getDateValue(varName);
+                val = val.substring(matcher.end());
+            } else {
+                break;
+            }
+        }
+    	return str;
+    }
+    
+    private static String getDateValue(String key) {
+    	String val = "";
+        if (key.equals("now")) {
+            val = new Date().toString();
+        } else if (key.startsWith("now ")) {
+            val = formatTime(key);
+        }
+        return val;
+    }
 
     private static String getContextValue(RenderingContext context, PJsonObject params, String key) {
         String result = null;
@@ -331,6 +357,11 @@ public class PDFUtils {
             context.addError(e);
             return new Date().toString();
         }
+    }
+    
+    private static String formatTime(String key) throws IllegalArgumentException {
+        SimpleDateFormat format = new SimpleDateFormat(key.substring(4));
+        return format.format(new Date());
     }
 
     /**

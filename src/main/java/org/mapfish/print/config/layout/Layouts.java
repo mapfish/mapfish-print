@@ -28,7 +28,12 @@ import java.util.HashMap;
  * Just to make sure the values of the hash have the good type.
  */
 public class Layouts extends HashMap<String, Layout> {
-    public static class Wrapper extends DefaultMapWrapper {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public static class Wrapper extends DefaultMapWrapper {
         public Wrapper(Class<Layout> type) {
             super(type);
         }

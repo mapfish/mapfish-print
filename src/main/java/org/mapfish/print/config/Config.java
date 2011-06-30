@@ -31,6 +31,7 @@ import org.ho.yaml.YamlConfig;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.InvalidValueException;
+import org.mapfish.print.PDFUtils;
 import org.mapfish.print.config.layout.Layout;
 import org.mapfish.print.config.layout.Layouts;
 import org.mapfish.print.map.MapTileTask;
@@ -394,9 +395,8 @@ public class Config {
         Layout layout = layouts.get(layoutName);
         String name = null;
         if(layout != null) {
-            name = layout.getOutputFilename();
+            name = PDFUtils.getValueFromString(layout.getOutputFilename()); // get the string if it has ${now} or ${now DATEFORMAT} in it
         }
-
         return name == null ? outputFilename : name;
     }
 

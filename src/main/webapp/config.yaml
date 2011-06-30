@@ -44,9 +44,6 @@ hosts:
   - !dnsMatch
     host: demo.mapfish.org
     port: 80
-  - !dnsMatch
-    host: basemap-web.zen.landcareresearch.co.nz
-    port: 80
 
 # the default fileName for the files downloaded from the servlet
 outputFilename: MapFish_PrintOut
