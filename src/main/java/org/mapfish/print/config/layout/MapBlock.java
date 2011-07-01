@@ -114,9 +114,20 @@ public class MapBlock extends Block {
 
             centerX = (minX + maxX) / 2.0F;
             centerY = (minY + maxY) / 2.0F;
+            
+            double rotation = params.optDouble("rotation", 0.0);
+            rotation *= Math.PI / 180;
+            float projWidth  = (maxX - minX) * (float)Math.abs(Math.cos(rotation)) +
+                               (maxY - minY) * (float)Math.abs(Math.sin(rotation));
+            float projHeight = (maxY - minY) * (float)Math.abs(Math.cos(rotation)) +
+                               (maxX - minX) * (float)Math.abs(Math.sin(rotation));
             scale = context.getConfig().getBestScale(Math.max(
-                    (maxX - minX) / (DistanceUnit.PT.convertTo(width, unitEnum)),
-                    (maxY - minY) / (DistanceUnit.PT.convertTo(height, unitEnum))));
+                    projWidth  / (DistanceUnit.PT.convertTo(width, unitEnum)),
+                    projHeight / (DistanceUnit.PT.convertTo(height, unitEnum))));
+            // if the rotation is 0:
+            // scale = context.getConfig().getBestScale(Math.max(
+            //         (maxX - minX) / (DistanceUnit.PT.convertTo(width, unitEnum)),
+            //         (maxY - minY) / (DistanceUnit.PT.convertTo(height, unitEnum))));
         }
 
         if (!context.getConfig().isScalePresent(scale)) {

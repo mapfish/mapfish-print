@@ -83,6 +83,10 @@ public class PJsonObject extends PJsonElement {
         return result;
     }
 
+    public double optDouble(String key, double defaultValue) {
+        return obj.optDouble(key, defaultValue);
+    }
+
     public float getFloat(String key) {
         return (float) getDouble(key);
     }
