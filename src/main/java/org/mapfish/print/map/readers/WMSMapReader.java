@@ -29,6 +29,7 @@ import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
 import org.pvalsecc.misc.StringUtils;
 import org.pvalsecc.misc.URIUtils;
+import org.apache.log4j.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -43,6 +44,7 @@ import java.util.Map;
  * (TileCache).
  */
 public class WMSMapReader extends TileableMapReader {
+    public static final Logger LOGGER = Logger.getLogger(WMSMapReader.class);
     private final String format;
     protected final List<String> layers = new ArrayList<String>();
 
@@ -68,14 +70,36 @@ public class WMSMapReader extends TileableMapReader {
 
     public void render(Transformer transformer, ParallelMapTileLoader parallelMapTileLoader, String srs, boolean first) {
         PJsonObject customParams = params.optJSONObject("customParams");
-        if (customParams != null) {
-            // native WMS rotation - only works in singleTile mode
-            if (customParams.optString("angle") != null) {
+        
+        // store the rotation to not change for other layers
+        double oldAngle = transformer.getRotation();
+
+        // native WMS rotation - only works in singleTile mode
+        if (customParams != null && customParams.optString("angle") != null) { // For GeoServer
+            transformer.setRotation(0);
+        }
+        if (params.optBool("useNativeAngle", false)) {
+            String angle = String.valueOf(-Math.toDegrees(transformer.getRotation()));
+            try {
+                if (customParams != null) {
+                    customParams.getInternalObj().put("angle", angle); // For GeoServer
+                    customParams.getInternalObj().put("map_angle", angle); // For MapServer
+                }
+                else {
+                    Map customMap = new HashMap();
+                    customMap.put("angle", angle); // For GeoServer
+                    customMap.put("map_angle", angle); // For MapServer
+                    params.getInternalObj().put("customParams", customMap);
+                }
                 transformer.setRotation(0);
             }
+            catch (org.json.JSONException e) {
+                LOGGER.error("Unable to set angle: " + e.getClass().getName() + " - " + e.getMessage());
+            }
         }
-
         super.render(transformer, parallelMapTileLoader, srs, first);
+        // restore the rotation for other layers
+        transformer.setRotation(oldAngle);
     }
 
     protected void addCommonQueryParams(Map<String, List<String>> result, Transformer transformer, String srs, boolean first) {
