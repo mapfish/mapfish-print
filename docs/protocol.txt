@@ -91,6 +91,19 @@ The "SPEC" parameter is a JSON structure like that:
                 ...CUSTOM_PARAMS...
             }
         ]
+        legends: [
+            {
+                classes: [
+                    {
+                        icons: [
+                            'full url to the image'
+                        ]
+                        name: 'an icon name'
+                    }
+                ]
+                name: 'a class name'
+            }        
+        ]
     }
 
 The location to show on the map can be specified with a **center** and a **scale** as show or with a **bbox** like that::

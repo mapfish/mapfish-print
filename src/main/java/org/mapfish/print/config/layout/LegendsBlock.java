@@ -45,11 +45,13 @@ import java.net.URI;
 public class LegendsBlock extends Block {
     public static final Logger LOGGER = Logger.getLogger(LegendsBlock.class);
 
-    private double maxIconWidth = 0;
-    private double maxIconHeight = 8;
+    private double maxIconWidth = 0; // 0 mean disable
+    private double maxIconHeight = 8; // 0 mean disable
+    private float scale = 0; // 0 mean disable
+    private boolean inline = true;
     private double classIndentation = 20;
-    private double layerSpace = 5;
-    private double classSpace = 2;
+    private float layerSpace = 5;
+    private float classSpace = 2;
 
     private String layerFont = "Helvetica";
     protected double layerFontSize = 10;
@@ -68,18 +70,12 @@ public class LegendsBlock extends Block {
         if (legends != null && legends.size() > 0) {
             for (int i = 0; i < legends.size(); ++i) {
                 PJsonObject layer = legends.getJSONObject(i);
-                final PdfPCell cell = createLine(context, 0.0, layer, layerPdfFont, params);
-                if (i > 0) {
-                    cell.setPaddingTop((float) layerSpace);
-                }
-                table.addCell(cell);
+                createLine(context, 0.0, layer, layerPdfFont, params, table, i == 0 ? layerSpace : 0);
 
                 PJsonArray classes = layer.getJSONArray("classes");
                 for (int j = 0; j < classes.size(); ++j) {
                     PJsonObject clazz = classes.getJSONObject(j);
-                    final PdfPCell classCell = createLine(context, classIndentation, clazz, classPdfFont, params);
-                    classCell.setPaddingTop((float) classSpace);
-                    table.addCell(classCell);
+                    createLine(context, classIndentation, clazz, classPdfFont, params, table, classSpace);
                 }
             }
         }
@@ -87,22 +83,29 @@ public class LegendsBlock extends Block {
         target.add(table);
     }
 
-    private PdfPCell createLine(RenderingContext context, double indent, PJsonObject node, Font pdfFont, PJsonObject params) throws DocumentException {
+    private void createLine(RenderingContext context, double indent, PJsonObject node, Font pdfFont, PJsonObject params,
+            PdfPTable table, float lineSpace) throws DocumentException {
         final String name = node.getString("name");
         final String icon = node.optString("icon");
         final PJsonArray icons = node.optJSONArray("icons");
 
-        final Paragraph result = new Paragraph();
-        result.setFont(pdfFont);
+        Paragraph result = new Paragraph();
         if (icon != null) {
-        	try {
-	        	if (icon.indexOf("image%2Fsvg%2Bxml") != -1) { // TaODO: make this cleaner
-	        		result.add(PDFUtils.createImageChunkFromSVG(context, icon, maxIconWidth, maxIconHeight));
-	        	} else {
-	        		result.add(PDFUtils.createImageChunk(context, maxIconWidth, maxIconHeight, URI.create(icon), 0.0f));
-	        	}
-	            result.add(" ");
-        	} catch (IOException ioe) {
+            try {
+                if (icon.indexOf("image%2Fsvg%2Bxml") != -1) { // TODO: make this cleaner
+                    result.add(PDFUtils.createImageChunkFromSVG(context, icon, maxIconWidth, maxIconHeight));
+                } else {
+                    result.add(PDFUtils.createImageChunk(context, maxIconWidth, maxIconHeight, URI.create(icon), 0f));
+                }
+                if (!inline) {
+                    addCell(context, indent, params, table, lineSpace, result);
+                    result = new Paragraph();
+                    result.setFont(pdfFont);
+                }
+                else {
+                    result.add(" ");
+                }
+            } catch (IOException ioe) {
                 LOGGER.warn("Failed to load " + icon + " with " + ioe.getMessage());
             } catch (InvalidValueException e) {
                 LOGGER.warn("Failed to create image chunk: " + e.getMessage());
@@ -112,12 +115,19 @@ public class LegendsBlock extends Block {
             for (int i = 0; i < icons.size(); ++i) {
                 String iconItem = icons.getString(i);
                 try {
-                    if (iconItem.indexOf("image%2Fsvg%2Bxml") != -1) { // TaODO: make this cleaner
-                    	result.add(PDFUtils.createImageChunkFromSVG(context, iconItem, maxIconWidth, maxIconHeight));
+                    if (iconItem.indexOf("image%2Fsvg%2Bxml") != -1) { // TODO: make this cleaner
+                        result.add(PDFUtils.createImageChunkFromSVG(context, iconItem, maxIconWidth, maxIconHeight));
                     } else {
-                        result.add(PDFUtils.createImageChunk(context, maxIconWidth, maxIconHeight, URI.create(iconItem), 0.0f));
+                        result.add(PDFUtils.createImageChunk(context, maxIconWidth, maxIconHeight, scale, URI.create(iconItem), 0f));
                     }
-                    result.add(" ");
+                    if (!inline) {
+                        addCell(context, indent, params, table, 0, result);
+                        result = new Paragraph();
+                        result.setFont(pdfFont);
+                    }
+                    else {
+                        result.add(" ");
+                    }
                 } catch (IOException ioe) {
                     LOGGER.warn("Failed to load " + iconItem + " with " + ioe.getMessage());
                 } catch (InvalidValueException e) {
@@ -125,21 +135,45 @@ public class LegendsBlock extends Block {
                 }
             }
         }
-
         final PdfPCell cell = new PdfPCell(result);
         cell.setBorder(PdfPCell.NO_BORDER);
         cell.setPadding(0f);
         cell.setPaddingLeft((float) indent);
 
+        result.setFont(pdfFont);
         result.add(name);
 
         if (getBackgroundColorVal(context, params) != null) {
             cell.setBackgroundColor(getBackgroundColorVal(context, params));
         }
-
-        return cell;
+        table.addCell(cell);
     }
 
+    private void addCell(RenderingContext context, double indent, PJsonObject params, PdfPTable table,
+            float lineSpace, final Paragraph result) {
+        final PdfPCell cell = new PdfPCell(result);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setPadding(0f);
+        cell.setPaddingLeft((float) indent);
+
+        if (getBackgroundColorVal(context, params) != null) {
+            cell.setBackgroundColor(getBackgroundColorVal(context, params));
+        }
+
+        cell.setPaddingTop(lineSpace);
+        table.addCell(cell);
+    }
+
+    public void setDefaultScale(double scale) {
+        this.scale = (float)scale;
+        if (scale < 0.0) throw new InvalidValueException("scale", scale);
+    }
+
+    public void setInline(String inline) {
+        this.inline = "true".equalsIgnoreCase(inline);
+        if (!inline.equalsIgnoreCase("true") || !inline.equalsIgnoreCase("false")) throw new InvalidValueException("inline", inline);
+    }
+    
     public void setMaxIconWidth(double maxIconWidth) {
         this.maxIconWidth = maxIconWidth;
         if (maxIconWidth < 0.0) throw new InvalidValueException("maxIconWidth", maxIconWidth);
@@ -177,12 +211,12 @@ public class LegendsBlock extends Block {
     }
 
     public void setLayerSpace(double layerSpace) {
-        this.layerSpace = layerSpace;
+        this.layerSpace = (float)layerSpace;
         if (layerSpace < 0.0) throw new InvalidValueException("layerSpace", layerSpace);
     }
 
     public void setClassSpace(double classSpace) {
-        this.classSpace = classSpace;
+        this.classSpace = (float)classSpace;
         if (classSpace < 0.0) throw new InvalidValueException("classSpace", classSpace);
     }
 

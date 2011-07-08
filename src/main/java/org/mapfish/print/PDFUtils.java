@@ -67,6 +67,14 @@ public class PDFUtils {
      * bitmap content multiple times in order to reduce the file size.
      */
     public static Image getImage(RenderingContext context, URI uri, float w, float h) throws IOException, DocumentException {
+        return getImage(context, uri, w, h, 0f);
+    }
+    
+    /**
+     * Gets an iText image with a cache that uses PdfTemplates to re-use the same
+     * bitmap content multiple times in order to reduce the file size.
+     */
+    public static Image getImage(RenderingContext context, URI uri, float w, float h, float scale) throws IOException, DocumentException {
         //Check the image is not already used in the PDF file.
         //
         //This part is not protected against multi-threads... worst case, a single image can
@@ -88,14 +96,52 @@ public class PDFUtils {
         //fix the size/aspect ratio of the image in function of what is specified by the user
         if (w == 0.0f) {
             if (h == 0.0f) {
-                w = template.getWidth();
-                h = template.getHeight();
+                scale = scale == 0f ? 1f : scale;
+                w = template.getWidth() * scale;
+                h = template.getHeight() * scale;
             } else {
-                w = h / template.getHeight() * template.getWidth();
+                if (scale == 0f) {
+                    w = h / template.getHeight() * template.getWidth();
+                }
+                else {
+                    float maxh = h;
+                    w = template.getWidth() * scale;
+                    h = template.getWidth() * scale;
+                    float scaleh = h / maxh;
+                    if (scaleh > 1f) {
+                        w /=  scaleh;
+                        h /=  scaleh;
+                    }
+                }
             }
         } else {
             if (h == 0.0f) {
-                h = w / template.getWidth() * template.getHeight();
+                if (scale == 0f) {
+                    h = w / template.getWidth() * template.getHeight();
+                }
+                else {
+                    float maxw = w;
+                    w = template.getWidth() * scale;
+                    h = template.getWidth() * scale;
+                    float scalew = w / maxw;
+                    if (scalew > 1f) {
+                        w /=  scalew;
+                        h /=  scalew;
+                    }
+                }
+            }
+            else {
+                float maxw = w;
+                float maxh = h;
+                w = template.getWidth() * scale;
+                h = template.getWidth() * scale;
+                float scalew = w / maxw;
+                float scaleh = h / maxh;
+                float maxscale = Math.max(scalew, scaleh);
+                if (maxscale > 1f) {
+                    w /=  maxscale;
+                    h /=  maxscale;
+                }
             }
         }
 
@@ -436,14 +482,20 @@ public class PDFUtils {
     }
 
     public static Chunk createImageChunk(RenderingContext context, double maxWidth, double maxHeight, URI url, float rotation) throws DocumentException {
-        final Image image = createImage(context, maxWidth, maxHeight, url, rotation);
+        return createImageChunk(context, maxWidth, maxHeight, 0f, url, rotation);
+    }
+    public static Chunk createImageChunk(RenderingContext context, double maxWidth, double maxHeight, float scale, URI url, float rotation) throws DocumentException {
+        final Image image = createImage(context, maxWidth, maxHeight, scale, url, rotation);
         return new Chunk(image, 0f, 0f, true);
     }
 
     public static Image createImage(RenderingContext context, double maxWidth, double maxHeight, URI url, float rotation) throws DocumentException {
+        return createImage(context, maxWidth, maxHeight, 0f, url, rotation);
+    }
+    public static Image createImage(RenderingContext context, double maxWidth, double maxHeight, float scale, URI url, float rotation) throws DocumentException {
         final Image image;
         try {
-            image = getImage(context, url, (float) maxWidth, (float) maxHeight);
+            image = getImage(context, url, (float) maxWidth, (float) maxHeight, scale);
         } catch (IOException e) {
             throw new InvalidValueException("url", url.toString(), e);
         }

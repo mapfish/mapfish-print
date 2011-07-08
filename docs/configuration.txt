@@ -514,8 +514,10 @@ Display each layers along with its classes (icons and labels).
 .. code-block:: yaml
 
           - !legends
-  ?         maxIconWidth: 8
+  ?         maxIconWidth: 8 
   ?         maxIconHeight: 8
+  ?         defaultScale: 0
+  ?         inline: true
   ?         classIndentation: 20
   ?         layerSpace: 5
   ?         classSpace: 2
@@ -526,9 +528,16 @@ Display each layers along with its classes (icons and labels).
   ?         classFontSize: 8
   ?         fontEncoding: Cp1252
 
+**maxIconWidth**, **maxIconHeight**, **defaultScale** with value of 0 indicates that the value will be ignore.
+
+if **defaultScale** is non null it means that the legend image will be scaled so it doesn't take the full space.
+
+Set **inline** to false mean that only tne image will be display per line. 
+
 **layerSpace** and **classSpace** is to specify the line space to add before layers and classes.
 
-For this to work, you need to set the **layerTree** config option on MF print widgets.
+For this to work, you need to set the **layerTree** config option on MF print widgets,
+more precisely the legends should be present in the print.pdf JSON request.
 
 Table configuration
 -------------------

@@ -395,7 +395,10 @@ public class Config {
         Layout layout = layouts.get(layoutName);
         String name = null;
         if(layout != null) {
-            name = PDFUtils.getValueFromString(layout.getOutputFilename()); // get the string if it has ${now} or ${now DATEFORMAT} in it
+            name = layout.getOutputFilename();
+            if (name != null) {
+                name = PDFUtils.getValueFromString(name); // get the string if it has ${now} or ${now DATEFORMAT} in it
+            }
         }
         return name == null ? outputFilename : name;
     }
