@@ -131,16 +131,21 @@ public class PDFUtils {
                 }
             }
             else {
-                float maxw = w;
-                float maxh = h;
-                w = template.getWidth() * scale;
-                h = template.getWidth() * scale;
-                float scalew = w / maxw;
-                float scaleh = h / maxh;
-                float maxscale = Math.max(scalew, scaleh);
-                if (maxscale > 1f) {
-                    w /=  maxscale;
-                    h /=  maxscale;
+                if (scale == 0f) {
+                    h = w / template.getWidth() * template.getHeight();
+                }
+                else {
+                    float maxw = w;
+                    float maxh = h;
+                    w = template.getWidth() * scale;
+                    h = template.getWidth() * scale;
+                    float scalew = w / maxw;
+                    float scaleh = h / maxh;
+                    float maxscale = Math.max(scalew, scaleh);
+                    if (maxscale > 1f) {
+                        w /=  maxscale;
+                        h /=  maxscale;
+                    }
                 }
             }
         }
