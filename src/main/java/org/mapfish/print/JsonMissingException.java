@@ -25,7 +25,12 @@ import org.mapfish.print.utils.PJsonElement;
  * Thrown when an attribute is missing in the spec.
  */
 public class JsonMissingException extends PrintException {
-    public JsonMissingException(PJsonElement pJsonObject, String key) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public JsonMissingException(PJsonElement pJsonObject, String key) {
         super("attribute [" + pJsonObject.getPath(key) + "] missing");
     }
 }

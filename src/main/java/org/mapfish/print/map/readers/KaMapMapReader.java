@@ -63,8 +63,8 @@ public class KaMapMapReader extends TileableMapReader {
         float targetResolution = (maxGeoX - minGeoX) / w;
         TileCacheLayerInfo.ResolutionInfo resolution = tileCacheLayerInfo.getNearestResolution(targetResolution);
 
-        int tileX = Math.round((minGeoX - tileCacheLayerInfo.getMinX()) / (resolution.value * w));
-        int tileY = Math.round((minGeoY - tileCacheLayerInfo.getMinY()) / (resolution.value * h));
+        Math.round((minGeoX - tileCacheLayerInfo.getMinX()) / (resolution.value * w));
+        Math.round((minGeoY - tileCacheLayerInfo.getMinY()) / (resolution.value * h));
 
         StringBuilder path = new StringBuilder();
 

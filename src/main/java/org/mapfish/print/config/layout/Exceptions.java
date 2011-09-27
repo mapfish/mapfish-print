@@ -28,12 +28,17 @@ import java.util.ArrayList;
  */
 @SuppressWarnings({"RawUseOfParameterizedType"})
 public class Exceptions extends ArrayList<CellException> {
-    public static class Wrapper extends DefaultCollectionWrapper {
-        public Wrapper(Class type) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public static class Wrapper extends DefaultCollectionWrapper {
+        public Wrapper(Class<?> type) {
             super(type);
         }
 
-        public Class componentType() {
+        public Class<CellException> componentType() {
             return CellException.class;
         }
 

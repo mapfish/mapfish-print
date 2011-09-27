@@ -23,7 +23,12 @@ package org.mapfish.print;
  * Base exception for printing problems.
  */
 public class PrintException extends RuntimeException {
-    public PrintException(String message) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public PrintException(String message) {
         super(message);
     }
 

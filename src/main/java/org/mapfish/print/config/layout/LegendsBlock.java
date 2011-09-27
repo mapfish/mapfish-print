@@ -135,6 +135,8 @@ public class LegendsBlock extends Block {
                 }
             }
         }
+        result.add(name);
+
         final PdfPCell cell = new PdfPCell(result);
         cell.setBorder(PdfPCell.NO_BORDER);
         cell.setPadding(0f);

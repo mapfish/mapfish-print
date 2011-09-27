@@ -25,7 +25,12 @@ import org.mapfish.print.utils.PJsonElement;
  * Thrown when an attribute has an invalid value in the spec.
  */
 public class InvalidJsonValueException extends PrintException {
-    public InvalidJsonValueException(PJsonElement element, String key, Object value) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public InvalidJsonValueException(PJsonElement element, String key, Object value) {
         this(element, key, value, null);
     }
 

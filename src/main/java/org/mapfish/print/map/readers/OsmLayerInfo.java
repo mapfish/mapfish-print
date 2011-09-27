@@ -19,12 +19,7 @@
 
 package org.mapfish.print.map.readers;
 
-import org.mapfish.print.InvalidValueException;
 import org.mapfish.print.utils.PJsonArray;
-
-import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Holds the information we need to manage an OSM layer.

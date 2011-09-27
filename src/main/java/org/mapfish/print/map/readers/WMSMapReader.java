@@ -19,8 +19,6 @@
 
 package org.mapfish.print.map.readers;
 
-import org.apache.batik.bridge.UserAgent;
-import org.apache.batik.bridge.UserAgentAdapter;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.Transformer;
 import org.mapfish.print.map.ParallelMapTileLoader;
@@ -191,13 +189,17 @@ public class WMSMapReader extends TileableMapReader {
 	        	 *  more constraining factor is max width 
 	        	 */
 	        	if (maxW / maxH < width / height) {
+	        		//LOGGER.warn("before width="+width+" height="+height);
 	        		divisor = width / maxW;
 	        		width = maxW;
 	        		height = height / divisor;
+	        		//LOGGER.warn("after width="+width+" height="+height);
 	        	} else {
+	        		//LOGGER.warn("before width="+width+" height="+height);
 	        		divisor = height / maxH;
 	        		height = maxH;
 	        		width = width / divisor;
+	        		//LOGGER.warn("after width="+width+" height="+height);
 	        	}
         	}
             URIUtils.addParamOverride(tileParams, "WIDTH", Long.toString((long) Math.round(width)));

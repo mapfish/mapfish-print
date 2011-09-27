@@ -21,8 +21,6 @@ package org.mapfish.print.map.readers.google;
 
 import java.io.UnsupportedEncodingException;
 import java.net.*;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;

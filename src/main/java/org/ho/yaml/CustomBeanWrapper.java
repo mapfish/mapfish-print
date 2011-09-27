@@ -42,7 +42,8 @@ public class CustomBeanWrapper extends DefaultBeanWrapper {
             PropertyDescriptor prop = ReflectionUtil.getPropertyDescriptor(type, name);
             if (prop == null) {
                 LOGGER.warn(type.getSimpleName() + ": unknown field '" + name + "' with value '" + value + "'");
-                PropertyDescriptor prop2 = ReflectionUtil.getPropertyDescriptor(type, name);
+                //PropertyDescriptor prop2 = ReflectionUtil.getPropertyDescriptor(type, name);
+                ReflectionUtil.getPropertyDescriptor(type, name);
                 return;
             }
             if (config.isPropertyAccessibleForDecoding(prop)) {

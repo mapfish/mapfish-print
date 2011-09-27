@@ -180,7 +180,7 @@ public enum DistanceUnit {
     }
 
     public static class Wrapper extends EnumWrapper {
-        public Wrapper(Class type) {
+        public Wrapper(Class type) { // do not "fix" this eclipse warning, because it breaks things, Tim
             super(type);
         }
 

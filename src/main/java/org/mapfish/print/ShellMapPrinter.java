@@ -106,7 +106,8 @@ public class ShellMapPrinter {
 
             } else {
                 final InputStream inFile = getInputStream();
-                final PJsonObject jsonSpec = printer.parseSpec(FileUtilities.readWholeTextStream(inFile, "UTF-8"));
+                //final PJsonObject jsonSpec = printer.parseSpec(FileUtilities.readWholeTextStream(inFile, "UTF-8"));
+                final PJsonObject jsonSpec = MapPrinter.parseSpec(FileUtilities.readWholeTextStream(inFile, "UTF-8"));
                 final OutputFormat outputFormat = OutputFactory.create(printer.getConfig(), jsonSpec);
                 outFile = getOutputStream(jsonSpec.optString("outputFormat", "pdf"));
                 outputFormat.print(printer, jsonSpec, outFile, referer);
