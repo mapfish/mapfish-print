@@ -68,7 +68,6 @@ public class OsmMapReader extends TileableMapReader {
         path.append('/').append(tileX);
         path.append('/').append(tileY-1);
         path.append('.').append(tileCacheLayerInfo.getExtension());
-        System.out.print(path);
 
         return new URI(commonUri.getScheme(), commonUri.getUserInfo(), commonUri.getHost(), commonUri.getPort(), commonUri.getPath() + path, commonUri.getQuery(), commonUri.getFragment());
     }
