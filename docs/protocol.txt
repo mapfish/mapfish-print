@@ -90,17 +90,17 @@ The "SPEC" parameter is a JSON structure like that:
                 geodetic: false,
                 ...CUSTOM_PARAMS...
             }
-        ]
+        ],
         legends: [
             {
                 classes: [
                     {
                         icons: [
                             'full url to the image'
-                        ]
+                        ],
                         name: 'an icon name'
                     }
-                ]
+                ],
                 name: 'a class name'
             }        
         ]
