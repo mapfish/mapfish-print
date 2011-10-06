@@ -254,7 +254,7 @@ Some virtual variables can be used:
 * ${configDir}: The absolute path to the directory of the configuration file.
 * ${format PRINTF VAR}: Format the value of VAR using the provided `PRINTF format <http://java.sun.com/j2se/1.5.0/docs/api/java/util/Formatter.html#syntax>`_ (for example: %,d). 
 
-All the blocks can have a condition attribute that takes a spec attribute name. If the attribute name exists and is not equal to "false" or "0", the block is drawn. Otherwise, it is ignored. An exclamation mark may precede the condition to invert it.
+All the blocks can have a condition attribute that takes a spec attribute name. If the attribute name exists and is not equal to "false" or "0", the block is drawn. Otherwise, it is ignored. An exclamation mark may precede the condition to invert it, exclamation mark is part of yaml syntax, than the expression should be in quotes.
 
 Example: show text block only if in the spec the attribute name "showText" is given, is not equal to "false" and not equal to "0":
 
