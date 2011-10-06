@@ -273,7 +273,7 @@ Text block
   ?         font: Helvetica
   ?         fontSize: 12
   ?         fontEncoding: Cp1252
-  ?          fontColor: black
+  ?         fontColor: black
   ?         spacingAfter: 0
   ?         align: left
   ?         vertAlign: middle
@@ -514,6 +514,8 @@ Display each layers along with its classes (icons and labels).
 .. code-block:: yaml
 
           - !legends
+  ?         maxHeight: 0
+  ?         maxWidth: 0
   ?         maxIconWidth: 8 
   ?         maxIconHeight: 8
   ?         defaultScale: 0
@@ -527,8 +529,15 @@ Display each layers along with its classes (icons and labels).
   ?         classFont: Helvetica
   ?         classFontSize: 8
   ?         fontEncoding: Cp1252
+  ?         columnMargin: 3
 
 **maxIconWidth**, **maxIconHeight**, **defaultScale** with value of 0 indicates that the value will be ignore.
+
+**maxHeight** with value of 0 indicates that the multi column is disable.
+
+if **inline** is true the multi column is disable.
+
+if **maxWidth** is set that mean that in the multi column mode the column next to the maxWidth will not be add.
 
 if **defaultScale** is non null it means that the legend image will be scaled so it doesn't take the full space.
 
