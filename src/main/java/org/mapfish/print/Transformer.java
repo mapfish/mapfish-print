@@ -34,30 +34,27 @@ import com.lowagie.text.pdf.PdfContentByte;
  * bitmap, and paper space for a map rendering.
  */
 public class Transformer implements Cloneable {
-	private static final String GOOGLE_WKT = "PROJCS[\"Google Mercator\","
-		+ "GEOGCS[\"WGS 84\","
-		+ "DATUM[\"World Geodetic System 1984\","
-		+ "SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]],"
-		+ "AUTHORITY[\"EPSG\",\"6326\"]],"
-		+ "PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]],"
-		+ "UNIT[\"degree\", 0.017453292519943295],"
-		+ "AXIS[\"Geodetic latitude\", NORTH],"
-		+ "AXIS[\"Geodetic longitude\", EAST],"
-		+ "AUTHORITY[\"EPSG\",\"4326\"]],"
-		+ "PROJECTION[\"Mercator_1SP\"],"
-		+ "PARAMETER[\"semi_minor\", 6378137.0],"
-		+ "PARAMETER[\"latitude_of_origin\", 0.0],"
-		+ "PARAMETER[\"central_meridian\", 0.0],"
-		+ "PARAMETER[\"scale_factor\", 1.0],"
-		+ "PARAMETER[\"false_easting\", 0.0],"
-		+ "PARAMETER[\"false_northing\", 0.0],"
-		+ "UNIT[\"m\", 1.0]," + "AXIS[\"Easting\", EAST],"
-		+ "AXIS[\"Northing\", NORTH],"
-		+ "AUTHORITY[\"EPSG\",\"900913\"]]";
+    private static final String GOOGLE_WKT = "PROJCS[\"Google Mercator\","
+            + "GEOGCS[\"WGS 84\","
+            + "DATUM[\"World Geodetic System 1984\","
+            + "SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]],"
+            + "AUTHORITY[\"EPSG\",\"6326\"]],"
+            + "PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]],"
+            + "UNIT[\"degree\", 0.017453292519943295],"
+            + "AXIS[\"Geodetic latitude\", NORTH],"
+            + "AXIS[\"Geodetic longitude\", EAST],"
+            + "AUTHORITY[\"EPSG\",\"4326\"]],"
+            + "PROJECTION[\"Mercator_1SP\"],"
+            + "PARAMETER[\"semi_minor\", 6378137.0],"
+            + "PARAMETER[\"latitude_of_origin\", 0.0],"
+            + "PARAMETER[\"central_meridian\", 0.0],"
+            + "PARAMETER[\"scale_factor\", 1.0],"
+            + "PARAMETER[\"false_easting\", 0.0],"
+            + "PARAMETER[\"false_northing\", 0.0]," + "UNIT[\"m\", 1.0],"
+            + "AXIS[\"Easting\", EAST]," + "AXIS[\"Northing\", NORTH],"
+            + "AUTHORITY[\"EPSG\",\"900913\"]]";
 
-	
-	
-    private int svgFactor;
+    private float svgFactor = 1.0f;
     public float minGeoX;
     public float minGeoY;
     public float maxGeoX;
@@ -76,27 +73,73 @@ public class Transformer implements Cloneable {
     private double rotation;
 
     /**
+     * @param centerX
+     *            geographic center in projection - x
+     * @param centerY
+     *            geographic center in projection - y
+     * @param paperWidth
+     *            e.g. map width in pt on the PDF
+     * @param paperHeight
+     *            e.g. map height in pt on the PDF
+     * @param scale
+     *            e.g. 10000 if scale is 1:10,000
+     * @param dpi
+     *            as selected in request
+     * @param unitEnum
+     *            the distance unit of the map e.g. DistanceUnit.M for meters
+     * @param rotation
+     *            the rotation of the map per the request
      * @param geodeticSRS
      *            if not null then it is a the srs to use with the geodetic
      *            calculator. if null it is assumed that it is non-geodetic
      */
     public Transformer(float centerX, float centerY, float paperWidth,
             float paperHeight, int scale, int dpi, DistanceUnit unitEnum,
-            double rotation, String geodeticSRS) {
+            double rotation, String geodeticSRS, RenderingContext context) {
         this.dpi = dpi;
         pixelPerGeoUnit = (float) (unitEnum.convertTo(dpi, DistanceUnit.IN) / scale);
 
         float geoWidth = paperWidth * dpi / 72.0f / pixelPerGeoUnit;
         float geoHeight = paperHeight * dpi / 72.0f / pixelPerGeoUnit;
 
-        //target at least 600DPI for the SVG precision
-        svgFactor = Math.max((600 + dpi - 1) / dpi, 1);
+        /**
+         * The following code has been changed due to the fact that it seems
+         * wrong. However, I'm not sure if my "correction" solves the problem
+         * for the better. So, please review.
+         * 
+         * The ('wrong') code below can be reformed: (600 + dpi - 1) / dpi = 1 +
+         * 599/dpi and is never smaller than 1, since dpi>1. Also, it does not
+         * make sense, as this factor gets smaller with increasing values for
+         * dpi.
+         */
+        // target at least 600DPI for the SVG precision
+        // svgFactor = Math.max((600 + dpi - 1) / dpi, 1);
+
+        /**
+         * svgFactor seems to not matter so much so we set it to 1 (above) needs
+         * to get bigger if DPI increases and at standard 72 DPI needs to be 1.0
+         */
+        if (context.getConfig().getIntegerSvg()) { // integerSvg: true # in yaml
+                                                   // config file
+            if (dpi < 600) { // target at least 600 DPI, this is a hack and only
+                             // needed for MapServer <= 5.6 where integers
+                             // are put into SVG
+                svgFactor = 600f / 72.0f;
+                /**
+                 * = 8.33 so almost 9 as before with svgFactor being (600 + dpi
+                 * -1)/dpi = ~9 if dpi = 72
+                 */
+            } else {
+                svgFactor = dpi / 72.0f; // gets greater than 8.33
+            }
+        } // else defaults to 1.0 as it should with MapServer >= 6 and CAIRO SVG
+          // rendering with floating point values
 
         this.paperWidth = paperWidth;
         this.paperHeight = paperHeight;
         this.scale = scale;
         this.rotation = rotation;
-        
+
         if (geodeticSRS != null) {
             computeGeodeticBBox(geoWidth, geoHeight, centerX, centerY, dpi,
                     geodeticSRS);
@@ -162,7 +205,8 @@ public class Transformer implements Cloneable {
         double width = getStraightBitmapW();
         if (rotation != 0.0) {
             double height = getStraightBitmapH();
-            width = Math.abs(width * Math.cos(rotation)) + Math.abs(height * Math.sin(rotation));
+            width = Math.abs(width * Math.cos(rotation))
+                    + Math.abs(height * Math.sin(rotation));
         }
         return Math.round(width);
     }
@@ -171,7 +215,8 @@ public class Transformer implements Cloneable {
         double height = getStraightBitmapH();
         if (rotation != 0.0) {
             double width = getStraightBitmapW();
-            height = Math.abs(height * Math.cos(rotation)) + Math.abs(width * Math.sin(rotation));
+            height = Math.abs(height * Math.cos(rotation))
+                    + Math.abs(width * Math.sin(rotation));
         }
         return Math.round(height);
     }
@@ -180,7 +225,8 @@ public class Transformer implements Cloneable {
         float width = getGeoW();
         if (rotation != 0.0) {
             float height = getGeoH();
-            width = (float) (Math.abs(width * Math.cos(rotation)) + Math.abs(height * Math.sin(rotation)));
+            width = (float) (Math.abs(width * Math.cos(rotation)) + Math
+                    .abs(height * Math.sin(rotation)));
         }
         return width;
     }
@@ -189,7 +235,8 @@ public class Transformer implements Cloneable {
         float height = getGeoH();
         if (rotation != 0.0) {
             float width = getGeoW();
-            height = (float) (Math.abs(height * Math.cos(rotation)) + Math.abs(width * Math.sin(rotation)));
+            height = (float) (Math.abs(height * Math.cos(rotation)) + Math
+                    .abs(width * Math.sin(rotation)));
         }
         return height;
     }
@@ -198,7 +245,8 @@ public class Transformer implements Cloneable {
         float width = getPaperW();
         if (rotation != 0.0) {
             float height = getPaperH();
-            width = (float) (Math.abs(width * Math.cos(rotation)) + Math.abs(height * Math.sin(rotation)));
+            width = (float) (Math.abs(width * Math.cos(rotation)) + Math
+                    .abs(height * Math.sin(rotation)));
         }
         return width;
     }
@@ -207,7 +255,8 @@ public class Transformer implements Cloneable {
         float height = getPaperH();
         if (rotation != 0.0) {
             float width = getPaperW();
-            height = (float) (Math.abs(height * Math.cos(rotation)) + Math.abs(width * Math.sin(rotation)));
+            height = (float) (Math.abs(height * Math.cos(rotation)) + Math
+                    .abs(width * Math.sin(rotation)));
         }
         return height;
     }
@@ -229,11 +278,11 @@ public class Transformer implements Cloneable {
     }
 
     public long getRotatedSvgW() {
-        return getRotatedBitmapW() * svgFactor;
+        return (long) (getRotatedBitmapW() * svgFactor);
     }
 
     public long getRotatedSvgH() {
-        return getRotatedBitmapH() * svgFactor;
+        return (long) (getRotatedBitmapH() * svgFactor);
     }
 
     public long getStraightSvgW() {
@@ -270,7 +319,8 @@ public class Transformer implements Cloneable {
      *         the position of the map and its rotation.
      */
     public AffineTransform getBaseTransform() {
-        final AffineTransform result = AffineTransform.getTranslateInstance(paperPosX, paperPosY);
+        final AffineTransform result = AffineTransform.getTranslateInstance(
+                paperPosX, paperPosY);
         if (rotation != 0.0F) {
             result.translate(getPaperW() / 2, getPaperH() / 2);
             result.rotate(rotation);
@@ -280,13 +330,17 @@ public class Transformer implements Cloneable {
     }
 
     /**
-     * @param reverseRotation True to do the rotation in the other direction
-     * @return The affine transformation to go from geographic coordinated to paper coordinates
+     * @param reverseRotation
+     *            True to do the rotation in the other direction
+     * @return The affine transformation to go from geographic coordinated to
+     *         paper coordinates
      */
     public AffineTransform getGeoTransform(boolean reverseRotation) {
-        final AffineTransform result = AffineTransform.getTranslateInstance(paperPosX, paperPosY);
+        final AffineTransform result = AffineTransform.getTranslateInstance(
+                paperPosX, paperPosY);
         if (rotation != 0.0F) {
-            result.rotate((reverseRotation ? -1 : 1) * rotation, getPaperW() / 2, getPaperH() / 2);
+            result.rotate((reverseRotation ? -1 : 1) * rotation,
+                    getPaperW() / 2, getPaperH() / 2);
         }
         result.scale(getPaperW() / getGeoW(), getPaperH() / getGeoH());
         result.translate(-minGeoX, -minGeoY);
@@ -295,13 +349,15 @@ public class Transformer implements Cloneable {
 
     public AffineTransform getSvgTransform() {
         final AffineTransform result = getBaseTransform();
-        result.scale(getPaperW() / getStraightSvgW(), getPaperH() / getStraightSvgH());
+        result.scale(getPaperW() / getStraightSvgW(), getPaperH()
+                / getStraightSvgH());
         return result;
     }
 
     public AffineTransform getPdfTransform() {
         final AffineTransform result = getBaseTransform();
-        result.scale(getPaperW() / getStraightBitmapW(), getPaperH() / getStraightBitmapH());
+        result.scale(getPaperW() / getStraightBitmapW(), getPaperH()
+                / getStraightBitmapH());
         return result;
     }
 
@@ -317,7 +373,7 @@ public class Transformer implements Cloneable {
         float destW = mainTransformer.getGeoW() / factor;
         float destH = mainTransformer.getGeoH() / factor;
 
-        //fix aspect ratio
+        // fix aspect ratio
         if (destW / destH > getGeoW() / getGeoH()) {
             destH = getGeoH() * destW / getGeoW();
         } else {
@@ -357,7 +413,7 @@ public class Transformer implements Cloneable {
         return maxGeoY;
     }
 
-    public int getSvgFactor() {
+    public float getSvgFactor() {
         return svgFactor;
     }
 

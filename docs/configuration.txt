@@ -11,6 +11,11 @@ Here is the general structure:
     - 254
     - 190
     {...}
+
+  ?maxSvgWidth: 2048 # set the maximum dimensions to 2048 points, this is useful when using MapServer and a maximum dimension is there
+  ?maxSvgHeight: 2048
+  ?integerSvg: false # the library in MapServer <= 5.6 does not support floating point values in the SVG coordinate space, set this to true if using a WMS that does not support floating point values in SVG coordinates
+
   ?outputFormats:
     - pdf
     - png

@@ -141,6 +141,7 @@ public class SVGTileRenderer extends TileRenderer {
 
     private TranscoderInput getTranscoderInput(URL url, Transformer transformer, RenderingContext context) {
         final float zoomFactor = transformer.getSvgFactor() * context.getStyleFactor();
+    	//final float zoomFactor = context.getStyleFactor();
         if (svgZoomOut != null && zoomFactor != 1.0f) {
         	javax.xml.transform.Transformer xslt = null;
             try {

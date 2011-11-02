@@ -67,6 +67,8 @@ public class Config {
     private double maxSvgW = Double.MAX_VALUE;
     private double maxSvgH = Double.MAX_VALUE;
     
+    private boolean integerSvg = true;
+    
     private List<String> overlayLayers = null;
     
     private TreeSet<String> fonts = null;
@@ -427,4 +429,18 @@ public class Config {
     public List<String> getOverlayLayers() {
       return overlayLayers;
     }
+
+	/**
+	 * @return the integerSvg true if for example MapServer 5.6 or earlier is used where integers are put into the SVG
+	 */
+	public boolean getIntegerSvg() {
+		return integerSvg;
+	}
+
+	/**
+	 * @param integerSvg the integerSvg to set
+	 */
+	public void setIntegerSvg(boolean integerSvg) {
+		this.integerSvg = integerSvg;
+	}
 }
