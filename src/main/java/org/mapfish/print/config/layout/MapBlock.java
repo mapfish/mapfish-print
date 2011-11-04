@@ -148,7 +148,7 @@ public class MapBlock extends Block {
         }
         double rotation = params.optFloat("rotation", 0.0F) * Math.PI / 180.0;
         return new Transformer(centerX, centerY, width, height, scale, dpi,
-                unitEnum, rotation, srs, context);
+                unitEnum, rotation, srs, context.getConfig().getIntegerSvg());
     }
 
     public void setHeight(String height) {

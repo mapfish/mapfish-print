@@ -43,8 +43,8 @@ dependencies {
 
 manifest.mainAttributes('Main-Class':'org.mapfish.print.ShellMapPrinter', 'Build-Time': new Date().getDateTimeString())
 
-sourceCompatibility = 1.5
-targetCompatibility = 1.5
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
 
 jar {
   enabled = true

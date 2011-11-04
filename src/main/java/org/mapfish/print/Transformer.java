@@ -95,7 +95,7 @@ public class Transformer implements Cloneable {
      */
     public Transformer(float centerX, float centerY, float paperWidth,
             float paperHeight, int scale, int dpi, DistanceUnit unitEnum,
-            double rotation, String geodeticSRS, RenderingContext context) {
+            double rotation, String geodeticSRS, boolean isIntegerSvg) {
         this.dpi = dpi;
         pixelPerGeoUnit = (float) (unitEnum.convertTo(dpi, DistanceUnit.IN) / scale);
 
@@ -119,7 +119,7 @@ public class Transformer implements Cloneable {
          * svgFactor seems to not matter so much so we set it to 1 (above) needs
          * to get bigger if DPI increases and at standard 72 DPI needs to be 1.0
          */
-        if (context.getConfig().getIntegerSvg()) { // integerSvg: true # in yaml
+        if (isIntegerSvg) { // integerSvg: true # in yaml
                                                    // config file
             if (dpi < 600) { // target at least 600 DPI, this is a hack and only
                              // needed for MapServer <= 5.6 where integers
