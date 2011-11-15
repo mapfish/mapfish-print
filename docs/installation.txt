@@ -7,11 +7,15 @@ Compilation
 To build this project, you need:
 
 * JDK >= 1.5, make sure you use Sun's JDK (sun-java6-jdk on Ubuntu 8.04) and not GCJ
-* Download MapFish Print from SVN
+* Download MapFish Print from GitHub
 
-  * On Debian::
+  * On systems with git installed::
+      
+      Go to https://github.com/mapfish/mapfish-print
+      Click the "Fork" button to fork a version to your user
+      Assuming your username is myuser type
 
-      svn checkout http://www.mapfish.org/svn/mapfish/print/trunk/
+      git clone git@github.com:myuser/mapfish-print.git
 
 The other external libs are taken care of by maven.
 
