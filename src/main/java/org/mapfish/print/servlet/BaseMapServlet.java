@@ -99,10 +99,17 @@ public abstract class BaseMapServlet extends HttpServlet {
         	lastModified = defaultLastModified; // this is a fix for when configuration files have changed
         	//debugPath += "app = NULL lastModifieds from defaultLastModified: "+ lastModified +"\n";
         }
+        
+        boolean forceReload = false;
+        if (printer != null && printer.getConfig().getReloadConfig()) {
+            forceReload = true;
+        }
 
-        if (printer != null && configFile.lastModified() != lastModified) {
+        if (forceReload || (printer != null && configFile.lastModified() != lastModified)) {
             //file modified, reload it
-            LOGGER.info("Configuration file modified. Reloading...");
+            if (!forceReload) {
+                LOGGER.info("Configuration file modified. Reloading...");
+            }            
             try {
             	printer.stop();
             	
@@ -127,35 +134,17 @@ public abstract class BaseMapServlet extends HttpServlet {
                 if (app != null) {
                 	if (printers == null) {
                 		printers = new HashMap<String, MapPrinter>();
-                		//debugPath += "printers = new HashMap , printer == null, app = "+app+"\n";
                 	}
                 	printers.put(app, printer);
                 	lastModifieds.put(app, lastModified);
-                	//debugPath += "putting app = "+app+" HashMaps: printer and lastModified: "+lastModified+"\n";
                 } else {
                 	defaultLastModified = lastModified; // need this for default application
-                	//debugPath += "defaultLastModified = "+defaultLastModified+" 123\n";
                 }
             } catch (FileNotFoundException e) {
                 throw new ServletException("Cannot read configuration file: " + configPath, e);
             }
         }
         
-        //LOGGER.info(debugPath);
-        /*
-        try {
-            if (app == null) {
-            	throw new Exception("Just to see the stack trace");
-            }
-           	throw new Exception("Just to see the stack trace");
-        } catch (Exception e) {
-        	StackTraceElement stelements[] = e.getStackTrace();
-        	for (StackTraceElement s : stelements) {
-        		LOGGER.warn("StackTraceElement ASD: "+ s.toString());
-        	}
-        	//LOGGER.warn("app == NULL:\n"+ e.getStackTrace());
-        }
-        */
         return printer;
     }
 

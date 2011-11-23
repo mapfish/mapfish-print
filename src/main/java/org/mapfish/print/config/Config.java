@@ -66,6 +66,7 @@ public class Config {
     private String maxSvgHeight = "";
     private double maxSvgW = Double.MAX_VALUE;
     private double maxSvgH = Double.MAX_VALUE;
+    private boolean reloadConfig = false;
     
     private boolean integerSvg = true;
     
@@ -443,4 +444,18 @@ public class Config {
 	public void setIntegerSvg(boolean integerSvg) {
 		this.integerSvg = integerSvg;
 	}
+
+    /**
+     * @return the reloadConfig
+     */
+    public boolean getReloadConfig() {
+        return reloadConfig;
+    }
+
+    /**
+     * @param reloadConfig the reloadConfig to set
+     */
+    public void setReloadConfig(boolean reloadConfig) {
+        this.reloadConfig = reloadConfig;
+    }
 }
