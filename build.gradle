@@ -61,8 +61,7 @@ task standalone (type: Jar) {
 
   manifest = jar.manifest
 
-
-  from sourceSets.main.classes
+  from sourceSets.main.output
 
   def dependencies = configurations.compile.resolve().findAll{ file ->
       return !file.name.contains("servlet-api")
@@ -99,9 +98,21 @@ artifacts {
   archives jar, war, standalone
 }
 
+configure(install.repositories.mavenInstaller) {
+    addFilter('lib') { artifact, file ->
+      artifact.name.contains 'print-lib'
+    }
+    addFilter('standalone') { artifact, file ->
+      artifact.name.contains 'print-standalone'
+    }
+    addFilter('war') { artifact, file ->
+      artifact.name.contains 'print-servlet'
+    }
+}
+
 uploadArchives << {
   def ssl = new SSL()
-  
+
   repositories.mavenDeployer {
 		pom.project {
       licenses {
@@ -124,18 +135,9 @@ uploadArchives << {
       authentication( userName: "admin", privateKey: ssl.privateKey(), passphrase: ssl.passphrase())
       uniqueVersion = false
     }
-    
-    addFilter('lib') { artifact, file ->
-      artifact.name.contains 'print-lib'
-    }
-    addFilter('standalone') { artifact, file ->
-      artifact.name.contains 'print-standalone'
-    }
-    addFilter('war') { artifact, file ->
-      artifact.name.contains 'print-servlet'
-    }
   }
 }
+
 def prop(key) {
   return System.getProperty(key) == null ? null : "--${key}=${System.getProperty(key)}"
 }
