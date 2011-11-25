@@ -110,6 +110,7 @@ configure(install.repositories.mavenInstaller) {
     }
 }
 
+/*
 uploadArchives << {
   def ssl = new SSL()
 
@@ -136,7 +137,7 @@ uploadArchives << {
       uniqueVersion = false
     }
   }
-}
+}*/
 
 def prop(key) {
   return System.getProperty(key) == null ? null : "--${key}=${System.getProperty(key)}"
