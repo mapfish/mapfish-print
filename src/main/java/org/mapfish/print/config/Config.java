@@ -82,7 +82,7 @@ public class Config {
 
     private boolean tilecacheMerging = false;
     
-    private List<SecurityStrategy> security = null;
+    private List<SecurityStrategy> security = Collections.emptyList();
 
     private String outputFilename = "mapfish-print.pdf";
 
