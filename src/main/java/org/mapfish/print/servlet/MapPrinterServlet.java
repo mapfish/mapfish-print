@@ -33,6 +33,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -457,6 +459,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             super(tempFile.getAbsolutePath());
             creationTime = System.currentTimeMillis();
             this.outputFileName = jsonSpec.optString(Constants.OUTPUT_FILENAME_KEY);
+            this.outputFileName.replace("${date}", DateFormat.getDateTimeInstance().format(new Date()));
             this.printedLayoutName = jsonSpec.optString(Constants.JSON_LAYOUT_KEY, null);
 
             this.suffix = format.fileSuffix();
