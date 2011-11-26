@@ -447,7 +447,7 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
     }
 
-    protected static class TempFile extends File {
+    static class TempFile extends File {
         private static final long serialVersionUID = 455104129549002361L;
         private final long creationTime;
         public final String printedLayoutName;
@@ -459,7 +459,6 @@ public class MapPrinterServlet extends BaseMapServlet {
             super(tempFile.getAbsolutePath());
             creationTime = System.currentTimeMillis();
             this.outputFileName = jsonSpec.optString(Constants.OUTPUT_FILENAME_KEY);
-            this.outputFileName.replace("${date}", DateFormat.getDateTimeInstance().format(new Date()));
             this.printedLayoutName = jsonSpec.optString(Constants.JSON_LAYOUT_KEY, null);
 
             this.suffix = format.fileSuffix();
@@ -475,11 +474,19 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
 
         private String addSuffix(String startingName) {
+            startingName = formatFileName(startingName, new Date());
+
             if(!startingName.toLowerCase().endsWith("."+suffix.toLowerCase())) {
                 return startingName+"."+suffix;
             } else {
                 return startingName;
             }
+        }
+
+        public static String formatFileName(String startingName, Date date) {
+            return startingName.replace("${date}", DateFormat.getDateInstance().format(date)).
+                    replace("${dateTime}", DateFormat.getDateTimeInstance().format(date)).
+                    replace("${time}", DateFormat.getTimeInstance().format(date));
         }
 
         public String contentType() {

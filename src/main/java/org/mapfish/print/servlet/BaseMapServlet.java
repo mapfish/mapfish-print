@@ -138,6 +138,8 @@ public abstract class BaseMapServlet extends HttpServlet {
                 }
             } catch (FileNotFoundException e) {
                 throw new ServletException("Cannot read configuration file: " + configPath, e);
+            } catch (Throwable e) {
+                LOGGER.error("Error occurred while reading configuration file", e);
             }
         }
         
