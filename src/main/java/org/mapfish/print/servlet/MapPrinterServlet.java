@@ -34,11 +34,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Main print servlet.
@@ -467,26 +470,55 @@ public class MapPrinterServlet extends BaseMapServlet {
 
         public String getOutputFileName(MapPrinter mapPrinter) {
             if(outputFileName != null) {
-                return addSuffix(outputFileName);
+                return formatFileName(suffix, outputFileName, new Date());
             } else {
-                return addSuffix(mapPrinter.getOutputFilename(printedLayoutName, getName()));
+                return formatFileName(suffix, mapPrinter.getOutputFilename(printedLayoutName, getName()), new Date());
             }
         }
 
-        private String addSuffix(String startingName) {
-            startingName = formatFileName(startingName, new Date());
 
-            if(!startingName.toLowerCase().endsWith("."+suffix.toLowerCase())) {
-                return startingName+"."+suffix;
+        public static String formatFileName(String suffix, String startingName, Date date) {
+            Matcher matcher = Pattern.compile("\\$\\{(.+?)\\}").matcher(startingName);
+            HashMap<String,String> replacements = new HashMap<String,String>();
+            while(matcher.find()) {
+                String pattern = matcher.group(1);
+                String key = "${"+pattern+"}";
+                replacements.put(key, findReplacement(pattern, date));
+            }
+            String result = startingName;
+            for(Map.Entry<String,String> entry: replacements.entrySet()) {
+                result = result.replace(entry.getKey(), entry.getValue());
+            }
+            
+            while(suffix.startsWith(".")) {
+                suffix = suffix.substring(1); 
+            }
+            if(suffix.isEmpty() || result.toLowerCase().endsWith("."+suffix.toLowerCase())) {
+                return result;
             } else {
-                return startingName;
+                return result+"."+suffix;
             }
         }
 
-        public static String formatFileName(String startingName, Date date) {
-            return startingName.replace("${date}", DateFormat.getDateInstance().format(date)).
-                    replace("${dateTime}", DateFormat.getDateTimeInstance().format(date)).
-                    replace("${time}", DateFormat.getTimeInstance().format(date));
+        public static String cleanUpName(String original) {
+            return original.replace(",","").replaceAll("\\s+", "_");
+        }
+        
+        private static String findReplacement(String pattern, Date date) {
+            if (pattern.toLowerCase().equals("date")) {
+                return cleanUpName(DateFormat.getDateInstance().format(date));
+            } else if (pattern.toLowerCase().equals("datetime")) {
+                return cleanUpName(DateFormat.getDateTimeInstance().format(date));
+            } else if (pattern.toLowerCase().equals("time")) {
+                return cleanUpName(DateFormat.getTimeInstance().format(date));
+            } else {
+                try {
+                    return new SimpleDateFormat(pattern).format(date);
+                } catch (Exception e) {
+                    LOGGER.error("Unable to format timestamp according to pattern: "+pattern, e);
+                    return "${"+pattern+"}";
+                }
+            }
         }
 
         public String contentType() {
