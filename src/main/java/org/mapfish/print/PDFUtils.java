@@ -173,7 +173,14 @@ public class PDFUtils {
             //Assumption is that the file is on the local file system
             return Image.getInstance(uri.toString());
         } else if("file".equalsIgnoreCase(uri.getScheme())) {
-            String path = uri.getHost() + uri.getPath();
+            String path;
+            if(uri.getHost() != null && uri.getPath() != null) {
+                path = uri.getHost() + uri.getPath();
+            } else if(uri.getHost() == null && uri.getPath() != null) {
+                path = uri.getPath();
+            } else {
+                path = uri.toString().substring("file:".length()).replaceAll("/+", "/");
+            }
             path = path.replace("/", File.separator);
             return Image.getInstance(new File(path).toURI().toURL());
         } else {
