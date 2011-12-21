@@ -105,7 +105,7 @@ public abstract class Block {
             throw new InvalidValueException("condition", condition);
         }
 
-        String value = params.optString(condition);
+        String value = params.optString(matcher.group(2));
         if (value == null) {
             value = context.getGlobalParams().optString(matcher.group(2));
         }
