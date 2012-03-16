@@ -47,6 +47,7 @@ public class Page {
     public void render(PJsonObject params, RenderingContext context) throws DocumentException {
         if (isVisible(context, params)) {
             final Document doc = context.getDocument();
+            context.setCurrentPageParams(params);
             doc.setPageSize(getPageSizeRect(context, params));
             doc.setMargins(getMarginLeft(context, params), getMarginRight(context, params),
                     getMarginTop(context, params) + (header != null ? header.getHeight() : 0),
