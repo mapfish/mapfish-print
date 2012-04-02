@@ -142,7 +142,11 @@ public class PDFUtils {
             }
             else {
                 if (scale == 0f) {
-                    h = w / template.getWidth() * template.getHeight();
+                    float scalew = template.getWidth() / w;
+                    float scaleh = template.getHeight() / h;
+                    float maxscale = Math.max(scalew, scaleh);
+                    w = template.getWidth() / maxscale;
+                    h = template.getHeight() / maxscale;
                 }
                 else {
                     float maxw = w;
