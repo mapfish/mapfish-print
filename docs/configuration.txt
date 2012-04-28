@@ -16,7 +16,7 @@ Here is the general structure:
   ?maxSvgHeight: 2048
   ?integerSvg: false # the library in MapServer <= 5.6 does not support floating point values in the SVG coordinate space, set this to true if using a WMS that does not support floating point values in SVG coordinates
 
-  ?outputFormats:
+  ?formats:
     - pdf
     - png
     {...}
@@ -98,7 +98,7 @@ In general, PDF dimensions and positions are specified in points. 72 points == 1
 
 The list of {HOST_WHITELIST_DEFINITION} defines the allowed URLs for getting maps. Its format will be defined in `the next sub-section <configuration.html#host-whitelist-definition>`_.
 
-The outputFormats element lists the values formats that the server permits.  If omitted only 'pdf' is permitted.  If the single element '*' is present then all formats that the server can produce can be requested.  The formats the server can produce depends to a large degree on how the Java is configured.  PDF is supported on all systems but for image output formats JAI and ImageIO is used which means both must be on the server for them to be available.  You can get the list of supported formats by running the standalone client with the --clientConfig flag enabled (you will need to supply a yaml config file as well).  If you are using the servlet then do a get info request to see the list of formats (with the '*' as the outputFormats parameter in the config file).
+The formats element lists the values formats that the server permits.  If omitted only 'pdf' is permitted.  If the single element '*' (quotes are required) is present then all formats that the server can produce can be requested.  The formats the server can produce depends to a large degree on how the Java is configured.  PDF is supported on all systems but for image output formats JAI and ImageIO is used which means both must be on the server for them to be available.  You can get the list of supported formats by running the standalone client with the --clientConfig flag enabled (you will need to supply a yaml config file as well).  If you are using the servlet then do a get info request to see the list of formats (with the '*' as the outputFormats parameter in the config file).
 
 You can have as many layouts as you want. Their name must be unique and will be used on the client side. A layout can have a "titlePage" that will be added at the beginning of the generated document. It cannot contain any map. Same for the "lastPage", but for the end of the document. The "mainPage" section is mandatory and will be used once for each page requested. The details of a {PAGE_DEFINITION} section can be found `in another sub-section of this document <configuration.html#page-definition>`_.
 
