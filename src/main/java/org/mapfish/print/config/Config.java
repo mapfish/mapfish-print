@@ -66,6 +66,7 @@ public class Config {
     private String maxSvgHeight = "";
     private double maxSvgW = Double.MAX_VALUE;
     private double maxSvgH = Double.MAX_VALUE;
+    private boolean reloadConfig = false;
     
     private boolean integerSvg = true;
     
@@ -434,26 +435,36 @@ public class Config {
     }
 
     public List<String> getOverlayLayers() {
-      return overlayLayers;
+        return overlayLayers;
     }
 
-	/**
-	 * @return the integerSvg true if for example MapServer 5.6 or earlier is used where integers are put into the SVG
-	 */
-	public boolean getIntegerSvg() {
-		return integerSvg;
-	}
+    /**
+     * @return the integerSvg true if for example MapServer 5.6 or earlier is
+     *          used where integers are put into the SVG
+     */
+    public boolean getIntegerSvg() {
+        return integerSvg;
+    }
 
-	/**
-	 * @param integerSvg the integerSvg to set
-	 */
-	public void setIntegerSvg(boolean integerSvg) {
-		this.integerSvg = integerSvg;
-	}
+    /**
+     * @param integerSvg
+     *         the integerSvg to set
+     */
+    public void setIntegerSvg(boolean integerSvg) {
+        this.integerSvg = integerSvg;
+    }
 
-	public void setSecurity(List<SecurityStrategy> security) {
-		this.security = security;
-	}
-	
-	
+    /**
+     * @return the reloadConfig
+     */
+    public boolean getReloadConfig() {
+        return reloadConfig;
+    }
+
+    /**
+     * @param reloadConfig the reloadConfig to set
+     */
+    public void setReloadConfig(boolean reloadConfig) {
+        this.reloadConfig = reloadConfig;
+    }
 }
