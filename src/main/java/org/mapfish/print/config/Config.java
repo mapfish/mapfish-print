@@ -435,24 +435,22 @@ public class Config {
     }
 
     public List<String> getOverlayLayers() {
-        return overlayLayers;
+      return overlayLayers;
     }
 
-    /**
-     * @return the integerSvg true if for example MapServer 5.6 or earlier is
-     *          used where integers are put into the SVG
-     */
-    public boolean getIntegerSvg() {
-        return integerSvg;
-    }
+	/**
+	 * @return the integerSvg true if for example MapServer 5.6 or earlier is used where integers are put into the SVG
+	 */
+	public boolean getIntegerSvg() {
+		return integerSvg;
+	}
 
-    /**
-     * @param integerSvg
-     *         the integerSvg to set
-     */
-    public void setIntegerSvg(boolean integerSvg) {
-        this.integerSvg = integerSvg;
-    }
+	/**
+	 * @param integerSvg the integerSvg to set
+	 */
+	public void setIntegerSvg(boolean integerSvg) {
+		this.integerSvg = integerSvg;
+	}
 
     /**
      * @return the reloadConfig
