@@ -27,6 +27,7 @@ import org.ho.yaml.wrapper.DefaultSimpleTypeWrapper;
 import org.ho.yaml.wrapper.EnumWrapper;
 import org.ho.yaml.wrapper.ObjectWrapper;
 import org.mapfish.print.config.AddressHostMatcher;
+import org.mapfish.print.config.BasicAuthSecurity;
 import org.mapfish.print.config.ColorWrapper;
 import org.mapfish.print.config.CustomEnumWrapper;
 import org.mapfish.print.config.DnsHostMatcher;
@@ -76,6 +77,9 @@ public class CustomYamlConfig extends YamlConfig {
         transfers.put("ipMatch", AddressHostMatcher.class.getName());
         transfers.put("dnsMatch", DnsHostMatcher.class.getName());
 
+        // security control
+        transfers.put("basicAuth", BasicAuthSecurity.class.getName());
+        // key for signing uris (google API requires this)
         transfers.put("key", Key.class.getName());
 
         setTransfers(transfers);

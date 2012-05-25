@@ -42,31 +42,35 @@ public class Page {
     private String marginBottom = "20";
     private String backgroundPdf = null;
     private boolean landscape = false;
+    private String condition = null;
 
     public void render(PJsonObject params, RenderingContext context) throws DocumentException {
-        final Document doc = context.getDocument();
-        doc.setPageSize(getPageSizeRect(context, params));
-        doc.setMargins(getMarginLeft(context, params), getMarginRight(context, params),
-                getMarginTop(context, params) + (header != null ? header.getHeight() : 0),
-                getMarginBottom(context, params) + (footer != null ? footer.getHeight() : 0));
+        if (isVisible(context, params)) {
+            final Document doc = context.getDocument();
+            context.setCurrentPageParams(params);
+            doc.setPageSize(getPageSizeRect(context, params));
+            doc.setMargins(getMarginLeft(context, params), getMarginRight(context, params),
+                    getMarginTop(context, params) + (header != null ? header.getHeight() : 0),
+                    getMarginBottom(context, params) + (footer != null ? footer.getHeight() : 0));
 
-        context.getCustomBlocks().setBackgroundPdf(PDFUtils.evalString(context, params, backgroundPdf));
-        if (doc.isOpen()) {
-            doc.newPage();
-        } else {
-            doc.open();
-        }
-        context.getCustomBlocks().setHeader(header, params);
-        context.getCustomBlocks().setFooter(footer, params);
+            context.getCustomBlocks().setBackgroundPdf(PDFUtils.evalString(context, params, backgroundPdf));
+            if (doc.isOpen()) {
+                doc.newPage();
+            } else {
+                doc.open();
+            }
+            context.getCustomBlocks().setHeader(header, params);
+            context.getCustomBlocks().setFooter(footer, params);
 
-        for (int i = 0; i < items.size(); i++) {
-            Block block = items.get(i);
-            if (block.isVisible(context, params)) {
-                block.render(params, new Block.PdfElement() {
-                    public void add(Element element) throws DocumentException {
-                        doc.add(element);
-                    }
-                }, context);
+            for (int i = 0; i < items.size(); i++) {
+                Block block = items.get(i);
+                if (block.isVisible(context, params)) {
+                    block.render(params, new Block.PdfElement() {
+                        public void add(Element element) throws DocumentException {
+                            doc.add(element);
+                        }
+                    }, context);
+                }
             }
         }
     }
@@ -77,6 +81,17 @@ public class Page {
             return result.rotate();
         } else {
             return result;
+        }
+    }
+
+    protected boolean isVisible(RenderingContext context, PJsonObject params) {
+        return Block.testCondition(context, params, condition);
+    }
+
+    public void setCondition(String condition) {
+        this.condition = condition;
+        if (condition != null && !Block.CONDITION_REGEXP.matcher(condition).matches()) {
+            throw new InvalidValueException("condition", condition);
         }
     }
 

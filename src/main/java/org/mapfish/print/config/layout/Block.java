@@ -93,9 +93,9 @@ public abstract class Block {
         return vertAlign;
     }
 
-    private static final Pattern CONDITION_REGEXP = Pattern.compile("^(!?)(.*)$");
+    public static final Pattern CONDITION_REGEXP = Pattern.compile("^(!?)(.*)$");
 
-    public boolean isVisible(RenderingContext context, PJsonObject params) {
+    public static final boolean testCondition(RenderingContext context, PJsonObject params, String condition) {
         if (condition == null) {
             return true;
         }
@@ -105,7 +105,7 @@ public abstract class Block {
             throw new InvalidValueException("condition", condition);
         }
 
-        String value = params.optString(condition);
+        String value = params.optString(matcher.group(2));
         if (value == null) {
             value = context.getGlobalParams().optString(matcher.group(2));
         }
@@ -114,6 +114,10 @@ public abstract class Block {
             result = !result;
         }
         return result;
+    }
+
+    public boolean isVisible(RenderingContext context, PJsonObject params) {
+        return testCondition(context, params, condition);
     }
 
     public void setCondition(String condition) {

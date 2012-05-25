@@ -16,7 +16,7 @@ Here is the general structure:
   ?maxSvgHeight: 2048
   ?integerSvg: false # the library in MapServer <= 5.6 does not support floating point values in the SVG coordinate space, set this to true if using a WMS that does not support floating point values in SVG coordinates
 
-  ?outputFormats:
+  ?formats:
     - pdf
     - png
     {...}
@@ -50,7 +50,19 @@ Here is the general structure:
   ?connectionTimeout: 30000           MF_V1.2
   ?socketTimeout: 180000              MF_V1.2
   ?outputFilename: Mapfish-print      MF_V1.2
-
+  
+  ?security:
+  ?  - !basicAuth
+  ?      matcher: !dnsMatch
+  ?        host: www.camptocamp.com
+  ?        post: 443
+  ?      username: xyz
+  ?      password: zyx
+  ?      preemptive: true
+  ?  - !basicAuth
+  ?    username: abc
+  ?    password: bca
+  
   layouts:
      {LAYOUT_NAME}:
   ?   : Mapfish-print.pdf  MF_V1.2
@@ -86,7 +98,7 @@ In general, PDF dimensions and positions are specified in points. 72 points == 1
 
 The list of {HOST_WHITELIST_DEFINITION} defines the allowed URLs for getting maps. Its format will be defined in `the next sub-section <configuration.html#host-whitelist-definition>`_.
 
-The outputFormats element lists the values formats that the server permits.  If omitted only 'pdf' is permitted.  If the single element '*' is present then all formats that the server can produce can be requested.  The formats the server can produce depends to a large degree on how the Java is configured.  PDF is supported on all systems but for image output formats JAI and ImageIO is used which means both must be on the server for them to be available.  You can get the list of supported formats by running the standalone client with the --clientConfig flag enabled (you will need to supply a yaml config file as well).  If you are using the servlet then do a get info request to see the list of formats (with the '*' as the outputFormats parameter in the config file).
+The formats element lists the values formats that the server permits.  If omitted only 'pdf' is permitted.  If the single element '*' (quotes are required) is present then all formats that the server can produce can be requested.  The formats the server can produce depends to a large degree on how the Java is configured.  PDF is supported on all systems but for image output formats JAI and ImageIO is used which means both must be on the server for them to be available.  You can get the list of supported formats by running the standalone client with the --clientConfig flag enabled (you will need to supply a yaml config file as well).  If you are using the servlet then do a get info request to see the list of formats (with the '*' as the outputFormats parameter in the config file).
 
 You can have as many layouts as you want. Their name must be unique and will be used on the client side. A layout can have a "titlePage" that will be added at the beginning of the generated document. It cannot contain any map. Same for the "lastPage", but for the end of the document. The "mainPage" section is mandatory and will be used once for each page requested. The details of a {PAGE_DEFINITION} section can be found `in another sub-section of this document <configuration.html#page-definition>`_.
 
@@ -98,8 +110,40 @@ New versions of tilecache added the support for merging multiple layers in a sin
 
 "connectionTimeout" and "socketTimeout" (only since MapFish v1.2) can be used to tune the timeouts for reading tiles from map servers.
 
-If the 'outputFilename' parameter is defined in the main body then that name will be used by the MapPrintServlet when sending the pdf to the client.  It will be the name of the file that the client downloads.  If the 'outputFilename' parameter is defined in a layout then that value will override the default name.  In both cases the .pdf is optional; if not present the server will append .pdf to the name.  In all cases the json request can override the filename defined in the configuration file by posting a 'outputFilename' attribute in the posted JSON.
+If the 'outputFilename' parameter is defined in the main body then that name will be used by the MapPrintServlet when sending the pdf to the client.  It will be the name of the file that the client downloads.  If the 'outputFilename' parameter is defined in a layout then that value will override the default name.  In both cases the .pdf is optional; if not present the server will append .pdf to the name.  In all cases the json request can override the filename defined in the configuration file by posting a 'outputFilename' attribute in the posted JSON. If the outputFilename has ${date}, ${time} or ${dateTime} in it, it will be replaced with the current date using the related DateFormat.get*Instance().format() method.  If a pattern is provided it will be passed to SimpleDataFormat for processing.  A few examples follow:
 
+* outputFilename: "host-${yyyyMMdd}.pdf"   # results in host-20111213.pdf
+* outputFilename: "host-${date}"           # results in host-Dec_13_2011.pdf (actual output depends on local of server)
+* outputFilename: "host-${dateTime}"       # results in host-Dec_13_2011_1:10:50_PM.pdf (actual output depends on local of server)
+* outputFilename: "host-${time}.pdf"       # results in host-1:11:14_PM.pdf (actual output depends on local of server)
+* outputFilename: "host-${yyMMdd-hhmmss}"# results in host-111213-011154.pdf (actual output depends on local of server)
+
+Security
+--------
+Both Keys and Security are options for accessing protected services.  Keys are currently for Google maps premium accounts and Security is for other types and is more general  Currently only BasicAuth is supported but other strategies can easily be added
+
+.. code-block:: yaml
+
+    security:
+        - !basicAuth
+            matcher: !dnsMatch
+              host: www.camptocamp.com
+              post: 443
+            username: xyz
+            password: zyx
+            preemptive: true
+        - !basicAuth
+          username: abc
+          password: cba
+
+The above example has 2 security configuration.  Each option is tested (in order) to see if it can be used for the given URI and if it applies it is used to configure requests for the URI.  In the above example the first configuration will be used if the URI matches the hostmatcher provided if not then the second configuration will be applied.  The last configuration has no host matcher so it is applied to all URIs.
+
+A basicAuth security configuration consists of 4 options
+
+* matcher - a host matcher for determining which requests need the security to be applied
+* username - username for basicauth
+* password - password for basicauth
+* preemptive - optional, but for cases where the credentials need to be sent without the challenge
 
 Keys
 ----
@@ -207,6 +251,7 @@ The structure is like that:
     ?     marginTop: 20
     ?     marginBottom: 20
     ?     backgroundPdf: template.pdf
+    ?     condition: null
     ?     header:
             height: 50
             items:
@@ -220,6 +265,8 @@ The structure is like that:
             items:
               - {BLOCK_DEFINITION}
               {...}
+
+With the "condition" we can completely hide a page, same behavior than in block.
 
 If "backgroundPdf" is specified, the first page of the given PDF file will be added as background of every page.
 

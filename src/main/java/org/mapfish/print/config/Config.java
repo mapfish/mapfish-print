@@ -82,6 +82,8 @@ public class Config {
     private int connectionTimeout = 40*60*1000; // 40 minutes //30*1000;
 
     private boolean tilecacheMerging = false;
+    
+    private List<SecurityStrategy> security = Collections.emptyList();
 
     private String outputFilename = "mapfish-print.pdf";
 
@@ -363,6 +365,11 @@ public class Config {
             httpClient.getHostConfiguration().setProxy(hostName, port);
         }
 
+        for(SecurityStrategy sec : security)
+        if(sec.matches(uri)) {
+        	sec.configure(uri, httpClient);
+        	break;
+        }
         return httpClient;
     }
 
@@ -457,5 +464,9 @@ public class Config {
      */
     public void setReloadConfig(boolean reloadConfig) {
         this.reloadConfig = reloadConfig;
+    }
+
+    public void setSecurity(List<SecurityStrategy> security) {
+        this.security = security;
     }
 }

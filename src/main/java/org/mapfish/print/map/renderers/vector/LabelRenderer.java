@@ -28,8 +28,11 @@ import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
+import org.apache.log4j.Logger;
 
 public class LabelRenderer {
+
+	public static final Logger LOGGER = Logger.getLogger(LabelRenderer.class);
 
 	static void applyStyle(RenderingContext context, PdfContentByte dc,
 			PJsonObject style, Geometry geometry) {
@@ -54,7 +57,7 @@ public class LabelRenderer {
 					|| !"HELVETICA".equalsIgnoreCase(fontFamily)
 					|| !"TIMES_ROMAN".equalsIgnoreCase(fontFamily)) {
 
-				System.out.println("Font: '"+ fontFamily + 
+				LOGGER.info("Font: '"+ fontFamily +
 						"' not supported, supported fonts are 'HELVETICA', " +
 						"'COURIER', 'TIMES_ROMAN', defaults to 'HELVETICA'");
 				fontFamily = "HELVETICA";

@@ -21,6 +21,8 @@ scales:
   - 2000000
   - 4000000
 
+outputFilename: 'pigma-${date}.pdf'
+
 #===========================================================================
 # the list of allowed hosts
 #===========================================================================
@@ -38,6 +40,16 @@ hosts:
   - !dnsMatch
     host: tile.openstreetmap.org
     port: 80
+
+security:
+  - !basicAuth
+    matcher: !dnsMatch
+      host: c2cpc61.camptocamp.com
+      port:80
+    username: xyz
+    password: yxz
+    preemptive: true
+
 
 layouts:
   #===========================================================================
