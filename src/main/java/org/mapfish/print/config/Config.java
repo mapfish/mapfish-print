@@ -467,4 +467,8 @@ public class Config {
     public void setReloadConfig(boolean reloadConfig) {
         this.reloadConfig = reloadConfig;
     }
+
+    public void setSecurity(List<SecurityStrategy> security) {
+        this.security = security;
+    }
 }
