@@ -227,7 +227,8 @@ public class LegendsBlock extends Block {
             result.setFont(pdfFont);
             result.add(name);
             if (name.trim().length() > 0) {
-                float width = pdfFont.getBaseFont().getWidthPoint(name, pdfFont.getSize());
+                BaseFont baseFont = pdfFont.getBaseFont();
+                float width = baseFont == null ? pdfFont.getSize() : baseFont.getWidthPoint(name, pdfFont.getSize());
                 if (escapeOrphanTitle) {
                     currentCellHeight += pdfFont.getSize();
                     cellWidth = Math.max(cellWidth, width);
