@@ -3,12 +3,3 @@ build/
 buildSrc/.gradle/
 buildSrc/build/
 deploy.sh
-.classpath
-.project
-.settings/
-bin/
-src/main/webapp/environment_theme.yaml
-src/main/webapp/oe.html
-src/main/webapp/smap.yaml
-src/main/webapp/vector.html
-
