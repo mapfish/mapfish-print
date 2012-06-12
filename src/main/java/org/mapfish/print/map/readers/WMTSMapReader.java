@@ -35,12 +35,12 @@ import java.util.Map;
  * Support for the protocol using directly the content of a WMTS REST structure.
  */
 public class WMTSMapReader extends TileableMapReader {
-	protected final String layer;
+    protected final String layer;
     @SuppressWarnings("unused")
-	private final float opacity;
-    private final String version; 
-    private final String requestEncoding; 
-    private final PJsonArray tileOrigin; 
+    private final float opacity;
+    private final String version;
+    private final String requestEncoding;
+    private final PJsonArray tileOrigin;
     private final String style;
     private final PJsonArray dimensions;
     private final PJsonObject dimensionsParams;
@@ -48,7 +48,7 @@ public class WMTSMapReader extends TileableMapReader {
     private final int zoomOffset;
     private final PJsonArray matrixIds;
     private final String formatSuffix;
-    
+
 
     private WMTSMapReader(String layer, RenderingContext context, PJsonObject params) {
         super(context, params);
@@ -60,7 +60,7 @@ public class WMTSMapReader extends TileableMapReader {
         requestEncoding = params.getString("requestEncoding");
         // Optional (but mandatory until matrixIds is supported)
         tileOrigin = params.getJSONArray("tileOrigin");
-        style = params.getString("style"); 
+        style = params.getString("style");
         // Optional
         dimensions = params.optJSONArray("dimensions");
         // Optional
@@ -74,7 +74,7 @@ public class WMTSMapReader extends TileableMapReader {
         	throw new RuntimeException("matrixIds are not supported for now. Use zoomOffset and tileOrigin instead. Patch welcome.");
         }
         formatSuffix = params.getString("formatSuffix");
-        
+
         tileCacheLayerInfo = new WMTSLayerInfo(params.getJSONArray("resolutions"), tileSize.getInt(0), tileSize.getInt(1), maxExtent.getFloat(0), maxExtent.getFloat(1), maxExtent.getFloat(2), maxExtent.getFloat(3), formatSuffix);
     }
 
@@ -92,37 +92,37 @@ public class WMTSMapReader extends TileableMapReader {
 
         int col = (int) Math.round(Math.floor(((maxGeoX + minGeoX)/2-tileOrigin.getFloat(0)) / (resolution.value * w)));
         int row = (int) Math.round(Math.floor((tileOrigin.getFloat(1)-(maxGeoY + minGeoY)/2) / (resolution.value * h)));
-        
+
         StringBuilder path = new StringBuilder();
         if (!commonUri.getPath().endsWith("/")) {
             path.append('/');
         }
         if (requestEncoding.compareTo("REST") == 0) {
-        	path.append(version);
-        	path.append('/').append(layer);
-        	path.append('/').append(style);
-        	// Add dimensions
-        	if (dimensions != null) {
-        		for (int i = 0; i< dimensions.size(); i++) {
-        			path.append('/').append(dimensionsParams.getString(dimensions.getString(i)));	
-        		}
-        	}
-        	path.append('/').append(matrixSet);
-        	path.append('/').append(resolution.index + zoomOffset);
-        	path.append('/').append(row);
-        	path.append('/').append(col);
+            path.append(version);
+            path.append('/').append(layer);
+            path.append('/').append(style);
+            // Add dimensions
+            if (dimensions != null) {
+                for (int i = 0; i< dimensions.size(); i++) {
+                    path.append('/').append(dimensionsParams.getString(dimensions.getString(i)));
+                }
+            }
+            path.append('/').append(matrixSet);
+            path.append('/').append(resolution.index + zoomOffset);
+            path.append('/').append(row);
+            path.append('/').append(col);
 
-        	path.append('.').append(tileCacheLayerInfo.getExtension());
+            path.append('.').append(tileCacheLayerInfo.getExtension());
 
-        	return new URI(commonUri.getScheme(), commonUri.getUserInfo(), commonUri.getHost(), commonUri.getPort(), commonUri.getPath() + path, commonUri.getQuery(), commonUri.getFragment());
+            return new URI(commonUri.getScheme(), commonUri.getUserInfo(), commonUri.getHost(), commonUri.getPort(), commonUri.getPath() + path, commonUri.getQuery(), commonUri.getFragment());
         } else {
-        	throw new RuntimeException("Only WMTS REST structure is supported");
+            throw new RuntimeException("Only WMTS REST structure is supported");
         }
     }
 
     protected static void create(List<MapReader> target, RenderingContext context, PJsonObject params) {
-    	String layer = params.getString("layer");
-    	target.add(new WMTSMapReader(layer, context, params));
+        String layer = params.getString("layer");
+        target.add(new WMTSMapReader(layer, context, params));
     }
 
     public boolean testMerge(MapReader other) {
