@@ -64,14 +64,16 @@ public class TileCacheLayerInfo {
         this.maxX = maxX;
         this.maxY = maxY;
 
-        Matcher formatMatcher = FORMAT_REGEXP.matcher(format);
-        if (formatMatcher.matches()) {
-            extension = formatMatcher.group(1).toLowerCase();
-            if (extension.equals("jpg")) {
-                extension = "jpeg";
+        if (format != null) {
+            Matcher formatMatcher = FORMAT_REGEXP.matcher(format);
+            if (formatMatcher.matches()) {
+                extension = formatMatcher.group(1).toLowerCase();
+                if (extension.equals("jpg")) {
+                    extension = "jpeg";
+                }
+            } else {
+                throw new InvalidValueException("format", format);
             }
-        } else {
-            throw new InvalidValueException("format", format);
         }
     }
 
