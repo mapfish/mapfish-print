@@ -56,14 +56,14 @@ public abstract class TileableMapReader extends HTTPMapReader {
         if (tileCacheLayerInfo != null) {
             //tiled
             transformer = fixTiledTransformer(transformer);
-            
+
             if (transformer == null) {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("Resolution out of bounds.");
                 }
                 urls.add(null);
             }
-            
+
             bitmapTileW = tileCacheLayerInfo.getWidth();
             bitmapTileH = tileCacheLayerInfo.getHeight();
             final float tileGeoWidth = transformer.getResolution() * bitmapTileW;
@@ -71,7 +71,7 @@ public abstract class TileableMapReader extends HTTPMapReader {
 
 
             // TODO I would like to do this sort of thing by extension points for plugins
-            
+
             // the tileMinGeoSize is not calculated the same way in TileCache
             // and KaMap, so they are treated differently here.
             final float tileMinGeoX;
@@ -136,7 +136,7 @@ public abstract class TileableMapReader extends HTTPMapReader {
      */
     private Transformer fixTiledTransformer(Transformer transformer) {
         float resolution;
-        
+
         // if clientResolution is passed from client use it explicitly if available otherwise calculate nearest resolution
         if (this.context.getCurrentPageParams().has("clientResolution")) {
             float clientResolution = this.context.getCurrentPageParams().getFloat("clientResolution");
@@ -158,7 +158,7 @@ public abstract class TileableMapReader extends HTTPMapReader {
             TileCacheLayerInfo.ResolutionInfo resolutionInfo = tileCacheLayerInfo.getNearestResolution(targetResolution);
             resolution = resolutionInfo.value;
         }
-        
+
         transformer = transformer.clone();
         transformer.setResolution(resolution);
         return transformer;
