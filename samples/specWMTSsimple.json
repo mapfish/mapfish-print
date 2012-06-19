@@ -1,0 +1,44 @@
+{
+    "units": "m",
+    "srs": "EPSG:21781",
+    "layout": "A4 portrait",
+    "dpi": 150,
+    "layers": [{
+        "baseURL": "http://tile5.geo.admin.ch/geoadmin/",
+        "opacity": 1,
+        "singleTile": false,
+        "type": "TileCache",
+        "layer": "ch.swisstopo.swissimage",
+        "maxExtent": [420000, 30000, 900000, 350000],
+        "tileSize": [256, 256],
+        "extension": "jpeg",
+        "resolutions": [4000, 3750, 3500, 3250, 3000, 2750, 2500, 2250, 2000, 1750, 1500, 1250, 1000, 750, 650, 500, 250, 100, 50, 20, 10, 5, 2.5, 2, 1.5, 1, 0.5]
+    }, {
+        "baseURL": "http://wmts0.geo.admin.ch/",
+        "opacity": 1,
+        "singleTile": false,
+        "type": "WMTS",
+        "layer": "ch.bafu.wasser-entnahme",
+        "version": "1.0.0",
+        "requestEncoding": "REST",
+        "tileOrigin": [420000, 350000],
+        "tileSize": [256, 256],
+        "style": "default",
+        "formatSuffix": "png",
+        "dimensions": ["TIME"],
+        "params": {
+            "TIME": "20040101"
+        },
+        "maxExtent": [420000, 30000, 900000, 350000],
+        "matrixSet": "21781",
+        "zoomOffset": 14,
+        "resolutions": [650, 500, 250, 100, 50, 20, 10, 5, 2.5, 2, 1, 0.5]
+    }],
+    "pages": [{
+        "center": [578846, 183326.24545288],
+        "scale": 100000,
+        "rotation": 0,
+        "dataOwner": "(c) Data: swisstopo, OFEV",
+        "langfr": true
+    }]
+}
