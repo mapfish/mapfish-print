@@ -2,7 +2,7 @@
    "units" : "m",
    "srs" : "EPSG:2180",
    "layout" : "A4 portrait",
-   "title": 'A simple example',
+   "title": "A simple example",
    "dpi" : 127,
    "layers" :
       [
