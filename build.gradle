@@ -73,8 +73,7 @@ task standalone (type: Jar) {
 
   
   def serviceDir = new File("$buildDir/META-INF/services")
-  serviceDir.deleteDir()
-  serviceDir.mkdirs()
+  def metaInfDir = new File("$buildDir/META-INF/")
 
   for(file in dependencies) {
     def files = zipTree(file).matching { 
@@ -82,14 +81,25 @@ task standalone (type: Jar) {
         exclude 'LICENSE'
     }
     
-    zipTree(file).matching {include 'META-INF/services/*'}.each {f ->
-            new File(serviceDir,f.name) << f.getText("UTF-8")
-    }
-
     from files
   }
+
+  doFirst {
+      
+      serviceDir.deleteDir()
+      serviceDir.mkdirs()
+      for(file in dependencies.findAll({it.name.matches("((gt)|(spring-)).*")})) {
+          zipTree(file).matching {includes: ['META-INF/services/*','META-INF/spring.*']}.each {f ->
+              def base = serviceDir
+              if (f.name.startsWith("spring")) {
+                  base = metaInfDir;
+              }
+              new File(base,f.name) << f.getText("UTF-8")
+          }
+      }
+  }
   
-  from fileTree(buildDir).matching{include 'META-INF/services/*'}
+  from fileTree(buildDir).matching{include 'META-INF/*'}
   
   into ""
   

@@ -19,11 +19,15 @@
 
 package org.mapfish.print.output;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.channels.FileChannel;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,6 +37,7 @@ import org.mapfish.print.RenderingContext;
 import org.mapfish.print.TimeLogger;
 import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
+import org.pvalsecc.misc.FileUtilities;
 
 import com.lowagie.text.DocumentException;
 
@@ -192,16 +197,52 @@ public class ImageMagickOutputFactory implements OutputFormatFactory {
          */
         private void createImage(PJsonObject jsonSpec, File tmpPdfFile, File tmpPngFile, RenderingContext context) throws IOException {
             int dpi = calculateDPI(context, jsonSpec);
-            String cmd = imageMagickCmd+" -density " + dpi + "x" + dpi + " " 
-                    + tmpPdfFile.getAbsolutePath() + " " + tmpPngFile.getAbsolutePath();
-            LOGGER.info("Run: " + cmd);
-            Process p = Runtime.getRuntime().exec(cmd);
+            
+            /*FileChannel in = new FileInputStream(tmpPdfFile).getChannel();
+            FileChannel out = new FileOutputStream(new File("c:\\p.pdf")).getChannel();
+            out.transferFrom(in, 0, tmpPdfFile.length());
+            in.close();
+            out.close();*/
+            ProcessBuilder builder = new ProcessBuilder(imageMagickCmd, "-density", dpi+"x"+dpi, tmpPdfFile.getAbsolutePath(), tmpPngFile.getAbsolutePath());
+            LOGGER.info("Run: " + builder.command());
+            
+            Process p = builder.start();
+            
+            writeOut(p, false);
+            writeOut(p, true);
             try {
-                p.waitFor();
+                int exitCode = p.waitFor();
+                
+                p.destroy();
+                if(exitCode != 0) {
+                	LOGGER.error("Image magick failed to create image from pdf.  Exit code was "+exitCode);
+                } else {
+                	LOGGER.info("Image magick exited correctly from image conversion process.  Exit code was "+exitCode);
+                }
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                LOGGER.error("Process interrupted", e);
             }
         }
 
+		private void writeOut(Process p, boolean errorStream) throws IOException {
+			InputStream stream;
+			if(errorStream) {
+				stream = p.getErrorStream();
+			} else {
+				stream = p.getInputStream();
+			}
+			BufferedReader reader = new BufferedReader (new InputStreamReader(stream));
+            String line = null;
+            
+            while((line = reader.readLine()) != null) {
+            	if(errorStream) {
+            		LOGGER.error(line);
+            	} else {
+            		LOGGER.info(line);
+            	}
+            }
+		}
     }
+
+    
 }
