@@ -19,6 +19,11 @@
 
 package org.ho.yaml;
 
+import java.awt.Color;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.ho.util.BiDirectionalMap;
 import org.ho.yaml.wrapper.ArrayWrapper;
 import org.ho.yaml.wrapper.DefaultCollectionWrapper;
@@ -33,15 +38,21 @@ import org.mapfish.print.config.CustomEnumWrapper;
 import org.mapfish.print.config.DnsHostMatcher;
 import org.mapfish.print.config.Key;
 import org.mapfish.print.config.LocalHostMatcher;
-import org.mapfish.print.config.layout.*;
+import org.mapfish.print.config.layout.AttributesBlock;
+import org.mapfish.print.config.layout.ColumnDefs;
+import org.mapfish.print.config.layout.ColumnsBlock;
+import org.mapfish.print.config.layout.Exceptions;
+import org.mapfish.print.config.layout.HorizontalAlign;
+import org.mapfish.print.config.layout.ImageBlock;
+import org.mapfish.print.config.layout.Layouts;
+import org.mapfish.print.config.layout.LegendsBlock;
+import org.mapfish.print.config.layout.MapBlock;
+import org.mapfish.print.config.layout.ScalebarBlock;
+import org.mapfish.print.config.layout.TextBlock;
+import org.mapfish.print.config.layout.VerticalAlign;
 import org.mapfish.print.scalebar.Direction;
 import org.mapfish.print.scalebar.Type;
 import org.mapfish.print.utils.DistanceUnit;
-
-import java.awt.*;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 public class CustomYamlConfig extends YamlConfig {
     public CustomYamlConfig() {

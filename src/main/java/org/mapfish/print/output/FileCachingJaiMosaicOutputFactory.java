@@ -36,10 +36,8 @@ import javax.media.jai.RenderedOp;
 import org.apache.log4j.Logger;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.mapfish.print.MapPrinter;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.TimeLogger;
-import org.mapfish.print.config.Config;
 import org.mapfish.print.utils.PJsonObject;
 
 import com.lowagie.text.DocumentException;
@@ -150,7 +148,8 @@ public class FileCachingJaiMosaicOutputFactory extends InMemoryJaiMosaicOutputFa
             List<ImageInfo> images = new ArrayList<ImageInfo>();
             PDDocument pdf = PDDocument.load(tmpFile);
             try {
-                List<PDPage> pages = pdf.getDocumentCatalog().getAllPages();
+                @SuppressWarnings("unchecked")
+				List<PDPage> pages = pdf.getDocumentCatalog().getAllPages();
 
                 for (PDPage page : pages) {
                     BufferedImage img = page.convertToImage(BufferedImage.TYPE_INT_RGB, calculateDPI(context, jsonSpec));

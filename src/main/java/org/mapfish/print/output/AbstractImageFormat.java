@@ -20,16 +20,9 @@
 package org.mapfish.print.output;
 
 
-import org.mapfish.print.Constants;
-import org.mapfish.print.MapPrinter;
 import org.mapfish.print.RenderingContext;
-import org.mapfish.print.config.layout.Layout;
 import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
-
-import com.lowagie.text.Document;
-import com.lowagie.text.pdf.PdfStream;
-import com.lowagie.text.pdf.PdfWriter;
 
 /**
  * User: jeichar
@@ -45,12 +38,12 @@ abstract class AbstractImageFormat extends AbstractOutputFormat implements Outpu
         this.format = format;
     }
 
-    public String contentType() {
+    public String getContentType() {
 
         return "image/" + format;
     }
 
-    public String fileSuffix() {
+    public String getFileSuffix() {
         return format;
     }
 

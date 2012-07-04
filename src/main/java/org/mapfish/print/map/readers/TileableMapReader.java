@@ -19,18 +19,18 @@
 
 package org.mapfish.print.map.readers;
 
-import org.mapfish.print.RenderingContext;
-import org.mapfish.print.Transformer;
-import org.mapfish.print.map.ParallelMapTileLoader;
-import org.mapfish.print.map.renderers.TileRenderer;
-import org.mapfish.print.utils.PJsonObject;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.mapfish.print.RenderingContext;
+import org.mapfish.print.Transformer;
+import org.mapfish.print.map.ParallelMapTileLoader;
+import org.mapfish.print.map.renderers.TileRenderer;
+import org.mapfish.print.utils.PJsonObject;
 
 public abstract class TileableMapReader extends HTTPMapReader {
 

@@ -20,8 +20,10 @@
 package org.mapfish.print.map.readers.google;
 
 import java.io.UnsupportedEncodingException;
-import java.net.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.DecimalFormat;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,7 @@ import java.util.Map;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.Transformer;
 import org.mapfish.print.map.readers.MapReader;
+import org.mapfish.print.map.readers.MapReaderFactory;
 import org.mapfish.print.map.readers.TileableMapReader;
 import org.mapfish.print.map.renderers.TileRenderer;
 import org.mapfish.print.utils.PJsonArray;
@@ -39,6 +42,14 @@ import org.pvalsecc.misc.URIUtils;
  * Support for the protocol using directly the content of a Google Map Static API directory.
  */
 public class GoogleMapTileReader extends TileableMapReader {
+	public static class Factory implements MapReaderFactory {
+		@Override
+		public List<? extends MapReader> create(String type, RenderingContext context,
+				PJsonObject params) {
+			return Collections.singletonList(new GoogleMapTileReader("t", context, params));
+		}
+    }
+	
     protected final String layer;
     private GoogleConfig config;
 
@@ -85,11 +96,6 @@ public class GoogleMapTileReader extends TileableMapReader {
         } else {
             return uri;
         }
-    }
-
-
-    public static void create(List<MapReader> target, RenderingContext context, PJsonObject params) {
-        target.add(new GoogleMapTileReader("t", context, params));
     }
 
     public boolean testMerge(MapReader other) {

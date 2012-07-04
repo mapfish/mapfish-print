@@ -19,15 +19,9 @@
 
 package org.mapfish.print.map.readers;
 
-import org.mapfish.print.InvalidJsonValueException;
-import org.mapfish.print.RenderingContext;
 import org.mapfish.print.Transformer;
 import org.mapfish.print.map.ParallelMapTileLoader;
-import org.mapfish.print.map.readers.google.GoogleMapReader;
-import org.mapfish.print.map.readers.google.GoogleMapTileReader;
 import org.mapfish.print.utils.PJsonObject;
-
-import java.util.List;
 
 /**
  * Logic to read and render a map layer.
@@ -43,37 +37,6 @@ public abstract class MapReader {
      * Method called to render a whole layer
      */
     public abstract void render(Transformer transformer, ParallelMapTileLoader parallelMapTileLoader, String srs, boolean first);
-
-    public static void create(List<MapReader> target, String type, RenderingContext context, PJsonObject params) {
-        // TODO add plugin architecture.  considering looking at OSGI
-        if ("WMS".equalsIgnoreCase(type)) {
-            WMSMapReader.create(target, context, params);
-        } else if ("MapServer".equalsIgnoreCase(type)) {
-            MapServerMapReader.create(target, context, params);
-        } else if ("TileCache".equalsIgnoreCase(type)) {
-            TileCacheMapReader.create(target, context, params);
-        } else if ("Osm".equalsIgnoreCase(type)) {
-            OsmMapReader.create(target, context, params);
-        } else if ("Tms".equalsIgnoreCase(type)) {
-            TmsMapReader.create(target, context, params);
-        } else if ("Vector".equalsIgnoreCase(type)) {
-            VectorMapReader.create(target, context, params);
-        } else if ("Image".equalsIgnoreCase(type)) {
-            ImageMapReader.create(target, context, params);
-        } else if ("TiledGoogle".equalsIgnoreCase(type)) {
-            GoogleMapTileReader.create(target, context, params);
-        } else if ("Google".equalsIgnoreCase(type)) {
-            GoogleMapReader.create(target, context, params);
-        } else if ("KaMapCache".equalsIgnoreCase(type)) {
-            KaMapCacheMapReader.create(target, context, params);
-        } else if ("KaMap".equalsIgnoreCase(type)) {
-            KaMapMapReader.create(target, context, params);
-        } else if ("WMTS".equalsIgnoreCase(type)) {
-            WMTSMapReader.create(target, context, params);
-        } else {
-            throw new InvalidJsonValueException(params, "type", type);
-        }
-    }
 
     public abstract boolean testMerge(MapReader other);
 

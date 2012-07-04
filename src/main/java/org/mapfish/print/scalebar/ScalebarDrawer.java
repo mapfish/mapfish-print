@@ -19,15 +19,16 @@
 
 package org.mapfish.print.scalebar;
 
-import com.lowagie.text.Font;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.PdfContentByte;
+import java.awt.geom.AffineTransform;
+import java.util.List;
+
 import org.mapfish.print.ChunkDrawer;
 import org.mapfish.print.PDFCustomBlocks;
 import org.mapfish.print.config.layout.ScalebarBlock;
 
-import java.awt.geom.AffineTransform;
-import java.util.List;
+import com.lowagie.text.Font;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.PdfContentByte;
 
 /**
  * Base class for drawing a scale bar.

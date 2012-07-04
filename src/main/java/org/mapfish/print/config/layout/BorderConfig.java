@@ -19,13 +19,13 @@
 
 package org.mapfish.print.config.layout;
 
+import java.awt.Color;
+
+import org.mapfish.print.InvalidValueException;
 import org.mapfish.print.PDFUtils;
 import org.mapfish.print.RenderingContext;
-import org.mapfish.print.InvalidValueException;
 import org.mapfish.print.config.ColorWrapper;
 import org.mapfish.print.utils.PJsonObject;
-
-import java.awt.*;
 
 /**
  * Bean for configuring a cell's borders.

@@ -216,7 +216,7 @@ public class MapPrinter {
     public Config getConfig() {
         return config;
     }
-	public OutputFormat outputFormat(PJsonObject jsonSpec) {
+	public OutputFormat getOutputFormat(PJsonObject jsonSpec) {
 		return outputFactory.create(config, jsonSpec);
 	}
 }

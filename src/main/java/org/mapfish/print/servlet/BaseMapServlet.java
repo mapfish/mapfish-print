@@ -19,17 +19,17 @@
 
 package org.mapfish.print.servlet;
 
-import org.apache.log4j.Logger;
-import org.mapfish.print.MapPrinter;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+
+import org.apache.log4j.Logger;
+import org.mapfish.print.MapPrinter;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Base class for MapPrinter servlets (deals with the configuration loading)

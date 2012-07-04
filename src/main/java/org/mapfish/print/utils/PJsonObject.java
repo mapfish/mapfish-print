@@ -19,12 +19,12 @@
 
 package org.mapfish.print.utils;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONException;
-import org.mapfish.print.JsonMissingException;
-
 import java.util.Iterator;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.mapfish.print.JsonMissingException;
 
 /**
  * Wrapper around the {@link org.json.JSONObject} class to have a better
@@ -157,7 +157,8 @@ public class PJsonObject extends PJsonElement {
         return result != null ? result : defaultValue;
     }
 
-    public Iterator<String> keys() {
+    @SuppressWarnings("unchecked")
+	public Iterator<String> keys() {
         return obj.keys();
     }
 
@@ -187,9 +188,6 @@ public class PJsonObject extends PJsonElement {
         }
     }
 
-    /**
-     * @deprecated Use only if you know what you are doing!
-     */
     public JSONObject getInternalObj() {
         return obj;
     }

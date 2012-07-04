@@ -19,15 +19,16 @@
 
 package org.mapfish.print.map.renderers.vector;
 
-import org.mapfish.geo.MfGeo;
-import org.mapfish.geo.MfFeatureCollection;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.mapfish.geo.MfFeature;
+import org.mapfish.geo.MfFeatureCollection;
+import org.mapfish.geo.MfGeo;
 import org.mapfish.geo.MfGeometry;
 import org.mapfish.print.RenderingContext;
-import com.lowagie.text.pdf.PdfContentByte;
 
-import java.util.Map;
-import java.util.HashMap;
+import com.lowagie.text.pdf.PdfContentByte;
 
 /**
  * iText renderer for MF geoJSON features.
@@ -41,9 +42,10 @@ public abstract class FeaturesRenderer<T extends MfGeo> {
         RENDERERS.put(MfGeometry.class, new GeometryRenderer());
     }
 
-    @SuppressWarnings({"RawUseOfParameterizedType", "unchecked"})
-    public static void render(RenderingContext context, PdfContentByte dc, MfGeo geo) {
-        FeaturesRenderer renderer = RENDERERS.get(geo.getClass());
+    @SuppressWarnings("unchecked")
+	public static void render(RenderingContext context, PdfContentByte dc, MfGeo geo) {
+        @SuppressWarnings("rawtypes")
+		FeaturesRenderer renderer = RENDERERS.get(geo.getClass());
         if (renderer == null) {
             throw new RuntimeException("Rendering of " + geo.getClass().getName() + " not supported");
         }

@@ -19,9 +19,10 @@
 
 package org.mapfish.print.config.layout;
 
-import com.lowagie.text.pdf.PdfPCell;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.utils.PJsonObject;
+
+import com.lowagie.text.pdf.PdfPCell;
 
 /**
  * Bean for configuring a table's outer border and its cells.

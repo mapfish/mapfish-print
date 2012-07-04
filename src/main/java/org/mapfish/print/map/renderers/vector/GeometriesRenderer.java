@@ -54,9 +54,10 @@ public abstract class GeometriesRenderer<T extends Geometry> {
         RENDERERS.put(Point.class, new PointRenderer());
     }
 
-    @SuppressWarnings({"RawUseOfParameterizedType", "unchecked"})
+    @SuppressWarnings({"unchecked"})
     protected static void render(RenderingContext context, PdfContentByte dc, PJsonObject style, Geometry geometry) {
-        GeometriesRenderer renderer = RENDERERS.get(geometry.getClass());
+        @SuppressWarnings("rawtypes")
+		GeometriesRenderer renderer = RENDERERS.get(geometry.getClass());
         if (renderer == null) {
             throw new RuntimeException("Rendering of " + geometry.getClass().getName() + " not supported");
         }

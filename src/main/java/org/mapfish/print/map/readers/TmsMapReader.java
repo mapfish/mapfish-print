@@ -19,19 +19,28 @@
 
 package org.mapfish.print.map.readers;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.Transformer;
 import org.mapfish.print.map.renderers.TileRenderer;
 import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
-
 public class TmsMapReader extends TileableMapReader {
+	public static class Factory implements MapReaderFactory {
+		@Override
+		public List<? extends MapReader> create(String type, RenderingContext context,
+				PJsonObject params) {
+			return Collections.singletonList(new TmsMapReader("t", context, params));
+		}
+    }
+	
     protected final String layer;
     private final String format;
     private final String extension;
@@ -84,11 +93,6 @@ public class TmsMapReader extends TileableMapReader {
         path.append('.').append(this.format);
 
         return new URI(commonUri.getScheme(), commonUri.getUserInfo(), commonUri.getHost(), commonUri.getPort(), commonUri.getPath() + path, commonUri.getQuery(), commonUri.getFragment());
-    }
-
-    protected static void create(List<MapReader> target, RenderingContext context, PJsonObject params) {
-        //String layer = params.getString("layer");
-        target.add(new TmsMapReader("t", context, params));
     }
 
     public boolean testMerge(MapReader other) {

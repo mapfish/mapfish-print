@@ -19,8 +19,9 @@
 
 package org.mapfish.print.map.readers;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfContentByte;
+import java.util.Collections;
+import java.util.List;
+
 import org.json.JSONException;
 import org.mapfish.geo.MfGeo;
 import org.mapfish.geo.MfGeoJSONReader;
@@ -33,7 +34,8 @@ import org.mapfish.print.map.renderers.vector.FeaturesRenderer;
 import org.mapfish.print.map.renderers.vector.StyledMfGeoFactory;
 import org.mapfish.print.utils.PJsonObject;
 
-import java.util.List;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfContentByte;
 
 /**
  * Render vector layers. The geometries and the styling comes directly from the spec JSON.
@@ -48,6 +50,14 @@ import java.util.List;
  * </ul>
  */
 public class VectorMapReader extends MapReader {
+	public static class Factory implements MapReaderFactory {
+		@Override
+		public List<? extends MapReader> create(String type, RenderingContext context,
+				PJsonObject params) {
+			return Collections.singletonList(new VectorMapReader(context, params));
+		}
+    }
+	
     private final MfGeo geo;
     private final RenderingContext context;
     private final String name;
@@ -67,10 +77,6 @@ public class VectorMapReader extends MapReader {
             throw new InvalidJsonValueException(params, "geoJson", geoJson.toString(), e);
         }
         name = params.optString("name", "vector");
-    }
-
-    public static void create(List<MapReader> target, RenderingContext context, PJsonObject params) {
-        target.add(new VectorMapReader(context, params));
     }
 
     public void render(final Transformer transformer, ParallelMapTileLoader parallelMapTileLoader, String srs, boolean first) {

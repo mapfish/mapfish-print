@@ -19,9 +19,9 @@
 
 package org.mapfish.print.config;
 
-import org.mapfish.print.PrintTestCase;
+import java.awt.Color;
 
-import java.awt.*;
+import org.mapfish.print.PrintTestCase;
 
 public class ColorWrapperTest extends PrintTestCase {
     public ColorWrapperTest(String name) {

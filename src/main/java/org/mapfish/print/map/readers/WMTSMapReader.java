@@ -19,6 +19,14 @@
 
 package org.mapfish.print.map.readers;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.Transformer;
 import org.mapfish.print.map.ParallelMapTileLoader;
@@ -26,17 +34,18 @@ import org.mapfish.print.map.renderers.TileRenderer;
 import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Support for the protocol using directly the content of a WMTS REST structure.
  */
 public class WMTSMapReader extends TileableMapReader {
+	public static class Factory implements MapReaderFactory {
+		@Override
+		public List<? extends MapReader> create(String type, RenderingContext context,
+				PJsonObject params) {
+			return Collections.singletonList(new WMTSMapReader(params.getString("layer"), context, params));
+		}
+    }
+	
     protected final String layer;
     @SuppressWarnings("unused")
     private final float opacity;
@@ -195,11 +204,6 @@ public class WMTSMapReader extends TileableMapReader {
                 throw new RuntimeException("Only WMTS REST structure is supported");
             }
         }
-    }
-
-    protected static void create(List<MapReader> target, RenderingContext context, PJsonObject params) {
-        String layer = params.getString("layer");
-        target.add(new WMTSMapReader(layer, context, params));
     }
 
     public boolean testMerge(MapReader other) {

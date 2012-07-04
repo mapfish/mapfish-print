@@ -19,13 +19,18 @@
 
 package org.mapfish.print.config.layout;
 
-import com.lowagie.text.*;
+import java.util.List;
+
 import org.mapfish.print.InvalidValueException;
 import org.mapfish.print.PDFUtils;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.utils.PJsonObject;
 
-import java.util.List;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Rectangle;
 
 
 /**

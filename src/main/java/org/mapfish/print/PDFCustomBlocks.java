@@ -19,15 +19,29 @@
 
 package org.mapfish.print;
 
-import com.lowagie.text.*;
-import com.lowagie.text.pdf.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.mapfish.print.config.layout.HeaderFooter;
 import org.mapfish.print.utils.PJsonObject;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.List;
+import com.lowagie.text.BadElementException;
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Font;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.PdfAnnotation;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfImportedPage;
+import com.lowagie.text.pdf.PdfPageEventHelper;
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfWriter;
 
 /**
  * Listen to events from the PDF document in order to render the

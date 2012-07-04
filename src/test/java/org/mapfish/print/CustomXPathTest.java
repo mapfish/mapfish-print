@@ -19,15 +19,16 @@
 
 package org.mapfish.print;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import java.io.IOException;
+import java.io.StringReader;
 
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.IOException;
-import java.io.StringReader;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 public class CustomXPathTest extends PrintTestCase {
     public CustomXPathTest(String name) {

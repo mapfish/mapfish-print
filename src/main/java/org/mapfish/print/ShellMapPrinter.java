@@ -122,8 +122,8 @@ public class ShellMapPrinter {
 
             } else {
                 final InputStream inFile = getInputStream();
-                //final PJsonObject jsonSpec = printer.parseSpec(FileUtilities.readWholeTextStream(inFile, "UTF-8"));
                 final PJsonObject jsonSpec = MapPrinter.parseSpec(FileUtilities.readWholeTextStream(inFile, "UTF-8"));
+                outFile = getOutputStream(printer.getOutputFormat(jsonSpec).getFileSuffix());
                 printer.print(jsonSpec, outFile, referer);
             }
         } finally {

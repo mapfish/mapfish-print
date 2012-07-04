@@ -19,14 +19,15 @@
 
 package org.mapfish.print.map.renderers.vector;
 
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfGState;
-import org.mapfish.print.utils.PJsonObject;
-import org.mapfish.print.config.ColorWrapper;
 import org.mapfish.print.InvalidValueException;
 import org.mapfish.print.RenderingContext;
+import org.mapfish.print.config.ColorWrapper;
+import org.mapfish.print.utils.PJsonObject;
+
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfGState;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.LineString;
 
 public class LineStringRenderer extends GeometriesRenderer<LineString> {
     protected static void applyStyle(RenderingContext context, PdfContentByte dc, PJsonObject style, PdfGState state) {

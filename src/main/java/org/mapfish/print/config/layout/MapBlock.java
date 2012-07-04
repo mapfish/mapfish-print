@@ -19,16 +19,22 @@
 
 package org.mapfish.print.config.layout;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.PdfContentByte;
 import org.json.JSONException;
 import org.json.JSONWriter;
-import org.mapfish.print.*;
+import org.mapfish.print.InvalidJsonValueException;
+import org.mapfish.print.InvalidValueException;
+import org.mapfish.print.PDFCustomBlocks;
+import org.mapfish.print.PDFUtils;
+import org.mapfish.print.RenderingContext;
+import org.mapfish.print.Transformer;
 import org.mapfish.print.map.MapChunkDrawer;
 import org.mapfish.print.utils.DistanceUnit;
 import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
+
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.PdfContentByte;
 
 /**
  * Bean to configure the !map blocks.

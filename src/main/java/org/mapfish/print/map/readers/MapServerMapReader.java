@@ -19,6 +19,12 @@
 
 package org.mapfish.print.map.readers;
 
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.Transformer;
 import org.mapfish.print.map.ParallelMapTileLoader;
@@ -28,13 +34,24 @@ import org.mapfish.print.utils.PJsonObject;
 import org.pvalsecc.misc.StringUtils;
 import org.pvalsecc.misc.URIUtils;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 public class MapServerMapReader extends HTTPMapReader {
+	
+
+    public static class Factory implements MapReaderFactory {
+		@Override
+		public List<MapReader> create(String type, RenderingContext context,
+				PJsonObject params) {
+			ArrayList<MapReader> target = new ArrayList<MapReader>();
+			PJsonArray layers = params.getJSONArray("layers");
+	        for (int i = 0; i < layers.size(); i++) {
+	            String layer = layers.getString(i);
+	            target.add(new MapServerMapReader(layer, context, params));
+	        }
+			return target;
+		}
+    	
+    }
+	
     private final String format;
     protected final List<String> layers = new ArrayList<String>();
 
@@ -94,14 +111,6 @@ public class MapServerMapReader extends HTTPMapReader {
         }
     }
 
-    protected static void create(List<MapReader> target, RenderingContext context, PJsonObject params) {
-        PJsonArray layers = params.getJSONArray("layers");
-        for (int i = 0; i < layers.size(); i++) {
-            String layer = layers.getString(i);
-            target.add(new MapServerMapReader(layer, context, params));
-        }
-    }
-
     public boolean testMerge(MapReader other) {
         if (canMerge(other)) {
             MapServerMapReader ms = (MapServerMapReader) other;
@@ -127,4 +136,5 @@ public class MapServerMapReader extends HTTPMapReader {
     public String toString() {
         return StringUtils.join(layers, ", ");
     }
+    
 }

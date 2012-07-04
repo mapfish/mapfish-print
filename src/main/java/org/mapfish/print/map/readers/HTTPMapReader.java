@@ -19,6 +19,15 @@
 
 package org.mapfish.print.map.readers;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.mapfish.print.InvalidJsonValueException;
 import org.mapfish.print.RenderingContext;
@@ -28,11 +37,6 @@ import org.mapfish.print.map.renderers.TileRenderer;
 import org.mapfish.print.utils.PJsonObject;
 import org.pvalsecc.misc.MatchAllSet;
 import org.pvalsecc.misc.URIUtils;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
 
 public abstract class HTTPMapReader extends MapReader {
     public static final Logger LOGGER = Logger.getLogger(HTTPMapReader.class);

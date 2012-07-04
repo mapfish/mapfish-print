@@ -19,12 +19,13 @@
 
 package org.mapfish.print.scalebar;
 
+import java.util.List;
+
+import org.mapfish.print.PDFCustomBlocks;
+import org.mapfish.print.config.layout.ScalebarBlock;
+
 import com.lowagie.text.Font;
 import com.lowagie.text.pdf.PdfContentByte;
-import org.mapfish.print.config.layout.ScalebarBlock;
-import org.mapfish.print.PDFCustomBlocks;
-
-import java.util.List;
 
 /**
  * Draw a bar with alternating black and white zones marking the sub-intervals.

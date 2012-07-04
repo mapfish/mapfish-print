@@ -19,12 +19,12 @@
 
 package org.ho.yaml;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+
 import org.apache.log4j.Logger;
 import org.ho.yaml.exception.PropertyAccessException;
 import org.ho.yaml.wrapper.DefaultBeanWrapper;
-
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
 
 /**
  * Fix a few bugs in the original class.

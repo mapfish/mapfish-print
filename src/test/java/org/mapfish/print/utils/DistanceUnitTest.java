@@ -21,8 +21,6 @@ package org.mapfish.print.utils;
 
 import org.mapfish.print.PrintTestCase;
 
-import java.nio.charset.Charset;
-
 public class DistanceUnitTest extends PrintTestCase {
     public DistanceUnitTest(String name) {
         super(name);

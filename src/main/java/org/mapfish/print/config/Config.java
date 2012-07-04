@@ -46,6 +46,7 @@ import org.mapfish.print.PDFUtils;
 import org.mapfish.print.config.layout.Layout;
 import org.mapfish.print.config.layout.Layouts;
 import org.mapfish.print.map.MapTileTask;
+import org.mapfish.print.map.readers.MapReaderFactoryFinder;
 import org.mapfish.print.map.readers.WMSServerInfo;
 import org.mapfish.print.output.OutputFactory;
 import org.pvalsecc.concurrent.OrderedResultsExecutor;
@@ -100,6 +101,8 @@ public class Config {
     private TreeSet<String> formats; // private int svgMaxWidth = -1; private int svgMaxHeight = -1;
 
 	private OutputFactory outputFactory;
+
+	private MapReaderFactoryFinder mapReaderFactoryFinder;
 
     public Config() {
         hosts.add(new LocalHostMatcher());
@@ -449,4 +452,13 @@ public class Config {
     public void setSecurity(List<SecurityStrategy> security) {
         this.security = security;
     }
+
+	public void setMapReaderFactoryFinder(
+			MapReaderFactoryFinder mapReaderFactoryFinder) {
+		this.mapReaderFactoryFinder = mapReaderFactoryFinder;
+	}
+	
+	public MapReaderFactoryFinder getMapReaderFactoryFinder() {
+		return mapReaderFactoryFinder;
+	}
 }

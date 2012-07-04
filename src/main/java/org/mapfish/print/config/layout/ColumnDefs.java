@@ -19,10 +19,10 @@
 
 package org.mapfish.print.config.layout;
 
+import java.util.HashMap;
+
 import org.ho.yaml.wrapper.DefaultMapWrapper;
 import org.mapfish.print.InvalidValueException;
-
-import java.util.HashMap;
 
 /**
  * Just to make sure the values of the hash have the good type.

@@ -19,12 +19,13 @@
 
 package org.mapfish.print.map;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfContentByte;
+import java.io.IOException;
+
 import org.mapfish.print.RenderingContext;
 import org.pvalsecc.concurrent.OrderedResultsExecutor;
 
-import java.io.IOException;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfContentByte;
 
 /**
  * Task for loading and rendering a tile.

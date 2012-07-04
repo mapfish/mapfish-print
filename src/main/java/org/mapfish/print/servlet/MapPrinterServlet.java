@@ -292,9 +292,9 @@ public class MapPrinterServlet extends BaseMapServlet {
         String referer = httpServletRequest.getHeader("Referer");
 
         MapPrinter mapPrinter = getMapPrinter(app);
-		final OutputFormat outputFormat = mapPrinter.outputFormat(specJson);
+		final OutputFormat outputFormat = mapPrinter.getOutputFormat(specJson);
         //create a temporary file that will contain the PDF
-        final File tempJavaFile = File.createTempFile(TEMP_FILE_PREFIX, "."+outputFormat.fileSuffix()+TEMP_FILE_SUFFIX, getTempDir());
+        final File tempJavaFile = File.createTempFile(TEMP_FILE_PREFIX, "."+outputFormat.getFileSuffix()+TEMP_FILE_SUFFIX, getTempDir());
         TempFile tempFile = new TempFile(tempJavaFile, specJson, outputFormat);
 
         FileOutputStream out = null;
@@ -469,8 +469,8 @@ public class MapPrinterServlet extends BaseMapServlet {
             this.outputFileName = jsonSpec.optString(Constants.OUTPUT_FILENAME_KEY);
             this.printedLayoutName = jsonSpec.optString(Constants.JSON_LAYOUT_KEY, null);
 
-            this.suffix = format.fileSuffix();
-            this.contentType = format.contentType();
+            this.suffix = format.getFileSuffix();
+            this.contentType = format.getContentType();
         }
 
         public String getOutputFileName(MapPrinter mapPrinter) {

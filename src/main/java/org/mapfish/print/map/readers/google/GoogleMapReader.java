@@ -19,26 +19,36 @@
 
 package org.mapfish.print.map.readers.google;
 
-import org.mapfish.print.RenderingContext;
-import org.mapfish.print.Transformer;
-import org.mapfish.print.map.ParallelMapTileLoader;
-import org.mapfish.print.map.readers.HTTPMapReader;
-import org.mapfish.print.map.readers.MapReader;
-import org.mapfish.print.map.renderers.TileRenderer;
-import org.mapfish.print.utils.PJsonArray;
-import org.mapfish.print.utils.PJsonObject;
-import org.pvalsecc.misc.URIUtils;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mapfish.print.RenderingContext;
+import org.mapfish.print.Transformer;
+import org.mapfish.print.map.ParallelMapTileLoader;
+import org.mapfish.print.map.readers.HTTPMapReader;
+import org.mapfish.print.map.readers.MapReader;
+import org.mapfish.print.map.readers.MapReaderFactory;
+import org.mapfish.print.map.renderers.TileRenderer;
+import org.mapfish.print.utils.PJsonArray;
+import org.mapfish.print.utils.PJsonObject;
+import org.pvalsecc.misc.URIUtils;
+
 public class GoogleMapReader extends HTTPMapReader {
+	public static class Factory implements MapReaderFactory {
+		@Override
+		public List<? extends MapReader> create(String type, RenderingContext context,
+				PJsonObject params) {
+			return Collections.singletonList(new GoogleMapReader("t", context, params));
+		}
+    }
+	
 
     private final String layer;
     private final GoogleConfig config;
@@ -105,10 +115,6 @@ public class GoogleMapReader extends HTTPMapReader {
         if(config.language != null) URIUtils.addParamOverride(result, "language", config.language);
         if(config.markers.size() > 0) result.put("markers", config.markers);
         if(config.path != null) URIUtils.addParamOverride(result, "path", config.path);
-    }
-
-    public static void create(List<MapReader> target, RenderingContext context, PJsonObject params) {
-        target.add(new GoogleMapReader("t", context, params));
     }
 
     public boolean testMerge(MapReader other) {

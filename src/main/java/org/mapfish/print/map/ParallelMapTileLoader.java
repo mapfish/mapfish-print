@@ -19,11 +19,12 @@
 
 package org.mapfish.print.map;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfContentByte;
 import org.mapfish.print.RenderingContext;
 import org.pvalsecc.concurrent.BlockingSimpleTarget;
 import org.pvalsecc.concurrent.OrderedResultsExecutor;
+
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfContentByte;
 
 /**
  * An instance of this class is in charge of loading in parallel the tiles of a

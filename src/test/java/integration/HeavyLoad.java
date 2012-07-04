@@ -19,6 +19,10 @@
 
 package integration;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.TreeSet;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -26,13 +30,13 @@ import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
-import org.apache.log4j.*;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.pvalsecc.misc.FileUtilities;
 import org.pvalsecc.misc.UnitUtilities;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.TreeSet;
 
 /**
  * Simple program to test a tomcat print module under heavy load.

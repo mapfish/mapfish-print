@@ -19,6 +19,7 @@
 
 package org.mapfish.print.map.renderers.vector;
 
+import org.apache.log4j.Logger;
 import org.mapfish.print.PDFUtils;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.config.ColorWrapper;
@@ -28,7 +29,6 @@ import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
-import org.apache.log4j.Logger;
 
 public class LabelRenderer {
 

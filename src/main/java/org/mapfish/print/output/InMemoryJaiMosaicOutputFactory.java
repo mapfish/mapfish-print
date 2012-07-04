@@ -19,21 +19,7 @@
 
 package org.mapfish.print.output;
 
-import com.lowagie.text.DocumentException;
-import org.apache.log4j.Logger;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.mapfish.print.MapPrinter;
-import org.mapfish.print.RenderingContext;
-import org.mapfish.print.TimeLogger;
-import org.mapfish.print.utils.PJsonObject;
-
-import javax.imageio.ImageIO;
-import javax.media.jai.JAI;
-import javax.media.jai.RenderedOp;
-import javax.media.jai.TileCache;
-import javax.media.jai.operator.MosaicDescriptor;
-import java.awt.*;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
@@ -44,6 +30,21 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.imageio.ImageIO;
+import javax.media.jai.JAI;
+import javax.media.jai.RenderedOp;
+import javax.media.jai.TileCache;
+import javax.media.jai.operator.MosaicDescriptor;
+
+import org.apache.log4j.Logger;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.mapfish.print.RenderingContext;
+import org.mapfish.print.TimeLogger;
+import org.mapfish.print.utils.PJsonObject;
+
+import com.lowagie.text.DocumentException;
 
 /**
  * An output factory that uses pdf box to parse the pdf and create a collection of BufferedImages.  
@@ -161,7 +162,8 @@ public class InMemoryJaiMosaicOutputFactory implements OutputFormatFactory {
             List<BufferedImage> images = new ArrayList<BufferedImage>();
             PDDocument pdf = PDDocument.load(tmpFile);
             try {
-                List<PDPage> pages = pdf.getDocumentCatalog().getAllPages();
+                @SuppressWarnings("unchecked")
+				List<PDPage> pages = pdf.getDocumentCatalog().getAllPages();
 
                 for (PDPage page : pages) {
                     BufferedImage img = page.convertToImage(BufferedImage.TYPE_4BYTE_ABGR, calculateDPI(context, jsonSpec));

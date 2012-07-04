@@ -32,6 +32,6 @@ import com.lowagie.text.DocumentException;
  */
 public interface OutputFormat {
     RenderingContext print(PrintParams params) throws DocumentException;
-    String contentType();
-    String fileSuffix();
+    String getContentType();
+    String getFileSuffix();
 }

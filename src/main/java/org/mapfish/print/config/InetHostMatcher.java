@@ -19,10 +19,14 @@
 
 package org.mapfish.print.config;
 
-import org.apache.log4j.Logger;
-
-import java.net.*;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.SocketException;
+import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.Arrays;
+
+import org.apache.log4j.Logger;
 
 /**
  * Allows to check that a given URL matches an IP address (numeric format)

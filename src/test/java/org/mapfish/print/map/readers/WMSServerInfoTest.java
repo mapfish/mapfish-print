@@ -19,14 +19,15 @@
 
 package org.mapfish.print.map.readers;
 
-import org.mapfish.print.PrintTestCase;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.mapfish.print.PrintTestCase;
+import org.xml.sax.SAXException;
 
 public class WMSServerInfoTest extends PrintTestCase {
     public WMSServerInfoTest(String name) {

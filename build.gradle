@@ -48,6 +48,8 @@ manifest.mainAttributes('Main-Class':'org.mapfish.print.ShellMapPrinter', 'Build
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
+compileJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
+
 jar {
   enabled = true
   baseName = "print-lib"

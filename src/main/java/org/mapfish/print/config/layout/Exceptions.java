@@ -19,9 +19,9 @@
 
 package org.mapfish.print.config.layout;
 
-import org.ho.yaml.wrapper.DefaultCollectionWrapper;
-
 import java.util.ArrayList;
+
+import org.ho.yaml.wrapper.DefaultCollectionWrapper;
 
 /**
  * Just to make sure the values of the hash have the good type.

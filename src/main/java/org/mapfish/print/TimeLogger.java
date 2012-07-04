@@ -19,12 +19,16 @@
 
 package org.mapfish.print;
 
-import org.apache.log4j.Logger;
+import static org.apache.log4j.Priority.DEBUG_INT;
+import static org.apache.log4j.Priority.ERROR_INT;
+import static org.apache.log4j.Priority.FATAL_INT;
+import static org.apache.log4j.Priority.INFO_INT;
+import static org.apache.log4j.Priority.WARN_INT;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import static org.apache.log4j.Priority.*;
+import org.apache.log4j.Logger;
 
 /**
  * User: jeichar
