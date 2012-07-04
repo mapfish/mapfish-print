@@ -19,12 +19,9 @@
 
 package org.mapfish.print.output;
 
-import com.lowagie.text.DocumentException;
-import org.mapfish.print.MapPrinter;
 import org.mapfish.print.RenderingContext;
-import org.mapfish.print.utils.PJsonObject;
 
-import java.io.OutputStream;
+import com.lowagie.text.DocumentException;
 
 /**
  * Interface for exporting the generated PDF from MapPrinter.
@@ -34,7 +31,7 @@ import java.io.OutputStream;
  * Time: 1:49:41 PM
  */
 public interface OutputFormat {
-    RenderingContext print(MapPrinter printer, PJsonObject jsonSpec, OutputStream out, String referer) throws DocumentException;
+    RenderingContext print(PrintParams params) throws DocumentException;
     String contentType();
     String fileSuffix();
 }

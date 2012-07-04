@@ -43,12 +43,31 @@ import com.lowagie.text.DocumentException;
  * 
  * It include an hack to correct the transparency layer opacity.
  * 
- * To use it the system property USE_IMAGEMAGICK should be set to true.
  *  
  * @author Stéphane Brunner
  */
-public class ImageOutputImageMagickFactory implements OutputFormatFactory {
+public class ImageMagickOutputFactory implements OutputFormatFactory {
     
+	private String imageMagickCommand;
+
+	public ImageMagickOutputFactory() {
+		if(java.lang.management.ManagementFactory.getOperatingSystemMXBean().getName().toLowerCase().contains("win")) {
+			imageMagickCommand = "convert";
+		} else {
+			imageMagickCommand = "/usr/bin/convert";
+		}
+	}
+	/**
+	 * Set the path and command of the image magic convert command.  
+	 * 
+	 * Default value is /usr/bin/convert on linux and just convert on windows (assumes it is on the path)
+	 *
+	 * value is typically injected by spring dependency injection
+	 */
+	public void setImageMagickCommand(String imageMagickCommand) {
+		this.imageMagickCommand = imageMagickCommand;
+	}
+	
     @Override
     public List<String> formats() {
         return Collections.singletonList("png");
@@ -56,7 +75,7 @@ public class ImageOutputImageMagickFactory implements OutputFormatFactory {
 
     @Override
     public OutputFormat create(String format) {
-        return new ImageOutput(format);
+        return new ImageOutput(format, imageMagickCommand);
     }
 
     @Override
@@ -70,20 +89,22 @@ public class ImageOutputImageMagickFactory implements OutputFormatFactory {
          * The logger.
          */
         public static final Logger LOGGER = Logger.getLogger(ImageOutput.class);
+		private String imageMagickCmd;
 
         /**
          * Construct.
          * @param format
          */
-        public ImageOutput(String format) {
+        public ImageOutput(String format, String imageMagickCmd) {
             super(format);
+            this.imageMagickCmd = imageMagickCmd;
         }
 
         @Override
-        public RenderingContext print(MapPrinter printer, PJsonObject jsonSpec, OutputStream out, String referer) throws DocumentException {
+        public RenderingContext print(PrintParams params) throws DocumentException {
             // Hack to correct the transparency
             {
-                PJsonArray layers = jsonSpec.getJSONArray("layers");
+                PJsonArray layers = params.jsonSpec.getJSONArray("layers");
                 
                 // a*x²+b*x+c
                 final double a = -0.3;
@@ -112,7 +133,7 @@ public class ImageOutputImageMagickFactory implements OutputFormatFactory {
                 RenderingContext context;
                 try {
                     TimeLogger timeLog = TimeLogger.info(LOGGER, "PDF Creation");
-                    context = printer.print(jsonSpec, tmpOut, referer);
+                    context = doPrint(params.withOutput(tmpOut));
                     timeLog.done();
                 } finally {
                     tmpOut.close();
@@ -120,11 +141,11 @@ public class ImageOutputImageMagickFactory implements OutputFormatFactory {
 
                 TimeLogger timeLog = TimeLogger.info(LOGGER, "Pdf to image conversion");
                 tmpPngFile = File.createTempFile("mapfishprint", ".png");
-                createImage(jsonSpec, tmpPdfFile, tmpPngFile, context);
+                createImage(params.jsonSpec, tmpPdfFile, tmpPngFile, context);
                 timeLog.done();
 
                 timeLog = TimeLogger.info(LOGGER, "Write Image");
-                drawImage(out, tmpPngFile);
+                drawImage(params.outputStream, tmpPngFile);
                 timeLog.done();
 
                 return context;
@@ -172,7 +193,7 @@ public class ImageOutputImageMagickFactory implements OutputFormatFactory {
          */
         private void createImage(PJsonObject jsonSpec, File tmpPdfFile, File tmpPngFile, RenderingContext context) throws IOException {
             int dpi = calculateDPI(context, jsonSpec);
-            String cmd = "/usr/bin/convert -density " + dpi + "x" + dpi + " " 
+            String cmd = imageMagickCmd+" -density " + dpi + "x" + dpi + " " 
                     + tmpPdfFile.getAbsolutePath() + " " + tmpPngFile.getAbsolutePath();
             LOGGER.info("Run: " + cmd);
             Process p = Runtime.getRuntime().exec(cmd);

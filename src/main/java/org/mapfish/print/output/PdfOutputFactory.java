@@ -31,11 +31,13 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * OutputFormat and factory that Outputs PDF objects
+ * 
  * User: jeichar
  * Date: Oct 18, 2010
  * Time: 2:00:30 PM
  */
-public class PdfOutput implements OutputFormat, OutputFormatFactory {
+public class PdfOutputFactory extends AbstractOutputFormat implements OutputFormatFactory {
 
     public String contentType() {
         return "application/pdf";
@@ -57,9 +59,9 @@ public class PdfOutput implements OutputFormat, OutputFormatFactory {
         return this;
     }
 
-    public RenderingContext print(MapPrinter printer, PJsonObject jsonSpec, OutputStream out, String referer) throws DocumentException {
-        final TimeLogger timeLog = TimeLogger.info(Logger.getLogger(PdfOutput.class), "PDF Creation");
-        final RenderingContext context = printer.print(jsonSpec, out, referer);
+    public RenderingContext print(PrintParams params) throws DocumentException {
+        final TimeLogger timeLog = TimeLogger.info(Logger.getLogger(PdfOutputFactory.class), "PDF Creation");
+        final RenderingContext context = doPrint(params);
         timeLog.done();
         
         return context;

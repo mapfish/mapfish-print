@@ -19,20 +19,14 @@
 
 package org.mapfish.print.servlet;
 
-import com.lowagie.text.DocumentException;
-import org.json.JSONException;
-import org.json.JSONWriter;
-import org.mapfish.print.Constants;
-import org.mapfish.print.MapPrinter;
-import org.mapfish.print.output.OutputFactory;
-import org.mapfish.print.output.OutputFormat;
-import org.mapfish.print.utils.PJsonObject;
-import org.pvalsecc.misc.FileUtilities;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -42,6 +36,20 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONException;
+import org.json.JSONWriter;
+import org.mapfish.print.Constants;
+import org.mapfish.print.MapPrinter;
+import org.mapfish.print.output.OutputFormat;
+import org.mapfish.print.utils.PJsonObject;
+import org.pvalsecc.misc.FileUtilities;
+
+import com.lowagie.text.DocumentException;
 
 /**
  * Main print servlet.
@@ -283,7 +291,8 @@ public class MapPrinterServlet extends BaseMapServlet {
 
         String referer = httpServletRequest.getHeader("Referer");
 
-        final OutputFormat outputFormat = OutputFactory.create(getMapPrinter(app).getConfig(),specJson);
+        MapPrinter mapPrinter = getMapPrinter(app);
+		final OutputFormat outputFormat = mapPrinter.outputFormat(specJson);
         //create a temporary file that will contain the PDF
         final File tempJavaFile = File.createTempFile(TEMP_FILE_PREFIX, "."+outputFormat.fileSuffix()+TEMP_FILE_SUFFIX, getTempDir());
         TempFile tempFile = new TempFile(tempJavaFile, specJson, outputFormat);
@@ -291,17 +300,13 @@ public class MapPrinterServlet extends BaseMapServlet {
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(tempFile);
-
-            outputFormat.print(getMapPrinter(app), specJson, out, referer);
+            mapPrinter.print(specJson, out, referer);
 
             return tempFile;
         } catch (IOException e) {
             deleteFile(tempFile);
             throw e;
         } catch (DocumentException e) {
-            deleteFile(tempFile);
-            throw e;
-        } catch (ServletException e) {
             deleteFile(tempFile);
             throw e;
         } finally {

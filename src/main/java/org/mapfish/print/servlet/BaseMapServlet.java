@@ -21,7 +21,9 @@ package org.mapfish.print.servlet;
 
 import org.apache.log4j.Logger;
 import org.mapfish.print.MapPrinter;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import java.io.File;
@@ -52,6 +54,7 @@ public abstract class BaseMapServlet extends HttpServlet {
      * </ul>
      * <p/>
      * If the location is a relative path, it's taken from the servlet's root directory.
+     * @param servletContext 
      */
     protected synchronized MapPrinter getMapPrinter(String app) throws ServletException {
         String configPath = getInitParameter("config");
@@ -130,7 +133,7 @@ public abstract class BaseMapServlet extends HttpServlet {
             //debugPath += "printer == null, lastModified from configFile = "+lastModified+"\n";
             try {
                 LOGGER.info("Loading configuration file: " + configFile.getAbsolutePath());
-                printer = new MapPrinter(configFile);
+                printer = WebApplicationContextUtils.getWebApplicationContext(getServletContext()).getBean(MapPrinter.class).setYamlConfigFile(configFile);
                 if (app != null) {
                 	if (printers == null) {
                 		printers = new HashMap<String, MapPrinter>();
@@ -150,11 +153,4 @@ public abstract class BaseMapServlet extends HttpServlet {
         return printer;
     }
 
-    @Override
-    public synchronized void destroy() {
-        if(printer != null) {
-            printer.stop();
-        }
-        super.destroy();
-    }
 }

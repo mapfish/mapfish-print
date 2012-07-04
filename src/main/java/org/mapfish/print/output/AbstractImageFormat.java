@@ -19,16 +19,24 @@
 
 package org.mapfish.print.output;
 
+
+import org.mapfish.print.Constants;
+import org.mapfish.print.MapPrinter;
 import org.mapfish.print.RenderingContext;
+import org.mapfish.print.config.layout.Layout;
 import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
+
+import com.lowagie.text.Document;
+import com.lowagie.text.pdf.PdfStream;
+import com.lowagie.text.pdf.PdfWriter;
 
 /**
  * User: jeichar
  * Date: 10/21/10
  * Time: 11:18 AM
  */
-abstract class AbstractImageFormat implements OutputFormat {
+abstract class AbstractImageFormat extends AbstractOutputFormat implements OutputFormat {
     protected static final float MARGIN = 20;
 
     protected final String format;

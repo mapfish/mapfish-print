@@ -28,6 +28,7 @@ import org.mapfish.print.config.layout.Block;
 import org.mapfish.print.config.layout.Layout;
 import org.mapfish.print.config.layout.MainPage;
 import org.mapfish.print.config.layout.MapBlock;
+import org.mapfish.print.output.OutputFactory;
 import org.mapfish.print.utils.PJsonObject;
 import org.pvalsecc.misc.FileUtilities;
 

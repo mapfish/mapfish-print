@@ -20,19 +20,20 @@
 package org.mapfish.print.output;
 
 import com.lowagie.text.DocumentException;
-import com.sun.media.jai.codec.FileSeekableStream;
 import org.apache.log4j.Logger;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.TimeLogger;
-import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
 
 import javax.imageio.ImageIO;
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
+import javax.media.jai.TileCache;
+import javax.media.jai.operator.MosaicDescriptor;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
@@ -44,32 +45,55 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ImageOutputScalableFactory extends ImageOutputFactory {
+/**
+ * An output factory that uses pdf box to parse the pdf and create a collection of BufferedImages.  
+ * 
+ * Then using JAI Mosaic operation the buffered images are combined into one RenderableImage (virtual image)
+ * and that is written to a file using ImageIO
+ * 
+ * User: jeichar
+ * Date: Oct 18, 2010
+ * Time: 2:00:30 PM
+ */
+public class InMemoryJaiMosaicOutputFactory implements OutputFormatFactory {
 
-    @Override
+    public List<String> formats() {
+	try {
+	    String[] formats = ImageIO.getWriterFormatNames();
+	    return Arrays.asList(formats);
+	} catch (Throwable t) {
+	    return new ArrayList<String>();
+	}
+    }
+
     public OutputFormat create(String format) {
-        return new ImageOutputScalable(format);
+        return new ImageOutput(format);
     }
 
     public String enablementStatus() {
-        if(super.enablementStatus() != null) {
-            return super.enablementStatus();
+         try {
+            MosaicDescriptor.class.getSimpleName();
+        } catch (Throwable e) {
+            return "JAI required";
         }
-        if(!formats().contains("TIF")) {
-            return "TIF not supported by ImageIO";
+
+        try {
+            MosaicDescriptor.class.getSimpleName();
+        } catch (Throwable e) {
+            return "JAI MosaicDescriptor not available on classpath";
         }
         return null;
     }
 
-    public static class ImageOutputScalable extends AbstractImageFormat {
+    public static class ImageOutput extends AbstractImageFormat {
 
-        public static final Logger LOGGER = Logger.getLogger(ImageOutputScalable.class);
+        public static final Logger LOGGER = Logger.getLogger(ImageOutput.class);
 
-        public ImageOutputScalable(String format) {
+        public ImageOutput(String format) {
             super(format);
         }
 
-        public RenderingContext print(MapPrinter printer, PJsonObject jsonSpec, OutputStream out, String referer) throws DocumentException {
+        public RenderingContext print(PrintParams params) throws DocumentException {
             File tmpFile = null;
             try {
                 tmpFile = File.createTempFile("mapfishprint", ".pdf");
@@ -77,18 +101,18 @@ public class ImageOutputScalableFactory extends ImageOutputFactory {
                 RenderingContext context;
                 try {
                     TimeLogger timeLog = TimeLogger.info(LOGGER, "PDF Creation");
-                    context = printer.print(jsonSpec, tmpOut, referer);
+                    context =  doPrint(params.withOutput(tmpOut));
                     timeLog.done();
                 } finally {
                     tmpOut.close();
                 }
 
                 TimeLogger timeLog = TimeLogger.info(LOGGER, "Pdf to image conversion");
-                List<ImageInfo> images = createImages(jsonSpec, tmpFile, context);
+                List<BufferedImage> images = createImages(params.jsonSpec, tmpFile, context);
                 timeLog.done();
 
-                timeLog = TimeLogger.info(LOGGER, "Write Mosaiced Image");
-                drawImage(out, images);
+                timeLog = TimeLogger.info(LOGGER, "Write Image");
+                drawImage(params.outputStream, images);
                 timeLog.done();
 
                 return context;
@@ -96,7 +120,7 @@ public class ImageOutputScalableFactory extends ImageOutputFactory {
                 throw new RuntimeException(e);
             } finally {
                 if (tmpFile != null) {
-                    if(!tmpFile.delete()) {
+                    if (!tmpFile.delete()) {
                         LOGGER.warn(tmpFile+" was not able to be deleted for unknown reason.  Will try again on shutdown");
                     }
                     tmpFile.deleteOnExit();
@@ -104,70 +128,49 @@ public class ImageOutputScalableFactory extends ImageOutputFactory {
             }
         }
 
-        private void drawImage(OutputStream out, List<ImageInfo> images) throws IOException {
+        private void drawImage(OutputStream out, List<? extends RenderedImage> images) throws IOException {
 
             ParameterBlock pbMosaic = new ParameterBlock();
             float height = 0;
             float width = 0;
 
             int i = 0;
-            for (ImageInfo imageinfo : images) {
-                ParameterBlock pb = new ParameterBlock();
-                pb.add(new FileSeekableStream(imageinfo.imageFile));
-                pb.add(null);
-                pb.add(null);
-                RenderedOp source = JAI.create("TIFF", pb);
+            for (RenderedImage source : images) {
                 i++;
                 LOGGER.debug("Adding page image " + i + " bounds: [" + 0 + "," + height + " " + source.getWidth() + "," + (height + source.getHeight()) + "]");
-                RenderedOp translated = translateImage(height, source);
+                ParameterBlock pbTranslate = new ParameterBlock();
+                pbTranslate.addSource(source);
+                pbTranslate.add(0f);
+                pbTranslate.add(height);
+                RenderedOp translated = JAI.create("translate", pbTranslate);
 
                 pbMosaic.addSource(translated);
 
-                height += imageinfo.height + MARGIN;
-                if (width < imageinfo.width) width = imageinfo.width;
+                height += source.getHeight() + MARGIN;
+                if (width < source.getWidth()) width = source.getWidth();
             }
 
-            RenderedOp mosaic = JAI.create("mosaic", pbMosaic);
+            TileCache cache = JAI.createTileCache((long) (height * width * 400));
+            RenderingHints hints = new RenderingHints(JAI.KEY_TILE_CACHE, cache);
+
+            RenderedOp mosaic = JAI.create("mosaic", pbMosaic, hints);
             ImageIO.write(mosaic, format, out);
         }
 
-        private RenderedOp translateImage(float height, RenderedImage source) {
-            ParameterBlock pbTranslate = new ParameterBlock();
-            pbTranslate.addSource(source);
-            pbTranslate.add(0f);
-            pbTranslate.add(height);
-            return JAI.create("translate", pbTranslate);
-        }
-
-        private List<ImageInfo> createImages(PJsonObject jsonSpec, File tmpFile, RenderingContext context) throws IOException {
-            List<ImageInfo> images = new ArrayList<ImageInfo>();
+        private List<BufferedImage> createImages(PJsonObject jsonSpec, File tmpFile, RenderingContext context) throws IOException {
+            List<BufferedImage> images = new ArrayList<BufferedImage>();
             PDDocument pdf = PDDocument.load(tmpFile);
             try {
                 List<PDPage> pages = pdf.getDocumentCatalog().getAllPages();
 
                 for (PDPage page : pages) {
-                    BufferedImage img = page.convertToImage(BufferedImage.TYPE_INT_RGB, calculateDPI(context, jsonSpec));
-                    File file = File.createTempFile("pdfToImage", "tiff");
-                    ImageIO.write(img, "TIF", file);
-                    images.add(new ImageInfo(file, img.getWidth(), img.getHeight()));
+                    BufferedImage img = page.convertToImage(BufferedImage.TYPE_4BYTE_ABGR, calculateDPI(context, jsonSpec));
+                    images.add(img);
                 }
             } finally {
                 pdf.close();
             }
             return images;
-        }
-
-    }
-
-    static class ImageInfo {
-        final File imageFile;
-        final int width, height;
-
-        ImageInfo(File imageFile, int width, int height) {
-            this.imageFile = imageFile;
-
-            this.width = width;
-            this.height = height;
         }
     }
 }

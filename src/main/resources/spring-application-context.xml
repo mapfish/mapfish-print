@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+	<context:annotation-config></context:annotation-config>
+	<bean id="outputFactory" class="org.mapfish.print.output.OutputFactory">
+		<property name="formatFactories">
+			<list>
+				<!-- Uncomment to use image magick for image output -->
+				<!-- <ref bean="imageMagickOutput" />  -->
+				<ref bean="fileCachingJaiMosaicOutputFactory" />
+				<ref bean="inMemoryJaiMosaicOutputFactory" />
+				<ref bean="pdfOutputFactory" />
+			</list>
+		</property>
+	</bean>
+	<bean id="mapPrinter" class="org.mapfish.print.MapPrinter"></bean>
+	<bean id="configFactory" class="org.mapfish.print.config.ConfigFactory"></bean>
+
+	<bean id="imageMagickOutput" class="org.mapfish.print.output.ImageMagickOutputFactory">
+		<!-- Default is to use /usr/bin/convert on linux and just plain convert on windows if this is 
+			 not acceptable in your application then uncomment property below and enter correct value for your environment -->
+		<!-- <property name="imageMagickCommand"><value>/usr/bin/convert</value></property>  -->
+	</bean>
+	<bean id="fileCachingJaiMosaicOutputFactory" class="org.mapfish.print.output.FileCachingJaiMosaicOutputFactory"/>
+	<bean id="inMemoryJaiMosaicOutputFactory" class="org.mapfish.print.output.InMemoryJaiMosaicOutputFactory"/>
+	<bean id="pdfOutputFactory" class="org.mapfish.print.output.PdfOutputFactory"/>
+</beans>
