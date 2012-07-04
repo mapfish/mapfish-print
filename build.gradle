@@ -13,10 +13,11 @@ apply plugin: 'project-report'
 
 defaultTasks 'jar', 'war', 'standalone'
 
-MAPFISH_REPO='http://dev.mapfish.org/maven/repository'
+def MAPFISH_REPO='http://dev.mapfish.org/maven/repository'
 repositories {
-  mavenRepo urls: MAPFISH_REPO
-  mavenRepo urls: ["http://www.ibiblio.org/maven2", "http://download.osgeo.org/webdav/geotools"]
+  mavenRepo url: MAPFISH_REPO
+  mavenRepo url: "http://download.osgeo.org/webdav/geotools"
+  mavenRepo url: "http://www.ibiblio.org/maven2"
   mavenCentral()
 }
 
