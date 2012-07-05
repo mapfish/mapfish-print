@@ -38,7 +38,29 @@
 	<bean id="imageMagickOutput" class="org.mapfish.print.output.ImageMagickOutputFactory">
 		<!-- Default is to use /usr/bin/convert on linux and just plain convert on windows if this is 
 			 not acceptable in your application then uncomment property below and enter correct value for your environment -->
-		<!-- <property name="imageMagickCommand"><value>/usr/bin/convert</value></property>  -->
+		<!-- <property name="imageMagickCmd">
+			<value>/usr/bin/convert</value>
+		</property> -->
+		
+		<property name="imageMagickArgs">
+			<list>
+				<value>/usr/bin/convert</value>
+				<value>-density</value>
+				<value>${dpi}x${dpi}</value>
+				<value>${sourceFile}</value>
+				<value>${targetFile}</value>
+			</list>
+		</property>
+		<property name="formats">
+			<list>
+				<value>jpg</value>
+				<value>png</value>
+				<value>tif</value>
+				<value>tiff</value>
+				<value>gif</value>
+				<value>bmp</value>
+			</list>
+		</property>
 	</bean>
 	<bean id="fileCachingJaiMosaicOutputFactory" class="org.mapfish.print.output.FileCachingJaiMosaicOutputFactory"/>
 	<bean id="inMemoryJaiMosaicOutputFactory" class="org.mapfish.print.output.InMemoryJaiMosaicOutputFactory"/>

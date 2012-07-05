@@ -76,6 +76,9 @@ public class ShellMapPrinter {
     @Option(desc = "Property file for the log4j configuration")
     private String log4jConfig = null;
 
+    @Option(desc = "Spring configuration file to use in addition to the default.  This allows overriding certain values if desired")
+    private String springConfig = null;
+
 	private final ClassPathXmlApplicationContext context;
 
     public ShellMapPrinter(String[] args) throws IOException {
@@ -85,7 +88,13 @@ public class ShellMapPrinter {
             help(invalidOption.getMessage());
         }
         configureLogs();
-        this.context = new ClassPathXmlApplicationContext(DEFAULT_SPRING_CONTEXT);
+        String[] files;
+        if(springConfig != null) {
+        	files = new String[]{DEFAULT_SPRING_CONTEXT, springConfig};
+        } else {
+        	files = new String[]{DEFAULT_SPRING_CONTEXT};
+        }
+        this.context = new ClassPathXmlApplicationContext(files);
         
     }
 

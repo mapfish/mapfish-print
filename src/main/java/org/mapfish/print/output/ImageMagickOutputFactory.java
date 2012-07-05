@@ -20,6 +20,7 @@
 package org.mapfish.print.output;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -27,8 +28,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -37,7 +39,6 @@ import org.mapfish.print.RenderingContext;
 import org.mapfish.print.TimeLogger;
 import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
-import org.pvalsecc.misc.FileUtilities;
 
 import com.lowagie.text.DocumentException;
 
@@ -52,34 +53,62 @@ import com.lowagie.text.DocumentException;
  */
 public class ImageMagickOutputFactory implements OutputFormatFactory {
     
-	private String imageMagickCommand;
+	private String imageMagickCmd;
+	private List<String> imageMagickArgs = new ArrayList<String>();
+	private List<String> formats = new ArrayList<String>();
 
 	public ImageMagickOutputFactory() {
+		
 		if(java.lang.management.ManagementFactory.getOperatingSystemMXBean().getName().toLowerCase().contains("win")) {
-			imageMagickCommand = "convert";
+			imageMagickCmd = "convert";
 		} else {
-			imageMagickCommand = "/usr/bin/convert";
+			imageMagickCmd = "/usr/bin/convert";
 		}
+		
+		imageMagickArgs.add("-density");
+		imageMagickArgs.add("${dpi}x${dpi}");
+		imageMagickArgs.add("${sourceFile}");
+		imageMagickArgs.add("${targetFile}");
+		
+		formats.add("jpg");
+		formats.add("gif");
+		formats.add("png");
+		formats.add("bmp");
+		formats.add("tif");
+		formats.add("tiff");
 	}
 	/**
 	 * Set the path and command of the image magic convert command.  
 	 * 
 	 * Default value is /usr/bin/convert on linux and just convert on windows (assumes it is on the path)
-	 *
+	 * 
 	 * value is typically injected by spring dependency injection
 	 */
-	public void setImageMagickCommand(String imageMagickCommand) {
-		this.imageMagickCommand = imageMagickCommand;
+	public void setImageMagickCmd(String imageMagickCmd) {
+		this.imageMagickCmd = imageMagickCmd;
+	}
+	/**
+	 * Set arguments when executing the imageMagickCmd.  
+	 * 
+	 * Default parameters are "-density", "${dpi}x${dpi}", "${sourceFile}" and "${targetFile}"
+	 * 
+	 * value is typically injected by spring dependency injection
+	 */
+	public void setImageMagickArgs(List<String> imageMagickArgs) {
+		this.imageMagickArgs = imageMagickArgs;
+	}
+	public void setFormats(List<String> formats) {
+		this.formats = formats;
 	}
 	
     @Override
     public List<String> formats() {
-        return Collections.singletonList("png");
+        return formats;
     }
 
     @Override
     public OutputFormat create(String format) {
-        return new ImageOutput(format, imageMagickCommand);
+        return new ImageOutput(format, imageMagickCmd, imageMagickArgs);
     }
 
     @Override
@@ -93,15 +122,16 @@ public class ImageMagickOutputFactory implements OutputFormatFactory {
          * The logger.
          */
         public static final Logger LOGGER = Logger.getLogger(ImageOutput.class);
-		private String imageMagickCmd;
-
+		private List<String> imageMagickArgs;
+		private String cmd;
         /**
          * Construct.
          * @param format
          */
-        public ImageOutput(String format, String imageMagickCmd) {
+        public ImageOutput(String format, String cmd, List<String> imageMagickArgs) {
             super(format);
-            this.imageMagickCmd = imageMagickCmd;
+            this.cmd = cmd;
+            this.imageMagickArgs = imageMagickArgs;
         }
 
         @Override
@@ -178,16 +208,25 @@ public class ImageMagickOutputFactory implements OutputFormatFactory {
          * @throws IOException on IO error
          */
         private void drawImage(OutputStream out, File tmpPngFile) throws IOException {
-            FileInputStream input = new FileInputStream(tmpPngFile);
-            byte[] buffer = new byte[1024*10]; // Adjust if you want
-            int bytesRead;
-            while ((bytesRead = input.read(buffer)) != -1)
-            {
-                out.write(buffer, 0, bytesRead);
+            FileInputStream inputStream = new FileInputStream(tmpPngFile);
+			FileChannel channel = inputStream.getChannel();
+            try {
+	            channel.transferTo(0, tmpPngFile.length(), Channels.newChannel(out));
+            } finally {
+            	closeQuiet(channel);
+            	closeQuiet(inputStream);
             }
         }
 
-        /**
+        private void closeQuiet(Closeable c) {
+        	try {
+        		if(c != null) c.close();
+        	} catch(Throwable e) {
+        		LOGGER.error("Error closing resource", e);
+        	}
+		}
+
+		/**
          * Creates a PNG image from a PDF file using the convert command provide by Image Magick 
          * @param jsonSpec the spec used to know the DPI value
          * @param tmpPdfFile the PDF file
@@ -198,13 +237,26 @@ public class ImageMagickOutputFactory implements OutputFormatFactory {
         private void createImage(PJsonObject jsonSpec, File tmpPdfFile, File tmpPngFile, RenderingContext context) throws IOException {
             int dpi = calculateDPI(context, jsonSpec);
             
-            /*FileChannel in = new FileInputStream(tmpPdfFile).getChannel();
+            FileChannel in = new FileInputStream(tmpPdfFile).getChannel();
             FileChannel out = new FileOutputStream(new File("c:\\p.pdf")).getChannel();
             out.transferFrom(in, 0, tmpPdfFile.length());
             in.close();
-            out.close();*/
-            ProcessBuilder builder = new ProcessBuilder(imageMagickCmd, "-density", dpi+"x"+dpi, tmpPdfFile.getAbsolutePath(), tmpPngFile.getAbsolutePath());
-            LOGGER.info("Run: " + builder.command());
+            out.close();
+            
+            String[] finalCommands = new String[imageMagickArgs.size()+1];
+            finalCommands[0] = cmd;
+            
+            for (int i = 1; i < finalCommands.length; i++) {
+				String arg = imageMagickArgs.get(i)
+						.replace("${dpi}", ""+dpi)
+						.replace("${targetFile}", tmpPngFile.getAbsolutePath())
+						.replace("${sourceFile}", tmpPdfFile.getAbsolutePath());
+				
+				finalCommands[i] = arg;
+			}
+            
+            ProcessBuilder builder = new ProcessBuilder(finalCommands);
+            LOGGER.info("Executing process: " + builder.command());
             
             Process p = builder.start();
             
