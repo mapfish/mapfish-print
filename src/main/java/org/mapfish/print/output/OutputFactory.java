@@ -63,7 +63,7 @@ public class OutputFactory {
                     }
                 }
             } else {
-                LOGGER.warn("OutputFormatFactory " + (formatFactory.getClass().getSimpleName()) + " is disabled: " + enablementMsg);
+                LOGGER.warn("OutputFormatFactory " + (formatFactory.getClass().getName()) + " is disabled: " + enablementMsg);
             }
         }
 

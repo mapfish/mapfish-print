@@ -42,7 +42,9 @@ import org.pvalsecc.misc.FileUtilities;
 import org.pvalsecc.opts.GetOptions;
 import org.pvalsecc.opts.InvalidOption;
 import org.pvalsecc.opts.Option;
+import org.springframework.context.support.AbstractXmlApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import com.lowagie.text.DocumentException;
 
@@ -79,7 +81,7 @@ public class ShellMapPrinter {
     @Option(desc = "Spring configuration file to use in addition to the default.  This allows overriding certain values if desired")
     private String springConfig = null;
 
-	private final ClassPathXmlApplicationContext context;
+	private AbstractXmlApplicationContext context;
 
     public ShellMapPrinter(String[] args) throws IOException {
         try {
@@ -88,14 +90,11 @@ public class ShellMapPrinter {
             help(invalidOption.getMessage());
         }
         configureLogs();
-        String[] files;
-        if(springConfig != null) {
-        	files = new String[]{DEFAULT_SPRING_CONTEXT, springConfig};
-        } else {
-        	files = new String[]{DEFAULT_SPRING_CONTEXT};
-        }
-        this.context = new ClassPathXmlApplicationContext(files);
+        this.context = new ClassPathXmlApplicationContext(DEFAULT_SPRING_CONTEXT);
         
+        if(springConfig != null) {
+        	this.context = new FileSystemXmlApplicationContext(new String[]{"classpath:/"+DEFAULT_SPRING_CONTEXT, springConfig});
+        }
     }
 
     private void help(String message) {

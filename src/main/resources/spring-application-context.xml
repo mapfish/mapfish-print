@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
+<beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:p="http://www.springframework.org/schema/p"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
@@ -39,14 +39,14 @@
 		<!-- Default is to use /usr/bin/convert on linux and just plain convert on windows if this is 
 			 not acceptable in your application then uncomment property below and enter correct value for your environment -->
 		<!-- <property name="imageMagickCmd">
-			<value>/usr/bin/convert</value>
+			<value>/usr/local/convert</value>
 		</property> -->
 		
 		<property name="imageMagickArgs">
 			<list>
-				<value>/usr/bin/convert</value>
 				<value>-density</value>
-				<value>${dpi}x${dpi}</value>
+				<value>${dpi}</value>
+				<value>-append</value>
 				<value>${sourceFile}</value>
 				<value>${targetFile}</value>
 			</list>

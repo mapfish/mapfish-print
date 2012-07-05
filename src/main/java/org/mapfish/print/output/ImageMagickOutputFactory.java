@@ -67,6 +67,7 @@ public class ImageMagickOutputFactory implements OutputFormatFactory {
 		
 		imageMagickArgs.add("-density");
 		imageMagickArgs.add("${dpi}x${dpi}");
+		imageMagickArgs.add("-append");
 		imageMagickArgs.add("${sourceFile}");
 		imageMagickArgs.add("${targetFile}");
 		
@@ -237,17 +238,16 @@ public class ImageMagickOutputFactory implements OutputFormatFactory {
         private void createImage(PJsonObject jsonSpec, File tmpPdfFile, File tmpPngFile, RenderingContext context) throws IOException {
             int dpi = calculateDPI(context, jsonSpec);
             
-            FileChannel in = new FileInputStream(tmpPdfFile).getChannel();
-            FileChannel out = new FileOutputStream(new File("c:\\p.pdf")).getChannel();
-            out.transferFrom(in, 0, tmpPdfFile.length());
-            in.close();
-            out.close();
-            
             String[] finalCommands = new String[imageMagickArgs.size()+1];
             finalCommands[0] = cmd;
+//            FileChannel in = new FileInputStream(tmpPdfFile).getChannel();
+//            FileChannel out = new FileOutputStream(new File("p.pdf")).getChannel();
+//            out.transferFrom(in, 0, tmpPdfFile.length());
+//            in.close();
+//            out.close();
             
             for (int i = 1; i < finalCommands.length; i++) {
-				String arg = imageMagickArgs.get(i)
+				String arg = imageMagickArgs.get(i-1)
 						.replace("${dpi}", ""+dpi)
 						.replace("${targetFile}", tmpPngFile.getAbsolutePath())
 						.replace("${sourceFile}", tmpPdfFile.getAbsolutePath());
