@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+	<context:annotation-config></context:annotation-config>
+	<bean id="mapPrinter" class="org.mapfish.print.MapPrinter"></bean>
+	<bean id="configFactory" class="org.mapfish.print.config.ConfigFactory"></bean>
+
+	<!-- Define MapReaderFactories -->
+	<bean id="mapReaderFactoryFinder" class="org.mapfish.print.map.readers.MapReaderFactoryFinder"/>
+	<bean id="wms-MapReaderFactory" class="org.mapfish.print.map.readers.WMSMapReader$Factory"/>
+	<bean id="mapServer-MapReaderFactory" class="org.mapfish.print.map.readers.MapServerMapReader$Factory"/>
+	<bean id="tileCache-MapReaderFactory" class="org.mapfish.print.map.readers.TileCacheMapReader$Factory"/>
+	<bean id="osm-MapReaderFactory" class="org.mapfish.print.map.readers.OsmMapReader$Factory"/>
+	<bean id="tms-MapReaderFactory" class="org.mapfish.print.map.readers.TmsMapReader$Factory"/>
+	<bean id="vector-MapReaderFactory" class="org.mapfish.print.map.readers.VectorMapReader$Factory"/>
+	<bean id="image-MapReaderFactory" class="org.mapfish.print.map.readers.ImageMapReader$Factory"/>
+	<bean id="tiledGoogle-MapReaderFactory" class="org.mapfish.print.map.readers.google.GoogleMapTileReader$Factory"/>
+	<bean id="google-MapReaderFactory" class="org.mapfish.print.map.readers.google.GoogleMapReader$Factory"/>
+	<bean id="kaMapCache-ReaderFactory" class="org.mapfish.print.map.readers.KaMapCacheMapReader$Factory"/>
+	<bean id="kaMap-ReaderFactory" class="org.mapfish.print.map.readers.KaMapMapReader$Factory"/>
+	<bean id="wmts-ReaderFactory" class="org.mapfish.print.map.readers.WMTSMapReader$Factory"/>
+	
+	<!-- Define output factories -->
+	<bean id="outputFactory" class="org.mapfish.print.output.OutputFactory">
+		<property name="formatFactories">
+			<list>
+				<!-- Uncomment to use image magick for image output -->
+				<!-- <ref bean="imageMagickOutput" />  -->
+				<ref bean="fileCachingJaiMosaicOutputFactory" />
+				<ref bean="inMemoryJaiMosaicOutputFactory" />
+				<ref bean="pdfOutputFactory" />
+			</list>
+		</property>
+	</bean>
+	<bean id="imageMagickOutput" class="org.mapfish.print.output.ImageMagickOutputFactory">
+		<!-- Default is to use /usr/bin/convert on linux and just plain convert on windows if this is 
+			 not acceptable in your application then uncomment property below and enter correct value for your environment -->
+		<!-- <property name="imageMagickCmd">
+			<value>/usr/local/convert</value>
+		</property> -->
+		
+		<property name="imageMagickArgs">
+			<list>
+				<value>-density</value>
+				<value>${dpi}</value>
+				<value>-append</value>
+				<value>${sourceFile}</value>
+				<value>${targetFile}</value>
+			</list>
+		</property>
+		<property name="formats">
+			<list>
+				<value>jpg</value>
+				<value>png</value>
+				<value>tif</value>
+				<value>tiff</value>
+				<value>gif</value>
+				<value>bmp</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="fileCachingJaiMosaicOutputFactory" class="org.mapfish.print.output.FileCachingJaiMosaicOutputFactory"/>
+	<bean id="inMemoryJaiMosaicOutputFactory" class="org.mapfish.print.output.InMemoryJaiMosaicOutputFactory"/>
+	<bean id="pdfOutputFactory" class="org.mapfish.print.output.PdfOutputFactory"/>
+</beans>
