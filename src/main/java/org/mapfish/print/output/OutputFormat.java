@@ -31,7 +31,7 @@ import com.lowagie.text.DocumentException;
  * Time: 1:49:41 PM
  */
 public interface OutputFormat {
-    RenderingContext print(PrintParams params) throws DocumentException;
+    RenderingContext print(PrintParams params) throws DocumentException, InterruptedException;
     String getContentType();
     String getFileSuffix();
 }

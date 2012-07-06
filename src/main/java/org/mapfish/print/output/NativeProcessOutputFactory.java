@@ -32,6 +32,8 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.json.JSONException;
@@ -44,32 +46,39 @@ import com.lowagie.text.DocumentException;
 
 /**
  * Print Output that generate a PNG. It will first generate a PDF ant convert it to PNG
- * using the convert command provide by ImageMagick.
+ * using the convert command provide by a native process.
  * 
  * It include an hack to correct the transparency layer opacity.
  * 
  *  
- * @author Stéphane Brunner
+ * @author Stephane Brunner
+ * @author Jesse Eichar
  */
-public class ImageMagickOutputFactory implements OutputFormatFactory {
-    
-	private String imageMagickCmd;
-	private List<String> imageMagickArgs = new ArrayList<String>();
-	private List<String> formats = new ArrayList<String>();
+public class NativeProcessOutputFactory implements OutputFormatFactory {
 
-	public ImageMagickOutputFactory() {
-		
+    /**
+     * The logger.
+     */
+    public static final Logger LOGGER = Logger.getLogger(NativeProcessOutputFactory.class);
+	private String cmd;
+	private List<String> cmdArgs = new ArrayList<String>();
+	private List<String> formats = new ArrayList<String>();
+	private int timeoutSeconds = 30;
+	private final Semaphore runningProcesses;
+	
+	public NativeProcessOutputFactory(int maxProcesses) {
+		runningProcesses = new Semaphore(maxProcesses,true);
 		if(java.lang.management.ManagementFactory.getOperatingSystemMXBean().getName().toLowerCase().contains("win")) {
-			imageMagickCmd = "convert";
+			cmd = "convert";
 		} else {
-			imageMagickCmd = "/usr/bin/convert";
+			cmd = "/usr/bin/convert";
 		}
 		
-		imageMagickArgs.add("-density");
-		imageMagickArgs.add("${dpi}x${dpi}");
-		imageMagickArgs.add("-append");
-		imageMagickArgs.add("${sourceFile}");
-		imageMagickArgs.add("${targetFile}");
+		cmdArgs.add("-density");
+		cmdArgs.add("${dpi}x${dpi}");
+		cmdArgs.add("-append");
+		cmdArgs.add("${sourceFile}");
+		cmdArgs.add("${targetFile}");
 		
 		formats.add("jpg");
 		formats.add("gif");
@@ -85,19 +94,31 @@ public class ImageMagickOutputFactory implements OutputFormatFactory {
 	 * 
 	 * value is typically injected by spring dependency injection
 	 */
-	public void setImageMagickCmd(String imageMagickCmd) {
-		this.imageMagickCmd = imageMagickCmd;
+	public void setCmd(String cmd) {
+		this.cmd = cmd;
 	}
 	/**
-	 * Set arguments when executing the imageMagickCmd.  
+	 * Set arguments when executing the Cmd.  
 	 * 
 	 * Default parameters are "-density", "${dpi}x${dpi}", "${sourceFile}" and "${targetFile}"
 	 * 
 	 * value is typically injected by spring dependency injection
 	 */
-	public void setImageMagickArgs(List<String> imageMagickArgs) {
-		this.imageMagickArgs = imageMagickArgs;
+	public void setCmdArgs(List<String> cmdArgs) {
+		this.cmdArgs = cmdArgs;
 	}
+	/**
+	 * Set the length of time in seconds to wait for a free process for executing conversion
+	 * 
+	 * @param timeoutSeconds
+	 */
+	public void setTimeoutSeconds(int timeoutSeconds) {
+		this.timeoutSeconds = timeoutSeconds;
+	}
+	/**
+	 * Set the formats that the current native process installation can support
+	 * @param formats
+	 */
 	public void setFormats(List<String> formats) {
 		this.formats = formats;
 	}
@@ -109,7 +130,7 @@ public class ImageMagickOutputFactory implements OutputFormatFactory {
 
     @Override
     public OutputFormat create(String format) {
-        return new ImageOutput(format, imageMagickCmd, imageMagickArgs);
+        return new ImageOutput(format);
     }
 
     @Override
@@ -117,26 +138,18 @@ public class ImageMagickOutputFactory implements OutputFormatFactory {
         return null;
     }
 
-    public static class ImageOutput extends AbstractImageFormat {
+    private class ImageOutput extends AbstractImageFormat {
 
-        /**
-         * The logger.
-         */
-        public static final Logger LOGGER = Logger.getLogger(ImageOutput.class);
-		private List<String> imageMagickArgs;
-		private String cmd;
         /**
          * Construct.
          * @param format
          */
-        public ImageOutput(String format, String cmd, List<String> imageMagickArgs) {
+        public ImageOutput(String format) {
             super(format);
-            this.cmd = cmd;
-            this.imageMagickArgs = imageMagickArgs;
         }
 
         @Override
-        public RenderingContext print(PrintParams params) throws DocumentException {
+        public RenderingContext print(PrintParams params) throws DocumentException, InterruptedException {
             // Hack to correct the transparency
             {
                 PJsonArray layers = params.jsonSpec.getJSONArray("layers");
@@ -228,52 +241,54 @@ public class ImageMagickOutputFactory implements OutputFormatFactory {
 		}
 
 		/**
-         * Creates a PNG image from a PDF file using the convert command provide by Image Magick 
+         * Creates a PNG image from a PDF file using the native process
+         *  
          * @param jsonSpec the spec used to know the DPI value
          * @param tmpPdfFile the PDF file
          * @param tmpPngFile the PNG file
          * @param context the context used to know the DPI value
          * @throws IOException on IO error
+		 * @throws InterruptedException if in able to acquire semaphore
          */
-        private void createImage(PJsonObject jsonSpec, File tmpPdfFile, File tmpPngFile, RenderingContext context) throws IOException {
-            int dpi = calculateDPI(context, jsonSpec);
-            
-            String[] finalCommands = new String[imageMagickArgs.size()+1];
-            finalCommands[0] = cmd;
-//            FileChannel in = new FileInputStream(tmpPdfFile).getChannel();
-//            FileChannel out = new FileOutputStream(new File("p.pdf")).getChannel();
-//            out.transferFrom(in, 0, tmpPdfFile.length());
-//            in.close();
-//            out.close();
-            
-            for (int i = 1; i < finalCommands.length; i++) {
-				String arg = imageMagickArgs.get(i-1)
-						.replace("${dpi}", ""+dpi)
-						.replace("${targetFile}", tmpPngFile.getAbsolutePath())
-						.replace("${sourceFile}", tmpPdfFile.getAbsolutePath());
-				
-				finalCommands[i] = arg;
-			}
-            
-            ProcessBuilder builder = new ProcessBuilder(finalCommands);
-            LOGGER.info("Executing process: " + builder.command());
-            
-            Process p = builder.start();
-            
-            writeOut(p, false);
-            writeOut(p, true);
-            try {
-                int exitCode = p.waitFor();
-                
-                p.destroy();
-                if(exitCode != 0) {
-                	LOGGER.error("Image magick failed to create image from pdf.  Exit code was "+exitCode);
-                } else {
-                	LOGGER.info("Image magick exited correctly from image conversion process.  Exit code was "+exitCode);
-                }
-            } catch (InterruptedException e) {
-                LOGGER.error("Process interrupted", e);
-            }
+        private void createImage(PJsonObject jsonSpec, File tmpPdfFile, File tmpPngFile, RenderingContext context) throws IOException, InterruptedException {
+        	runningProcesses.tryAcquire(timeoutSeconds, TimeUnit.SECONDS);
+        	try {
+	            int dpi = calculateDPI(context, jsonSpec);
+	            
+	            String[] finalCommands = new String[cmdArgs.size()+1];
+	            finalCommands[0] = cmd;
+	            
+	            for (int i = 1; i < finalCommands.length; i++) {
+					String arg = cmdArgs.get(i-1)
+							.replace("${dpi}", ""+dpi)
+							.replace("${targetFile}", tmpPngFile.getAbsolutePath())
+							.replace("${sourceFile}", tmpPdfFile.getAbsolutePath());
+					
+					finalCommands[i] = arg;
+				}
+	            
+	            ProcessBuilder builder = new ProcessBuilder(finalCommands);
+	            LOGGER.info("Executing process: " + builder.command());
+	            
+	            Process p = builder.start();
+	            
+	            writeOut(p, false);
+	            writeOut(p, true);
+	            try {
+	                int exitCode = p.waitFor();
+	                
+	                p.destroy();
+	                if(exitCode != 0) {
+	                	LOGGER.error(cmd+" failed to create image from pdf.  Exit code was "+exitCode);
+	                } else {
+	                	LOGGER.info(cmd+" exited correctly from image conversion process.  Exit code was "+exitCode);
+	                }
+	            } catch (InterruptedException e) {
+	                LOGGER.error("Process interrupted", e);
+	            }
+        	} finally {
+        		runningProcesses.release();
+        	}
         }
 
 		private void writeOut(Process p, boolean errorStream) throws IOException {

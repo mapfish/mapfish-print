@@ -173,8 +173,9 @@ public class MapPrinter {
      * Generate the PDF using the given spec.
      *
      * @return The context that was used for printing.
+     * @throws InterruptedException 
      */
-    public RenderingContext print(PJsonObject jsonSpec, OutputStream outputStream, String referer) throws DocumentException {
+    public RenderingContext print(PJsonObject jsonSpec, OutputStream outputStream, String referer) throws DocumentException, InterruptedException {
     	initFonts();
     	OutputFormat output = this.outputFactory.create(config, jsonSpec);
     	

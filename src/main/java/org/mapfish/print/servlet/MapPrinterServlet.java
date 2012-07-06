@@ -276,8 +276,9 @@ public class MapPrinterServlet extends BaseMapServlet {
 
     /**
      * Do the actual work of creating the PDF temporary file.
+     * @throws InterruptedException 
      */
-    protected TempFile doCreatePDFFile(String spec, HttpServletRequest httpServletRequest) throws IOException, DocumentException, ServletException {
+    protected TempFile doCreatePDFFile(String spec, HttpServletRequest httpServletRequest) throws IOException, DocumentException, ServletException, InterruptedException {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Generating PDF for spec=" + spec);
         }
@@ -309,7 +310,10 @@ public class MapPrinterServlet extends BaseMapServlet {
         } catch (DocumentException e) {
             deleteFile(tempFile);
             throw e;
-        } finally {
+        } catch (InterruptedException e) {
+        	deleteFile(tempFile);
+            throw e;
+		} finally {
             if (out != null)
                 out.close();
         }

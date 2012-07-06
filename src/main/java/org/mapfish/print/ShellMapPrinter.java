@@ -111,7 +111,7 @@ public class ShellMapPrinter {
         System.exit(-1);
     }
 
-    public void run() throws IOException, JSONException, DocumentException {
+    public void run() throws IOException, JSONException, DocumentException, InterruptedException {
     	MapPrinter printer = context.getBean(MapPrinter.class);
         printer.setYamlConfigFile(new File(config));
         OutputStream outFile = null;
@@ -198,7 +198,7 @@ public class ShellMapPrinter {
         return file;
     }
 
-    public static void main(String[] args) throws IOException, JSONException, DocumentException {
+    public static void main(String[] args) throws IOException, JSONException, DocumentException, InterruptedException {
         ShellMapPrinter app = new ShellMapPrinter(args);
         try {
             app.run();
