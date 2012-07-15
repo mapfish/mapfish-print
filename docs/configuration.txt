@@ -286,7 +286,7 @@ Here is a short list of supported **pageSizes**:
 + A3     + 842   + 1191   +
 +--------+-------+--------+
 
-The complete list can be found in http://www.1t3xt.info/api/com/lowagie/text/PageSize.html. If you want to use a custom page size, you can set **pageSize** to the width and the height separated by a space.
+The complete list can be found in http://api.itextpdf.com/itext/com/itextpdf/text/PageSize.html. If you want to use a custom page size, you can set **pageSize** to the width and the height separated by a space.
 
 Block definition
 ----------------
