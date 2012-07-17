@@ -130,8 +130,14 @@ public class PointRenderer extends GeometriesRenderer<Point> {
             PolygonRenderer.applyStyle(context, dc, style, state);
             dc.setGState(state);
 
-            dc.circle((float) coordinate.x, (float) coordinate.y, pointRadius * f);
-            dc.fillStroke();
+            dc.circle((float) coordinate.x, (float) coordinate.y, pointRadius * f);            
+            renderStrokeAndFill(dc, style.optBool("stroke", true), style.optBool("fill", true));
         }
+    }
+
+    private void renderStrokeAndFill(PdfContentByte dc, boolean stroke, boolean fill) {
+        if (stroke && fill) dc.fillStroke();
+        else if (stroke) dc.stroke();
+        else if (fill) dc.fill();
     }
 }
