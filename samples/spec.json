@@ -1,21 +1,21 @@
 {
-    layout: 'A4 portrait',
-    title: 'A simple example',
-    srs: 'EPSG:4326',
-    dpi: 254,
-    units: 'degrees',
-    outputFormat: 'pdf',
-    layers: [{
-            type: 'WMS',
-            layers: ['basic'],
-            baseURL: 'http://labs.metacarta.com/wms/vmap0',
-            format: 'image/jpeg'
+    "layout": "A4 portrait",
+    "title": "A simple example",
+    "srs": "EPSG:4326",
+    "dpi": 254,
+    "units": "degrees",
+    "outputFormat": "png",
+    "layers": [{
+            "type": "WMS",
+            "layers": ["basic"],
+            "baseURL": "http://labs.metacarta.com/wms/vmap0",
+            "format": "image/jpeg"
         },
         {
-            type: 'WMS',
-            layers: ['routes'],
-            baseURL: 'http://www.camptocamp.org/cgi-bin/mapserv_c2corg',
-            format: 'image/png'
+            "type": "WMS",
+            "layers": ["routes"],
+            "baseURL": "http://www.camptocamp.org/cgi-bin/mapserv_c2corg",
+            "format": "image/png"
         },    {
                 "opacity": 0.5,
                 "customParams": {},
@@ -62,32 +62,32 @@
                 "name": "Cosmetic"
             }
     ],
-    pages: [
+    "pages": [
         {
-            center: [6, 45.5],
-            scale: 4000000,
-            mapTitle: "First map",
-            comment: "This is the first page selected by the user.",
-            rotation: 0,
-            data: {
-                data: [
-                    {id:1, name: 'blah', icon: 'icon_pan', nameBackgroundColor: 'red', nameBorderColor: 'blue'},
-                    {id:2, name: 'blip', icon: 'icon_zoomin', nameBackgroundColor: 'yellow', nameBorderColor: 'green'}
+            "center": [6, 45.5],
+            "scale": 4000000,
+            "mapTitle": "First map",
+            "comment": "This is the first page selected by the user.",
+            "rotation": 0,
+            "data": {
+                "data": [
+                    {"id":1, "name": "blah", "icon": "icon_pan", "nameBackgroundColor": "red", "nameBorderColor": "blue"},
+                    {"id":2, "name": "blip", "icon": "icon_zoomin", "nameBackgroundColor": "yellow", "nameBorderColor": "green"}
                 ],
-                columns: ['id', 'name', 'icon']
+                "columns": ["id", "name", "icon"]
             }
         },{
-            center: [6, 45.5],
-            scale: 4000000,
-            mapTitle: "First map",
-            comment: "This is the first page selected by the user.",
-            rotation: 0,
-            data: {
-                data: [
-                    {id:1, name: 'blah', icon: 'icon_pan', nameBackgroundColor: 'red', nameBorderColor: 'blue'},
-                    {id:2, name: 'blip', icon: 'icon_zoomin', nameBackgroundColor: 'yellow', nameBorderColor: 'green'}
+            "center": [6, 45.5],
+            "scale": 4000000,
+            "mapTitle": "First map",
+            "comment": "This is the first page selected by the user.",
+            "rotation": 0,
+            "data": {
+                "data": [
+                    {"id":1, "name": "blah", "icon": "icon_pan", "nameBackgroundColor": "red", "nameBorderColor": "blue"},
+                    {"id":2, "name": "blip", "icon": "icon_zoomin", "nameBackgroundColor": "yellow", "nameBorderColor": "green"}
                 ],
-                columns: ['id', 'name', 'icon']
+                "columns": ["id", "name", "icon"]
             }
         }
     ]

@@ -19,10 +19,13 @@
 
 package org.mapfish.print;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.pdf.PdfWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.TreeSet;
+
 import org.mapfish.print.config.Config;
 import org.mapfish.print.config.layout.Block;
 import org.mapfish.print.config.layout.Layout;
@@ -31,12 +34,10 @@ import org.mapfish.print.config.layout.MapBlock;
 import org.mapfish.print.utils.PJsonObject;
 import org.pvalsecc.misc.FileUtilities;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.TreeSet;
+import com.lowagie.text.Document;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.PdfWriter;
 
 public abstract class PdfTestCase extends PrintTestCase {
     private static final int MARGIN = 40;
@@ -50,7 +51,8 @@ public abstract class PdfTestCase extends PrintTestCase {
         super(name);
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     protected void setUp() throws Exception {
         super.setUp();
         PJsonObject spec = MapPrinter.parseSpec(FileUtilities.readWholeTextFile(new File("samples/spec.json")));

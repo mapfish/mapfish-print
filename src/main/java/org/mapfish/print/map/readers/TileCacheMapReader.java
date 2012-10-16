@@ -19,22 +19,37 @@
 
 package org.mapfish.print.map.readers;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.Transformer;
 import org.mapfish.print.map.renderers.TileRenderer;
 import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Support for the protocol using directly the content of a TileCache directory.
  */
 public class TileCacheMapReader extends TileableMapReader {
+    public static class Factory implements MapReaderFactory {
+		@Override
+		public List<MapReader> create(String type, RenderingContext context,
+				PJsonObject params) {
+			ArrayList<MapReader> target = new ArrayList<MapReader>();
+
+			String layer = params.getString("layer");
+	        target.add(new TileCacheMapReader(layer, context, params));
+	        
+			return target;
+		}
+    	
+    }
+	
     private final String layer;
 
     private TileCacheMapReader(String layer, RenderingContext context, PJsonObject params) {
@@ -75,11 +90,6 @@ public class TileCacheMapReader extends TileableMapReader {
         path.append('.').append(tileCacheLayerInfo.getExtension());
 
         return new URI(commonUri.getScheme(), commonUri.getUserInfo(), commonUri.getHost(), commonUri.getPort(), commonUri.getPath() + path, commonUri.getQuery(), commonUri.getFragment());
-    }
-
-    protected static void create(List<MapReader> target, RenderingContext context, PJsonObject params) {
-        String layer = params.getString("layer");
-        target.add(new TileCacheMapReader(layer, context, params));
     }
 
     public boolean testMerge(MapReader other) {

@@ -19,29 +19,29 @@
 
 package org.mapfish.print.output;
 
-import com.lowagie.text.DocumentException;
-import org.apache.log4j.Logger;
-import org.mapfish.print.MapPrinter;
-import org.mapfish.print.RenderingContext;
-import org.mapfish.print.TimeLogger;
-import org.mapfish.print.utils.PJsonObject;
-
-import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.mapfish.print.RenderingContext;
+import org.mapfish.print.TimeLogger;
+
+import com.lowagie.text.DocumentException;
+
 /**
+ * OutputFormat and factory that Outputs PDF objects
+ * 
  * User: jeichar
  * Date: Oct 18, 2010
  * Time: 2:00:30 PM
  */
-public class PdfOutput implements OutputFormat, OutputFormatFactory {
+public class PdfOutputFactory extends AbstractOutputFormat implements OutputFormatFactory {
 
-    public String contentType() {
+    public String getContentType() {
         return "application/pdf";
     }
 
-    public String fileSuffix() {
+    public String getFileSuffix() {
         return "pdf";
     }
 
@@ -57,9 +57,9 @@ public class PdfOutput implements OutputFormat, OutputFormatFactory {
         return this;
     }
 
-    public RenderingContext print(MapPrinter printer, PJsonObject jsonSpec, OutputStream out, String referer) throws DocumentException {
-        final TimeLogger timeLog = TimeLogger.info(Logger.getLogger(PdfOutput.class), "PDF Creation");
-        final RenderingContext context = printer.print(jsonSpec, out, referer);
+    public RenderingContext print(PrintParams params) throws DocumentException {
+        final TimeLogger timeLog = TimeLogger.info(Logger.getLogger(PdfOutputFactory.class), "PDF Creation");
+        final RenderingContext context = doPrint(params);
         timeLog.done();
         
         return context;

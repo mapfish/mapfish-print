@@ -19,14 +19,14 @@
 
 package org.mapfish.print.utils;
 
-import org.ho.yaml.wrapper.EnumWrapper;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.ho.yaml.wrapper.EnumWrapper;
 
 /**
  * An enum for expressing distance units. Contains everything needed for
@@ -180,7 +180,7 @@ public enum DistanceUnit {
     }
 
     public static class Wrapper extends EnumWrapper {
-        public Wrapper(Class type) { // do not "fix" this eclipse warning, because it breaks things, Tim
+        public Wrapper(Class<?> type) { // do not "fix" this eclipse warning, because it breaks things, Tim
             super(type);
         }
 

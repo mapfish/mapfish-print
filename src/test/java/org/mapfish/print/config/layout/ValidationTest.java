@@ -19,12 +19,12 @@
 
 package org.mapfish.print.config.layout;
 
-import org.mapfish.print.InvalidValueException;
-import org.mapfish.print.PrintTestCase;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.mapfish.print.InvalidValueException;
+import org.mapfish.print.PrintTestCase;
 
 /**
  * A few test around the {@link org.mapfish.print.config.layout.Block#validate()} method.

@@ -19,18 +19,23 @@
 
 package org.mapfish.print.map;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfLayer;
-import org.mapfish.print.*;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.mapfish.print.ChunkDrawer;
+import org.mapfish.print.InvalidJsonValueException;
+import org.mapfish.print.PDFCustomBlocks;
+import org.mapfish.print.RenderingContext;
+import org.mapfish.print.Transformer;
 import org.mapfish.print.map.readers.MapReader;
 import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfLayer;
 
 /**
  * Special drawer for map chunks.
@@ -108,7 +113,7 @@ public class MapChunkDrawer extends ChunkDrawer {
 
                 }
                 if (bPrint) {
-                    MapReader.create(readers, type, context, layer);
+                    context.getConfig().getMapReaderFactoryFinder().create(readers, type, context, layer);
                 }
             }
         }

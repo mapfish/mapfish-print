@@ -19,23 +19,44 @@
 
 package org.mapfish.print.map.readers;
 
-import org.mapfish.print.RenderingContext;
-import org.mapfish.print.Transformer;
-import org.mapfish.print.map.renderers.TileRenderer;
-import org.mapfish.print.utils.PJsonArray;
-import org.mapfish.print.utils.PJsonObject;
-import org.mapfish.print.utils.DistanceUnit;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.mapfish.print.RenderingContext;
+import org.mapfish.print.Transformer;
+import org.mapfish.print.map.renderers.TileRenderer;
+import org.mapfish.print.utils.DistanceUnit;
+import org.mapfish.print.utils.PJsonArray;
+import org.mapfish.print.utils.PJsonObject;
 
 /**
  * Support for the protocol using the KaMap tiling method
  */
 public class KaMapMapReader extends TileableMapReader {
+	public static class Factory implements MapReaderFactory {
+
+		@Override
+		public List<MapReader> create(String type, RenderingContext context,
+				PJsonObject params) {
+			ArrayList<MapReader> target = new ArrayList<MapReader>();
+
+	        String map = params.getString("map");
+	        String group = "";
+	        if (params.has("group")) {
+	            group = params.getString("group");
+	        }
+	        String units = context.getGlobalParams().getString("units");
+
+	        target.add(new KaMapMapReader(map, group, units, context, params));
+	    
+			return target;
+		}
+    }
+	
     private final String map;
     private final String group;
     private final String units;
@@ -100,16 +121,6 @@ public class KaMapMapReader extends TileableMapReader {
         return new URI(commonUri.getScheme(), commonUri.getUserInfo(), commonUri.getHost(), commonUri.getPort(), commonUri.getPath(), path.toString(), commonUri.getFragment());
     }
 
-    protected static void create(List<MapReader> target, RenderingContext context, PJsonObject params) {
-        String map = params.getString("map");
-        String group = "";
-        if (params.has("group")) {
-            group = params.getString("group");
-        }
-        String units = context.getGlobalParams().getString("units");
-
-        target.add(new KaMapMapReader(map, group, units, context, params));
-    }
 
     public boolean testMerge(MapReader other) {
         return false;

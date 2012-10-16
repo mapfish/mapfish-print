@@ -20,29 +20,6 @@
 package org.mapfish.print.config;
 
 //import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethodBase;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.ho.yaml.CustomYamlConfig;
-import org.ho.yaml.YamlConfig;
-import org.json.JSONException;
-import org.json.JSONWriter;
-import org.mapfish.print.InvalidValueException;
-import org.mapfish.print.PDFUtils;
-import org.mapfish.print.config.layout.Layout;
-import org.mapfish.print.config.layout.Layouts;
-import org.mapfish.print.map.MapTileTask;
-import org.mapfish.print.map.readers.WMSServerInfo;
-import org.mapfish.print.output.OutputFactory;
-//import org.mapfish.print.output.OutputFormat;
-import org.pvalsecc.concurrent.OrderedResultsExecutor;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
@@ -51,7 +28,29 @@ import java.net.SocketException;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.TreeSet;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethodBase;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONWriter;
+import org.mapfish.print.InvalidValueException;
+import org.mapfish.print.PDFUtils;
+import org.mapfish.print.config.layout.Layout;
+import org.mapfish.print.config.layout.Layouts;
+import org.mapfish.print.map.MapTileTask;
+import org.mapfish.print.map.readers.MapReaderFactoryFinder;
+import org.mapfish.print.map.readers.WMSServerInfo;
+import org.mapfish.print.output.OutputFactory;
+import org.pvalsecc.concurrent.OrderedResultsExecutor;
+//import org.mapfish.print.output.OutputFormat;
 
 /**
  * Bean mapping the root of the configuration file.
@@ -101,34 +100,18 @@ public class Config {
     private MultiThreadedHttpConnectionManager connectionManager;
     private TreeSet<String> formats; // private int svgMaxWidth = -1; private int svgMaxHeight = -1;
 
+	private OutputFactory outputFactory;
+
+	private MapReaderFactoryFinder mapReaderFactoryFinder;
+
     public Config() {
         hosts.add(new LocalHostMatcher());
     }
 
-    /**
-     * Create an instance out of the given file.
-     */
-    public static Config fromYaml(File file) throws FileNotFoundException {
-        YamlConfig config = new CustomYamlConfig();
-        Config result = config.loadType(file, Config.class);
-        result.validate();
-        return result;
-    }
-
-    public static Config fromInputStream(InputStream instream) {
-        YamlConfig config = new CustomYamlConfig();
-        Config result = config.loadType(instream, Config.class);
-        result.validate();
-        return result;
-    }
-
-    public static Config fromString(String strConfig) {
-        YamlConfig config = new CustomYamlConfig();
-        Config result = config.loadType(strConfig, Config.class);
-        result.validate();
-        return result;
-    }
-
+    public void setOutputFactory(OutputFactory outputFactory) {
+		this.outputFactory = outputFactory;
+	}
+    
     public Layout getLayout(String name) {
         return layouts.get(name);
     }
@@ -190,7 +173,7 @@ public class Config {
 
         json.key("outputFormats");
         json.array();
-        for (String format : OutputFactory.getSupportedFormats(this)) {
+        for (String format : outputFactory.getSupportedFormats(this)) {
             json.object();
             json.key("name").value(format);
             json.endObject();
@@ -469,4 +452,13 @@ public class Config {
     public void setSecurity(List<SecurityStrategy> security) {
         this.security = security;
     }
+
+	public void setMapReaderFactoryFinder(
+			MapReaderFactoryFinder mapReaderFactoryFinder) {
+		this.mapReaderFactoryFinder = mapReaderFactoryFinder;
+	}
+	
+	public MapReaderFactoryFinder getMapReaderFactoryFinder() {
+		return mapReaderFactoryFinder;
+	}
 }

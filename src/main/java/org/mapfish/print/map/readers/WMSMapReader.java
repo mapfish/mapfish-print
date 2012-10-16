@@ -19,16 +19,6 @@
 
 package org.mapfish.print.map.readers;
 
-import org.mapfish.print.RenderingContext;
-import org.mapfish.print.Transformer;
-import org.mapfish.print.map.ParallelMapTileLoader;
-import org.mapfish.print.map.renderers.TileRenderer;
-import org.mapfish.print.utils.PJsonArray;
-import org.mapfish.print.utils.PJsonObject;
-import org.pvalsecc.misc.StringUtils;
-import org.pvalsecc.misc.URIUtils;
-import org.apache.log4j.Logger;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -37,11 +27,42 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+import org.mapfish.print.RenderingContext;
+import org.mapfish.print.Transformer;
+import org.mapfish.print.map.ParallelMapTileLoader;
+import org.mapfish.print.map.renderers.TileRenderer;
+import org.mapfish.print.utils.PJsonArray;
+import org.mapfish.print.utils.PJsonObject;
+import org.pvalsecc.misc.StringUtils;
+import org.pvalsecc.misc.URIUtils;
+
 /**
  * Support for the WMS protocol with possibilities to go through a WMS-C service
  * (TileCache).
  */
 public class WMSMapReader extends TileableMapReader {
+
+    public static class Factory implements MapReaderFactory {
+		@Override
+		public List<MapReader> create(String type, RenderingContext context, PJsonObject params) {
+			ArrayList<MapReader> target = new ArrayList<MapReader>();
+			PJsonArray layers = params.getJSONArray("layers");
+	        PJsonArray styles = params.optJSONArray("styles");
+	        for (int i = 0; i < layers.size(); i++) {
+	            String layer = layers.getString(i);
+	            String style = "";
+	            if (styles != null && i < styles.size()) {
+	                style = styles.getString(i);
+	            }
+	            target.add(new WMSMapReader(layer, style, context, params));
+	        }
+	        
+	        return target;
+		}
+    	
+    }
+    
     public static final Logger LOGGER = Logger.getLogger(WMSMapReader.class);
     private final String format;
     protected final List<String> layers = new ArrayList<String>();
@@ -84,7 +105,7 @@ public class WMSMapReader extends TileableMapReader {
                     customParams.getInternalObj().put("map_angle", angle); // For MapServer
                 }
                 else {
-                    Map customMap = new HashMap();
+                    Map<String,String> customMap = new HashMap<String,String>();
                     customMap.put("angle", angle); // For GeoServer
                     customMap.put("map_angle", angle); // For MapServer
                     params.getInternalObj().put("customParams", customMap);
@@ -114,19 +135,6 @@ public class WMSMapReader extends TileableMapReader {
         URIUtils.addParamOverride(result, "STYLES", StringUtils.join(styles, ","));
         URIUtils.addParamOverride(result, "format_options", "dpi:" + transformer.getDpi()); // For GeoServer
         URIUtils.addParamOverride(result, "map_resolution", String.valueOf(transformer.getDpi())); // For MapServer
-    }
-
-    protected static void create(List<MapReader> target, RenderingContext context, PJsonObject params) {
-        PJsonArray layers = params.getJSONArray("layers");
-        PJsonArray styles = params.optJSONArray("styles");
-        for (int i = 0; i < layers.size(); i++) {
-            String layer = layers.getString(i);
-            String style = "";
-            if (styles != null && i < styles.size()) {
-                style = styles.getString(i);
-            }
-            target.add(new WMSMapReader(layer, style, context, params));
-        }
     }
 
     public boolean testMerge(MapReader other) {

@@ -19,9 +19,22 @@
 
 package org.mapfish.print.map.renderers;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfGState;
+import java.awt.Graphics2D;
+import java.awt.print.PageFormat;
+import java.awt.print.Paper;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
+
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
+
 import org.apache.batik.ext.awt.RenderingHintsKeyExt;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.print.PrintTranscoder;
@@ -37,20 +50,9 @@ import org.mapfish.print.map.ParallelMapTileLoader;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamSource;
-import java.awt.*;
-import java.awt.print.PageFormat;
-import java.awt.print.Paper;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfGState;
 
 public class SVGTileRenderer extends TileRenderer {
     public static final Logger LOGGER = Logger.getLogger(SVGTileRenderer.class);

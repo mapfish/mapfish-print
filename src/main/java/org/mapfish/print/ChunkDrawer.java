@@ -19,14 +19,14 @@
 
 package org.mapfish.print;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfPTableEvent;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Base class for the chunk drawers. It's for parts of the page that needs direct

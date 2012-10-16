@@ -19,9 +19,8 @@
 
 package org.mapfish.print;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
+import java.io.IOException;
+
 import org.json.JSONException;
 import org.mapfish.print.config.layout.Block;
 import org.mapfish.print.config.layout.ScalebarBlock;
@@ -30,7 +29,9 @@ import org.mapfish.print.scalebar.Type;
 import org.mapfish.print.utils.DistanceUnit;
 import org.mapfish.print.utils.PJsonObject;
 
-import java.io.IOException;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
 
 /**
  * This is not an automated test. You have to look at the generated PDF file.

@@ -19,10 +19,11 @@
 
 package org.mapfish.print.map.readers;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Image;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfGState;
+import java.awt.geom.AffineTransform;
+import java.net.URI;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mapfish.print.InvalidJsonValueException;
@@ -34,14 +35,24 @@ import org.mapfish.print.map.ParallelMapTileLoader;
 import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
 
-import java.awt.geom.AffineTransform;
-import java.net.URI;
-import java.util.List;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Image;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfGState;
 
 /**
  * Renders using a georeferenced image directly.
  */
 public class ImageMapReader extends MapReader {
+	public static class Factory implements MapReaderFactory {
+
+		@Override
+		public List<? extends MapReader> create(String type, RenderingContext context,
+				PJsonObject params) {
+			return Collections.singletonList(new ImageMapReader(context, params));
+		}
+    }
+	
     private static final Log LOGGER = LogFactory.getLog(ImageMapReader.class);
 
     private final String name;
@@ -122,9 +133,5 @@ public class ImageMapReader extends MapReader {
 
     public String toString() {
         return name;
-    }
-
-    public static void create(List<MapReader> target, RenderingContext context, PJsonObject params) {
-        target.add(new ImageMapReader(context, params));
     }
 }

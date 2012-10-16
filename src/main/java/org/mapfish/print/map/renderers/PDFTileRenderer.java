@@ -19,11 +19,10 @@
 
 package org.mapfish.print.map.renderers;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfGState;
-import com.lowagie.text.pdf.PdfImportedPage;
-import com.lowagie.text.pdf.PdfReader;
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.mapfish.print.InvalidValueException;
 import org.mapfish.print.RenderingContext;
@@ -31,9 +30,11 @@ import org.mapfish.print.Transformer;
 import org.mapfish.print.map.MapTileTask;
 import org.mapfish.print.map.ParallelMapTileLoader;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfGState;
+import com.lowagie.text.pdf.PdfImportedPage;
+import com.lowagie.text.pdf.PdfReader;
 
 public class PDFTileRenderer extends TileRenderer {
     public static final Logger LOGGER = Logger.getLogger(PDFTileRenderer.class);

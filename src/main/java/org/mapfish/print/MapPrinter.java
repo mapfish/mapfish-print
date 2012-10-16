@@ -19,122 +19,169 @@
 
 package org.mapfish.print;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.FontFactory;
-import com.lowagie.text.pdf.ByteBuffer;
-import com.lowagie.text.pdf.PdfStream;
-import com.lowagie.text.pdf.PdfWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.TreeSet;
+
+import javax.annotation.PreDestroy;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.mapfish.print.config.Config;
-import org.mapfish.print.config.layout.Layout;
+import org.mapfish.print.config.ConfigFactory;
+import org.mapfish.print.output.OutputFactory;
+import org.mapfish.print.output.OutputFormat;
+import org.mapfish.print.output.PrintParams;
 import org.mapfish.print.utils.PJsonObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 
-import java.io.*;
-import java.util.TreeSet;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.pdf.ByteBuffer;
 
 /**
  * The main class for printing maps. Will parse the spec, create the PDF
  * document and generate it.
+ * 
+ * This class should not be directly created but rather obtained from an application
+ * context object so that all plugins and dependencies are correctly injected into it
  */
 public class MapPrinter {
     /**
      * The parsed configuration file.
+     * 
+     * This is a per instance property and while can be set by spring typically will be set by user of printer
      */
-    private final Config config;
+    private Config config;
 
     /**
      * The directory where the configuration file sits (used for ${configDir})
+     * 
+     * This is a per instance property and while can be set by spring typically will be set by user of printer
      */
-    private String configDir;
+    private File configDir;
 
+    /**
+     * OutputFactory for the final output
+     * 
+     * Injected by Spring
+     */
+    private OutputFactory outputFactory;
+    /**
+     * Factory for creating config objects
+     * 
+     * Injected by Spring
+     */
+    private ConfigFactory configFactory;
+    
+    private volatile boolean fontsInitialized = false;
+    
     static {
         //configure iText to use a higher precision for floats
         ByteBuffer.HIGH_PRECISION = true;
     }
-
-    public MapPrinter(File config) throws FileNotFoundException {
-        this.config = Config.fromYaml(config);
-        configDir = config.getParent();
+    /**
+     * OutputFactory for the final output
+     * 
+     * Injected by Spring
+     */
+    @Autowired
+    @Required
+    public void setOutputFactory(OutputFactory outputFactory) {
+		this.outputFactory = outputFactory;
+	}
+    /**
+     * Factory for creating config objects
+     * 
+     * Injected by Spring
+     */
+    @Autowired
+    @Required
+    public void setConfigFactory(ConfigFactory configFactory) {
+		this.configFactory = configFactory;
+	}
+    /**
+     * Sets both the configuration by parsing the configFile and the configDir relative to the configFile
+     * @param configFile
+     * @throws FileNotFoundException
+     * @return this
+     */
+    public MapPrinter setYamlConfigFile(File configFile) throws FileNotFoundException {
+    	this.config = configFactory.fromYaml(configFile);
+        configDir = configFile.getParentFile();
         if (configDir == null) {
             try {
-                configDir = new File(".").getCanonicalPath();
+                configDir = new File(".").getCanonicalFile();
             } catch (IOException e) {
-                configDir = ".";
+                configDir = new File(".");
             }
         }
-        initFonts();
+        return this;
     }
-
-    public MapPrinter(InputStream instreamConfig, String configDir) {
-        this.config = Config.fromInputStream(instreamConfig);
-        this.configDir = configDir;
-
-        initFonts();
+    
+    public MapPrinter setConfig(String strConfig) {
+    	this.config = configFactory.fromString(strConfig);
+    	return this;
     }
-
-
-    public MapPrinter(String strConfig, String configDir) {
-        this.config = Config.fromString(strConfig);
-        this.configDir = configDir;
-
-        initFonts();
+    
+    public MapPrinter setConfig(InputStream inputConfig) {
+    	this.config =  configFactory.fromInputStream(inputConfig);
+    	return this;
     }
+    
+    public MapPrinter setConfigDir(String configDir) {
+		this.configDir = new File(configDir);
+		return this;
+	}
 
     /**
      * Register the user specified fonts in iText.
      */
     private void initFonts() {
-        //we don't do that since it takes ages and that would hurt the perfs for
-        //the python controller:
-        //FontFactory.registerDirectories();
+    	if(!fontsInitialized) {
+    		synchronized (this) {
+    			if(!fontsInitialized) {
+    				//we don't do that since it takes ages and that would hurt the perfs for
+    		        //the python controller:
+    		        //FontFactory.registerDirectories();
 
-        FontFactory.defaultEmbedding = true;
+    		        FontFactory.defaultEmbedding = true;
 
-        final TreeSet<String> fontPaths = config.getFonts();
-        if (fontPaths != null) {
-            for (String fontPath : fontPaths) {
-                fontPath = fontPath.replaceAll("\\$\\{configDir\\}", configDir);
-                File fontFile = new File(fontPath);
-                if (fontFile.isDirectory()) {
-                    FontFactory.registerDirectory(fontPath, true);
-                } else {
-                    FontFactory.register(fontPath);
-                }
-            }
-        }
+    		        final TreeSet<String> fontPaths = config.getFonts();
+    		        if (fontPaths != null) {
+    		            for (String fontPath : fontPaths) {
+    		                fontPath = fontPath.replaceAll("\\$\\{configDir\\}", configDir.getPath());
+    		                File fontFile = new File(fontPath);
+    		                if (fontFile.isDirectory()) {
+    		                    FontFactory.registerDirectory(fontPath, true);
+    		                } else {
+    		                    FontFactory.register(fontPath);
+    		                }
+    		            }
+    		        }
+    			}				
+			}
+    	}
     }
 
     /**
      * Generate the PDF using the given spec.
      *
      * @return The context that was used for printing.
+     * @throws InterruptedException 
      */
-    public RenderingContext print(PJsonObject jsonSpec, OutputStream outFile, String referer) throws DocumentException {
-
-
-        final String layoutName = jsonSpec.getString(Constants.JSON_LAYOUT_KEY);
-        Layout layout = config.getLayout(layoutName);
-        if (layout == null) {
-            throw new RuntimeException("Unknown layout '" + layoutName + "'");
-        }
-
-        Document doc = new Document(layout.getFirstPageSize(null,jsonSpec));
-        PdfWriter writer = PdfWriter.getInstance(doc, outFile);
-        if (!layout.isSupportLegacyReader()) {
-            writer.setFullCompression();
-            writer.setPdfVersion(PdfWriter.PDF_VERSION_1_5);
-            writer.setCompressionLevel(PdfStream.BEST_COMPRESSION);
-        }
-        RenderingContext context = new RenderingContext(doc, writer, config, jsonSpec, configDir, layout, referer);
-
-        layout.render(jsonSpec, context);
-
-        doc.close();
-        writer.close();
-        return context;
+    public RenderingContext print(PJsonObject jsonSpec, OutputStream outputStream, String referer) throws DocumentException, InterruptedException {
+    	initFonts();
+    	OutputFormat output = this.outputFactory.create(config, jsonSpec);
+    	
+    	PrintParams params = new PrintParams(config, configDir, jsonSpec, outputStream, referer);
+		return output.print(params );
+        
     }
 
     public static PJsonObject parseSpec(String spec) {
@@ -157,6 +204,7 @@ public class MapPrinter {
     /**
      * Stop the thread pool or others.
      */
+    @PreDestroy
     public void stop() {
         config.stop();
     }
@@ -169,4 +217,7 @@ public class MapPrinter {
     public Config getConfig() {
         return config;
     }
+	public OutputFormat getOutputFormat(PJsonObject jsonSpec) {
+		return outputFactory.create(config, jsonSpec);
+	}
 }

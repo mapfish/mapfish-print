@@ -19,20 +19,6 @@
 
 package org.mapfish.print.output;
 
-import com.lowagie.text.DocumentException;
-import com.sun.media.jai.codec.FileSeekableStream;
-import org.apache.log4j.Logger;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.mapfish.print.MapPrinter;
-import org.mapfish.print.RenderingContext;
-import org.mapfish.print.TimeLogger;
-import org.mapfish.print.utils.PJsonArray;
-import org.mapfish.print.utils.PJsonObject;
-
-import javax.imageio.ImageIO;
-import javax.media.jai.JAI;
-import javax.media.jai.RenderedOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
@@ -41,10 +27,29 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class ImageOutputScalableFactory extends ImageOutputFactory {
+import javax.imageio.ImageIO;
+import javax.media.jai.JAI;
+import javax.media.jai.RenderedOp;
+
+import org.apache.log4j.Logger;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.mapfish.print.RenderingContext;
+import org.mapfish.print.TimeLogger;
+import org.mapfish.print.utils.PJsonObject;
+
+import com.lowagie.text.DocumentException;
+import com.sun.media.jai.codec.FileSeekableStream;
+
+/**
+ * Similar to {@link InMemoryJaiMosaicOutputFactory} in that it uses pdf box to parse pdf.  However it writes
+ * each page to disk as an image before combining them using JAI mosaic.  
+ * 
+ * @author jeichar
+ */
+public class FileCachingJaiMosaicOutputFactory extends InMemoryJaiMosaicOutputFactory {
 
     @Override
     public OutputFormat create(String format) {
@@ -55,8 +60,8 @@ public class ImageOutputScalableFactory extends ImageOutputFactory {
         if(super.enablementStatus() != null) {
             return super.enablementStatus();
         }
-        if(!formats().contains("TIF")) {
-            return "TIF not supported by ImageIO";
+        if(!formats().contains("TIFF")) {
+            return "TIFF not supported by ImageIO";
         }
         return null;
     }
@@ -69,7 +74,7 @@ public class ImageOutputScalableFactory extends ImageOutputFactory {
             super(format);
         }
 
-        public RenderingContext print(MapPrinter printer, PJsonObject jsonSpec, OutputStream out, String referer) throws DocumentException {
+        public RenderingContext print(PrintParams params) throws DocumentException {
             File tmpFile = null;
             try {
                 tmpFile = File.createTempFile("mapfishprint", ".pdf");
@@ -77,18 +82,18 @@ public class ImageOutputScalableFactory extends ImageOutputFactory {
                 RenderingContext context;
                 try {
                     TimeLogger timeLog = TimeLogger.info(LOGGER, "PDF Creation");
-                    context = printer.print(jsonSpec, tmpOut, referer);
+                    context = doPrint(params.withOutput(tmpOut));
                     timeLog.done();
                 } finally {
                     tmpOut.close();
                 }
 
                 TimeLogger timeLog = TimeLogger.info(LOGGER, "Pdf to image conversion");
-                List<ImageInfo> images = createImages(jsonSpec, tmpFile, context);
+                List<ImageInfo> images = createImages(params.jsonSpec, tmpFile, context);
                 timeLog.done();
 
                 timeLog = TimeLogger.info(LOGGER, "Write Mosaiced Image");
-                drawImage(out, images);
+                drawImage(params.outputStream, images);
                 timeLog.done();
 
                 return context;
@@ -143,12 +148,13 @@ public class ImageOutputScalableFactory extends ImageOutputFactory {
             List<ImageInfo> images = new ArrayList<ImageInfo>();
             PDDocument pdf = PDDocument.load(tmpFile);
             try {
-                List<PDPage> pages = pdf.getDocumentCatalog().getAllPages();
+                @SuppressWarnings("unchecked")
+				List<PDPage> pages = pdf.getDocumentCatalog().getAllPages();
 
                 for (PDPage page : pages) {
                     BufferedImage img = page.convertToImage(BufferedImage.TYPE_INT_RGB, calculateDPI(context, jsonSpec));
                     File file = File.createTempFile("pdfToImage", "tiff");
-                    ImageIO.write(img, "TIF", file);
+                    ImageIO.write(img, "TIFF", file);
                     images.add(new ImageInfo(file, img.getWidth(), img.getHeight()));
                 }
             } finally {

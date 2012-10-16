@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+	<context:annotation-config></context:annotation-config>
+
+	<!-- Define output factories -->
+	<bean id="outputFactory" class="org.mapfish.print.output.OutputFactory">
+		<property name="formatFactories">
+			<list>
+				<!-- Uncomment to use image magick for image output -->
+				<ref bean="imageMagickOutput" />
+			</list>
+		</property>
+	</bean>
+	<bean id="imageMagickOutput" class="org.mapfish.print.output.NativeProcessOutputFactory">
+		<!-- Default is to use /usr/bin/convert on linux and just plain convert on windows if this is 
+			 not acceptable in your application then uncomment property below and enter correct value for your environment -->
+		<property name="cmd">
+			<value>C:\Program Files\ImageMagick-6.7.8-Q16\convert</value>
+		</property>
+		<!-- The arguments to use when running an imagemagick process -->
+		<property name="cmdArgs">
+			<list>
+				<value>-density</value>
+				<value>${dpi}</value>
+				<value>-append</value>
+				<value>${sourceFile}</value>
+				<value>${targetFile}</value>
+			</list>
+		</property>
+		<!-- Formats supported by the converter -->
+		<property name="formats">
+			<list>
+				<value>jpg</value>
+				<value>png</value>
+				<value>tif</value>
+				<value>tiff</value>
+				<value>gif</value>
+				<value>bmp</value>
+			</list>
+		</property>
+		<!-- The number of concurrent processes to run.  Extra processes will wait their turn  -->
+		<constructor-arg>
+			<value>10</value>
+		</constructor-arg>
+		<!-- the length of time to wait for a process to be available before giving up -->
+		<property name="timeoutSeconds">
+			<value>30</value>
+		</property>
+	</bean>
+</beans>

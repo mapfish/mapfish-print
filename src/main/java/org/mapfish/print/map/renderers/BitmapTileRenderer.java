@@ -19,13 +19,12 @@
 
 package org.mapfish.print.map.renderers;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Image;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfGState;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Polygon;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mapfish.print.PDFUtils;
@@ -34,11 +33,13 @@ import org.mapfish.print.Transformer;
 import org.mapfish.print.map.MapTileTask;
 import org.mapfish.print.map.ParallelMapTileLoader;
 
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Image;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfGState;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Polygon;
 
 public class BitmapTileRenderer extends TileRenderer {
     private static final Log LOGGER = LogFactory.getLog(BitmapTileRenderer.class);

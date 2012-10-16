@@ -19,6 +19,7 @@
 
 package org.mapfish.print.output;
 
+
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
@@ -28,7 +29,7 @@ import org.mapfish.print.utils.PJsonObject;
  * Date: 10/21/10
  * Time: 11:18 AM
  */
-abstract class AbstractImageFormat implements OutputFormat {
+abstract class AbstractImageFormat extends AbstractOutputFormat implements OutputFormat {
     protected static final float MARGIN = 20;
 
     protected final String format;
@@ -37,12 +38,12 @@ abstract class AbstractImageFormat implements OutputFormat {
         this.format = format;
     }
 
-    public String contentType() {
+    public String getContentType() {
 
         return "image/" + format;
     }
 
-    public String fileSuffix() {
+    public String getFileSuffix() {
         return format;
     }
 

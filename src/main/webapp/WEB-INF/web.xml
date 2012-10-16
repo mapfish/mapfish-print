@@ -2,7 +2,13 @@
 <web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
-
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>classpath:spring-application-context.xml</param-value>
+  </context-param>
   <servlet>
     <servlet-name>mapfish.print</servlet-name>
     <servlet-class>org.mapfish.print.servlet.MapPrinterServlet</servlet-class>

@@ -19,11 +19,11 @@
 
 package org.mapfish.print.map.renderers.vector;
 
-import org.mapfish.geo.MfGeoFactory;
+import org.json.JSONObject;
 import org.mapfish.geo.MfFeature;
+import org.mapfish.geo.MfGeoFactory;
 import org.mapfish.geo.MfGeometry;
 import org.mapfish.print.utils.PJsonObject;
-import org.json.JSONObject;
 
 /**
  * MfFactory that affects a styling object to the Features.

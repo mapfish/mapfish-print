@@ -28,6 +28,7 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.mapfish.print.config.Config;
 import org.mapfish.print.utils.PJsonObject;
+import org.springframework.beans.factory.annotation.Required;
 
 /**
  * User: jeichar
@@ -36,23 +37,22 @@ import org.mapfish.print.utils.PJsonObject;
  */
 public class OutputFactory {
     private static final Logger LOGGER = Logger.getLogger(OutputFactory.class);
-    private final static List<OutputFormatFactory> formats = new ArrayList<OutputFormatFactory>();
+    private List<OutputFormatFactory> formatFactories = new ArrayList<OutputFormatFactory>();
 
-    static {
-        // order matters.  first match will get used
-        formats.add(new PdfOutput());
-        String useImageMagik = System.getProperties().getProperty("USE_IMAGEMAGICK");
-        if (useImageMagik != null && "true".equals(useImageMagik.toLowerCase())) {
-            formats.add(new ImageOutputImageMagickFactory());
-        }
-        formats.add(new ImageOutputScalableFactory());
-        formats.add(new ImageOutputFactory());
-    }
-
-    public static OutputFormat create(Config config, PJsonObject spec) {
+    /**
+     * For spring dependency injection
+     * 
+     * @param formatFactories
+     */
+    @Required
+    public void setFormatFactories(List<OutputFormatFactory> formatFactories) {
+		this.formatFactories = formatFactories;
+	}
+    
+    public OutputFormat create(Config config, PJsonObject spec) {
         String id = spec.optString("outputFormat", "pdf");
 
-        for (OutputFormatFactory formatFactory : formats) {
+        for (OutputFormatFactory formatFactory : formatFactories) {
             String enablementMsg = formatFactory.enablementStatus();
             if(enablementMsg == null) {
                 for (String supportedFormat : formatFactory.formats()) {
@@ -63,7 +63,7 @@ public class OutputFactory {
                     }
                 }
             } else {
-                LOGGER.warn("OutputFormatFactory " + (formatFactory.getClass().getSimpleName()) + " is disabled: " + enablementMsg);
+                LOGGER.warn("OutputFormatFactory " + (formatFactory.getClass().getName()) + " is disabled: " + enablementMsg);
             }
         }
 
@@ -80,9 +80,9 @@ public class OutputFactory {
         }
     }
 
-    public static Set<String> getSupportedFormats(Config config) {
+    public Set<String> getSupportedFormats(Config config) {
         Set<String> supported = new HashSet<String>();
-        for (OutputFormatFactory formatFactory : formats) {
+        for (OutputFormatFactory formatFactory : formatFactories) {
             if(formatFactory.enablementStatus() == null) {
                 for (String format : formatFactory.formats()) {
                     if(permitted(format, config)) {
@@ -95,7 +95,7 @@ public class OutputFactory {
         return supported;
     }
 
-    private static boolean permitted(String supportedFormat, Config config) {
+    private boolean permitted(String supportedFormat, Config config) {
         TreeSet<String> configuredFormats = config.getFormats();
         if(configuredFormats.size() == 1 && configuredFormats.iterator().next().trim().equals("*")) {
             return true;

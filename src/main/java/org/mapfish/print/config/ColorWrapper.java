@@ -19,13 +19,13 @@
 
 package org.mapfish.print.config;
 
+import java.awt.Color;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+
 import org.ho.yaml.exception.YamlException;
 import org.ho.yaml.wrapper.AbstractWrapper;
 import org.ho.yaml.wrapper.SimpleObjectWrapper;
-
-import java.awt.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
 /**
  * Yaml wrapper for allowing color fields. The supported formats are:

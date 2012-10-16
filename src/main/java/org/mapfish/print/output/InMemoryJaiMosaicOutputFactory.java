@@ -19,21 +19,7 @@
 
 package org.mapfish.print.output;
 
-import com.lowagie.text.DocumentException;
-import org.apache.log4j.Logger;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.mapfish.print.MapPrinter;
-import org.mapfish.print.RenderingContext;
-import org.mapfish.print.TimeLogger;
-import org.mapfish.print.utils.PJsonObject;
-
-import javax.imageio.ImageIO;
-import javax.media.jai.JAI;
-import javax.media.jai.RenderedOp;
-import javax.media.jai.TileCache;
-import javax.media.jai.operator.MosaicDescriptor;
-import java.awt.*;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
@@ -45,12 +31,32 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+import javax.media.jai.JAI;
+import javax.media.jai.RenderedOp;
+import javax.media.jai.TileCache;
+import javax.media.jai.operator.MosaicDescriptor;
+
+import org.apache.log4j.Logger;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.mapfish.print.RenderingContext;
+import org.mapfish.print.TimeLogger;
+import org.mapfish.print.utils.PJsonObject;
+
+import com.lowagie.text.DocumentException;
+
 /**
+ * An output factory that uses pdf box to parse the pdf and create a collection of BufferedImages.  
+ * 
+ * Then using JAI Mosaic operation the buffered images are combined into one RenderableImage (virtual image)
+ * and that is written to a file using ImageIO
+ * 
  * User: jeichar
  * Date: Oct 18, 2010
  * Time: 2:00:30 PM
  */
-public class ImageOutputFactory implements OutputFormatFactory {
+public class InMemoryJaiMosaicOutputFactory implements OutputFormatFactory {
 
     public List<String> formats() {
 	try {
@@ -88,7 +94,7 @@ public class ImageOutputFactory implements OutputFormatFactory {
             super(format);
         }
 
-        public RenderingContext print(MapPrinter printer, PJsonObject jsonSpec, OutputStream out, String referer) throws DocumentException {
+        public RenderingContext print(PrintParams params) throws DocumentException {
             File tmpFile = null;
             try {
                 tmpFile = File.createTempFile("mapfishprint", ".pdf");
@@ -96,18 +102,18 @@ public class ImageOutputFactory implements OutputFormatFactory {
                 RenderingContext context;
                 try {
                     TimeLogger timeLog = TimeLogger.info(LOGGER, "PDF Creation");
-                    context = printer.print(jsonSpec, tmpOut, referer);
+                    context =  doPrint(params.withOutput(tmpOut));
                     timeLog.done();
                 } finally {
                     tmpOut.close();
                 }
 
                 TimeLogger timeLog = TimeLogger.info(LOGGER, "Pdf to image conversion");
-                List<BufferedImage> images = createImages(jsonSpec, tmpFile, context);
+                List<BufferedImage> images = createImages(params.jsonSpec, tmpFile, context);
                 timeLog.done();
 
                 timeLog = TimeLogger.info(LOGGER, "Write Image");
-                drawImage(out, images);
+                drawImage(params.outputStream, images);
                 timeLog.done();
 
                 return context;
@@ -149,14 +155,15 @@ public class ImageOutputFactory implements OutputFormatFactory {
             RenderingHints hints = new RenderingHints(JAI.KEY_TILE_CACHE, cache);
 
             RenderedOp mosaic = JAI.create("mosaic", pbMosaic, hints);
-            ImageIO.write(mosaic, "TIFF", out);
+            ImageIO.write(mosaic, format, out);
         }
 
         private List<BufferedImage> createImages(PJsonObject jsonSpec, File tmpFile, RenderingContext context) throws IOException {
             List<BufferedImage> images = new ArrayList<BufferedImage>();
             PDDocument pdf = PDDocument.load(tmpFile);
             try {
-                List<PDPage> pages = pdf.getDocumentCatalog().getAllPages();
+                @SuppressWarnings("unchecked")
+				List<PDPage> pages = pdf.getDocumentCatalog().getAllPages();
 
                 for (PDPage page : pages) {
                     BufferedImage img = page.convertToImage(BufferedImage.TYPE_4BYTE_ABGR, calculateDPI(context, jsonSpec));

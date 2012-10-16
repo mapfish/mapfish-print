@@ -19,11 +19,11 @@
 
 package org.mapfish.print;
 
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Rectangle;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Rectangle;
 
 /**
  * Non production utility main to print the pages sizes defined by iText.

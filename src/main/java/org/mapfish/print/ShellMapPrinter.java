@@ -19,20 +19,34 @@
 
 package org.mapfish.print;
 
-import com.lowagie.text.DocumentException;
-import org.apache.log4j.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.PropertyConfigurator;
 import org.json.JSONException;
 import org.json.JSONWriter;
-import org.mapfish.print.output.OutputFactory;
-import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.utils.PJsonObject;
 import org.pvalsecc.misc.FileUtilities;
 import org.pvalsecc.opts.GetOptions;
 import org.pvalsecc.opts.InvalidOption;
 import org.pvalsecc.opts.Option;
+import org.springframework.context.support.AbstractXmlApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-import java.io.*;
-import java.nio.charset.Charset;
+import com.lowagie.text.DocumentException;
 
 /**
  * A shell version of the MapPrinter. Can be used for testing or for calling
@@ -40,6 +54,8 @@ import java.nio.charset.Charset;
  */
 public class ShellMapPrinter {
     public static final Logger LOGGER = Logger.getLogger(ShellMapPrinter.class);
+
+	public static final String DEFAULT_SPRING_CONTEXT = "spring-application-context.xml";
 
     @Option(desc = "Filename for the configuration (templates&CO)", mandatory = true)
     private String config = null;
@@ -62,7 +78,10 @@ public class ShellMapPrinter {
     @Option(desc = "Property file for the log4j configuration")
     private String log4jConfig = null;
 
-    private final MapPrinter printer;
+    @Option(desc = "Spring configuration file to use in addition to the default.  This allows overriding certain values if desired")
+    private String springConfig = null;
+
+	private AbstractXmlApplicationContext context;
 
     public ShellMapPrinter(String[] args) throws IOException {
         try {
@@ -71,10 +90,13 @@ public class ShellMapPrinter {
             help(invalidOption.getMessage());
         }
         configureLogs();
-        printer = new MapPrinter(new File(config));
+        this.context = new ClassPathXmlApplicationContext(DEFAULT_SPRING_CONTEXT);
+        
+        if(springConfig != null) {
+        	this.context = new FileSystemXmlApplicationContext(new String[]{"classpath:/"+DEFAULT_SPRING_CONTEXT, springConfig});
+        }
     }
 
-    @SuppressWarnings({"UseOfSystemOutOrSystemErr"})
     private void help(String message) {
         System.err.println(message);
         System.err.println();
@@ -89,7 +111,9 @@ public class ShellMapPrinter {
         System.exit(-1);
     }
 
-    public void run() throws IOException, JSONException, DocumentException {
+    public void run() throws IOException, JSONException, DocumentException, InterruptedException {
+    	MapPrinter printer = context.getBean(MapPrinter.class);
+        printer.setYamlConfigFile(new File(config));
         OutputStream outFile = null;
         try {
             if (clientConfig) {
@@ -106,15 +130,13 @@ public class ShellMapPrinter {
 
             } else {
                 final InputStream inFile = getInputStream();
-                //final PJsonObject jsonSpec = printer.parseSpec(FileUtilities.readWholeTextStream(inFile, "UTF-8"));
                 final PJsonObject jsonSpec = MapPrinter.parseSpec(FileUtilities.readWholeTextStream(inFile, "UTF-8"));
-                final OutputFormat outputFormat = OutputFactory.create(printer.getConfig(), jsonSpec);
-                outFile = getOutputStream(jsonSpec.optString("outputFormat", "pdf"));
-                outputFormat.print(printer, jsonSpec, outFile, referer);
+                outFile = getOutputStream(printer.getOutputFormat(jsonSpec).getFileSuffix());
+                printer.print(jsonSpec, outFile, referer);
             }
         } finally {
             if(outFile != null) outFile.close();
-            if(printer != null) printer.stop();
+            if(context != null) context.destroy();
         }
     }
 
@@ -150,7 +172,8 @@ public class ShellMapPrinter {
         }
     }
 
-    private OutputStream getOutputStream(String suffix) throws FileNotFoundException {
+    @SuppressWarnings("resource")
+	private OutputStream getOutputStream(String suffix) throws FileNotFoundException {
         final OutputStream outFile;
         if (output != null) {
             if(!output.endsWith("."+suffix)) {
@@ -164,7 +187,8 @@ public class ShellMapPrinter {
         return outFile;
     }
 
-    private InputStream getInputStream() throws FileNotFoundException {
+    @SuppressWarnings("resource")
+	private InputStream getInputStream() throws FileNotFoundException {
         final InputStream file;
         if (spec != null) {
             file = new FileInputStream(spec);
@@ -174,7 +198,7 @@ public class ShellMapPrinter {
         return file;
     }
 
-    public static void main(String[] args) throws IOException, JSONException, DocumentException {
+    public static void main(String[] args) throws IOException, JSONException, DocumentException, InterruptedException {
         ShellMapPrinter app = new ShellMapPrinter(args);
         try {
             app.run();

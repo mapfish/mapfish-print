@@ -19,16 +19,17 @@
 
 package org.mapfish.print.config.layout;
 
-import com.lowagie.text.DocumentException;
+import java.awt.Color;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.mapfish.print.InvalidValueException;
 import org.mapfish.print.PDFUtils;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.config.ColorWrapper;
 import org.mapfish.print.utils.PJsonObject;
 
-import java.awt.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.lowagie.text.DocumentException;
 
 /**
  * Base class for blocks that can be found in "items" arrays.

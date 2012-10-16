@@ -19,13 +19,14 @@
 
 package org.mapfish.print.config.layout;
 
+import java.awt.Color;
+
+import org.mapfish.print.InvalidValueException;
+import org.mapfish.print.config.ColorWrapper;
+
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 import com.lowagie.text.pdf.BaseFont;
-import org.mapfish.print.config.ColorWrapper;
-import org.mapfish.print.InvalidValueException;
-
-import java.awt.*;
 
 /**
  * Base class for block having font specifications

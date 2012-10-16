@@ -19,14 +19,14 @@
 
 package org.mapfish.print.config;
 
-import org.mapfish.print.PrintTestCase;
-
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+
+import org.mapfish.print.PrintTestCase;
 
 public class AddressHostMatcherTest extends PrintTestCase {
     public AddressHostMatcherTest(String name) {

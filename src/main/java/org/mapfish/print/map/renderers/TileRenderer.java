@@ -19,15 +19,15 @@
 
 package org.mapfish.print.map.renderers;
 
-import org.mapfish.print.RenderingContext;
-import org.mapfish.print.Transformer;
-import org.mapfish.print.map.ParallelMapTileLoader;
-
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.mapfish.print.RenderingContext;
+import org.mapfish.print.Transformer;
+import org.mapfish.print.map.ParallelMapTileLoader;
 
 /**
  * Used by the {@link org.mapfish.print.map.readers.HTTPMapReader} to render it's tiles in function of the requested format.

@@ -19,12 +19,12 @@
 
 package org.mapfish.print.map.readers;
 
-import org.mapfish.print.InvalidValueException;
-import org.mapfish.print.utils.PJsonArray;
-
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.mapfish.print.InvalidValueException;
+import org.mapfish.print.utils.PJsonArray;
 
 /**
  * Holds the information we need to manage a tilecache layer.
@@ -64,14 +64,16 @@ public class TileCacheLayerInfo {
         this.maxX = maxX;
         this.maxY = maxY;
 
-        Matcher formatMatcher = FORMAT_REGEXP.matcher(format);
-        if (formatMatcher.matches()) {
-            extension = formatMatcher.group(1).toLowerCase();
-            if (extension.equals("jpg")) {
-                extension = "jpeg";
+        if (format != null) {
+            Matcher formatMatcher = FORMAT_REGEXP.matcher(format);
+            if (formatMatcher.matches()) {
+                extension = formatMatcher.group(1).toLowerCase();
+                if (extension.equals("jpg")) {
+                    extension = "jpeg";
+                }
+            } else {
+                throw new InvalidValueException("format", format);
             }
-        } else {
-            throw new InvalidValueException("format", format);
         }
     }
 

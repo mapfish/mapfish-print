@@ -19,11 +19,11 @@
 
 package org.mapfish.print.map.renderers.vector;
 
+import org.json.JSONException;
+import org.json.JSONWriter;
 import org.mapfish.geo.MfFeature;
 import org.mapfish.geo.MfGeometry;
 import org.mapfish.print.utils.PJsonObject;
-import org.json.JSONWriter;
-import org.json.JSONException;
 
 /**
  * A geo JSON feature with styling information.

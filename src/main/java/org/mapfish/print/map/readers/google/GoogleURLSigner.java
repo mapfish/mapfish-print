@@ -27,8 +27,9 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.lowagie.text.pdf.codec.Base64;
 import org.mapfish.print.config.Key;
+
+import com.lowagie.text.pdf.codec.Base64;
 
 public class GoogleURLSigner {
     // This variable stores the binary key, which is computed from the string

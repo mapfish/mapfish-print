@@ -19,11 +19,11 @@
 
 package apps;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFImageWriter;
-
-import java.awt.image.BufferedImage;
-import java.io.*;
 
 /**
  * An example of using the PagePanel class to show PDFs. For more advanced

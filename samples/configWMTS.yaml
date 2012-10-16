@@ -29,8 +29,8 @@ hosts:
   - !dnsMatch
     host: tile5.geo.admin.ch
     port: 80
-    
-     
+
+
 layouts:
   #===========================================================================
   A4 portrait:

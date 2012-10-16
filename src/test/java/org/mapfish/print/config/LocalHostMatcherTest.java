@@ -19,8 +19,6 @@
 
 package org.mapfish.print.config;
 
-import org.mapfish.print.PrintTestCase;
-
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -30,6 +28,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
+
+import org.mapfish.print.PrintTestCase;
 
 public class LocalHostMatcherTest extends PrintTestCase {
     public LocalHostMatcherTest(String name) {

@@ -19,20 +19,25 @@
 
 package org.mapfish.print.map.readers.google;
 
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.SocketException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.config.Config;
 import org.mapfish.print.config.Key;
 import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
-
-import java.io.UnsupportedEncodingException;
-import java.net.*;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * User: jeichar
