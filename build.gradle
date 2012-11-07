@@ -94,7 +94,10 @@ task standalone (type: Jar) {
       serviceDir.deleteDir()
       serviceDir.mkdirs()
       for(file in dependencies.findAll({it.name.matches("((gt)|(spring-)).*")})) {
-          zipTree(file).matching {includes: ['META-INF/services/*','META-INF/spring.*']}.each {f ->
+          zipTree(file).matching {
+            include 'META-INF/services/*'
+            include 'META-INF/spring.*'
+          }.each {f ->
               def base = serviceDir
               if (f.name.startsWith("spring")) {
                   base = metaInfDir;
