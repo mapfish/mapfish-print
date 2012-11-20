@@ -62,6 +62,10 @@ hosts:
     ip: basemap-web.zen.landcareresearch.co.nz
     mask: 255.255.255.255
     port: 80
+  - !ipMatch
+    ip: maps.zen.landcareresearch.co.nz
+    mask: 255.255.255.255
+    port: 80
 #    port: 80
 #  - !dnsMatch
 #    host: basemap-web.zen.landcareresearch.co.nz

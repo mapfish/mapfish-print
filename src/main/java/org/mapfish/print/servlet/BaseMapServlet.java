@@ -29,7 +29,10 @@ import javax.servlet.http.HttpServlet;
 
 import org.apache.log4j.Logger;
 import org.mapfish.print.MapPrinter;
+import org.mapfish.print.config.ConfigFactory;
+import org.mapfish.print.output.OutputFactory;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+//import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Base class for MapPrinter servlets (deals with the configuration loading)
@@ -133,7 +136,32 @@ public abstract class BaseMapServlet extends HttpServlet {
             //debugPath += "printer == null, lastModified from configFile = "+lastModified+"\n";
             try {
                 LOGGER.info("Loading configuration file: " + configFile.getAbsolutePath());
-                printer = WebApplicationContextUtils.getWebApplicationContext(getServletContext()).getBean(MapPrinter.class).setYamlConfigFile(configFile);
+                //printer = WebApplicationContextUtils.getWebApplicationContext(getServletContext()).getBean(MapPrinter.class).setYamlConfigFile(configFile);
+                /*
+                 * The above line introduces a bug: When printing with two
+                 * applications, say using app-a.yaml and app-b.yaml, 
+                 * when printing app-a it works, then printing app-b, works.
+                 * Then printing app-a again, it prints as configured with
+                 * app-b.
+                 * 
+                 * We do not need DI if this class depends on MapPrinter 
+                 * anyway which it does through the .setYamlConfigFile method
+                 * and the call to MapPrinter.class. I guess in the future
+                 * we could implement an interface and define that in the
+                 * spring-application-context.xml file to take advantage of
+                 * DI's power, but without an interface DI just introduces
+                 * unnecessary complexity.
+                 * 
+                 * This class now depends on ConfigFactory and OutputFactory
+                 * as well. This is not ideal. If we want to DI everything
+                 * we should take advantage of interfaces. Otherwise I cannot
+                 * see the point of DI, because it is mainly to be able to
+                 * unit test things.
+                 */
+                printer = new MapPrinter();
+                printer.setOutputFactory(WebApplicationContextUtils.getWebApplicationContext(getServletContext()).getBean(OutputFactory.class));
+                printer.setConfigFactory(WebApplicationContextUtils.getWebApplicationContext(getServletContext()).getBean(ConfigFactory.class));
+                printer.setYamlConfigFile(configFile);
                 if (app != null) {
                 	if (printers == null) {
                 		printers = new HashMap<String, MapPrinter>();

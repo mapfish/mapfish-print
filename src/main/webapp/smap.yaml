@@ -54,6 +54,9 @@ hosts:
     ip: 202.27.242.222
     port: 8080
   - !dnsMatch
+    host: maps.zen.landcareresearch.co.nz
+    port: 80
+  - !dnsMatch
     host: basemap-web.zen.landcareresearch.co.nz
     port: 80
   - !dnsMatch
