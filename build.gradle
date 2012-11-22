@@ -11,7 +11,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven'
 apply plugin: 'project-report'
 
-defaultTasks 'jar', 'war', 'standalone'
+defaultTasks 'jar', 'war', 'imageMagickWar', 'standalone'
 
 def MAPFISH_REPO='http://dev.mapfish.org/maven/repository'
 repositories {
@@ -61,6 +61,12 @@ jar {
 war {
   baseName = "print-servlet"
   manifest.mainAttributes('Build-Time': new Date().getDateTimeString())
+}
+task imageMagickWar (type: War) {
+  baseName = "print-servlet"
+  manifest.mainAttributes('Build-Time': new Date().getDateTimeString())
+  classifier = "IMG-MAGICK"
+  from fileTree('sample-spring/imagemagick')
 }
 
 task standalone (type: Jar) {
@@ -113,14 +119,11 @@ task standalone (type: Jar) {
   
 }
 
-println(standalone.inputs)
-println(standalone.outputs)
-
 task show << {
     sourceSets.main.output.properties.each {println it}
 }
 artifacts {
-  archives jar, war, standalone
+  archives jar, war, standalone, imageMagickWar
 }
 
 configure(install.repositories.mavenInstaller) {

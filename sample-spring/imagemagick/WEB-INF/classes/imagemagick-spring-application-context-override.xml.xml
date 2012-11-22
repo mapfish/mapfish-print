@@ -18,9 +18,9 @@
 	<bean id="imageMagickOutput" class="org.mapfish.print.output.NativeProcessOutputFactory">
 		<!-- Default is to use /usr/bin/convert on linux and just plain convert on windows if this is 
 			 not acceptable in your application then uncomment property below and enter correct value for your environment -->
-		<property name="cmd">
+		<!-- <property name="cmd">
 			<value>C:\Program Files\ImageMagick-6.7.8-Q16\convert</value>
-		</property>
+		</property> -->
 		<!-- The arguments to use when running an imagemagick process -->
 		<property name="cmdArgs">
 			<list>
