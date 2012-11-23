@@ -10,12 +10,11 @@
 	<bean id="outputFactory" class="org.mapfish.print.output.OutputFactory">
 		<property name="formatFactories">
 			<list>
-				<!-- Uncomment to use image magick for image output -->
 				<ref bean="imageMagickOutput" />
+				<ref bean="pdfOutputFactory" />
 			</list>
 		</property>
-	</bean>
-	<bean id="imageMagickOutput" class="org.mapfish.print.output.NativeProcessOutputFactory">
+	</bean>	<bean id="imageMagickOutput" class="org.mapfish.print.output.NativeProcessOutputFactory">
 		<!-- Default is to use /usr/bin/convert on linux and just plain convert on windows if this is 
 			 not acceptable in your application then uncomment property below and enter correct value for your environment -->
 		<!-- <property name="cmd">
