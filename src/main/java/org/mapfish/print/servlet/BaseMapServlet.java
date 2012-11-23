@@ -76,7 +76,11 @@ public abstract class BaseMapServlet extends HttpServlet {
     			printer = null;
     			//debugPath += "printer = null 1\n";
     		}
-       		configFile = new File(app +".yaml");
+            if(app.toLowerCase().endsWith(".yaml")) {
+                configFile = new File(app);
+            } else {
+                configFile = new File(app +".yaml");
+            }
         } else {
         	configFile = new File(configPath);
         	//debugPath += "configFile = new ..., 1\n";

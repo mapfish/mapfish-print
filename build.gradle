@@ -1,5 +1,4 @@
-import com.camptocamp.gradle.plugin.*
-import com.camptocamp.gradle.*
+import org.gradle.api.plugins.jetty.JettyRun
 
 group = 'org.mapfish.print'
 version = '1.2-SNAPSHOT'
@@ -122,6 +121,8 @@ task standalone (type: Jar) {
 task show << {
     sourceSets.main.output.properties.each {println it}
 }
+show.description = 'For debugging build script.  shows some debug information'
+
 artifacts {
   archives jar, war, standalone, imageMagickWar
 }
@@ -203,12 +204,32 @@ task run(dependesOn: compileJava) << {
      }
    }
 }
+run.description = 'Run mapfish print from commandline.  All commandline parameters apply. Execute task without system parameters to get help' 
 
 jettyRun {
     httpPort = 8080
     scanTargets = (fileTree("src/main/").include("webapp/WEB-INF/**") + fileTree(compileJava.destinationDir)).files
     reload = 'manual'
 }
+
+task jettyRunImgMgk (type: JettyRun) {
+	description = 'Run mapfish-print within jetty with the imagemagick format installed'
+    httpPort = 8080
+    def imgMagickSpring = file("sample-spring/imagemagick/WEB-INF/classes/imagemagick-spring-application-context-override.xml") 
+    scanTargets = (fileTree("src/main/").include("webapp/WEB-INF/**") + fileTree(compileJava.destinationDir)).files
+    reload = 'manual'
+
+    def tmpFile = file("src/main/webapp/WEB-INF/classes/imagemagick-spring-application-context-override.xml")
+    tmpFile.deleteOnExit()
+    doFirst {
+        //tmpFile.createNewFile()
+        tmpFile << imgMagickSpring.bytes
+    }
+    doLast {
+        tmpFile.delete()
+    }
+}
+
 
 
 /*
@@ -262,3 +283,4 @@ task minify(dependsOn: [generateProguardConfigFile]) << {
               classpath:  configurations.proguard.asPath    )
   ant.proguard(configuration: proguardConfig)
 }
+minify.description = 'Minify standalone jar, not yet functioning'

@@ -5,7 +5,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 	<context:annotation-config></context:annotation-config>
-	<bean id="mapPrinter" class="org.mapfish.print.MapPrinter"></bean>
+	<bean id="mapPrinter" class="org.mapfish.print.MapPrinter" scope="request"></bean>
 	<bean id="configFactory" class="org.mapfish.print.config.ConfigFactory"></bean>
 
 	<!-- Define MapReaderFactories -->
