@@ -127,12 +127,12 @@ public class LegendsBlock extends Block {
             if (legends != null && legends.size() > 0) {
                 for (int i = 0; i < legends.size(); ++i) {
                     PJsonObject layer = legends.getJSONObject(i);
-                    createLine(0.0, layer, layerPdfFont, i == 0 ? 0 : layerSpace, true);
+                    createLine(0.0, layer, layerPdfFont, i == 0 ? 0 : layerSpace, true, true);
     
                     PJsonArray classes = layer.getJSONArray("classes");
                     for (int j = 0; j < classes.size(); ++j) {
                         PJsonObject clazz = classes.getJSONObject(j);
-                        createLine(classIndentation, clazz, classPdfFont, classSpace, false);
+                        createLine(classIndentation, clazz, classPdfFont, classSpace, false, false);
                     }
                 }
             }
@@ -196,34 +196,34 @@ public class LegendsBlock extends Block {
          * @throws DocumentException
          */
         private void createLine(double indent, PJsonObject node, Font pdfFont,
-                float lineSpace, boolean escapeOrphanTitle) throws DocumentException {
+                float lineSpace, boolean escapeOrphanTitle, boolean defaultIconBeforeName) throws DocumentException {
             final String name = node.getString("name");
             final String icon = node.optString("icon");
             final PJsonArray icons = node.optJSONArray("icons");
     
             Paragraph result = new Paragraph();
-            if (icon != null) {
-                result = createIcon(indent, lineSpace, icon, result);
-            }
-            if (icons != null) {
-                for (int i = 0; i < icons.size(); ++i) {
-                    String iconItem = icons.getString(i);
-                    result = createIcon(indent, i == 0 ? lineSpace : 0,
-                            iconItem, result);
-                }
+            boolean iconBeforeName = node.optBool("iconBeforeName", defaultIconBeforeName);
+            if(iconBeforeName) {
+                result = addIconToParagraph(indent, lineSpace, icon, icons, result);
+                addTitleSeparator(indent, lineSpace, result);
+                addName(pdfFont, escapeOrphanTitle, name, result);
+            } else {
+                addName(pdfFont, escapeOrphanTitle, name, result);
+                addCell(indent, lineSpace, result);
+                result = new Paragraph();
+                result = addIconToParagraph(indent, lineSpace, icon, icons, result);
+                addTitleSeparator(indent, lineSpace, result);
             }
     
-            if (title != null) {
+    
+            if (!escapeOrphanTitle) {
                 column.addCell(title);
+                title = null;
             }
-            title = new PdfPCell(result);
-            title.setBorder(PdfPCell.NO_BORDER);
-            title.setPadding(0f);
-            title.setPaddingLeft((float)indent);
-            if (inline) {
-                title.setPaddingTop(lineSpace);
-            }
-    
+            
+        }
+
+        private void addName(Font pdfFont, boolean escapeOrphanTitle, final String name, Paragraph result) {
             result.setFont(pdfFont);
             result.add(name);
             if (name.trim().length() > 0) {
@@ -240,13 +240,37 @@ public class LegendsBlock extends Block {
                 }
             }
     
-            if (getBackgroundColorVal(context, params) != null) {
+            if (title != null && getBackgroundColorVal(context, params) != null) {
                 title.setBackgroundColor(getBackgroundColorVal(context, params));
             }
-            if (!escapeOrphanTitle) {
+        }
+
+        private void addTitleSeparator(double indent, float lineSpace, Paragraph result) {
+            if (title != null) {
                 column.addCell(title);
-                title = null;
             }
+            title = new PdfPCell(result);
+            title.setBorder(PdfPCell.NO_BORDER);
+            title.setPadding(0f);
+            title.setPaddingLeft((float)indent);
+            if (inline) {
+                title.setPaddingTop(lineSpace);
+            }
+        }
+
+        private Paragraph addIconToParagraph(double indent, float lineSpace, final String icon, final PJsonArray icons, Paragraph result)
+                throws DocumentException {
+            if (icon != null) {
+                result = createIcon(indent, lineSpace, icon, result);
+            }
+            if (icons != null) {
+                for (int i = 0; i < icons.size(); ++i) {
+                    String iconItem = icons.getString(i);
+                    result = createIcon(indent, i == 0 ? lineSpace : 0,
+                            iconItem, result);
+                }
+            }
+            return result;
         }
 
         /**

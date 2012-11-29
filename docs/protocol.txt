@@ -98,7 +98,8 @@ The "SPEC" parameter is a JSON structure like that:
                         icons: [
                             'full url to the image'
                         ],
-                        name: 'an icon name'
+                        name: 'an icon name',
+                        iconBeforeName: true
                     }
                 ],
                 name: 'a class name'
