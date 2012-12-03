@@ -24,10 +24,10 @@
 		<property name="cmdArgs">
 			<list>
 				<value>-density</value>
-				<value>${dpi}</value>
+				<value>@@dpi@@</value>
 				<value>-append</value>
-				<value>${sourceFile}</value>
-				<value>${targetFile}</value>
+				<value>@@sourceFile@@</value>
+				<value>@@targetFile@@</value>
 			</list>
 		</property>
 		<!-- Formats supported by the converter -->

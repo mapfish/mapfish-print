@@ -76,11 +76,7 @@ public abstract class BaseMapServlet extends HttpServlet {
     			printer = null;
     			//debugPath += "printer = null 1\n";
     		}
-            if(app.toLowerCase().endsWith(".yaml")) {
-                configFile = new File(app);
-            } else {
-                configFile = new File(app +".yaml");
-            }
+            configFile = new File(app);
         } else {
         	configFile = new File(configPath);
         	//debugPath += "configFile = new ..., 1\n";
@@ -88,9 +84,17 @@ public abstract class BaseMapServlet extends HttpServlet {
         if (!configFile.isAbsolute()) {
         	if (app != null) {
         		//debugPath += "config is absolute app = "+app+"\n";
-        		configFile = new File(getServletContext().getRealPath(app +".yaml"));
+        		if(app.toLowerCase().endsWith(".yaml")) {
+        			configFile = new File(getServletContext().getRealPath(app));
+        		} else {
+        			configFile = new File(getServletContext().getRealPath(app +".yaml"));
+        		}
         	} else {
-        		configFile = new File(getServletContext().getRealPath(configPath));
+        		if(configPath.toLowerCase().endsWith(".yaml")) {
+        			configFile = new File(getServletContext().getRealPath(configPath));
+        		} else {
+        			configFile = new File(getServletContext().getRealPath(configPath+".yaml"));
+        		}
         		//debugPath += "config is absolute app DEFAULT\n";
         	}
         }

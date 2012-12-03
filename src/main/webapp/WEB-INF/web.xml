@@ -7,7 +7,7 @@
   </listener>
   <context-param>
     <param-name>contextConfigLocation</param-name>
-    <param-value>classpath:spring-application-context.xml,classpath:*-spring-application-context-override.xml</param-value>
+    <param-value>classpath:mapfish-spring-application-context.xml,classpath:*-mapfish-spring-application-context-override.xml</param-value>
   </context-param>
   <servlet>
     <servlet-name>mapfish.print</servlet-name>
