@@ -19,6 +19,7 @@
 
 package org.mapfish.print.map.renderers.vector;
 
+import java.awt.geom.AffineTransform;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,37 +44,37 @@ public abstract class FeaturesRenderer<T extends MfGeo> {
     }
 
     @SuppressWarnings("unchecked")
-	public static void render(RenderingContext context, PdfContentByte dc, MfGeo geo) {
+	public static void render(RenderingContext context, PdfContentByte dc, MfGeo geo, AffineTransform affineTransform) {
         @SuppressWarnings("rawtypes")
 		FeaturesRenderer renderer = RENDERERS.get(geo.getClass());
         if (renderer == null) {
             throw new RuntimeException("Rendering of " + geo.getClass().getName() + " not supported");
         }
-        renderer.renderImpl(context, dc, geo);
+        renderer.renderImpl(context, dc, geo, affineTransform);
     }
 
-    protected abstract void renderImpl(RenderingContext context, PdfContentByte dc, T geo);
+    protected abstract void renderImpl(RenderingContext context, PdfContentByte dc, T geo, AffineTransform affineTransform);
 
     private static class FeatureRenderer extends FeaturesRenderer<StyledMfFeature> {
-        protected void renderImpl(RenderingContext context, PdfContentByte dc, StyledMfFeature geo) {
+        protected void renderImpl(RenderingContext context, PdfContentByte dc, StyledMfFeature geo, AffineTransform affineTransform) {
             final MfGeometry theGeom = geo.getMfGeometry();
             if (theGeom != null && geo.isDisplayed()) {
-                GeometriesRenderer.render(context, dc, geo.getStyle(), theGeom.getInternalGeometry());
+                GeometriesRenderer.render(context, dc, geo.getStyle(), theGeom.getInternalGeometry(), affineTransform);
             }
         }
     }
 
     private static class FeatureCollectionRenderer extends FeaturesRenderer<MfFeatureCollection> {
-        protected void renderImpl(RenderingContext context, PdfContentByte dc, MfFeatureCollection geo) {
+        protected void renderImpl(RenderingContext context, PdfContentByte dc, MfFeatureCollection geo, AffineTransform affineTransform) {
             for (MfFeature cur : geo.getCollection()) {
-                render(context, dc, cur);
+                render(context, dc, cur, affineTransform);
             }
         }
     }
 
     private static class GeometryRenderer extends FeaturesRenderer<MfGeometry> {
-        protected void renderImpl(RenderingContext context, PdfContentByte dc, MfGeometry geo) {
-            GeometriesRenderer.render(context, dc, null, geo.getInternalGeometry());
+        protected void renderImpl(RenderingContext context, PdfContentByte dc, MfGeometry geo, AffineTransform affineTransform) {
+            GeometriesRenderer.render(context, dc, null, geo.getInternalGeometry(), affineTransform);
         }
     }
 }

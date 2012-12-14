@@ -82,11 +82,7 @@ public class VectorMapReader extends MapReader {
     public void render(final Transformer transformer, ParallelMapTileLoader parallelMapTileLoader, String srs, boolean first) {
         parallelMapTileLoader.addTileToLoad(new MapTileTask.RenderOnly() {
             public void renderOnPdf(PdfContentByte dc) throws DocumentException {
-                dc.transform(transformer.getGeoTransform(false));
-                float styleFactor = context.getStyleFactor();
-                context.setStyleFactor(styleFactor * transformer.getGeoW() / transformer.getPaperW());  //protected by the PDFLock acquired in the caller (ParallelMapTileLoader.handle)
-                FeaturesRenderer.render(context, dc, geo);
-                context.setStyleFactor(styleFactor);
+                FeaturesRenderer.render(context, dc, geo, transformer.getGeoTransform(false));
             }
         });
     }

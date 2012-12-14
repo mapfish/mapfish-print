@@ -19,6 +19,8 @@
 
 package org.mapfish.print.map.renderers.vector;
 
+import java.awt.geom.AffineTransform;
+
 import org.apache.log4j.Logger;
 import org.mapfish.print.PDFUtils;
 import org.mapfish.print.RenderingContext;
@@ -27,6 +29,7 @@ import org.mapfish.print.utils.PJsonObject;
 
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfContentByte;
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
@@ -35,7 +38,7 @@ public class LabelRenderer {
 	public static final Logger LOGGER = Logger.getLogger(LabelRenderer.class);
 
 	static void applyStyle(RenderingContext context, PdfContentByte dc,
-			PJsonObject style, Geometry geometry) {
+			PJsonObject style, Geometry geometry, AffineTransform affineTransform) {
 		/*
 		 * See Feature/Vector.js for more information about labels
 		 */
@@ -64,7 +67,8 @@ public class LabelRenderer {
 			}
 			String fontSize = style.optString("fontSize", "12");
 			String fontWeight = style.optString("fontWeight", "normal");
-			Point center = geometry.getCentroid();
+			Coordinate center = geometry.getCentroid().getCoordinate();
+            center = GeometriesRenderer.transformCoordinate(center, affineTransform);
 			float f = context.getStyleFactor();
 			BaseFont bf = PDFUtils
 					.getBaseFont(fontFamily, fontSize, fontWeight);
@@ -73,13 +77,13 @@ public class LabelRenderer {
 			dc.setFontAndSize(bf, fontHeight);
 			dc.setColorFill(ColorWrapper.convertColor(fontColor));
 			dc.beginText();
-			dc.setTextMatrix((float) center.getX() + labelXOffset * f,
-					(float) center.getY() + labelYOffset * f);
+			dc.setTextMatrix((float) center.x + labelXOffset * f,
+                (float) center.y + labelYOffset * f);
 			dc.showTextAligned(
 					PDFUtils.getHorizontalAlignment(labelAlign),
 					label,
-					(float) center.getX() + labelXOffset * f,
-					(float) center.getY()
+					(float) center.x + labelXOffset * f,
+					(float) center.y
 							+ labelYOffset
 							* f
 							- PDFUtils
