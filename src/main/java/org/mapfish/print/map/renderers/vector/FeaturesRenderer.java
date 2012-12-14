@@ -19,15 +19,17 @@
 
 package org.mapfish.print.map.renderers.vector;
 
-import org.mapfish.geo.MfGeo;
-import org.mapfish.geo.MfFeatureCollection;
+import java.awt.geom.AffineTransform;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.mapfish.geo.MfFeature;
+import org.mapfish.geo.MfFeatureCollection;
+import org.mapfish.geo.MfGeo;
 import org.mapfish.geo.MfGeometry;
 import org.mapfish.print.RenderingContext;
-import com.lowagie.text.pdf.PdfContentByte;
 
-import java.util.Map;
-import java.util.HashMap;
+import com.lowagie.text.pdf.PdfContentByte;
 
 /**
  * iText renderer for MF geoJSON features.
@@ -41,37 +43,38 @@ public abstract class FeaturesRenderer<T extends MfGeo> {
         RENDERERS.put(MfGeometry.class, new GeometryRenderer());
     }
 
-    @SuppressWarnings({"RawUseOfParameterizedType", "unchecked"})
-    public static void render(RenderingContext context, PdfContentByte dc, MfGeo geo) {
-        FeaturesRenderer renderer = RENDERERS.get(geo.getClass());
+    @SuppressWarnings("unchecked")
+	public static void render(RenderingContext context, PdfContentByte dc, MfGeo geo, AffineTransform affineTransform) {
+        @SuppressWarnings("rawtypes")
+		FeaturesRenderer renderer = RENDERERS.get(geo.getClass());
         if (renderer == null) {
             throw new RuntimeException("Rendering of " + geo.getClass().getName() + " not supported");
         }
-        renderer.renderImpl(context, dc, geo);
+        renderer.renderImpl(context, dc, geo, affineTransform);
     }
 
-    protected abstract void renderImpl(RenderingContext context, PdfContentByte dc, T geo);
+    protected abstract void renderImpl(RenderingContext context, PdfContentByte dc, T geo, AffineTransform affineTransform);
 
     private static class FeatureRenderer extends FeaturesRenderer<StyledMfFeature> {
-        protected void renderImpl(RenderingContext context, PdfContentByte dc, StyledMfFeature geo) {
+        protected void renderImpl(RenderingContext context, PdfContentByte dc, StyledMfFeature geo, AffineTransform affineTransform) {
             final MfGeometry theGeom = geo.getMfGeometry();
             if (theGeom != null && geo.isDisplayed()) {
-                GeometriesRenderer.render(context, dc, geo.getStyle(), theGeom.getInternalGeometry());
+                GeometriesRenderer.render(context, dc, geo.getStyle(), theGeom.getInternalGeometry(), affineTransform);
             }
         }
     }
 
     private static class FeatureCollectionRenderer extends FeaturesRenderer<MfFeatureCollection> {
-        protected void renderImpl(RenderingContext context, PdfContentByte dc, MfFeatureCollection geo) {
+        protected void renderImpl(RenderingContext context, PdfContentByte dc, MfFeatureCollection geo, AffineTransform affineTransform) {
             for (MfFeature cur : geo.getCollection()) {
-                render(context, dc, cur);
+                render(context, dc, cur, affineTransform);
             }
         }
     }
 
     private static class GeometryRenderer extends FeaturesRenderer<MfGeometry> {
-        protected void renderImpl(RenderingContext context, PdfContentByte dc, MfGeometry geo) {
-            GeometriesRenderer.render(context, dc, null, geo.getInternalGeometry());
+        protected void renderImpl(RenderingContext context, PdfContentByte dc, MfGeometry geo, AffineTransform affineTransform) {
+            GeometriesRenderer.render(context, dc, null, geo.getInternalGeometry(), affineTransform);
         }
     }
 }

@@ -19,6 +19,7 @@
 
 package org.mapfish.print.map.renderers.vector;
 
+import java.awt.geom.AffineTransform;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -79,9 +80,9 @@ public class PointRenderer extends GeometriesRenderer<Point> {
         return coords;
     }
 
-    protected void renderImpl(RenderingContext context, PdfContentByte dc, PJsonObject style, Point geometry) {
+    protected void renderImpl(RenderingContext context, PdfContentByte dc, PJsonObject style, Point geometry, AffineTransform affineTransform) {
         PdfGState state = new PdfGState();
-        final Coordinate coordinate = geometry.getCoordinate();
+        final Coordinate coordinate = transformCoordinate((Coordinate) geometry.getCoordinate().clone(), affineTransform);
         float pointRadius = style.optFloat("pointRadius", 4.0f);
         final float f = context.getStyleFactor();
 
