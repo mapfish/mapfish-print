@@ -93,6 +93,6 @@ public class LineStringRenderer extends GeometriesRenderer<LineString> {
             transformCoordinate(coord, affineTransform);
             dc.lineTo((float) coord.x, (float) coord.y);
         }
-        dc.stroke();
+        if (style.optBool("stroke", true)) dc.stroke();
     }
 }

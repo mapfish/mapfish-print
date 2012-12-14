@@ -54,7 +54,7 @@ class PolygonRenderer extends GeometriesRenderer<Polygon> {
         for (int i = 0; i < geometry.getNumInteriorRing(); ++i) {
             renderRing(dc, geometry.getInteriorRingN(i), affineTransform);
         }
-        dc.eoFillStroke();
+        renderStrokeAndFill(dc, style.optBool("stroke", true), style.optBool("fill", true));
     }
 
     private void renderRing(PdfContentByte dc, LineString ring, AffineTransform affineTransform) {
@@ -69,5 +69,11 @@ class PolygonRenderer extends GeometriesRenderer<Polygon> {
             dc.lineTo((float) coord.x, (float) coord.y);
         }
         dc.closePath();
+    }
+    
+    private void renderStrokeAndFill(PdfContentByte dc, boolean stroke, boolean fill) {
+        if (stroke && fill) dc.eoFillStroke();
+        else if (stroke) dc.stroke();
+        else if (fill) dc.eoFill();
     }
 }
