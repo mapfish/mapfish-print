@@ -140,6 +140,9 @@ If you are developping a web application, you can include the print module in it
 2. Add these three sections (correct the paths and URLs in function of your needs) to your WEB-INF/web.xml file::
 
         ...
+        <listener>
+          <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+        </listener>
         <context-param>
             <param-name>contextConfigLocation</param-name>
             <param-value>classpath:mapfish-spring-application-context.xml,classpath:*-mapfish-spring-application-context-override.xml</param-value>
