@@ -20,6 +20,23 @@
 package org.mapfish.print.config;
 
 //import org.apache.commons.httpclient.HostConfiguration;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.Proxy;
+import java.net.ProxySelector;
+import java.net.SocketException;
+import java.net.URI;
+import java.net.UnknownHostException;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.TreeSet;
+import java.util.HashMap;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -39,19 +56,6 @@ import org.mapfish.print.map.readers.WMSServerInfo;
 import org.mapfish.print.output.OutputFactory;
 //import org.mapfish.print.output.OutputFormat;
 import org.pvalsecc.concurrent.OrderedResultsExecutor;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.Proxy;
-import java.net.ProxySelector;
-import java.net.SocketException;
-import java.net.URI;
-import java.net.UnknownHostException;
-import java.text.NumberFormat;
-import java.util.*;
 
 /**
  * Bean mapping the root of the configuration file.
@@ -74,6 +78,7 @@ public class Config {
     
     private TreeSet<String> fonts = null;
     private List<HostMatcher> hosts = new ArrayList<HostMatcher>();
+    private HashMap localHostForward;
     private TreeSet<Key> keys;
 
     private int globalParallelFetches = 5;
@@ -468,5 +473,30 @@ public class Config {
 
     public void setSecurity(List<SecurityStrategy> security) {
         this.security = security;
+    }
+
+    public void setLocalHostForward(HashMap localHostForward) {
+        this.localHostForward = localHostForward;
+        System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
+    }
+
+    public boolean localHostForwardIsHttps2http() {
+        if (localHostForward != null) {
+            Object https2http = localHostForward.get("https2http");
+            if (https2http != null && https2http instanceof Boolean) {
+                return (Boolean)https2http;
+            }
+        }
+        return false;
+    }
+
+    public boolean localHostForwardIsFrom(String host) {
+        if (localHostForward != null) {
+            Object from = localHostForward.get("from");
+            if (from != null && from instanceof List) {
+                return ((List)from).indexOf(host) >= 0;
+            }
+        }
+        return false;
     }
 }

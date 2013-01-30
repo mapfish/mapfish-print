@@ -19,6 +19,22 @@
 
 package org.mapfish.print.map.readers;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,20 +48,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Collections;
 
 /**
  * Use to get information about a WMS server. Caches the results.
@@ -109,17 +111,36 @@ public class WMSServerInfo {
         URIUtils.addParamOverride(queryParams, "VERSION", "1.1.1");
         URL url = URIUtils.addParams(baseUrl, queryParams, HTTPMapReader.OVERRIDE_ALL).toURL();
 
-        GetMethod method = new GetMethod(url.toString());
-        if (context.getReferer() != null) {
-            method.setRequestHeader("Referer", context.getReferer());
-        }
+        GetMethod method = null;
         try {
-            context.getConfig().getHttpClient(baseUrl).executeMethod(method);
-            int code = method.getStatusCode();
-            if (code < 200 || code >= 300) {
-                throw new IOException("Error " + code + " while reading the Capabilities from " + url + ": " + method.getStatusText());
+            final InputStream stream;
+
+            if ((url.getProtocol().equals("http") || url.getProtocol().equals("https")) &&
+                    context.getConfig().localHostForwardIsFrom(url.getHost())) {
+                String scheme = url.getProtocol();
+                final String host = url.getHost();
+                if (url.getProtocol().equals("https") &&
+                        context.getConfig().localHostForwardIsHttps2http()) {
+                    scheme = "http";
+                }
+                URL localUrl = new URL(scheme, "localhost", url.getPort(),
+                        url.getFile());
+                HttpURLConnection connexion = (HttpURLConnection)localUrl.openConnection();
+                connexion.setRequestProperty("Host", host);
+                stream = connexion.getInputStream();
             }
-            InputStream stream = method.getResponseBodyAsStream();
+            else {
+                method = new GetMethod(url.toString());
+                if (context.getReferer() != null) {
+                    method.setRequestHeader("Referer", context.getReferer());
+                }
+                context.getConfig().getHttpClient(baseUrl).executeMethod(method);
+                int code = method.getStatusCode();
+                if (code < 200 || code >= 300) {
+                    throw new IOException("Error " + code + " while reading the Capabilities from " + url + ": " + method.getStatusText());
+                }
+                stream = method.getResponseBodyAsStream();
+            }
             final WMSServerInfo result;
             try {
                 result = parseCapabilities(stream);
@@ -128,7 +149,9 @@ public class WMSServerInfo {
             }
             return result;
         } finally {
-            method.releaseConnection();
+            if (method != null) {
+                method.releaseConnection();
+            }
         }
     }
 
