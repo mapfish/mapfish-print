@@ -63,7 +63,11 @@ hosts:
     mask: 255.255.255.255
     port: 80
   - !ipMatch
-    ip: maps.zen.landcareresearch.co.nz
+    ip: maps-a.zen.landcareresearch.co.nz
+    mask: 255.255.255.255
+    port: 80
+  - !ipMatch
+    ip: maps-b.zen.landcareresearch.co.nz
     mask: 255.255.255.255
     port: 80
 #    port: 80
@@ -173,6 +177,8 @@ layouts:
           width: 450
           items:
             - !legends
+              maxHeight: 100
+              inline: false
               backgroundColor: #FFFFFF
               maxIconWidth: 20
               maxIconHeight: 20
@@ -291,9 +297,13 @@ layouts:
         - !columns
           absoluteX: 112
           absoluteY: 475
-          width: 450
+          #width: 450
+          width: 600
           items:
             - !legends
+              maxHeight: 300
+              maxWidth: 60
+              inline: false
               backgroundColor: #FFFFFF
               maxIconWidth: 20
               maxIconHeight: 20
