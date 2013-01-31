@@ -20,8 +20,11 @@
 package org.mapfish.print;
 
 import java.awt.Graphics2D;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -187,34 +190,89 @@ public class PDFUtils {
             }
             path = path.replace("/", File.separator);
             return Image.getInstance(new File(path).toURI().toURL());
-        } else {
-            //read the whole image content in memory, then give that to iText
-            GetMethod method = new GetMethod(uri.toString());
-            method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
+        }
+        else {
+            final String contentType;
+            final int statusCode;
+            final String statusText;
+            byte[] data = null;
             try {
-                if (context.getReferer() != null) {
-                    method.setRequestHeader("Referer", context.getReferer());
-                }
-                if (LOGGER.isDebugEnabled()) LOGGER.debug("loading image: "+uri);
-                context.getConfig().getHttpClient(uri).executeMethod(method);
-                int code = method.getStatusCode();
-                final String contentType;
+                //read the whole image content in memory, then give that to iText
+                if ((uri.getScheme().equals("http") || uri.getScheme().equals("https")) &&
+                        context.getConfig().localHostForwardIsFrom(uri.getHost())) {
+                    String scheme = uri.getScheme();
+                    final String host = uri.getHost();
+                    if (uri.getScheme().equals("https") &&
+                            context.getConfig().localHostForwardIsHttps2http()) {
+                        scheme = "http";
+                    }
+                    URL url = new URL(scheme, "localhost", uri.getPort(), 
+                            uri.getPath() + "?" + uri.getQuery());
 
-                Header contentTypeHeader = method.getResponseHeader("Content-Type");
-                if(contentTypeHeader == null) {
-                    contentType = "";
-                } else {
-                    contentType = contentTypeHeader.getValue();
+                    HttpURLConnection connexion = (HttpURLConnection)url.openConnection();
+                    connexion.setRequestProperty("Host", host);
+                    InputStream is = null;
+                    try {
+                        try {
+                            is = connexion.getInputStream();
+                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            byte[] buffer = new byte[1024];
+                            int length;
+                            while ((length = is.read(buffer)) != -1) {
+                                baos.write(buffer, 0, length);
+                            }
+                            baos.flush();
+                            data = baos.toByteArray();
+                        }
+                        catch (IOException e) {
+                            LOGGER.warn(e);
+                        }
+                        statusCode = connexion.getResponseCode();
+                        statusText = connexion.getResponseMessage();
+                        contentType = connexion.getContentType();
+                    }
+                    finally {
+                        if (is != null) {
+                            is.close();
+                        }
+                    }
+                }
+                else {
+                    GetMethod getMethod = null;
+                    try {
+                        getMethod = new GetMethod(uri.toString());
+                        getMethod.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
+                        if (context.getReferer() != null) {
+                            getMethod.setRequestHeader("Referer", context.getReferer());
+                        }
+                        if (LOGGER.isDebugEnabled()) LOGGER.debug("loading image: "+uri);
+                        context.getConfig().getHttpClient(uri).executeMethod(getMethod);
+                        statusCode = getMethod.getStatusCode();
+                        statusText = getMethod.getStatusText();
+
+                        Header contentTypeHeader = getMethod.getResponseHeader("Content-Type");
+                        if(contentTypeHeader == null) {
+                            contentType = "";
+                        } else {
+                            contentType = contentTypeHeader.getValue();
+                        }
+                        data = getMethod.getResponseBody();
+                    }
+                    finally {
+                        if (getMethod != null) {
+                            getMethod.releaseConnection();
+                        }
+                    }
                 }
 
-                if (code == 204) {
+                if (statusCode == 204) {
                     // returns a transparent image
                     if (LOGGER.isDebugEnabled()) LOGGER.debug("creating a transparent image for: " + uri);
                     try {
                         byte maskr[] = {(byte)255};
                         Image mask = Image.getInstance(1,1,1,1,maskr);
                         mask.makeMask();
-                        byte data[] = new byte[1*1*3];
+                        data = new byte[1*1*3];
                         Image image = Image.getInstance(1, 1, 3, 8, data);
                         image.setImageMask(mask);
                         return image;
@@ -222,23 +280,21 @@ public class PDFUtils {
                         LOGGER.warn("Couldn't generate a transparent image");
                         throw e;
                     }
-                } else if (code < 200 || code >= 300 || contentType.startsWith("text/") || contentType.equals("application/vnd.ogc.se_xml")) {
-                    if (LOGGER.isDebugEnabled()) LOGGER.debug("Server returned an error for " + uri + ": " + method.getResponseBodyAsString());
-                    if (code < 200 || code >= 300) {
-                        throw new IOException("Error (status=" + code + ") while reading the image from " + uri + ": " + method.getStatusText());
+                } else if (statusCode < 200 || statusCode >= 300 || contentType.startsWith("text/") || contentType.equals("application/vnd.ogc.se_xml")) {
+                    if (LOGGER.isDebugEnabled()) LOGGER.debug("Server returned an error for " + uri + ": " + new String(data));
+                    if (statusCode < 200 || statusCode >= 300) {
+                        throw new IOException("Error (status=" + statusCode + ") while reading the image from " + uri + ": " + statusText);
                     } else {
                         throw new IOException("Didn't receive an image while reading: " + uri);
                     }
                 } else {
-                    final Image result = Image.getInstance(method.getResponseBody());
+                    final Image result = Image.getInstance(data);
                     if (LOGGER.isDebugEnabled()) LOGGER.debug("loaded image: "+uri);
                     return result;
                 }
             } catch (IOException e) {
                 LOGGER.warn("Server returned an error for " + uri + ": " + e.getMessage());
                 throw e;
-            } finally {
-                method.releaseConnection();
             }
         }
     }

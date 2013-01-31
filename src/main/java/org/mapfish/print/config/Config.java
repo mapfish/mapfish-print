@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.HashMap;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
@@ -73,6 +74,7 @@ public class Config {
     
     private TreeSet<String> fonts = null;
     private List<HostMatcher> hosts = new ArrayList<HostMatcher>();
+    private HashMap localHostForward;
     private TreeSet<Key> keys;
 
     private int globalParallelFetches = 5;
@@ -461,4 +463,29 @@ public class Config {
 	public MapReaderFactoryFinder getMapReaderFactoryFinder() {
 		return mapReaderFactoryFinder;
 	}
+
+    public void setLocalHostForward(HashMap localHostForward) {
+        this.localHostForward = localHostForward;
+        System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
+    }
+
+    public boolean localHostForwardIsHttps2http() {
+        if (localHostForward != null) {
+            Object https2http = localHostForward.get("https2http");
+            if (https2http != null && https2http instanceof Boolean) {
+                return (Boolean)https2http;
+            }
+        }
+        return false;
+    }
+
+    public boolean localHostForwardIsFrom(String host) {
+        if (localHostForward != null) {
+            Object from = localHostForward.get("from");
+            if (from != null && from instanceof List) {
+                return ((List)from).indexOf(host) >= 0;
+            }
+        }
+        return false;
+    }
 }
