@@ -79,7 +79,34 @@ public class PointRenderer extends GeometriesRenderer<Point> {
         }
         return coords;
     }
-
+    
+    private float[] rotateSymbol(float[] symbol, float rotation) {
+		float minX = Float.MAX_VALUE;
+        float maxX = -Float.MAX_VALUE;
+        float minY = Float.MAX_VALUE;
+        float maxY = -Float.MAX_VALUE;
+        for (int i = 0; i < symbol.length; i += 2) {
+            float x = symbol[i];
+            float y = symbol[i + 1];
+            minX = Math.min(minX, x);
+            maxX = Math.max(maxX, x);
+            minY = Math.min(minY, y);
+            maxY = Math.max(maxY, y);
+        }
+        float width = maxX - minX;
+        float height = maxY - minY;
+        
+		AffineTransform rotationTransform =AffineTransform.getRotateInstance(java.lang.Math.toRadians(rotation), width/2, height/2);
+		for (int i = 0; i < symbol.length; i += 2) {
+            float x = symbol[i];
+            float y = symbol[i + 1];
+            Coordinate coordinate2= new Coordinate(x, y);
+            coordinate2 = transformCoordinate(coordinate2, rotationTransform);
+            symbol[i] = (float) coordinate2.x;
+            symbol[i+1] = (float) coordinate2.y;
+        }
+		return symbol;
+	}
     protected void renderImpl(RenderingContext context, PdfContentByte dc, PJsonObject style, Point geometry, AffineTransform affineTransform) {
         PdfGState state = new PdfGState();
         final Coordinate coordinate = transformCoordinate((Coordinate) geometry.getCoordinate().clone(), affineTransform);
@@ -91,6 +118,7 @@ public class PointRenderer extends GeometriesRenderer<Point> {
         float height = style.optFloat("graphicHeight", pointRadius * 2.0f);
         float offsetX = style.optFloat("graphicXOffset", -width / 2.0f);
         float offsetY = style.optFloat("graphicYOffset", -height / 2.0f);
+    	float rotation =  style.optFloat("rotation", 0.0f);
         
         // See Feature/Vector.js for more information about labels 
         String label = style.optString("label");
@@ -102,6 +130,7 @@ public class PointRenderer extends GeometriesRenderer<Point> {
             dc.setGState(state);
             try {
                 Image image = PDFUtils.createImage(context, width * f, height * f, new URI(style.getString("externalGraphic")), 0.0f);
+                image.setRotationDegrees(-rotation);
                 // fix for height: because the coordinate system is mirrored, we need to move the image by height, and then subtract the offset
                 image.setAbsolutePosition((float) coordinate.x + offsetX * f, (float) coordinate.y - height * f - offsetY * f);
                 dc.addImage(image);
@@ -115,10 +144,13 @@ public class PointRenderer extends GeometriesRenderer<Point> {
 
         } else if (graphicName != null && !graphicName.equalsIgnoreCase("circle")) {
             PolygonRenderer.applyStyle(context, dc, style, state);
-            float[] symbol = SYMBOLS.get(graphicName);
+            float[] symbol = SYMBOLS.get(graphicName).clone();
             if (symbol == null) {
                 throw new InvalidValueException("graphicName", graphicName);
             }
+            if (rotation != 0){
+        		symbol = rotateSymbol(symbol, -rotation);
+        	}
             dc.setGState(state);
             dc.moveTo((float) coordinate.x + symbol[0] * width * f + offsetX * f, (float) coordinate.y + symbol[1] * height * f + offsetY * f);
             for (int i = 2; i < symbol.length - 2; i += 2) {
