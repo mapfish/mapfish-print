@@ -29,6 +29,10 @@ import javax.servlet.http.HttpServlet;
 
 import org.apache.log4j.Logger;
 import org.mapfish.print.MapPrinter;
+import org.mapfish.print.ShellMapPrinter;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
@@ -44,6 +48,8 @@ public abstract class BaseMapServlet extends HttpServlet {
     private long lastModified = 0L;
     private long defaultLastModified = 0L;
     private Map<String,Long> lastModifieds = null;
+
+    private volatile ApplicationContext context;
 
     /**
      * Builds a MapPrinter instance out of the file pointed by the servlet's
@@ -141,7 +147,7 @@ public abstract class BaseMapServlet extends HttpServlet {
             //debugPath += "printer == null, lastModified from configFile = "+lastModified+"\n";
             try {
                 LOGGER.info("Loading configuration file: " + configFile.getAbsolutePath());
-                printer = WebApplicationContextUtils.getWebApplicationContext(getServletContext()).getBean(MapPrinter.class).setYamlConfigFile(configFile);
+                printer = getApplicationContext().getBean(MapPrinter.class).setYamlConfigFile(configFile);
                 if (app != null) {
                 	if (printers == null) {
                 		printers = new HashMap<String, MapPrinter>();
@@ -159,6 +165,25 @@ public abstract class BaseMapServlet extends HttpServlet {
         }
         
         return printer;
+    }
+
+    private ApplicationContext getApplicationContext() {
+        if (this.context == null) {
+            synchronized (this) {
+                if (this.context == null) {
+                    this.context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+                    if (this.context == null || context.getBean(MapPrinter.class) == null) {
+                        String springConfig = System.getProperty("mapfish.print.springConfig");
+                        if(springConfig != null) {
+                            this.context = new FileSystemXmlApplicationContext(new String[]{"classpath:/"+ShellMapPrinter.DEFAULT_SPRING_CONTEXT, springConfig});
+                        } else {
+                            this.context = new ClassPathXmlApplicationContext(ShellMapPrinter.DEFAULT_SPRING_CONTEXT);
+                        }
+                    }
+                }
+            }
+        }
+        return this.context;
     }
 
 }

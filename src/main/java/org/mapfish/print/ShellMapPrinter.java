@@ -55,7 +55,7 @@ import com.lowagie.text.DocumentException;
 public class ShellMapPrinter {
     public static final Logger LOGGER = Logger.getLogger(ShellMapPrinter.class);
 
-	public static final String DEFAULT_SPRING_CONTEXT = "spring-application-context.xml";
+	public static final String DEFAULT_SPRING_CONTEXT = "mapfish-spring-application-context.xml";
 
     @Option(desc = "Filename for the configuration (templates&CO)", mandatory = true)
     private String config = null;
