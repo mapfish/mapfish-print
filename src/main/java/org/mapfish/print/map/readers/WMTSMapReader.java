@@ -38,14 +38,14 @@ import org.mapfish.print.utils.PJsonObject;
  * Support for the protocol using directly the content of a WMTS REST structure.
  */
 public class WMTSMapReader extends TileableMapReader {
-	public static class Factory implements MapReaderFactory {
-		@Override
-		public List<? extends MapReader> create(String type, RenderingContext context,
-				PJsonObject params) {
-			return Collections.singletonList(new WMTSMapReader(params.getString("layer"), context, params));
-		}
+    public static class Factory implements MapReaderFactory {
+        @Override
+        public List<? extends MapReader> create(String type, RenderingContext context,
+                PJsonObject params) {
+            return Collections.singletonList(new WMTSMapReader(params.getString("layer"), context, params));
+        }
     }
-	
+
     protected final String layer;
     @SuppressWarnings("unused")
     private final float opacity;
