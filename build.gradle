@@ -1,7 +1,7 @@
 import org.gradle.api.plugins.jetty.JettyRun
 
 group = 'org.mapfish.print'
-version = '1.2-SNAPSHOT'
+version = '2.0-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'war'
