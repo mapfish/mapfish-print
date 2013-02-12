@@ -2,7 +2,7 @@ import com.camptocamp.gradle.plugin.*
 import com.camptocamp.gradle.*
 
 group = 'org.mapfish.print'
-version = '1.2-SNAPSHOT'
+version = '1.2.0'
 
 apply plugin: 'java'
 apply plugin: 'war'
