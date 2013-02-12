@@ -92,11 +92,22 @@ task standalone (type: Jar) {
   
 }
 
-task show {
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+ 
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+task show << {
 //    sourceSets.main.classes.asFileTree.each {println it}
+println version
 }
 artifacts {
-  archives jar, war, standalone
+  archives jar, war, standalone, javadocJar, sourcesJar
 }
 
 configure(install.repositories.mavenInstaller) {
@@ -109,6 +120,71 @@ configure(install.repositories.mavenInstaller) {
     addFilter('war') { artifact, file ->
       artifact.name.contains 'print-servlet'
     }
+}
+
+
+/*
+ * This upload Archives configuration I took from:
+ * http://jedicoder.blogspot.ch/2011/11/automated-gradle-project-deployment-to.html
+ *
+ * For deploying see section about "Create a gradle properties file"
+ */
+// need to sign jars for uploading releases to maven central
+if (Boolean.parseBoolean(enablePublishing)) {
+  apply plugin: 'signing'
+  signing {
+    sign configurations.archives
+  }
+
+  uploadArchives {
+      repositories {
+          mavenDeployer {
+              beforeDeployment { MavenDeployment deployment -> signPom(deployment) }
+              def deployUrl;
+              if (version.endsWith("-SNAPSHOT")) {
+                deployUrl = host+"content/repositories/snapshots"
+              } else {
+                deployUrl = host+"service/local/staging/deploy/maven2"
+              }
+              
+              repository(url: deployUrl) {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+              }
+ 
+              pom.project {
+                 name 'print'
+                 packaging 'jar'
+                 description 'Application for generating PDFs and images from oneline webmapping services'
+                 url 'http://www.mapfish.org/doc/print/'
+ 
+                 scm {
+                     url 'scm:git@github.com:mapfish/mapfish-print.git'
+                     connection 'scm:git@github.com:mapfish/mapfish-print.git'
+                     developerConnection 'scm:git@github.com:mapfish/mapfish-print.git'
+                 }
+ 
+                 licenses {
+                     license {
+                         name 'GNU General Public License'
+                         url 'http://www.gnu.org/licenses/#GPL'
+                         distribution 'repo'
+                     }
+                 }
+ 
+                 developers {
+                     developer {
+                         id 'jesseeichar'
+                         name 'Jesse Eichar'
+                     }
+                     developer {
+                         id 'geekdenz'
+                         name 'Tim-Hinnerk Heuer'
+                     }
+                 }
+             }
+          }
+      }
+  }
 }
 
 /*
