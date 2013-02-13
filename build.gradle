@@ -137,17 +137,13 @@ show.description = 'For debugging build script.  shows some debug information'
 artifacts {
   archives jar, war, imageMagickWar, standalone, javadocJar, sourcesJar
 }
-
+def artifactFilterMapping = ['lib':'print-lib', 'standalone':'print-standalone', 'war':'print-servlet']
 configure(install.repositories.mavenInstaller) {
-    addFilter('lib') { artifact, file ->
-      artifact.name.contains 'print-lib'
+  artifactFilterMapping.each {entry ->
+    addFilter(entry.key) { artifact, file ->
+      artifact.name.contains entry.value
     }
-    addFilter('standalone') { artifact, file ->
-      artifact.name.contains 'print-standalone'
-    }
-    addFilter('war') { artifact, file ->
-      artifact.name.contains 'print-servlet'
-    }
+  }
 }
 
 
@@ -167,30 +163,45 @@ if (Boolean.parseBoolean(enablePublishing)) {
   uploadArchives {
       repositories {
           mavenDeployer {
-              beforeDeployment { MavenDeployment deployment -> signPom(deployment) }
-              def deployUrl;
-              if (version.endsWith("-SNAPSHOT")) {
-                deployUrl = host+"content/repositories/snapshots"
-              } else {
-                deployUrl = host+"service/local/staging/deploy/maven2"
-              }
-              
-              repository(url: deployUrl) {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+             repository(url: "https://$host/service/local/staging/deploy/maven2") {
                 authentication(userName: sonatypeUsername, password: sonatypePassword)
               }
- 
-              pom.project {
-                 name 'print'
+              snapshotRepository(url: "https://$host/content/repositories/snapshots")  {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+                uniqueVersion = false
+              }
+              artifactFilterMapping.each {entry ->
+                addFilter(entry.key) { artifact, file ->
+                  artifact.name.contains entry.value
+                }
+              }
+              pom('lib').project {
+                 name 'print-lib'
                  packaging 'jar'
-                 description 'Application for generating PDFs and images from oneline webmapping services'
+                 description 'Library for generating PDFs and images from oneline webmapping services'
+             }
+              pom('war').project {
+                 name 'print'
+                 packaging 'war'
+                 description 'Web application for generating PDFs and images from oneline webmapping services'
+             }
+             pom('standalone').project {
+                 name 'print-standalone'
+                 packaging 'jar'
+                 description 'Application for generating PDFs and images from oneline webmapping services. All dependencies are included'
+             }
+             artifactFilterMapping.keySet().each { filterName ->
+               pom(filterName).project {
                  url 'http://www.mapfish.org/doc/print/'
- 
+
                  scm {
                      url 'scm:git@github.com:mapfish/mapfish-print.git'
                      connection 'scm:git@github.com:mapfish/mapfish-print.git'
                      developerConnection 'scm:git@github.com:mapfish/mapfish-print.git'
                  }
- 
+
                  licenses {
                      license {
                          name 'GNU General Public License'
@@ -198,7 +209,7 @@ if (Boolean.parseBoolean(enablePublishing)) {
                          distribution 'repo'
                      }
                  }
- 
+
                  developers {
                      developer {
                          id 'jesseeichar'
@@ -209,6 +220,7 @@ if (Boolean.parseBoolean(enablePublishing)) {
                          name 'Tim-Hinnerk Heuer'
                      }
                  }
+               }
              }
           }
       }
