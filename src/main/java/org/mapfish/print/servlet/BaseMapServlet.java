@@ -43,7 +43,6 @@ public abstract class BaseMapServlet extends HttpServlet {
 
     public static final Logger LOGGER = Logger.getLogger(BaseMapServlet.class);
 
-    private MapPrinter printer = null;
     private Map<String, MapPrinter> printers = null;
     private long lastModified = 0L;
     private long defaultLastModified = 0L;
@@ -68,7 +67,8 @@ public abstract class BaseMapServlet extends HttpServlet {
             throw new ServletException("Missing configuration in web.xml 'web-app/servlet/init-param[param-name=config]' or 'web-app/context-param[param-name=config]'");
         }
         //String debugPath = "";
-
+        
+        MapPrinter printer = null;
         File configFile = null;
         if (app != null) {
         	if (lastModifieds == null) {
@@ -161,6 +161,7 @@ public abstract class BaseMapServlet extends HttpServlet {
                 throw new ServletException("Cannot read configuration file: " + configPath, e);
             } catch (Throwable e) {
                 LOGGER.error("Error occurred while reading configuration file", e);
+                throw new ServletException("Error occurred while reading configuration file '" + configFile + "': " + e );
             }
         }
         
