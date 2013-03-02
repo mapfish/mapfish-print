@@ -137,8 +137,16 @@ If you are developping a web application, you can include the print module in it
         </repositories>
         ...
 
-2. Add these two sections (correct the paths and URLs in function of your needs) to your WEB-INF/web.xml file::
+2. Add these three sections (correct the paths and URLs in function of your needs) to your WEB-INF/web.xml file::
 
+        ...
+        <listener>
+          <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+        </listener>
+        <context-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:mapfish-spring-application-context.xml,classpath:*-mapfish-spring-application-context-override.xml</param-value>
+        </context-param>
         ...
         <servlet>
           <servlet-name>mapfish.print</servlet-name>
@@ -159,11 +167,6 @@ If you are developping a web application, you can include the print module in it
 Configuring Servlet Temp Directory
 ++++++++++++++++++++++++++++++++++
 By default the default servlet temporary directory will be used but that behaviour can be overridden setting the init-param *tempdir*.  If this parameter is set the servlet must have write access to the directory.
-
-Ruby on rails
-~~~~~~~~~~~~~
-
-TODO write the doc.
 
 Command line
 ~~~~~~~~~~~~
@@ -197,3 +200,17 @@ Help about the command line's option can be obtained like that:
   java -Djava.awt.headless=true -cp build/libs/print-standalone-%VERSION%.jar org.mapfish.print.ShellMapPrinter
   
 
+With Image output line
+~~~~~~~~~~~~~~~~~~~~~~
+
+At the moment to have robust image (png, gif, etc...) output options the image magick command line tool must be used.  The tool is cross platform and available on linux, windows and mac osx.  Before installing mapfish print first install both:
+
+ * ImageMagick (specifically ensure that the convert tool has been installed)
+ * Ghostscript
+
+Once ImageMagick is installed (and Ghostscript) then the spring configuration needs to be updated so that org.mapfish.print.output.NativeProcessOutputFactory object will be used as an option for creating output files.  This OutputFactory uses native commandline processes for converting a PDF to an alternate format. The mapfish-spring-application-context.xml can be directly edited to configure the OutputFactory or the file https://github.com/mapfish/mapfish-print/blob/master/sample-spring/imagemagick/WEB-INF/classes/imagemagick-spring-application-context-override.xml can be copied into the mapfish-print/WEB-INF/classes folder (if a servlet is being used).  
+ 
+Since the ImageMagick support is a commonly requested configuration there is an IMAGEMAGICK artifact prebuild with the correct configuration.  To use this artifact change your maven dependency from: print-servlet-1.2-SNAPSHOT to print-servlet-1.2-SNAPSHOT-IMG-MAGICK (you will likely have to change the 1.2-SNAPSHOT portion to the version of mapfish that you are using).
+
+By default ImageMagick will try to find the convert tool in /usr/bin/convert.  You will want to find the path to your convert tool and update imagemagick-spring-application-context-override.xml if that file is included in your build, or mapfish-spring-application-context.xml if you manually changed the mapfish-spring-application-context.xml file to include the imagemagick configuration.
+ 

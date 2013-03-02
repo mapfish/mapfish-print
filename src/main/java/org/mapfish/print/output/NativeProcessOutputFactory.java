@@ -75,10 +75,10 @@ public class NativeProcessOutputFactory implements OutputFormatFactory {
 		}
 		
 		cmdArgs.add("-density");
-		cmdArgs.add("${dpi}x${dpi}");
+		cmdArgs.add("@@dpi@@x@@dpi@@");
 		cmdArgs.add("-append");
-		cmdArgs.add("${sourceFile}");
-		cmdArgs.add("${targetFile}");
+		cmdArgs.add("@@sourceFile@@");
+		cmdArgs.add("@@targetFile@@");
 		
 		formats.add("jpg");
 		formats.add("gif");
@@ -100,7 +100,7 @@ public class NativeProcessOutputFactory implements OutputFormatFactory {
 	/**
 	 * Set arguments when executing the Cmd.  
 	 * 
-	 * Default parameters are "-density", "${dpi}x${dpi}", "${sourceFile}" and "${targetFile}"
+	 * Default parameters are "-density", "@@dpi@@x@@dpi@@", "@@sourceFile@@" and "@@targetFile@@"
 	 * 
 	 * value is typically injected by spring dependency injection
 	 */
@@ -260,6 +260,9 @@ public class NativeProcessOutputFactory implements OutputFormatFactory {
 	            
 	            for (int i = 1; i < finalCommands.length; i++) {
 					String arg = cmdArgs.get(i-1)
+							.replace("@@dpi@@", ""+dpi)
+							.replace("@@targetFile@@", tmpPngFile.getAbsolutePath())
+							.replace("@@sourceFile@@", tmpPdfFile.getAbsolutePath())
 							.replace("${dpi}", ""+dpi)
 							.replace("${targetFile}", tmpPngFile.getAbsolutePath())
 							.replace("${sourceFile}", tmpPdfFile.getAbsolutePath());

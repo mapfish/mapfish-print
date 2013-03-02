@@ -19,6 +19,8 @@
 
 package org.mapfish.print.map.renderers.vector;
 
+import java.awt.geom.AffineTransform;
+
 import org.mapfish.print.InvalidValueException;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.config.ColorWrapper;
@@ -77,17 +79,20 @@ public class LineStringRenderer extends GeometriesRenderer<LineString> {
         }
     }
 
-    protected void renderImpl(RenderingContext context, PdfContentByte dc, PJsonObject style, LineString geometry) {
+    protected void renderImpl(RenderingContext context, PdfContentByte dc, PJsonObject style, LineString geometry, AffineTransform affineTransform) {
         PdfGState state = new PdfGState();
         applyStyle(context, dc, style, state);
         dc.setGState(state);
         Coordinate[] coords = geometry.getCoordinates();
         if (coords.length < 2) return;
-        dc.moveTo((float) coords[0].x, (float) coords[0].y);
+        Coordinate coord = (Coordinate) coords[0].clone();
+        transformCoordinate(coord, affineTransform);
+        dc.moveTo((float) coord.x, (float) coord.y);
         for (int i = 1; i < coords.length; i++) {
-            Coordinate coord = coords[i];
+            coord = (Coordinate) coords[i].clone();
+            transformCoordinate(coord, affineTransform);
             dc.lineTo((float) coord.x, (float) coord.y);
         }
-        dc.stroke();
+        if (style.optBool("stroke", true)) dc.stroke();
     }
 }
