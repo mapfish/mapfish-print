@@ -284,3 +284,16 @@ task minify(dependsOn: [generateProguardConfigFile]) << {
   ant.proguard(configuration: proguardConfig)
 }
 minify.description = 'Minify standalone jar, not yet functioning'
+
+/*
+// following doesn't work, but maybe someone can figure it out
+task debug (type: JettyRun) {
+    //main = "com.mything.server.HttpServer"
+    //classpath = sourceSets.main.runtimeClasspath
+    //jvmArgs = ["-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"]
+    httpPort = 8080
+    jettyConfig = new File('jetty-debug.xml')
+    scanTargets = (fileTree("src/main/").include("webapp/WEB-INF/**") + fileTree(compileJava.destinationDir)).files
+    reload = 'manual'
+}
+*/
