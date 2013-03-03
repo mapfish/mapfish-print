@@ -1,5 +1,10 @@
 #!/bin/sh
 
-GRADLE_OPTS='-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005'
+port=$1
+if [ -z $port ]
+then
+    port=8000
+fi
+GRADLE_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=$port"
 gradle jettyRun
 GRADLE_OPTS=''
