@@ -72,7 +72,7 @@ public class MapChunkDrawer extends ChunkDrawer {
         PJsonArray layers = parent.getJSONArray("layers");
         String srs = parent.getString("srs");
 
-        if (!context.getConfig().isScalePresent(transformer.getScale())) {
+        if (!context.getConfig().isDisableScaleLocking() && !context.getConfig().isScalePresent(transformer.getScale())) {
             throw new InvalidJsonValueException(params, "scale", transformer.getScale());
         }
 

@@ -83,6 +83,7 @@ public class Config {
     private int connectionTimeout = 40*60*1000; // 40 minutes //30*1000;
 
     private boolean tilecacheMerging = false;
+    private boolean disableScaleLocking = false;
     
     private List<SecurityStrategy> security = Collections.emptyList();
 
@@ -285,13 +286,20 @@ public class Config {
      * @return The first scale that is bigger or equal than the target.
      */
     public int getBestScale(double target) {
-        target *= BEST_SCALE_TOLERANCE;
-        for (Integer scale : scales) {
-            if (scale >= target) {
-                return scale;
-            }
+        if (this.disableScaleLocking) {
+            Double forcedScale = target;
+            return forcedScale.intValue();
         }
-        return scales.last();
+        else {
+            target *= BEST_SCALE_TOLERANCE;
+            for (Integer scale : scales) {
+                if (scale >= target) {
+                    return scale;
+                }
+            }
+            return scales.last();
+        }
+
     }
 
     public synchronized OrderedResultsExecutor<MapTileTask> getMapRenderingExecutor() {
@@ -376,6 +384,14 @@ public class Config {
 
     public boolean isTilecacheMerging() {
         return tilecacheMerging;
+    }
+
+    public void setDisableScaleLocking(boolean disableScaleLocking) {
+        this.disableScaleLocking = disableScaleLocking;
+    }
+
+    public boolean isDisableScaleLocking() {
+        return disableScaleLocking;
     }
 
     public void setSocketTimeout(int socketTimeout) {
