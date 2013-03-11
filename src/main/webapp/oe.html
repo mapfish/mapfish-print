@@ -27,48 +27,41 @@
 {
     "units": "m",
     "srs": "EPSG:2193",
-    "layout": "A4 Portrait",
+    "layout": "A4 Landscape",
     "dpi": 72,
     "layers": [
         {
-            "baseURL": "http://basemap-web.zen.landcareresearch.co.nz/cgi-bin/mapserv.svn?MAP=%2Fopt%2Fmapserver%2Fmapfiles%2Fscenz_topo_new.map&TRANSPARENT=true&FORMAT=image%2Fsvg%2Bxml",
+            "baseURL": "http://maps-b/cgi-bin/mapserv?MAP=%2Fopt%2Fmapserver%2Fmapfiles%2Ftopobasemap_hybrid.map&TRANSPARENT=true&FORMAT=image%2Fpng",
             "opacity": 1,
             "singleTile": false,
             "type": "WMS",
             "layers": [
-                "coastpoly",
-                "veg",
-                "urban_grp",
-                "contours",
-                "water",
-                "coast_feats",
-                "height_pnts",
-                "transport"
-            ],
-            "format": "image/svg+xml",
-            "styles": [
-                ""
-            ],
-            "legend": false,
-            "name": "Colour Topographic"
-        },
-        {
-            "baseURL": "http://basemap-web.zen.landcareresearch.co.nz/cgi-bin/mapserv?MAP=%2Fopt%2Fmapserver%2Fmapfiles%2Fbasemap_raster.map&TRANSPARENT=true&FORMAT=image%2Fpng",
-            "opacity": 1,
-            "singleTile": false,
-            "type": "WMS",
-            "layers": [
-                "slope"
+                "topo_hyb_relief"
             ],
             "format": "image/png",
             "styles": [
                 ""
             ],
-            "legend": true,
-            "name": "Steepness of Slope"
+            "legend": false,
+            "name": "Colour Hybrid Terrain / Topographic"
         },
         {
-            "baseURL": "http://basemap-web.zen.landcareresearch.co.nz/cgi-bin/mapserv.svn?MAP=%2Fopt%2Fmapserver%2Fmapfiles%2Fscenz_topo_new.map&FORMAT=image%2Fsvg%2Bxml&TRANSPARENT=true",
+            "baseURL": "http://maps-b/cgi-bin/mapserv?MAP=%2Fopt%2Fmapserver%2Fmapfiles%2Flenz.map&TRANSPARENT=true&FORMAT=image%2Fsvg%2Bxml&CLASS=15%2C14%2C13%2C12%2C11%2C10%2C9%2C8%2C7%2C6%2C5%2C4%2C3%2C2%2C1",
+            "opacity": 1,
+            "singleTile": false,
+            "type": "WMS",
+            "layers": [
+                "lenz_potnatveg"
+            ],
+            "format": "image/svg+xml",
+            "styles": [
+                ""
+            ],
+            "legend": true,
+            "name": "Potential Natural Vegetation"
+        },
+        {
+            "baseURL": "http://maps-b/cgi-bin/mapserv?MAP=%2Fopt%2Fmapserver%2Fmapfiles%2Ftopobasemap.map&FORMAT=image%2Fsvg%2Bxml&TRANSPARENT=true",
             "opacity": 1,
             "singleTile": false,
             "type": "WMS",
@@ -83,7 +76,7 @@
             "name": "Water Group"
         },
         {
-            "baseURL": "http://basemap-web.zen.landcareresearch.co.nz/cgi-bin/mapserv.svn?MAP=%2Fopt%2Fmapserver%2Fmapfiles%2Fscenz_topo_new.map&FORMAT=image%2Fsvg%2Bxml&TRANSPARENT=true",
+            "baseURL": "http://maps-b/cgi-bin/mapserv?MAP=%2Fopt%2Fmapserver%2Fmapfiles%2Ftopobasemap.map&FORMAT=image%2Fsvg%2Bxml&TRANSPARENT=true",
             "opacity": 1,
             "singleTile": false,
             "type": "WMS",
@@ -98,7 +91,7 @@
             "name": "Transport"
         },
         {
-            "baseURL": "http://basemap-web.zen.landcareresearch.co.nz/cgi-bin/mapserv601?MAP=%2Fopt%2Fmapserver%2Fmapfiles%2Fm6scenz_topo_new.map&FORMAT=image%2Fsvg%2Bxml&TRANSPARENT=true",
+            "baseURL": "http://maps-b/cgi-bin/mapserv?MAP=%2Fopt%2Fmapserver%2Fmapfiles%2Ftopobasemap.map&FORMAT=image%2Fsvg%2Bxml&TRANSPARENT=true",
             "opacity": 1,
             "singleTile": false,
             "type": "WMS",
@@ -116,46 +109,93 @@
     "pages": [
         {
             "center": [
-                1879637.3954403,
-                5829647.9082123
+                1692109.0709278,
+                5650652.2716475
             ],
-            "scale": 25000,
-            "scaleName": "1:25,000",
+            "scale": 50000,
+            "scaleName": "1:50,000",
             "rotation": 0,
             "mapTitle": ""
         }
     ],
     "legends": [
         {
-            "name": "Steepness of Slope",
+            "name": "Potential Natural Vegetation",
             "classes": [
                 {
-                    "name": "Flat to Gently Undulating (0-3º) DEGREES[\u00B0]",
-                    "icon": "http://basemap-web.zen.landcareresearch.co.nz/cgi-bin/mapserv.svn?map=/opt/mapserver/mapfiles/basemap_raster_svg.map&transparent=true&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&ICON=slope%2C0&FORMAT=image%2Fsvg%2Bxml&MODE=legendicon"
+                    "iconBeforeName": true,
+                    "name": "Unclassified",
+                    "icon": "http://maps-b/cgi-bin/mapserv?map=/opt/mapserver/mapfiles/lenz.map&map.imagetype=svg&transparent=true&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&ICON=lenz_potnatveg_full%2C0&FORMAT=image%2Fsvg%2Bxml&MODE=legendicon&MAP.IMAGETYPE=svg"
                 },
                 {
-                    "name": "Undulating (4-7&deg;)",
-                    "icon": "http://basemap-web.zen.landcareresearch.co.nz/cgi-bin/mapserv.svn?map=/opt/mapserver/mapfiles/basemap_raster_svg.map&transparent=true&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&ICON=slope%2C1&FORMAT=image%2Fsvg%2Bxml&MODE=legendicon"
+                    "iconBeforeName": true,
+                    "name": "Kauri",
+                    "icon": "http://maps-b/cgi-bin/mapserv?map=/opt/mapserver/mapfiles/lenz.map&map.imagetype=svg&transparent=true&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&ICON=lenz_potnatveg_full%2C1&FORMAT=image%2Fsvg%2Bxml&MODE=legendicon&MAP.IMAGETYPE=svg"
                 },
                 {
-                    "name": "Rolling (8-15&deg;)",
-                    "icon": "http://basemap-web.zen.landcareresearch.co.nz/cgi-bin/mapserv.svn?map=/opt/mapserver/mapfiles/basemap_raster_svg.map&transparent=true&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&ICON=slope%2C2&FORMAT=image%2Fsvg%2Bxml&MODE=legendicon"
+                    "iconBeforeName": true,
+                    "name": "Podocarp (native conifers)",
+                    "icon": "http://maps-b/cgi-bin/mapserv?map=/opt/mapserver/mapfiles/lenz.map&map.imagetype=svg&transparent=true&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&ICON=lenz_potnatveg_full%2C2&FORMAT=image%2Fsvg%2Bxml&MODE=legendicon&MAP.IMAGETYPE=svg"
                 },
                 {
-                    "name": "Strongly rolling (16-20&deg;)",
-                    "icon": "http://basemap-web.zen.landcareresearch.co.nz/cgi-bin/mapserv.svn?map=/opt/mapserver/mapfiles/basemap_raster_svg.map&transparent=true&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&ICON=slope%2C3&FORMAT=image%2Fsvg%2Bxml&MODE=legendicon"
+                    "iconBeforeName": true,
+                    "name": "Totara-broadleaf",
+                    "icon": "http://maps-b/cgi-bin/mapserv?map=/opt/mapserver/mapfiles/lenz.map&map.imagetype=svg&transparent=true&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&ICON=lenz_potnatveg_full%2C3&FORMAT=image%2Fsvg%2Bxml&MODE=legendicon&MAP.IMAGETYPE=svg"
                 },
                 {
-                    "name": "Moderately steep (21-25&deg;)",
-                    "icon": "http://basemap-web.zen.landcareresearch.co.nz/cgi-bin/mapserv.svn?map=/opt/mapserver/mapfiles/basemap_raster_svg.map&transparent=true&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&ICON=slope%2C4&FORMAT=image%2Fsvg%2Bxml&MODE=legendicon"
+                    "iconBeforeName": true,
+                    "name": "Rimu-tawa   ",
+                    "icon": "http://maps-b/cgi-bin/mapserv?map=/opt/mapserver/mapfiles/lenz.map&map.imagetype=svg&transparent=true&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&ICON=lenz_potnatveg_full%2C4&FORMAT=image%2Fsvg%2Bxml&MODE=legendicon&MAP.IMAGETYPE=svg"
                 },
                 {
-                    "name": "Steep (26-35&deg;)",
-                    "icon": "http://basemap-web.zen.landcareresearch.co.nz/cgi-bin/mapserv.svn?map=/opt/mapserver/mapfiles/basemap_raster_svg.map&transparent=true&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&ICON=slope%2C5&FORMAT=image%2Fsvg%2Bxml&MODE=legendicon"
+                    "iconBeforeName": true,
+                    "name": "Rimu-matai-broadleaf ",
+                    "icon": "http://maps-b/cgi-bin/mapserv?map=/opt/mapserver/mapfiles/lenz.map&map.imagetype=svg&transparent=true&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&ICON=lenz_potnatveg_full%2C5&FORMAT=image%2Fsvg%2Bxml&MODE=legendicon&MAP.IMAGETYPE=svg"
                 },
                 {
-                    "name": "Very steep (&gt;35&deg;)",
-                    "icon": "http://basemap-web.zen.landcareresearch.co.nz/cgi-bin/mapserv.svn?map=/opt/mapserver/mapfiles/basemap_raster_svg.map&transparent=true&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&ICON=slope%2C6&FORMAT=image%2Fsvg%2Bxml&MODE=legendicon"
+                    "iconBeforeName": true,
+                    "name": "Rimu-broadleaf-beech",
+                    "icon": "http://maps-b/cgi-bin/mapserv?map=/opt/mapserver/mapfiles/lenz.map&map.imagetype=svg&transparent=true&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&ICON=lenz_potnatveg_full%2C6&FORMAT=image%2Fsvg%2Bxml&MODE=legendicon&MAP.IMAGETYPE=svg"
+                },
+                {
+                    "iconBeforeName": true,
+                    "name": "Podocarp-beech",
+                    "icon": "http://maps-b/cgi-bin/mapserv?map=/opt/mapserver/mapfiles/lenz.map&map.imagetype=svg&transparent=true&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&ICON=lenz_potnatveg_full%2C7&FORMAT=image%2Fsvg%2Bxml&MODE=legendicon&MAP.IMAGETYPE=svg"
+                },
+                {
+                    "iconBeforeName": true,
+                    "name": "Rimu-rata-kamahi-broadleaf",
+                    "icon": "http://maps-b/cgi-bin/mapserv?map=/opt/mapserver/mapfiles/lenz.map&map.imagetype=svg&transparent=true&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&ICON=lenz_potnatveg_full%2C8&FORMAT=image%2Fsvg%2Bxml&MODE=legendicon&MAP.IMAGETYPE=svg"
+                },
+                {
+                    "iconBeforeName": true,
+                    "name": "Upland Podocarp-beech-rata-kamahi",
+                    "icon": "http://maps-b/cgi-bin/mapserv?map=/opt/mapserver/mapfiles/lenz.map&map.imagetype=svg&transparent=true&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&ICON=lenz_potnatveg_full%2C9&FORMAT=image%2Fsvg%2Bxml&MODE=legendicon&MAP.IMAGETYPE=svg"
+                },
+                {
+                    "iconBeforeName": true,
+                    "name": "Beeches",
+                    "icon": "http://maps-b/cgi-bin/mapserv?map=/opt/mapserver/mapfiles/lenz.map&map.imagetype=svg&transparent=true&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&ICON=lenz_potnatveg_full%2C10&FORMAT=image%2Fsvg%2Bxml&MODE=legendicon&MAP.IMAGETYPE=svg"
+                },
+                {
+                    "iconBeforeName": true,
+                    "name": "Wetlands",
+                    "icon": "http://maps-b/cgi-bin/mapserv?map=/opt/mapserver/mapfiles/lenz.map&map.imagetype=svg&transparent=true&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&ICON=lenz_potnatveg_full%2C11&FORMAT=image%2Fsvg%2Bxml&MODE=legendicon&MAP.IMAGETYPE=svg"
+                },
+                {
+                    "iconBeforeName": true,
+                    "name": "Dunelands",
+                    "icon": "http://maps-b/cgi-bin/mapserv?map=/opt/mapserver/mapfiles/lenz.map&map.imagetype=svg&transparent=true&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&ICON=lenz_potnatveg_full%2C12&FORMAT=image%2Fsvg%2Bxml&MODE=legendicon&MAP.IMAGETYPE=svg"
+                },
+                {
+                    "iconBeforeName": true,
+                    "name": "Scrub, tussock-grassland and herbfield above treeline",
+                    "icon": "http://maps-b/cgi-bin/mapserv?map=/opt/mapserver/mapfiles/lenz.map&map.imagetype=svg&transparent=true&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&ICON=lenz_potnatveg_full%2C13&FORMAT=image%2Fsvg%2Bxml&MODE=legendicon&MAP.IMAGETYPE=svg"
+                },
+                {
+                    "iconBeforeName": true,
+                    "name": "Scrub, shrubland and tussock-grassland below treeline",
+                    "icon": "http://maps-b/cgi-bin/mapserv?map=/opt/mapserver/mapfiles/lenz.map&map.imagetype=svg&transparent=true&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&ICON=lenz_potnatveg_full%2C14&FORMAT=image%2Fsvg%2Bxml&MODE=legendicon&MAP.IMAGETYPE=svg"
                 }
             ]
         }

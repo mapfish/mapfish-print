@@ -178,13 +178,14 @@ layouts:
           items:
             - !legends
               maxHeight: 100
-              inline: false
+              inline: true
               backgroundColor: #FFFFFF
               maxIconWidth: 20
               maxIconHeight: 20
               classIndentation: 0
               layerSpace: 25
-              classSpace: 10
+              #classSpace: 10
+              classSpace: 20
               layerFont: Arial
               layerFontSize: 14
               classFont: Arial
@@ -303,7 +304,8 @@ layouts:
             - !legends
               maxHeight: 300
               maxWidth: 60
-              inline: false
+              #inline: true
+              inline: true
               backgroundColor: #FFFFFF
               maxIconWidth: 20
               maxIconHeight: 20

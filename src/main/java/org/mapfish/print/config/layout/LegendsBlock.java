@@ -205,8 +205,10 @@ public class LegendsBlock extends Block {
             boolean iconBeforeName = node.optBool("iconBeforeName", defaultIconBeforeName);
             if(iconBeforeName) {
                 result = addIconToParagraph(indent, lineSpace, icon, icons, result);
-                addTitleSeparator(indent, lineSpace, result);
                 addName(pdfFont, escapeOrphanTitle, name, result);
+                addCell(indent, lineSpace, result);
+                result = new Paragraph();
+                addTitleSeparator(indent, lineSpace, result);
             } else {
                 addName(pdfFont, escapeOrphanTitle, name, result);
                 addCell(indent, lineSpace, result);
@@ -298,8 +300,9 @@ public class LegendsBlock extends Block {
                     cellWidth = Math.max(cellWidth, iconChunk.getImage().getPlainWidth());
                     addCell(indent, lineSpace, result);
                     result = new Paragraph();
-                }
-                else {
+                } else {
+                    currentCellHeight = Math.max(iconChunk.getImage().getPlainHeight() + lineSpace, currentCellHeight);
+                    cellWidth = Math.max(cellWidth, iconChunk.getImage().getPlainWidth());
                     result.add(" ");
                 }
             } catch (IOException ioe) {
@@ -328,11 +331,13 @@ public class LegendsBlock extends Block {
     
             cell.setPaddingTop(lineSpace);
             currentCellHeight += lineSpace;
-            if (!inline && maxHeight != 0 && (currentColumnHeight + currentCellHeight > maxHeight)) {
+            //if (!inline && maxHeight != 0 && (currentColumnHeight + currentCellHeight > maxHeight)) { //}
+            if (maxHeight != 0 && (currentColumnHeight + currentCellHeight > maxHeight)) {
                 column = new PdfPTable(1);
                 column.setWidthPercentage(100f);
                 columns.add(column);
                 currentColumnHeight = 0;
+                //currentCellHeight = 0;
                 columnsWidth.add(cellWidth);
             }
             else {
