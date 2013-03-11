@@ -136,7 +136,7 @@ public class MapBlock extends Block {
             //         (maxY - minY) / (DistanceUnit.PT.convertTo(height, unitEnum))));
         }
 
-        if (!context.getConfig().isScalePresent(scale)) {
+        if (!context.getConfig().isDisableScaleLocking() && !context.getConfig().isScalePresent(scale)) {
             throw new InvalidJsonValueException(params, "scale", scale);
         }
 
