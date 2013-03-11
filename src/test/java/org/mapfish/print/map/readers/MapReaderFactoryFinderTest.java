@@ -17,6 +17,7 @@ public class MapReaderFactoryFinderTest {
 		assertNotNull(ff.getFactory("MapServer"));		
 		assertNotNull(ff.getFactory("TileCache"));		
 		assertNotNull(ff.getFactory("Osm"));		
+		assertNotNull(ff.getFactory("Xyz"));		
 		assertNotNull(ff.getFactory("Tms"));		
 		assertNotNull(ff.getFactory("Vector"));		
 		assertNotNull(ff.getFactory("Image"));		
