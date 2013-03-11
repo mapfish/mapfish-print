@@ -55,6 +55,7 @@ Here is the general structure:
   ?connectionTimeout: 30000           MF_V1.2
   ?socketTimeout: 180000              MF_V1.2
   ?outputFilename: Mapfish-print      MF_V1.2
+  ?disableScaleLocking: false
   
   ?security:
   ?  - !basicAuth
@@ -122,6 +123,8 @@ If the 'outputFilename' parameter is defined in the main body then that name wil
 * outputFilename: "host-${dateTime}"       # results in host-Dec_13_2011_1:10:50_PM.pdf (actual output depends on local of server)
 * outputFilename: "host-${time}.pdf"       # results in host-1:11:14_PM.pdf (actual output depends on local of server)
 * outputFilename: "host-${yyMMdd-hhmmss}"# results in host-111213-011154.pdf (actual output depends on local of server)
+
+"disableScaleLocking" allows you to bypass the choosing of scale from the available factors, and simply use the suggested value produced inside MapBlock.java.
 
 Security
 --------
