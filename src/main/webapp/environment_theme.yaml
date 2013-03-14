@@ -309,8 +309,8 @@ layouts:
               #inline: true
               inline: true
               backgroundColor: #FFFFFF
-              iconPadding: 2 0 0 0
-              textPadding: 0
+              iconPadding: 3 0 0 0
+              textPadding: 0 0 0 5
               maxIconWidth: 20
               maxIconHeight: 20
               classIndentation: 20
