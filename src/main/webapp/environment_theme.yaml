@@ -304,11 +304,13 @@ layouts:
             - !legends
               horizontalAlignment: left
               #horizontalAlignment: right
-              maxHeight: 300
+              maxHeight: 280
               maxWidth: 200
               #inline: true
               inline: true
               backgroundColor: #FFFFFF
+              iconPadding: 2 0 0 0
+              textPadding: 0
               maxIconWidth: 20
               maxIconHeight: 20
               classIndentation: 20
