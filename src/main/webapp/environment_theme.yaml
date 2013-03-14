@@ -302,14 +302,16 @@ layouts:
           width: 600
           items:
             - !legends
+              horizontalAlignment: left
+              #horizontalAlignment: right
               maxHeight: 300
-              maxWidth: 60
+              maxWidth: 200
               #inline: true
               inline: true
               backgroundColor: #FFFFFF
               maxIconWidth: 20
               maxIconHeight: 20
-              classIndentation: 0
+              classIndentation: 20
               layerSpace: 25
               classSpace: 10
               layerFont: Arial
