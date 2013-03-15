@@ -62,6 +62,14 @@ hosts:
     ip: basemap-web.zen.landcareresearch.co.nz
     mask: 255.255.255.255
     port: 80
+  - !ipMatch
+    ip: maps-a.zen.landcareresearch.co.nz
+    mask: 255.255.255.255
+    port: 80
+  - !ipMatch
+    ip: maps-b.zen.landcareresearch.co.nz
+    mask: 255.255.255.255
+    port: 80
 #    port: 80
 #  - !dnsMatch
 #    host: basemap-web.zen.landcareresearch.co.nz
@@ -169,12 +177,15 @@ layouts:
           width: 450
           items:
             - !legends
+              maxHeight: 100
+              inline: true
               backgroundColor: #FFFFFF
               maxIconWidth: 20
               maxIconHeight: 20
               classIndentation: 0
               layerSpace: 25
-              classSpace: 10
+              #classSpace: 10
+              classSpace: 20
               layerFont: Arial
               layerFontSize: 14
               classFont: Arial
@@ -287,13 +298,22 @@ layouts:
         - !columns
           absoluteX: 112
           absoluteY: 475
-          width: 450
+          #width: 450
+          width: 600
           items:
             - !legends
+              horizontalAlignment: left
+              #horizontalAlignment: right
+              maxHeight: 280
+              maxWidth: 200
+              #inline: true
+              inline: true
               backgroundColor: #FFFFFF
+              iconPadding: 3 0 0 0
+              textPadding: 0 0 0 5
               maxIconWidth: 20
               maxIconHeight: 20
-              classIndentation: 0
+              classIndentation: 20
               layerSpace: 25
               classSpace: 10
               layerFont: Arial
