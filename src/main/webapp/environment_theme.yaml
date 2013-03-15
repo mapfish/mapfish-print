@@ -70,6 +70,10 @@ hosts:
     ip: maps-b.zen.landcareresearch.co.nz
     mask: 255.255.255.255
     port: 80
+  - !ipMatch
+    ip: maps-b
+    mask: 255.255.255.255
+    port: 80
 #    port: 80
 #  - !dnsMatch
 #    host: basemap-web.zen.landcareresearch.co.nz
@@ -310,7 +314,7 @@ layouts:
               inline: true
               backgroundColor: #FFFFFF
               iconPadding: 3 0 0 0
-              textPadding: 0 0 0 5
+              textPadding: 0 5 0 5
               maxIconWidth: 20
               maxIconHeight: 20
               classIndentation: 20

@@ -844,27 +844,42 @@ public class LegendsBlock extends Block {
                  * CSS like padding for icons:
                  * not to forget indent!
                  */
+                float indentLeft = legendItemTable.isIconBeforeName() ? (float) indent : 0f;
                 imageCell.setPaddingTop(iconPadding[0]);
                 imageCell.setPaddingRight(iconPadding[1]);
                 imageCell.setPaddingBottom(lineSpace + iconPadding[2]);
-                imageCell.setPaddingLeft((float) indent + iconPadding[3]);
+                imageCell.setPaddingLeft(indentLeft + iconPadding[3]);
 
                 imageCell.setBorder(PdfPCell.NO_BORDER);
 
             }
             PdfPCell nameCell = new PdfPCell(namePhrase);
 
+
+            /**
+             * If we have the icon before the text we need to add spacing
+             * after.
+             */
+            float spacingRight = !legendItemTable.isIconBeforeName() ? 
+                    (float) spacingAfter : 0f;
+            /**
+             * If there is no icon we need to add the left indent to the name
+             * column.
+             */
+            float indentLeft = icon == null ? (float) indent : 0f;
+
             /**
              * CSS like padding for text
              * not to forget spacing!
              */
-            nameCell.setPaddingTop(0f);
-
             nameCell.setPaddingTop(textPadding[0]);
-            nameCell.setPaddingRight((float) spacingAfter + textPadding[1]);
+            nameCell.setPaddingRight(spacingRight + textPadding[1]);
             nameCell.setPaddingBottom(lineSpace + textPadding[2]);
-            nameCell.setPaddingLeft(textPadding[3]);
+            nameCell.setPaddingLeft(indentLeft + textPadding[3]);
             
+            if (!legendItemTable.isIconBeforeName()) {
+                nameCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+            }
             nameCell.setBorder(PdfPCell.NO_BORDER);
             
             if (inline) {
