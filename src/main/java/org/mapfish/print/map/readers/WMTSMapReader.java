@@ -38,14 +38,14 @@ import org.mapfish.print.utils.PJsonObject;
  * Support for the protocol using directly the content of a WMTS REST structure.
  */
 public class WMTSMapReader extends TileableMapReader {
-	public static class Factory implements MapReaderFactory {
-		@Override
-		public List<? extends MapReader> create(String type, RenderingContext context,
-				PJsonObject params) {
-			return Collections.singletonList(new WMTSMapReader(params.getString("layer"), context, params));
-		}
+    public static class Factory implements MapReaderFactory {
+        @Override
+        public List<? extends MapReader> create(String type, RenderingContext context,
+                PJsonObject params) {
+            return Collections.singletonList(new WMTSMapReader(params.getString("layer"), context, params));
+        }
     }
-	
+
     protected final String layer;
     @SuppressWarnings("unused")
     private final float opacity;
@@ -163,9 +163,11 @@ public class WMTSMapReader extends TileableMapReader {
                 query += "&TILEROW=" + row;
                 query += "&TILECOL=" + col;
                 query += "&FORMAT=" + format;
-                for (int i = 0 ; i < dimensions.size() ; i++) {
-                    String d = dimensions.getString(i);
-                    query += "&" + d + "=" + dimensionsParams.getString(d.toUpperCase());
+                if (dimensions != null) {
+                    for (int i = 0 ; i < dimensions.size() ; i++) {
+                        String d = dimensions.getString(i);
+                        query += "&" + d + "=" + dimensionsParams.getString(d.toUpperCase());
+                    }
                 }
                 return new URI(commonUri.getScheme(), commonUri.getUserInfo(), commonUri.getHost(), commonUri.getPort(),
                         commonUri.getPath(), query, commonUri.getFragment());
@@ -200,8 +202,26 @@ public class WMTSMapReader extends TileableMapReader {
                 path.append('.').append(tileCacheLayerInfo.getExtension());
 
                 return new URI(commonUri.getScheme(), commonUri.getUserInfo(), commonUri.getHost(), commonUri.getPort(), commonUri.getPath() + path, commonUri.getQuery(), commonUri.getFragment());
-            } else {
-                throw new RuntimeException("Only WMTS REST structure is supported");
+            }
+            else {
+                String query = "SERVICE=WMTS";
+                query += "&REQUEST=GetTile";
+                query += "&VERSION=" + version;
+                query += "&LAYER=" + layer;
+                query += "&STYLE=" + style;
+                query += "&TILEMATRIXSET=" + matrixSet;
+                query += "&TILEMATRIX=" + (resolution.index + zoomOffset);
+                query += "&TILEROW=" + row;
+                query += "&TILECOL=" + col;
+                query += "&FORMAT=" + (formatSuffix.equals("png") ? "image/png" : "image/jpeg");
+                if (dimensions != null) {
+                    for (int i = 0 ; i < dimensions.size() ; i++) {
+                        String d = dimensions.getString(i);
+                        query += "&" + d + "=" + dimensionsParams.getString(d.toUpperCase());
+                    }
+                }
+                return new URI(commonUri.getScheme(), commonUri.getUserInfo(), commonUri.getHost(), commonUri.getPort(),
+                        commonUri.getPath(), query, commonUri.getFragment());
             }
         }
     }
