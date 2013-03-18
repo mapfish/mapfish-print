@@ -1,5 +1,5 @@
 group = 'org.mapfish.print'
-version = '1.2.0'
+version = '1.2-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'war'
