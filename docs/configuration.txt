@@ -573,8 +573,12 @@ Display each layers along with its classes (icons and labels).
           - !legends
   ?         maxHeight: 0
   ?         maxWidth: 0
-  ?         maxIconWidth: 8 
-  ?         maxIconHeight: 8
+  ?         iconMaxWidth: 8 
+  ?         iconMaxHeight: 8
+  ?         iconPadding: 8 7 6 5
+  ?         textMaxWidth: 8 
+  ?         textMaxHeight: 8
+  ?         textPadding: 8 7 6 5
   ?         defaultScale: 0
   ?         inline: true
   ?         classIndentation: 20
@@ -588,19 +592,21 @@ Display each layers along with its classes (icons and labels).
   ?         fontEncoding: Cp1252
   ?         columnMargin: 3
 
-**maxIconWidth**, **maxIconHeight**, **defaultScale** with value of 0 indicates that the value will be ignore.
+**iconMaxWidth**, **iconMaxHeight**, **defaultScale** with value of 0 indicate that the value will be ignored, i.e. the values are automatically set to the equivalent of Infinity, Infinity and 1 respectively.
 
-**maxHeight** with value of 0 indicates that the multi column is disable.
+**maxHeight** with value of 0 indicates that the multi column is disabled, i.e. there is only ever one column in this case.
 
-if **inline** is true the multi column is disable.
+**textMaxWidth/Height** and **iconMaxWidth/Height** define how wide/high the text/icon cells of a legend item can be. At this point textMaxHeight is ignored.
 
-if **maxWidth** is set that mean that in the multi column mode the column next to the maxWidth will not be add.
+**textPadding** and **iconPadding** can be used like standard CSS padding. In the above example 8 is the padding top, 7 padding right, 6 padding bottom and 5 padding left.
+
+if **inline** is true icons and text are rendered on the same line, BUT multicolumn is still enabled.
+
+if **maxWidth** is set the whole legend gets a maximum width, just like other blocks.
 
 if **defaultScale** is non null it means that the legend image will be scaled so it doesn't take the full space.
 
-Set **inline** to false mean that only tne image will be display per line. 
-
-**layerSpace** and **classSpace** is to specify the line space to add before layers and classes.
+**layerSpace** and **classSpace** is to specify the line space to add after layers and classes.
 
 For this to work, you need to set the **layerTree** config option on MF print widgets,
 more precisely the legends should be present in the print.pdf JSON request.
