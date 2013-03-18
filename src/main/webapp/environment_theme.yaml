@@ -306,17 +306,24 @@ layouts:
           width: 600
           items:
             - !legends
+              backgroundColor: #FFFFF1
+              borders: true
               horizontalAlignment: left
               #horizontalAlignment: right
               maxHeight: 280
-              maxWidth: 200
-              #inline: true
+              maxWidth: 400
               inline: true
-              backgroundColor: #FFFFFF
+
+              iconMaxWidth: 20
+              iconMaxHeight: 20
               iconPadding: 3 0 0 0
+
+              textMaxWidth: 150
+              # 0 means no max
+              textMaxHeight: 0
               textPadding: 0 5 0 5
-              maxIconWidth: 20
-              maxIconHeight: 20
+
+              columnMaxWidth: 0
               classIndentation: 20
               layerSpace: 25
               classSpace: 10

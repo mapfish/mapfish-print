@@ -646,11 +646,18 @@ public class PDFUtils {
 		return myOffset;
 	}
 	
-	public static Chunk createImageChunkFromSVG(RenderingContext context, String iconItem, double maxIconWidth, double maxIconHeight) throws IOException {
-		return new Chunk(PDFUtils.createImageFromSVG(context, iconItem, maxIconWidth, maxIconHeight), 0f, 0f, true);		
+	public static Chunk createImageChunkFromSVG(RenderingContext context, 
+            String iconItem, 
+            double maxIconWidth, 
+            double maxIconHeight,
+            double scale) throws IOException {
+		return new Chunk(PDFUtils.createImageFromSVG(context, iconItem, 
+                maxIconWidth, maxIconHeight, scale), 0f, 0f, true);		
 	}
 
-	public static Image createImageFromSVG(RenderingContext context, String iconItem, double maxIconWidth, double maxIconHeight) throws IOException {
+	public static Image createImageFromSVG(RenderingContext context, 
+            String iconItem, double maxIconWidth, double maxIconHeight,
+            double scale) throws IOException {
         Image image = null;
         try {
             PdfContentByte dc = context.getDirectContent();
@@ -679,7 +686,10 @@ public class PDFUtils {
             graphics.paint(g2d);
             g2d.dispose();
             image = Image.getInstance(map);
-            image.scaleToFit((float) maxIconWidth, (float) maxIconHeight);
+            image.scalePercent((float) (scale * 100));
+            if (image.getWidth() > maxIconWidth || image.getHeight() > maxIconHeight) {
+                image.scaleToFit((float) maxIconWidth, (float) maxIconHeight);
+            }
         } catch (BadElementException bee) {
             LOGGER.warn("Bad Element " + iconItem + " with " + bee.getMessage());
         } catch (MalformedURLException mue) {

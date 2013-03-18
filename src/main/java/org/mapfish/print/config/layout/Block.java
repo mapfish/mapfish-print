@@ -130,6 +130,20 @@ public abstract class Block {
 
     public void setSpacingAfter(double spacingAfter) {
         this.spacingAfter = spacingAfter;
-        if (spacingAfter < 0.0) throw new InvalidValueException("spacingAfter", spacingAfter);
+        if (spacingAfter < 0.0) {
+            throw new InvalidValueException("spacingAfter", spacingAfter);
+        }
+    }
+    protected double getMaxValueIfZero(double value, String exceptionName) {
+        if (value < 0.0) {
+            throw new InvalidValueException(exceptionName, value);
+        }
+        return value == 0.0 ? Double.MAX_VALUE : value;
+    }
+    protected float getMaxValueIfZero(float value, String exceptionName) {
+        if (value < 0.0) {
+            throw new InvalidValueException(exceptionName, value);
+        }
+        return value == 0.0 ? Float.MAX_VALUE : value;
     }
 }
