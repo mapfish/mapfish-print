@@ -81,22 +81,36 @@ task standalone (type: Jar) {
   
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
+task libJavadocJar(type: Jar, dependsOn: javadoc) {
+    baseName = 'print-lib'
     classifier = 'javadoc'
     from 'build/docs/javadoc'
 }
  
-task sourcesJar(type: Jar) {
+task libSourcesJar(type: Jar) {
+    baseName = 'print-lib'
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+task standaloneJavadocJar(type: Jar, dependsOn: javadoc) {
+    baseName = 'print-standalone'
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+ 
+task standaloneSourcesJar(type: Jar) {
+    baseName = 'print-standalone'
     from sourceSets.main.allSource
     classifier = 'sources'
 }
 
 task show << {
 //    sourceSets.main.classes.asFileTree.each {println it}
-println version
+println standaloneJavadocJar.properties
 }
 artifacts {
-  archives jar, war, standalone, javadocJar, sourcesJar
+  archives jar, war, standalone, libSourcesJar, libJavadocJar, standaloneSourcesJar, standaloneJavadocJar
 }
 def artifactFilterMapping = ['lib':'print-lib', 'standalone':'print-standalone', 'war':'print-servlet']
 configure(install.repositories.mavenInstaller) {

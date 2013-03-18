@@ -6,7 +6,7 @@ Compilation
 
 To build this project, you need:
 
-* JDK >= 1.5, make sure you use Sun's JDK (sun-java6-jdk on Ubuntu 8.04) and not GCJ
+* JDK >= 1.6, make sure you use Sun's JDK (sun-java6-jdk on Ubuntu 8.04) and not GCJ
 * Download MapFish Print from GitHub
 
   * On systems with git installed::
@@ -123,15 +123,15 @@ If you are developping a web application, you can include the print module in it
           <dependency>
             <groupId>org.mapfish.print</groupId>
             <artifactId>print-lib</artifactId>
-            <version>1.2-SNAPSHOT</version>
+            <version>%RELEASE%</version>
           </dependency>
           ...
         </dependencies>
         ...
         <repositories>
           <repository>
-            <id>org.mapfish</id>
-            <url>http://dev.mapfish.org/maven/repository</url>
+            <id>geotools</id>
+            <url>http://download.osgeo.org/webdav/geotools</url>
           </repository>
           ...
         </repositories>
@@ -145,7 +145,7 @@ If you are developping a web application, you can include the print module in it
           <servlet-class>org.mapfish.print.servlet.MapPrinterServlet</servlet-class>
           <init-param>
             <param-name>config</param-name>
-            <param-value>config.yaml</param-value>
+            <param-value>WEB-INF/config.yaml</param-value>
           </init-param>
         </servlet>
         <servlet-mapping>
@@ -154,16 +154,11 @@ If you are developping a web application, you can include the print module in it
         </servlet-mapping>
          ...
 
-3. Add a config.yaml file (from the `samples <https://trac.mapfish.org/trac/mapfish/browser/print/trunk/samples>`_, for example) to the root of your web application. 
+3. Add a config.yaml file (from the `samples <https://trac.mapfish.org/trac/mapfish/browser/print/trunk/samples>`_, for example) to the WEB-INF directory of your web application. 
 
 Configuring Servlet Temp Directory
 ++++++++++++++++++++++++++++++++++
 By default the default servlet temporary directory will be used but that behaviour can be overridden setting the init-param *tempdir*.  If this parameter is set the servlet must have write access to the directory.
-
-Ruby on rails
-~~~~~~~~~~~~~
-
-TODO write the doc.
 
 Command line
 ~~~~~~~~~~~~
