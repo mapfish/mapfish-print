@@ -83,7 +83,7 @@ public class LegendsBlock extends Block {
     protected float classFontSize = 8;
     private String fontEncoding = BaseFont.WINANSI;
     
-    private int legendItemHorizontalAlignment = Element.ALIGN_CENTER;
+    private int horizontalAlignment = Element.ALIGN_CENTER;
     private float[] columnPadding = {0f,0f,0f,0f};
     
     /**
@@ -182,17 +182,18 @@ public class LegendsBlock extends Block {
                     computeOptimumLegendItemWidths(legendItem);
 
                     totalHeight += getHeight(legendItem);
+                    float cellPaddingTop = leftCell.getPaddingTop();
+                    float spacingBefore = legendItem.getSpaceBefore();
                     if (totalHeight > maxHeight) {
                         column = getDefaultOuterTable(1);
                         columns.add(column);
                         totalHeight = 0f;
-                        float spacingBefore = legendItem.getSpaceBefore();
                         /**
                          * This fixes the case where a layer legend item
                          * gets too much padding from the top.
                          */
-                        if (spacingBefore > 0f) {
-                            leftCell.setPaddingTop(leftCell.getPaddingTop() - spacingBefore);
+                        if (spacingBefore > 0f && cellPaddingTop > 0) {
+                            leftCell.setPaddingTop(cellPaddingTop - spacingBefore);
                             if (rightCell != null) {
                                 rightCell.setPaddingTop(rightCell.getPaddingTop() - spacingBefore);
                             }
@@ -206,9 +207,8 @@ public class LegendsBlock extends Block {
                              * clear out the table and start new, because the 
                              * maxColumnWidth has changed!
                              */
-                            iconMaxWidth = Math.min(iconMaxWidth, maxColumnWidth/2);
-                            textMaxWidth = Math.min(textMaxWidth, 
-                                    maxColumnWidth - iconMaxWidth);
+                            //iconMaxWidth = Math.min(iconMaxWidth, maxColumnWidth/2);
+                            //textMaxWidth = Math.min(textMaxWidth, maxColumnWidth - iconMaxWidth);
                             column = getDefaultOuterTable(1);
                             columns = new ArrayList<PdfPTable>(columnsSize);
                             columns.add(column);
@@ -219,10 +219,17 @@ public class LegendsBlock extends Block {
                             column.addCell(legendItem);
                         }
                     } else {
+                        if (spacingBefore > 0) {
+                            leftCell.setPaddingTop(iconPadding[0] + spacingBefore);
+                            if (rightCell != null) {
+                                rightCell.setPaddingTop(
+                                        textPadding[0] + spacingBefore);
+                            }
+                        }
                         column.addCell(legendItem);
                     }
                 }
-                column.setHorizontalAlignment(legendItemHorizontalAlignment);
+                column.setHorizontalAlignment(horizontalAlignment);
             }
 
             numColumns = columns.size();
@@ -277,6 +284,11 @@ public class LegendsBlock extends Block {
                 }
                 table.addCell(cell);
             }
+            if (maxWidth < Float.MAX_VALUE) {
+                table.setTotalWidth(maxWidth);
+                table.setLockedWidth(true);
+            }
+            table.setHorizontalAlignment(horizontalAlignment);
             target.add(table);
             cleanup(); // don't forget to cleanup afterwards
         }
@@ -546,8 +558,8 @@ public class LegendsBlock extends Block {
             if (numCells == 1) {
                 absoluteWidths = new float[1];
                 absoluteWidths[0] = optimumTextCellWidth +
-                        optimumIconCellWidth +
-                        classIndentation; // +
+                        optimumIconCellWidth;// +
+                        //classIndentation; // +
 //                        iconPadding[1] +
 //                        iconPadding[3] +
 //                        textPadding[1] +
@@ -558,42 +570,45 @@ public class LegendsBlock extends Block {
             } else {
                 absoluteWidths = new float[2];
                 if (legendItem.isIconBeforeName()) {
-                    absoluteWidths[0] = optimumIconCellWidth + 
-                            iconPadding[1] +
-                            iconPadding[3] +
-                            classIndentation;
+                    absoluteWidths[0] = optimumIconCellWidth; // + 
+                            //iconPadding[1] +
+                            //iconPadding[3] +
+                            //classIndentation;
                             //leftCell.getPaddingLeft() +
                             //leftCell.getPaddingRight();
-                    absoluteWidths[1] = optimumTextCellWidth +
-                            textPadding[1] +
-                            textPadding[3];
+                    absoluteWidths[1] = optimumTextCellWidth;// +
+                            //textPadding[1] +
+                            //textPadding[3];
                             //rightCell.getPaddingLeft() +
                             //rightCell.getPaddingRight();
                 } else {
-                    absoluteWidths[0] = optimumTextCellWidth +
-                            textPadding[1] +
-                            textPadding[3] +
-                            classIndentation; // @fixme: what if layer item and not class item?
+                    absoluteWidths[0] = optimumTextCellWidth;// +
+                            //textPadding[1] +
+                            //textPadding[3] +
+                            //classIndentation; // @fixme: what if layer item and not class item?
                             //rightCell.getPaddingLeft() +
                             //rightCell.getPaddingRight();
-                    absoluteWidths[1] = optimumIconCellWidth + 
-                            iconPadding[1] +
-                            iconPadding[3];
+                    absoluteWidths[1] = optimumIconCellWidth;// + 
+                            //iconPadding[1] +
+                            //iconPadding[3];
                             //leftCell.getPaddingLeft() +
                             //leftCell.getPaddingRight();
                 }
             }
             legendItem.setTotalWidth(absoluteWidths);
             legendItem.setLockedWidth(true);
-            legendItem.setHorizontalAlignment(legendItemHorizontalAlignment);
+            legendItem.setHorizontalAlignment(horizontalAlignment);
         }
 
         private void setOptimumCellWidths(float maxColumnWidth) {
-            optimumIconCellWidth = Math.min(maxActualImageWidth, iconMaxWidth);
+            optimumIconCellWidth = Math.min(
+                    maxActualImageWidth + classIndentation,
+                    iconMaxWidth + classIndentation);
             optimumTextCellWidth = Math.min(maxActualTextWidth, textMaxWidth);
             // don't let the icon cell be bigger than half
             optimumIconCellWidth = Math.min(optimumIconCellWidth, maxColumnWidth/2);
-            optimumTextCellWidth = Math.min(optimumTextCellWidth, maxColumnWidth - optimumIconCellWidth);
+            optimumTextCellWidth = Math.min(optimumTextCellWidth,
+                    maxColumnWidth - optimumIconCellWidth);
         }
     }
 
@@ -774,9 +789,9 @@ public class LegendsBlock extends Block {
      */
     public void setHorizontalAlignment(String value) {
         if (value.equalsIgnoreCase("left")) {
-            this.legendItemHorizontalAlignment = Element.ALIGN_LEFT;
+            this.horizontalAlignment = Element.ALIGN_LEFT;
         } else if (value.equalsIgnoreCase("right")) {
-            this.legendItemHorizontalAlignment = Element.ALIGN_RIGHT;
+            this.horizontalAlignment = Element.ALIGN_RIGHT;
         }
     }
 
