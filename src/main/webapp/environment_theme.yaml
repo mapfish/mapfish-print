@@ -307,19 +307,19 @@ layouts:
           items:
             - !legends
               backgroundColor: #FFFFFF
-              #borders: true
+              borders: true
               horizontalAlignment: left
               #horizontalAlignment: right
               maxHeight: 280
               maxWidth: 600
               inline: true
 
-              defaultScale: 2
-              iconMaxWidth: 40
+              defaultScale: 1
+              iconMaxWidth: 60
               iconMaxHeight: 40
               iconPadding: 3 0 0 0
 
-              textMaxWidth: 200
+              textMaxWidth: 300
               # 0 means no max
               textMaxHeight: 0
               textPadding: 0 10 0 10
