@@ -4,4 +4,3 @@ buildSrc/.gradle/
 buildSrc/build/
 deploy.sh
 *.class
-.nb-gradle-properties
