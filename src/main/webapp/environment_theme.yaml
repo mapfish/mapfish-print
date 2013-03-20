@@ -487,7 +487,7 @@ layouts:
               #borders: true
               horizontalAlignment: left
               #horizontalAlignment: right
-              maxHeight: 280
+              maxHeight: 600
               maxWidth: 600
               inline: true
 
