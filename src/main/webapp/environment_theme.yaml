@@ -181,20 +181,49 @@ layouts:
           width: 450
           items:
             - !legends
-              maxHeight: 100
-              inline: true
               backgroundColor: #FFFFFF
-              maxIconWidth: 20
-              maxIconHeight: 20
-              classIndentation: 0
+              #borders: true
+              horizontalAlignment: left
+              #horizontalAlignment: right
+              maxHeight: 600
+              maxWidth: 450
+              inline: true
+
+              defaultScale: 0.5
+              iconMaxWidth: 80
+              iconMaxHeight: 80
+              iconPadding: 3 0 0 0
+
+              textMaxWidth: 300
+              # 0 means no max
+              textMaxHeight: 0
+              textPadding: 0 10 0 10
+
+              columnMaxWidth: 0
+              classIndentation: 20
+              layerSpaceBefore: 10
               layerSpace: 25
-              #classSpace: 10
-              classSpace: 20
+              classSpace: 10
               layerFont: Arial
               layerFontSize: 14
               classFont: Arial
               classFontSize: 12
               fontEncoding: Cp1252
+
+#              maxHeight: 100
+#              inline: true
+#              backgroundColor: #FFFFFF
+#              maxIconWidth: 20
+#              maxIconHeight: 20
+#              classIndentation: 0
+#              layerSpace: 25
+#              #classSpace: 10
+#              classSpace: 20
+#              layerFont: Arial
+#              layerFontSize: 14
+#              classFont: Arial
+#              classFontSize: 12
+#              fontEncoding: Cp1252
 #      footer:
 #        height: 30
 #        items:
@@ -307,14 +336,14 @@ layouts:
           items:
             - !legends
               backgroundColor: #FFFFFF
-              borders: true
+              #borders: true
               horizontalAlignment: left
               #horizontalAlignment: right
               maxHeight: 280
               maxWidth: 600
               inline: true
 
-              defaultScale: 1
+              defaultScale: 0.5
               iconMaxWidth: 60
               iconMaxHeight: 40
               iconPadding: 3 0 0 0
@@ -455,15 +484,32 @@ layouts:
           items:
             - !legends
               backgroundColor: #FFFFFF
-              maxIconWidth: 30
-              maxIconHeight: 30
-              classIndentation: 0
-              layerSpace: 30
-              classSpace: 15
+              #borders: true
+              horizontalAlignment: left
+              #horizontalAlignment: right
+              maxHeight: 280
+              maxWidth: 600
+              inline: true
+
+              defaultScale: 0.5
+              iconMaxWidth: 60
+              iconMaxHeight: 40
+              iconPadding: 3 0 0 0
+
+              textMaxWidth: 300
+              # 0 means no max
+              textMaxHeight: 0
+              textPadding: 0 10 0 10
+
+              columnMaxWidth: 0
+              classIndentation: 20
+              layerSpaceBefore: 10
+              layerSpace: 25
+              classSpace: 10
               layerFont: Arial
-              layerFontSize: 20
+              layerFontSize: 14
               classFont: Arial
-              classFontSize: 18
+              classFontSize: 12
               fontEncoding: Cp1252
 #      footer:
 #        height: 30
@@ -570,15 +616,32 @@ layouts:
           items:
             - !legends
               backgroundColor: #FFFFFF
-              maxIconWidth: 30
-              maxIconHeight: 30
-              classIndentation: 0
-              layerSpace: 30
-              classSpace: 15
+              #borders: true
+              horizontalAlignment: left
+              #horizontalAlignment: right
+              maxHeight: 600
+              maxWidth: 600
+              inline: true
+
+              defaultScale: 0.5
+              iconMaxWidth: 60
+              iconMaxHeight: 40
+              iconPadding: 3 0 0 0
+
+              textMaxWidth: 300
+              # 0 means no max
+              textMaxHeight: 0
+              textPadding: 0 10 0 10
+
+              columnMaxWidth: 0
+              classIndentation: 20
+              layerSpaceBefore: 10
+              layerSpace: 25
+              classSpace: 10
               layerFont: Arial
-              layerFontSize: 20
+              layerFontSize: 14
               classFont: Arial
-              classFontSize: 18
+              classFontSize: 12
               fontEncoding: Cp1252
 
 #      footer:
