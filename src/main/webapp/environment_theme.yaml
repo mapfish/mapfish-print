@@ -314,17 +314,19 @@ layouts:
               maxWidth: 400
               inline: true
 
-              iconMaxWidth: 20
-              iconMaxHeight: 20
+              defaultScale: 2
+              iconMaxWidth: 40
+              iconMaxHeight: 40
               iconPadding: 3 0 0 0
 
-              textMaxWidth: 150
+              textMaxWidth: 200
               # 0 means no max
               textMaxHeight: 0
               textPadding: 0 5 0 5
 
               columnMaxWidth: 0
               classIndentation: 20
+              layerSpaceBefore: 10
               layerSpace: 25
               classSpace: 10
               layerFont: Arial

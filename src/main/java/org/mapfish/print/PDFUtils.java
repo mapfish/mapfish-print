@@ -687,7 +687,7 @@ public class PDFUtils {
             g2d.dispose();
             image = Image.getInstance(map);
             image.scalePercent((float) (scale * 100));
-            if (image.getWidth() > maxIconWidth || image.getHeight() > maxIconHeight) {
+            if (image.getWidth()*scale > maxIconWidth || image.getHeight()*scale > maxIconHeight) {
                 image.scaleToFit((float) maxIconWidth, (float) maxIconHeight);
             }
         } catch (BadElementException bee) {

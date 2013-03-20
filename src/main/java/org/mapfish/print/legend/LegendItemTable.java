@@ -13,6 +13,7 @@ import com.lowagie.text.pdf.PdfPTable;
  */
 public class LegendItemTable extends PdfPTable {
     private boolean iconBeforeName = false;
+    private float spaceBefore = 0f;
 
     public LegendItemTable() {
         super(1);
@@ -32,6 +33,20 @@ public class LegendItemTable extends PdfPTable {
      */
     public void setIconBeforeName(boolean iconBeforeName) {
         this.iconBeforeName = iconBeforeName;
+    }
+
+    /**
+     * @return the spaceBefore
+     */
+    public float getSpaceBefore() {
+        return spaceBefore;
+    }
+
+    /**
+     * @param spaceBefore the spaceBefore to set
+     */
+    public void setSpaceBefore(float spaceBefore) {
+        this.spaceBefore = spaceBefore;
     }
     
 }

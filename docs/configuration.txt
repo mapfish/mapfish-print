@@ -582,6 +582,7 @@ Display each layers along with its classes (icons and labels).
   ?         defaultScale: 0
   ?         inline: true
   ?         classIndentation: 20
+  ?         layerSpaceBefore: 5
   ?         layerSpace: 5
   ?         classSpace: 2
   ?         backgroundColor: #FFFFFF
@@ -605,6 +606,8 @@ if **inline** is true icons and text are rendered on the same line, BUT multicol
 if **maxWidth** is set the whole legend gets a maximum width, just like other blocks.
 
 if **defaultScale** is non null it means that the legend image will be scaled so it doesn't take the full space.
+
+**layerSpaceBefore** is to specify the space before the second and consecutive layers.
 
 **layerSpace** and **classSpace** is to specify the line space to add after layers and classes.
 
