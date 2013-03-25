@@ -574,16 +574,23 @@ Display each layers along with its classes (icons and labels).
 .. code-block:: yaml
 
           - !legends
+  ?         backgroundColor: #FFFFFF
+  ?         borders: false
+  ?         horizontalAlignment: center
   ?         maxHeight: 0
   ?         maxWidth: 0
-  ?         maxIconWidth: 8 
-  ?         maxIconHeight: 8
+  ?         iconMaxWidth: 8 
+  ?         iconMaxHeight: 8
+  ?         iconPadding: 8 7 6 5
+  ?         textMaxWidth: 8 
+  ?         textMaxHeight: 8
+  ?         textPadding: 8 7 6 5
   ?         defaultScale: 0
   ?         inline: true
   ?         classIndentation: 20
+  ?         layerSpaceBefore: 5
   ?         layerSpace: 5
   ?         classSpace: 2
-  ?         backgroundColor: #FFFFFF
   ?         layerFont: Helvetica
   ?         layerFontSize: 10
   ?         classFont: Helvetica
@@ -591,22 +598,46 @@ Display each layers along with its classes (icons and labels).
   ?         fontEncoding: Cp1252
   ?         columnMargin: 3
 
-**maxIconWidth**, **maxIconHeight**, **defaultScale** with value of 0 indicates that the value will be ignore.
+**borders** is mainly for debugging purpouses and shows all borders in the legend tables. This can be either 'true' or 'false'.
 
-**maxHeight** with value of 0 indicates that the multi column is disable.
+**horizontalAlignment** can be left, right or center (default) and aligns all items left, right or in the center.
 
-if **inline** is true the multi column is disable.
+**iconMaxWidth**, **iconMaxHeight**, **defaultScale** with value of 0 indicate that the value will be ignored, i.e. the values are automatically set to the equivalent of Infinity, Infinity and 1 respectively.
 
-if **maxWidth** is set that mean that in the multi column mode the column next to the maxWidth will not be add.
+**textMaxWidth/Height** and **iconMaxWidth/Height** define how wide/high the text/icon cells of a legend item can be. At this point textMaxHeight is ignored.
 
-if **defaultScale** is non null it means that the legend image will be scaled so it doesn't take the full space.
+**textPadding** and **iconPadding** can be used like standard CSS padding. In the above example 8 is the padding top, 7 padding right, 6 padding bottom and 5 padding left.
 
-Set **inline** to false mean that only tne image will be display per line. 
+if **inline** is true icons and text are rendered on the same line, BUT multicolumn is still enabled.
 
-**layerSpace** and **classSpace** is to specify the line space to add before layers and classes.
+if **maxWidth** is set the whole legend gets a maximum width, just like other blocks.
+
+if **maxHeight** is set the whole legend gets a maximum height. This forces more than one column to appear if the legend is higher than the specified value. This can be used to enable the multi-column layout. 0 makes the maxHeight= max value, i.e. the equivalent of infinity.
+
+if **defaultScale** is non null it means that the legend image will be scaled so it doesn't take the full space. This can be overriden for individual classes in the spec JSON sent to the print module by adding an attribute called 'scale' and giving it a number. In conjunction with iconMaxWidth/Height this can be used to control average and also maximum width/height.
 
 For this to work, you need to set the **layerTree** config option on MF print widgets,
 more precisely the legends should be present in the print.pdf JSON request.
+
+**layerSpaceBefore** is to specify the space before the second and consecutive layers.
+
+**layerSpace** and **classSpace** is to specify the line space to add after layers and classes.
+
+**columnMaxWidth** maximum width of a column in multi-column layout. Not tested (at time of writing).
+
+**classIndentation** amount of points to indent classes by.
+
+**layerSpaceBefore** if a layer is after another one, this defines the amount of space to have before it. This will not be applied if the layer is the first item in its column in multi-column layout.
+
+**layerFont** font of layer name legend items.
+
+**layerFontSize** font size of layer name.
+
+**classFont** font of class legend items.
+
+**classFontSize** font size of class.
+
+**fontEncoding** (see below)
 
 Table configuration
 -------------------

@@ -19,25 +19,31 @@
 
 package org.mapfish.print.config.layout;
 
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-
+import java.util.Date;
 import org.apache.log4j.Logger;
 import org.mapfish.print.InvalidValueException;
 import org.mapfish.print.PDFUtils;
 import org.mapfish.print.RenderingContext;
+import org.mapfish.print.legend.LegendItemTable;
 import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
-
-import com.lowagie.text.Chunk;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Font;
-import com.lowagie.text.FontFactory;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
 
 /**
  * Bean to configure a !legends block.
@@ -46,390 +52,766 @@ import com.lowagie.text.pdf.PdfPTable;
  */
 public class LegendsBlock extends Block {
     public static final Logger LOGGER = Logger.getLogger(LegendsBlock.class);
+    private static String tempDir = System.getProperty("java.io.tmpdir");
+    private static String fileSeparator = System.getProperty("file.separator");
 
-    private double maxHeight = 0; // 0 mean multi column disable
-    private double maxWidth = 0;
+    private boolean borders = false; // for debugging or seeing effects
+    private float maxWidth = Float.MAX_VALUE; // so setting max value!
+    // multi column is always enabled when maxHeight is set to something
+    // lower than the page size/height
+    private float maxHeight = Float.MAX_VALUE;
 
-    private double maxIconWidth = 0; // 0 mean disable
-    private double maxIconHeight = 8; // 0 mean disable
-    private float scale = 0; // 0 mean disable
+    private float iconMaxWidth = Float.MAX_VALUE; // MAX_VALUE/0 means disable
+    private float iconMaxHeight = 8; // 0 means disable
+    private float iconPadding[] = {0f,0f,0f,0f};
+
+    private float textMaxWidth = Float.MAX_VALUE;
+    //private float textMaxHeight = Float.MAX_VALUE; // UNUSED for now!
+    private float textPadding[] = {0f,0f,0f,0f};
+    
+    private float scale = 1f; // 1 means disable
     private boolean inline = true;
-    private double classIndentation = 20;
+    private float classIndentation = 20;
+    private float layerSpaceBefore = 5;
     private float layerSpace = 5;
     private float classSpace = 2;
 
     private String layerFont = "Helvetica";
-    protected double layerFontSize = 10;
+    protected float layerFontSize = 10;
     private String classFont = "Helvetica";
-    protected double classFontSize = 8;
+    protected float classFontSize = 8;
     private String fontEncoding = BaseFont.WINANSI;
     
-    private double columnMargin = 3;
+    private int horizontalAlignment = Element.ALIGN_CENTER;
+    private float[] columnPadding = {0f,0f,0f,0f};
     
     /**
      * Render the legends block
-     * @see org.mapfish.print.config.layout.Block#render(org.mapfish.print.utils.PJsonObject, org.mapfish.print.config.layout.Block.PdfElement, org.mapfish.print.RenderingContext)
+     * @see org.mapfish.print.config.layout.Block#render(
+     *              org.mapfish.print.utils.PJsonObject, 
+     *              org.mapfish.print.config.layout.Block.PdfElement, 
+     *              org.mapfish.print.RenderingContext)
      */
+    @Override
     public void render(PJsonObject params, PdfElement target, RenderingContext context) throws DocumentException {
         Renderer renderer = new Renderer(params, context);
         renderer.render(target);
     }
-    
+
     /**
      * A renderer to render the legend block
      * @author Stéphane Brunner
      */
     private class Renderer {
-        private PJsonObject params;
+        /* 
+         * need these to calculate widths/heights of output
+         * 
+         * For example a cell could contain the text "Hello World"
+         * while it is the equivalent of 7 characters wide "World" would 
+         * be wrapped onto the next line which would make the height 
+         * calculation complicated if not actually rendered onto a page.
+         * This is important for long legend texts which wrap.
+         */
+        private String tempFilename;
+        private Document tempDocument = new Document();
+        private PdfWriter writer;
+
         private RenderingContext context;
         
         // all the pdf columns
         private ArrayList<PdfPTable> columns = new ArrayList<PdfPTable>();
         // all the columns width
         private ArrayList<Float> columnsWidth = new ArrayList<Float>();
-        // the current cell width
-        private float cellWidth = 0;
         // the current column
-        private PdfPTable column = new PdfPTable(1);
-        // the curent title
-        private PdfPCell title;
-        // the current cell height
-        private double currentCellHeight = 0;
+        private PdfPTable column;
         // the current column height 
-        private double currentColumnHeight = 0;
+        private int currentColumnIndex = 0;
+        private float maxActualImageWidth = 0;
+        private float maxActualTextWidth = 0;
+        private ArrayList<LegendItemTable> legendItems = new ArrayList<LegendItemTable>();
+        // optimum widths are used to compute the best possible widths of legend
+        // items
+        private float optimumIconCellWidth = 0f;
+        private float optimumTextCellWidth = 0f;
+        // temporary cells used in calculations
+        private PdfPCell leftCell;
+        private PdfPCell rightCell;
+        private float[] absoluteWidths;
 
         /**
          * Construct
          * @param params the params
          * @param context the context
          */
-        public Renderer(PJsonObject params, RenderingContext context) {
-            column.setWidthPercentage(100f);
+        public Renderer(PJsonObject params, RenderingContext context) throws DocumentException {
+            column = getDefaultOuterTable(1);
             columns.add(column);
-            currentCellHeight = 0;
-            columnsWidth.add(0f);
-            this.params = params;
             this.context = context;
+            makeTempDocument(); // need this to calculate widths and heights of elements!
         }
         
-        /**
-         * Render
-         * @param target the target element
-         * @throws DocumentException
-         */
         public void render(PdfElement target) throws DocumentException {
-
-            Font layerPdfFont = getLayerPdfFont();
-            Font classPdfFont = getClassPdfFont();
+            //float optimumTextWidthWithoutIcon = 0f;
+            int numColumns = 1;
+            absoluteWidths = new float[1];
 
             // create the legend
             PJsonArray legends = context.getGlobalParams().optJSONArray("legends");
+            float maxColumnWidth = maxWidth;
+
             if (legends != null && legends.size() > 0) {
                 for (int i = 0; i < legends.size(); ++i) {
-                    PJsonObject layer = legends.getJSONObject(i);
-                    createLine(0.0, layer, layerPdfFont, i == 0 ? 0 : layerSpace, true, true);
+                    createLegend(legends.getJSONObject(i), i == 0);
+                }
+                setOptimumCellWidths(maxColumnWidth);
+                
+                float totalHeight = 0f;
+                for (int i = 0, len = legendItems.size(); i < len; ++i) {
+                    LegendItemTable legendItem = legendItems.get(i);
+                    /**
+                     * need the padding set before in createLegend
+                     * and add it to the optimum absolute widths
+                     */
+                    computeOptimumLegendItemWidths(legendItem);
+
+                    totalHeight += getHeight(legendItem);
+                    float cellPaddingTop = leftCell.getPaddingTop();
+                    float spacingBefore = legendItem.getSpaceBefore();
+                    if (totalHeight > maxHeight) {
+                        column = getDefaultOuterTable(1);
+                        columns.add(column);
+                        totalHeight = 0f;
+                        /**
+                         * This fixes the case where a layer legend item
+                         * gets too much padding from the top.
+                         */
+                        if (spacingBefore > 0f && cellPaddingTop > 0) {
+                            leftCell.setPaddingTop(cellPaddingTop - spacingBefore);
+                            if (rightCell != null) {
+                                rightCell.setPaddingTop(rightCell.getPaddingTop() - spacingBefore);
+                            }
+                        }
+                        int columnsSize = columns.size();
+                        maxColumnWidth = (maxWidth / columnsSize) -
+                                columnPadding[1] - columnPadding[3];
+                        if (maxColumnWidth < optimumIconCellWidth +
+                                optimumTextCellWidth) {
+                            /**
+                             * clear out the table and start new, because the 
+                             * maxColumnWidth has changed!
+                             */
+                            column = getDefaultOuterTable(1);
+                            columns = new ArrayList<PdfPTable>(columnsSize);
+                            columns.add(column);
+                            i = -1;
+                            setOptimumCellWidths(maxColumnWidth);
+                        } else {
+                            column.addCell(legendItem);
+                        }
+                    } else {
+                        column.addCell(legendItem);
+                    }
+                }
+                column.setHorizontalAlignment(horizontalAlignment);
+            }
+
+            numColumns = columns.size();
+            PdfPTable table = getDefaultOuterTable(numColumns);
+            if (maxWidth != Float.MAX_VALUE) {
+                table.setTotalWidth(maxWidth);
+            }
+
+            for (PdfPTable col : columns) {
+                PdfPCell cell = new PdfPCell(col);
+                cell.setPaddingTop(columnPadding[0]);
+                cell.setPaddingRight(columnPadding[1]);
+                cell.setPaddingBottom(columnPadding[2]);
+                cell.setPaddingLeft(columnPadding[3]);
+                if (!borders) {
+                    cell.setBorder(PdfPCell.NO_BORDER);
+                }
+                table.addCell(cell);
+            }
+            if (maxWidth < Float.MAX_VALUE) {
+                table.setTotalWidth(maxWidth);
+                table.setLockedWidth(true);
+            }
+            table.setHorizontalAlignment(horizontalAlignment);
+            target.add(table);
+            cleanup(); // don't forget to cleanup afterwards
+        }
+        
+        /**
+         * get width of text on the page with font
+         * @param myString any string printed on the page
+         * @param pdfFont Font needed to calculate this
+         * @return width in points
+         */
+        private float getTextWidth(String myString, Font pdfFont) {
+            BaseFont baseFont = pdfFont.getBaseFont();
+            float width = baseFont == null ? 
+                    new Chunk(myString).getWidthPoint() : 
+                    baseFont.getWidthPoint(myString, pdfFont.getSize());
+            return width;
+        }
+
+        /**
+         * Create a chunk from an image (svg, png, ...)
+         * @param context PDF rendering context
+         * @param iconItem URL of the image
+         * @param iconMaxWidth width of the chunk
+         * @param iconMaxHeight height of the chunk
+         * @return Chunk with image in it
+         * @throws DocumentException 
+         */
+        private Chunk createImageChunk(RenderingContext context, 
+                String iconItem, 
+                float maxIconWidth, 
+                float maxIconHeight,
+                float scale) throws DocumentException {
+            Chunk iconChunk = null;
+            try {
+                if (iconItem.indexOf("image%2Fsvg%2Bxml") != -1) { // TODO: make this cleaner
+                    iconChunk = PDFUtils.createImageChunkFromSVG(
+                            context, iconItem, 
+                            maxIconWidth, maxIconHeight, scale);
+                } else {
+                    iconChunk = PDFUtils.createImageChunk(context, 
+                            maxIconWidth, maxIconHeight, scale, 
+                            URI.create(iconItem), 0f);
+                }
+            } catch (IOException e) {
+                throw new DocumentException(e);
+            }
+            return iconChunk;
+        }
+
+        /**
+         * creates a "real" PDF document to draw on to be able to calculate
+         * correct widths of text etc
+         * @throws DocumentException 
+         */
+        private void makeTempDocument() throws DocumentException {
+            try {
+                tempFilename = tempDir.indexOf('/') != -1 ? "" : "\\";
+                long time = (new Date()).getTime();
+                tempFilename = tempDir + fileSeparator +
+                        "mapfish-print-tmp-"+ time +".pdf";
+                // Unfortunately have to open an actual file on disk
+                // for the calculations to work properly
+                writer = PdfWriter.getInstance(tempDocument, 
+                        new FileOutputStream(tempFilename));
+                tempDocument.open();
+            } catch (FileNotFoundException e) {
+                throw new DocumentException(e);
+            } catch (DocumentException e) {
+                // don't forget to delete the useless file
+                new File(tempFilename).delete();
+                throw new DocumentException(e);
+            }
+        }
+
+        /**
+         * delete the temporary file needed for dimensions' calculations
+         * @throws DocumentException 
+         */
+        private void cleanup() throws DocumentException {
+            try {
+                tempDocument.close();
+                writer.close();
+                // don't forget to delete the useless file
+            } catch (Exception e) {
+                throw new DocumentException(e);
+            } finally {
+                new File(tempFilename).delete();
+            }
+        }
+
+        /**
+         * get the height in points when printed onto the temporary document
+         * @param element any PDF element
+         * @return height in points
+         * @throws DocumentException 
+         */
+        private float getHeight(Element element) throws DocumentException {
+            tempDocument.add(element);
+            if (element instanceof PdfPTable) {
+                return ((PdfPTable) element).getTotalHeight();
+            }
+            if (element instanceof PdfPCell) {
+                return ((PdfPCell) element).getHeight();
+            }
+            return -1;
+        }
+
+        /**
+         * create the legend for a layer json object 
+         * @param layer JSON object
+         * @param isFirst only do some things on the first item
+         * @throws DocumentException 
+         */
+        private void createLegend(PJsonObject layer, boolean isFirst) 
+                throws DocumentException {
+            Font layerPdfFont = getLayerPdfFont();
+            Font classPdfFont = getClassPdfFont();
+            createTableLine(0.0f, layer, layerPdfFont, 
+                    layerSpace, true, isFirst ? 0f : layerSpaceBefore);
+            PJsonArray classes = layer.getJSONArray("classes");
+            for (int j = 0; j < classes.size(); ++j) {
+                PJsonObject clazz = classes.getJSONObject(j);
+                createTableLine(classIndentation, 
+                        clazz, classPdfFont, classSpace, true, 0f);
+            }
+        }
+
+        private void createTableLine(float indent, PJsonObject node, Font pdfFont,
+                float lineSpace, boolean defaultIconBeforeName, float spaceBefore) 
+                throws DocumentException {
+            final String name = node.getString("name"); // legend text
+            final String icon = node.optString("icon"); // legend image
+            final String iconScaleString = node.optString("scale", ""+ scale); // legend image
+            final float iconScale = Float.parseFloat(iconScaleString);
+            //final PJsonArray icons = node.optJSONArray("icons"); // UNUSED, please check what this should be doing!
+            boolean iconBeforeName = node.optBool("iconBeforeName", defaultIconBeforeName);
     
-                    PJsonArray classes = layer.getJSONArray("classes");
-                    for (int j = 0; j < classes.size(); ++j) {
-                        PJsonObject clazz = classes.getJSONObject(j);
-                        createLine(classIndentation, clazz, classPdfFont, classSpace, false, false);
+            Phrase imagePhrase = new Phrase();
+            Chunk iconChunk;
+            if (icon != null) {
+                iconChunk = createImageChunk(context, icon, iconMaxWidth,
+                        iconMaxHeight, iconScale);
+            } else {
+                iconChunk = new Chunk(""); 
+            }
+            imagePhrase.add(iconChunk);
+            
+            Phrase namePhrase = new Phrase();
+            namePhrase.setFont(pdfFont);
+            namePhrase.add(name);
+            
+            float textWidth = getTextWidth(name, pdfFont);
+            float imageWidth = icon == null ? 0f : iconChunk.getImage().getPlainWidth();
+            
+            int columnsWidthSize = columnsWidth.size();
+            float maxWidthF = textWidth + imageWidth; // total with of legend item
+            if (columnsWidthSize <= currentColumnIndex) {// need to add
+                columnsWidth.add(Math.min(maxWidth, maxWidthF));
+            } else if (columnsWidthSize >= 1 && currentColumnIndex == 0) {
+                // need to get the min of max
+                maxWidthF = Math.max(columnsWidth.get(0), maxWidthF);
+                columnsWidth.set(0, Math.min(maxWidth, maxWidthF));
+            }
+            
+            absoluteWidths = null;
+            LegendItemTable legendItemTable = null;
+            if (icon == null) {
+                legendItemTable = new LegendItemTable(1);
+                absoluteWidths = new float[1];
+                absoluteWidths[0] = textMaxWidth + iconMaxWidth + 
+                        iconPadding[1] + iconPadding[3] +
+                        textPadding[1] + textPadding[3];
+            } else {
+                legendItemTable = new LegendItemTable(2);
+                absoluteWidths = new float[2];
+                absoluteWidths[0] = iconMaxWidth + 
+                        iconPadding[1] + iconPadding[3];
+                absoluteWidths[1] = textMaxWidth +
+                        textPadding[1] + textPadding[3];
+            }
+            legendItemTable.setIconBeforeName(iconBeforeName);
+            legendItemTable.setTotalWidth(absoluteWidths);
+            legendItemTable.getDefaultCell().setPadding(0f);
+            PdfPCell imageCell = null;
+            if (icon != null) {
+                imageCell = new PdfPCell(imagePhrase);
+                /**
+                 * CSS like padding for icons:
+                 * not to forget indent!
+                 */
+                float indentLeft = legendItemTable.isIconBeforeName() ? indent : 0f;
+                imageCell.setPaddingTop(spaceBefore + iconPadding[0]);
+                imageCell.setPaddingRight(iconPadding[1]);
+                imageCell.setPaddingBottom(lineSpace + iconPadding[2]);
+                imageCell.setPaddingLeft(indentLeft + iconPadding[3]);
+
+                if (!borders) {
+                    imageCell.setBorder(PdfPCell.NO_BORDER);
+                }
+
+            }
+            PdfPCell nameCell = new PdfPCell(namePhrase);
+
+
+            /**
+             * If there is no icon we need to add the left indent to the name
+             * column. Also if the icon is not before the text!
+             */
+            float indentLeft = icon == null || !iconBeforeName ? (float) indent : 0f;
+
+            legendItemTable.setSpaceBefore(spaceBefore);
+            /**
+             * CSS like padding for text
+             * not to forget spacing!
+             */
+            nameCell.setPaddingTop(spaceBefore + textPadding[0]);
+            nameCell.setPaddingRight(textPadding[1]);
+            nameCell.setPaddingBottom(lineSpace + textPadding[2]);
+            nameCell.setPaddingLeft(indentLeft + textPadding[3]);
+            
+            if (!iconBeforeName) {
+                nameCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+            }
+            if (!borders) {
+                nameCell.setBorder(PdfPCell.NO_BORDER);
+            }
+            
+            if (inline) {
+                if (iconBeforeName) {
+                    if (imageCell != null) {
+                        legendItemTable.addCell(imageCell);
+                    }
+                    legendItemTable.addCell(nameCell);
+                } else {
+                    legendItemTable.addCell(nameCell);
+                    if (imageCell != null) {
+                        legendItemTable.addCell(imageCell);
+                    }
+                }
+            } else {
+                legendItemTable = new LegendItemTable(1);
+                if (iconBeforeName) {
+                    if (imageCell != null) {
+                        legendItemTable.addCell(imageCell);
+                    }
+                    legendItemTable.addCell(nameCell);
+                } else {
+                    legendItemTable.addCell(nameCell);
+                    if (imageCell != null) {
+                        legendItemTable.addCell(imageCell);
                     }
                 }
             }
-            
-            // complete the width of the last column
-            { 
-                int index = columnsWidth.size() - 1;
-                columnsWidth.set(index, Math.max(columnsWidth.get(index), cellWidth));
-            }
-            if (title != null) {
-                column.addCell(title);
-            }
-            
-            // calculate the fullWidth (sum of width of visible column with margin)
-            int len = columns.size();
-            float fullWidth = 0;
-            for (int i = 0 ; i < len ; i++) {
-                float width = columnsWidth.get(i);
-                if (fullWidth + width < maxWidth) {
-                    fullWidth += width + columnMargin;
-                }
-                else {
-                    len = i + 1;
-                }
-            }
-            
-            // create the column with array for the table
-            float[] pdfWidths = new float[len + 1];
-            for (int i = 0 ; i < len ; i++) {
-                pdfWidths[i] = columnsWidth.get(i);
-            }
-            // for empty column
-            pdfWidths[len] = Math.max(0f, (float)maxWidth - fullWidth);
-            
-            // table used for column
-            PdfPTable table = new PdfPTable(pdfWidths);
-            table.setWidthPercentage(100f);
-            table.getDefaultCell().setBorder(PdfPCell.NO_BORDER);
-            table.getDefaultCell().setPadding(0f);
-            table.setSpacingAfter((float) spacingAfter);
-    
-            // add columns
-            for (int i = 0 ; i < len ; i++) {
-                table.addCell(columns.get(i));
-            }
-            // create empty column
-            table.addCell("");
-            
-            // add to result 
-            target.add(table);
+
+            maxActualImageWidth = Math.max(imageWidth, maxActualImageWidth);
+            maxActualTextWidth = Math.max(textWidth, maxActualTextWidth);
+            legendItems.add(legendItemTable);
+            //return getHeight(legendItemTable);
         }
-    
-        /**
-         * Display a legend or class block (name and icon(s) ).
-         * In not inline mode it's a line. 
-         * @param indent left indentation
-         * @param node the json node
-         * @param pdfFont the font used for the title
-         * @param lineSpace the top indent for the icons
-         * @param escapeOrphanTitle don't have orphan title
-         * @throws DocumentException
-         */
-        private void createLine(double indent, PJsonObject node, Font pdfFont,
-                float lineSpace, boolean escapeOrphanTitle, boolean defaultIconBeforeName) throws DocumentException {
-            final String name = node.getString("name");
-            final String icon = node.optString("icon");
-            final PJsonArray icons = node.optJSONArray("icons");
-    
-            Paragraph result = new Paragraph();
-            boolean iconBeforeName = node.optBool("iconBeforeName", defaultIconBeforeName);
-            if(iconBeforeName) {
-                result = addIconToParagraph(indent, lineSpace, icon, icons, result);
-                addTitleSeparator(indent, lineSpace, result);
-                addName(pdfFont, escapeOrphanTitle, name, result);
+
+        private PdfPTable getDefaultOuterTable(int numColumns) {
+            PdfPTable pdfPTable = new PdfPTable(numColumns);
+            if (!borders) {
+                pdfPTable.getDefaultCell().setBorder(PdfPCell.NO_BORDER);
+            }
+            pdfPTable.setWidthPercentage(100f);
+            pdfPTable.getDefaultCell().setPadding(0f);
+            pdfPTable.setSpacingAfter((float) spacingAfter);
+            return pdfPTable;
+        }
+
+        private void computeOptimumLegendItemWidths(LegendItemTable legendItem) throws DocumentException {
+            PdfPCell cells[] =  legendItem.getRow(0).getCells();
+            int numCells = cells.length;
+            leftCell = cells[0];
+            rightCell = null;
+            if (numCells > 1) {
+                rightCell = cells[1];
+            }
+            if (numCells == 1) {
+                absoluteWidths = new float[1];
+                absoluteWidths[0] = optimumTextCellWidth + optimumIconCellWidth;
             } else {
-                addName(pdfFont, escapeOrphanTitle, name, result);
-                addCell(indent, lineSpace, result);
-                result = new Paragraph();
-                result = addIconToParagraph(indent, lineSpace, icon, icons, result);
-                addTitleSeparator(indent, lineSpace, result);
-            }
-    
-    
-            if (!escapeOrphanTitle) {
-                column.addCell(title);
-                title = null;
-            }
-            
-        }
-
-        private void addName(Font pdfFont, boolean escapeOrphanTitle, final String name, Paragraph result) {
-            result.setFont(pdfFont);
-            result.add(name);
-            if (name.trim().length() > 0) {
-                BaseFont baseFont = pdfFont.getBaseFont();
-                float width = baseFont == null ? pdfFont.getSize() : baseFont.getWidthPoint(name, pdfFont.getSize());
-                if (escapeOrphanTitle) {
-                    currentCellHeight += pdfFont.getSize();
-                    cellWidth = Math.max(cellWidth, width);
-                }
-                else {
-                    currentColumnHeight += pdfFont.getSize();
-                    int index = columnsWidth.size() - 1;
-                    columnsWidth.set(index, Math.max(columnsWidth.get(index), width));
-                }
-            }
-    
-            if (title != null && getBackgroundColorVal(context, params) != null) {
-                title.setBackgroundColor(getBackgroundColorVal(context, params));
-            }
-        }
-
-        private void addTitleSeparator(double indent, float lineSpace, Paragraph result) {
-            if (title != null) {
-                column.addCell(title);
-            }
-            title = new PdfPCell(result);
-            title.setBorder(PdfPCell.NO_BORDER);
-            title.setPadding(0f);
-            title.setPaddingLeft((float)indent);
-            if (inline) {
-                title.setPaddingTop(lineSpace);
-            }
-        }
-
-        private Paragraph addIconToParagraph(double indent, float lineSpace, final String icon, final PJsonArray icons, Paragraph result)
-                throws DocumentException {
-            if (icon != null) {
-                result = createIcon(indent, lineSpace, icon, result);
-            }
-            if (icons != null) {
-                for (int i = 0; i < icons.size(); ++i) {
-                    String iconItem = icons.getString(i);
-                    result = createIcon(indent, i == 0 ? lineSpace : 0,
-                            iconItem, result);
-                }
-            }
-            return result;
-        }
-
-        /**
-         * Creates a legend icon
-         * @param indent left indentation
-         * @param lineSpace the top indent for the icons
-         * @param icon the icon to display
-         * @param result the element to add to
-         * @return the result for the next elements
-         * @throws DocumentException
-         */
-        private Paragraph createIcon(double indent, float lineSpace,
-                final String icon, Paragraph result) throws DocumentException {
-            try {
-                Chunk iconChunk = null;
-                if (icon.indexOf("image%2Fsvg%2Bxml") != -1) { // TODO: make this cleaner
-                    iconChunk = PDFUtils.createImageChunkFromSVG(context, icon, maxIconWidth, maxIconHeight);
+                absoluteWidths = new float[2];
+                if (legendItem.isIconBeforeName()) {
+                    absoluteWidths[0] = optimumIconCellWidth;
+                    absoluteWidths[1] = optimumTextCellWidth;
                 } else {
-                    iconChunk = PDFUtils.createImageChunk(context, maxIconWidth, maxIconHeight, scale, 
-                            URI.create(icon), 0f);
+                    absoluteWidths[0] = optimumTextCellWidth;
+                    absoluteWidths[1] = optimumIconCellWidth;
                 }
-                result.add(iconChunk);
-                if (!inline) {
-                    currentCellHeight += iconChunk.getImage().getPlainHeight() + lineSpace;
-                    cellWidth = Math.max(cellWidth, iconChunk.getImage().getPlainWidth());
-                    addCell(indent, lineSpace, result);
-                    result = new Paragraph();
-                }
-                else {
-                    result.add(" ");
-                }
-            } catch (IOException ioe) {
-                LOGGER.warn("Failed to load " + icon + " with " + ioe.getMessage());
-            } catch (InvalidValueException e) {
-                LOGGER.warn("Failed to create image chunk: " + e.getMessage());
             }
-            return result;
+            legendItem.setTotalWidth(absoluteWidths);
+            legendItem.setLockedWidth(true);
+            legendItem.setHorizontalAlignment(horizontalAlignment);
         }
 
-        /**
-         * Add an icon in the column as a cell.
-         * @param indent left indentation
-         * @param lineSpace the top indent for the icons
-         * @param icon the icon element to add
-         */
-        private void addCell(double indent, float lineSpace, final Paragraph icon) {
-            final PdfPCell cell = new PdfPCell(icon);
-            cell.setBorder(PdfPCell.NO_BORDER);
-            cell.setPadding(0f);
-            cell.setPaddingLeft((float) indent);
-    
-            if (getBackgroundColorVal(context, params) != null) {
-                cell.setBackgroundColor(getBackgroundColorVal(context, params));
-            }
-    
-            cell.setPaddingTop(lineSpace);
-            currentCellHeight += lineSpace;
-            if (!inline && maxHeight != 0 && (currentColumnHeight + currentCellHeight > maxHeight)) {
-                column = new PdfPTable(1);
-                column.setWidthPercentage(100f);
-                columns.add(column);
-                currentColumnHeight = 0;
-                columnsWidth.add(cellWidth);
-            }
-            else {
-                int index = columnsWidth.size() - 1;
-                columnsWidth.set(index, Math.max(columnsWidth.get(index), cellWidth));
-            }
-            cellWidth = 0;
-            currentColumnHeight += currentCellHeight;
-            currentCellHeight = 0;
-            if (title != null) {
-                column.addCell(title);
-                title = null;
-            }
-            column.addCell(cell);
+        private void setOptimumCellWidths(float maxColumnWidth) {
+            optimumIconCellWidth = Math.min(
+                    maxActualImageWidth + classIndentation,
+                    iconMaxWidth + classIndentation);
+            optimumTextCellWidth = Math.min(maxActualTextWidth, textMaxWidth);
+            // don't let the icon cell be bigger than half
+            optimumIconCellWidth = Math.min(optimumIconCellWidth, maxColumnWidth/2);
+            optimumTextCellWidth = Math.min(optimumTextCellWidth,
+                    maxColumnWidth - optimumIconCellWidth);
         }
     }
 
-    public void setMaxWidth(double maxWidth) {
-        this.maxWidth = maxWidth;
-        if (maxWidth < 0.0) throw new InvalidValueException("maxWidth", maxWidth);
+    /**
+     * set maximum width of legend items i.e. the legend tables
+     * @param maxWidth 
+     */
+    public void setMaxWidth(float maxWidth) {
+        this.maxWidth = getMaxValueIfZero(maxWidth, "maxWidth");
     }
 
-    public void setMaxHeight(double maxHeight) {
-        this.maxHeight = maxHeight;
-        if (maxHeight < 0.0) throw new InvalidValueException("maxHeight", maxHeight);
+    /**
+     * set maximum height of a legend column
+     * @param maxHeight if 0 means the column can be as hight as possible 
+     */
+    public void setMaxHeight(float maxHeight) {
+        this.maxHeight = getMaxValueIfZero(maxHeight, "maxHeight");
     }
 
+    /**
+     * 1.0 or null for no scaling &gt;1.0 to increase size,
+     * &lt; 1.0 to decrease
+     * @param scale scale icon/image by this
+     */
     public void setDefaultScale(double scale) {
         this.scale = (float)scale;
-        if (scale < 0.0) throw new InvalidValueException("scale", scale);
+        if (scale < 0.0) {
+            throw new InvalidValueException("scale", scale);
+        }
+        if (scale == 0f) {
+            this.scale = 1f;
+        }
     }
 
-    public void setInline(String inline) {
-        this.inline = "true".equalsIgnoreCase(inline);
-        if (!(inline.equalsIgnoreCase("true") || inline.equalsIgnoreCase("false"))) throw new InvalidValueException("inline", inline);
+    /**
+     * Whether legend icons/images should appear on the same line as 
+     * the legend text, has nothing to do with multi-column layout.
+     * @param inline true of false
+     */
+    public void setInline(boolean inline) {
+        this.inline = inline;
     }
     
-    public void setMaxIconWidth(double maxIconWidth) {
-        this.maxIconWidth = maxIconWidth;
-        if (maxIconWidth < 0.0) throw new InvalidValueException("maxIconWidth", maxIconWidth);
+    /**
+     * maximum width a legend icon/image can have
+     * currently SVG icons are scaled to fit this
+     * @param iconMaxWidth
+     */
+    public void setIconMaxWidth(float maxIconWidth) {
+        this.iconMaxWidth = maxIconWidth;
+        if (maxIconWidth < 0.0) {
+            throw new InvalidValueException("maxIconWidth", maxIconWidth);
+        }
+        if (maxIconWidth == 0f) {
+            this.iconMaxWidth = Float.MAX_VALUE;
+        }
     }
 
-    public void setMaxIconHeight(double maxIconHeight) {
-        this.maxIconHeight = maxIconHeight;
-        if (maxIconHeight < 0.0) throw new InvalidValueException("maxIconHeight", maxIconHeight);
+    /**
+     * maximum height of legend icon/image
+     * currently SVG icons get scaled to this
+     * if not present icons get scaled preserving ratio with iconMaxWidth
+     * @param iconMaxHeight float &gt;0.0
+     */
+    public void setIconMaxHeight(float maxIconHeight) {
+        this.iconMaxHeight = getMaxValueIfZero(maxIconHeight, "maxIconHeight");
     }
 
-    public void setClassIndentation(double classIndentation) {
+    /**
+     * horizontal indentation of class legend items
+     * @param classIndentation 
+     */
+    public void setClassIndentation(float classIndentation) {
         this.classIndentation = classIndentation;
-        if (classIndentation < 0.0) throw new InvalidValueException("classIndentation", classIndentation);
+        if (classIndentation < 0.0) {
+            throw new InvalidValueException("classIndentation", classIndentation);
+        }
     }
 
+    /**
+     * font of class legend items' texts
+     * @param classFont 
+     */
     public void setClassFont(String classFont) {
         this.classFont = classFont;
     }
 
-    public void setClassFontSize(double classFontSize) {
+    /**
+     * font size for class legend items' texts
+     * @param classFontSize 
+     */
+    public void setClassFontSize(float classFontSize) {
         this.classFontSize = classFontSize;
-        if (classFontSize < 0.0) throw new InvalidValueException("classFontSize", classFontSize);
+        if (classFontSize < 0.0) {
+            throw new InvalidValueException("classFontSize", classFontSize);
+        }
     }
 
     public String getClassFont() {
         return classFont;
     }
 
+    /**
+     * layers' texts font 
+     * @return Font used for layers' texts but not for classes
+     */
     protected Font getLayerPdfFont() {
         return FontFactory.getFont(layerFont, fontEncoding, (float) layerFontSize);
     }
 
+    /**
+     * classes' texts font
+     * @return Font used for class items
+     */
     protected Font getClassPdfFont() {
         return FontFactory.getFont(classFont, fontEncoding, (float) classFontSize);
     }
 
-    public void setLayerSpace(double layerSpace) {
+    /**
+     * vertical space AFTER the legend items
+     * @param layerSpace 
+     */
+    public void setLayerSpace(float layerSpace) {
         this.layerSpace = (float)layerSpace;
-        if (layerSpace < 0.0) throw new InvalidValueException("layerSpace", layerSpace);
+        if (layerSpace < 0.0) {
+            throw new InvalidValueException("layerSpace", layerSpace);
+        }
     }
 
-    public void setClassSpace(double classSpace) {
+    /**
+     * vertical space AFTER class legend items
+     * @param classSpace 
+     */
+    public void setClassSpace(float classSpace) {
         this.classSpace = (float)classSpace;
-        if (classSpace < 0.0) throw new InvalidValueException("classSpace", classSpace);
+        if (classSpace < 0.0) {
+            throw new InvalidValueException("classSpace", classSpace);
+        }
     }
 
+    /** 
+     * @param layerFont Font name used for layer items, not classes
+     */
     public void setLayerFont(String layerFont) {
         this.layerFont = layerFont;
     }
 
-    public void setLayerFontSize(double layerFontSize) {
+    /**
+     * @param layerFontSize font size used for layer items
+     */
+    public void setLayerFontSize(float layerFontSize) {
         this.layerFontSize = layerFontSize;
-        if (layerFontSize < 0.0) throw new InvalidValueException("layerFontSize", layerFontSize);
+        if (layerFontSize < 0.0) {
+            throw new InvalidValueException("layerFontSize", layerFontSize);
+        }
     }
 
+    /**
+     * Font encoding
+     * @param fontEncoding 
+     */
     public void setFontEncoding(String fontEncoding) {
         this.fontEncoding = fontEncoding;
     }
     
-    public void setColumnMargin(double columnMargin) {
-        this.columnMargin = columnMargin;
+    /**
+     * CSS style margin of each legend column
+     * @param columnMargin 
+     */
+    public void setColumnMargin(String columnMargin) {
+        this.columnPadding = getFloatCssValues(columnMargin);
+    }
+
+    /**
+     * set the horizontal alignment of legend items inside the table
+     * and the table itself
+     * @param value left|center|right
+     */
+    public void setHorizontalAlignment(String value) {
+        if (value.equalsIgnoreCase("left")) {
+            this.horizontalAlignment = Element.ALIGN_LEFT;
+        } else if (value.equalsIgnoreCase("right")) {
+            this.horizontalAlignment = Element.ALIGN_RIGHT;
+        }
+    }
+
+    /**
+     * CSS style padding around legend icon/image
+     * @param values 
+     */
+    public void setIconPadding(String values) {
+        this.iconPadding = getFloatCssValues(values);
+    }
+
+    /**
+     * CSS style padding around legend text/name
+     * @param values 
+     */
+    public void setTextPadding(String values) {
+        this.textPadding = getFloatCssValues(values);
+    }
+
+    /**
+     * get CSS like values for padding
+     * @param values space separated floating point values
+     * @return css padding like array of floats
+     */
+    private float[] getFloatCssValues(String values) {
+        float result[] = {0f,0f,0f,0f};
+        String topRightBottomLeft[] = values.split(" ");
+        int len = topRightBottomLeft.length > 4 ? 4 : topRightBottomLeft.length;
+        switch (len) {
+            default:
+            case 1:
+                for (int i = 0; i < 4; ++i) {
+                    result[i] = Float.parseFloat(topRightBottomLeft[0]);
+                }
+                break;
+            case 2:
+                result[0] = result[2] = Float.parseFloat(topRightBottomLeft[0]);
+                result[1] = result[3] = Float.parseFloat(topRightBottomLeft[1]);
+                break;
+            case 3:
+                result[0] = Float.parseFloat(topRightBottomLeft[0]);
+                result[1] = result[3] = Float.parseFloat(topRightBottomLeft[1]);
+                result[2] = Float.parseFloat(topRightBottomLeft[3]);
+                break;
+            case 4:
+                for (int i = 0; i < len; ++i) {
+                    float val = Float.parseFloat(topRightBottomLeft[i]);
+                    result[i] = val;
+                }
+                break;
+        }
+        return result;
+    }
+
+    /**
+     * Do we have borders for debugging?
+     * @param value 
+     */
+    public void setBorders(boolean value) {
+        this.borders = value;
+    }
+    
+    /**
+     * UNUSED (for now)
+     * @param textMaxHeight the textMaxHeight to set
+     */
+    /*
+    public void setTextMaxHeight(double textMaxHeight) {
+        this.textMaxHeight = getMaxValueIfZero((float) textMaxHeight, "textMaxHeight");
+    }
+    */
+    
+    /**
+     * @param textMaxWidth the textMaxWidth to set
+     */
+    public void setTextMaxWidth(float textMaxWidth) {
+        this.textMaxWidth = getMaxValueIfZero(textMaxWidth, "textMaxWidth");
+    }
+
+    /**
+     * @param layerSpaceBefore the layerSpaceBefore to set
+     */
+    public void setLayerSpaceBefore(double layerSpaceBefore) {
+        if (layerSpaceBefore < 0.0f) {
+            throw new InvalidValueException("layerSpaceBefore", layerSpaceBefore);
+        }
+        this.layerSpaceBefore = (float) layerSpaceBefore;
     }
 }

@@ -396,3 +396,13 @@ task minify(dependsOn: [generateProguardConfigFile]) << {
   ant.proguard(configuration: proguardConfig)
 }
 minify.description = 'Minify standalone jar, not yet functioning'
+
+/*
+task debug(type: JettyRun) {
+    //httpPort = 8080
+    scanTargets = (fileTree("src/main/").include("webapp/WEB-INF/**") + fileTree(compileJava.destinationDir)).files
+    reload = 'manual'
+    jettyConfig = file('jetty-debug.xml')
+    //jettyEnvXml = file('jetty-debug.xml')
+}
+*/

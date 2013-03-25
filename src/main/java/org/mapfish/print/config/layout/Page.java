@@ -71,6 +71,7 @@ public class Page {
                 Block block = items.get(i);
                 if (block.isVisible(context, params)) {
                     block.render(params, new Block.PdfElement() {
+                        @Override
                         public void add(Element element) throws DocumentException {
                             doc.add(element);
                         }
