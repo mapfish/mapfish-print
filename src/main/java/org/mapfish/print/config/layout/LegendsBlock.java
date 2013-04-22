@@ -38,6 +38,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import org.apache.log4j.Logger;
+import org.json.JSONException;
 import org.mapfish.print.InvalidValueException;
 import org.mapfish.print.PDFUtils;
 import org.mapfish.print.RenderingContext;
@@ -137,6 +138,7 @@ public class LegendsBlock extends Block {
         private PdfPCell leftCell;
         private PdfPCell rightCell;
         private float[] absoluteWidths;
+        private boolean needTempDocument = true;
 
         /**
          * Construct
@@ -147,7 +149,18 @@ public class LegendsBlock extends Block {
             column = getDefaultOuterTable(1);
             columns.add(column);
             this.context = context;
-            makeTempDocument(); // need this to calculate widths and heights of elements!
+            try {
+                if (params.getInternalObj().getJSONArray("legends").length() == 0) {
+                    // this prevents a bug when there are no legends
+                    needTempDocument = false;
+                }
+            } catch (JSONException e) {
+                // if there is no legends block, we don't need to do anything
+                needTempDocument = false;
+            }
+            if (needTempDocument) {
+                makeTempDocument(); // need this to calculate widths and heights of elements!
+            }
         }
         
         public void render(PdfElement target) throws DocumentException {
@@ -316,6 +329,9 @@ public class LegendsBlock extends Block {
          * @throws DocumentException 
          */
         private void cleanup() throws DocumentException {
+            if (!needTempDocument) {
+                return;
+            }
             try {
                 tempDocument.close();
                 writer.close();
@@ -369,27 +385,44 @@ public class LegendsBlock extends Block {
                 throws DocumentException {
             final String name = node.getString("name"); // legend text
             final String icon = node.optString("icon"); // legend image
+            final PJsonArray iconsArray = node.optJSONArray("icons");
+            final int iconsSize = iconsArray == null ? 0 : iconsArray.size();
+            final String icons[] = new String[iconsSize];
+            final boolean haveNoIcon = icon == null && iconsSize == 0;
             final String iconScaleString = node.optString("scale", ""+ scale); // legend image
             final float iconScale = Float.parseFloat(iconScaleString);
             //final PJsonArray icons = node.optJSONArray("icons"); // UNUSED, please check what this should be doing!
             boolean iconBeforeName = node.optBool("iconBeforeName", defaultIconBeforeName);
     
+            for (int i = -1; ++i < iconsSize;) {
+                icons[i] = iconsArray.getString(i);
+            }
+            
             Phrase imagePhrase = new Phrase();
             Chunk iconChunk;
-            if (icon != null) {
+            float imageWidth = 0f;
+            if (iconsSize > 0) {
+                for (String myIcon : icons) {
+                    iconChunk = createImageChunk(context, 
+                            myIcon, iconMaxWidth, iconMaxHeight, iconScale);
+                    imagePhrase.add(iconChunk);
+                    imageWidth += iconChunk.getImage().getPlainWidth();
+                }
+            } else if (icon != null) {
                 iconChunk = createImageChunk(context, icon, iconMaxWidth,
                         iconMaxHeight, iconScale);
+                imagePhrase.add(iconChunk);
+                imageWidth = iconChunk.getImage().getPlainWidth();
             } else {
-                iconChunk = new Chunk(""); 
+                iconChunk = new Chunk("");
+                imagePhrase.add(iconChunk);
             }
-            imagePhrase.add(iconChunk);
             
             Phrase namePhrase = new Phrase();
             namePhrase.setFont(pdfFont);
             namePhrase.add(name);
             
             float textWidth = getTextWidth(name, pdfFont);
-            float imageWidth = icon == null ? 0f : iconChunk.getImage().getPlainWidth();
             
             int columnsWidthSize = columnsWidth.size();
             float maxWidthF = textWidth + imageWidth; // total with of legend item
@@ -403,7 +436,7 @@ public class LegendsBlock extends Block {
             
             absoluteWidths = null;
             LegendItemTable legendItemTable = null;
-            if (icon == null) {
+            if (haveNoIcon) {
                 legendItemTable = new LegendItemTable(1);
                 absoluteWidths = new float[1];
                 absoluteWidths[0] = textMaxWidth + iconMaxWidth + 
@@ -421,7 +454,7 @@ public class LegendsBlock extends Block {
             legendItemTable.setTotalWidth(absoluteWidths);
             legendItemTable.getDefaultCell().setPadding(0f);
             PdfPCell imageCell = null;
-            if (icon != null) {
+            if (!haveNoIcon) {
                 imageCell = new PdfPCell(imagePhrase);
                 /**
                  * CSS like padding for icons:
@@ -445,7 +478,7 @@ public class LegendsBlock extends Block {
              * If there is no icon we need to add the left indent to the name
              * column. Also if the icon is not before the text!
              */
-            float indentLeft = icon == null || !iconBeforeName ? (float) indent : 0f;
+            float indentLeft = haveNoIcon || !iconBeforeName ? (float) indent : 0f;
 
             legendItemTable.setSpaceBefore(spaceBefore);
             /**
