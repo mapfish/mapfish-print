@@ -39,7 +39,6 @@ dependencies {
 
   proguard 'net.sf.proguard:proguard:4.4'
 }
-
 manifest.mainAttributes('Main-Class':'org.mapfish.print.ShellMapPrinter', 'Build-Time': new Date().getDateTimeString())
 
 sourceCompatibility = 1.6
@@ -249,6 +248,10 @@ if (Boolean.parseBoolean(enablePublishing)) {
       }
     }
   }
+} else {
+	uploadArchives << {
+		throw new IllegalStateException("Cannot upload archives because enablePublishing property is not true.  It is $enablePublishing")
+	}
 }
 
 /*

@@ -1,0 +1,3 @@
+ * Legend consistency, reimplementation 
+  * https://github.com/mapfish/mapfish-print/issues/33
+  * https://github.com/mapfish/mapfish-print/pull/40
