@@ -80,7 +80,7 @@ public class PDFUtils {
     public static Image getImage(RenderingContext context, URI uri, float w, float h) throws IOException, DocumentException {
         return getImage(context, uri, w, h, 0f);
     }
-    
+
     /**
      * Gets an iText image with a cache that uses PdfTemplates to re-use the same
      * bitmap content multiple times in order to reduce the file size.
@@ -204,7 +204,7 @@ public class PDFUtils {
                             context.getConfig().localHostForwardIsHttps2http()) {
                         scheme = "http";
                     }
-                    URL url = new URL(scheme, "localhost", uri.getPort(), 
+                    URL url = new URL(scheme, "localhost", uri.getPort(),
                             uri.getPath() + "?" + uri.getQuery());
 
                     HttpURLConnection connexion = (HttpURLConnection)url.openConnection();
@@ -391,7 +391,7 @@ public class PDFUtils {
     }
 
     private static final Pattern FORMAT_PATTERN = Pattern.compile("^format\\s+(%[-+# 0,(]*\\d*(\\.\\d*)?(d))\\s+(.*)$");
-    
+
     public static String getValueFromString(String val) {
     	String str = val;
         while (true) {
@@ -407,7 +407,7 @@ public class PDFUtils {
         }
     	return str;
     }
-    
+
     private static String getDateValue(String key) {
     	String val = "";
         if (key.equals("now")) {
@@ -484,7 +484,7 @@ public class PDFUtils {
             return new Date().toString();
         }
     }
-    
+
     private static String formatTime(String key) throws IllegalArgumentException {
         SimpleDateFormat format = new SimpleDateFormat(key.substring(4));
         return format.format(new Date());
@@ -645,17 +645,17 @@ public class PDFUtils {
 		}
 		return myOffset;
 	}
-	
-	public static Chunk createImageChunkFromSVG(RenderingContext context, 
-            String iconItem, 
-            double maxIconWidth, 
+
+	public static Chunk createImageChunkFromSVG(RenderingContext context,
+            String iconItem,
+            double maxIconWidth,
             double maxIconHeight,
             double scale) throws IOException {
-		return new Chunk(PDFUtils.createImageFromSVG(context, iconItem, 
-                maxIconWidth, maxIconHeight, scale), 0f, 0f, true);		
+		return new Chunk(PDFUtils.createImageFromSVG(context, iconItem,
+                maxIconWidth, maxIconHeight, scale), 0f, 0f, true);
 	}
 
-	public static Image createImageFromSVG(RenderingContext context, 
+	public static Image createImageFromSVG(RenderingContext context,
             String iconItem, double maxIconWidth, double maxIconHeight,
             double scale) throws IOException {
         Image image = null;

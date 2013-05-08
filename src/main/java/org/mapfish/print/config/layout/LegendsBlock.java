@@ -69,7 +69,7 @@ public class LegendsBlock extends Block {
     private float textMaxWidth = Float.MAX_VALUE;
     //private float textMaxHeight = Float.MAX_VALUE; // UNUSED for now!
     private float textPadding[] = {0f,0f,0f,0f};
-    
+
     private float scale = 1f; // 1 means disable
     private boolean inline = true;
     private float classIndentation = 20;
@@ -82,15 +82,15 @@ public class LegendsBlock extends Block {
     private String classFont = "Helvetica";
     protected float classFontSize = 8;
     private String fontEncoding = BaseFont.WINANSI;
-    
+
     private int horizontalAlignment = Element.ALIGN_CENTER;
     private float[] columnPadding = {0f,0f,0f,0f};
-    
+
     /**
      * Render the legends block
      * @see org.mapfish.print.config.layout.Block#render(
-     *              org.mapfish.print.utils.PJsonObject, 
-     *              org.mapfish.print.config.layout.Block.PdfElement, 
+     *              org.mapfish.print.utils.PJsonObject,
+     *              org.mapfish.print.config.layout.Block.PdfElement,
      *              org.mapfish.print.RenderingContext)
      */
     @Override
@@ -104,12 +104,12 @@ public class LegendsBlock extends Block {
      * @author Stéphane Brunner
      */
     private class Renderer {
-        /* 
+        /*
          * need these to calculate widths/heights of output
-         * 
+         *
          * For example a cell could contain the text "Hello World"
-         * while it is the equivalent of 7 characters wide "World" would 
-         * be wrapped onto the next line which would make the height 
+         * while it is the equivalent of 7 characters wide "World" would
+         * be wrapped onto the next line which would make the height
          * calculation complicated if not actually rendered onto a page.
          * This is important for long legend texts which wrap.
          */
@@ -118,14 +118,14 @@ public class LegendsBlock extends Block {
         private PdfWriter writer;
 
         private RenderingContext context;
-        
+
         // all the pdf columns
         private ArrayList<PdfPTable> columns = new ArrayList<PdfPTable>();
         // all the columns width
         private ArrayList<Float> columnsWidth = new ArrayList<Float>();
         // the current column
         private PdfPTable column;
-        // the current column height 
+        // the current column height
         private int currentColumnIndex = 0;
         private float maxActualImageWidth = 0;
         private float maxActualTextWidth = 0;
@@ -162,7 +162,7 @@ public class LegendsBlock extends Block {
                 makeTempDocument(); // need this to calculate widths and heights of elements!
             }
         }
-        
+
         public void render(PdfElement target) throws DocumentException {
             //float optimumTextWidthWithoutIcon = 0f;
             int numColumns = 1;
@@ -177,7 +177,7 @@ public class LegendsBlock extends Block {
                     createLegend(legends.getJSONObject(i), i == 0);
                 }
                 setOptimumCellWidths(maxColumnWidth);
-                
+
                 float totalHeight = 0f;
                 for (int i = 0, len = legendItems.size(); i < len; ++i) {
                     LegendItemTable legendItem = legendItems.get(i);
@@ -210,7 +210,7 @@ public class LegendsBlock extends Block {
                         if (maxColumnWidth < optimumIconCellWidth +
                                 optimumTextCellWidth) {
                             /**
-                             * clear out the table and start new, because the 
+                             * clear out the table and start new, because the
                              * maxColumnWidth has changed!
                              */
                             column = getDefaultOuterTable(1);
@@ -253,7 +253,7 @@ public class LegendsBlock extends Block {
             target.add(table);
             cleanup(); // don't forget to cleanup afterwards
         }
-        
+
         /**
          * get width of text on the page with font
          * @param myString any string printed on the page
@@ -262,8 +262,8 @@ public class LegendsBlock extends Block {
          */
         private float getTextWidth(String myString, Font pdfFont) {
             BaseFont baseFont = pdfFont.getBaseFont();
-            float width = baseFont == null ? 
-                    new Chunk(myString).getWidthPoint() : 
+            float width = baseFont == null ?
+                    new Chunk(myString).getWidthPoint() :
                     baseFont.getWidthPoint(myString, pdfFont.getSize());
             return width;
         }
@@ -275,22 +275,22 @@ public class LegendsBlock extends Block {
          * @param iconMaxWidth width of the chunk
          * @param iconMaxHeight height of the chunk
          * @return Chunk with image in it
-         * @throws DocumentException 
+         * @throws DocumentException
          */
-        private Chunk createImageChunk(RenderingContext context, 
-                String iconItem, 
-                float maxIconWidth, 
+        private Chunk createImageChunk(RenderingContext context,
+                String iconItem,
+                float maxIconWidth,
                 float maxIconHeight,
                 float scale) throws DocumentException {
             Chunk iconChunk = null;
             try {
                 if (iconItem.indexOf("image%2Fsvg%2Bxml") != -1) { // TODO: make this cleaner
                     iconChunk = PDFUtils.createImageChunkFromSVG(
-                            context, iconItem, 
+                            context, iconItem,
                             maxIconWidth, maxIconHeight, scale);
                 } else {
-                    iconChunk = PDFUtils.createImageChunk(context, 
-                            maxIconWidth, maxIconHeight, scale, 
+                    iconChunk = PDFUtils.createImageChunk(context,
+                            maxIconWidth, maxIconHeight, scale,
                             URI.create(iconItem), 0f);
                 }
             } catch (IOException e) {
@@ -302,7 +302,7 @@ public class LegendsBlock extends Block {
         /**
          * creates a "real" PDF document to draw on to be able to calculate
          * correct widths of text etc
-         * @throws DocumentException 
+         * @throws DocumentException
          */
         private void makeTempDocument() throws DocumentException {
             try {
@@ -312,7 +312,7 @@ public class LegendsBlock extends Block {
                         "mapfish-print-tmp-"+ time +".pdf";
                 // Unfortunately have to open an actual file on disk
                 // for the calculations to work properly
-                writer = PdfWriter.getInstance(tempDocument, 
+                writer = PdfWriter.getInstance(tempDocument,
                         new FileOutputStream(tempFilename));
                 tempDocument.open();
             } catch (FileNotFoundException e) {
@@ -326,7 +326,7 @@ public class LegendsBlock extends Block {
 
         /**
          * delete the temporary file needed for dimensions' calculations
-         * @throws DocumentException 
+         * @throws DocumentException
          */
         private void cleanup() throws DocumentException {
             if (!needTempDocument) {
@@ -347,7 +347,7 @@ public class LegendsBlock extends Block {
          * get the height in points when printed onto the temporary document
          * @param element any PDF element
          * @return height in points
-         * @throws DocumentException 
+         * @throws DocumentException
          */
         private float getHeight(Element element) throws DocumentException {
             tempDocument.add(element);
@@ -361,27 +361,27 @@ public class LegendsBlock extends Block {
         }
 
         /**
-         * create the legend for a layer json object 
+         * create the legend for a layer json object
          * @param layer JSON object
          * @param isFirst only do some things on the first item
-         * @throws DocumentException 
+         * @throws DocumentException
          */
-        private void createLegend(PJsonObject layer, boolean isFirst) 
+        private void createLegend(PJsonObject layer, boolean isFirst)
                 throws DocumentException {
             Font layerPdfFont = getLayerPdfFont();
             Font classPdfFont = getClassPdfFont();
-            createTableLine(0.0f, layer, layerPdfFont, 
+            createTableLine(0.0f, layer, layerPdfFont,
                     layerSpace, true, isFirst ? 0f : layerSpaceBefore);
             PJsonArray classes = layer.getJSONArray("classes");
             for (int j = 0; j < classes.size(); ++j) {
                 PJsonObject clazz = classes.getJSONObject(j);
-                createTableLine(classIndentation, 
+                createTableLine(classIndentation,
                         clazz, classPdfFont, classSpace, true, 0f);
             }
         }
 
         private void createTableLine(float indent, PJsonObject node, Font pdfFont,
-                float lineSpace, boolean defaultIconBeforeName, float spaceBefore) 
+                float lineSpace, boolean defaultIconBeforeName, float spaceBefore)
                 throws DocumentException {
             final String name = node.getString("name"); // legend text
             final String icon = node.optString("icon"); // legend image
@@ -393,17 +393,17 @@ public class LegendsBlock extends Block {
             final float iconScale = Float.parseFloat(iconScaleString);
             //final PJsonArray icons = node.optJSONArray("icons"); // UNUSED, please check what this should be doing!
             boolean iconBeforeName = node.optBool("iconBeforeName", defaultIconBeforeName);
-    
+
             for (int i = -1; ++i < iconsSize;) {
                 icons[i] = iconsArray.getString(i);
             }
-            
+
             Phrase imagePhrase = new Phrase();
             Chunk iconChunk;
             float imageWidth = 0f;
             if (iconsSize > 0) {
                 for (String myIcon : icons) {
-                    iconChunk = createImageChunk(context, 
+                    iconChunk = createImageChunk(context,
                             myIcon, iconMaxWidth, iconMaxHeight, iconScale);
                     imagePhrase.add(iconChunk);
                     imageWidth += iconChunk.getImage().getPlainWidth();
@@ -417,13 +417,13 @@ public class LegendsBlock extends Block {
                 iconChunk = new Chunk("");
                 imagePhrase.add(iconChunk);
             }
-            
+
             Phrase namePhrase = new Phrase();
             namePhrase.setFont(pdfFont);
             namePhrase.add(name);
-            
+
             float textWidth = getTextWidth(name, pdfFont);
-            
+
             int columnsWidthSize = columnsWidth.size();
             float maxWidthF = textWidth + imageWidth; // total with of legend item
             if (columnsWidthSize <= currentColumnIndex) {// need to add
@@ -433,19 +433,19 @@ public class LegendsBlock extends Block {
                 maxWidthF = Math.max(columnsWidth.get(0), maxWidthF);
                 columnsWidth.set(0, Math.min(maxWidth, maxWidthF));
             }
-            
+
             absoluteWidths = null;
             LegendItemTable legendItemTable = null;
             if (haveNoIcon) {
                 legendItemTable = new LegendItemTable(1);
                 absoluteWidths = new float[1];
-                absoluteWidths[0] = textMaxWidth + iconMaxWidth + 
+                absoluteWidths[0] = textMaxWidth + iconMaxWidth +
                         iconPadding[1] + iconPadding[3] +
                         textPadding[1] + textPadding[3];
             } else {
                 legendItemTable = new LegendItemTable(2);
                 absoluteWidths = new float[2];
-                absoluteWidths[0] = iconMaxWidth + 
+                absoluteWidths[0] = iconMaxWidth +
                         iconPadding[1] + iconPadding[3];
                 absoluteWidths[1] = textMaxWidth +
                         textPadding[1] + textPadding[3];
@@ -489,14 +489,14 @@ public class LegendsBlock extends Block {
             nameCell.setPaddingRight(textPadding[1]);
             nameCell.setPaddingBottom(lineSpace + textPadding[2]);
             nameCell.setPaddingLeft(indentLeft + textPadding[3]);
-            
+
             if (!iconBeforeName) {
                 nameCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
             }
             if (!borders) {
                 nameCell.setBorder(PdfPCell.NO_BORDER);
             }
-            
+
             if (inline) {
                 if (iconBeforeName) {
                     if (imageCell != null) {
@@ -581,7 +581,7 @@ public class LegendsBlock extends Block {
 
     /**
      * set maximum width of legend items i.e. the legend tables
-     * @param maxWidth 
+     * @param maxWidth
      */
     public void setMaxWidth(float maxWidth) {
         this.maxWidth = getMaxValueIfZero(maxWidth, "maxWidth");
@@ -589,7 +589,7 @@ public class LegendsBlock extends Block {
 
     /**
      * set maximum height of a legend column
-     * @param maxHeight if 0 means the column can be as hight as possible 
+     * @param maxHeight if 0 means the column can be as hight as possible
      */
     public void setMaxHeight(float maxHeight) {
         this.maxHeight = getMaxValueIfZero(maxHeight, "maxHeight");
@@ -611,14 +611,14 @@ public class LegendsBlock extends Block {
     }
 
     /**
-     * Whether legend icons/images should appear on the same line as 
+     * Whether legend icons/images should appear on the same line as
      * the legend text, has nothing to do with multi-column layout.
      * @param inline true of false
      */
     public void setInline(boolean inline) {
         this.inline = inline;
     }
-    
+
     /**
      * maximum width a legend icon/image can have
      * currently SVG icons are scaled to fit this
@@ -646,7 +646,7 @@ public class LegendsBlock extends Block {
 
     /**
      * horizontal indentation of class legend items
-     * @param classIndentation 
+     * @param classIndentation
      */
     public void setClassIndentation(float classIndentation) {
         this.classIndentation = classIndentation;
@@ -657,7 +657,7 @@ public class LegendsBlock extends Block {
 
     /**
      * font of class legend items' texts
-     * @param classFont 
+     * @param classFont
      */
     public void setClassFont(String classFont) {
         this.classFont = classFont;
@@ -665,7 +665,7 @@ public class LegendsBlock extends Block {
 
     /**
      * font size for class legend items' texts
-     * @param classFontSize 
+     * @param classFontSize
      */
     public void setClassFontSize(float classFontSize) {
         this.classFontSize = classFontSize;
@@ -679,7 +679,7 @@ public class LegendsBlock extends Block {
     }
 
     /**
-     * layers' texts font 
+     * layers' texts font
      * @return Font used for layers' texts but not for classes
      */
     protected Font getLayerPdfFont() {
@@ -696,7 +696,7 @@ public class LegendsBlock extends Block {
 
     /**
      * vertical space AFTER the legend items
-     * @param layerSpace 
+     * @param layerSpace
      */
     public void setLayerSpace(float layerSpace) {
         this.layerSpace = (float)layerSpace;
@@ -707,7 +707,7 @@ public class LegendsBlock extends Block {
 
     /**
      * vertical space AFTER class legend items
-     * @param classSpace 
+     * @param classSpace
      */
     public void setClassSpace(float classSpace) {
         this.classSpace = (float)classSpace;
@@ -716,7 +716,7 @@ public class LegendsBlock extends Block {
         }
     }
 
-    /** 
+    /**
      * @param layerFont Font name used for layer items, not classes
      */
     public void setLayerFont(String layerFont) {
@@ -735,15 +735,15 @@ public class LegendsBlock extends Block {
 
     /**
      * Font encoding
-     * @param fontEncoding 
+     * @param fontEncoding
      */
     public void setFontEncoding(String fontEncoding) {
         this.fontEncoding = fontEncoding;
     }
-    
+
     /**
      * CSS style margin of each legend column
-     * @param columnMargin 
+     * @param columnMargin
      */
     public void setColumnMargin(String columnMargin) {
         this.columnPadding = getFloatCssValues(columnMargin);
@@ -764,7 +764,7 @@ public class LegendsBlock extends Block {
 
     /**
      * CSS style padding around legend icon/image
-     * @param values 
+     * @param values
      */
     public void setIconPadding(String values) {
         this.iconPadding = getFloatCssValues(values);
@@ -772,7 +772,7 @@ public class LegendsBlock extends Block {
 
     /**
      * CSS style padding around legend text/name
-     * @param values 
+     * @param values
      */
     public void setTextPadding(String values) {
         this.textPadding = getFloatCssValues(values);
@@ -815,12 +815,12 @@ public class LegendsBlock extends Block {
 
     /**
      * Do we have borders for debugging?
-     * @param value 
+     * @param value
      */
     public void setBorders(boolean value) {
         this.borders = value;
     }
-    
+
     /**
      * UNUSED (for now)
      * @param textMaxHeight the textMaxHeight to set
@@ -830,7 +830,7 @@ public class LegendsBlock extends Block {
         this.textMaxHeight = getMaxValueIfZero((float) textMaxHeight, "textMaxHeight");
     }
     */
-    
+
     /**
      * @param textMaxWidth the textMaxWidth to set
      */
