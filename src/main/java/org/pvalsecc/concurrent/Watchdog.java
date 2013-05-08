@@ -40,7 +40,7 @@ public abstract class Watchdog implements Runnable {
 
     private boolean stop = false;
 
-    private Set<Sheep> sheeps = new HashSet();
+    private Set<Sheep> sheeps = new HashSet<Sheep>();
 
     private final long watchdogPeriod;
 
