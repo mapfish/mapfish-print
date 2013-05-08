@@ -149,13 +149,9 @@ public class LegendsBlock extends Block {
             column = getDefaultOuterTable(1);
             columns.add(column);
             this.context = context;
-            try {
-                if (params.getInternalObj().getJSONArray("legends").length() == 0) {
-                    // this prevents a bug when there are no legends
-                    needTempDocument = false;
-                }
-            } catch (JSONException e) {
-                // if there is no legends block, we don't need to do anything
+            PJsonArray legends = context.getGlobalParams().optJSONArray("legends");
+            if (legends == null || legends.size() == 0) {
+                // this prevents a bug when there are no legends
                 needTempDocument = false;
             }
             if (needTempDocument) {
