@@ -579,16 +579,16 @@ public class LegendsBlock extends Block {
      * set maximum width of legend items i.e. the legend tables
      * @param maxWidth
      */
-    public void setMaxWidth(float maxWidth) {
-        this.maxWidth = getMaxValueIfZero(maxWidth, "maxWidth");
+    public void setMaxWidth(double maxWidth) {
+        this.maxWidth = getMaxValueIfZero((float)maxWidth, "maxWidth");
     }
 
     /**
      * set maximum height of a legend column
      * @param maxHeight if 0 means the column can be as hight as possible
      */
-    public void setMaxHeight(float maxHeight) {
-        this.maxHeight = getMaxValueIfZero(maxHeight, "maxHeight");
+    public void setMaxHeight(double maxHeight) {
+        this.maxHeight = getMaxValueIfZero((float)maxHeight, "maxHeight");
     }
 
     /**
@@ -620,8 +620,8 @@ public class LegendsBlock extends Block {
      * currently SVG icons are scaled to fit this
      * @param iconMaxWidth
      */
-    public void setIconMaxWidth(float maxIconWidth) {
-        this.iconMaxWidth = maxIconWidth;
+    public void setIconMaxWidth(double maxIconWidth) {
+        this.iconMaxWidth = (float)maxIconWidth;
         if (maxIconWidth < 0.0) {
             throw new InvalidValueException("maxIconWidth", maxIconWidth);
         }
@@ -636,16 +636,16 @@ public class LegendsBlock extends Block {
      * if not present icons get scaled preserving ratio with iconMaxWidth
      * @param iconMaxHeight float &gt;0.0
      */
-    public void setIconMaxHeight(float maxIconHeight) {
-        this.iconMaxHeight = getMaxValueIfZero(maxIconHeight, "maxIconHeight");
+    public void setIconMaxHeight(double maxIconHeight) {
+        this.iconMaxHeight = getMaxValueIfZero((float)maxIconHeight, "maxIconHeight");
     }
 
     /**
      * horizontal indentation of class legend items
      * @param classIndentation
      */
-    public void setClassIndentation(float classIndentation) {
-        this.classIndentation = classIndentation;
+    public void setClassIndentation(double classIndentation) {
+        this.classIndentation = (float)classIndentation;
         if (classIndentation < 0.0) {
             throw new InvalidValueException("classIndentation", classIndentation);
         }
@@ -663,8 +663,8 @@ public class LegendsBlock extends Block {
      * font size for class legend items' texts
      * @param classFontSize
      */
-    public void setClassFontSize(float classFontSize) {
-        this.classFontSize = classFontSize;
+    public void setClassFontSize(double classFontSize) {
+        this.classFontSize = (float)classFontSize;
         if (classFontSize < 0.0) {
             throw new InvalidValueException("classFontSize", classFontSize);
         }
@@ -694,7 +694,7 @@ public class LegendsBlock extends Block {
      * vertical space AFTER the legend items
      * @param layerSpace
      */
-    public void setLayerSpace(float layerSpace) {
+    public void setLayerSpace(double layerSpace) {
         this.layerSpace = (float)layerSpace;
         if (layerSpace < 0.0) {
             throw new InvalidValueException("layerSpace", layerSpace);
@@ -705,7 +705,7 @@ public class LegendsBlock extends Block {
      * vertical space AFTER class legend items
      * @param classSpace
      */
-    public void setClassSpace(float classSpace) {
+    public void setClassSpace(double classSpace) {
         this.classSpace = (float)classSpace;
         if (classSpace < 0.0) {
             throw new InvalidValueException("classSpace", classSpace);
@@ -722,8 +722,8 @@ public class LegendsBlock extends Block {
     /**
      * @param layerFontSize font size used for layer items
      */
-    public void setLayerFontSize(float layerFontSize) {
-        this.layerFontSize = layerFontSize;
+    public void setLayerFontSize(double layerFontSize) {
+        this.layerFontSize = (float)layerFontSize;
         if (layerFontSize < 0.0) {
             throw new InvalidValueException("layerFontSize", layerFontSize);
         }
@@ -830,8 +830,8 @@ public class LegendsBlock extends Block {
     /**
      * @param textMaxWidth the textMaxWidth to set
      */
-    public void setTextMaxWidth(float textMaxWidth) {
-        this.textMaxWidth = getMaxValueIfZero(textMaxWidth, "textMaxWidth");
+    public void setTextMaxWidth(double textMaxWidth) {
+        this.textMaxWidth = getMaxValueIfZero((float)textMaxWidth, "textMaxWidth");
     }
 
     /**
