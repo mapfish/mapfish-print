@@ -372,7 +372,7 @@ public class LegendsBlock extends Block {
             for (int j = 0; j < classes.size(); ++j) {
                 PJsonObject clazz = classes.getJSONObject(j);
                 createTableLine(classIndentation,
-                        clazz, classPdfFont, classSpace, true, 0f);
+                        clazz, classPdfFont, classSpace, inline, 0f);
             }
         }
 
@@ -486,7 +486,7 @@ public class LegendsBlock extends Block {
             nameCell.setPaddingBottom(lineSpace + textPadding[2]);
             nameCell.setPaddingLeft(indentLeft + textPadding[3]);
 
-            if (!iconBeforeName) {
+            if (!iconBeforeName && inline) {
                 nameCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
             }
             if (!borders) {
