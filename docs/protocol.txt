@@ -103,7 +103,7 @@ The "SPEC" parameter is a JSON structure like that:
                     }
                 ],
                 name: 'a class name'
-            }        
+            }
         ]
     }
 
@@ -115,7 +115,7 @@ The print module will use the nearest scale and will make sure the aspect ratio 
 
 The geodetic parameter can be set to true so the scale of geodetic layers can correctly be calculated.  Certain projections (Google and Latlong for example) are based on a spheroid and therefore require **geodetic: true** in order to correctly calculate the scale.  If the geodetic parameter is not present it will be assumed to be false.
 
-The outputFilename parameter is optional and if omitted the values used in the server's configuration will be used instead.  If it is present it will be the name of the downloaded file.  The suffix will be added if not left off in the parameter.  The date can be substituted into the filename as well if desired.  See configuration's outputFilename for more information and examples 
+The outputFilename parameter is optional and if omitted the values used in the server's configuration will be used instead.  If it is present it will be the name of the downloaded file.  The suffix will be added if not left off in the parameter.  The date can be substituted into the filename as well if desired.  See configuration's outputFilename for more information and examples
 
 The outputFormat parameter is optional and if omitted the value 'pdf' will be used.  Only the formats returned in the info are permitted.
 
@@ -375,4 +375,3 @@ The google map reader has several custom parameters that can be added to the req
   .. code-block:: javascript
 
     path: 'color:0x0000ff|weight:5|46.5095933305192,6.506684726913701|46.5195933305192,6.526684726913701|46.5395933305192,6.536684726913701|46.5695933305192,6.576684726913701',
-

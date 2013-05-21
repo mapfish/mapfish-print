@@ -37,14 +37,14 @@ import org.mapfish.print.utils.PJsonObject;
  *
  */
 public class XyzMapReader extends TileableMapReader {
-	public static class Factory implements MapReaderFactory {
-		@Override
-		public List<? extends MapReader> create(String type, RenderingContext context,
-				PJsonObject params) {
-			return Collections.singletonList(new XyzMapReader("t", context, params));
-		}
+    public static class Factory implements MapReaderFactory {
+        @Override
+        public List<? extends MapReader> create(String type, RenderingContext context,
+                PJsonObject params) {
+            return Collections.singletonList(new XyzMapReader("t", context, params));
+        }
     }
-	
+
     protected final String layer;
 
     protected XyzMapReader(String layer, RenderingContext context, PJsonObject params) {
@@ -66,7 +66,7 @@ public class XyzMapReader extends TileableMapReader {
     protected URI getTileUri(URI commonUri, Transformer transformer, float minGeoX, float minGeoY, float maxGeoX, float maxGeoY, long w, long h) throws URISyntaxException, UnsupportedEncodingException {
         float targetResolution = (maxGeoX - minGeoX) / w;
         XyzLayerInfo.ResolutionInfo resolution = tileCacheLayerInfo.getNearestResolution(targetResolution);
-        
+
         int tileX = Math.round((minGeoX - tileCacheLayerInfo.getMinX()) / (resolution.value * w));
         int tileY = Math.round((tileCacheLayerInfo.getMaxY() - minGeoY) / (resolution.value * h));
 
