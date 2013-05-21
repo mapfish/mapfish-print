@@ -127,12 +127,15 @@ public class WMSServerInfo {
                         url.getFile());
                 HttpURLConnection connexion = (HttpURLConnection)localUrl.openConnection();
                 connexion.setRequestProperty("Host", host);
+                for (Map.Entry<String, String> entry : context.getHeaders().entrySet()) {
+                    connexion.setRequestProperty(entry.getKey(), entry.getValue());
+                }
                 stream = connexion.getInputStream();
             }
             else {
                 method = new GetMethod(url.toString());
-                if (context.getReferer() != null) {
-                    method.setRequestHeader("Referer", context.getReferer());
+                for (Map.Entry<String, String> entry : context.getHeaders().entrySet()) {
+                    method.setRequestHeader(entry.getKey(), entry.getValue());
                 }
                 context.getConfig().getHttpClient(baseUrl).executeMethod(method);
                 int code = method.getStatusCode();

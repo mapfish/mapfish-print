@@ -44,7 +44,7 @@ public class RenderingContext {
     private final String configDir;
     private final PDFCustomBlocks customBlocks;
     private final Layout layout;
-    private final String referer;
+    private final Map<String, String> headers;
 
     /**
      * Current page being rendered
@@ -71,14 +71,14 @@ public class RenderingContext {
     private final Object pdfLock=new Object();
 
     public RenderingContext(Document document, PdfWriter writer, Config config,
-                            PJsonObject globalParams, String configDir, Layout layout, String referer) {
+                            PJsonObject globalParams, String configDir, Layout layout, Map<String, String> headers) {
         this.document = document;
         this.writer = writer;
         this.config = config;
         this.globalParams = globalParams;
         this.configDir = configDir;
         this.layout = layout;
-        this.referer = referer;
+        this.headers = headers;
         customBlocks = new PDFCustomBlocks(writer, this);
     }
 
@@ -138,8 +138,8 @@ public class RenderingContext {
         return templateCache;
     }
 
-    public String getReferer() {
-        return referer;
+    public Map<String, String> getHeaders() {
+        return headers;
     }
 
     public Object getPdfLock() {

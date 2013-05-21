@@ -28,6 +28,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.ConsoleAppender;
@@ -74,6 +76,9 @@ public class ShellMapPrinter {
 
     @Option(desc = "Referer address to use when doing queries")
     private String referer = null;
+
+    @Option(desc = "Cookie to use when doing queries")
+    private String cookie = null;
 
     @Option(desc = "Property file for the log4j configuration")
     private String log4jConfig = null;
@@ -132,7 +137,14 @@ public class ShellMapPrinter {
                 final InputStream inFile = getInputStream();
                 final PJsonObject jsonSpec = MapPrinter.parseSpec(FileUtilities.readWholeTextStream(inFile, "UTF-8"));
                 outFile = getOutputStream(printer.getOutputFormat(jsonSpec).getFileSuffix());
-                printer.print(jsonSpec, outFile, referer);
+                Map<String, String> headers = new HashMap<String, String>();
+                if (referer != null) {
+                    headers.put("Referer", referer);
+                }
+                if (cookie != null) {
+                    headers.put("Cookie", cookie);
+                }
+                printer.print(jsonSpec, outFile, headers);
             }
         } finally {
             if(outFile != null) outFile.close();

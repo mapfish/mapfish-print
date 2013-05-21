@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.TreeSet;
+import java.util.Map;
 
 import javax.annotation.PreDestroy;
 
@@ -175,11 +176,11 @@ public class MapPrinter {
      * @return The context that was used for printing.
      * @throws InterruptedException
      */
-    public RenderingContext print(PJsonObject jsonSpec, OutputStream outputStream, String referer) throws DocumentException, InterruptedException {
+    public RenderingContext print(PJsonObject jsonSpec, OutputStream outputStream, Map<String, String> headers) throws DocumentException, InterruptedException {
         initFonts();
         OutputFormat output = this.outputFactory.create(config, jsonSpec);
 
-        PrintParams params = new PrintParams(config, configDir, jsonSpec, outputStream, referer);
+        PrintParams params = new PrintParams(config, configDir, jsonSpec, outputStream, headers);
         return output.print(params );
 
     }

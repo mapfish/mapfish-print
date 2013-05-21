@@ -290,7 +290,9 @@ public class MapPrinterServlet extends BaseMapServlet {
             app = null;
         }
 
-        String referer = httpServletRequest.getHeader("Referer");
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Referer", httpServletRequest.getHeader("Referer"));
+        headers.put("Cookie", httpServletRequest.getHeader("Cookie"));
 
         MapPrinter mapPrinter = getMapPrinter(app);
         final OutputFormat outputFormat = mapPrinter.getOutputFormat(specJson);
@@ -301,7 +303,7 @@ public class MapPrinterServlet extends BaseMapServlet {
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(tempFile);
-            mapPrinter.print(specJson, out, referer);
+            mapPrinter.print(specJson, out, headers);
 
             return tempFile;
         } catch (IOException e) {

@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Map;
 
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
@@ -158,8 +159,8 @@ public class SVGTileRenderer extends TileRenderer {
                 xslt.setParameter("zoomFactor", zoomFactor);
 
                 final URLConnection urlConnection = url.openConnection();
-                if (context.getReferer() != null) {
-                    urlConnection.setRequestProperty("Referer", context.getReferer());
+                for (Map.Entry<String, String> entry : context.getHeaders().entrySet()) {
+                    urlConnection.setRequestProperty(entry.getKey(), entry.getValue());
                 }
                 final InputStream inputStream = urlConnection.getInputStream();
 

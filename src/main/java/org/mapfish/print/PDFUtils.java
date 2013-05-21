@@ -209,6 +209,9 @@ public class PDFUtils {
 
                     HttpURLConnection connexion = (HttpURLConnection)url.openConnection();
                     connexion.setRequestProperty("Host", host);
+                    for (Map.Entry<String, String> entry : context.getHeaders().entrySet()) {
+                        connexion.setRequestProperty(entry.getKey(), entry.getValue());
+                    }
                     InputStream is = null;
                     try {
                         try {
@@ -239,9 +242,8 @@ public class PDFUtils {
                     GetMethod getMethod = null;
                     try {
                         getMethod = new GetMethod(uri.toString());
-                        getMethod.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
-                        if (context.getReferer() != null) {
-                            getMethod.setRequestHeader("Referer", context.getReferer());
+                        for (Map.Entry<String, String> entry : context.getHeaders().entrySet()) {
+                            getMethod.setRequestHeader(entry.getKey(), entry.getValue());
                         }
                         if (LOGGER.isDebugEnabled()) LOGGER.debug("loading image: "+uri);
                         context.getConfig().getHttpClient(uri).executeMethod(getMethod);

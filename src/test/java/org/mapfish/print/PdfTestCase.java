@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.TreeSet;
+import java.util.Collections;
 
 import org.mapfish.print.config.Config;
 import org.mapfish.print.config.layout.Block;
@@ -90,6 +91,6 @@ public abstract class PdfTestCase extends PrintTestCase {
         Config config = new Config();
         config.setDpis(new TreeSet<Integer>(Arrays.asList(96, 190, 254)));
         config.setScales(new TreeSet<Integer>(Arrays.asList(20000, 25000, 100000, 500000, 4000000)));
-        context = new RenderingContext(doc, writer, config, spec, null, layout, null);
+        context = new RenderingContext(doc, writer, config, spec, null, layout, Collections.<String, String>emptyMap());
     }
 }
