@@ -33,7 +33,8 @@ import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
 
 /**
- * Support for the protocol using directly the content of a TileCache directory.
+ * Support the tile layout z/x/y.<extension>.
+ *
  */
 public class XyzMapReader extends TileableMapReader {
 	public static class Factory implements MapReaderFactory {

@@ -33,7 +33,7 @@ import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
 
 /**
- * Support for the protocol using directly the content of a TileCache directory.
+ * Support the OSM tile layout.
  */
 public class OsmMapReader extends TileableMapReader {
 	public static class Factory implements MapReaderFactory {

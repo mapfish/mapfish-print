@@ -155,11 +155,212 @@ HTTP command::
 
 Returns the PDF. Can be called only during a limited time since the server side temporary file is deleted afterwards.
 
-Custom Params
+Layers Params
 *************
+
+Vector
+------
+Type: vector
+
+Render vector layers. The geometries and the styling comes directly from the spec JSON.
+
+* opacity (Defaults to 1.0)
+* geoJson (Required) the geoJson to render
+* styleProperty (Defaults to '_style') Name of the property within the features to use as style name. The given property may contain a style object directly.
+* styles (Optional) dictonary of styles. One style is defined as in OpenLayers.Feature.Vector.style.
+* name (Defaults to 'vector') the layer name.
+
+WMS
+---
+Type: wms
+
+Support for the WMS protocol with possibilities to go through a WMS-C service (TileCache).
+
+* opacity (Defaults to 1.0)
+* baseURL (Required) Service URL
+* customParams (Optional) Map, additional URL arguments
+* layers (Required)
+* styles (Optional)
+* format (Required)
+* customParams (Optional) Map, additional URL arguments
+* useNativeAngle (Defaults to false) it true transform the map angle to customParams.angle for GeoServer, and customParams.map_angle for MapServer.
+
+WMTS
+----
+Type: wmts
+
+Support for the protocol using directly the content of a WMTS tiled layer, support REST or KVP.
+
+Two possible mode, standard or simple, the simple mode imply that all the topLeftCorner are identical.
+
+Standard mode:
+
+* opacity (Defaults to 1.0)
+* baseURL the 'ResourceURL' available in the WMTS capabilities.
+* customParams (Optional) Map, additional URL arguments
+* layer (Required) the layer name
+* version (Required) '1.0.0'
+* requestEncoding (Required) 'REST' or 'KVP'
+* style (Required) the style name
+* dimensions (Optional) list of dimensions names
+* params (Optional) dictionary of dimensions name (capital) => value
+* matrixSet (Required) the name of the matrix set
+* matrixIds (Required) array of matrix ids e.g.:
+    [{
+        "identifier": "0",
+        "matrixSize": [1, 1],
+        "resolution": 4000,
+        "tileSize": [256, 256],
+        "topLeftCorner": [420000, 350000]
+    }, ...]
+* format (Optional, Required id requestEncoding is 'KVP')
+
+Simple mode:
+* baseURL base URL without the version.
+* layer (Required)
+* version (Required)
+* requestEncoding (Required) 'REST'
+* tileOrigin (Required)
+* tileSize (Required)
+* extension (Required)
+* resolutions (Required)
+* style (Required)
+* tileFullExtent (Required)
+* zoomOffset (Required)
+* dimensions (Optional)
+* params (Optional)
+* formatSuffix (Required)
+
+Tms
+---
+Type: tms
+
+Support the TMS tile layout.
+
+* opacity (Defaults to 1.0)
+* baseURL (Required) Service URL
+* customParams (Optional) Map, additional URL arguments
+* maxExtent (Required) Array, extent coordinates [420000, 30000, 900000, 350000]
+* tileSize (Required) Array, tile size e.g. [256, 256]
+* format (Required)
+* layer (Required)
+* resolutions (Required) Array of resolutions
+
+Xyz
+---
+Type: xyz
+
+Support the tile layout z/x/y.<extension>.
+
+* opacity (Defaults to 1.0)
+* baseURL (Required) Service URL
+* customParams (Optional) Map, additional URL arguments
+* maxExtent (Required) Array, extent coordinates [420000, 30000, 900000, 350000]
+* tileSize (Required) Array, tile size e.g. [256, 256]
+* resolutions (Required) Array of resolutions (Required) Array of resolutions
+* extension (Required) file extension (Required) file extension
+* tileOrigin (Optional) Array, tile origine e.g. [420000, 350000]
+* tileOriginCorner 'tl' or 'bl' (Defaults to 'bl')
+
+Osm
+---
+Type: osm
+
+Support the OSM tile layout.
+
+* opacity (Defaults to 1.0)
+* baseURL (Required) Service URL
+* customParams (Optional) Map, additional URL arguments
+* maxExtent (Required) Array, extent coordinates [420000, 30000, 900000, 350000]
+* tileSize (Required) Array, tile size e.g. [256, 256]
+* resolutions (Required) Array of resolutions
+* extension (Required) file extension
+
+TileCache
+---------
+Type: tileCache
+
+Support for the protocol using directly the content of a TileCache directory.
+
+* opacity (Defaults to 1.0)
+* baseURL (Required) Service URL
+* customParams (Optional) Map, additional URL arguments
+* layer (Required)
+* maxExtent (Required) Array, extent coordinates [420000, 30000, 900000, 350000]
+* tileSize (Required) Array, tile size e.g. [256, 256]
+* resolutions (Required) Array of resolutions
+* extension (Required) file extension
+
+Image
+-----
+Type: image
+* opacity (Defaults to 1.0)
+* name (Required)
+* baseURL (Required) Service URL
+* extent (Required)
+
+MapServer
+---------
+Type: mapServer
+
+Support mapserver WMS server.
+
+* opacity (Defaults to 1.0)
+* baseURL (Required) Service URL
+* customParams (Optional) Map, additional URL arguments
+* layers (Required)
+* format (Required)
+
+KaMap
+-----
+Type: kaMap
+
+Support for the protocol using the KaMap tiling method
+
+* opacity (Defaults to 1.0)
+* baseURL (Required) Service URL
+* customParams (Optional) Map, additional URL arguments
+* map
+* group
+* maxExtent (Required) Array, extent coordinates [420000, 30000, 900000, 350000]
+* tileSize (Required) Array, tile size e.g. [256, 256]
+* resolutions (Required) Array of resolutions
+* extension (Required) file extension
+
+KaMapCache
+----------
+Type: kaMapCache
+
+Support for the protocol talking direclty to a web-accessible ka-Map cache generated by the precache2.php script.
+
+* opacity (Defaults to 1.0)
+* baseURL (Required) Service URL
+* customParams (Optional) Map, additional URL arguments
+* map (Required)
+* group (Required)
+* metaTileWidth (Required)
+* metaTileHeight (Required)
+* units (Required)
+* maxExtent (Required) Array, extent coordinates [420000, 30000, 900000, 350000]
+* tileSize (Required) Array, tile size e.g. [256, 256]
+* resolutions (Required) Array of resolutions
+* extension (Required) file extension
+
 Google
 ------
-The google map reader has several custom parameters that can be added to the request in summary they are:
+Type: google or tiledGoogle
+
+They used the Google Map Static API, tiledGoogle will create tiles and google only one image.
+
+The google map reader has several custom parameters that can be added to the request they are:
+* opacity (Optional, Defaults to 1.0)
+* baseURL (Required, should be 'http://maps.google.com/maps/api/staticmap')
+* customParams (Optional) Map, additional URL arguments
+* maxExtent (Required, should be [-20037508.34, -20037508.34, 20037508.34, 20037508.34])
+* resolutions (Required, should be [156543.03390625, 78271.516953125, 39135.7584765625, 19567.87923828125, 9783.939619140625, 4891.9698095703125, 2445.9849047851562, 1222.9924523925781, 611.4962261962891, 305.74811309814453, 152.87405654907226, 76.43702827453613, 38.218514137268066, 19.109257068634033, 9.554628534317017, 4.777314267158508, 2.388657133579254, 1.194328566789627, 0.5971642833948135, 0.29858214169740677, 0.14929107084870338, 0.07464553542435169])
+* extension (Required, should be 'png')
+* client (Optional)
+* format (Optional)
 * maptype (Required) - type of map to display: http://code.google.com/apis/maps/documentation/staticmaps/#MapTypes
 * sensor  (Optional) - specifies whether the application requesting the static map is using a sensor to determine the user's location
 * language (Optional) - language of labels.
