@@ -52,7 +52,7 @@ public abstract class PdfTestCase extends PrintTestCase {
     }
 
     @SuppressWarnings("deprecation")
-	@Override
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         PJsonObject spec = MapPrinter.parseSpec(FileUtilities.readWholeTextFile(new File("samples/spec.json")));

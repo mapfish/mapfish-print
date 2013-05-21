@@ -50,7 +50,7 @@ public class RenderingContext {
      * Current page being rendered
      */
     private PJsonObject currentPageParams = null;
-    
+
     /**
      * Factor applyed to styles (line width, ...). Used to make features thinner
      * in the overview map.
@@ -105,13 +105,13 @@ public class RenderingContext {
     public PJsonObject getGlobalParams() {
         return globalParams;
     }
-    
+
     public void setCurrentPageParams(PJsonObject pageParams) {
-    	currentPageParams = pageParams;
+        currentPageParams = pageParams;
     }
-    
+
     public PJsonObject getCurrentPageParams() {
-    	return currentPageParams;
+        return currentPageParams;
     }
 
     public String getConfigDir() {

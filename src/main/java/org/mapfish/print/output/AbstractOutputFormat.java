@@ -31,7 +31,7 @@ public abstract class AbstractOutputFormat implements OutputFormat {
 
         doc.close();
         writer.close();
-        
+
         return context;
     }
 }
