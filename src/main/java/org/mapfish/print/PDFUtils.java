@@ -209,6 +209,9 @@ public class PDFUtils {
 
                     HttpURLConnection connexion = (HttpURLConnection)url.openConnection();
                     connexion.setRequestProperty("Host", host);
+                    for (Map.Entry<String, String> entry : context.getHeaders().entrySet()) {
+                        connexion.setRequestProperty(entry.getKey(), entry.getValue());
+                    }
                     InputStream is = null;
                     try {
                         try {
@@ -239,9 +242,8 @@ public class PDFUtils {
                     GetMethod getMethod = null;
                     try {
                         getMethod = new GetMethod(uri.toString());
-                        getMethod.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
-                        if (context.getReferer() != null) {
-                            getMethod.setRequestHeader("Referer", context.getReferer());
+                        for (Map.Entry<String, String> entry : context.getHeaders().entrySet()) {
+                            getMethod.setRequestHeader(entry.getKey(), entry.getValue());
                         }
                         if (LOGGER.isDebugEnabled()) LOGGER.debug("loading image: "+uri);
                         context.getConfig().getHttpClient(uri).executeMethod(getMethod);
@@ -393,7 +395,7 @@ public class PDFUtils {
     private static final Pattern FORMAT_PATTERN = Pattern.compile("^format\\s+(%[-+# 0,(]*\\d*(\\.\\d*)?(d))\\s+(.*)$");
 
     public static String getValueFromString(String val) {
-    	String str = val;
+        String str = val;
         while (true) {
             Matcher matcher = VAR_REGEXP.matcher(val);
             if (matcher.find()) {
@@ -405,11 +407,11 @@ public class PDFUtils {
                 break;
             }
         }
-    	return str;
+        return str;
     }
 
     private static String getDateValue(String key) {
-    	String val = "";
+        String val = "";
         if (key.equals("now")) {
             val = new Date().toString();
         } else if (key.startsWith("now ")) {
@@ -586,76 +588,76 @@ public class PDFUtils {
         return image;
     }
 
-	public static BaseFont getBaseFont(String fontFamily, String fontSize,
-			String fontWeight) {
-		int myFontValue;
-		float myFontSize;
-		int myFontWeight;
-		if (fontFamily.toUpperCase().contains("COURIER")) {
-			myFontValue = Font.COURIER;
-		} else if (fontFamily.toUpperCase().contains("HELVETICA")) {
-			myFontValue = Font.HELVETICA;
-		} else if (fontFamily.toUpperCase().contains("ROMAN")) {
-			myFontValue = Font.TIMES_ROMAN;
-		} else {
-			myFontValue = Font.HELVETICA;
-		}
-		myFontSize = (float) Double.parseDouble(fontSize.toLowerCase()
-				.replaceAll("px", ""));
-		if (fontWeight.toUpperCase().contains("NORMAL")) {
-			myFontWeight = Font.NORMAL;
-		} else if (fontWeight.toUpperCase().contains("BOLD")) {
-			myFontWeight = Font.BOLD;
-		} else if (fontWeight.toUpperCase().contains("ITALIC")) {
-			myFontWeight = Font.ITALIC;
-		} else {
-			myFontWeight = Font.NORMAL;
-		}
-		Font pdfFont = new Font(myFontValue, myFontSize, myFontWeight);
-		BaseFont bf = pdfFont.getCalculatedBaseFont(false);
-		return bf;
-	}
+    public static BaseFont getBaseFont(String fontFamily, String fontSize,
+            String fontWeight) {
+        int myFontValue;
+        float myFontSize;
+        int myFontWeight;
+        if (fontFamily.toUpperCase().contains("COURIER")) {
+            myFontValue = Font.COURIER;
+        } else if (fontFamily.toUpperCase().contains("HELVETICA")) {
+            myFontValue = Font.HELVETICA;
+        } else if (fontFamily.toUpperCase().contains("ROMAN")) {
+            myFontValue = Font.TIMES_ROMAN;
+        } else {
+            myFontValue = Font.HELVETICA;
+        }
+        myFontSize = (float) Double.parseDouble(fontSize.toLowerCase()
+                .replaceAll("px", ""));
+        if (fontWeight.toUpperCase().contains("NORMAL")) {
+            myFontWeight = Font.NORMAL;
+        } else if (fontWeight.toUpperCase().contains("BOLD")) {
+            myFontWeight = Font.BOLD;
+        } else if (fontWeight.toUpperCase().contains("ITALIC")) {
+            myFontWeight = Font.ITALIC;
+        } else {
+            myFontWeight = Font.NORMAL;
+        }
+        Font pdfFont = new Font(myFontValue, myFontSize, myFontWeight);
+        BaseFont bf = pdfFont.getCalculatedBaseFont(false);
+        return bf;
+    }
 
-	public static int getHorizontalAlignment(String labelAlign) {
-		/* Valid values for horizontal alignment: "l"=left, "c"=center, "r"=right. */
-		int myAlignment = PdfContentByte.ALIGN_LEFT;
-		if (labelAlign.toUpperCase().contains("L")) {
-			myAlignment = PdfContentByte.ALIGN_LEFT;
-		}
-		if (labelAlign.toUpperCase().contains("C")) {
-			myAlignment = PdfContentByte.ALIGN_CENTER;
-		}
-		if (labelAlign.toUpperCase().contains("R")) {
-			myAlignment = PdfContentByte.ALIGN_RIGHT;
-		}
-		return myAlignment;
-	}
+    public static int getHorizontalAlignment(String labelAlign) {
+        /* Valid values for horizontal alignment: "l"=left, "c"=center, "r"=right. */
+        int myAlignment = PdfContentByte.ALIGN_LEFT;
+        if (labelAlign.toUpperCase().contains("L")) {
+            myAlignment = PdfContentByte.ALIGN_LEFT;
+        }
+        if (labelAlign.toUpperCase().contains("C")) {
+            myAlignment = PdfContentByte.ALIGN_CENTER;
+        }
+        if (labelAlign.toUpperCase().contains("R")) {
+            myAlignment = PdfContentByte.ALIGN_RIGHT;
+        }
+        return myAlignment;
+    }
 
-	public static float getVerticalOffset(String labelAlign, float fontHeight) {
-		/* Valid values for vertical alignment: "t"=top, "m"=middle, "b"=bottom. */
-		float myOffset = (float) 0.0;
-		if (labelAlign.toUpperCase().contains("T")) {
-			myOffset = fontHeight;
-		}
-		if (labelAlign.toUpperCase().contains("M")) {
-			myOffset = fontHeight/2;
-		}
-		if (labelAlign.toUpperCase().contains("B")) {
-			myOffset = (float) 0.0;
-		}
-		return myOffset;
-	}
+    public static float getVerticalOffset(String labelAlign, float fontHeight) {
+        /* Valid values for vertical alignment: "t"=top, "m"=middle, "b"=bottom. */
+        float myOffset = (float) 0.0;
+        if (labelAlign.toUpperCase().contains("T")) {
+            myOffset = fontHeight;
+        }
+        if (labelAlign.toUpperCase().contains("M")) {
+            myOffset = fontHeight/2;
+        }
+        if (labelAlign.toUpperCase().contains("B")) {
+            myOffset = (float) 0.0;
+        }
+        return myOffset;
+    }
 
-	public static Chunk createImageChunkFromSVG(RenderingContext context,
+    public static Chunk createImageChunkFromSVG(RenderingContext context,
             String iconItem,
             double maxIconWidth,
             double maxIconHeight,
             double scale) throws IOException {
-		return new Chunk(PDFUtils.createImageFromSVG(context, iconItem,
+        return new Chunk(PDFUtils.createImageFromSVG(context, iconItem,
                 maxIconWidth, maxIconHeight, scale), 0f, 0f, true);
-	}
+    }
 
-	public static Image createImageFromSVG(RenderingContext context,
+    public static Image createImageFromSVG(RenderingContext context,
             String iconItem, double maxIconWidth, double maxIconHeight,
             double scale) throws IOException {
         Image image = null;

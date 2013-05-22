@@ -25,13 +25,13 @@ public abstract class AbstractOutputFormat implements OutputFormat {
             writer.setPdfVersion(PdfWriter.PDF_VERSION_1_5);
             writer.setCompressionLevel(PdfStream.BEST_COMPRESSION);
         }
-        RenderingContext context = new RenderingContext(doc, writer, params.config, params.jsonSpec, params.configDir.getPath(), layout, params.referer);
+        RenderingContext context = new RenderingContext(doc, writer, params.config, params.jsonSpec, params.configDir.getPath(), layout, params.headers);
 
         layout.render(params.jsonSpec, context);
 
         doc.close();
         writer.close();
-        
+
         return context;
     }
 }
