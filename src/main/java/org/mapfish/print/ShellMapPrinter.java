@@ -28,6 +28,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.ConsoleAppender;
@@ -55,7 +57,7 @@ import com.lowagie.text.DocumentException;
 public class ShellMapPrinter {
     public static final Logger LOGGER = Logger.getLogger(ShellMapPrinter.class);
 
-	public static final String DEFAULT_SPRING_CONTEXT = "mapfish-spring-application-context.xml";
+    public static final String DEFAULT_SPRING_CONTEXT = "mapfish-spring-application-context.xml";
 
     @Option(desc = "Filename for the configuration (templates&CO)", mandatory = true)
     private String config = null;
@@ -75,13 +77,16 @@ public class ShellMapPrinter {
     @Option(desc = "Referer address to use when doing queries")
     private String referer = null;
 
+    @Option(desc = "Cookie to use when doing queries")
+    private String cookie = null;
+
     @Option(desc = "Property file for the log4j configuration")
     private String log4jConfig = null;
 
     @Option(desc = "Spring configuration file to use in addition to the default.  This allows overriding certain values if desired")
     private String springConfig = null;
 
-	private AbstractXmlApplicationContext context;
+    private AbstractXmlApplicationContext context;
 
     public ShellMapPrinter(String[] args) throws IOException {
         try {
@@ -91,9 +96,9 @@ public class ShellMapPrinter {
         }
         configureLogs();
         this.context = new ClassPathXmlApplicationContext(DEFAULT_SPRING_CONTEXT);
-        
+
         if(springConfig != null) {
-        	this.context = new FileSystemXmlApplicationContext(new String[]{"classpath:/"+DEFAULT_SPRING_CONTEXT, springConfig});
+            this.context = new FileSystemXmlApplicationContext(new String[]{"classpath:/"+DEFAULT_SPRING_CONTEXT, springConfig});
         }
     }
 
@@ -112,7 +117,7 @@ public class ShellMapPrinter {
     }
 
     public void run() throws IOException, JSONException, DocumentException, InterruptedException {
-    	MapPrinter printer = context.getBean(MapPrinter.class);
+        MapPrinter printer = context.getBean(MapPrinter.class);
         printer.setYamlConfigFile(new File(config));
         OutputStream outFile = null;
         try {
@@ -132,7 +137,14 @@ public class ShellMapPrinter {
                 final InputStream inFile = getInputStream();
                 final PJsonObject jsonSpec = MapPrinter.parseSpec(FileUtilities.readWholeTextStream(inFile, "UTF-8"));
                 outFile = getOutputStream(printer.getOutputFormat(jsonSpec).getFileSuffix());
-                printer.print(jsonSpec, outFile, referer);
+                Map<String, String> headers = new HashMap<String, String>();
+                if (referer != null) {
+                    headers.put("Referer", referer);
+                }
+                if (cookie != null) {
+                    headers.put("Cookie", cookie);
+                }
+                printer.print(jsonSpec, outFile, headers);
             }
         } finally {
             if(outFile != null) outFile.close();
@@ -173,7 +185,7 @@ public class ShellMapPrinter {
     }
 
     @SuppressWarnings("resource")
-	private OutputStream getOutputStream(String suffix) throws FileNotFoundException {
+    private OutputStream getOutputStream(String suffix) throws FileNotFoundException {
         final OutputStream outFile;
         if (output != null) {
             if(!output.endsWith("."+suffix)) {
@@ -188,7 +200,7 @@ public class ShellMapPrinter {
     }
 
     @SuppressWarnings("resource")
-	private InputStream getInputStream() throws FileNotFoundException {
+    private InputStream getInputStream() throws FileNotFoundException {
         final InputStream file;
         if (spec != null) {
             file = new FileInputStream(spec);
