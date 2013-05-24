@@ -27,11 +27,11 @@ import org.mapfish.print.utils.PJsonArray;
 public class WMTSLayerInfo extends TileCacheLayerInfo {
 
     public WMTSLayerInfo(String resolutions, int width, int height, float minX, float minY, float maxX, float maxY, String format) {
-        super(resolutions, width, height, minX, minY, maxX, maxY, format);
+        super(resolutions, width, height, minX, minY, maxX, maxY, format, minX, maxY);
     }
-    
+
     public WMTSLayerInfo(PJsonArray resolutions, int width, int height, float minX, float minY, float maxX, float maxY, String extension) {
-        super(resolutions, width, height, minX, minY, maxX, maxY, extension);
+        super(resolutions, width, height, minX, minY, maxX, maxY, extension, minX, maxY);
     }
 }
 

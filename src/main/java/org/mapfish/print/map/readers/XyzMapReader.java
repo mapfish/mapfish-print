@@ -52,7 +52,20 @@ public class XyzMapReader extends TileableMapReader {
         this.layer = layer;
         PJsonArray maxExtent = params.getJSONArray("maxExtent");
         PJsonArray tileSize = params.getJSONArray("tileSize");
-        tileCacheLayerInfo = new XyzLayerInfo(params.getJSONArray("resolutions"), tileSize.getInt(0), tileSize.getInt(1), maxExtent.getFloat(0), maxExtent.getFloat(1), maxExtent.getFloat(2), maxExtent.getFloat(3), params.getString("extension"));
+        PJsonArray tileOrigin = params.optJSONArray("tileOrigin");
+        String tileOriginCorner = params.optString("tileOriginCorner", "bl");
+        final float tileOriginX;
+        final float tileOriginY;
+        if (tileOrigin == null) {
+            tileOriginX = maxExtent.getFloat(0);
+            tileOriginY = maxExtent.getFloat(tileOriginCorner.charAt(0) == 't' ? 3 : 1);
+        }
+        else {
+            tileOriginX = tileOrigin.getFloat(0);
+            tileOriginY = tileOrigin.getFloat(1);
+        }
+        tileCacheLayerInfo = new XyzLayerInfo(params.getJSONArray("resolutions"), tileSize.getInt(0), tileSize.getInt(1), maxExtent.getFloat(0), maxExtent.getFloat(1), maxExtent.getFloat(2), maxExtent.getFloat(3),
+                params.getString("extension"), tileOriginX, tileOriginY);
     }
 
     protected TileRenderer.Format getFormat() {
