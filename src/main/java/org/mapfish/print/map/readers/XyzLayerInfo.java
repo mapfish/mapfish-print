@@ -31,11 +31,12 @@ public class XyzLayerInfo extends TileCacheLayerInfo {
     protected static final double RESOLUTION_TOLERANCE = 1.9;
 
     public XyzLayerInfo(String resolutions, int width, int height, float minX, float minY, float maxX, float maxY, String format) {
-    	super(resolutions, width, height, minX, minY, maxX, maxY, format);
+        super(resolutions, width, height, minX, minY, maxX, maxY, format);
     }
 
-    public XyzLayerInfo(PJsonArray resolutions, int width, int height, float minX, float minY, float maxX, float maxY, String extension) {
-    	super(resolutions, width, height, minX, minY, maxX, maxY, extension);
+    public XyzLayerInfo(PJsonArray resolutions, int width, int height, float minX, float minY, float maxX, float maxY, String extension,
+            float originX, float originY) {
+        super(resolutions, width, height, minX, minY, maxX, maxY, extension, originX, originY);
     }
 
     public ResolutionInfo getNearestResolution(float targetResolution) {

@@ -47,9 +47,12 @@ public class TileCacheLayerInfo {
     protected final float minY;
     protected final float maxX;
     protected final float maxY;
+    protected final float originX;
+    protected final float originY;
     protected String extension;
 
-    public TileCacheLayerInfo(String resolutions, int width, int height, float minX, float minY, float maxX, float maxY, String format) {
+    public TileCacheLayerInfo(String resolutions, int width, int height, float minX, float minY, float maxX, float maxY, String format,
+            float originX, float originY) {
         String[] resolutionsTxt = RESOLUTIONS_REGEXP.split(resolutions);
         this.resolutions = new float[resolutionsTxt.length];
         for (int i = 0; i < resolutionsTxt.length; ++i) {
@@ -63,6 +66,8 @@ public class TileCacheLayerInfo {
         this.minY = minY;
         this.maxX = maxX;
         this.maxY = maxY;
+        this.originX = originX;
+        this.originY = originY;
 
         if (format != null) {
             Matcher formatMatcher = FORMAT_REGEXP.matcher(format);
@@ -77,11 +82,15 @@ public class TileCacheLayerInfo {
         }
     }
 
-    public TileCacheLayerInfo(PJsonArray resolutions, int width, int height, float minX, float minY, float maxX, float maxY, String extension) {
+    public TileCacheLayerInfo(String resolutions, int width, int height, float minX, float minY, float maxX, float maxY, String format) {
+        this(resolutions, width, height, minX, minY, maxX, maxY, format, minX, minY);
+    }
+
+    public TileCacheLayerInfo(PJsonArray resolutions, int width, int height, float minX, float minY, float maxX, float maxY, String extension,
+            float originX, float originY) {
         this.resolutions = new float[resolutions.size()];
         for (int i = 0; i < resolutions.size(); ++i) {
             this.resolutions[i] = resolutions.getFloat(i);
-
         }
         sortResolutions();
 
@@ -91,8 +100,13 @@ public class TileCacheLayerInfo {
         this.minY = minY;
         this.maxX = maxX;
         this.maxY = maxY;
-
+        this.originX = originX;
+        this.originY = originY;
         this.extension = extension;
+    }
+
+    public TileCacheLayerInfo(PJsonArray resolutions, int width, int height, float minX, float minY, float maxX, float maxY, String extension) {
+        this(resolutions, width, height, minX, minY, maxX, maxY, extension, minX, minY);
     }
 
     public int getWidth() {
@@ -173,6 +187,14 @@ public class TileCacheLayerInfo {
         return maxY;
     }
 
+    public float getOriginX() {
+        return originX;
+    }
+
+    public float getOriginY() {
+        return originY;
+    }
+
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("TileCacheLayerInfo");
@@ -182,6 +204,8 @@ public class TileCacheLayerInfo {
         sb.append(", minY=").append(minY);
         sb.append(", maxX=").append(maxX);
         sb.append(", maxY=").append(maxY);
+        sb.append(", originX=").append(originX);
+        sb.append(", originY=").append(originY);
         sb.append(", extension='").append(extension).append('\'');
         sb.append(", resolutions=").append(resolutions == null ? "null" : "");
         for (int i = 0; resolutions != null && i < resolutions.length; ++i) {

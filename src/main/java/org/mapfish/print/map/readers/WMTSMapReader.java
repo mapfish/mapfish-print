@@ -35,7 +35,7 @@ import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
 
 /**
- * Support for the protocol using directly the content of a WMTS REST structure.
+ * Support for the protocol using directly the content of a WMTS tiled layer, support REST or KVP.
  */
 public class WMTSMapReader extends TileableMapReader {
     public static class Factory implements MapReaderFactory {

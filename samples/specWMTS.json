@@ -188,8 +188,7 @@
             "resolution": 0.5000000000006599,
             "tileSize": [256, 256],
             "topLeftCorner": [420000, 350000]
-        }],
-        "useNativeAngle": true
+        }]
     }],
     "pages": [{
         "center": [578846, 183326.24545288],
