@@ -25,6 +25,8 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.Transformer;
@@ -34,18 +36,18 @@ import org.mapfish.print.utils.PJsonObject;
 
 /**
  * Support the tile layout z/x/y.<extension>.
- *
  */
 public class XyzMapReader extends TileableMapReader {
     public static class Factory implements MapReaderFactory {
         @Override
         public List<? extends MapReader> create(String type, RenderingContext context,
-                PJsonObject params) {
+                                                PJsonObject params) {
             return Collections.singletonList(new XyzMapReader("t", context, params));
         }
     }
 
     protected final String layer;
+    protected final String path_format;
 
     protected XyzMapReader(String layer, RenderingContext context, PJsonObject params) {
         super(context, params);
@@ -59,11 +61,12 @@ public class XyzMapReader extends TileableMapReader {
         if (tileOrigin == null) {
             tileOriginX = maxExtent.getFloat(0);
             tileOriginY = maxExtent.getFloat(tileOriginCorner.charAt(0) == 't' ? 3 : 1);
-        }
-        else {
+        } else {
             tileOriginX = tileOrigin.getFloat(0);
             tileOriginY = tileOrigin.getFloat(1);
         }
+
+        path_format = params.optString("path_format", null);
         tileCacheLayerInfo = new XyzLayerInfo(params.getJSONArray("resolutions"), tileSize.getInt(0), tileSize.getInt(1), maxExtent.getFloat(0), maxExtent.getFloat(1), maxExtent.getFloat(2), maxExtent.getFloat(3),
                 params.getString("extension"), tileOriginX, tileOriginY);
     }
@@ -84,13 +87,42 @@ public class XyzMapReader extends TileableMapReader {
         int tileY = Math.round((tileCacheLayerInfo.getMaxY() - minGeoY) / (resolution.value * h));
 
         StringBuilder path = new StringBuilder();
-        if (!commonUri.getPath().endsWith("/")) {
+        if (!commonUri.getPath().endsWith("/") && !this.path_format.startsWith("/")) {
             path.append('/');
         }
-        path.append(String.format("%02d", resolution.index));
-        path.append('/').append(tileX);
-        path.append('/').append(tileY-1);
-        path.append('.').append(tileCacheLayerInfo.getExtension());
+
+        if (this.path_format == null) {
+            path.append(String.format("%02d", resolution.index));
+            path.append('/').append(tileX);
+            path.append('/').append(tileY - 1);
+            path.append('.').append(tileCacheLayerInfo.getExtension());
+        } else {
+            path.append(this.path_format);
+
+            Pattern pattern = Pattern.compile("$\\{z\\}");
+            Matcher matcher = pattern.matcher(path);
+            while (matcher.find()) {
+                path.replace(matcher.start(), matcher.end(), String.format("%02d", resolution.index));
+            }
+
+            pattern = Pattern.compile("$\\{x\\}");
+            matcher = pattern.matcher(path);
+            while (matcher.find()) {
+                path.replace(matcher.start(), matcher.end(), String.format("d", tileX));
+            }
+
+            pattern = Pattern.compile("$\\{y\\}");
+            matcher = pattern.matcher(path);
+            while (matcher.find()) {
+                path.replace(matcher.start(), matcher.end(), String.format("d", tileY - 1));
+            }
+
+            pattern = Pattern.compile("$\\{extension\\}");
+            matcher = pattern.matcher(path);
+            while (matcher.find()) {
+                path.replace(matcher.start(), matcher.end(), tileCacheLayerInfo.getExtension());
+            }
+        }
 
         return new URI(commonUri.getScheme(), commonUri.getUserInfo(), commonUri.getHost(), commonUri.getPort(), commonUri.getPath() + path, commonUri.getQuery(), commonUri.getFragment());
     }
