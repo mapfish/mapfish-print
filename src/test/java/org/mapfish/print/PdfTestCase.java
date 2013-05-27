@@ -65,9 +65,7 @@ public abstract class PdfTestCase extends PrintTestCase {
             String expectedPath = "build"+File.separator + "classes" + File.separator + "test";
             String[] paths = System.getProperty("java.class.path").split(File.pathSeparator);
 
-            System.out.println("comparing with: " + expectedPath);
             for(String path : paths){
-               System.out.println(path);
                if(path.indexOf(expectedPath) != -1){
                    baseDir = path;
                }
