@@ -1,0 +1,15 @@
+
+    {
+        "baseURL": "http://foo.example.com/tms/",
+        "opacity": 1,
+        "singleTile": false,
+        "type": "TMS",
+        "layer": null,
+        "maxExtent": [-20037508.342789, -20037508.342789, 20037508.342789, 20037508.342789],
+        "tileSize": [256, 256],
+        "tileOrigin": {"x":-1,"y":-1},
+        "originLeft": true,
+        "originBottom": false,
+        "resolutions": [156543.0339, 78271.51695, 39135.758475, 19567.8792375, 9783.93961875, 4891.969809375, 2445.9849046875, 1222.99245234375],
+        "format": "image/png"
+    }
