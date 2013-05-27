@@ -60,7 +60,20 @@ public abstract class PdfTestCase extends PrintTestCase {
         spec.getInternalObj().put("units", "meters");
 
         doc = new Document(PageSize.A4);
+
+        //This test expects to be able to write files into the same directory the classes
+        //are compiled to, in this case the build/classes/test directory
+        String expectedPath = "build"+File.separator + "classes" + File.separator + "test";
         String baseDir = PdfTestCase.class.getClassLoader().getResource(".").getFile();
+        if(baseDir.indexOf("pulse-java.jar") != -1){
+            String[] paths = System.getProperty("java.class.path").split(File.pathSeparator);
+
+            for(String path : paths){
+               if(path.indexOf(expectedPath) != -1){
+                   baseDir = path;
+               }
+           }
+        }
         outFile = new FileOutputStream(baseDir + getClass().getSimpleName() + "_" + getName() + ".pdf");
         writer = PdfWriter.getInstance(doc, outFile);
         writer.setFullCompression();
