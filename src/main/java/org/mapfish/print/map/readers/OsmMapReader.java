@@ -33,7 +33,7 @@ import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
 
 /**
- * Support for the protocol using directly the content of a TileCache directory.
+ * Support the OSM tile layout.
  */
 public class OsmMapReader extends TileableMapReader {
 	public static class Factory implements MapReaderFactory {
@@ -43,7 +43,7 @@ public class OsmMapReader extends TileableMapReader {
 			return Collections.singletonList(new OsmMapReader("t", context, params));
 		}
     }
-	
+
     protected final String layer;
 
     protected OsmMapReader(String layer, RenderingContext context, PJsonObject params) {
@@ -65,7 +65,7 @@ public class OsmMapReader extends TileableMapReader {
     protected URI getTileUri(URI commonUri, Transformer transformer, float minGeoX, float minGeoY, float maxGeoX, float maxGeoY, long w, long h) throws URISyntaxException, UnsupportedEncodingException {
         float targetResolution = (maxGeoX - minGeoX) / w;
         OsmLayerInfo.ResolutionInfo resolution = tileCacheLayerInfo.getNearestResolution(targetResolution);
-        
+
         int tileX = Math.round((minGeoX - tileCacheLayerInfo.getMinX()) / (resolution.value * w));
         int tileY = Math.round((tileCacheLayerInfo.getMaxY() - minGeoY) / (resolution.value * h));
 

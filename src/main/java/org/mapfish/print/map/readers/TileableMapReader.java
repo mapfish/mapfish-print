@@ -76,30 +76,22 @@ public abstract class TileableMapReader extends HTTPMapReader {
             // and KaMap, so they are treated differently here.
             final float tileMinGeoX;
             final float tileMinGeoY;
-            if (this instanceof TileCacheMapReader) {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("TileCacheMapReader min geo x and y calculation used");
-                }
-                tileMinGeoX = (float) (Math.floor((minGeoX - tileCacheLayerInfo.getMinX()) / tileGeoWidth) * tileGeoWidth) + tileCacheLayerInfo.getMinX();
-                tileMinGeoY = (float) (Math.floor((minGeoY - tileCacheLayerInfo.getMinY()) / tileGeoHeight) * tileGeoHeight) + tileCacheLayerInfo.getMinY();
-            } else if (this instanceof KaMapCacheMapReader || this instanceof KaMapMapReader) {
+            if (this instanceof KaMapCacheMapReader || this instanceof KaMapMapReader) {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("Kamap min geo x and y calculation used");
                 }
                 tileMinGeoX = (float) (Math.floor((minGeoX) / tileGeoWidth) * tileGeoWidth);
                 tileMinGeoY = (float) (Math.floor((minGeoY) / tileGeoHeight) * tileGeoHeight);
-            } else if (this instanceof WMTSMapReader) {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("WMTS min geo x and y calculation used");
-                }
-                tileMinGeoX = (float) (Math.floor((minGeoX - tileCacheLayerInfo.getMinX()) / tileGeoWidth) * tileGeoWidth) + tileCacheLayerInfo.getMinX();
-                tileMinGeoY = (float) (tileCacheLayerInfo.getMaxY() - ((Math.ceil((tileCacheLayerInfo.getMaxY() - minGeoY) / tileGeoHeight)) * tileGeoHeight));
             } else {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("Default min geo x and y calculation used");
                 }
-                tileMinGeoX = (float) (Math.floor((minGeoX - tileCacheLayerInfo.getMinX()) / tileGeoWidth) * tileGeoWidth) + tileCacheLayerInfo.getMinX();
-                tileMinGeoY = (float) (Math.floor((minGeoY - tileCacheLayerInfo.getMinY()) / tileGeoHeight) * tileGeoHeight) + tileCacheLayerInfo.getMinY();
+                tileMinGeoX = (float) (tileCacheLayerInfo.getOriginX() + (Math.floor(
+                    (minGeoX - tileCacheLayerInfo.getOriginX()) / tileGeoWidth
+                ) * tileGeoWidth));
+                tileMinGeoY = (float) (tileCacheLayerInfo.getOriginY() + (Math.floor(
+                    (minGeoY - tileCacheLayerInfo.getOriginY()) / tileGeoHeight
+                ) * tileGeoHeight));
             }
 
             offsetX = (minGeoX - tileMinGeoX) / transformer.getResolution();

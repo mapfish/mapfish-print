@@ -33,17 +33,18 @@ import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
 
 /**
- * Support for the protocol using directly the content of a TileCache directory.
+ * Support the tile layout z/x/y.<extension>.
+ *
  */
 public class XyzMapReader extends TileableMapReader {
-	public static class Factory implements MapReaderFactory {
-		@Override
-		public List<? extends MapReader> create(String type, RenderingContext context,
-				PJsonObject params) {
-			return Collections.singletonList(new XyzMapReader("t", context, params));
-		}
+    public static class Factory implements MapReaderFactory {
+        @Override
+        public List<? extends MapReader> create(String type, RenderingContext context,
+                PJsonObject params) {
+            return Collections.singletonList(new XyzMapReader("t", context, params));
+        }
     }
-	
+
     protected final String layer;
 
     protected XyzMapReader(String layer, RenderingContext context, PJsonObject params) {
@@ -51,7 +52,20 @@ public class XyzMapReader extends TileableMapReader {
         this.layer = layer;
         PJsonArray maxExtent = params.getJSONArray("maxExtent");
         PJsonArray tileSize = params.getJSONArray("tileSize");
-        tileCacheLayerInfo = new XyzLayerInfo(params.getJSONArray("resolutions"), tileSize.getInt(0), tileSize.getInt(1), maxExtent.getFloat(0), maxExtent.getFloat(1), maxExtent.getFloat(2), maxExtent.getFloat(3), params.getString("extension"));
+        PJsonArray tileOrigin = params.optJSONArray("tileOrigin");
+        String tileOriginCorner = params.optString("tileOriginCorner", "bl");
+        final float tileOriginX;
+        final float tileOriginY;
+        if (tileOrigin == null) {
+            tileOriginX = maxExtent.getFloat(0);
+            tileOriginY = maxExtent.getFloat(tileOriginCorner.charAt(0) == 't' ? 3 : 1);
+        }
+        else {
+            tileOriginX = tileOrigin.getFloat(0);
+            tileOriginY = tileOrigin.getFloat(1);
+        }
+        tileCacheLayerInfo = new XyzLayerInfo(params.getJSONArray("resolutions"), tileSize.getInt(0), tileSize.getInt(1), maxExtent.getFloat(0), maxExtent.getFloat(1), maxExtent.getFloat(2), maxExtent.getFloat(3),
+                params.getString("extension"), tileOriginX, tileOriginY);
     }
 
     protected TileRenderer.Format getFormat() {
@@ -65,7 +79,7 @@ public class XyzMapReader extends TileableMapReader {
     protected URI getTileUri(URI commonUri, Transformer transformer, float minGeoX, float minGeoY, float maxGeoX, float maxGeoY, long w, long h) throws URISyntaxException, UnsupportedEncodingException {
         float targetResolution = (maxGeoX - minGeoX) / w;
         XyzLayerInfo.ResolutionInfo resolution = tileCacheLayerInfo.getNearestResolution(targetResolution);
-        
+
         int tileX = Math.round((minGeoX - tileCacheLayerInfo.getMinX()) / (resolution.value * w));
         int tileY = Math.round((tileCacheLayerInfo.getMaxY() - minGeoY) / (resolution.value * h));
 
