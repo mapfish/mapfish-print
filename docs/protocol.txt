@@ -245,6 +245,7 @@ Support the TMS tile layout.
 * format (Required)
 * layer (Required)
 * resolutions (Required) Array of resolutions
+* tileOrigin (Optional) Object, tile origin.  Defaults to 0,0
 
 Xyz
 ---
