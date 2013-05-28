@@ -4,6 +4,8 @@ import com.lowagie.text.Document;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfWriter;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.PrintTestCase;
@@ -20,6 +22,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,6 +43,8 @@ public class XYZLayerTest extends PrintTestCase {
     private PdfWriter writer;
     private OutputStream outFile;
 
+    PJsonObject xyzSpec;
+
 
     public XYZLayerTest(String name) {
         super(name);
@@ -47,8 +52,8 @@ public class XYZLayerTest extends PrintTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        PJsonObject spec = MapPrinter.parseSpec(FileUtilities.readWholeTextFile(new File("samples/spec.json")));
-        spec.getInternalObj().put("units", "meters");
+      //  PJsonObject spec = MapPrinter.parseSpec(FileUtilities.readWholeTextFile(new File(XYZLayerTest.class.getClassLoader().getResource("samples/spec.json").getFile())));
+       // spec.getInternalObj().put("units", "meters");
 
         doc = new Document(PageSize.A4);
         String baseDir = getBaseDir();
@@ -63,13 +68,14 @@ public class XYZLayerTest extends PrintTestCase {
         Config config = new Config();
         config.setDpis(new TreeSet<Integer>(Arrays.asList(96, 190, 254)));
         config.setScales(new TreeSet<Integer>(Arrays.asList(20000, 25000, 100000, 500000, 4000000)));
-        context = new RenderingContext(doc, writer, config, spec, null, layout, Collections.<String, String>emptyMap());
-        doc.setMargins(MARGIN, MARGIN, MARGIN, MARGIN * 3);
-        doc.open();
-        doc.newPage();
-        final Paragraph title = new Paragraph("Test class=" + getClass().getName() + " method=" + getName());
-        title.setSpacingAfter(20);
-        doc.add(title);
+        context = new RenderingContext(doc, writer, config, null, null, layout, Collections.<String, String>emptyMap());
+
+
+
+        xyzSpec = MapPrinter.parseSpec(FileUtilities.readWholeTextFile(
+                new File(XYZLayerTest.class.getClassLoader().getResource("layers/layer_spec.json").getFile())
+                ));
+
     }
 
     protected void tearDown() throws Exception {
@@ -82,32 +88,38 @@ public class XYZLayerTest extends PrintTestCase {
         super.tearDown();
     }
 
-    @Test
-	public void uriWithoutFormatTest() {
-        xyzreader = new XyzMapReader("foo",context, new PJsonObject(null, null));
-        String format = null;
+    public void testUriWithoutFormat() throws IOException, JSONException {
 
-        assertTrue("Writing a test to confirm the uri_formatting process",true);
-	}
+        JSONObject xyz_full = xyzSpec.getInternalObj();
+        xyz_full.accumulate("path_format", null);
+        xyzSpec = new PJsonObject(xyz_full, "");
 
-    @Test
-    public void uriWithFormatTest() {
+        xyzreader = new XyzMapReader("foo", context, xyzSpec);
 
-        String format = "${z}_${x}_${y}_static.${extension}";
-
-        assertTrue("Writing a test to confirm the uri_formatting process",true);
+        assertTrue("Writing a test to confirm the uri_formatting process", true);
     }
 
-    private String getBaseDir(){
+    public void testUriWithFormat()  throws IOException, JSONException {
+
+        JSONObject xyz_full = xyzSpec.getInternalObj();
+        xyz_full.accumulate("path_format", "${z}_${x}_${y}_static.${extension}");
+        xyzSpec = new PJsonObject(xyz_full, "");
+
+        xyzreader = new XyzMapReader("foo", context, xyzSpec);
+
+        assertTrue("Writing a test to confirm the uri_formatting process", true);
+    }
+
+    private String getBaseDir() {
         //This test expects to be able to write files into the same directory the classes
         //are compiled to, in this case the build/classes/test directory
-        String expectedPath = "build"+File.separator + "classes" + File.separator + "test";
+        String expectedPath = "build" + File.separator + "classes" + File.separator + "test";
         String baseDir = XYZLayerTest.class.getClassLoader().getResource(".").getFile();
-        if(baseDir.indexOf("pulse-java.jar") != -1){
+        if (baseDir.indexOf("pulse-java.jar") != -1) {
             String[] paths = System.getProperty("java.class.path").split(File.pathSeparator);
 
-            for(String path : paths){
-                if(path.indexOf(expectedPath) != -1){
+            for (String path : paths) {
+                if (path.indexOf(expectedPath) != -1 || path.indexOf("out/test/mapfish-print") != -1) {
                     baseDir = path;
                 }
             }
