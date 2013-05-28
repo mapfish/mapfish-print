@@ -103,7 +103,6 @@ public class XYZLayerTest extends PrintTestCase {
 
 
         assertEquals("Default format (null path_format) did not get created correctly", expected_url, url);
-        assertTrue("Writing a test to confirm the uri_formatting process", true);
     }
 
     public void testUriWithFormat() throws IOException, JSONException, URISyntaxException {
@@ -121,7 +120,6 @@ public class XYZLayerTest extends PrintTestCase {
         String url = outputuri.getScheme() + outputuri.getHost() + outputuri.getPort() + outputuri.getPath();
 
         assertEquals("Custom format did not get created correctly", expected_url, url);
-        assertTrue("Writing a test to confirm the uri_formatting process", true);
     }
 
     private String getBaseDir() {
