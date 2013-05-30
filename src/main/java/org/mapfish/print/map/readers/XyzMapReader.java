@@ -87,7 +87,7 @@ public class XyzMapReader extends TileableMapReader {
         int tileY = Math.round((tileCacheLayerInfo.getMaxY() - minGeoY) / (resolution.value * h));
 
         StringBuilder path = new StringBuilder();
-        if (!commonUri.getPath().endsWith("/") && !this.path_format.startsWith("/")) {
+        if (!commonUri.getPath().endsWith("/")) {
             path.append('/');
         }
 
@@ -97,30 +97,38 @@ public class XyzMapReader extends TileableMapReader {
             path.append('/').append(tileY - 1);
             path.append('.').append(tileCacheLayerInfo.getExtension());
         } else {
-            path.append(this.path_format);
+            if(this.path_format.startsWith("/")){
+                path.append(this.path_format.substring(1));
+            }else{
+                path.append(this.path_format);
+            }
 
-            Pattern pattern = Pattern.compile("$\\{z\\}");
+            Pattern pattern = Pattern.compile("\\$\\{z\\}");
             Matcher matcher = pattern.matcher(path);
             while (matcher.find()) {
                 path.replace(matcher.start(), matcher.end(), String.format("%02d", resolution.index));
+                matcher = pattern.matcher(path);
             }
 
-            pattern = Pattern.compile("$\\{x\\}");
+            pattern = Pattern.compile("\\$\\{x\\}");
             matcher = pattern.matcher(path);
             while (matcher.find()) {
-                path.replace(matcher.start(), matcher.end(), String.format("d", tileX));
+                path.replace(matcher.start(), matcher.end(), new Integer(tileX).toString());
+                matcher = pattern.matcher(path);
             }
 
-            pattern = Pattern.compile("$\\{y\\}");
+            pattern = Pattern.compile("\\$\\{y\\}");
             matcher = pattern.matcher(path);
             while (matcher.find()) {
-                path.replace(matcher.start(), matcher.end(), String.format("d", tileY - 1));
+                path.replace(matcher.start(), matcher.end(), new Integer(tileY - 1).toString());
+                matcher = pattern.matcher(path);
             }
 
-            pattern = Pattern.compile("$\\{extension\\}");
+            pattern = Pattern.compile("\\$\\{extension\\}");
             matcher = pattern.matcher(path);
             while (matcher.find()) {
                 path.replace(matcher.start(), matcher.end(), tileCacheLayerInfo.getExtension());
+                matcher = pattern.matcher(path);
             }
         }
 
