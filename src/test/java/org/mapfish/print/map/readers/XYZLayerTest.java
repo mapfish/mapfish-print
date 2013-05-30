@@ -12,6 +12,7 @@ import org.mapfish.print.PrintTestCase;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.ShellMapPrinter;
 import org.mapfish.print.config.Config;
+import org.mapfish.print.config.HostMatcher;
 import org.mapfish.print.config.layout.Block;
 import org.mapfish.print.config.layout.Layout;
 import org.mapfish.print.config.layout.MainPage;
@@ -69,6 +70,9 @@ public class XYZLayerTest extends PrintTestCase {
         Config config = new Config();
         config.setDpis(new TreeSet<Integer>(Arrays.asList(96, 190, 254)));
         config.setScales(new TreeSet<Integer>(Arrays.asList(20000, 25000, 100000, 500000, 4000000)));
+        List<HostMatcher> hosts = new ArrayList<HostMatcher>(1);
+        hosts.add(HostMatcher.ACCEPT_ALL);
+        config.setHosts(hosts);
         context = new RenderingContext(doc, writer, config, null, null, layout, Collections.<String, String>emptyMap());
 
 
@@ -79,7 +83,6 @@ public class XYZLayerTest extends PrintTestCase {
     }
 
     protected void tearDown() throws Exception {
-        doc.close();
         writer.close();
         outFile.close();
 
@@ -90,7 +93,7 @@ public class XYZLayerTest extends PrintTestCase {
 
     public void testUriWithoutFormat() throws IOException, JSONException, URISyntaxException {
         String test_format = null;
-        String expected_url = xyzSpec.getString("baseURL") + "/z/0/0.jpg";
+        String expected_url = xyzSpec.getString("baseURL") + "/07/64/63.gif";
 
         JSONObject xyz_full = xyzSpec.getInternalObj();
         xyz_full.accumulate("path_format", test_format);
@@ -99,15 +102,14 @@ public class XYZLayerTest extends PrintTestCase {
         xyzreader = new XyzMapReader("foo", context, xyzSpec);
 
         URI outputuri = xyzreader.getTileUri(URIUtils.addParams(xyzreader.baseUrl, new HashMap<String, List<String>>(), new MatchAllSet<String>()), null, -180, -90, 180, 90, 256, 256);
-        String url = outputuri.getScheme() + outputuri.getHost() + outputuri.getPort() + outputuri.getPath();
-
+        String url = outputuri.getScheme() +"://"+ outputuri.getHost() + outputuri.getPath();
 
         assertEquals("Default format (null path_format) did not get created correctly", expected_url, url);
     }
 
     public void testUriWithFormat() throws IOException, JSONException, URISyntaxException {
         String test_format = "${z}_${x}_${y}_static.${extension}";
-        String expected_url = xyzSpec.getString("baseURL") + "/z_0_o_static.jpg";
+        String expected_url = xyzSpec.getString("baseURL") + "/07_64_63_static.gif";
 
 
         JSONObject xyz_full = xyzSpec.getInternalObj();
@@ -117,7 +119,7 @@ public class XYZLayerTest extends PrintTestCase {
         xyzreader = new XyzMapReader("foo", context, xyzSpec);
 
         URI outputuri = xyzreader.getTileUri(URIUtils.addParams(xyzreader.baseUrl, new HashMap<String, List<String>>(), new MatchAllSet<String>()), null, -180, -90, 180, 90, 256, 256);
-        String url = outputuri.getScheme() + outputuri.getHost() + outputuri.getPort() + outputuri.getPath();
+        String url = outputuri.getScheme() +"://"+ outputuri.getHost() + outputuri.getPath();
 
         assertEquals("Custom format did not get created correctly", expected_url, url);
     }
