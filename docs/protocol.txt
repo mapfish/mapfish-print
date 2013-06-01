@@ -244,7 +244,11 @@ Support the TMS tile layout.
 * format (Required)
 * layer (Required)
 * resolutions (Required) Array of resolutions
+* tileOrigin (Optional) Object, tile origin.  Defaults to 0,0
 
+Resources:
+* Quick intro to TMS requests: http://geowebcache.org/docs/current/services/tms.html
+* TMS Spec (Not an Official Standard): http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification
 Xyz
 ---
 Type: xyz
