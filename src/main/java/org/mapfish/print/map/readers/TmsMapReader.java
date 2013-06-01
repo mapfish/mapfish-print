@@ -62,9 +62,10 @@ public class TmsMapReader extends TileableMapReader {
         }
         layerName = params.getString("layer");
 
-        PJsonObject tileOrigin = ( params.has("tileOrigin") ? params.getJSONObject("tileOrigin") : params.getJSONObject("origin") );
+        PJsonObject tileOrigin = ( params.has("tileOrigin") ? params.getJSONObject("tileOrigin") : params.optJSONObject("origin") );
         final float originX;
         final float originY ;
+
         if(tileOrigin == null || (!tileOrigin.has("x") && !tileOrigin.has("lon"))){
             originX = 0.0f;
         }else{
