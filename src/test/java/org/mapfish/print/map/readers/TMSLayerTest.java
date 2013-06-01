@@ -100,8 +100,12 @@ public class TMSLayerTest extends PrintTestCase {
 
     public void testOriginXY() throws JSONException{
         JSONObject tms_full = tmsSpec.getInternalObj();
+        Map<String, Float> origin = new HashMap<String, Float>();
+        origin.put("x",-10.0f);
+        origin.put("y",-10.0f);
+
         tms_full.accumulate("tileOrigin", null);
-        tms_full.accumulate("origin", null);
+        tms_full.accumulate("origin", origin);
         tmsSpec = new PJsonObject(tms_full, "");
 
         tmsreader = new TmsMapReader("foo", context, tmsSpec);
@@ -112,7 +116,11 @@ public class TMSLayerTest extends PrintTestCase {
 
     public void testTileOriginXY() throws JSONException{
         JSONObject tms_full = tmsSpec.getInternalObj();
-        tms_full.accumulate("tileOrigin", null);
+        Map<String, Float> origin = new HashMap<String, Float>();
+        origin.put("x",-10.0f);
+        origin.put("y",-10.0f);
+
+        tms_full.accumulate("tileOrigin", new JSONObject(origin));
         tms_full.accumulate("origin", null);
         tmsSpec = new PJsonObject(tms_full, "");
 
@@ -124,7 +132,11 @@ public class TMSLayerTest extends PrintTestCase {
 
     public void testOriginLatLon() throws JSONException{
         JSONObject tms_full = tmsSpec.getInternalObj();
-        tms_full.accumulate("tileOrigin", null);
+        Map<String, Float> origin = new HashMap<String, Float>();
+        origin.put("lat",-10.0f);
+        origin.put("lon",-10.0f);
+
+        tms_full.accumulate("tileOrigin", new JSONObject(origin));
         tms_full.accumulate("origin", null);
         tmsSpec = new PJsonObject(tms_full, "");
 
