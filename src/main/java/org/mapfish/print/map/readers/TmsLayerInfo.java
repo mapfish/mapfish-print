@@ -30,8 +30,17 @@ public class TmsLayerInfo extends TileCacheLayerInfo {
         super(resolutions, width, height, minX, minY, maxX, maxY, format);
     }
 
+    public TmsLayerInfo(String resolutions, int width, int height, float minX, float minY, float maxX, float maxY, String format, float originX, float originY) {
+        super(resolutions, width, height, minX, minY, maxX, maxY, format, originX, originY);
+    }
+
     public TmsLayerInfo(PJsonArray resolutions, int width, int height, float minX, float minY, float maxX, float maxY, String extension) {
         super(resolutions, width, height, minX, minY, maxX, maxY, extension);
+    }
+
+    public TmsLayerInfo(PJsonArray resolutions, int width, int height, float minX, float minY, float maxX, float maxY, String extension,
+                        float originX, float originY) {
+        super(resolutions, width, height, minX, minY, maxX, maxY, extension, originX, originY);
     }
 
     @Override
