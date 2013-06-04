@@ -222,5 +222,7 @@ public class ShellMapPrinter {
             }
             System.exit(-2);
         }
+        System.exit(0);
+
     }
 }
