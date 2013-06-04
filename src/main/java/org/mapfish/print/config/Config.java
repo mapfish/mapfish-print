@@ -20,6 +20,7 @@
 package org.mapfish.print.config;
 
 //import org.apache.commons.httpclient.HostConfiguration;
+import java.io.Closeable;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
@@ -30,9 +31,9 @@ import java.net.UnknownHostException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.HashMap;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
@@ -56,7 +57,7 @@ import org.pvalsecc.concurrent.OrderedResultsExecutor;
 /**
  * Bean mapping the root of the configuration file.
  */
-public class Config {
+public class Config implements Closeable {
     public static final Logger LOGGER = Logger.getLogger(Config.class);
 
     private Layouts layouts;
@@ -313,14 +314,19 @@ public class Config {
     /**
      * Stop all the threads and stuff used for this config.
      */
-    public synchronized void stop() {
-        WMSServerInfo.clearCache();
-        if (mapRenderingExecutor != null) {
-            mapRenderingExecutor.stop();
-        }
-
-        if(connectionManager != null) {
-            connectionManager.shutdown();
+    public synchronized void close() {
+        try {
+            WMSServerInfo.clearCache();
+        } finally {
+            try {
+                if (mapRenderingExecutor != null) {
+                    mapRenderingExecutor.stop();
+                }
+            } finally {
+                if (connectionManager != null) {
+                    connectionManager.shutdown();
+                }
+            }
         }
     }
 

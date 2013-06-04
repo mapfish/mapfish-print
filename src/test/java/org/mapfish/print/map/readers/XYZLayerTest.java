@@ -68,17 +68,19 @@ public class XYZLayerTest extends PrintTestCase {
         mainPage.setItems(new ArrayList<Block>(Arrays.asList(mapBlock)));
         layout.setMainPage(mainPage);
         Config config = new Config();
-        config.setDpis(new TreeSet<Integer>(Arrays.asList(96, 190, 254)));
-        config.setScales(new TreeSet<Integer>(Arrays.asList(20000, 25000, 100000, 500000, 4000000)));
-        List<HostMatcher> hosts = new ArrayList<HostMatcher>(1);
-        hosts.add(HostMatcher.ACCEPT_ALL);
-        config.setHosts(hosts);
-        context = new RenderingContext(doc, writer, config, null, null, layout, Collections.<String, String>emptyMap());
+        try {
+            config.setDpis(new TreeSet<Integer>(Arrays.asList(96, 190, 254)));
+            config.setScales(new TreeSet<Integer>(Arrays.asList(20000, 25000, 100000, 500000, 4000000)));
+            List<HostMatcher> hosts = new ArrayList<HostMatcher>(1);
+            hosts.add(HostMatcher.ACCEPT_ALL);
+            config.setHosts(hosts);
+            context = new RenderingContext(doc, writer, config, null, null, layout, Collections.<String, String> emptyMap());
 
-
-        xyzSpec = MapPrinter.parseSpec(FileUtilities.readWholeTextFile(
-                new File(XYZLayerTest.class.getClassLoader().getResource("layers/layer_spec.json").getFile())
-        ));
+            xyzSpec = MapPrinter.parseSpec(FileUtilities.readWholeTextFile(new File(XYZLayerTest.class.getClassLoader()
+                    .getResource("layers/layer_spec.json").getFile())));
+        } finally {
+            config.close();
+        }
 
     }
 
