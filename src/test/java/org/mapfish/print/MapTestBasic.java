@@ -21,14 +21,9 @@ import java.util.*;
 
 public abstract class MapTestBasic extends TestCase {
 
-    private static final int MARGIN = 40;
-
     private final Logger logger = Logger.getLogger(MapTestBasic.class);
 
-    protected Document doc;
     protected RenderingContext context;
-    private PdfWriter writer;
-    private OutputStream outFile;
 
     public MapTestBasic(String name) {
         super(name);
@@ -39,13 +34,11 @@ public abstract class MapTestBasic extends TestCase {
         BasicConfigurator.configure(new ConsoleAppender(
                 new PatternLayout("%d{HH:mm:ss.SSS} [%t] %-5p %30.30c - %m%n")));
         Logger.getRootLogger().setLevel(Level.DEBUG);
-        //  PJsonObject spec = MapPrinter.parseSpec(FileUtilities.readWholeTextFile(new File(XYZLayerTest.class.getClassLoader().getResource("samples/spec.json").getFile())));
-        // spec.getInternalObj().put("units", "meters");
 
-        doc = new Document(PageSize.A4);
+        Document doc = new Document(PageSize.A4);
         String baseDir = getBaseDir();
-        outFile = new FileOutputStream(baseDir + getClass().getSimpleName() + "_" + getName() + ".pdf");
-        writer = PdfWriter.getInstance(doc, outFile);
+        OutputStream outFile = new FileOutputStream(baseDir + getClass().getSimpleName() + "_" + getName() + ".pdf");
+        PdfWriter writer = PdfWriter.getInstance(doc, outFile);
         writer.setFullCompression();
         Layout layout = new Layout();
         MainPage mainPage = new MainPage();
@@ -68,8 +61,9 @@ public abstract class MapTestBasic extends TestCase {
     protected void tearDown() throws Exception {
         BasicConfigurator.resetConfiguration();
 
-        writer.close();
-        outFile.close();
+        context.getWriter().close();
+        //Do I need to close the outfile stream?
+        //context.getWriter().
 
         context = null;
 
