@@ -72,6 +72,7 @@ public class OrderedResultsExecutor<RESULT> {
         for (int i = 0; i < threads.length; i++) {
             if(threads[i]==null) {
                 Thread thread = threads[i] = new Thread(new Runner(), name+i);
+                thread.setDaemon(true);
                 thread.start();
             }
         }

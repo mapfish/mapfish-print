@@ -207,7 +207,7 @@ public class MapPrinter {
      */
     @PreDestroy
     public void stop() {
-        config.stop();
+        config.close();
     }
 
     public String getOutputFilename(String layout, String defaultName) {

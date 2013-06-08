@@ -102,8 +102,12 @@ public abstract class PdfTestCase extends PrintTestCase {
         mainPage.setItems(new ArrayList<Block>(Arrays.asList(mapBlock)));
         layout.setMainPage(mainPage);
         Config config = new Config();
+        try {
         config.setDpis(new TreeSet<Integer>(Arrays.asList(96, 190, 254)));
         config.setScales(new TreeSet<Integer>(Arrays.asList(20000, 25000, 100000, 500000, 4000000)));
         context = new RenderingContext(doc, writer, config, spec, null, layout, Collections.<String, String>emptyMap());
+        } finally {
+            config.close();
+        }
     }
 }
