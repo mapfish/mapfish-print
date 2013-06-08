@@ -19,7 +19,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.*;
 
-public class MapTestBasic  extends TestCase {
+public class MapTestBasic extends TestCase {
 
     private static final int MARGIN = 40;
 
@@ -34,7 +34,7 @@ public class MapTestBasic  extends TestCase {
         super(name);
     }
 
-    protected void setUp() throws Exception{
+    protected void setUp() throws Exception {
         super.setUp();
         BasicConfigurator.configure(new ConsoleAppender(
                 new PatternLayout("%d{HH:mm:ss.SSS} [%t] %-5p %30.30c - %m%n")));
@@ -53,13 +53,16 @@ public class MapTestBasic  extends TestCase {
         mainPage.setItems(new ArrayList<Block>(Arrays.asList(mapBlock)));
         layout.setMainPage(mainPage);
         Config config = new Config();
-        config.setDpis(new TreeSet<Integer>(Arrays.asList(96, 190, 254)));
-        config.setScales(new TreeSet<Integer>(Arrays.asList(20000, 25000, 100000, 500000, 4000000)));
-        List<HostMatcher> hosts = new ArrayList<HostMatcher>(1);
-        hosts.add(HostMatcher.ACCEPT_ALL);
-        config.setHosts(hosts);
-        context = new RenderingContext(doc, writer, config, null, null, layout, Collections.<String, String>emptyMap());
-
+        try {
+            config.setDpis(new TreeSet<Integer>(Arrays.asList(96, 190, 254)));
+            config.setScales(new TreeSet<Integer>(Arrays.asList(20000, 25000, 100000, 500000, 4000000)));
+            List<HostMatcher> hosts = new ArrayList<HostMatcher>(1);
+            hosts.add(HostMatcher.ACCEPT_ALL);
+            config.setHosts(hosts);
+            context = new RenderingContext(doc, writer, config, null, null, layout, Collections.<String, String>emptyMap());
+        } finally {
+            config.close();
+        }
     }
 
     protected void tearDown() throws Exception {
@@ -73,11 +76,11 @@ public class MapTestBasic  extends TestCase {
         super.tearDown();
     }
 
-    public void succeeded(FrameworkMethod method){
-        logger.info("Test "+ method.getName() + "() succeeded.");
+    public void succeeded(FrameworkMethod method) {
+        logger.info("Test " + method.getName() + "() succeeded.");
     }
 
-    public void failed(Throwable e, FrameworkMethod method){
+    public void failed(Throwable e, FrameworkMethod method) {
         logger.error("Test " + method.getName() + "() failed. " + e.getMessage(), e);
     }
 
