@@ -97,39 +97,16 @@ public class XyzMapReader extends TileableMapReader {
             path.append('/').append(tileY - 1);
             path.append('.').append(tileCacheLayerInfo.getExtension());
         } else {
-            if(this.path_format.startsWith("/")){
+            if (this.path_format.startsWith("/")) {
                 path.append(this.path_format.substring(1));
-            }else{
+            } else {
                 path.append(this.path_format);
             }
 
-            Pattern pattern = Pattern.compile("\\$\\{z\\}");
-            Matcher matcher = pattern.matcher(path);
-            while (matcher.find()) {
-                path.replace(matcher.start(), matcher.end(), String.format("%02d", resolution.index));
-                matcher = pattern.matcher(path);
-            }
-
-            pattern = Pattern.compile("\\$\\{x\\}");
-            matcher = pattern.matcher(path);
-            while (matcher.find()) {
-                path.replace(matcher.start(), matcher.end(), new Integer(tileX).toString());
-                matcher = pattern.matcher(path);
-            }
-
-            pattern = Pattern.compile("\\$\\{y\\}");
-            matcher = pattern.matcher(path);
-            while (matcher.find()) {
-                path.replace(matcher.start(), matcher.end(), new Integer(tileY - 1).toString());
-                matcher = pattern.matcher(path);
-            }
-
-            pattern = Pattern.compile("\\$\\{extension\\}");
-            matcher = pattern.matcher(path);
-            while (matcher.find()) {
-                path.replace(matcher.start(), matcher.end(), tileCacheLayerInfo.getExtension());
-                matcher = pattern.matcher(path);
-            }
+             url_regex_replace("z", path, resolution.index);
+             url_regex_replace("x", path, new Integer(tileX));
+             url_regex_replace("y", path, new Integer(tileY - 1));
+             url_regex_replace("extension", path, tileCacheLayerInfo.getExtension());
         }
 
         return new URI(commonUri.getScheme(), commonUri.getUserInfo(), commonUri.getHost(), commonUri.getPort(), commonUri.getPath() + path, commonUri.getQuery(), commonUri.getFragment());
@@ -146,5 +123,25 @@ public class XyzMapReader extends TileableMapReader {
 
     public String toString() {
         return layer;
+    }
+
+    private void url_regex_replace(String needle, StringBuilder haystack, Object replaceValue) {
+        Pattern pattern = Pattern.compile("\\$\\{("+needle+"+)\\}");
+        Matcher matcher = pattern.matcher(haystack);
+        while (matcher.find()) {
+            int length = 1;
+            if (matcher.groupCount() > 0) {
+                length = matcher.group(1).length();
+            }
+            String value = "";
+            if (needle.equals("extension")) {
+                value = (String) replaceValue;
+            } else {
+                value = String.format("%0" + length + "d", replaceValue);
+            }
+            haystack.replace(matcher.start(), matcher.end(), value);
+
+            matcher = pattern.matcher(haystack);
+        }
     }
 }
