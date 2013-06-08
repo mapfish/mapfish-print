@@ -1,7 +1,5 @@
 package org.mapfish.print.map.readers;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.pdf.PdfWriter;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.*;
@@ -9,22 +7,12 @@ import org.mapfish.print.utils.PJsonObject;
 import org.pvalsecc.misc.FileUtilities;
 
 import java.io.File;
-import java.io.OutputStream;
 import java.util.*;
 
 public class TMSLayerTest extends MapTestBasic {
 
-    private static final int MARGIN = 40;
-
-
-    private TmsMapReader tmsreader;
-    protected Document doc;
-    protected RenderingContext context;
-    private PdfWriter writer;
-    private OutputStream outFile;
-
     PJsonObject tmsSpec;
-
+    TmsMapReader tmsreader;
 
     public TMSLayerTest(String name) {
         super(name);

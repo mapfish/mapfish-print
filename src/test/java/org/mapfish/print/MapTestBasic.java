@@ -19,7 +19,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.*;
 
-public class MapTestBasic extends TestCase {
+public abstract class MapTestBasic extends TestCase {
 
     private static final int MARGIN = 40;
 
