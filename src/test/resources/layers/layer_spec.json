@@ -2,7 +2,6 @@
     "baseURL": "http://www.example.com",
     "opacity": 1,
     "singleTile": false,
-    "type": "XYZ",
     "layer": null,
     "maxExtent": [-20037508.342789, -20037508.342789, 20037508.342789, 20037508.342789],
     "tileSize": [256, 256],
