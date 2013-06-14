@@ -291,8 +291,12 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
 
         Map<String, String> headers = new HashMap<String, String>();
-        headers.put("Referer", httpServletRequest.getHeader("Referer"));
-        headers.put("Cookie", httpServletRequest.getHeader("Cookie"));
+        if (httpServletRequest.getHeader("Referer") != null) {
+            headers.put("Referer", httpServletRequest.getHeader("Referer"));
+        }
+        if (httpServletRequest.getHeader("Cookie") != null) {
+            headers.put("Cookie", httpServletRequest.getHeader("Cookie"));
+        }
 
         MapPrinter mapPrinter = getMapPrinter(app);
         final OutputFormat outputFormat = mapPrinter.getOutputFormat(specJson);
