@@ -62,8 +62,6 @@ public abstract class MapTestBasic extends TestCase {
         BasicConfigurator.resetConfiguration();
 
         context.getWriter().close();
-        //Do I need to close the outfile stream?
-        //context.getWriter().
 
         context = null;
 
