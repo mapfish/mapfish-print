@@ -264,7 +264,7 @@ Support the tile layout z/x/y.<extension>.
 * extension (Required) file extension (Required) file extension
 * tileOrigin (Optional) Array, tile origine e.g. [420000, 350000]
 * tileOriginCorner 'tl' or 'bl' (Defaults to 'bl')
-* path_format (Optional) url fragment used to construct the tile location. Can support variable replacement of ${x}, ${y}, ${z} and ${extension}. Defaults to z/x/y.extension format.  You can use multiple "letters" to indicate a replacable pattern (aka, ${zzzz} will ensure the z variable is 0 padded to have a length of AT LEAST 4 characters).
+* path_format (Optional) url fragment used to construct the tile location. Can support variable replacement of ${x}, ${y}, ${z} and ${extension}. Defaults to zz/x/y.extension format.  You can use multiple "letters" to indicate a replacable pattern (aka, ${zzzz} will ensure the z variable is 0 padded to have a length of AT LEAST 4 characters).
 
 Osm
 ---
