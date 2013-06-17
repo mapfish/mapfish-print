@@ -61,7 +61,7 @@ public class XYZLayerTest extends MapTestBasic {
         String expected_url = xyzSpec.getString("baseURL") + "/07/64/63.gif";
 
         JSONObject xyz_full = xyzSpec.getInternalObj();
-        xyz_full.accumulate("path_format", test_format);
+        xyz_full.put("path_format", test_format);
         xyzSpec = new PJsonObject(xyz_full, "");
 
         xyzreader = new XyzMapReader("foo", context, xyzSpec);
@@ -71,21 +71,49 @@ public class XYZLayerTest extends MapTestBasic {
         assertEquals("Default format (null path_format) did not get created correctly", expected_url, outputuri.toURL().toString());
     }
 
-    public void testUriWithFormat() throws IOException, JSONException, URISyntaxException {
+    public void testUriWithBasicFormat() throws IOException, JSONException, URISyntaxException {
         String test_format = "${z}_${x}_${y}_static.${extension}";
-        String expected_url = xyzSpec.getString("baseURL") + "/07_64_63_static.gif";
+        String expected_url = xyzSpec.getString("baseURL") + "/7_64_63_static.gif";
 
 
         JSONObject xyz_full = xyzSpec.getInternalObj();
-        xyz_full.accumulate("path_format", test_format);
+        xyz_full.put("path_format", test_format);
         xyzSpec = new PJsonObject(xyz_full, "");
 
         xyzreader = new XyzMapReader("foo", context, xyzSpec);
 
         URI outputuri = xyzreader.getTileUri(URIUtils.addParams(xyzreader.baseUrl, new HashMap<String, List<String>>(), new MatchAllSet<String>()), null, -180, -90, 180, 90, 256, 256);
 
-        assertEquals("Custom format did not get created correctly", expected_url, outputuri.toURL().toString());
+        assertEquals("Custom format without any string formatter did not get created correctly", expected_url, outputuri.toURL().toString());
     }
 
+    public void testUriWithDigitFormat() throws IOException, JSONException, URISyntaxException {
+        String test_format = "${zzz}_${x}_${yy}_static.${extension}";
+        String expected_url = xyzSpec.getString("baseURL") + "/007_64_63_static.gif";
 
+
+        JSONObject xyz_full = xyzSpec.getInternalObj();
+        xyz_full.put("path_format", test_format);
+        xyzSpec = new PJsonObject(xyz_full, "");
+
+        xyzreader = new XyzMapReader("foo", context, xyzSpec);
+
+        URI outputuri = xyzreader.getTileUri(URIUtils.addParams(xyzreader.baseUrl, new HashMap<String, List<String>>(), new MatchAllSet<String>()), null, -180, -90, 180, 90, 256, 256);
+
+        assertEquals("Custom format relying on the string formatter did not get created correctly", expected_url, outputuri.toURL().toString());
+
+        //Test another format
+        test_format = "${zzzz}_${xx}_${yyy}_static.${extension}";
+        expected_url = xyzSpec.getString("baseURL") + "/0007_64_063_static.gif";
+
+        xyz_full.put("path_format", test_format);
+        xyzSpec = new PJsonObject(xyz_full, "");
+
+        xyzreader = new XyzMapReader("foo", context, xyzSpec);
+
+        outputuri = xyzreader.getTileUri(URIUtils.addParams(xyzreader.baseUrl, new HashMap<String, List<String>>(), new MatchAllSet<String>()), null, -180, -90, 180, 90, 256, 256);
+
+        assertEquals("Custom format relying on the string formatter did not get created correctly", expected_url, outputuri.toURL().toString());
+
+    }
 }
