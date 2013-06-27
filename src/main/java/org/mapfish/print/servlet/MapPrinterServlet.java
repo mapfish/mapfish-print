@@ -137,17 +137,9 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
         if (httpServletRequest.getMethod() == "POST") {
             try {
-                purgeOldTemporaryFiles();
-    
                 spec = getSpecFromPostBody(httpServletRequest);
-                tempFile = doCreatePDFFile(spec, httpServletRequest);
-                if (tempFile == null) {
-                    error(httpServletResponse, "Missing 'spec' parameter", 500);
-                    return;
-                }
             } catch (Throwable e) {
-                deleteFile(tempFile);
-                error(httpServletResponse, e);
+                error(httpServletResponse, "Missing 'spec' parameter", 500);
                 return;
             }
         } else {
