@@ -67,6 +67,11 @@ public abstract class GeometriesRenderer<T extends Geometry> {
         dc.saveState();
         try {
             renderer.renderImpl(context, dc, style, geometry, affineTransform);
+        } finally {
+            dc.restoreState();
+        }
+        dc.saveState();
+        try {
             LabelRenderer.applyStyle(context, dc, style, geometry, affineTransform);
         } finally {
             dc.restoreState();
