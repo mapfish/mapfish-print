@@ -138,8 +138,8 @@ public class MapPrinterServlet extends BaseMapServlet {
         if (httpServletRequest.getMethod() == "POST") {
             try {
                 spec = getSpecFromPostBody(httpServletRequest);
-            } catch (Throwable e) {
-                error(httpServletResponse, "Missing 'spec' parameter", 500);
+            } catch (IOException e) {
+                error(httpServletResponse, "Missing 'spec' in request body", 500);
                 return;
             }
         } else {
