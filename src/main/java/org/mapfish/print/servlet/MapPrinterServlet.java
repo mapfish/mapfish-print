@@ -94,7 +94,9 @@ public class MapPrinterServlet extends BaseMapServlet {
 
     protected void doPost(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
         final String additionalPath = httpServletRequest.getPathInfo();
-        if (additionalPath.equals(CREATE_URL)) {
+        if (additionalPath.equals(PRINT_URL)) {
+            createAndGetPDF(httpServletRequest, httpServletResponse);
+        } else if (additionalPath.equals(CREATE_URL)) {
             createPDF(httpServletRequest, httpServletResponse, getBaseUrl(httpServletRequest));
         } else {
             error(httpServletResponse, "Unknown method: " + additionalPath, 404);
@@ -126,18 +128,28 @@ public class MapPrinterServlet extends BaseMapServlet {
      */
     protected void createAndGetPDF(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         //get the spec from the query
+        TempFile tempFile = null;
+        String spec = null;
         try {
             httpServletRequest.setCharacterEncoding("UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-        final String spec = httpServletRequest.getParameter("spec");
+        if (httpServletRequest.getMethod() == "POST") {
+            try {
+                spec = getSpecFromPostBody(httpServletRequest);
+            } catch (IOException e) {
+                error(httpServletResponse, "Missing 'spec' in request body", 500);
+                return;
+            }
+        } else {
+            spec = httpServletRequest.getParameter("spec");
+        }
         if (spec == null) {
             error(httpServletResponse, "Missing 'spec' parameter", 500);
             return;
         }
 
-        TempFile tempFile = null;
         try {
             tempFile = doCreatePDFFile(spec, httpServletRequest);
             sendPdfFile(httpServletResponse, tempFile, Boolean.parseBoolean(httpServletRequest.getParameter("inline")));
