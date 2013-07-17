@@ -61,6 +61,8 @@ print.pdf
 HTTP command::
 
   GET {PRINT_URL}/print.pdf?spec={SPEC}
+     or
+  POST {PRINT_URL}/print.pdf    with {SPEC} in the request body
 
 The "SPEC" parameter is a JSON structure like that:
 
@@ -215,6 +217,7 @@ Standard mode:
 * format (Optional, Required id requestEncoding is 'KVP')
 
 Simple mode:
+
 * baseURL base URL without the version.
 * layer (Required)
 * version (Required)
