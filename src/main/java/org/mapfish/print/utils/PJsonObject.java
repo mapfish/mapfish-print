@@ -178,7 +178,7 @@ public class PJsonObject extends PJsonElement {
             final Iterator<String> iterator = keys();
             while (iterator.hasNext()) {
                 String key = iterator.next();
-                if (!other.getString(key).equals(getString(key))) {
+                if (!getString(key).equals(other.optString(key))) {
                     return false;
                 }
             }
