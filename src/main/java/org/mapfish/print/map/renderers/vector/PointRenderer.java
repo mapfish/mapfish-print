@@ -132,7 +132,9 @@ public class PointRenderer extends GeometriesRenderer<Point> {
                 Image image = PDFUtils.createImage(context, width * f, height * f, new URI(style.getString("externalGraphic")), 0.0f);
                 image.setRotationDegrees(-rotation);
                 // fix for height: because the coordinate system is mirrored, we need to move the image by height, and then subtract the offset
-                image.setAbsolutePosition((float) coordinate.x + offsetX * f, (float) coordinate.y - height * f - offsetY * f);
+                float rotationOffsetX = (image.getScaledWidth() - image.getPlainWidth())/2.0f;
+                float rotationOffsetY = (image.getScaledHeight() - image.getPlainHeight())/2.0f;
+                image.setAbsolutePosition((float) coordinate.x + offsetX * f - rotationOffsetX, (float) coordinate.y - height * f - offsetY * f -rotationOffsetY);
                 dc.addImage(image);
             } catch (BadElementException e) {
                 context.addError(e);
