@@ -43,6 +43,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONWriter;
+import org.mapfish.print.Constants;
 import org.mapfish.print.InvalidValueException;
 import org.mapfish.print.PDFUtils;
 import org.mapfish.print.config.layout.Layout;
@@ -107,6 +108,7 @@ public class Config implements Closeable {
 	private OutputFactory outputFactory;
 
 	private MapReaderFactoryFinder mapReaderFactoryFinder;
+    private String brokenUrlPlaceholder = Constants.ImagePlaceHolderConstants.THROW;
 
     public Config() {
         hosts.add(new LocalHostMatcher());
@@ -509,5 +511,13 @@ public class Config implements Closeable {
             }
         }
         return false;
+    }
+
+    public void setBrokenUrlPlaceholder(String brokenUrlPlaceholder) {
+        this.brokenUrlPlaceholder = brokenUrlPlaceholder;
+    }
+
+    public String getBrokenUrlPlaceholder() {
+        return brokenUrlPlaceholder;
     }
 }

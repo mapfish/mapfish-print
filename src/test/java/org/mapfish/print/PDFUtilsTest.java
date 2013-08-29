@@ -81,4 +81,18 @@ public class PDFUtilsTest extends PdfTestCase {
             assertEquals("Error (status=500) while reading the image from " + uri + ": Server error", ex.getMessage());
         }
     }
+
+    public void testPlaceholder() throws URISyntaxException, IOException, DocumentException {
+        URI uri = new URI("http://localhost:" + PORT + "/500");
+        try {
+            doc.newPage();
+            PDFUtils.getImageDirect(context, uri);
+            fail("Supposed to have thrown an IOException");
+        } catch (IOException ex) {
+            //expected
+            assertEquals("Error (status=500) while reading the image from " + uri + ": Server error", ex.getMessage());
+        }
+    }
+
+
 }

@@ -20,11 +20,23 @@
 package org.mapfish.print;
 
 /**
+ * Strings used in configurations etc...
  * User: jeichar
  * Date: Sep 30, 2010
  * Time: 4:27:46 PM
  */
-public class Constants {
-    public static final String JSON_LAYOUT_KEY = "layout";
-    public static final String OUTPUT_FILENAME_KEY = "outputFilename";
+public interface Constants {
+    /**
+     * The layout tag in the json spec file.
+     */
+    String JSON_LAYOUT_KEY = "layout";
+    /**
+     * The output filename in the json spec file.
+     */
+    String OUTPUT_FILENAME_KEY = "outputFilename";
+    public interface ImagePlaceHolderConstants {
+        String THROW = "throw";
+        String DEFAULT = "default";
+        String DEFAULT_ERROR_IMAGE = "default_error.png";
+    }
 }

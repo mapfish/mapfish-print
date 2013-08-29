@@ -56,6 +56,7 @@ Here is the general structure:
   ?socketTimeout: 180000              MF_V1.2
   ?outputFilename: Mapfish-print      MF_V1.2
   ?disableScaleLocking: false
+  ?brokenUrlPlaceholder: default      MF_V2.0
 
   ?security:
   ?  - !basicAuth
@@ -125,6 +126,12 @@ If the 'outputFilename' parameter is defined in the main body then that name wil
 * outputFilename: "host-${yyMMdd-hhmmss}"# results in host-111213-011154.pdf (actual output depends on local of server)
 
 "disableScaleLocking" allows you to bypass the choosing of scale from the available factors, and simply use the suggested value produced inside MapBlock.java.
+
+"brokenUrlPlaceholder" the placeholder image to use in the case of a broken url.  By default, when a url request fails, an error is thrown and the pdf process terminates.  However if this parameter is set then instead a placeholder image is returned.  
+Non-null values are:
+  * "default" - use the system default image.
+  * "throw" - throw an exception.
+  * <url> - obtain the image from the supplied url.  If this url is broken then an exception will be thrown.  This can be anytype of valid url from a file url to https url.
 
 Security
 --------

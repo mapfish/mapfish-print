@@ -36,12 +36,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
+import java.net.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -56,7 +54,6 @@ import org.apache.batik.dom.svg.SVGDocumentFactory;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 import org.mapfish.print.config.layout.Block;
@@ -72,6 +69,7 @@ import org.w3c.dom.svg.SVGDocument;
  */
 public class PDFUtils {
     public static final Logger LOGGER = Logger.getLogger(PDFUtils.class);
+    private static final Map<String, Image> placeholderCache = new HashMap<String, Image>();
 
     /**
      * Gets an iText image with a cache that uses PdfTemplates to re-use the same
@@ -174,40 +172,46 @@ public class PDFUtils {
      * Gets an iText image. Avoids doing the query twice.
      */
     protected static Image getImageDirect(RenderingContext context, URI uri) throws IOException, DocumentException {
+            return loadImageFromUrl(context, uri, false);
+    }
+
+    private static Image loadImageFromUrl(final RenderingContext context, final URI uri, final boolean alwaysThrowExceptionOnError)
+            throws
+            IOException, DocumentException {
         if (!uri.isAbsolute()) {
             //Assumption is that the file is on the local file system
             return Image.getInstance(uri.toString());
-        } else if("file".equalsIgnoreCase(uri.getScheme())) {
+        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
             String path;
-            if(uri.getHost() != null && uri.getPath() != null) {
+            if (uri.getHost() != null && uri.getPath() != null) {
                 path = uri.getHost() + uri.getPath();
-            } else if(uri.getHost() == null && uri.getPath() != null) {
+            } else if (uri.getHost() == null && uri.getPath() != null) {
                 path = uri.getPath();
             } else {
                 path = uri.toString().substring("file:".length()).replaceAll("/+", "/");
             }
             path = path.replace("/", File.separator);
             return Image.getInstance(new File(path).toURI().toURL());
-        }
-        else {
+        } else {
+
             final String contentType;
             final int statusCode;
             final String statusText;
             byte[] data = null;
             try {
                 //read the whole image content in memory, then give that to iText
-                if ((uri.getScheme().equals("http") || uri.getScheme().equals("https")) &&
-                        context.getConfig().localHostForwardIsFrom(uri.getHost())) {
+                if ((uri.getScheme().equals("http") || uri.getScheme().equals("https"))
+                        && context.getConfig().localHostForwardIsFrom(uri.getHost())) {
                     String scheme = uri.getScheme();
                     final String host = uri.getHost();
-                    if (uri.getScheme().equals("https") &&
-                            context.getConfig().localHostForwardIsHttps2http()) {
+                    if (uri.getScheme().equals("https")
+                            && context.getConfig().localHostForwardIsHttps2http()) {
                         scheme = "http";
                     }
                     URL url = new URL(scheme, "localhost", uri.getPort(),
                             uri.getPath() + "?" + uri.getQuery());
 
-                    HttpURLConnection connexion = (HttpURLConnection)url.openConnection();
+                    HttpURLConnection connexion = (HttpURLConnection) url.openConnection();
                     connexion.setRequestProperty("Host", host);
                     for (Map.Entry<String, String> entry : context.getHeaders().entrySet()) {
                         connexion.setRequestProperty(entry.getKey(), entry.getValue());
@@ -224,41 +228,37 @@ public class PDFUtils {
                             }
                             baos.flush();
                             data = baos.toByteArray();
-                        }
-                        catch (IOException e) {
+                        } catch (IOException e) {
                             LOGGER.warn(e);
                         }
                         statusCode = connexion.getResponseCode();
                         statusText = connexion.getResponseMessage();
                         contentType = connexion.getContentType();
-                    }
-                    finally {
+                    } finally {
                         if (is != null) {
                             is.close();
                         }
                     }
-                }
-                else {
+                } else {
                     GetMethod getMethod = null;
                     try {
                         getMethod = new GetMethod(uri.toString());
                         for (Map.Entry<String, String> entry : context.getHeaders().entrySet()) {
                             getMethod.setRequestHeader(entry.getKey(), entry.getValue());
                         }
-                        if (LOGGER.isDebugEnabled()) LOGGER.debug("loading image: "+uri);
+                        if (LOGGER.isDebugEnabled()) LOGGER.debug("loading image: " + uri);
                         context.getConfig().getHttpClient(uri).executeMethod(getMethod);
                         statusCode = getMethod.getStatusCode();
                         statusText = getMethod.getStatusText();
 
                         Header contentTypeHeader = getMethod.getResponseHeader("Content-Type");
-                        if(contentTypeHeader == null) {
+                        if (contentTypeHeader == null) {
                             contentType = "";
                         } else {
                             contentType = contentTypeHeader.getValue();
                         }
                         data = getMethod.getResponseBody();
-                    }
-                    finally {
+                    } finally {
                         if (getMethod != null) {
                             getMethod.releaseConnection();
                         }
@@ -269,33 +269,93 @@ public class PDFUtils {
                     // returns a transparent image
                     if (LOGGER.isDebugEnabled()) LOGGER.debug("creating a transparent image for: " + uri);
                     try {
-                        byte maskr[] = {(byte)255};
-                        Image mask = Image.getInstance(1,1,1,1,maskr);
+                        final byte[] maskr = {(byte) 255};
+                        Image mask = Image.getInstance(1, 1, 1, 1, maskr);
                         mask.makeMask();
-                        data = new byte[1*1*3];
+                        data = new byte[1 * 1 * 3];
                         Image image = Image.getInstance(1, 1, 3, 8, data);
                         image.setImageMask(mask);
                         return image;
                     } catch (DocumentException e) {
                         LOGGER.warn("Couldn't generate a transparent image");
-                        throw e;
+
+                        if (alwaysThrowExceptionOnError) {
+                            throw e;
+                        }
+
+                        Image image = handleImageLoadError(context, e.getMessage());
+
+                        LOGGER.warn("The status code was not a valid code, a default image is being returned.");
+
+                        return image;
                     }
-                } else if (statusCode < 200 || statusCode >= 300 || contentType.startsWith("text/") || contentType.equals("application/vnd.ogc.se_xml")) {
+                } else if (statusCode < 200 || statusCode >= 300 || contentType.startsWith("text/") || contentType.equals
+                        ("application/vnd" +
+                        ".ogc.se_xml")) {
                     if (LOGGER.isDebugEnabled()) LOGGER.debug("Server returned an error for " + uri + ": " + new String(data));
+                    String errorMessage;
                     if (statusCode < 200 || statusCode >= 300) {
-                        throw new IOException("Error (status=" + statusCode + ") while reading the image from " + uri + ": " + statusText);
+                        errorMessage = "Error (status=" + statusCode + ") while reading the image from " + uri + ": " + statusText;
                     } else {
-                        throw new IOException("Didn't receive an image while reading: " + uri);
+                        errorMessage = "Didn't receive an image while reading: " + uri;
                     }
+
+                    if (alwaysThrowExceptionOnError) {
+                        throw new IOException(errorMessage);
+                    }
+
+                    Image image = handleImageLoadError(context, errorMessage);
+
+                    LOGGER.warn("The status code was not a valid code, a default image is being returned.");
+
+                    return image;
                 } else {
-                    final Image result = Image.getInstance(data);
-                    if (LOGGER.isDebugEnabled()) LOGGER.debug("loaded image: "+uri);
-                    return result;
+                    if (LOGGER.isDebugEnabled()) LOGGER.debug("loaded image: " + uri);
+                    return Image.getInstance(data);
                 }
             } catch (IOException e) {
-                LOGGER.warn("Server returned an error for " + uri + ": " + e.getMessage());
-                throw e;
+                LOGGER.error("Server returned an error for " + uri + ": " + e.getMessage());
+
+                if (alwaysThrowExceptionOnError) {
+                    throw e;
+                }
+
+                return handleImageLoadError(context, e.getMessage());
             }
+        }
+    }
+
+    /**
+     * In the case url fails to load an image this method should be called to handle the issue.  If the configuration
+     * has a default image for broken image urls then it will be returned otherwise an error will be thrown.
+     *
+     * @param context the context.
+     * @param errorMessage the message of the error to throw in the case the configuration requires it.
+     */
+    public static Image handleImageLoadError(final RenderingContext context, final String errorMessage) throws IOException,
+            DocumentException {
+        String placeholderString = context.getConfig().getBrokenUrlPlaceholder();
+        if (placeholderString.equalsIgnoreCase(Constants.ImagePlaceHolderConstants.THROW)) {
+            throw new IOException(errorMessage);
+        } else {
+            Image image = placeholderCache.get(placeholderString);
+
+            if (image == null) {
+                try {
+                    if (placeholderString.equalsIgnoreCase(Constants.ImagePlaceHolderConstants.DEFAULT)) {
+                        URL url = PDFUtils.class.getClassLoader().getResource(Constants.ImagePlaceHolderConstants.DEFAULT_ERROR_IMAGE);
+                        image = loadImageFromUrl(context, url.toURI(), true);
+                    } else {
+                        image = loadImageFromUrl(context, new URI(placeholderString), true);
+                    }
+                } catch (URISyntaxException e) {
+                    throw new RuntimeException(e);
+                }
+                if (image != null) {
+                    placeholderCache.put(placeholderString, image);
+                }
+            }
+            return image;
         }
     }
 
