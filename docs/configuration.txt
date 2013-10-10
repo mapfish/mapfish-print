@@ -425,6 +425,7 @@ Allowed only within a **mainPage**.
   ?         absoluteX: null
   ?         absoluteY: null
   ?         overviewMap: null
+  ?         backgroundColor: #FFFFFF
 
 **width** and **height** are mandatory. You can use variable substitution in this part, but if you do so, the browser won't receive the map size when it calls **info.json**. You'll have to **override mapfish.widgets.print.Base.configReceived** and set the map width and height of your layouts.
 
