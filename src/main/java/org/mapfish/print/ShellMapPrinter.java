@@ -98,7 +98,7 @@ public class ShellMapPrinter {
         this.context = new ClassPathXmlApplicationContext(DEFAULT_SPRING_CONTEXT);
 
         if(springConfig != null) {
-            this.context = new FileSystemXmlApplicationContext(new String[]{"classpath:/"+DEFAULT_SPRING_CONTEXT, springConfig});
+            this.context = new ClassPathXmlApplicationContext(new String[]{DEFAULT_SPRING_CONTEXT, springConfig});
         }
     }
 

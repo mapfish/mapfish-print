@@ -21,7 +21,7 @@ import java.util.*;
 
 public abstract class MapTestBasic extends TestCase {
 
-    private final Logger logger = Logger.getLogger(MapTestBasic.class);
+    protected final Logger logger = Logger.getLogger(MapTestBasic.class);
 
     protected RenderingContext context;
 
