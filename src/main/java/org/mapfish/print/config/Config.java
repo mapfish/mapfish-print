@@ -77,6 +77,7 @@ public class Config implements Closeable {
     private TreeSet<String> fonts = null;
     private List<HostMatcher> hosts = new ArrayList<HostMatcher>();
     private HashMap localHostForward;
+    private TreeSet<String> headers;
     private TreeSet<Key> keys;
 
     private int globalParallelFetches = 5;
@@ -511,6 +512,14 @@ public class Config implements Closeable {
             }
         }
         return false;
+    }
+
+    public void setHeaders(TreeSet<String> headers) {
+        this.headers = headers;
+    }
+
+    public TreeSet<String> getHeaders() {
+        return this.headers;
     }
 
     public void setBrokenUrlPlaceholder(String brokenUrlPlaceholder) {
