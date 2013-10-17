@@ -35,6 +35,8 @@ Here is the general structure:
   ?    - map.example.com
   ?  https2http: True # For above hosts on request on https we build a request on http
 
+  ?headers: ['Cookie', 'Referer'] # The header that will be copyed to the tiles http requests
+
   ?keys:
   ?  - !key
   ?    host: !dnsMatch
@@ -127,7 +129,7 @@ If the 'outputFilename' parameter is defined in the main body then that name wil
 
 "disableScaleLocking" allows you to bypass the choosing of scale from the available factors, and simply use the suggested value produced inside MapBlock.java.
 
-"brokenUrlPlaceholder" the placeholder image to use in the case of a broken url.  By default, when a url request fails, an error is thrown and the pdf process terminates.  However if this parameter is set then instead a placeholder image is returned.  
+"brokenUrlPlaceholder" the placeholder image to use in the case of a broken url.  By default, when a url request fails, an error is thrown and the pdf process terminates.  However if this parameter is set then instead a placeholder image is returned.
 Non-null values are:
   * "default" - use the system default image.
   * "throw" - throw an exception.
