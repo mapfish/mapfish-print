@@ -312,7 +312,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             configHeaders.add("Referer");
             configHeaders.add("Cookie");
         }
-        for (Iterator<String> header_iter = mapPrinter.getConfig().getHeaders().iterator() ; header_iter.hasNext() ; ) {
+        for (Iterator<String> header_iter = configHeaders.iterator() ; header_iter.hasNext() ; ) {
             String header = header_iter.next();
             if (httpServletRequest.getHeader(header) != null) {
                 headers.put(header, httpServletRequest.getHeader(header));
