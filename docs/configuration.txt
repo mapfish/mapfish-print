@@ -59,7 +59,7 @@ Here is the general structure:
   ?outputFilename: Mapfish-print      MF_V1.2
   ?disableScaleLocking: false
   ?brokenUrlPlaceholder: default      MF_V2.0
-  ?proxyUrl: http://mapfishprint.org  MF_V2.0
+  ?proxyBaseUrl: http://mapfishprint.org  MF_V2.0
 
   ?security:
   ?  - !basicAuth
