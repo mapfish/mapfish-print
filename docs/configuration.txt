@@ -59,6 +59,7 @@ Here is the general structure:
   ?outputFilename: Mapfish-print      MF_V1.2
   ?disableScaleLocking: false
   ?brokenUrlPlaceholder: default      MF_V2.0
+  ?proxyUrl: http://mapfishprint.org  MF_V2.0
 
   ?security:
   ?  - !basicAuth
@@ -134,6 +135,9 @@ Non-null values are:
   * "default" - use the system default image.
   * "throw" - throw an exception.
   * <url> - obtain the image from the supplied url.  If this url is broken then an exception will be thrown.  This can be anytype of valid url from a file url to https url.
+
+"proxyBaseUrl" the optional url of the proxy between mapfish-print and the internet.  This is the url base that will be in the info.json response.  On occasion the url or port of the web server containing mapfish-print is not the server that is public to the internet and the requests are proxied to the mapfish-print webserver.  In this case it is important for the info.json request to return the public URL instead of the url of the webserver.
+
 
 Security
 --------

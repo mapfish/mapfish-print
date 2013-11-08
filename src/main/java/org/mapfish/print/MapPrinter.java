@@ -197,6 +197,7 @@ public class MapPrinter {
 
     /**
      * Use by /info.json to generate its returned content.
+     * @param json the writer for outputting the config specification
      */
     public void printClientConfig(JSONWriter json) throws JSONException {
         config.printClientConfig(json);

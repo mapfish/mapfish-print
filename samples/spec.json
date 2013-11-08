@@ -4,7 +4,7 @@
     "srs": "EPSG:4326",
     "dpi": 254,
     "units": "degrees",
-    "outputFormat": "png",
+    "outputFormat": "pdf",
     "layers": [{
             "type": "WMS",
             "layers": ["basic"],

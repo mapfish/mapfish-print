@@ -110,6 +110,7 @@ public class Config implements Closeable {
 
 	private MapReaderFactoryFinder mapReaderFactoryFinder;
     private String brokenUrlPlaceholder = Constants.ImagePlaceHolderConstants.THROW;
+    private String proxyBaseUrl;
 
     public Config() {
         hosts.add(new LocalHostMatcher());
@@ -528,5 +529,27 @@ public class Config implements Closeable {
 
     public String getBrokenUrlPlaceholder() {
         return brokenUrlPlaceholder;
+    }
+
+    /**
+     * Get the url of the proxy that resides between the servlet and the internet.
+     * <p/>
+     * This method may return null if there is no proxy between the servlet and the internet.
+     *
+     * @return the url of the proxy that resides between the servlet and the internet.
+     */
+    public String getProxyBaseUrl() {
+        return proxyBaseUrl;
+    }
+
+    /**
+     * Set the url of the proxy that resides between the servlet and the internet.
+     * <p/>
+     * This is an optional parameter as there may not be a proxy.
+     *
+     * @param proxyBaseUrl the url of the proxy as seen from the internet.
+     */
+    public void setProxyBaseUrl(String proxyBaseUrl) {
+        this.proxyBaseUrl = proxyBaseUrl;
     }
 }

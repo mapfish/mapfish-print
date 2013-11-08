@@ -268,8 +268,14 @@ public class MapPrinterServlet extends BaseMapServlet {
                 json.object();
                 {
                     printer.printClientConfig(json);
-                    json.key("printURL").value(basePath + PRINT_URL);
-                    json.key("createURL").value(basePath + CREATE_URL);
+                    String urlToUseInSpec = basePath;
+
+                    String proxyUrl = printer.getConfig().getProxyBaseUrl();
+                    if (proxyUrl != null) {
+                        urlToUseInSpec = proxyUrl;
+                    }
+                    json.key("printURL").value(urlToUseInSpec + PRINT_URL);
+                    json.key("createURL").value(urlToUseInSpec + CREATE_URL);
                     if (app != null) {
                         json.key("app").value(app);
                     }
