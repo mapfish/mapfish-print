@@ -11,7 +11,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONString;
 import org.junit.Test;
 import org.mapfish.print.Constants;
 import org.mapfish.print.FakeHttpd;
@@ -19,7 +18,6 @@ import org.mapfish.print.RenderingContext;
 import org.mapfish.print.config.Config;
 import org.mapfish.print.utils.PJsonObject;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
