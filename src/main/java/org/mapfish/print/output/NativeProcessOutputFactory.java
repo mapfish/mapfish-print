@@ -174,7 +174,7 @@ public class NativeProcessOutputFactory implements OutputFormatFactory {
             }
             
             File tmpPdfFile = null;
-            File tmpPngFile = null;
+            File tmpImageFile = null;
             try {
                 tmpPdfFile = File.createTempFile("mapfishprint", ".pdf");
                 FileOutputStream tmpOut = new FileOutputStream(tmpPdfFile);
@@ -188,12 +188,13 @@ public class NativeProcessOutputFactory implements OutputFormatFactory {
                 }
 
                 TimeLogger timeLog = TimeLogger.info(LOGGER, "Pdf to image conversion");
-                tmpPngFile = File.createTempFile("mapfishprint", ".png");
-                createImage(params.jsonSpec, tmpPdfFile, tmpPngFile, context);
+                final String suffix = "." + format;
+                tmpImageFile = File.createTempFile("mapfishprint", suffix);
+                createImage(params.jsonSpec, tmpPdfFile, tmpImageFile, context);
                 timeLog.done();
 
                 timeLog = TimeLogger.info(LOGGER, "Write Image");
-                drawImage(params.outputStream, tmpPngFile);
+                drawImage(params.outputStream, tmpImageFile);
                 timeLog.done();
 
                 return context;
@@ -206,11 +207,11 @@ public class NativeProcessOutputFactory implements OutputFormatFactory {
                     }
                     tmpPdfFile.deleteOnExit();
                 }
-                if (tmpPngFile != null) {
-                    if(!tmpPngFile.delete()) {
-                        LOGGER.warn(tmpPngFile+" was not able to be deleted for unknown reason.  Will try again on shutdown");
+                if (tmpImageFile != null) {
+                    if(!tmpImageFile.delete()) {
+                        LOGGER.warn(tmpImageFile+" was not able to be deleted for unknown reason.  Will try again on shutdown");
                     }
-                    tmpPngFile.deleteOnExit();
+                    tmpImageFile.deleteOnExit();
                 }
             }
         }
