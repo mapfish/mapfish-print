@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:p="http://www.springframework.org/schema/p"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+	xsi:schemaLocation="
+	    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		">
 	<context:annotation-config></context:annotation-config>
 
 	<!-- Define output factories -->
@@ -27,14 +28,14 @@
 				<value>@@dpi@@</value>
 				<value>-append</value>
 				<value>@@sourceFile@@</value>
-				<value>@@targetFile@@</value>
 				<value>-bordercolor</value>
-				<value>#FFFFFF</value>
-				<value>-border</value>
-				<value>0</value>
-				<value>-alpha</value>
-				<value>off</value>
-			</list>
+                <value>#FFFFFF</value>
+                <value>-border</value>
+                <value>0</value>
+                <value>-alpha</value>
+                <value>off</value>
+                <value>@@targetFile@@</value>
+            </list>
 		</property>
 		<!-- Formats supported by the converter -->
 		<property name="formats">
