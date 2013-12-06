@@ -278,7 +278,7 @@ The structure is like that:
             items:
               - {BLOCK_DEFINITION}
               {...}
-           items:
+          items:
             - {BLOCK_DEFINITION}
             {...}
     ?     footer:
