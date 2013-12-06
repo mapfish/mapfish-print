@@ -123,7 +123,7 @@ public class PointRenderer extends GeometriesRenderer<Point> {
         // See Feature/Vector.js for more information about labels 
         String label = style.optString("label");
         
-        if (style.optString("externalGraphic") != null) {
+        if ((style.optString("externalGraphic") != null ) && (style.optString("externalGraphic").length() > 0)) {
             float opacity = style.optFloat("graphicOpacity", style.optFloat("fillOpacity", 1.0f));
             state.setFillOpacity(opacity);
             state.setStrokeOpacity(opacity);
