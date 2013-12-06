@@ -28,6 +28,12 @@
 				<value>-append</value>
 				<value>@@sourceFile@@</value>
 				<value>@@targetFile@@</value>
+				<value>-bordercolor</value>
+				<value>#FFFFFF</value>
+				<value>-border</value>
+				<value>0</value>
+				<value>-alpha</value>
+				<value>off</value>
 			</list>
 		</property>
 		<!-- Formats supported by the converter -->
