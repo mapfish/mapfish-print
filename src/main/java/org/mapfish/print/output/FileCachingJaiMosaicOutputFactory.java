@@ -149,7 +149,7 @@ public class FileCachingJaiMosaicOutputFactory extends InMemoryJaiMosaicOutputFa
             PDDocument pdf = PDDocument.load(tmpFile);
             try {
                 @SuppressWarnings("unchecked")
-				List<PDPage> pages = pdf.getDocumentCatalog().getAllPages();
+                List<PDPage> pages = pdf.getDocumentCatalog().getAllPages();
 
                 for (PDPage page : pages) {
                     BufferedImage img = page.convertToImage(BufferedImage.TYPE_INT_RGB, calculateDPI(context, jsonSpec));

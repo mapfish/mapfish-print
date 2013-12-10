@@ -130,7 +130,7 @@ public class GoogleConfig {
         }
         if(signer==null && requireKey) {
             throw new RuntimeException(baseUrl+" is a google layer and therefore it needs a key" +
-            		" obtained from google so be usable in a non-webbrowser application.  Add a keys section to the config.yaml file or use TiledGoogle type instead. ");
+                    " obtained from google so be usable in a non-webbrowser application.  Add a keys section to the config.yaml file or use TiledGoogle type instead. ");
         }
 
         return signer;

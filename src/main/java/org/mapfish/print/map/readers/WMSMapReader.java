@@ -44,25 +44,25 @@ import org.pvalsecc.misc.URIUtils;
 public class WMSMapReader extends TileableMapReader {
 
     public static class Factory implements MapReaderFactory {
-		@Override
-		public List<MapReader> create(String type, RenderingContext context, PJsonObject params) {
-			ArrayList<MapReader> target = new ArrayList<MapReader>();
-			PJsonArray layers = params.getJSONArray("layers");
-	        PJsonArray styles = params.optJSONArray("styles");
-	        for (int i = 0; i < layers.size(); i++) {
-	            String layer = layers.getString(i);
-	            String style = "";
-	            if (styles != null && i < styles.size()) {
-	                style = styles.getString(i);
-	            }
-	            target.add(new WMSMapReader(layer, style, context, params));
-	        }
-	        
-	        return target;
-		}
-    	
+        @Override
+        public List<MapReader> create(String type, RenderingContext context, PJsonObject params) {
+            ArrayList<MapReader> target = new ArrayList<MapReader>();
+            PJsonArray layers = params.getJSONArray("layers");
+            PJsonArray styles = params.optJSONArray("styles");
+            for (int i = 0; i < layers.size(); i++) {
+                String layer = layers.getString(i);
+                String style = "";
+                if (styles != null && i < styles.size()) {
+                    style = styles.getString(i);
+                }
+                target.add(new WMSMapReader(layer, style, context, params));
+            }
+
+            return target;
+        }
+
     }
-    
+
     public static final Logger LOGGER = Logger.getLogger(WMSMapReader.class);
     private final String format;
     protected final List<String> layers = new ArrayList<String>();
@@ -89,7 +89,7 @@ public class WMSMapReader extends TileableMapReader {
 
     public void render(Transformer transformer, ParallelMapTileLoader parallelMapTileLoader, String srs, boolean first) {
         PJsonObject customParams = params.optJSONObject("customParams");
-        
+
         // store the rotation to not change for other layers
         double oldAngle = transformer.getRotation();
 
@@ -185,31 +185,31 @@ public class WMSMapReader extends TileableMapReader {
 
         Map<String, List<String>> tileParams = new HashMap<String, List<String>>();
         if (format.equals("image/svg+xml")) {
-        	double maxW = context.getConfig().getMaxSvgW(); // config setting in YAML called maxSvgWidth
-        	double maxH = context.getConfig().getMaxSvgH(); // config setting in YAML called maxSvgHeight
-        	double divisor = 1;
-        	double width = transformer.getRotatedSvgW(); // width of the vector map
-        	double height = transformer.getRotatedSvgH(); // height of the vector map
-        	
-        	if (maxW < width || maxH < height) {
-	        	/**
-	        	 *  need to use maxW as divisor, smaller quotient for width means 
-	        	 *  more constraining factor is max width 
-	        	 */
-	        	if (maxW / maxH < width / height) {
-	        		//LOGGER.warn("before width="+width+" height="+height);
-	        		divisor = width / maxW;
-	        		width = maxW;
-	        		height = height / divisor;
-	        		//LOGGER.warn("after width="+width+" height="+height);
-	        	} else {
-	        		//LOGGER.warn("before width="+width+" height="+height);
-	        		divisor = height / maxH;
-	        		height = maxH;
-	        		width = width / divisor;
-	        		//LOGGER.warn("after width="+width+" height="+height);
-	        	}
-        	}
+            double maxW = context.getConfig().getMaxSvgW(); // config setting in YAML called maxSvgWidth
+            double maxH = context.getConfig().getMaxSvgH(); // config setting in YAML called maxSvgHeight
+            double divisor = 1;
+            double width = transformer.getRotatedSvgW(); // width of the vector map
+            double height = transformer.getRotatedSvgH(); // height of the vector map
+
+            if (maxW < width || maxH < height) {
+                /**
+                 *  need to use maxW as divisor, smaller quotient for width means
+                 *  more constraining factor is max width
+                 */
+                if (maxW / maxH < width / height) {
+                    //LOGGER.warn("before width="+width+" height="+height);
+                    divisor = width / maxW;
+                    width = maxW;
+                    height = height / divisor;
+                    //LOGGER.warn("after width="+width+" height="+height);
+                } else {
+                    //LOGGER.warn("before width="+width+" height="+height);
+                    divisor = height / maxH;
+                    height = maxH;
+                    width = width / divisor;
+                    //LOGGER.warn("after width="+width+" height="+height);
+                }
+            }
             URIUtils.addParamOverride(tileParams, "WIDTH", Long.toString((long) Math.round(width)));
             URIUtils.addParamOverride(tileParams, "HEIGHT", Long.toString((long) Math.round(height)));
         } else {

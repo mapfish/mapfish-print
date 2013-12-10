@@ -46,8 +46,8 @@ public class OutputFactory {
      */
     @Required
     public void setFormatFactories(List<OutputFormatFactory> formatFactories) {
-		this.formatFactories = formatFactories;
-	}
+        this.formatFactories = formatFactories;
+    }
     
     public OutputFormat create(Config config, PJsonObject spec) {
         String id = spec.optString("outputFormat", "pdf");

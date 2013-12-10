@@ -37,19 +37,19 @@ import org.mapfish.print.utils.PJsonObject;
  */
 public class TileCacheMapReader extends TileableMapReader {
     public static class Factory implements MapReaderFactory {
-		@Override
-		public List<MapReader> create(String type, RenderingContext context,
-				PJsonObject params) {
-			ArrayList<MapReader> target = new ArrayList<MapReader>();
+        @Override
+        public List<MapReader> create(String type, RenderingContext context,
+                PJsonObject params) {
+            ArrayList<MapReader> target = new ArrayList<MapReader>();
 
-			String layer = params.getString("layer");
-	        target.add(new TileCacheMapReader(layer, context, params));
-	        
-			return target;
-		}
-    	
+            String layer = params.getString("layer");
+            target.add(new TileCacheMapReader(layer, context, params));
+            
+            return target;
+        }
+        
     }
-	
+    
     private final String layer;
 
     private TileCacheMapReader(String layer, RenderingContext context, PJsonObject params) {

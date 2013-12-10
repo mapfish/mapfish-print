@@ -12,7 +12,7 @@ import com.lowagie.text.pdf.PdfWriter;
 public abstract class AbstractOutputFormat implements OutputFormat {
 
     protected RenderingContext doPrint(PrintParams params) throws DocumentException {
-    	final String layoutName = params.jsonSpec.getString(Constants.JSON_LAYOUT_KEY);
+        final String layoutName = params.jsonSpec.getString(Constants.JSON_LAYOUT_KEY);
         Layout layout = params.config.getLayout(layoutName);
         if (layout == null) {
             throw new RuntimeException("Unknown layout '" + layoutName + "'");

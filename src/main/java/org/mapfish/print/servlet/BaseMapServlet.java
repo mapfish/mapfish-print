@@ -71,50 +71,50 @@ public abstract class BaseMapServlet extends HttpServlet {
         MapPrinter printer = null;
         File configFile = null;
         if (app != null) {
-        	if (lastModifieds == null) {
-        		lastModifieds = new HashMap<String, Long>();
-        		//debugPath += "new HashMap\n";
-        	}
-    		if (printers instanceof HashMap &&  printers.containsKey(app)) {
-    			printer = printers.get(app);
-    			//debugPath += "get printer from hashmap\n";
-    		} else {
-    			printer = null;
-    			//debugPath += "printer = null 1\n";
-    		}
+            if (lastModifieds == null) {
+                lastModifieds = new HashMap<String, Long>();
+                //debugPath += "new HashMap\n";
+            }
+            if (printers instanceof HashMap &&  printers.containsKey(app)) {
+                printer = printers.get(app);
+                //debugPath += "get printer from hashmap\n";
+            } else {
+                printer = null;
+                //debugPath += "printer = null 1\n";
+            }
             configFile = new File(app);
         } else {
-        	configFile = new File(configPath);
-        	//debugPath += "configFile = new ..., 1\n";
+            configFile = new File(configPath);
+            //debugPath += "configFile = new ..., 1\n";
         }
         if (!configFile.isAbsolute()) {
-        	if (app != null) {
-        		//debugPath += "config is absolute app = "+app+"\n";
-        		if(app.toLowerCase().endsWith(".yaml")) {
-        			configFile = new File(getServletContext().getRealPath(app));
-        		} else {
-        			configFile = new File(getServletContext().getRealPath(app +".yaml"));
-        		}
-        	} else {
-        		if(configPath.toLowerCase().endsWith(".yaml")) {
-        			configFile = new File(getServletContext().getRealPath(configPath));
-        		} else {
-        			configFile = new File(getServletContext().getRealPath(configPath+".yaml"));
-        		}
-        		//debugPath += "config is absolute app DEFAULT\n";
-        	}
+            if (app != null) {
+                //debugPath += "config is absolute app = "+app+"\n";
+                if(app.toLowerCase().endsWith(".yaml")) {
+                    configFile = new File(getServletContext().getRealPath(app));
+                } else {
+                    configFile = new File(getServletContext().getRealPath(app +".yaml"));
+                }
+            } else {
+                if(configPath.toLowerCase().endsWith(".yaml")) {
+                    configFile = new File(getServletContext().getRealPath(configPath));
+                } else {
+                    configFile = new File(getServletContext().getRealPath(configPath+".yaml"));
+                }
+                //debugPath += "config is absolute app DEFAULT\n";
+            }
         }
         if (app != null) {
-        	if (lastModifieds instanceof HashMap && lastModifieds.containsKey(app)) {
-        		lastModified = lastModifieds.get(app);
-        		//debugPath += "app = "+app+" lastModifieds has key and gotten: "+ lastModified +"\n";
-        	} else {
-        		lastModified = 0L;
-        		//debugPath += "app = "+app+" lastModifieds has NOT key and gotten: "+ lastModified +" (0L)\n";
-        	}
+            if (lastModifieds instanceof HashMap && lastModifieds.containsKey(app)) {
+                lastModified = lastModifieds.get(app);
+                //debugPath += "app = "+app+" lastModifieds has key and gotten: "+ lastModified +"\n";
+            } else {
+                lastModified = 0L;
+                //debugPath += "app = "+app+" lastModifieds has NOT key and gotten: "+ lastModified +" (0L)\n";
+            }
         } else {
-        	lastModified = defaultLastModified; // this is a fix for when configuration files have changed
-        	//debugPath += "app = NULL lastModifieds from defaultLastModified: "+ lastModified +"\n";
+            lastModified = defaultLastModified; // this is a fix for when configuration files have changed
+            //debugPath += "app = NULL lastModifieds from defaultLastModified: "+ lastModified +"\n";
         }
         
         boolean forceReload = false;
@@ -128,17 +128,17 @@ public abstract class BaseMapServlet extends HttpServlet {
                 LOGGER.info("Configuration file modified. Reloading...");
             }            
             try {
-            	printer.stop();
-            	
-            	//debugPath += "printer stopped, setting NULL\n";
+                printer.stop();
+                
+                //debugPath += "printer stopped, setting NULL\n";
             } catch (NullPointerException npe) {
-            	LOGGER.info("BaseMapServlet.java: printer was not stopped. This happens when a switch between applications happens.\n"+ npe);
+                LOGGER.info("BaseMapServlet.java: printer was not stopped. This happens when a switch between applications happens.\n"+ npe);
             }
             
             printer = null;
             if (app != null) {
-            	LOGGER.info("Printer for "+ app +" stopped");
-            	printers.put(app, null);
+                LOGGER.info("Printer for "+ app +" stopped");
+                printers.put(app, null);
             }
         }
 
@@ -149,13 +149,13 @@ public abstract class BaseMapServlet extends HttpServlet {
                 LOGGER.info("Loading configuration file: " + configFile.getAbsolutePath());
                 printer = getApplicationContext().getBean(MapPrinter.class).setYamlConfigFile(configFile);
                 if (app != null) {
-                	if (printers == null) {
-                		printers = new HashMap<String, MapPrinter>();
-                	}
-                	printers.put(app, printer);
-                	lastModifieds.put(app, lastModified);
+                    if (printers == null) {
+                        printers = new HashMap<String, MapPrinter>();
+                    }
+                    printers.put(app, printer);
+                    lastModifieds.put(app, lastModified);
                 } else {
-                	defaultLastModified = lastModified; // need this for default application
+                    defaultLastModified = lastModified; // need this for default application
                 }
             } catch (FileNotFoundException e) {
                 throw new ServletException("Cannot read configuration file: " + configPath, e);

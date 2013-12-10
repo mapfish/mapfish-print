@@ -42,14 +42,14 @@ import org.pvalsecc.misc.URIUtils;
  * Support for the protocol using directly the content of a Google Map Static API directory.
  */
 public class GoogleMapTileReader extends TileableMapReader {
-	public static class Factory implements MapReaderFactory {
-		@Override
-		public List<? extends MapReader> create(String type, RenderingContext context,
-				PJsonObject params) {
-			return Collections.singletonList(new GoogleMapTileReader("t", context, params));
-		}
+    public static class Factory implements MapReaderFactory {
+        @Override
+        public List<? extends MapReader> create(String type, RenderingContext context,
+                PJsonObject params) {
+            return Collections.singletonList(new GoogleMapTileReader("t", context, params));
+        }
     }
-	
+    
     protected final String layer;
     private GoogleConfig config;
 
@@ -67,25 +67,25 @@ public class GoogleMapTileReader extends TileableMapReader {
     }
 
     protected URI getTileUri(URI commonUri, Transformer transformer, float minGeoX, float minGeoY, float maxGeoX, float maxGeoY, long w, long h) throws URISyntaxException, UnsupportedEncodingException {
-    	float targetResolution = (maxGeoX - minGeoX) / w;
+        float targetResolution = (maxGeoX - minGeoX) / w;
         GoogleLayerInfo.ResolutionInfo resolution = tileCacheLayerInfo.getNearestResolution(targetResolution);
         
-    	Map<String, List<String>> tileParams = new HashMap<String, List<String>>();
-    	
-    	// Geometry transformation from 900913 to lat/lon
-    	// See http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection/
-    	double latitude;
-    	double longitude;
-    	double originShift = 20037508.342789244;
-    	
-    	longitude = (((maxGeoX + minGeoX) / 2.0) / originShift) * 180.0;
-    	latitude = (((maxGeoY + minGeoY) / 2.0) / originShift) * 180.0;
+        Map<String, List<String>> tileParams = new HashMap<String, List<String>>();
+        
+        // Geometry transformation from 900913 to lat/lon
+        // See http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection/
+        double latitude;
+        double longitude;
+        double originShift = 20037508.342789244;
+        
+        longitude = (((maxGeoX + minGeoX) / 2.0) / originShift) * 180.0;
+        latitude = (((maxGeoY + minGeoY) / 2.0) / originShift) * 180.0;
 
-    	latitude = 180 / Math.PI * (2 * Math.atan( Math.exp( latitude * Math.PI / 180.0)) - Math.PI / 2.0);
-    	DecimalFormat df = new DecimalFormat("#.#######################");
-    	String center = df.format(latitude) + "," + df.format(longitude);
-    	String size = Long.toString(w) + "x" + Long.toString(h);
-    	
+        latitude = 180 / Math.PI * (2 * Math.atan( Math.exp( latitude * Math.PI / 180.0)) - Math.PI / 2.0);
+        DecimalFormat df = new DecimalFormat("#.#######################");
+        String center = df.format(latitude) + "," + df.format(longitude);
+        String size = Long.toString(w) + "x" + Long.toString(h);
+        
         URIUtils.addParamOverride(tileParams, "center", center);
         URIUtils.addParamOverride(tileParams, "size", size);
         URIUtils.addParamOverride(tileParams, "zoom", Integer.toString(resolution.index));
@@ -110,9 +110,9 @@ public class GoogleMapTileReader extends TileableMapReader {
         return layer;
     }
 
-	@Override
-	protected void addCommonQueryParams(Map<String, List<String>> result,
-			Transformer transformer, String srs, boolean first) {
+    @Override
+    protected void addCommonQueryParams(Map<String, List<String>> result,
+            Transformer transformer, String srs, boolean first) {
         if(config.signer != null) {
             URIUtils.addParamOverride(result, "client", config.signer.clientId());
         }
@@ -122,5 +122,5 @@ public class GoogleMapTileReader extends TileableMapReader {
         if(config.language != null) URIUtils.addParamOverride(result, "language", config.language);
         if(config.markers.size() > 0) result.put("markers", config.markers);
         if(config.path != null) URIUtils.addParamOverride(result, "path", config.path);
-	}
+    }
 }

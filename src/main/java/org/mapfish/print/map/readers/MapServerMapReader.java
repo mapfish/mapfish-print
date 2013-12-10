@@ -35,23 +35,23 @@ import org.pvalsecc.misc.StringUtils;
 import org.pvalsecc.misc.URIUtils;
 
 public class MapServerMapReader extends HTTPMapReader {
-	
+    
 
     public static class Factory implements MapReaderFactory {
-		@Override
-		public List<MapReader> create(String type, RenderingContext context,
-				PJsonObject params) {
-			ArrayList<MapReader> target = new ArrayList<MapReader>();
-			PJsonArray layers = params.getJSONArray("layers");
-	        for (int i = 0; i < layers.size(); i++) {
-	            String layer = layers.getString(i);
-	            target.add(new MapServerMapReader(layer, context, params));
-	        }
-			return target;
-		}
-    	
+        @Override
+        public List<MapReader> create(String type, RenderingContext context,
+                PJsonObject params) {
+            ArrayList<MapReader> target = new ArrayList<MapReader>();
+            PJsonArray layers = params.getJSONArray("layers");
+            for (int i = 0; i < layers.size(); i++) {
+                String layer = layers.getString(i);
+                target.add(new MapServerMapReader(layer, context, params));
+            }
+            return target;
+        }
+        
     }
-	
+    
     private final String format;
     protected final List<String> layers = new ArrayList<String>();
 
