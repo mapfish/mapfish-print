@@ -25,7 +25,7 @@ import com.lowagie.text.DocumentException;
 
 /**
  * Interface for exporting the generated PDF from MapPrinter.
- * 
+ *
  * User: jeichar
  * Date: Oct 18, 2010
  * Time: 1:49:41 PM

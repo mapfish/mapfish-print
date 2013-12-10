@@ -52,7 +52,7 @@ public class ImageMapReader extends MapReader {
             return Collections.singletonList(new ImageMapReader(context, params));
         }
     }
-    
+
     private static final Log LOGGER = LogFactory.getLog(ImageMapReader.class);
 
     private final String name;

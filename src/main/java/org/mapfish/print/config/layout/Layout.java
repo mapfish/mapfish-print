@@ -98,7 +98,7 @@ public class Layout {
     }
 
     public boolean isSupportLegacyReader() {
-        return metaData!=null && metaData.isSupportLegacyReader(); 
+        return metaData!=null && metaData.isSupportLegacyReader();
     }
 
     /**

@@ -1,4 +1,4 @@
- * Legend consistency, reimplementation 
+ * Legend consistency, reimplementation
   * https://github.com/mapfish/mapfish-print/issues/33
   * https://github.com/mapfish/mapfish-print/pull/40
  * Map readers and output formats now plugins.

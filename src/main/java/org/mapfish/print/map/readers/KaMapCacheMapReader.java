@@ -52,11 +52,11 @@ public class KaMapCacheMapReader extends TileableMapReader {
             String units = context.getGlobalParams().getString("units");
 
             target.add(new KaMapCacheMapReader(map, group, units, metaTileWidth, metaTileHeight, context, params));
-        
+
             return target;
         }
     }
-    
+
     private final String map;
     private final String group;
     private final String units;

@@ -44,12 +44,12 @@ public class TileCacheMapReader extends TileableMapReader {
 
             String layer = params.getString("layer");
             target.add(new TileCacheMapReader(layer, context, params));
-            
+
             return target;
         }
-        
+
     }
-    
+
     private final String layer;
 
     private TileCacheMapReader(String layer, RenderingContext context, PJsonObject params) {

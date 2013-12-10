@@ -26,7 +26,7 @@ import org.mapfish.print.utils.PJsonElement;
  */
 public class InvalidJsonValueException extends PrintException {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 

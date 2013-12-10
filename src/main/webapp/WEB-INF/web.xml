@@ -24,10 +24,10 @@
 
 
   <!-- ********************************************************* -->
-  
+
   <!-- What follows is an example on how having two set of       -->
   <!-- configurations in one servlet                             -->
-  
+
   <!--servlet>
     <servlet-name>mapfish.print2</servlet-name>
     <servlet-class>org.mapfish.print.servlet.MapPrinterServlet</servlet-class>

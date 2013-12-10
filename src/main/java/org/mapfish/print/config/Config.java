@@ -69,11 +69,11 @@ public class Config implements Closeable {
     private double maxSvgW = Double.MAX_VALUE;
     private double maxSvgH = Double.MAX_VALUE;
     private boolean reloadConfig = false;
-    
+
     private boolean integerSvg = true;
-    
+
     private List<String> overlayLayers = null;
-    
+
     private TreeSet<String> fonts = null;
     private List<HostMatcher> hosts = new ArrayList<HostMatcher>();
     private HashMap localHostForward;
@@ -87,7 +87,7 @@ public class Config implements Closeable {
 
     private boolean tilecacheMerging = false;
     private boolean disableScaleLocking = false;
-    
+
     private List<SecurityStrategy> security = Collections.emptyList();
 
     private String outputFilename = "mapfish-print.pdf";
@@ -119,7 +119,7 @@ public class Config implements Closeable {
     public void setOutputFactory(OutputFactory outputFactory) {
         this.outputFactory = outputFactory;
     }
-    
+
     public Layout getLayout(String name) {
         return layouts.get(name);
     }
@@ -131,7 +131,7 @@ public class Config implements Closeable {
     public void setDpis(TreeSet<Integer> dpis) {
         this.dpis = dpis;
     }
-    
+
     public void setMaxSvgWidth(String maxSvgWidth) {
         this.maxSvgWidth = maxSvgWidth;
         this.maxSvgW = Double.parseDouble(maxSvgWidth);
@@ -146,14 +146,14 @@ public class Config implements Closeable {
     public String getMaxSvgHeight() {
         return this.maxSvgHeight;
     }
-    
+
     public double getMaxSvgW() {
         return this.maxSvgW;
     }
     public double getMaxSvgH() {
         return this.maxSvgH;
     }
-    
+
     public TreeSet<Integer> getDpis() {
         return dpis;
     }
@@ -485,7 +485,7 @@ public class Config implements Closeable {
             MapReaderFactoryFinder mapReaderFactoryFinder) {
         this.mapReaderFactoryFinder = mapReaderFactoryFinder;
     }
-    
+
     public MapReaderFactoryFinder getMapReaderFactoryFinder() {
         return mapReaderFactoryFinder;
     }

@@ -29,7 +29,7 @@ import org.mapfish.print.InvalidValueException;
  */
 public class Layouts extends HashMap<String, Layout> {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 

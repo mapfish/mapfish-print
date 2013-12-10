@@ -46,7 +46,7 @@ import org.mapfish.print.utils.PJsonObject;
  */
 public class GoogleConfig {
     private final Logger logger;
-    
+
     public final String format;
     public final String sensor;
     public final String maptype;
@@ -146,7 +146,7 @@ public class GoogleConfig {
             if(path.length > 1) {
                 signedURI += path[1];
             }
-            
+
             return new URI(signedURI);
         } catch (InvalidKeyException e) {
             throw new RuntimeException(e);

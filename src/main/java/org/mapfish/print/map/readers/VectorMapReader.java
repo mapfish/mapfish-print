@@ -57,7 +57,7 @@ public class VectorMapReader extends MapReader {
             return Collections.singletonList(new VectorMapReader(context, params));
         }
     }
-    
+
     private final MfGeo geo;
     private final RenderingContext context;
     private final String name;

@@ -28,7 +28,7 @@ hosts:
   - !dnsMatch
     host: labs.metacarta.com
     port: 80
-     
+
 layouts:
   #===========================================================================
   A4 portrait:

@@ -22,7 +22,7 @@ import org.mapfish.print.InvalidValueException;
 
 /**
  * Encapsulates keys for a host.  For example Google requires a key.
- * 
+ *
  * @author jeichar
  */
 public class Key {

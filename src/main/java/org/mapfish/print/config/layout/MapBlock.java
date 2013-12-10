@@ -120,7 +120,7 @@ public class MapBlock extends Block {
 
             centerX = (minX + maxX) / 2.0F;
             centerY = (minY + maxY) / 2.0F;
-            
+
             double rotation = params.optDouble("rotation", 0.0);
             rotation *= Math.PI / 180;
             float projWidth  = (maxX - minX) * (float)Math.abs(Math.cos(rotation)) +

@@ -49,7 +49,7 @@ public class GoogleMapTileReader extends TileableMapReader {
             return Collections.singletonList(new GoogleMapTileReader("t", context, params));
         }
     }
-    
+
     protected final String layer;
     private GoogleConfig config;
 
@@ -69,15 +69,15 @@ public class GoogleMapTileReader extends TileableMapReader {
     protected URI getTileUri(URI commonUri, Transformer transformer, float minGeoX, float minGeoY, float maxGeoX, float maxGeoY, long w, long h) throws URISyntaxException, UnsupportedEncodingException {
         float targetResolution = (maxGeoX - minGeoX) / w;
         GoogleLayerInfo.ResolutionInfo resolution = tileCacheLayerInfo.getNearestResolution(targetResolution);
-        
+
         Map<String, List<String>> tileParams = new HashMap<String, List<String>>();
-        
+
         // Geometry transformation from 900913 to lat/lon
         // See http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection/
         double latitude;
         double longitude;
         double originShift = 20037508.342789244;
-        
+
         longitude = (((maxGeoX + minGeoX) / 2.0) / originShift) * 180.0;
         latitude = (((maxGeoY + minGeoY) / 2.0) / originShift) * 180.0;
 
@@ -85,7 +85,7 @@ public class GoogleMapTileReader extends TileableMapReader {
         DecimalFormat df = new DecimalFormat("#.#######################");
         String center = df.format(latitude) + "," + df.format(longitude);
         String size = Long.toString(w) + "x" + Long.toString(h);
-        
+
         URIUtils.addParamOverride(tileParams, "center", center);
         URIUtils.addParamOverride(tileParams, "size", size);
         URIUtils.addParamOverride(tileParams, "zoom", Integer.toString(resolution.index));

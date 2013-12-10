@@ -30,7 +30,7 @@ import com.lowagie.text.DocumentException;
 
 /**
  * OutputFormat and factory that Outputs PDF objects
- * 
+ *
  * User: jeichar
  * Date: Oct 18, 2010
  * Time: 2:00:30 PM
@@ -61,7 +61,7 @@ public class PdfOutputFactory extends AbstractOutputFormat implements OutputForm
         final TimeLogger timeLog = TimeLogger.info(Logger.getLogger(PdfOutputFactory.class), "PDF Creation");
         final RenderingContext context = doPrint(params);
         timeLog.done();
-        
+
         return context;
 
     }

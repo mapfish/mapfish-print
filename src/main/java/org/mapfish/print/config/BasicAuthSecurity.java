@@ -11,11 +11,11 @@ public class BasicAuthSecurity extends SecurityStrategy {
     String username = null;
     String password = null;
     boolean preemptive = false;
-    
+
     @Override
     public void configure(URI uri, HttpClient httpClient) {
         if(username==null || password==null) throw new IllegalStateException("username and password configuration of BasicAuthSecurity is required");
-        
+
         if(preemptive) {
             httpClient.getParams().setAuthenticationPreemptive(true);
         }

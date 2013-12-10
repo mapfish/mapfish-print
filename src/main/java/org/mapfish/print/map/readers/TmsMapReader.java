@@ -40,7 +40,7 @@ public class TmsMapReader extends TileableMapReader {
             return Collections.singletonList(new TmsMapReader("t", context, params));
         }
     }
-    
+
     protected final String layer;
     private final String format;
     private final String extension;

@@ -151,7 +151,7 @@ public class OrderedResultsExecutor<RESULT> {
     }
 
     /**
-     * One executor thread. 
+     * One executor thread.
      */
     public class Runner implements Runnable {
         public void run() {

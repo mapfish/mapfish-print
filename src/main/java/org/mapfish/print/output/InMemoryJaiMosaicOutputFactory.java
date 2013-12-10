@@ -47,11 +47,11 @@ import org.mapfish.print.utils.PJsonObject;
 import com.lowagie.text.DocumentException;
 
 /**
- * An output factory that uses pdf box to parse the pdf and create a collection of BufferedImages.  
- * 
+ * An output factory that uses pdf box to parse the pdf and create a collection of BufferedImages.
+ *
  * Then using JAI Mosaic operation the buffered images are combined into one RenderableImage (virtual image)
  * and that is written to a file using ImageIO
- * 
+ *
  * User: jeichar
  * Date: Oct 18, 2010
  * Time: 2:00:30 PM

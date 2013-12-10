@@ -29,7 +29,7 @@ import org.mapfish.print.InvalidValueException;
  */
 public class ColumnDefs extends HashMap<String, ColumnDef> {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 

@@ -24,7 +24,7 @@ package org.mapfish.print;
  */
 public class InvalidValueException extends PrintException {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 

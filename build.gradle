@@ -51,7 +51,7 @@ def gitRevision() {
 	}
 }
 manifest.mainAttributes(
-	'Main-Class':'org.mapfish.print.ShellMapPrinter', 
+	'Main-Class':'org.mapfish.print.ShellMapPrinter',
 	'Build-Time': new Date().getDateTimeString(),
 	'git-revision': gitRevision())
 
@@ -92,22 +92,22 @@ task standalone (type: Jar) {
       return !file.name.contains("servlet-api")
   }
 
-  
+
   def serviceDir = new File("$buildDir/META-INF/services")
   def metaInfDir = new File("$buildDir/META-INF/")
 
   for(file in dependencies) {
-    
-    def files = zipTree(file).matching { 
+
+    def files = zipTree(file).matching {
         exclude 'META-INF/**'
         exclude 'LICENSE'
     }
-    
+
     from files
   }
 
   doFirst {
-      
+
       serviceDir.deleteDir()
       serviceDir.mkdirs()
       for(file in dependencies.findAll({it.name.matches("((gt)|(spring-)).*")})) {
@@ -123,11 +123,11 @@ task standalone (type: Jar) {
           }
       }
   }
-  
+
   from fileTree(buildDir).matching{include 'META-INF/*'}
-  
+
   into ""
-  
+
 }
 
 task libJavadocJar(type: Jar, dependsOn: javadoc) {
@@ -135,7 +135,7 @@ task libJavadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from 'build/docs/javadoc'
 }
- 
+
 task libSourcesJar(type: Jar) {
     baseName = 'print-lib'
     from sourceSets.main.allSource
@@ -147,7 +147,7 @@ task standaloneJavadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from 'build/docs/javadoc'
 }
- 
+
 task standaloneSourcesJar(type: Jar) {
     baseName = 'print-standalone'
     from sourceSets.main.allSource
@@ -287,7 +287,7 @@ uploadArchives << {
     }
     name = 'dev.mapfish.org deployer'
     configuration = configurations.deployerJars
-    
+
     logger.debug("Using ${ssl.privateKey()} for privateKey file")
     logger.debug("Using ${ssl.passphrase()} for privateKey passphrase")
 
@@ -306,8 +306,8 @@ def prop(key) {
 }
 
 task run(dependesOn: compileJava) << {
-  def warning = """[WARNING] config parameter is required. 
-  
+  def warning = """[WARNING] config parameter is required.
+
   Usage:
     gradle run -Dconfig={value} [-Dspec={value}] [-Dverbose={value}] [-Doutput={value}] [-DclientConfig] [-Dreferer={value}] [-Dlog4jConfig={value}]
   Params:
@@ -318,17 +318,17 @@ task run(dependesOn: compileJava) << {
     -DclientConfig={on|off}: Get the config for the client form. Doesn't generate a PDF (defaults to [off])
     -Dreferer={String}: Referer address to use when doing queries (defaults to [null])
     -Dlog4jConfig={String}: Property file for the log4j configuration (defaults to [null])
-    
+
   Example:
     gradle run -Dconfig=samples/config.yaml -Dspec=samples/spec.json -Doutput=/tmp/print-out.pdf
-    
-    
+
+
   """
 
   def args = [prop("config"),prop("spec"),prop("output"),prop("verbose"),prop("clientConfig"),prop("referer"),prop("log4jConfig")]
   if(prop("config") == null) {
     println(warning)
-  } else {  
+  } else {
     ant.java(classname: 'org.mapfish.print.ShellMapPrinter', fork: false, logError: false,
              classpath: "${sourceSets.main.runtimeClasspath.asPath}")  {
         for(a in args.findAll {it!=null}){
@@ -337,7 +337,7 @@ task run(dependesOn: compileJava) << {
      }
    }
 }
-run.description = 'Run mapfish print from commandline.  All commandline parameters apply. Execute task without system parameters to get help' 
+run.description = 'Run mapfish print from commandline.  All commandline parameters apply. Execute task without system parameters to get help'
 
 jettyRun {
     httpPort = 8080
@@ -348,7 +348,7 @@ jettyRun {
 task jettyRunImgMgk (type: JettyRun) {
 	description = 'Run mapfish-print within jetty with the imagemagick format installed'
     httpPort = 8080
-    def imgMagickSpring = file("sample-spring/imagemagick/WEB-INF/classes/imagemagick-spring-application-context-override.xml") 
+    def imgMagickSpring = file("sample-spring/imagemagick/WEB-INF/classes/imagemagick-spring-application-context-override.xml")
     scanTargets = (fileTree("src/main/").include("webapp/WEB-INF/**") + fileTree(compileJava.destinationDir)).files
     reload = 'manual'
 
@@ -371,12 +371,12 @@ This task is not ready for prime time.  I do not know what parameters the class 
 task runWarTest(dependsOn: jettyRunWar) << {
   description = "run load test on embedded jetty"
   try {
-    
-    testServer = System.properties('testServer') :? 
+
+    testServer = System.properties('testServer') :?
     def constructor
     ant.java(
       classname: 'integration.HeavyLoad', fork:false,
-      classpath: "${configurations.testCompile.asPath}") 
+      classpath: "${configurations.testCompile.asPath}")
       {
         arg(value: "http://localhost:$httpPort/print")
         arg(value: "samples/spec.json")

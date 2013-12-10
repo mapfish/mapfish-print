@@ -13,19 +13,19 @@ import org.springframework.beans.factory.annotation.Required;
 
 /**
  * Used by MapPrinter to create configuration objects.  Typically injected by spring
- *  
+ *
  * @author jeichar
  */
 public class ConfigFactory {
     private OutputFactory outputFactoryFinder;
     private MapReaderFactoryFinder mapReaderFactoryFinder;
-    
+
     @Autowired
     @Required
     public void setOutputFactoryFinder(OutputFactory outputFactoryFinder) {
         this.outputFactoryFinder = outputFactoryFinder;
     }
-    
+
     @Autowired
     @Required
     public void setMapReaderFactoryFinder(

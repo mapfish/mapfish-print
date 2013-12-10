@@ -29,7 +29,7 @@ import org.ho.yaml.wrapper.DefaultCollectionWrapper;
 @SuppressWarnings({"RawUseOfParameterizedType"})
 public class Exceptions extends ArrayList<CellException> {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 

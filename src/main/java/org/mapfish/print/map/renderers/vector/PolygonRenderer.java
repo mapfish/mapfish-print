@@ -70,7 +70,7 @@ class PolygonRenderer extends GeometriesRenderer<Polygon> {
         }
         dc.closePath();
     }
-    
+
     private void renderStrokeAndFill(PdfContentByte dc, boolean stroke, boolean fill) {
         if (stroke && fill) dc.eoFillStroke();
         else if (stroke) dc.stroke();

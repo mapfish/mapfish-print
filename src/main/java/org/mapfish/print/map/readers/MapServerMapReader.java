@@ -35,7 +35,7 @@ import org.pvalsecc.misc.StringUtils;
 import org.pvalsecc.misc.URIUtils;
 
 public class MapServerMapReader extends HTTPMapReader {
-    
+
 
     public static class Factory implements MapReaderFactory {
         @Override
@@ -49,9 +49,9 @@ public class MapServerMapReader extends HTTPMapReader {
             }
             return target;
         }
-        
+
     }
-    
+
     private final String format;
     protected final List<String> layers = new ArrayList<String>();
 
@@ -80,7 +80,7 @@ public class MapServerMapReader extends HTTPMapReader {
     }
 
     protected void addCommonQueryParams(Map<String, List<String>> result, Transformer transformer, String srs, boolean first) {
-        
+
         // Use mapserver rotation
         URIUtils.addParamOverride(result, "map_angle", String.valueOf(-Math.toDegrees(transformer.getRotation())));
         transformer.setRotation(0);
@@ -136,5 +136,5 @@ public class MapServerMapReader extends HTTPMapReader {
     public String toString() {
         return StringUtils.join(layers, ", ");
     }
-    
+
 }

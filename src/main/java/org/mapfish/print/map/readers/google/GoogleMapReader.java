@@ -48,7 +48,7 @@ public class GoogleMapReader extends HTTPMapReader {
             return Collections.singletonList(new GoogleMapReader("t", context, params));
         }
     }
-    
+
 
     private final String layer;
     private final GoogleConfig config;
@@ -70,7 +70,7 @@ public class GoogleMapReader extends HTTPMapReader {
         float minGeoY = transformer.getRotatedMinGeoY();
         long width = transformer.getRotatedBitmapW();
         long height = transformer.getRotatedBitmapH();
-        
+
         float targetResolution = transformer.getGeoW() / width;
         GoogleLayerInfo.ResolutionInfo resolution = layerInfo.getNearestResolution(targetResolution);
 

@@ -19,7 +19,7 @@ scales:
   - 1000000
   - 2000000
   - 4000000
-  
+
 formats: ['pdf']
 
 #===========================================================================
@@ -88,7 +88,7 @@ layouts:
             - !text
               text: |
                 ${comment}
-                
+
                 Angle: ${rotation}°   Scale: 1:${format %,d scale}
             - !map
               width: 80

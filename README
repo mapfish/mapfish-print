@@ -10,7 +10,7 @@ This will build three artifacts:  print-servlet-xxx.war, print-lib.jar, print-st
 
 == Deploy ==
 The following command will build and upload all artifacts to the dev.mapfish.org repository.
-  > ./gradlew upload -DsshPassphrase=... 
+  > ./gradlew upload -DsshPassphrase=...
 
 To use in eclipse:
 - Create eclipse project metadata:
@@ -20,7 +20,7 @@ To use in eclipse:
 == Run from commandline ==
 The following command will run the mapfish printer.  If you do no supply any -Dxxx args then all argument options will be listed.
   > ./gradlew run -Dconfig=samples/config.yaml -Dspec=samples/spec.json -Doutput=/tmp/print-out.pdf
-  
+
 == Run in eclipse ==
 - Create new Java Run Configuration
 - Main class is org.mapfish.print.ShellMapPrinter

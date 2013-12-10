@@ -59,7 +59,7 @@ public abstract class BaseMapServlet extends HttpServlet {
      * </ul>
      * <p/>
      * If the location is a relative path, it's taken from the servlet's root directory.
-     * @param servletContext 
+     * @param servletContext
      */
     protected synchronized MapPrinter getMapPrinter(String app) throws ServletException {
         String configPath = getInitParameter("config");
@@ -67,7 +67,7 @@ public abstract class BaseMapServlet extends HttpServlet {
             throw new ServletException("Missing configuration in web.xml 'web-app/servlet/init-param[param-name=config]' or 'web-app/context-param[param-name=config]'");
         }
         //String debugPath = "";
-        
+
         MapPrinter printer = null;
         File configFile = null;
         if (app != null) {
@@ -116,7 +116,7 @@ public abstract class BaseMapServlet extends HttpServlet {
             lastModified = defaultLastModified; // this is a fix for when configuration files have changed
             //debugPath += "app = NULL lastModifieds from defaultLastModified: "+ lastModified +"\n";
         }
-        
+
         boolean forceReload = false;
         if (printer != null && printer.getConfig().getReloadConfig()) {
             forceReload = true;
@@ -126,15 +126,15 @@ public abstract class BaseMapServlet extends HttpServlet {
             //file modified, reload it
             if (!forceReload) {
                 LOGGER.info("Configuration file modified. Reloading...");
-            }            
+            }
             try {
                 printer.stop();
-                
+
                 //debugPath += "printer stopped, setting NULL\n";
             } catch (NullPointerException npe) {
                 LOGGER.info("BaseMapServlet.java: printer was not stopped. This happens when a switch between applications happens.\n"+ npe);
             }
-            
+
             printer = null;
             if (app != null) {
                 LOGGER.info("Printer for "+ app +" stopped");
@@ -164,7 +164,7 @@ public abstract class BaseMapServlet extends HttpServlet {
                 throw new ServletException("Error occurred while reading configuration file '" + configFile + "': " + e );
             }
         }
-        
+
         return printer;
     }
 

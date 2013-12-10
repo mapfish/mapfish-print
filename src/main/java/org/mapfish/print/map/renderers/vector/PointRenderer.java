@@ -79,7 +79,7 @@ public class PointRenderer extends GeometriesRenderer<Point> {
         }
         return coords;
     }
-    
+
     private float[] rotateSymbol(float[] symbol, float rotation) {
         float minX = Float.MAX_VALUE;
         float maxX = -Float.MAX_VALUE;
@@ -95,7 +95,7 @@ public class PointRenderer extends GeometriesRenderer<Point> {
         }
         float width = maxX - minX;
         float height = maxY - minY;
-        
+
         AffineTransform rotationTransform =AffineTransform.getRotateInstance(java.lang.Math.toRadians(rotation), width/2, height/2);
         for (int i = 0; i < symbol.length; i += 2) {
             float x = symbol[i];
@@ -119,7 +119,7 @@ public class PointRenderer extends GeometriesRenderer<Point> {
         float offsetX = style.optFloat("graphicXOffset", -width / 2.0f);
         float offsetY = style.optFloat("graphicYOffset", -height / 2.0f);
         float rotation =  style.optFloat("rotation", 0.0f);
-        
+
         if ((style.optString("externalGraphic") != null ) && (style.optString("externalGraphic").length() > 0)) {
             float opacity = style.optFloat("graphicOpacity", style.optFloat("fillOpacity", 1.0f));
             state.setFillOpacity(opacity);
@@ -161,7 +161,7 @@ public class PointRenderer extends GeometriesRenderer<Point> {
             PolygonRenderer.applyStyle(context, dc, style, state);
             dc.setGState(state);
 
-            dc.circle((float) coordinate.x, (float) coordinate.y, pointRadius * f);            
+            dc.circle((float) coordinate.x, (float) coordinate.y, pointRadius * f);
             renderStrokeAndFill(dc, style.optBool("stroke", true), style.optBool("fill", true));
         }
     }

@@ -7,7 +7,7 @@ import org.apache.commons.httpclient.HttpClient;
 
 public abstract class SecurityStrategy {
     private HostMatcher matcher;
-    
+
     public abstract void configure(URI uri, HttpClient httpClient);
     public boolean matches(URI uri) {
         try {
@@ -21,6 +21,6 @@ public abstract class SecurityStrategy {
         this.matcher = matcher;
     }
 
-    
-    
+
+
 }
