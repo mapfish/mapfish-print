@@ -137,4 +137,13 @@ public abstract class URIUtils {
         params.put(key, list);
         list.add(value);
     }
+
+    public static void setParamDefault(Map<String, List<String>> params, String key, String value) {
+        List<String> list = params.get(key);
+        if (list == null) {
+            list = new ArrayList<String>(1);
+            params.put(key, list);
+            list.add(value);
+        }
+    }
 }

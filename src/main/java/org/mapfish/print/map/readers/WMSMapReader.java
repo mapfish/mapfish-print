@@ -122,19 +122,19 @@ public class WMSMapReader extends TileableMapReader {
     }
 
     protected void addCommonQueryParams(Map<String, List<String>> result, Transformer transformer, String srs, boolean first) {
-        URIUtils.addParamOverride(result, "FORMAT", format);
-        URIUtils.addParamOverride(result, "LAYERS", StringUtils.join(layers, ","));
-        URIUtils.addParamOverride(result, "SRS", srs);
-        URIUtils.addParamOverride(result, "SERVICE", "WMS");
-        URIUtils.addParamOverride(result, "REQUEST", "GetMap");
-        //URIUtils.addParamOverride(result, "EXCEPTIONS", "application/vnd.ogc.se_inimage");
-        URIUtils.addParamOverride(result, "VERSION", "1.1.1");
+        URIUtils.setParamDefault(result, "FORMAT", format);
+        URIUtils.setParamDefault(result, "LAYERS", StringUtils.join(layers, ","));
+        URIUtils.setParamDefault(result, "SRS", srs);
+        URIUtils.setParamDefault(result, "SERVICE", "WMS");
+        URIUtils.setParamDefault(result, "REQUEST", "GetMap");
+        //URIUtils.setParamDefault(result, "EXCEPTIONS", "application/vnd.ogc.se_inimage");
+        URIUtils.setParamDefault(result, "VERSION", "1.1.1");
         if (!first) {
-            URIUtils.addParamOverride(result, "TRANSPARENT", "true");
+            URIUtils.setParamDefault(result, "TRANSPARENT", "true");
         }
-        URIUtils.addParamOverride(result, "STYLES", StringUtils.join(styles, ","));
-        URIUtils.addParamOverride(result, "format_options", "dpi:" + transformer.getDpi()); // For GeoServer
-        URIUtils.addParamOverride(result, "map_resolution", String.valueOf(transformer.getDpi())); // For MapServer
+        URIUtils.setParamDefault(result, "STYLES", StringUtils.join(styles, ","));
+        URIUtils.setParamDefault(result, "format_options", "dpi:" + transformer.getDpi()); // For GeoServer
+        URIUtils.setParamDefault(result, "map_resolution", String.valueOf(transformer.getDpi())); // For MapServer
     }
 
     public boolean testMerge(MapReader other) {
