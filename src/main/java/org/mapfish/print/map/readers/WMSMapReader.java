@@ -89,6 +89,10 @@ public class WMSMapReader extends TileableMapReader {
 
     public void render(Transformer transformer, ParallelMapTileLoader parallelMapTileLoader, String srs, boolean first) {
         PJsonObject customParams = params.optJSONObject("customParams");
+        String version = params.optString("version", null);
+        if (version != null) {
+            customParams.getInternalObj().put("VERSION", version);
+        }
 
         // store the rotation to not change for other layers
         double oldAngle = transformer.getRotation();
