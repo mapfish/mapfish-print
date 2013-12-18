@@ -101,7 +101,7 @@ layouts:
           - !columns
             config:
               cells:
-                - paddingBottom: 5   
+                - paddingBottom: 5
             items:
               - !image
                 maxWidth: 40

@@ -47,10 +47,10 @@ import com.lowagie.text.DocumentException;
 /**
  * Print Output that generate a PNG. It will first generate a PDF ant convert it to PNG
  * using the convert command provide by a native process.
- * 
+ *
  * It include an hack to correct the transparency layer opacity.
- * 
- *  
+ *
+ *
  * @author Stephane Brunner
  * @author Jesse Eichar
  */
@@ -60,69 +60,69 @@ public class NativeProcessOutputFactory implements OutputFormatFactory {
      * The logger.
      */
     public static final Logger LOGGER = Logger.getLogger(NativeProcessOutputFactory.class);
-	private String cmd;
-	private List<String> cmdArgs = new ArrayList<String>();
-	private List<String> formats = new ArrayList<String>();
-	private int timeoutSeconds = 30;
-	private final Semaphore runningProcesses;
-	
-	public NativeProcessOutputFactory(int maxProcesses) {
-		runningProcesses = new Semaphore(maxProcesses,true);
-		if(java.lang.management.ManagementFactory.getOperatingSystemMXBean().getName().toLowerCase().contains("win")) {
-			cmd = "convert";
-		} else {
-			cmd = "/usr/bin/convert";
-		}
-		
-		cmdArgs.add("-density");
-		cmdArgs.add("@@dpi@@x@@dpi@@");
-		cmdArgs.add("-append");
-		cmdArgs.add("@@sourceFile@@");
-		cmdArgs.add("@@targetFile@@");
-		
-		formats.add("jpg");
-		formats.add("gif");
-		formats.add("png");
-		formats.add("bmp");
-		formats.add("tif");
-		formats.add("tiff");
-	}
-	/**
-	 * Set the path and command of the image magic convert command.  
-	 * 
-	 * Default value is /usr/bin/convert on linux and just convert on windows (assumes it is on the path)
-	 * 
-	 * value is typically injected by spring dependency injection
-	 */
-	public void setCmd(String cmd) {
-		this.cmd = cmd;
-	}
-	/**
-	 * Set arguments when executing the Cmd.  
-	 * 
-	 * Default parameters are "-density", "@@dpi@@x@@dpi@@", "@@sourceFile@@" and "@@targetFile@@"
-	 * 
-	 * value is typically injected by spring dependency injection
-	 */
-	public void setCmdArgs(List<String> cmdArgs) {
-		this.cmdArgs = cmdArgs;
-	}
-	/**
-	 * Set the length of time in seconds to wait for a free process for executing conversion
-	 * 
-	 * @param timeoutSeconds
-	 */
-	public void setTimeoutSeconds(int timeoutSeconds) {
-		this.timeoutSeconds = timeoutSeconds;
-	}
-	/**
-	 * Set the formats that the current native process installation can support
-	 * @param formats
-	 */
-	public void setFormats(List<String> formats) {
-		this.formats = formats;
-	}
-	
+    private String cmd;
+    private List<String> cmdArgs = new ArrayList<String>();
+    private List<String> formats = new ArrayList<String>();
+    private int timeoutSeconds = 30;
+    private final Semaphore runningProcesses;
+
+    public NativeProcessOutputFactory(int maxProcesses) {
+        runningProcesses = new Semaphore(maxProcesses,true);
+        if(java.lang.management.ManagementFactory.getOperatingSystemMXBean().getName().toLowerCase().contains("win")) {
+            cmd = "convert";
+        } else {
+            cmd = "/usr/bin/convert";
+        }
+
+        cmdArgs.add("-density");
+        cmdArgs.add("@@dpi@@x@@dpi@@");
+        cmdArgs.add("-append");
+        cmdArgs.add("@@sourceFile@@");
+        cmdArgs.add("@@targetFile@@");
+
+        formats.add("jpg");
+        formats.add("gif");
+        formats.add("png");
+        formats.add("bmp");
+        formats.add("tif");
+        formats.add("tiff");
+    }
+    /**
+     * Set the path and command of the image magic convert command.
+     *
+     * Default value is /usr/bin/convert on linux and just convert on windows (assumes it is on the path)
+     *
+     * value is typically injected by spring dependency injection
+     */
+    public void setCmd(String cmd) {
+        this.cmd = cmd;
+    }
+    /**
+     * Set arguments when executing the Cmd.
+     *
+     * Default parameters are "-density", "@@dpi@@x@@dpi@@", "@@sourceFile@@" and "@@targetFile@@"
+     *
+     * value is typically injected by spring dependency injection
+     */
+    public void setCmdArgs(List<String> cmdArgs) {
+        this.cmdArgs = cmdArgs;
+    }
+    /**
+     * Set the length of time in seconds to wait for a free process for executing conversion
+     *
+     * @param timeoutSeconds
+     */
+    public void setTimeoutSeconds(int timeoutSeconds) {
+        this.timeoutSeconds = timeoutSeconds;
+    }
+    /**
+     * Set the formats that the current native process installation can support
+     * @param formats
+     */
+    public void setFormats(List<String> formats) {
+        this.formats = formats;
+    }
+
     @Override
     public List<String> formats() {
         return formats;
@@ -153,12 +153,12 @@ public class NativeProcessOutputFactory implements OutputFormatFactory {
             // Hack to correct the transparency
             {
                 PJsonArray layers = params.jsonSpec.getJSONArray("layers");
-                
+
                 // a*x²+b*x+c
                 final double a = -0.3;
                 final double b = 0.9;
                 final double c = 0.4;
-                
+
                 for (int i = 0 ; i < layers.size() ; i++) {
                     PJsonObject layer = layers.getJSONObject(i);
                     if (layer.has("opacity")) {
@@ -172,7 +172,7 @@ public class NativeProcessOutputFactory implements OutputFormatFactory {
                     }
                 }
             }
-            
+
             File tmpPdfFile = null;
             File tmpImageFile = null;
             try {
@@ -224,96 +224,96 @@ public class NativeProcessOutputFactory implements OutputFormatFactory {
          */
         private void drawImage(OutputStream out, File tmpPngFile) throws IOException {
             FileInputStream inputStream = new FileInputStream(tmpPngFile);
-			FileChannel channel = inputStream.getChannel();
+            FileChannel channel = inputStream.getChannel();
             try {
-	            channel.transferTo(0, tmpPngFile.length(), Channels.newChannel(out));
+                channel.transferTo(0, tmpPngFile.length(), Channels.newChannel(out));
             } finally {
-            	closeQuiet(channel);
-            	closeQuiet(inputStream);
+                closeQuiet(channel);
+                closeQuiet(inputStream);
             }
         }
 
         private void closeQuiet(Closeable c) {
-        	try {
-        		if(c != null) c.close();
-        	} catch(Throwable e) {
-        		LOGGER.error("Error closing resource", e);
-        	}
-		}
+            try {
+                if(c != null) c.close();
+            } catch(Throwable e) {
+                LOGGER.error("Error closing resource", e);
+            }
+        }
 
-		/**
+        /**
          * Creates a PNG image from a PDF file using the native process
-         *  
+         *
          * @param jsonSpec the spec used to know the DPI value
          * @param tmpPdfFile the PDF file
          * @param tmpPngFile the PNG file
          * @param context the context used to know the DPI value
          * @throws IOException on IO error
-		 * @throws InterruptedException if in able to acquire semaphore
+         * @throws InterruptedException if in able to acquire semaphore
          */
         private void createImage(PJsonObject jsonSpec, File tmpPdfFile, File tmpPngFile, RenderingContext context) throws IOException, InterruptedException {
-        	runningProcesses.tryAcquire(timeoutSeconds, TimeUnit.SECONDS);
-        	try {
-	            int dpi = calculateDPI(context, jsonSpec);
-	            
-	            String[] finalCommands = new String[cmdArgs.size()+1];
-	            finalCommands[0] = cmd;
-	            
-	            for (int i = 1; i < finalCommands.length; i++) {
-					String arg = cmdArgs.get(i-1)
-							.replace("@@dpi@@", ""+dpi)
-							.replace("@@targetFile@@", tmpPngFile.getAbsolutePath())
-							.replace("@@sourceFile@@", tmpPdfFile.getAbsolutePath())
-							.replace("${dpi}", ""+dpi)
-							.replace("${targetFile}", tmpPngFile.getAbsolutePath())
-							.replace("${sourceFile}", tmpPdfFile.getAbsolutePath());
-					
-					finalCommands[i] = arg;
-				}
-	            
-	            ProcessBuilder builder = new ProcessBuilder(finalCommands);
-	            LOGGER.info("Executing process: " + builder.command());
-	            
-	            Process p = builder.start();
-	            
-	            writeOut(p, false);
-	            writeOut(p, true);
-	            try {
-	                int exitCode = p.waitFor();
-	                
-	                p.destroy();
-	                if(exitCode != 0) {
-	                	LOGGER.error(cmd+" failed to create image from pdf.  Exit code was "+exitCode);
-	                } else {
-	                	LOGGER.info(cmd+" exited correctly from image conversion process.  Exit code was "+exitCode);
-	                }
-	            } catch (InterruptedException e) {
-	                LOGGER.error("Process interrupted", e);
-	            }
-        	} finally {
-        		runningProcesses.release();
-        	}
+            runningProcesses.tryAcquire(timeoutSeconds, TimeUnit.SECONDS);
+            try {
+                int dpi = calculateDPI(context, jsonSpec);
+
+                String[] finalCommands = new String[cmdArgs.size()+1];
+                finalCommands[0] = cmd;
+
+                for (int i = 1; i < finalCommands.length; i++) {
+                    String arg = cmdArgs.get(i-1)
+                            .replace("@@dpi@@", ""+dpi)
+                            .replace("@@targetFile@@", tmpPngFile.getAbsolutePath())
+                            .replace("@@sourceFile@@", tmpPdfFile.getAbsolutePath())
+                            .replace("${dpi}", ""+dpi)
+                            .replace("${targetFile}", tmpPngFile.getAbsolutePath())
+                            .replace("${sourceFile}", tmpPdfFile.getAbsolutePath());
+
+                    finalCommands[i] = arg;
+                }
+
+                ProcessBuilder builder = new ProcessBuilder(finalCommands);
+                LOGGER.info("Executing process: " + builder.command());
+
+                Process p = builder.start();
+
+                writeOut(p, false);
+                writeOut(p, true);
+                try {
+                    int exitCode = p.waitFor();
+
+                    p.destroy();
+                    if(exitCode != 0) {
+                        LOGGER.error(cmd+" failed to create image from pdf.  Exit code was "+exitCode);
+                    } else {
+                        LOGGER.info(cmd+" exited correctly from image conversion process.  Exit code was "+exitCode);
+                    }
+                } catch (InterruptedException e) {
+                    LOGGER.error("Process interrupted", e);
+                }
+            } finally {
+                runningProcesses.release();
+            }
         }
 
-		private void writeOut(Process p, boolean errorStream) throws IOException {
-			InputStream stream;
-			if(errorStream) {
-				stream = p.getErrorStream();
-			} else {
-				stream = p.getInputStream();
-			}
-			BufferedReader reader = new BufferedReader (new InputStreamReader(stream));
-            String line = null;
-            
-            while((line = reader.readLine()) != null) {
-            	if(errorStream) {
-            		LOGGER.error(line);
-            	} else {
-            		LOGGER.info(line);
-            	}
+        private void writeOut(Process p, boolean errorStream) throws IOException {
+            InputStream stream;
+            if(errorStream) {
+                stream = p.getErrorStream();
+            } else {
+                stream = p.getInputStream();
             }
-		}
+            BufferedReader reader = new BufferedReader (new InputStreamReader(stream));
+            String line = null;
+
+            while((line = reader.readLine()) != null) {
+                if(errorStream) {
+                    LOGGER.error(line);
+                } else {
+                    LOGGER.info(line);
+                }
+            }
+        }
     }
 
-    
+
 }

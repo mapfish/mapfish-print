@@ -13,33 +13,33 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 public class MapReaderFactoryFinder implements ApplicationContextAware {
-	private Map<String, MapReaderFactory> factories = new HashMap<String, MapReaderFactory>();
+    private Map<String, MapReaderFactory> factories = new HashMap<String, MapReaderFactory>();
 
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
-		Map<String, MapReaderFactory> tmpFac = applicationContext.getBeansOfType(MapReaderFactory.class);
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext)
+            throws BeansException {
+        Map<String, MapReaderFactory> tmpFac = applicationContext.getBeansOfType(MapReaderFactory.class);
 
-		for (Map.Entry<String, MapReaderFactory> entry : tmpFac.entrySet()) {
-			if(!entry.getKey().contains("-")) {
-				throw new BeanInitializationException("All MapFactoryReaders must have an id with format:  type-MapReaderFactory");
-			}
-			factories.put(entry.getKey().split("-")[0].toLowerCase(), entry.getValue());
-		}
-	}
+        for (Map.Entry<String, MapReaderFactory> entry : tmpFac.entrySet()) {
+            if(!entry.getKey().contains("-")) {
+                throw new BeanInitializationException("All MapFactoryReaders must have an id with format:  type-MapReaderFactory");
+            }
+            factories.put(entry.getKey().split("-")[0].toLowerCase(), entry.getValue());
+        }
+    }
 
-	public void create(List<MapReader> readers, String type,
-			RenderingContext context, PJsonObject params) {
+    public void create(List<MapReader> readers, String type,
+            RenderingContext context, PJsonObject params) {
 
-		MapReaderFactory factory = getFactory(type);
-		if (factory==null) {
-			throw new InvalidJsonValueException(params, "type", type);
-		}
+        MapReaderFactory factory = getFactory(type);
+        if (factory==null) {
+            throw new InvalidJsonValueException(params, "type", type);
+        }
 
-		readers.addAll(factory.create(type, context, params));
-	}
+        readers.addAll(factory.create(type, context, params));
+    }
 
-	MapReaderFactory getFactory(String type) {
-		return factories.get(type.toLowerCase());
-	}
+    MapReaderFactory getFactory(String type) {
+        return factories.get(type.toLowerCase());
+    }
 }

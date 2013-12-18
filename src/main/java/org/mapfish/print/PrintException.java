@@ -24,11 +24,11 @@ package org.mapfish.print;
  */
 public class PrintException extends RuntimeException {
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	public PrintException(String message) {
+    public PrintException(String message) {
         super(message);
     }
 

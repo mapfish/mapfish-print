@@ -44,15 +44,15 @@ import com.lowagie.text.pdf.PdfGState;
  * Renders using a georeferenced image directly.
  */
 public class ImageMapReader extends MapReader {
-	public static class Factory implements MapReaderFactory {
+    public static class Factory implements MapReaderFactory {
 
-		@Override
-		public List<? extends MapReader> create(String type, RenderingContext context,
-				PJsonObject params) {
-			return Collections.singletonList(new ImageMapReader(context, params));
-		}
+        @Override
+        public List<? extends MapReader> create(String type, RenderingContext context,
+                PJsonObject params) {
+            return Collections.singletonList(new ImageMapReader(context, params));
+        }
     }
-	
+
     private static final Log LOGGER = LogFactory.getLog(ImageMapReader.class);
 
     private final String name;

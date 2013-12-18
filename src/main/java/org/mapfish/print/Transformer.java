@@ -106,7 +106,7 @@ public class Transformer implements Cloneable {
          * The following code has been changed due to the fact that it seems
          * wrong. However, I'm not sure if my "correction" solves the problem
          * for the better. So, please review.
-         * 
+         *
          * The ('wrong') code below can be reformed: (600 + dpi - 1) / dpi = 1 +
          * 599/dpi and is never smaller than 1, since dpi>1. Also, it does not
          * make sense, as this factor gets smaller with increasing values for

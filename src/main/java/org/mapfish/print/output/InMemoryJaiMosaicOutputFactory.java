@@ -47,11 +47,11 @@ import org.mapfish.print.utils.PJsonObject;
 import com.lowagie.text.DocumentException;
 
 /**
- * An output factory that uses pdf box to parse the pdf and create a collection of BufferedImages.  
- * 
+ * An output factory that uses pdf box to parse the pdf and create a collection of BufferedImages.
+ *
  * Then using JAI Mosaic operation the buffered images are combined into one RenderableImage (virtual image)
  * and that is written to a file using ImageIO
- * 
+ *
  * User: jeichar
  * Date: Oct 18, 2010
  * Time: 2:00:30 PM
@@ -59,12 +59,12 @@ import com.lowagie.text.DocumentException;
 public class InMemoryJaiMosaicOutputFactory implements OutputFormatFactory {
 
     public List<String> formats() {
-	try {
-	    String[] formats = ImageIO.getWriterFormatNames();
-	    return Arrays.asList(formats);
-	} catch (Throwable t) {
-	    return new ArrayList<String>();
-	}
+        try {
+            String[] formats = ImageIO.getWriterFormatNames();
+            return Arrays.asList(formats);
+        } catch (Throwable t) {
+            return new ArrayList<String>();
+        }
     }
 
     public OutputFormat create(String format) {
@@ -163,7 +163,7 @@ public class InMemoryJaiMosaicOutputFactory implements OutputFormatFactory {
             PDDocument pdf = PDDocument.load(tmpFile);
             try {
                 @SuppressWarnings("unchecked")
-				List<PDPage> pages = pdf.getDocumentCatalog().getAllPages();
+                List<PDPage> pages = pdf.getDocumentCatalog().getAllPages();
 
                 for (PDPage page : pages) {
                     BufferedImage img = page.convertToImage(BufferedImage.TYPE_4BYTE_ABGR, calculateDPI(context, jsonSpec));

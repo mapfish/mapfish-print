@@ -69,11 +69,11 @@ public class Config implements Closeable {
     private double maxSvgW = Double.MAX_VALUE;
     private double maxSvgH = Double.MAX_VALUE;
     private boolean reloadConfig = false;
-    
+
     private boolean integerSvg = true;
-    
+
     private List<String> overlayLayers = null;
-    
+
     private TreeSet<String> fonts = null;
     private List<HostMatcher> hosts = new ArrayList<HostMatcher>();
     private HashMap localHostForward;
@@ -87,7 +87,7 @@ public class Config implements Closeable {
 
     private boolean tilecacheMerging = false;
     private boolean disableScaleLocking = false;
-    
+
     private List<SecurityStrategy> security = Collections.emptyList();
 
     private String outputFilename = "mapfish-print.pdf";
@@ -106,9 +106,9 @@ public class Config implements Closeable {
     private MultiThreadedHttpConnectionManager connectionManager;
     private TreeSet<String> formats; // private int svgMaxWidth = -1; private int svgMaxHeight = -1;
 
-	private OutputFactory outputFactory;
+    private OutputFactory outputFactory;
 
-	private MapReaderFactoryFinder mapReaderFactoryFinder;
+    private MapReaderFactoryFinder mapReaderFactoryFinder;
     private String brokenUrlPlaceholder = Constants.ImagePlaceHolderConstants.THROW;
     private String proxyBaseUrl;
 
@@ -117,9 +117,9 @@ public class Config implements Closeable {
     }
 
     public void setOutputFactory(OutputFactory outputFactory) {
-		this.outputFactory = outputFactory;
-	}
-    
+        this.outputFactory = outputFactory;
+    }
+
     public Layout getLayout(String name) {
         return layouts.get(name);
     }
@@ -131,29 +131,29 @@ public class Config implements Closeable {
     public void setDpis(TreeSet<Integer> dpis) {
         this.dpis = dpis;
     }
-    
+
     public void setMaxSvgWidth(String maxSvgWidth) {
-    	this.maxSvgWidth = maxSvgWidth;
-    	this.maxSvgW = Double.parseDouble(maxSvgWidth);
+        this.maxSvgWidth = maxSvgWidth;
+        this.maxSvgW = Double.parseDouble(maxSvgWidth);
     }
     public String getMaxSvgWidth() {
-    	return this.maxSvgWidth;
+        return this.maxSvgWidth;
     }
     public void setMaxSvgHeight(String maxSvgHeight) {
-    	this.maxSvgHeight = maxSvgHeight;
-    	this.maxSvgH = Double.parseDouble(maxSvgHeight);
+        this.maxSvgHeight = maxSvgHeight;
+        this.maxSvgH = Double.parseDouble(maxSvgHeight);
     }
     public String getMaxSvgHeight() {
-    	return this.maxSvgHeight;
+        return this.maxSvgHeight;
     }
-    
+
     public double getMaxSvgW() {
-    	return this.maxSvgW;
+        return this.maxSvgW;
     }
     public double getMaxSvgH() {
-    	return this.maxSvgH;
+        return this.maxSvgH;
     }
-    
+
     public TreeSet<Integer> getDpis() {
         return dpis;
     }
@@ -370,8 +370,8 @@ public class Config implements Closeable {
 
         for(SecurityStrategy sec : security)
         if(sec.matches(uri)) {
-        	sec.configure(uri, httpClient);
-        	break;
+            sec.configure(uri, httpClient);
+            break;
         }
         return httpClient;
     }
@@ -449,19 +449,19 @@ public class Config implements Closeable {
       return overlayLayers;
     }
 
-	/**
-	 * @return the integerSvg true if for example MapServer 5.6 or earlier is used where integers are put into the SVG
-	 */
-	public boolean getIntegerSvg() {
-		return integerSvg;
-	}
+    /**
+     * @return the integerSvg true if for example MapServer 5.6 or earlier is used where integers are put into the SVG
+     */
+    public boolean getIntegerSvg() {
+        return integerSvg;
+    }
 
-	/**
-	 * @param integerSvg the integerSvg to set
-	 */
-	public void setIntegerSvg(boolean integerSvg) {
-		this.integerSvg = integerSvg;
-	}
+    /**
+     * @param integerSvg the integerSvg to set
+     */
+    public void setIntegerSvg(boolean integerSvg) {
+        this.integerSvg = integerSvg;
+    }
 
     /**
      * @return the reloadConfig
@@ -481,14 +481,14 @@ public class Config implements Closeable {
         this.security = security;
     }
 
-	public void setMapReaderFactoryFinder(
-			MapReaderFactoryFinder mapReaderFactoryFinder) {
-		this.mapReaderFactoryFinder = mapReaderFactoryFinder;
-	}
-	
-	public MapReaderFactoryFinder getMapReaderFactoryFinder() {
-		return mapReaderFactoryFinder;
-	}
+    public void setMapReaderFactoryFinder(
+            MapReaderFactoryFinder mapReaderFactoryFinder) {
+        this.mapReaderFactoryFinder = mapReaderFactoryFinder;
+    }
+
+    public MapReaderFactoryFinder getMapReaderFactoryFinder() {
+        return mapReaderFactoryFinder;
+    }
 
     public void setLocalHostForward(HashMap localHostForward) {
         this.localHostForward = localHostForward;

@@ -65,7 +65,7 @@ public class HeaderFooter {
     public void validate() {
         if (height <= 0) throw new InvalidValueException("height", height);
         for (int i = 0; i < items.size(); i++) {
-            items.get(i).validate();            
+            items.get(i).validate();
         }
     }
 }

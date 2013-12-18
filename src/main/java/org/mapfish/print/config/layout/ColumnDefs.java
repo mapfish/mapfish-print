@@ -29,11 +29,11 @@ import org.mapfish.print.InvalidValueException;
  */
 public class ColumnDefs extends HashMap<String, ColumnDef> {
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	/**
+    /**
      * Called just after the config has been loaded to check it is valid.
      *
      * @throws InvalidValueException When there is a problem

@@ -41,14 +41,14 @@ public class OutputFactory {
 
     /**
      * For spring dependency injection
-     * 
+     *
      * @param formatFactories
      */
     @Required
     public void setFormatFactories(List<OutputFormatFactory> formatFactories) {
-		this.formatFactories = formatFactories;
-	}
-    
+        this.formatFactories = formatFactories;
+    }
+
     public OutputFormat create(Config config, PJsonObject spec) {
         String id = spec.optString("outputFormat", "pdf");
 

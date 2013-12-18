@@ -46,7 +46,7 @@ import org.mapfish.print.utils.PJsonObject;
  */
 public class GoogleConfig {
     private final Logger logger;
-    
+
     public final String format;
     public final String sensor;
     public final String maptype;
@@ -130,7 +130,7 @@ public class GoogleConfig {
         }
         if(signer==null && requireKey) {
             throw new RuntimeException(baseUrl+" is a google layer and therefore it needs a key" +
-            		" obtained from google so be usable in a non-webbrowser application.  Add a keys section to the config.yaml file or use TiledGoogle type instead. ");
+                    " obtained from google so be usable in a non-webbrowser application.  Add a keys section to the config.yaml file or use TiledGoogle type instead. ");
         }
 
         return signer;
@@ -146,7 +146,7 @@ public class GoogleConfig {
             if(path.length > 1) {
                 signedURI += path[1];
             }
-            
+
             return new URI(signedURI);
         } catch (InvalidKeyException e) {
             throw new RuntimeException(e);

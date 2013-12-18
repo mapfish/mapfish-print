@@ -22,7 +22,7 @@ public class MapPrinterServletTest {
         String customPattern2 = "yy:MM:dd:mm:ss";
         String custom = new SimpleDateFormat(customPattern).format(date);
         String custom2 = new SimpleDateFormat(customPattern2).format(date);
-        
+
         assertExpectedFormat(date, "|${else}|", "|${else}|", "");
         assertExpectedFormat(date, "|"+dateString+"|", "|${date}|", "");
         assertExpectedFormat(date, "|"+dateTimeString+"|", "|${dateTime}|", "");

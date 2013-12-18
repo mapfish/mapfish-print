@@ -26,11 +26,11 @@ import org.mapfish.print.utils.PJsonElement;
  */
 public class JsonMissingException extends PrintException {
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	public JsonMissingException(PJsonElement pJsonObject, String key) {
+    public JsonMissingException(PJsonElement pJsonObject, String key) {
         super("attribute [" + pJsonObject.getPath(key) + "] missing");
     }
 }

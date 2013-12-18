@@ -28,8 +28,8 @@ hosts:
   - !dnsMatch
     host: labs.metacarta.com
     port: 80
-      
-keys: 
+
+keys:
   - !key
     key: x_pdIEkdzsd_ddx
     id: gme-xxccy

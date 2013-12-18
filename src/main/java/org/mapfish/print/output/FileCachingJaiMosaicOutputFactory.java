@@ -45,8 +45,8 @@ import com.sun.media.jai.codec.FileSeekableStream;
 
 /**
  * Similar to {@link InMemoryJaiMosaicOutputFactory} in that it uses pdf box to parse pdf.  However it writes
- * each page to disk as an image before combining them using JAI mosaic.  
- * 
+ * each page to disk as an image before combining them using JAI mosaic.
+ *
  * @author jeichar
  */
 public class FileCachingJaiMosaicOutputFactory extends InMemoryJaiMosaicOutputFactory {
@@ -149,7 +149,7 @@ public class FileCachingJaiMosaicOutputFactory extends InMemoryJaiMosaicOutputFa
             PDDocument pdf = PDDocument.load(tmpFile);
             try {
                 @SuppressWarnings("unchecked")
-				List<PDPage> pages = pdf.getDocumentCatalog().getAllPages();
+                List<PDPage> pages = pdf.getDocumentCatalog().getAllPages();
 
                 for (PDPage page : pages) {
                     BufferedImage img = page.convertToImage(BufferedImage.TYPE_INT_RGB, calculateDPI(context, jsonSpec));

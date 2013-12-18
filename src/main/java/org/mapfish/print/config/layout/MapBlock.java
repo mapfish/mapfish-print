@@ -120,7 +120,7 @@ public class MapBlock extends Block {
 
             centerX = (minX + maxX) / 2.0F;
             centerY = (minY + maxY) / 2.0F;
-            
+
             double rotation = params.optDouble("rotation", 0.0);
             rotation *= Math.PI / 180;
             float projWidth  = (maxX - minX) * (float)Math.abs(Math.cos(rotation)) +
@@ -208,7 +208,7 @@ public class MapBlock extends Block {
         json.object();
         double w; //int w;
         try {
-        	w = Math.round(Double.parseDouble(width)); //w = Integer.parseInt(width);
+            w = Math.round(Double.parseDouble(width)); //w = Integer.parseInt(width);
         } catch (NumberFormatException e) {
             w = 0;
         }
@@ -216,7 +216,7 @@ public class MapBlock extends Block {
 
         double h; //int h;
         try {
-        	h = Math.round(Double.parseDouble(height)); //h = Integer.parseInt(height);
+            h = Math.round(Double.parseDouble(height)); //h = Integer.parseInt(height);
         } catch (NumberFormatException e) {
             h = 0;
         }

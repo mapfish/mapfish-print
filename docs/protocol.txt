@@ -184,6 +184,7 @@ Support for the WMS protocol with possibilities to go through a WMS-C service (T
 * layers (Required)
 * styles (Optional)
 * format (Required)
+* version (Defaults to ``1.1.1``)
 * useNativeAngle (Defaults to false) it true transform the map angle to customParams.angle for GeoServer, and customParams.map_angle for MapServer.
 
 WMTS

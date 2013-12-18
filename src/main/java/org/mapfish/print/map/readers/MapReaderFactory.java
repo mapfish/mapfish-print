@@ -6,5 +6,5 @@ import org.mapfish.print.RenderingContext;
 import org.mapfish.print.utils.PJsonObject;
 
 public interface MapReaderFactory {
-	List<? extends MapReader> create(String type, RenderingContext context, PJsonObject params);
+    List<? extends MapReader> create(String type, RenderingContext context, PJsonObject params);
 }

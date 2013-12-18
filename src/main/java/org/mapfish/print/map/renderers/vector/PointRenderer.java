@@ -79,9 +79,9 @@ public class PointRenderer extends GeometriesRenderer<Point> {
         }
         return coords;
     }
-    
+
     private float[] rotateSymbol(float[] symbol, float rotation) {
-		float minX = Float.MAX_VALUE;
+        float minX = Float.MAX_VALUE;
         float maxX = -Float.MAX_VALUE;
         float minY = Float.MAX_VALUE;
         float maxY = -Float.MAX_VALUE;
@@ -95,9 +95,9 @@ public class PointRenderer extends GeometriesRenderer<Point> {
         }
         float width = maxX - minX;
         float height = maxY - minY;
-        
-		AffineTransform rotationTransform =AffineTransform.getRotateInstance(java.lang.Math.toRadians(rotation), width/2, height/2);
-		for (int i = 0; i < symbol.length; i += 2) {
+
+        AffineTransform rotationTransform =AffineTransform.getRotateInstance(java.lang.Math.toRadians(rotation), width/2, height/2);
+        for (int i = 0; i < symbol.length; i += 2) {
             float x = symbol[i];
             float y = symbol[i + 1];
             Coordinate coordinate2= new Coordinate(x, y);
@@ -105,8 +105,8 @@ public class PointRenderer extends GeometriesRenderer<Point> {
             symbol[i] = (float) coordinate2.x;
             symbol[i+1] = (float) coordinate2.y;
         }
-		return symbol;
-	}
+        return symbol;
+    }
     protected void renderImpl(RenderingContext context, PdfContentByte dc, PJsonObject style, Point geometry, AffineTransform affineTransform) {
         PdfGState state = new PdfGState();
         final Coordinate coordinate = transformCoordinate((Coordinate) geometry.getCoordinate().clone(), affineTransform);
@@ -118,8 +118,8 @@ public class PointRenderer extends GeometriesRenderer<Point> {
         float height = style.optFloat("graphicHeight", pointRadius * 2.0f);
         float offsetX = style.optFloat("graphicXOffset", -width / 2.0f);
         float offsetY = style.optFloat("graphicYOffset", -height / 2.0f);
-    	float rotation =  style.optFloat("rotation", 0.0f);
-        
+        float rotation =  style.optFloat("rotation", 0.0f);
+
         if ((style.optString("externalGraphic") != null ) && (style.optString("externalGraphic").length() > 0)) {
             float opacity = style.optFloat("graphicOpacity", style.optFloat("fillOpacity", 1.0f));
             state.setFillOpacity(opacity);
@@ -148,8 +148,8 @@ public class PointRenderer extends GeometriesRenderer<Point> {
                 throw new InvalidValueException("graphicName", graphicName);
             }
             if (rotation != 0){
-        		symbol = rotateSymbol(symbol, -rotation);
-        	}
+                symbol = rotateSymbol(symbol, -rotation);
+            }
             dc.setGState(state);
             dc.moveTo((float) coordinate.x + symbol[0] * width * f + offsetX * f, (float) coordinate.y + symbol[1] * height * f + offsetY * f);
             for (int i = 2; i < symbol.length - 2; i += 2) {
@@ -161,7 +161,7 @@ public class PointRenderer extends GeometriesRenderer<Point> {
             PolygonRenderer.applyStyle(context, dc, style, state);
             dc.setGState(state);
 
-            dc.circle((float) coordinate.x, (float) coordinate.y, pointRadius * f);            
+            dc.circle((float) coordinate.x, (float) coordinate.y, pointRadius * f);
             renderStrokeAndFill(dc, style.optBool("stroke", true), style.optBool("fill", true));
         }
     }

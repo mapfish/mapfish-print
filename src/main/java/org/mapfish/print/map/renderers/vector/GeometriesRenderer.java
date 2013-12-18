@@ -60,7 +60,7 @@ public abstract class GeometriesRenderer<T extends Geometry> {
     @SuppressWarnings({"unchecked"})
     protected static void render(RenderingContext context, PdfContentByte dc, PJsonObject style, Geometry geometry, AffineTransform affineTransform) {
         @SuppressWarnings("rawtypes")
-		GeometriesRenderer renderer = RENDERERS.get(geometry.getClass());
+        GeometriesRenderer renderer = RENDERERS.get(geometry.getClass());
         if (renderer == null) {
             throw new RuntimeException("Rendering of " + geometry.getClass().getName() + " not supported");
         }
@@ -89,9 +89,9 @@ public abstract class GeometriesRenderer<T extends Geometry> {
     }
 
     protected static Coordinate transformCoordinate(Coordinate coordinate, AffineTransform affineTransform) {
-    	Point2D point2D = new Point2D.Double(coordinate.x, coordinate.y);
-    	affineTransform.transform(point2D, point2D);
-    	coordinate.setCoordinate(new Coordinate(point2D.getX(), point2D.getY()));
-    	return coordinate;
+        Point2D point2D = new Point2D.Double(coordinate.x, coordinate.y);
+        affineTransform.transform(point2D, point2D);
+        coordinate.setCoordinate(new Coordinate(point2D.getX(), point2D.getY()));
+        return coordinate;
     }
 }

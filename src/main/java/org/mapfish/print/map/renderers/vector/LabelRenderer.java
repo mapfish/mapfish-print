@@ -35,61 +35,61 @@ import com.vividsolutions.jts.geom.Point;
 
 public class LabelRenderer {
 
-	public static final Logger LOGGER = Logger.getLogger(LabelRenderer.class);
+    public static final Logger LOGGER = Logger.getLogger(LabelRenderer.class);
 
-	static void applyStyle(RenderingContext context, PdfContentByte dc,
-			PJsonObject style, Geometry geometry, AffineTransform affineTransform) {
-		/*
-		 * See Feature/Vector.js for more information about labels
-		 */
-		String label = style.optString("label");
+    static void applyStyle(RenderingContext context, PdfContentByte dc,
+            PJsonObject style, Geometry geometry, AffineTransform affineTransform) {
+        /*
+         * See Feature/Vector.js for more information about labels
+         */
+        String label = style.optString("label");
 
-		if (label != null && label.length() > 0) {
-			/*
-			 * Valid values for horizontal alignment: "l"=left, "c"=center,
-			 * "r"=right. Valid values for vertical alignment: "t"=top,
-			 * "m"=middle, "b"=bottom.
-			 */
-			String labelAlign = style.optString("labelAlign", "cm");
-			float labelXOffset = style.optFloat("labelXOffset", (float) 0.0);
-			float labelYOffset = style.optFloat("labelYOffset", (float) 0.0);
-			String fontColor = style.optString("fontColor", "#000000");
-			/* Supported itext fonts: COURIER, HELVETICA, TIMES_ROMAN */
-			String fontFamily = style.optString("fontFamily", "HELVETICA");
-			if (!"COURIER".equalsIgnoreCase(fontFamily)
-					|| !"HELVETICA".equalsIgnoreCase(fontFamily)
-					|| !"TIMES_ROMAN".equalsIgnoreCase(fontFamily)) {
+        if (label != null && label.length() > 0) {
+            /*
+             * Valid values for horizontal alignment: "l"=left, "c"=center,
+             * "r"=right. Valid values for vertical alignment: "t"=top,
+             * "m"=middle, "b"=bottom.
+             */
+            String labelAlign = style.optString("labelAlign", "cm");
+            float labelXOffset = style.optFloat("labelXOffset", (float) 0.0);
+            float labelYOffset = style.optFloat("labelYOffset", (float) 0.0);
+            String fontColor = style.optString("fontColor", "#000000");
+            /* Supported itext fonts: COURIER, HELVETICA, TIMES_ROMAN */
+            String fontFamily = style.optString("fontFamily", "HELVETICA");
+            if (!"COURIER".equalsIgnoreCase(fontFamily)
+                    || !"HELVETICA".equalsIgnoreCase(fontFamily)
+                    || !"TIMES_ROMAN".equalsIgnoreCase(fontFamily)) {
 
-				LOGGER.info("Font: '"+ fontFamily +
-						"' not supported, supported fonts are 'HELVETICA', " +
-						"'COURIER', 'TIMES_ROMAN', defaults to 'HELVETICA'");
-				fontFamily = "HELVETICA";
-			}
-			String fontSize = style.optString("fontSize", "12");
-			String fontWeight = style.optString("fontWeight", "normal");
-			Coordinate center = geometry.getCentroid().getCoordinate();
+                LOGGER.info("Font: '"+ fontFamily +
+                        "' not supported, supported fonts are 'HELVETICA', " +
+                        "'COURIER', 'TIMES_ROMAN', defaults to 'HELVETICA'");
+                fontFamily = "HELVETICA";
+            }
+            String fontSize = style.optString("fontSize", "12");
+            String fontWeight = style.optString("fontWeight", "normal");
+            Coordinate center = geometry.getCentroid().getCoordinate();
             center = GeometriesRenderer.transformCoordinate(center, affineTransform);
-			float f = context.getStyleFactor();
-			BaseFont bf = PDFUtils
-					.getBaseFont(fontFamily, fontSize, fontWeight);
-			float fontHeight = (float) Double.parseDouble(fontSize
-					.toLowerCase().replaceAll("px", "")) * f;
-			dc.setFontAndSize(bf, fontHeight);
-			dc.setColorFill(ColorWrapper.convertColor(fontColor));
-			dc.beginText();
-			dc.setTextMatrix((float) center.x + labelXOffset * f,
+            float f = context.getStyleFactor();
+            BaseFont bf = PDFUtils
+                    .getBaseFont(fontFamily, fontSize, fontWeight);
+            float fontHeight = (float) Double.parseDouble(fontSize
+                    .toLowerCase().replaceAll("px", "")) * f;
+            dc.setFontAndSize(bf, fontHeight);
+            dc.setColorFill(ColorWrapper.convertColor(fontColor));
+            dc.beginText();
+            dc.setTextMatrix((float) center.x + labelXOffset * f,
                 (float) center.y + labelYOffset * f);
-			dc.showTextAligned(
-					PDFUtils.getHorizontalAlignment(labelAlign),
-					label,
-					(float) center.x + labelXOffset * f,
-					(float) center.y
-							+ labelYOffset
-							* f
-							- PDFUtils
-									.getVerticalOffset(labelAlign, fontHeight),
-					0);
-			dc.endText();
-		}
-	}
+            dc.showTextAligned(
+                    PDFUtils.getHorizontalAlignment(labelAlign),
+                    label,
+                    (float) center.x + labelXOffset * f,
+                    (float) center.y
+                            + labelYOffset
+                            * f
+                            - PDFUtils
+                                    .getVerticalOffset(labelAlign, fontHeight),
+                    0);
+            dc.endText();
+        }
+    }
 }

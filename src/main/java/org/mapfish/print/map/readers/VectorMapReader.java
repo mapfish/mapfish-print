@@ -50,14 +50,14 @@ import com.lowagie.text.pdf.PdfContentByte;
  * </ul>
  */
 public class VectorMapReader extends MapReader {
-	public static class Factory implements MapReaderFactory {
-		@Override
-		public List<? extends MapReader> create(String type, RenderingContext context,
-				PJsonObject params) {
-			return Collections.singletonList(new VectorMapReader(context, params));
-		}
+    public static class Factory implements MapReaderFactory {
+        @Override
+        public List<? extends MapReader> create(String type, RenderingContext context,
+                PJsonObject params) {
+            return Collections.singletonList(new VectorMapReader(context, params));
+        }
     }
-	
+
     private final MfGeo geo;
     private final RenderingContext context;
     private final String name;

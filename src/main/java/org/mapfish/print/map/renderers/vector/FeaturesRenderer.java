@@ -44,9 +44,9 @@ public abstract class FeaturesRenderer<T extends MfGeo> {
     }
 
     @SuppressWarnings("unchecked")
-	public static void render(RenderingContext context, PdfContentByte dc, MfGeo geo, AffineTransform affineTransform) {
+    public static void render(RenderingContext context, PdfContentByte dc, MfGeo geo, AffineTransform affineTransform) {
         @SuppressWarnings("rawtypes")
-		FeaturesRenderer renderer = RENDERERS.get(geo.getClass());
+        FeaturesRenderer renderer = RENDERERS.get(geo.getClass());
         if (renderer == null) {
             throw new RuntimeException("Rendering of " + geo.getClass().getName() + " not supported");
         }

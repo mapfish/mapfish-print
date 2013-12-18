@@ -10,7 +10,7 @@ To build this project, you need:
 * Download MapFish Print from GitHub
 
   * On systems with git installed::
-      
+
       Go to https://github.com/mapfish/mapfish-print
       Click the "Fork" button to fork a version to your user
       Assuming your username is myuser type
@@ -38,15 +38,15 @@ You might get an error like:
     ....
     .....
     FAILURE: Could not determine which tasks to execute.
-    
+
     * What went wrong:
-    
+
     Task 'build' not found in root project 'src'.
-    
+
     * Try:
   	
     Run with -t to get a list of available tasks.
-    
+
     BUILD FAILED
     ....
     .....
@@ -73,7 +73,7 @@ Python
     print.jar = %MAPFISHDIR%/trunk/build/libs/print-standalone-%VERSION%.jar
     print.config = %PROJECT_DIR%/print/config.yaml
 
-2. Edit the config.yaml file in your %PROJECT_DIR%/print/ directory as documented in the `Print Module Server <configuration.html>`_ page. 
+2. Edit the config.yaml file in your %PROJECT_DIR%/print/ directory as documented in the `Print Module Server <configuration.html>`_ page.
 3. Edit the MY_PROJECT/config/routing.py file and add those 2 lines (just after the "CUSTOM ROUTES HERE")::
 
     from mapfish.controllers import printer
@@ -105,9 +105,9 @@ Note: some people have experienced problems when deploying the MapFish Print WAR
 
 In my system, tomcat is installed in **/var/lib/tomcat5.5** and the %WEBAPPS% directory is in **/var/lib/tomcat5.5/webapps**.
 
-1. copy the WAR file in your %WEBAPPS% directory. This is can be obtained from `%MAPFISH_DIR%/trunk/build/libs/print-servlet-*.war` if you compiled the print module or you can get it from the `maven repository <http://dev.mapfish.org/maven/repository/org/mapfish/print/print-servlet/1.1/print-servlet-1.1.war>`_. 
-2. Edit the config.yaml file in your `%WEAPPS%/print-servlet-*/` directory as documented in the `Print Module Server <configuration.html>`_ page. 
-3. If needed, edit the web.xml and log4j.properties files. 
+1. copy the WAR file in your %WEBAPPS% directory. This is can be obtained from `%MAPFISH_DIR%/trunk/build/libs/print-servlet-*.war` if you compiled the print module or you can get it from the `maven repository <http://dev.mapfish.org/maven/repository/org/mapfish/print/print-servlet/1.1/print-servlet-1.1.war>`_.
+2. Edit the config.yaml file in your `%WEAPPS%/print-servlet-*/` directory as documented in the `Print Module Server <configuration.html>`_ page.
+3. If needed, edit the web.xml and log4j.properties files.
 
 If your web pages are not served by the tomcat server, you may need to configure a proxy to work around the `same origin policy <http://en.wikipedia.org/wiki/Same_origin_policy>`_. See `Configure Proxy <http://trac.mapfish.org/trac/mapfish/wiki/ConfigureProxy>`_ for examples on how you may do that.
 
@@ -170,7 +170,7 @@ If you are developping a web application, you can include the print module in it
         </servlet-mapping>
          ...
 
-3. Add a config.yaml file (from the `samples <https://trac.mapfish.org/trac/mapfish/browser/print/trunk/samples>`_, for example) to the root of your web application. 
+3. Add a config.yaml file (from the `samples <https://trac.mapfish.org/trac/mapfish/browser/print/trunk/samples>`_, for example) to the root of your web application.
 
 Configuring Servlet Temp Directory
 ++++++++++++++++++++++++++++++++++
@@ -183,7 +183,7 @@ For debugging or calling from other environments, you can run the print module f
 
 Examples are assumed to be ran from the directory %MAPFISHDIR%/server/java/print.
 
-The fastest way is to call to gradle to run the application.  
+The fastest way is to call to gradle to run the application.
 
 .. code-block:: java
 
@@ -206,7 +206,7 @@ Help about the command line's option can be obtained like that:
 .. code-block:: java
 
   java -Djava.awt.headless=true -cp build/libs/print-standalone-%VERSION%.jar org.mapfish.print.ShellMapPrinter
-  
+
 
 With Image output line
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -216,9 +216,8 @@ At the moment to have robust image (png, gif, etc...) output options the image m
  * ImageMagick (specifically ensure that the convert tool has been installed)
  * Ghostscript
 
-Once ImageMagick is installed (and Ghostscript) then the spring configuration needs to be updated so that org.mapfish.print.output.NativeProcessOutputFactory object will be used as an option for creating output files.  This OutputFactory uses native commandline processes for converting a PDF to an alternate format. The mapfish-spring-application-context.xml can be directly edited to configure the OutputFactory or the file https://github.com/mapfish/mapfish-print/blob/master/sample-spring/imagemagick/WEB-INF/classes/imagemagick-spring-application-context-override.xml can be copied into the mapfish-print/WEB-INF/classes folder (if a servlet is being used).  
- 
+Once ImageMagick is installed (and Ghostscript) then the spring configuration needs to be updated so that org.mapfish.print.output.NativeProcessOutputFactory object will be used as an option for creating output files.  This OutputFactory uses native commandline processes for converting a PDF to an alternate format. The mapfish-spring-application-context.xml can be directly edited to configure the OutputFactory or the file https://github.com/mapfish/mapfish-print/blob/master/sample-spring/imagemagick/WEB-INF/classes/imagemagick-spring-application-context-override.xml can be copied into the mapfish-print/WEB-INF/classes folder (if a servlet is being used).
+
 Since the ImageMagick support is a commonly requested configuration there is an IMAGEMAGICK artifact prebuild with the correct configuration.  To use this artifact change your maven dependency from: print-servlet-1.2-SNAPSHOT to print-servlet-1.2-SNAPSHOT-IMG-MAGICK (you will likely have to change the 1.2-SNAPSHOT portion to the version of mapfish that you are using).
 
 By default ImageMagick will try to find the convert tool in /usr/bin/convert.  You will want to find the path to your convert tool and update imagemagick-spring-application-context-override.xml if that file is included in your build, or mapfish-spring-application-context.xml if you manually changed the mapfish-spring-application-context.xml file to include the imagemagick configuration.
- 

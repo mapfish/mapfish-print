@@ -26,11 +26,11 @@ import org.mapfish.print.utils.PJsonElement;
  */
 public class InvalidJsonValueException extends PrintException {
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	public InvalidJsonValueException(PJsonElement element, String key, Object value) {
+    public InvalidJsonValueException(PJsonElement element, String key, Object value) {
         this(element, key, value, null);
     }
 

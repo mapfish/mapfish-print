@@ -24,11 +24,11 @@ package org.mapfish.print;
  */
 public class InvalidValueException extends PrintException {
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	public InvalidValueException(String name, String value) {
+    public InvalidValueException(String name, String value) {
         this(name, value, null);
     }
 

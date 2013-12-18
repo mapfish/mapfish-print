@@ -27,7 +27,7 @@ import org.apache.pdfbox.util.PDFImageWriter;
 
 /**
  * An example of using the PagePanel class to show PDFs. For more advanced
- * usage including navigation and zooming, look ad the 
+ * usage including navigation and zooming, look ad the
  * com.sun.pdfview.PDFViewer class.
  *
  * @author joshua.marinacci@sun.com

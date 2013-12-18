@@ -79,7 +79,7 @@ public class AttributesBlock extends Block {
         final PdfPTable table = new PdfPTable(nbCols);
         table.setWidthPercentage(100f);
 
-        //deal with the weigths for the column widths, if specified 
+        //deal with the weigths for the column widths, if specified
         if (columnWidths != null) {
             int[] array = new int[columnWidths.size()];
             for (int i = 0; i < columnWidths.size(); i++) {

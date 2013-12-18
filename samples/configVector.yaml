@@ -113,7 +113,7 @@ layouts:
           - !columns
             config:
               cells:
-                - paddingBottom: 5   
+                - paddingBottom: 5
             items:
               - !text
                 backgroundColor: #FF0000

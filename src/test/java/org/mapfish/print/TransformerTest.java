@@ -50,7 +50,7 @@ public class TransformerTest extends PrintTestCase {
 
         assertTrue(Math.abs(linear.getGeoH() - geodetic.getGeoH()) > 0.00000001);
     }
-    
+
 
     public void testGoogle() {
         DistanceUnit unitEnum = DistanceUnit.fromString("m");
@@ -62,7 +62,7 @@ public class TransformerTest extends PrintTestCase {
         assertEquals(linear.getPaperH(), geodetic.getPaperH());
 
         assertTrue(Math.abs(linear.getGeoH() - geodetic.getGeoH()) > 0.00000001);
-        
+
     }
 
 }
