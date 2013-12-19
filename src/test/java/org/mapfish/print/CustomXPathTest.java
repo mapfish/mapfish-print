@@ -19,6 +19,7 @@
 
 package org.mapfish.print;
 
+import static org.junit.Assert.*;
 import java.io.IOException;
 import java.io.StringReader;
 
@@ -27,20 +28,20 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 public class CustomXPathTest extends PrintTestCase {
-    public CustomXPathTest(String name) {
-        super(name);
-    }
 
+    @Test
     public void testFactorArray() {
         CustomXPath functs = new CustomXPath();
         assertEquals("2,4,6", functs.factorArray("1,2,3", 2));
         assertEquals("2,4,6", functs.factorArray("1, 2, 3", 2));
     }
 
+    @Test
     public void testXslt() throws TransformerException, IOException {
         final StringReader xsltStream = new StringReader(
                 "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +

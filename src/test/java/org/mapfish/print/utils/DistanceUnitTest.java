@@ -19,13 +19,14 @@
 
 package org.mapfish.print.utils;
 
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 import org.mapfish.print.PrintTestCase;
 
 public class DistanceUnitTest extends PrintTestCase {
-    public DistanceUnitTest(String name) {
-        super(name);
-    }
 
+    @Test
     public void testString() {
         assertEquals("m", DistanceUnit.fromString("Meter").toString());
         assertEquals("m", DistanceUnit.fromString("meter").toString());
@@ -34,14 +35,16 @@ public class DistanceUnitTest extends PrintTestCase {
         assertEquals("\u00B0", DistanceUnit.fromString("degree").toString());
     }
 
+    @Test
     public void testConvert() {
-        assertEquals(25.4 / 1000.0, DistanceUnit.IN.convertTo(1.0, DistanceUnit.M));
-        assertEquals(25.4, DistanceUnit.IN.convertTo(1.0, DistanceUnit.MM));
-        assertEquals(1000.0, DistanceUnit.M.convertTo(1.0, DistanceUnit.MM));
-        assertEquals(1 / 12.0, DistanceUnit.IN.convertTo(1.0, DistanceUnit.FT));
-        assertEquals(12.0, DistanceUnit.FT.convertTo(1.0, DistanceUnit.IN));
+        assertEquals(25.4 / 1000.0, DistanceUnit.IN.convertTo(1.0, DistanceUnit.M), 0.000001);
+        assertEquals(25.4, DistanceUnit.IN.convertTo(1.0, DistanceUnit.MM), 0.000001);
+        assertEquals(1000.0, DistanceUnit.M.convertTo(1.0, DistanceUnit.MM), 0.000001);
+        assertEquals(1 / 12.0, DistanceUnit.IN.convertTo(1.0, DistanceUnit.FT), 0.000001);
+        assertEquals(12.0, DistanceUnit.FT.convertTo(1.0, DistanceUnit.IN), 0.000001);
     }
 
+    @Test
     public void testGroup() {
         DistanceUnit[] metrics = DistanceUnit.MM.getAllUnits();
         assertEquals(4, metrics.length);
@@ -51,6 +54,7 @@ public class DistanceUnitTest extends PrintTestCase {
         assertSame(DistanceUnit.KM, metrics[3]);
     }
 
+    @Test
     public void testBestUnit() {
         assertEquals(DistanceUnit.M, DistanceUnit.getBestUnit(1000.0, DistanceUnit.MM));
         assertEquals(DistanceUnit.CM, DistanceUnit.getBestUnit(999.9, DistanceUnit.MM));

@@ -49,6 +49,7 @@ public class TmsMapReader extends TileableMapReader {
 
     protected TmsMapReader(String layer, RenderingContext context, PJsonObject params) {
         super(context, params);
+
         this.layer = layer;
         PJsonArray maxExtent = params.getJSONArray("maxExtent");
         PJsonArray tileSize = params.getJSONArray("tileSize");
@@ -67,12 +68,20 @@ public class TmsMapReader extends TileableMapReader {
         final float originY ;
 
         if(tileOrigin == null || (!tileOrigin.has("x") && !tileOrigin.has("lon"))){
-            originX = 0.0f;
+            if (maxExtent.size() != 4 || context.getConfig().getTmsDefaultOriginX() != null) {
+                originX = context.getConfig().getTmsDefaultOriginX();
+            } else {
+                originX = Math.min(maxExtent.getFloat(0), maxExtent.getFloat(2));
+            }
         }else{
             originX = tileOrigin.has("x") ? tileOrigin.getFloat("x") : tileOrigin.getFloat("lon");
         }
         if(tileOrigin == null || (!tileOrigin.has("y") && !tileOrigin.has("lat"))){
-            originY = 0.0f;
+            if (maxExtent.size() != 4 || context.getConfig().getTmsDefaultOriginY() != null) {
+                originY = context.getConfig().getTmsDefaultOriginY();
+            } else {
+                originY = Math.min(maxExtent.getFloat(1), maxExtent.getFloat(3));
+            }
         }else{
             originY = tileOrigin.has("y") ? tileOrigin.getFloat("y") : tileOrigin.getFloat("lat");
         }
@@ -108,7 +117,8 @@ public class TmsMapReader extends TileableMapReader {
         path.append('/').append(tileY);
         path.append('.').append(this.format);
 
-        return new URI(commonUri.getScheme(), commonUri.getUserInfo(), commonUri.getHost(), commonUri.getPort(), commonUri.getPath() + path, commonUri.getQuery(), commonUri.getFragment());
+        return new URI(commonUri.getScheme(), commonUri.getUserInfo(), commonUri.getHost(), commonUri.getPort(),
+                commonUri.getPath() + path, commonUri.getQuery(), commonUri.getFragment());
     }
 
     public boolean testMerge(MapReader other) {

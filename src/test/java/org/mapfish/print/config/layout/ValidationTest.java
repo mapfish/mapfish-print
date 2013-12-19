@@ -19,10 +19,12 @@
 
 package org.mapfish.print.config.layout;
 
+import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Test;
 import org.mapfish.print.InvalidValueException;
 import org.mapfish.print.PrintTestCase;
 
@@ -30,10 +32,9 @@ import org.mapfish.print.PrintTestCase;
  * A few test around the {@link org.mapfish.print.config.layout.Block#validate()} method.
  */
 public class ValidationTest extends PrintTestCase {
-    public ValidationTest(String name) {
-        super(name);
-    }
 
+
+    @Test
     public void testAbsoluteInnerColumns() {
         Page page = new Page();
         ColumnsBlock rootColumns = new ColumnsBlock();
@@ -62,7 +63,7 @@ public class ValidationTest extends PrintTestCase {
             //expected
         }
     }
-
+    @Test
     public void testColumnsPartialAbsolute() {
         ColumnsBlock columns = new ColumnsBlock();
         TextBlock textBlock = new TextBlock();
@@ -88,7 +89,7 @@ public class ValidationTest extends PrintTestCase {
         columns.setAbsoluteY(100);
         columns.validate();
     }
-
+    @Test
     public void testMapPartialAbsolute() {
         MapBlock map = new MapBlock();
 

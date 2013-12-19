@@ -1,0 +1,12 @@
+{
+    "baseURL": "http://www.example.com",
+    "opacity": 1,
+    "singleTile": false,
+    "layer": "layerName",
+    "maxExtent": [-20037508.342789, -20037508.342789, 20037508.342789, 20037508.342789],
+    "tileSize": [256, 256],
+    "tileOriginCorner": "tl",
+    "resolutions": [156543.0339, 78271.51695, 39135.758475, 19567.8792375, 9783.93961875, 4891.969809375, 2445.9849046875, 1222.99245234375],
+    "extension": "gif",
+    "format": "gif"
+}

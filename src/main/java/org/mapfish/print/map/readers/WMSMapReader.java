@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.json.JSONException;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.Transformer;
 import org.mapfish.print.map.ParallelMapTileLoader;
@@ -91,7 +92,11 @@ public class WMSMapReader extends TileableMapReader {
         PJsonObject customParams = params.optJSONObject("customParams");
         String version = params.optString("version", null);
         if (version != null) {
-            customParams.getInternalObj().put("VERSION", version);
+            try {
+                customParams.getInternalObj().put("VERSION", version);
+            } catch (JSONException e) {
+                // skip
+            }
         }
 
         // store the rotation to not change for other layers

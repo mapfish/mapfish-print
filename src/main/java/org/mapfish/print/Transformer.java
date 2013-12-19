@@ -144,8 +144,8 @@ public class Transformer implements Cloneable {
             computeGeodeticBBox(geoWidth, geoHeight, centerX, centerY, dpi,
                     geodeticSRS);
         } else {
-            this.minGeoX = centerX - geoWidth / 2.0f;
-            this.minGeoY = centerY - geoHeight / 2.0f;
+            this.minGeoX = centerX - (geoWidth / 2.0f);
+            this.minGeoY = centerY - (geoHeight / 2.0f);
             this.maxGeoX = minGeoX + geoWidth;
             this.maxGeoY = minGeoY + geoHeight;
         }

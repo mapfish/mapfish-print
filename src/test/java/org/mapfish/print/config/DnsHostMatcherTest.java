@@ -19,19 +19,18 @@
 
 package org.mapfish.print.config;
 
+import static org.junit.Assert.*;
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 
+import org.junit.Test;
 import org.mapfish.print.PrintTestCase;
 
 public class DnsHostMatcherTest extends PrintTestCase {
-    public DnsHostMatcherTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testSimple() throws URISyntaxException, UnknownHostException, SocketException, MalformedURLException {
         DnsHostMatcher matcher = new DnsHostMatcher();
         matcher.setHost("www.example.com");

@@ -19,15 +19,15 @@
 
 package org.mapfish.print.config;
 
+import static org.junit.Assert.*;
 import java.awt.Color;
 
+import org.junit.Test;
 import org.mapfish.print.PrintTestCase;
 
 public class ColorWrapperTest extends PrintTestCase {
-    public ColorWrapperTest(String name) {
-        super(name);
-    }
 
+    @Test
     public void testHexa() {
         ColorWrapper wrapper = new ColorWrapper(Color.class);
 
@@ -38,6 +38,7 @@ public class ColorWrapperTest extends PrintTestCase {
         assertEquals(new Color(0x12, 0x56, 0xb8), wrapper.getObject());
     }
 
+    @Test
     public void testHexaAlpha() {
         ColorWrapper wrapper = new ColorWrapper(Color.class);
 
@@ -51,6 +52,7 @@ public class ColorWrapperTest extends PrintTestCase {
         assertEquals(new Color(0xFF, 0xFF, 0xFF, 0xFF), wrapper.getObject());
     }
 
+    @Test
     public void testText() {
         ColorWrapper wrapper = new ColorWrapper(Color.class);
 

@@ -68,6 +68,8 @@ public class Config implements Closeable {
     private String maxSvgHeight = "";
     private double maxSvgW = Double.MAX_VALUE;
     private double maxSvgH = Double.MAX_VALUE;
+    private Float tmsDefaultOriginX = null;
+    private Float tmsDefaultOriginY = null;
     private boolean reloadConfig = false;
 
     private boolean integerSvg = true;
@@ -551,5 +553,30 @@ public class Config implements Closeable {
      */
     public void setProxyBaseUrl(String proxyBaseUrl) {
         this.proxyBaseUrl = proxyBaseUrl;
+    }
+
+    /**
+     * Specify the default x - origin used by TMS map reader.  If null then the value will be derived from maxExtent.
+     */
+    public Float getTmsDefaultOriginX() {
+        return tmsDefaultOriginX;
+    }
+    /**
+     * Specify the default x - origin used by TMS map reader.  If null then the value will be derived from maxExtent.
+     */
+    public void setTmsDefaultOriginX(Float tmsDefaultOriginX) {
+        this.tmsDefaultOriginX = tmsDefaultOriginX;
+    }
+    /**
+     * Specify the default y - origin used by TMS map reader.  If null then the value will be derived from maxExtent.
+     */
+    public Float getTmsDefaultOriginY() {
+        return tmsDefaultOriginY;
+    }
+    /**
+     * Specify the default y - origin used by TMS map reader.  If null then the value will be derived from maxExtent.
+     */
+    public void setTmsDefaultOriginY(Float tmsDefaultOriginY) {
+        this.tmsDefaultOriginY = tmsDefaultOriginY;
     }
 }

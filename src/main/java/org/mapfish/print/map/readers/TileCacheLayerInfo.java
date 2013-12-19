@@ -33,12 +33,12 @@ public class TileCacheLayerInfo {
     /**
      * Tolerance we accept when trying to determine the nearest resolution.
      */
-    protected float resolutionTolerance(){
+    public float getResolutionTolerance(){
         return 1.05f;
     }
 
     protected static final Pattern FORMAT_REGEXP = Pattern.compile("^[^/]+/([^/]+)$");
-    protected static final Pattern RESOLUTIONS_REGEXP = Pattern.compile("\\s+");
+    protected static final Pattern RESOLUTIONS_REGEXP = Pattern.compile("(\\s+)|,");
 
     protected final int width;
     protected final int height;
@@ -120,16 +120,21 @@ public class TileCacheLayerInfo {
     public ResolutionInfo getNearestResolution(float targetResolution) {
         int pos = resolutions.length - 1;
         float result = resolutions[pos];
-        final float tolerance = resolutionTolerance();
+        final float tolerance = getResolutionTolerance();
         for (int i = resolutions.length - 1; i >= 0; --i) {
             float cur = resolutions[i];
 
+            float distance = Math.abs(targetResolution - cur);
             if (cur <= targetResolution * tolerance) {
-                result = cur;
-                pos = i;
-                if(cur == targetResolution) {
-                    break;
+                if (distance <= Math.abs(targetResolution - result)) {
+                    result = cur;
+                    pos = i;
+                    if(distance < 0.0000001f) {
+                        break;
+                    }
                 }
+            } else {
+                break;
             }
         }
         return new ResolutionInfo(pos, result);

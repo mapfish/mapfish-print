@@ -19,6 +19,7 @@
 
 package org.mapfish.print.config;
 
+import static org.junit.Assert.*;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -29,13 +30,11 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 
+import org.junit.Test;
 import org.mapfish.print.PrintTestCase;
 
 public class LocalHostMatcherTest extends PrintTestCase {
-    public LocalHostMatcherTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testAllIpV4() throws UnknownHostException, SocketException, URISyntaxException, MalformedURLException {
         LocalHostMatcher matcher = new LocalHostMatcher();
 

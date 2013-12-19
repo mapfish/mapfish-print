@@ -19,6 +19,7 @@
 
 package org.mapfish.print;
 
+import static org.junit.Assert.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -29,18 +30,15 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.lowagie.text.DocumentException;
+import org.junit.Test;
 
 public class PDFUtilsTest extends PdfTestCase {
     public static final Logger LOGGER = Logger.getLogger(PDFUtilsTest.class);
     private FakeHttpd httpd;
     private static final int PORT = 8181;
 
-    public PDFUtilsTest(String name) {
-        super(name);
-    }
-
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.INFO);
         Logger.getLogger("httpclient").setLevel(Level.INFO);
@@ -53,11 +51,12 @@ public class PDFUtilsTest extends PdfTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         httpd.shutdown();
         super.tearDown();
     }
 
+    @Test
     public void testGetImageDirectWMSError() throws URISyntaxException, IOException, DocumentException {
         URI uri = new URI("http://localhost:" + PORT + "/notImage");
         try {
@@ -70,6 +69,7 @@ public class PDFUtilsTest extends PdfTestCase {
         }
     }
 
+    @Test
     public void testGetImageDirectHTTPError() throws URISyntaxException, IOException, DocumentException {
         URI uri = new URI("http://localhost:" + PORT + "/500");
         try {
@@ -82,6 +82,7 @@ public class PDFUtilsTest extends PdfTestCase {
         }
     }
 
+    @Test
     public void testPlaceholder() throws URISyntaxException, IOException, DocumentException {
         URI uri = new URI("http://localhost:" + PORT + "/500");
         try {

@@ -201,8 +201,8 @@ Standard mode:
 * baseURL the 'ResourceURL' available in the WMTS capabilities.
 * customParams (Optional) Map, additional URL arguments
 * layer (Required) the layer name
-* version (Required) ``1.0.0``
-* requestEncoding (Required) ``REST`` or ``KVP``
+* version (Defaults to ``1.0.0``) WMTS protocol version
+* requestEncoding (Defaults to ``REST``) ``REST`` or ``KVP``
 * style (Required) the style name
 * dimensions (Optional) list of dimensions names
 * params (Optional) dictionary of dimensions name (capital) => value

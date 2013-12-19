@@ -19,6 +19,7 @@
 
 package org.mapfish.print.config;
 
+import static org.junit.Assert.*;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.SocketException;
@@ -26,13 +27,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 
+import org.junit.Test;
 import org.mapfish.print.PrintTestCase;
 
 public class AddressHostMatcherTest extends PrintTestCase {
-    public AddressHostMatcherTest(String name) {
-        super(name);
-    }
 
+    @Test
     public void testSimple() throws UnknownHostException, URISyntaxException, SocketException, MalformedURLException {
         AddressHostMatcher matcher = new AddressHostMatcher();
         matcher.setIp("127.2.3.56");
@@ -43,6 +43,7 @@ public class AddressHostMatcherTest extends PrintTestCase {
         assertFalse(matcher.validate(new URI("http://127.2.3.156/cgi-bin/mapserv?toto=tutu")));
     }
 
+    @Test
     public void testDns() throws UnknownHostException, URISyntaxException, SocketException, MalformedURLException {
         AddressHostMatcher matcher = new AddressHostMatcher();
         matcher.setIp("localhost");
@@ -52,6 +53,7 @@ public class AddressHostMatcherTest extends PrintTestCase {
         assertTrue(matcher.validate(new URI("http://127.0.0.1/cgi-bin/mapserv?toto=tutu")));
     }
 
+    @Test
     public void testPort() throws UnknownHostException, URISyntaxException, SocketException, MalformedURLException {
         AddressHostMatcher matcher = new AddressHostMatcher();
         matcher.setIp("localhost");
@@ -63,6 +65,7 @@ public class AddressHostMatcherTest extends PrintTestCase {
         assertFalse(matcher.validate(new URI("http://127.0.0.1:80/cgi-bin/mapserv?toto=tutu")));
     }
 
+    @Test
     public void testPath() throws UnknownHostException, URISyntaxException, SocketException, MalformedURLException {
         AddressHostMatcher matcher = new AddressHostMatcher();
         matcher.setIp("127.0.0.1");
@@ -74,6 +77,7 @@ public class AddressHostMatcherTest extends PrintTestCase {
         assertFalse(matcher.validate(new URI("http://127.0.0.2/cgi-bin/mapserv?toto=tutu")));
     }
 
+    @Test
     public void testMulti() throws UnknownHostException, URISyntaxException, SocketException, MalformedURLException {
         AddressHostMatcher matcher = new AddressHostMatcher();
         matcher.setIp("www.example.com");

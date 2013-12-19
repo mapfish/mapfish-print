@@ -19,24 +19,25 @@
 
 package org.mapfish.print.config;
 
+import static org.junit.Assert.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.TreeSet;
 
+import org.junit.Test;
 import org.mapfish.print.PrintTestCase;
 import org.mapfish.print.ShellMapPrinter;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ConfigTest extends PrintTestCase {
-    public ConfigTest(String name) {
-        super(name);
-    }
 
+    @Test
     public void testParse() throws FileNotFoundException {
-    	new ClassPathXmlApplicationContext(ShellMapPrinter.DEFAULT_SPRING_CONTEXT).getBean(ConfigFactory.class).fromYaml(new File("samples/config.yaml"));
+        new ClassPathXmlApplicationContext(ShellMapPrinter.DEFAULT_SPRING_CONTEXT).getBean(ConfigFactory.class).fromYaml(new File("samples/config.yaml"));
     }
 
+    @Test
     public void testBestScale() {
         Config config = new Config();
         try {

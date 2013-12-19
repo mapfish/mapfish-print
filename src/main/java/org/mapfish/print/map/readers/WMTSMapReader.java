@@ -50,7 +50,7 @@ public class WMTSMapReader extends TileableMapReader {
     @SuppressWarnings("unused")
     private final float opacity;
     private final String version;
-    private final String requestEncoding;
+    private final WMTSRequestEncoding requestEncoding;
     private final PJsonArray tileOrigin;
     private final String style;
     private final PJsonArray dimensions;
@@ -71,8 +71,9 @@ public class WMTSMapReader extends TileableMapReader {
         // Optional (but mandatory if matrixIds is not provided)
         PJsonArray tileSize = params.optJSONArray("tileSize");
         opacity = params.optFloat("opacity", 1.0F);
-        version = params.getString("version");
-        requestEncoding = params.getString("requestEncoding");
+        version = params.optString("version", "1.0.0");
+        requestEncoding = WMTSRequestEncoding.valueOf(params.optString("requestEncoding", WMTSRequestEncoding.REST.name()));
+
         // Optional (but mandatory if matrixIds is not provided)
         tileOrigin = params.optJSONArray("tileOrigin");
         style = params.getString("style");
@@ -86,10 +87,20 @@ public class WMTSMapReader extends TileableMapReader {
         // Optional
         matrixIds = params.optJSONArray("matrixIds");
         // Optional (but mandatory if matrixIds is not provided)
-        formatSuffix = params.optString("formatSuffix");
+        formatSuffix = params.optString("formatSuffix", params.optString("extension"));
+
         // Optional (but mandatory if matrixIds is provided and requestEncoding is KVP)
         format = params.optString("format");
 
+        if (tileOrigin == null && matrixIds == null) {
+            throw new IllegalArgumentException("Either tileOrigin or matrixIds is required.");
+        }
+        if (zoomOffset == null && matrixIds == null) {
+            throw new IllegalArgumentException("Either zoomOffset or matrixIds is required.");
+        }
+        if (formatSuffix == null && matrixIds == null) {
+            throw new IllegalArgumentException("Either extension (or formatSuffix) or matrixIds is required.");
+        }
         if (matrixIds == null) {
             tileCacheLayerInfo = new WMTSLayerInfo(params.getJSONArray("resolutions"), tileSize.getInt(0), tileSize.getInt(1), maxExtent.getFloat(0), maxExtent.getFloat(1), maxExtent.getFloat(2), maxExtent.getFloat(3), formatSuffix);
         }
@@ -103,7 +114,7 @@ public class WMTSMapReader extends TileableMapReader {
         //not much query params for this protocol...
     }
 
-    protected void renderTiles(TileRenderer formater, Transformer transformer, URI commonUri, ParallelMapTileLoader parallelMapTileLoader) throws IOException, URISyntaxException {
+    protected void renderTiles(TileRenderer formatter, Transformer transformer, URI commonUri, ParallelMapTileLoader parallelMapTileLoader) throws IOException, URISyntaxException {
         if (matrixIds != null) {
             float diff = Float.POSITIVE_INFINITY;
             float targetResolution = transformer.getGeoW() / transformer.getStraightBitmapW();
@@ -129,7 +140,7 @@ public class WMTSMapReader extends TileableMapReader {
                     topLeftCorner.getFloat(1),
                     format);
         }
-        super.renderTiles(formater, transformer, commonUri, parallelMapTileLoader);
+        super.renderTiles(formatter, transformer, commonUri, parallelMapTileLoader);
     }
 
     protected URI getTileUri(URI commonUri, Transformer transformer, float minGeoX, float minGeoY, float maxGeoX, float maxGeoY, long w, long h) throws URISyntaxException, UnsupportedEncodingException {
@@ -138,7 +149,7 @@ public class WMTSMapReader extends TileableMapReader {
             float factor = 1 / (matrix.getFloat("resolution") * w);
             int row = (int)Math.round((topLeftCorner.getFloat(1) - maxGeoY) * factor);
             int col = (int)Math.round((minGeoX - topLeftCorner.getFloat(0)) * factor);
-            if ("REST".equals(requestEncoding)) {
+            if (WMTSRequestEncoding.REST == requestEncoding) {
                 String path = commonUri.getPath();
                 for (int i = 0 ; i < dimensions.size() ; i++) {
                     String d = dimensions.getString(i);
@@ -184,7 +195,7 @@ public class WMTSMapReader extends TileableMapReader {
             if (!commonUri.getPath().endsWith("/")) {
                 path.append('/');
             }
-            if (requestEncoding.compareTo("REST") == 0) {
+            if (requestEncoding == WMTSRequestEncoding.REST) {
                 path.append(version);
                 path.append('/').append(layer);
                 path.append('/').append(style);
@@ -236,5 +247,9 @@ public class WMTSMapReader extends TileableMapReader {
 
     public String toString() {
         return layer;
+    }
+
+    private enum WMTSRequestEncoding {
+        KVP, REST
     }
 }

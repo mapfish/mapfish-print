@@ -44,7 +44,7 @@ public class TmsLayerInfo extends TileCacheLayerInfo {
     }
 
     @Override
-    protected float resolutionTolerance() {
+    public float getResolutionTolerance() {
         return 1.9f;
     }
 }

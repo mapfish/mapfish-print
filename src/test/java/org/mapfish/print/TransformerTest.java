@@ -19,17 +19,17 @@
 
 package org.mapfish.print;
 
+import static org.junit.Assert.*;
+import org.junit.Test;
 import org.mapfish.print.utils.DistanceUnit;
 
 public class TransformerTest extends PrintTestCase {
-    public TransformerTest(String name) {
-        super(name);
-    }
 
+    @Test
     public void testStraight() {
         Transformer t = new Transformer(0, 0, 100, 70, 10, 2, DistanceUnit.fromString("m"), 0, null, false);
-        assertEquals(100.0F, t.getPaperW());
-        assertEquals(70.0F, t.getPaperH());
+        assertEquals(100.0F, t.getPaperW(), 0.00001);
+        assertEquals(70.0F, t.getPaperH(), 0.00001);
 
         final double geoW = 100.0F / 72.0F * 2.54 / 10.0F;
         final double geoH = 70.0F / 72.0F * 2.54 / 10.0F;
@@ -39,27 +39,28 @@ public class TransformerTest extends PrintTestCase {
         assertEquals(geoH, t.getRotatedGeoH(), .000001);
     }
 
+    @Test
     public void testGeodetic() {
         DistanceUnit unitEnum = DistanceUnit.fromString("m");
 		int dpi = 2;
 		int scale = 10;
         Transformer geodetic = new Transformer(0, 0, 100, 70, scale, dpi, unitEnum, 0, "EPSG:4326", false);
         Transformer linear = new Transformer(0, 0, 100, 70, scale, dpi, unitEnum, 0, null, false);
-        assertEquals(linear.getPaperW(), geodetic.getPaperW());
-        assertEquals(linear.getPaperH(), geodetic.getPaperH());
+        assertEquals(linear.getPaperW(), geodetic.getPaperW(), 0.00001);
+        assertEquals(linear.getPaperH(), geodetic.getPaperH(), 0.00001);
 
         assertTrue(Math.abs(linear.getGeoH() - geodetic.getGeoH()) > 0.00000001);
     }
 
-
+    @Test
     public void testGoogle() {
         DistanceUnit unitEnum = DistanceUnit.fromString("m");
 		int dpi = 2;
 		int scale = 10;
         Transformer geodetic = new Transformer(731033.0f,5864001.0f, 100, 70, scale, dpi, unitEnum, 0, "EPSG:900913", false);
         Transformer linear = new Transformer(6.566981170957462f, 46.51954387957121f, 100, 70, scale, dpi, unitEnum, 0, null, false);
-        assertEquals(linear.getPaperW(), geodetic.getPaperW());
-        assertEquals(linear.getPaperH(), geodetic.getPaperH());
+        assertEquals(linear.getPaperW(), geodetic.getPaperW(), 0.00001);
+        assertEquals(linear.getPaperH(), geodetic.getPaperH(), 0.00001);
 
         assertTrue(Math.abs(linear.getGeoH() - geodetic.getGeoH()) > 0.00000001);
 

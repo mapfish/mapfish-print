@@ -201,9 +201,9 @@ public class PDFCustomBlocks extends PdfPageEventHelper {
     public void addError(Exception e) {
         errors.add(e);
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.warn("Error while adding a PDF element", e);
+            LOGGER.error("Error while adding a PDF element", e);
         } else {
-            LOGGER.warn("Error while adding a PDF element" + e.toString());
+            LOGGER.error("Error while adding a PDF element" + e.toString());
         }
     }
 

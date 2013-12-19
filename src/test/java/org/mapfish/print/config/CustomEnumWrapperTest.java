@@ -19,14 +19,15 @@
 
 package org.mapfish.print.config;
 
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 import org.mapfish.print.PrintTestCase;
 import org.mapfish.print.scalebar.Type;
 
 public class CustomEnumWrapperTest extends PrintTestCase {
-    public CustomEnumWrapperTest(String name) {
-        super(name);
-    }
 
+    @Test
     public void testSetObject() {
         CustomEnumWrapper wrapper = new CustomEnumWrapper(Type.class);
         wrapper.setObject("bar");

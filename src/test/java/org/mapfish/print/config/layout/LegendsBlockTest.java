@@ -11,6 +11,8 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.mapfish.print.Constants;
 import org.mapfish.print.FakeHttpd;
@@ -33,7 +35,8 @@ public class LegendsBlockTest {
     private FakeHttpd httpd;
     private static final int PORT = 8182;
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.INFO);
         Logger.getLogger("httpclient").setLevel(Level.INFO);
 
@@ -43,8 +46,8 @@ public class LegendsBlockTest {
         httpd = new FakeHttpd(PORT, routings);
         httpd.start();
     }
-
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         httpd.shutdown();
     }
 

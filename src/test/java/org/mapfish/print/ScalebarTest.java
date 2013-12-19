@@ -22,6 +22,7 @@ package org.mapfish.print;
 import java.io.IOException;
 
 import org.json.JSONException;
+import org.junit.Test;
 import org.mapfish.print.config.layout.Block;
 import org.mapfish.print.config.layout.ScalebarBlock;
 import org.mapfish.print.scalebar.Direction;
@@ -37,10 +38,8 @@ import com.lowagie.text.Element;
  * This is not an automated test. You have to look at the generated PDF file.
  */
 public class ScalebarTest extends PdfTestCase {
-    public ScalebarTest(String name) {
-        super(name);
-    }
 
+    @Test
     public void testBars() throws IOException, DocumentException, JSONException {
         PJsonObject page1 = context.getGlobalParams().getJSONArray("pages").getJSONObject(0);
 

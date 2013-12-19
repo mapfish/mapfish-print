@@ -6,6 +6,10 @@ import com.lowagie.text.PageSize;
 import com.lowagie.text.pdf.PdfWriter;
 import junit.framework.TestCase;
 import org.apache.log4j.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestName;
 import org.junit.runners.model.FrameworkMethod;
 import org.mapfish.print.config.Config;
 import org.mapfish.print.config.HostMatcher;
@@ -19,25 +23,23 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.*;
 
-public abstract class MapTestBasic extends TestCase {
+public abstract class MapTestBasic {
 
     protected final Logger logger = Logger.getLogger(MapTestBasic.class);
 
+    @Rule
+    public TestName name = new TestName();
     protected RenderingContext context;
 
-    public MapTestBasic(String name) {
-        super(name);
-    }
-
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         BasicConfigurator.configure(new ConsoleAppender(
                 new PatternLayout("%d{HH:mm:ss.SSS} [%t] %-5p %30.30c - %m%n")));
         Logger.getRootLogger().setLevel(Level.DEBUG);
 
         Document doc = new Document(PageSize.A4);
         String baseDir = getBaseDir();
-        OutputStream outFile = new FileOutputStream(baseDir + getClass().getSimpleName() + "_" + getName() + ".pdf");
+        OutputStream outFile = new FileOutputStream(baseDir + getClass().getSimpleName() + "_" + name.getMethodName() + ".pdf");
         PdfWriter writer = PdfWriter.getInstance(doc, outFile);
         writer.setFullCompression();
         Layout layout = new Layout();
@@ -58,23 +60,15 @@ public abstract class MapTestBasic extends TestCase {
         }
     }
 
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         BasicConfigurator.resetConfiguration();
 
         context.getWriter().close();
 
         context = null;
-
-        super.tearDown();
     }
 
-    public void succeeded(FrameworkMethod method) {
-        logger.info("Test " + method.getName() + "() succeeded.");
-    }
-
-    public void failed(Throwable e, FrameworkMethod method) {
-        logger.error("Test " + method.getName() + "() failed. " + e.getMessage(), e);
-    }
 
     private String getBaseDir() {
         //This test expects to be able to write files into the same directory the classes

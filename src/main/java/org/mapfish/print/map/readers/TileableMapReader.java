@@ -40,7 +40,7 @@ public abstract class TileableMapReader extends HTTPMapReader {
         super(context, params);
     }
 
-    protected void renderTiles(TileRenderer formater, Transformer transformer, URI commonUri, ParallelMapTileLoader parallelMapTileLoader) throws IOException, URISyntaxException {
+    protected void renderTiles(TileRenderer formatter, Transformer transformer, URI commonUri, ParallelMapTileLoader parallelMapTileLoader) throws IOException, URISyntaxException {
         final List<URI> urls = new ArrayList<URI>(1);
         final float offsetX;
         final float offsetY;
@@ -120,7 +120,7 @@ public abstract class TileableMapReader extends HTTPMapReader {
             bitmapTileH = transformer.getRotatedBitmapH();
             urls.add(getTileUri(commonUri, transformer, minGeoX, minGeoY, maxGeoX, maxGeoY, bitmapTileW, bitmapTileH));
         }
-        formater.render(transformer, urls, parallelMapTileLoader, context, opacity, nbTilesW, offsetX, offsetY, bitmapTileW, bitmapTileH);
+        formatter.render(transformer, urls, parallelMapTileLoader, context, opacity, nbTilesW, offsetX, offsetY, bitmapTileW, bitmapTileH);
     }
 
     /**

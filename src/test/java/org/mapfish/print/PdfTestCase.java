@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.TreeSet;
 import java.util.Collections;
 
+import org.junit.Before;
 import org.mapfish.print.config.Config;
 import org.mapfish.print.config.layout.Block;
 import org.mapfish.print.config.layout.Layout;
@@ -48,13 +49,10 @@ public abstract class PdfTestCase extends PrintTestCase {
     private PdfWriter writer;
     private OutputStream outFile;
 
-    public PdfTestCase(String name) {
-        super(name);
-    }
-
     @SuppressWarnings("deprecation")
     @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
         PJsonObject spec = MapPrinter.parseSpec(FileUtilities.readWholeTextFile(new File("samples/spec.json")));
         spec.getInternalObj().put("units", "meters");
@@ -74,20 +72,20 @@ public abstract class PdfTestCase extends PrintTestCase {
                }
            }
         }
-        outFile = new FileOutputStream(baseDir + getClass().getSimpleName() + "_" + getName() + ".pdf");
+        outFile = new FileOutputStream(baseDir + getClass().getSimpleName() + "_" + name.getMethodName() + ".pdf");
         writer = PdfWriter.getInstance(doc, outFile);
         writer.setFullCompression();
         createContext(spec);
         doc.setMargins(MARGIN, MARGIN, MARGIN, MARGIN * 3);
         doc.open();
         doc.newPage();
-        final Paragraph title = new Paragraph("Test class=" + getClass().getName() + " method=" + getName());
+        final Paragraph title = new Paragraph("Test class=" + getClass().getName() + " method=" + name.getMethodName());
         title.setSpacingAfter(20);
         doc.add(title);
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         doc.close();
         writer.close();
         outFile.close();
