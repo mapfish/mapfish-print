@@ -216,20 +216,21 @@ public class MapChunkDrawer extends ChunkDrawer {
             dc.transform(transformer.getGeoTransform(true));
             transformer.setRotation(0);
 
-            dc.setLineWidth(1 * transformer.getGeoW() / transformer.getPaperW());
+            dc.setLineWidth((float) (1 * transformer.getGeoW() / transformer.getPaperW()));
             dc.setColorStroke(new Color(255, 0, 0));
-            dc.rectangle(mainTransformer.getMinGeoX(), mainTransformer.getMinGeoY(), mainTransformer.getGeoW(), mainTransformer.getGeoH());
+            dc.rectangle((float) mainTransformer.getMinGeoX(), (float) mainTransformer.getMinGeoY(), (float) mainTransformer.getGeoW(),
+                    (float) mainTransformer.getGeoH());
             dc.stroke();
 
             if (mainTransformer.getRotation() != 0.0) {
                 //draw a little arrow
-                dc.setLineWidth(0.5F * transformer.getGeoW() / transformer.getPaperW());
-                dc.moveTo((3 * mainTransformer.getMinGeoX() + mainTransformer.getMaxGeoX()) / 4,
-                        mainTransformer.getMinGeoY());
-                dc.lineTo((mainTransformer.getMinGeoX() + mainTransformer.getMaxGeoX()) / 2,
-                        (mainTransformer.getMinGeoY() * 2 + mainTransformer.getMaxGeoY()) / 3);
-                dc.lineTo((mainTransformer.getMinGeoX() + 3 * mainTransformer.getMaxGeoX()) / 4,
-                        mainTransformer.getMinGeoY());
+                dc.setLineWidth((float) (0.5F * transformer.getGeoW() / transformer.getPaperW()));
+                dc.moveTo(((float) (3 * mainTransformer.getMinGeoX() + mainTransformer.getMaxGeoX()) / 4),
+                        (float) mainTransformer.getMinGeoY());
+                dc.lineTo((float) (mainTransformer.getMinGeoX() + mainTransformer.getMaxGeoX()) / 2,
+                        (float) (mainTransformer.getMinGeoY() * 2 + mainTransformer.getMaxGeoY()) / 3);
+                dc.lineTo((float) (mainTransformer.getMinGeoX() + 3 * mainTransformer.getMaxGeoX()) / 4,
+                        (float) mainTransformer.getMinGeoY());
                 dc.stroke();
             }
         } finally {

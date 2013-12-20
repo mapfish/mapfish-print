@@ -44,7 +44,7 @@ import com.vividsolutions.jts.geom.Polygon;
 public class BitmapTileRenderer extends TileRenderer {
     private static final Log LOGGER = LogFactory.getLog(BitmapTileRenderer.class);
 
-    public void render(Transformer transformer, List<URI> uris, ParallelMapTileLoader parallelMapTileLoader, final RenderingContext context, final float opacity, int nbTilesHorizontal, float offsetX, float offsetY, final long bitmapTileW, final long bitmapTileH) throws IOException {
+    public void render(Transformer transformer, List<URI> uris, ParallelMapTileLoader parallelMapTileLoader, final RenderingContext context, final float opacity, int nbTilesHorizontal, double offsetX, double offsetY, final long bitmapTileW, final long bitmapTileH) throws IOException {
         final AffineTransform bitmapTransformer = transformer.getBitmapTransform();
         final double rotation = transformer.getRotation();
 
@@ -56,8 +56,8 @@ public class BitmapTileRenderer extends TileRenderer {
 
             final int line = i / nbTilesHorizontal;
             final int col = i % nbTilesHorizontal;
-            final float posX = 0 - offsetX + col * bitmapTileW;
-            final float posY = 0 - offsetY + line * bitmapTileH;
+            final double posX = 0 - offsetX + col * bitmapTileW;
+            final double posY = 0 - offsetY + line * bitmapTileH;
 
             if (rotation != 0.0 && !isTileVisible(posX, posY, bitmapTileW, bitmapTileH, bitmapTransformer, transformer)) {
                 if (LOGGER.isDebugEnabled()) {
@@ -71,7 +71,7 @@ public class BitmapTileRenderer extends TileRenderer {
 
                 protected void readTile() throws IOException, DocumentException {
                     map = PDFUtils.getImage(context, uri, bitmapTileW, bitmapTileH);
-                    map.setAbsolutePosition(posX, posY);
+                    map.setAbsolutePosition((float) posX, (float) posY);
                 }
 
                 protected void renderOnPdf(PdfContentByte dc) throws DocumentException {
@@ -88,7 +88,7 @@ public class BitmapTileRenderer extends TileRenderer {
         }
     }
 
-    private boolean isTileVisible(float x, float y, long w, long h, AffineTransform bitmapTransformer, Transformer transformer) {
+    private boolean isTileVisible(double x, double y, long w, long h, AffineTransform bitmapTransformer, Transformer transformer) {
         GeometryFactory gf = new GeometryFactory();
         Polygon page = gf.createPolygon(
                 gf.createLinearRing(new Coordinate[]{
@@ -103,10 +103,10 @@ public class BitmapTileRenderer extends TileRenderer {
         Point2D.Float lr = new Point2D.Float();
         Point2D.Float ur = new Point2D.Float();
         Point2D.Float ul = new Point2D.Float();
-        bitmapTransformer.transform(new Point2D.Float(x, y), ll);
-        bitmapTransformer.transform(new Point2D.Float(x + w, y), lr);
-        bitmapTransformer.transform(new Point2D.Float(x + w, y + h), ur);
-        bitmapTransformer.transform(new Point2D.Float(x, y + h), ul);
+        bitmapTransformer.transform(new Point2D.Double(x, y), ll);
+        bitmapTransformer.transform(new Point2D.Double(x + w, y), lr);
+        bitmapTransformer.transform(new Point2D.Double(x + w, y + h), ur);
+        bitmapTransformer.transform(new Point2D.Double(x, y + h), ul);
         Polygon tile = gf.createPolygon(
                 gf.createLinearRing(new Coordinate[]{
                         new Coordinate(ll.getX(), ll.getY()),

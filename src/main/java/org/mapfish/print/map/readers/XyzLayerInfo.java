@@ -39,16 +39,9 @@ public class XyzLayerInfo extends TileCacheLayerInfo {
         super(resolutions, width, height, minX, minY, maxX, maxY, extension, originX, originY);
     }
 
-    public ResolutionInfo getNearestResolution(float targetResolution) {
-        int pos = resolutions.length - 1;
-        float result = resolutions[pos];
-        for (int i = resolutions.length - 1; i >= 0; --i) {
-            float cur = resolutions[i];
-            if (cur <= targetResolution * RESOLUTION_TOLERANCE) {
-                result = cur;
-                pos = i;
-            }
-        }
-        return new ResolutionInfo(pos, result);
+    @Override
+    public double getResolutionTolerance() {
+        return RESOLUTION_TOLERANCE;
     }
+
 }

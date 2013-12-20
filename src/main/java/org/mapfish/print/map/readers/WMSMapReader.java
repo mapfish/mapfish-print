@@ -190,7 +190,7 @@ public class WMSMapReader extends TileableMapReader {
         return true;
     }
 
-    protected URI getTileUri(URI commonUri, Transformer transformer, float minGeoX, float minGeoY, float maxGeoX, float maxGeoY, long w, long h) throws URISyntaxException, UnsupportedEncodingException {
+    protected URI getTileUri(URI commonUri, Transformer transformer, double minGeoX, double minGeoY, double maxGeoX, double maxGeoY, long w, long h) throws URISyntaxException, UnsupportedEncodingException {
 
         Map<String, List<String>> tileParams = new HashMap<String, List<String>>();
         if (format.equals("image/svg+xml")) {

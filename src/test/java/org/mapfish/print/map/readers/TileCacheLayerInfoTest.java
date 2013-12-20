@@ -13,10 +13,10 @@ public class TileCacheLayerInfoTest {
         String resolutions = "2800,1400,700,350,175,84,42,21,11.2,5.6,2.8,1.4,0.7,0.35,0.14,0.07";
         int width = 256;
         int height = 256;
-        float minX = 0.0f;
-        float minY = 0.0f;
-        float maxX = 700000.0f;
-        float maxY = 1300000.0f;
+        double minX = 0.0;
+        double minY = 0.0;
+        double maxX = 700000.0;
+        double maxY = 1300000.0;
         String extension = "image/png";
         float originX = 0.0f;
         float originY = 0.0f;
@@ -24,7 +24,7 @@ public class TileCacheLayerInfoTest {
                 extension, originX, originY);
 
 
-        for (float v : info.getResolutions()) {
+        for (double  v : info.getResolutions()) {
             assertEquals(v, info.getNearestResolution(v).value, 0.000001);
 
             // test the common case where rounding gets in the way of calculating the perfect target resolution

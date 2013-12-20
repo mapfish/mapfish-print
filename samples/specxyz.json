@@ -1,0 +1,32 @@
+{
+    "units":"m",
+    "srs":"EPSG:27700",
+    "layout":"A4 portrait",
+    "dpi":300,
+    "title":"Printed with Compass",
+    "mapTitle":"Printed with Compass",
+    "comment":"",
+    "mapFooter":"",
+    "layers":[{
+          "baseURL":"http://maps.warwickshire.gov.uk/gs/gwc/service/tms/",
+          "opacity":1.0,
+          "singleTile":false,
+          "type":"TMS",
+          "layer":"z_OS_Raster_Basemap",
+          "maxExtent":[0,0,700000,1300000],
+          "tileSize":[256,256],
+          "resolutions":[2800,1400,700,350,175,84,42,21,11.2,5.6,2.8,1.4,0.7,0.35,0.14,0.07],
+          "format":"png"
+    },
+    {
+           "baseURL":"http://maps.warwickshire.gov.uk/gs/ows",
+           "opacity":1.0,
+           "singleTile":true,
+           "type":"WMS",
+           "layers":["z_OS_Raster_Basemap"],
+           "format": "image/jpeg"
+       }],
+    "pages":[{
+        "center":[430552.3,265431.9],
+        "scale":75000,"rotation":0}
+    ]}

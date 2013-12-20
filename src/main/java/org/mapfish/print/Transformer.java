@@ -55,14 +55,14 @@ public class Transformer implements Cloneable {
             + "AUTHORITY[\"EPSG\",\"900913\"]]";
 
     private float svgFactor = 1.0f;
-    public float minGeoX;
-    public float minGeoY;
-    public float maxGeoX;
-    public float maxGeoY;
+    public double minGeoX;
+    public double minGeoY;
+    public double maxGeoX;
+    public double maxGeoY;
     private final int scale;
     private final float paperWidth;
     private final float paperHeight;
-    private float pixelPerGeoUnit;
+    private double pixelPerGeoUnit;
     private float paperPosX;
     private float paperPosY;
     private final int dpi;
@@ -97,10 +97,10 @@ public class Transformer implements Cloneable {
             float paperHeight, int scale, int dpi, DistanceUnit unitEnum,
             double rotation, String geodeticSRS, boolean isIntegerSvg) {
         this.dpi = dpi;
-        pixelPerGeoUnit = (float) (unitEnum.convertTo(dpi, DistanceUnit.IN) / scale);
+        pixelPerGeoUnit = (unitEnum.convertTo(dpi, DistanceUnit.IN) / scale);
 
-        float geoWidth = paperWidth * dpi / 72.0f / pixelPerGeoUnit;
-        float geoHeight = paperHeight * dpi / 72.0f / pixelPerGeoUnit;
+        double geoWidth = paperWidth * dpi / 72.0f / pixelPerGeoUnit;
+        double geoHeight = paperHeight * dpi / 72.0f / pixelPerGeoUnit;
 
         /**
          * The following code has been changed due to the fact that it seems
@@ -144,16 +144,16 @@ public class Transformer implements Cloneable {
             computeGeodeticBBox(geoWidth, geoHeight, centerX, centerY, dpi,
                     geodeticSRS);
         } else {
-            this.minGeoX = centerX - (geoWidth / 2.0f);
-            this.minGeoY = centerY - (geoHeight / 2.0f);
+            this.minGeoX = centerX - (geoWidth / 2.0);
+            this.minGeoY = centerY - (geoHeight / 2.0);
             this.maxGeoX = minGeoX + geoWidth;
             this.maxGeoY = minGeoY + geoHeight;
         }
 
     }
 
-    private void computeGeodeticBBox(float geoWidth, float geoHeight,
-            float centerX, float centerY, float dpi, String srsCode) {
+    private void computeGeodeticBBox(double geoWidth, double geoHeight,
+                                     double centerX, double centerY, double dpi, String srsCode) {
         try {
             CoordinateReferenceSystem crs;
             if (srsCode.equalsIgnoreCase("EPSG:900913")) {
@@ -185,19 +185,19 @@ public class Transformer implements Cloneable {
         }
     }
 
-    public float getGeoW() {
+    public double getGeoW() {
         return maxGeoX - minGeoX;
     }
 
-    public float getGeoH() {
+    public double getGeoH() {
         return (maxGeoY - minGeoY);
     }
 
-    public float getStraightBitmapW() {
+    public double getStraightBitmapW() {
         return getGeoW() * pixelPerGeoUnit;
     }
 
-    public float getStraightBitmapH() {
+    public double getStraightBitmapH() {
         return getGeoH() * pixelPerGeoUnit;
     }
 
@@ -221,21 +221,21 @@ public class Transformer implements Cloneable {
         return Math.round(height);
     }
 
-    public float getRotatedGeoW() {
-        float width = getGeoW();
+    public double getRotatedGeoW() {
+        double width = getGeoW();
         if (rotation != 0.0) {
-            float height = getGeoH();
-            width = (float) (Math.abs(width * Math.cos(rotation)) + Math
+            double height = getGeoH();
+            width = (Math.abs(width * Math.cos(rotation)) + Math
                     .abs(height * Math.sin(rotation)));
         }
         return width;
     }
 
-    public float getRotatedGeoH() {
-        float height = getGeoH();
+    public double getRotatedGeoH() {
+        double height = getGeoH();
         if (rotation != 0.0) {
-            float width = getGeoW();
-            height = (float) (Math.abs(height * Math.cos(rotation)) + Math
+            double width = getGeoW();
+            height = (Math.abs(height * Math.cos(rotation)) + Math
                     .abs(width * Math.sin(rotation)));
         }
         return height;
@@ -261,20 +261,20 @@ public class Transformer implements Cloneable {
         return height;
     }
 
-    public float getRotatedMinGeoX() {
-        return minGeoX - (getRotatedGeoW() - getGeoW()) / 2.0F;
+    public double getRotatedMinGeoX() {
+        return minGeoX - (getRotatedGeoW() - getGeoW()) / 2.0;
     }
 
-    public float getRotatedMaxGeoX() {
-        return maxGeoX + (getRotatedGeoW() - getGeoW()) / 2.0F;
+    public double getRotatedMaxGeoX() {
+        return maxGeoX + (getRotatedGeoW() - getGeoW()) / 2.0;
     }
 
-    public float getRotatedMinGeoY() {
-        return minGeoY - (getRotatedGeoH() - getGeoH()) / 2.0F;
+    public double getRotatedMinGeoY() {
+        return minGeoY - (getRotatedGeoH() - getGeoH()) / 2.0;
     }
 
-    public float getRotatedMaxGeoY() {
-        return maxGeoY + (getRotatedGeoH() - getGeoH()) / 2.0F;
+    public double getRotatedMaxGeoY() {
+        return maxGeoY + (getRotatedGeoH() - getGeoH()) / 2.0;
     }
 
     public long getRotatedSvgW() {
@@ -338,7 +338,7 @@ public class Transformer implements Cloneable {
     public AffineTransform getGeoTransform(boolean reverseRotation) {
         final AffineTransform result = AffineTransform.getTranslateInstance(
                 paperPosX, paperPosY);
-        if (rotation != 0.0F) {
+        if (Math.abs(rotation - 0.0) < 0.00001) {
             result.rotate((reverseRotation ? -1 : 1) * rotation,
                     getPaperW() / 2, getPaperH() / 2);
         }
@@ -370,8 +370,8 @@ public class Transformer implements Cloneable {
     }
 
     public void zoom(Transformer mainTransformer, float factor) {
-        float destW = mainTransformer.getGeoW() / factor;
-        float destH = mainTransformer.getGeoH() / factor;
+        double destW = mainTransformer.getGeoW() / factor;
+        double destH = mainTransformer.getGeoH() / factor;
 
         // fix aspect ratio
         if (destW / destH > getGeoW() / getGeoH()) {
@@ -380,13 +380,13 @@ public class Transformer implements Cloneable {
             destW = getGeoW() * destH / getGeoH();
         }
 
-        float cX = (minGeoX + maxGeoX) / 2.0f;
-        float cY = (minGeoY + maxGeoY) / 2.0f;
+        double cX = (minGeoX + maxGeoX) / 2.0;
+        double cY = (minGeoY + maxGeoY) / 2.0;
         pixelPerGeoUnit = pixelPerGeoUnit * getGeoW() / destW;
-        minGeoX = cX - destW / 2.0f;
-        maxGeoX = cX + destW / 2.0f;
-        minGeoY = cY - destH / 2.0f;
-        maxGeoY = cY + destH / 2.0f;
+        minGeoX = cX - destW / 2.0;
+        maxGeoX = cX + destW / 2.0;
+        minGeoY = cY - destH / 2.0;
+        maxGeoY = cY + destH / 2.0;
     }
 
     public Transformer clone() {
@@ -397,19 +397,19 @@ public class Transformer implements Cloneable {
         }
     }
 
-    public float getMinGeoX() {
+    public double getMinGeoX() {
         return minGeoX;
     }
 
-    public float getMinGeoY() {
+    public double getMinGeoY() {
         return minGeoY;
     }
 
-    public float getMaxGeoX() {
+    public double getMaxGeoX() {
         return maxGeoX;
     }
 
-    public float getMaxGeoY() {
+    public double getMaxGeoY() {
         return maxGeoY;
     }
 
@@ -431,11 +431,11 @@ public class Transformer implements Cloneable {
         this.rotation = rotation;
     }
 
-    public float getResolution() {
+    public double getResolution() {
         return 1 / pixelPerGeoUnit;
     }
 
-    public void setResolution(float resolution) {
+    public void setResolution(double resolution) {
         this.pixelPerGeoUnit = 1 / resolution;
     }
 

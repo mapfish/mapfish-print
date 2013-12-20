@@ -46,7 +46,7 @@ public abstract class TileRenderer {
     }
 
     public abstract void render(Transformer transformer, List<URI> urls, ParallelMapTileLoader parallelMapTileLoader, RenderingContext context,
-                                float opacity, int nbTilesHorizontal, float offsetX, float offsetY, long bitmapTileW, long bitmapTileH) throws IOException;
+                                float opacity, int nbTilesHorizontal, double offsetX, double offsetY, long bitmapTileW, long bitmapTileH) throws IOException;
 
     public enum Format {
         BITMAP,

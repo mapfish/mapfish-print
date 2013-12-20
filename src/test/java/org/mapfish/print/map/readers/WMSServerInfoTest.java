@@ -118,17 +118,17 @@ public class WMSServerInfoTest extends PrintTestCase {
         assertNotNull(layerInfo);
         assertEquals(256, layerInfo.getWidth());
         assertEquals(256, layerInfo.getHeight());
-        final float[] resolutions = layerInfo.getResolutions();
-        final float[] expectedResolutions = {
-                800.0F,
-                400.0F,
-                200.0F,
-                100.0F,
-                50.0F,
-                20.0F,
-                10.0F,
-                5.0F,
-                2.5F};
+        final double[] resolutions = layerInfo.getResolutions();
+        final double[] expectedResolutions = {
+                800.0,
+                400.0,
+                200.0,
+                100.0,
+                50.0,
+                20.0,
+                10.0,
+                5.0,
+                2.5};
         assertTrue(Arrays.equals(expectedResolutions, resolutions));
 
         final TileCacheLayerInfo.ResolutionInfo higherRes = new TileCacheLayerInfo.ResolutionInfo(8, 2.5F);
@@ -235,29 +235,29 @@ public class WMSServerInfoTest extends PrintTestCase {
         assertNotNull(layerInfo);
         assertEquals(256, layerInfo.getWidth());
         assertEquals(256, layerInfo.getHeight());
-        final float[] resolutions = layerInfo.getResolutions();
-        final float[] expectedResolutions = {
-                800.0F,
-                400.0F,
-                200.0F,
-                100.0F,
-                50.0F,
-                20.0F,
-                10.0F,
-                5.0F,
-                2.5F};
+        final double[] resolutions = layerInfo.getResolutions();
+        final double[] expectedResolutions = {
+                800.0,
+                400.0,
+                200.0,
+                100.0,
+                50.0,
+                20.0,
+                10.0,
+                5.0,
+                2.5};
         assertTrue(Arrays.equals(expectedResolutions, resolutions));
 
-        final TileCacheLayerInfo.ResolutionInfo higherRes = new TileCacheLayerInfo.ResolutionInfo(8, 2.5F);
-        final TileCacheLayerInfo.ResolutionInfo midRes = new TileCacheLayerInfo.ResolutionInfo(7, 5.0F);
-        final TileCacheLayerInfo.ResolutionInfo lowerRes = new TileCacheLayerInfo.ResolutionInfo(0, 800.0F);
+        final TileCacheLayerInfo.ResolutionInfo higherRes = new TileCacheLayerInfo.ResolutionInfo(8, 2.5);
+        final TileCacheLayerInfo.ResolutionInfo midRes = new TileCacheLayerInfo.ResolutionInfo(7, 5.0);
+        final TileCacheLayerInfo.ResolutionInfo lowerRes = new TileCacheLayerInfo.ResolutionInfo(0, 800.0);
 
-        assertEquals(higherRes, layerInfo.getNearestResolution(0.1F));
-        assertEquals(higherRes, layerInfo.getNearestResolution(2.5F));
-        assertEquals(higherRes, layerInfo.getNearestResolution(2.6F));
-        assertEquals(midRes, layerInfo.getNearestResolution(4.99999F));
-        assertEquals(midRes, layerInfo.getNearestResolution(5.0F));
-        assertEquals(lowerRes, layerInfo.getNearestResolution(1000.0F));
+        assertEquals(higherRes, layerInfo.getNearestResolution(0.1));
+        assertEquals(higherRes, layerInfo.getNearestResolution(2.5));
+        assertEquals(higherRes, layerInfo.getNearestResolution(2.6));
+        assertEquals(midRes, layerInfo.getNearestResolution(4.99999));
+        assertEquals(midRes, layerInfo.getNearestResolution(5.0));
+        assertEquals(lowerRes, layerInfo.getNearestResolution(1000.0));
 
         assertEquals(155000.0F, layerInfo.getMinX(), 0.00001);
         assertEquals(-253050.0F, layerInfo.getMinY(), 0.00001);

@@ -60,7 +60,7 @@ public class FakeHttpd extends Thread {
         synchronized (starting) {
             while (starting.get()) {
                 try {
-                    starting.wait();
+                    starting.wait(100);
                 } catch (InterruptedException e) {
                     //ignored
                 }
@@ -93,7 +93,12 @@ public class FakeHttpd extends Thread {
             serverSocket.close();
             LOGGER.info("stopped");
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
+        } finally {
+            synchronized (starting) {
+                starting.set(false);
+                starting.notify();
+            }
         }
     }
 
