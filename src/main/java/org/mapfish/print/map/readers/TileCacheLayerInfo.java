@@ -30,6 +30,12 @@ import org.mapfish.print.utils.PJsonArray;
  * Holds the information we need to manage a tilecache layer.
  */
 public class TileCacheLayerInfo {
+    /**
+     * Tolerance we accept when trying to determine the nearest resolution.
+     */
+    public float getResolutionTolerance(){
+        return 1.05f;
+    }
 
     protected static final Pattern FORMAT_REGEXP = Pattern.compile("^[^/]+/([^/]+)$");
     protected static final Pattern RESOLUTIONS_REGEXP = Pattern.compile("(\\s+)|,");
@@ -111,18 +117,22 @@ public class TileCacheLayerInfo {
         return height;
     }
 
-    public final ResolutionInfo getNearestResolution(float targetResolution) {
+    public ResolutionInfo getNearestResolution(float targetResolution) {
         int pos = resolutions.length - 1;
         float result = resolutions[pos];
-        float minDistance = Float.MAX_VALUE;
+        final float tolerance = getResolutionTolerance();
         for (int i = resolutions.length - 1; i >= 0; --i) {
             float cur = resolutions[i];
 
             float distance = Math.abs(targetResolution - cur);
-            if (distance <= minDistance) {
-                result = cur;
-                pos = i;
-                minDistance = distance;
+            if (cur <= targetResolution * tolerance) {
+                if (distance <= Math.abs(targetResolution - result)) {
+                    result = cur;
+                    pos = i;
+                    if(distance < 0.0000001f) {
+                        break;
+                    }
+                }
             } else {
                 break;
             }

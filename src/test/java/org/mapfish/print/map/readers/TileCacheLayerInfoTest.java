@@ -40,6 +40,6 @@ public class TileCacheLayerInfoTest {
         assertEquals(expected, info.getNearestResolution(84.001f));
         assertEquals(expected, info.getNearestResolution(100));
         assertEquals(expected, info.getNearestResolution(83.001f));
-        assertEquals(expected, info.getNearestResolution(69));
+        assertEquals(expected, info.getNearestResolution(84 * info.getResolutionTolerance()));
     }
 }

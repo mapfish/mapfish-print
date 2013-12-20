@@ -42,5 +42,10 @@ public class TmsLayerInfo extends TileCacheLayerInfo {
                         float originX, float originY) {
         super(resolutions, width, height, minX, minY, maxX, maxY, extension, originX, originY);
     }
+
+    @Override
+    public float getResolutionTolerance() {
+        return 1.9f;
+    }
 }
 

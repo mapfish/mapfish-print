@@ -25,9 +25,30 @@ import org.mapfish.print.utils.PJsonArray;
  * Holds the information we need to manage an XYZ layer.
  */
 public class XyzLayerInfo extends TileCacheLayerInfo {
+    /**
+     * Tolerance we accept when trying to determine the nearest resolution.
+     */
+    protected static final double RESOLUTION_TOLERANCE = 1.9;
+
+    public XyzLayerInfo(String resolutions, int width, int height, float minX, float minY, float maxX, float maxY, String format) {
+        super(resolutions, width, height, minX, minY, maxX, maxY, format);
+    }
+
     public XyzLayerInfo(PJsonArray resolutions, int width, int height, float minX, float minY, float maxX, float maxY, String extension,
             float originX, float originY) {
         super(resolutions, width, height, minX, minY, maxX, maxY, extension, originX, originY);
     }
 
+    public ResolutionInfo getNearestResolution(float targetResolution) {
+        int pos = resolutions.length - 1;
+        float result = resolutions[pos];
+        for (int i = resolutions.length - 1; i >= 0; --i) {
+            float cur = resolutions[i];
+            if (cur <= targetResolution * RESOLUTION_TOLERANCE) {
+                result = cur;
+                pos = i;
+            }
+        }
+        return new ResolutionInfo(pos, result);
+    }
 }
