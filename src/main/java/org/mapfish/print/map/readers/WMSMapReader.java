@@ -19,16 +19,7 @@
 
 package org.mapfish.print.map.readers;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.log4j.Logger;
-import org.json.JSONException;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.Transformer;
 import org.mapfish.print.map.ParallelMapTileLoader;
@@ -38,11 +29,21 @@ import org.mapfish.print.utils.PJsonObject;
 import org.pvalsecc.misc.StringUtils;
 import org.pvalsecc.misc.URIUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Support for the WMS protocol with possibilities to go through a WMS-C service
  * (TileCache).
  */
 public class WMSMapReader extends TileableMapReader {
+
+    private static final String DEFAULT_VERSION = "1.1.1";
 
     public static class Factory implements MapReaderFactory {
         @Override
@@ -61,13 +62,12 @@ public class WMSMapReader extends TileableMapReader {
 
             return target;
         }
-
     }
 
     public static final Logger LOGGER = Logger.getLogger(WMSMapReader.class);
     private final String format;
     protected final List<String> layers = new ArrayList<String>();
-
+    private String version;
     private final List<String> styles = new ArrayList<String>();
 
     private WMSMapReader(String layer, String style, RenderingContext context, PJsonObject params) {
@@ -76,6 +76,12 @@ public class WMSMapReader extends TileableMapReader {
         tileCacheLayerInfo = WMSServerInfo.getInfo(baseUrl, context).getTileCacheLayer(layer);
         styles.add(style);
         format = params.getString("format");
+        version = params.optString("version", DEFAULT_VERSION);
+        final PJsonObject customParams = params.optJSONObject("customParams");
+
+        if (customParams != null) {
+            version = customParams.optString("version", DEFAULT_VERSION);
+        }
     }
 
     protected TileRenderer.Format getFormat() {
@@ -90,14 +96,6 @@ public class WMSMapReader extends TileableMapReader {
 
     public void render(Transformer transformer, ParallelMapTileLoader parallelMapTileLoader, String srs, boolean first) {
         PJsonObject customParams = params.optJSONObject("customParams");
-        String version = params.optString("version", null);
-        if (version != null) {
-            try {
-                customParams.getInternalObj().put("VERSION", version);
-            } catch (JSONException e) {
-                // skip
-            }
-        }
 
         // store the rotation to not change for other layers
         double oldAngle = transformer.getRotation();
@@ -112,16 +110,14 @@ public class WMSMapReader extends TileableMapReader {
                 if (customParams != null) {
                     customParams.getInternalObj().put("angle", angle); // For GeoServer
                     customParams.getInternalObj().put("map_angle", angle); // For MapServer
-                }
-                else {
-                    Map<String,String> customMap = new HashMap<String,String>();
+                } else {
+                    Map<String, String> customMap = new HashMap<String, String>();
                     customMap.put("angle", angle); // For GeoServer
                     customMap.put("map_angle", angle); // For MapServer
                     params.getInternalObj().put("customParams", customMap);
                 }
                 transformer.setRotation(0);
-            }
-            catch (org.json.JSONException e) {
+            } catch (org.json.JSONException e) {
                 LOGGER.error("Unable to set angle: " + e.getClass().getName() + " - " + e.getMessage());
             }
         }
@@ -133,17 +129,26 @@ public class WMSMapReader extends TileableMapReader {
     protected void addCommonQueryParams(Map<String, List<String>> result, Transformer transformer, String srs, boolean first) {
         URIUtils.setParamDefault(result, "FORMAT", format);
         URIUtils.setParamDefault(result, "LAYERS", StringUtils.join(layers, ","));
-        URIUtils.setParamDefault(result, "SRS", srs);
         URIUtils.setParamDefault(result, "SERVICE", "WMS");
         URIUtils.setParamDefault(result, "REQUEST", "GetMap");
-        //URIUtils.setParamDefault(result, "EXCEPTIONS", "application/vnd.ogc.se_inimage");
-        URIUtils.setParamDefault(result, "VERSION", "1.1.1");
+
+        final String versionParamName = "version";
+
+        if (version.equals("1.3.0")) {
+            URIUtils.setParamDefault(result, "CRS", srs);
+            URIUtils.setParamDefault(result, versionParamName, version);
+        } else {
+            URIUtils.setParamDefault(result, "SRS", srs);
+            URIUtils.setParamDefault(result, versionParamName, "1.1.1");
+        }
+
         if (!first) {
             URIUtils.setParamDefault(result, "TRANSPARENT", "true");
         }
         URIUtils.setParamDefault(result, "STYLES", StringUtils.join(styles, ","));
         URIUtils.setParamDefault(result, "format_options", "dpi:" + transformer.getDpi()); // For GeoServer
         URIUtils.setParamDefault(result, "map_resolution", String.valueOf(transformer.getDpi())); // For MapServer
+
     }
 
     public boolean testMerge(MapReader other) {
@@ -190,7 +195,14 @@ public class WMSMapReader extends TileableMapReader {
         return true;
     }
 
-    protected URI getTileUri(URI commonUri, Transformer transformer, double minGeoX, double minGeoY, double maxGeoX, double maxGeoY, long w, long h) throws URISyntaxException, UnsupportedEncodingException {
+    @Override
+    protected URI createCommonURI(Transformer transformer, String srs, boolean first) throws URISyntaxException,
+            UnsupportedEncodingException {
+        return super.createCommonURI(transformer, srs, first);
+    }
+
+    protected URI getTileUri(URI commonUri, Transformer transformer, double minGeoX, double minGeoY, double maxGeoX, double maxGeoY,
+                             long w, long h) throws URISyntaxException, UnsupportedEncodingException {
 
         Map<String, List<String>> tileParams = new HashMap<String, List<String>>();
         if (format.equals("image/svg+xml")) {
@@ -225,7 +237,16 @@ public class WMSMapReader extends TileableMapReader {
             URIUtils.addParamOverride(tileParams, "WIDTH", Long.toString(w));
             URIUtils.addParamOverride(tileParams, "HEIGHT", Long.toString(h));
         }
-        URIUtils.addParamOverride(tileParams, "BBOX", String.format("%s,%s,%s,%s", minGeoX, minGeoY, maxGeoX, maxGeoY));
+
+        Map<String, List<String>> uriParams = URIUtils.getParameters(commonUri);
+        final String bbox;
+
+        if (version.contains("1.3.0")) {
+            bbox = String.format("%s,%s,%s,%s", minGeoX, maxGeoX, minGeoY, maxGeoY);
+        } else {
+            bbox = String.format("%s,%s,%s,%s", minGeoX, minGeoY, maxGeoX, maxGeoY);
+        }
+        URIUtils.addParamOverride(tileParams, "BBOX", bbox);
         return URIUtils.addParams(commonUri, tileParams, OVERRIDE_ALL);
     }
 

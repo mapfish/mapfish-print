@@ -12,6 +12,7 @@ import org.mapfish.print.utils.PJsonObject;
 import org.pvalsecc.misc.FileUtilities;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,11 +30,8 @@ public class TmsMapReaderTest extends MapTestBasic {
     public void setUp() throws Exception {
         super.setUp();
 
-        tmsSpec = MapPrinter.parseSpec(FileUtilities.readWholeTextFile(new File(TmsMapReaderTest.class.getClassLoader()
-                .getResource("layers/tms_layer_spec.json").getFile())));
-
+        tmsSpec = loadJson("layers/tms_layer_spec.json");
     }
-
 
     @Test
     public void testNoOriginDefault0_0() throws JSONException {

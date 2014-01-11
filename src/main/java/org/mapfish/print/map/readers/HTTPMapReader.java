@@ -20,6 +20,7 @@
 package org.mapfish.print.map.readers;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -70,27 +71,31 @@ public abstract class HTTPMapReader extends MapReader {
     }
 
     public void render(Transformer transformer, ParallelMapTileLoader parallelMapTileLoader, String srs, boolean first) {
-        Map<String, List<String>> queryParams = new HashMap<String, List<String>>();
 
         try {
-            PJsonObject customParams = params.optJSONObject("customParams");
-            if (customParams != null) {
-                final Iterator<String> customParamsIt = customParams.keys();
-                while (customParamsIt.hasNext()) {
-                    String key = customParamsIt.next();
-                    URIUtils.addParam(queryParams, key, customParams.getString(key));
-                }
-            }
+            final URI commonUri = createCommonURI(transformer, srs, first);
 
-            TileRenderer formater = TileRenderer.get(getFormat());
-
-            addCommonQueryParams(queryParams, transformer, srs, first);
-            final URI commonUri = URIUtils.addParams(baseUrl, queryParams, OVERRIDE_ALL);
-
-            renderTiles(formater, transformer, commonUri, parallelMapTileLoader);
+            TileRenderer formatter = TileRenderer.get(getFormat());
+            renderTiles(formatter, transformer, commonUri, parallelMapTileLoader);
         } catch (Exception e) {
             context.addError(e);
         }
+    }
+
+    protected URI createCommonURI(Transformer transformer, String srs, boolean first) throws URISyntaxException, UnsupportedEncodingException {
+        Map<String, List<String>> queryParams = new HashMap<String, List<String>>();
+        PJsonObject customParams = params.optJSONObject("customParams");
+        if (customParams != null) {
+            final Iterator<String> customParamsIt = customParams.keys();
+            while (customParamsIt.hasNext()) {
+                String key = customParamsIt.next();
+                URIUtils.addParam(queryParams, key, customParams.getString(key));
+            }
+        }
+
+
+        addCommonQueryParams(queryParams, transformer, srs, first);
+        return URIUtils.addParams(baseUrl, queryParams, OVERRIDE_ALL);
     }
 
     protected abstract void renderTiles(TileRenderer formater, Transformer transformer, URI commonUri, ParallelMapTileLoader parallelMapTileLoader) throws IOException, URISyntaxException;

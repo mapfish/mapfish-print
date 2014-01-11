@@ -1,40 +1,91 @@
 {
-   "layout": "A4 portrait",
-   "title": "A simple example",
-   "srs": "EPSG:4326",
-   "units": "dd",
-   "outputFilename": "mapfish-print",
-   "outputFormat": "gif",
-   "layers": [
-       {
-           "type": "WMS",
-           "format": "image/png",
-           "layers": ["basic"],
-           "baseURL": "http://labs.metacarta.com/wms/vmap0"
-       }
+   "title" : "title",
+   "units":"m",
+   "srs":"EPSG:4326",
+   "layout":"A4 portrait",
+   "dpi":91,
+   "outputFilename":"pigma_${yyyy-MM-dd_hhmmss}",
+   "layers":[
+      {
+         "baseURL":"http://www.geocat.ch/geoserver/ows?SERVICE=WMS&",
+         "opacity":1,
+         "type":"WMS",
+         "version":"1.3.0",
+         "layers":[
+            "topp:states"
+         ],
+         "format":"image/png",
+         "styles":[
+            ""
+         ],
+         "singleTile":false,
+         "customParams":{
+            "EXCEPTIONS":"XML",
+            "TRANSPARENT":true
+         }
+      },
+      {
+         "baseURL":"http://www.geocat.ch/geoserver/ows?SERVICE=WMS&",
+         "opacity":1,
+         "type":"WMS",
+         "version":"1.3.0",
+         "layers":[
+            "tiger:giant_polygon"
+         ],
+         "format":"image/png",
+         "styles":[
+            ""
+         ],
+         "singleTile":false,
+         "customParams":{
+            "EXCEPTIONS":"XML",
+            "TRANSPARENT":true
+         }
+      }
    ],
-   "pages": [
-       {
-           "center": [6, 45.5],
-           "scale": 4000000,
-           "dpi": 190,
-           "mapTitle": "First map",
-           "comment": "The 'routes' layer is not shown (the scale is too small)",
-           "data": [
-               {"id":1, "name": "blah", "icon": "icon_pan"},
-               {"id":2, "name": "blip", "icon": "icon_zoomin"}
-           ]
-       },
-       {
-           "center": [6.9, 46.2],
-           "scale": 500000,
-           "dpi": 190,
-           "mapTitle": "Second map",
-           "comment": "This is a zoomed in version of the first map. Since the scale is more appropriate, we show the 'routes' layer.",
-           "data": [
-               {"id":1, "name": "blah", "icon": "icon_pan"},
-               {"id":2, "name": "blip", "icon": "icon_zoomin"}
-           ]
-       }
+   "pages":[
+      {
+         "center":[
+            0,0
+         ],
+         "comment":"comment",
+         "scale":50000,
+         "rotation":0,
+         "mapTitle":"",
+         "mapComments":"",
+         "copyright":"Source : ",
+         "scaleLbl":"Échelle : ",
+         "dateLbl":"Date : ",
+         "showOverview":true,
+         "showNorth":true,
+         "showScalebar":true,
+         "showDate":true,
+         "showLegend":true,
+         "projection":"Projection : RGF-93/Lambert 93"
+      }
+   ],
+   "legends":[
+      {
+         "name":"World rectangle",
+         "classes":[
+            {
+               "name":"",
+               "icons":[
+                  "http://www.geocat.ch/geoserver/ows?service=WMS&request=GetLegendGraphic&width=20&height=20&layer=giant_polygon&FORMAT=image%2Fpng&LEGEND_OPTIONS=forceLabels%3Aon%3BfontAntiAliasing%3Atrue&SCALE=50000"
+               ]
+            }
+         ]
+      },
+      {
+         "name":"USA Population",
+         "classes":[
+            {
+               "name":"",
+               "icons":[
+                  "http://www.geocat.ch/geoserver/ows?service=WMS&request=GetLegendGraphic&width=20&height=20&layer=states&FORMAT=image%2Fpng&LEGEND_OPTIONS=forceLabels%3Aon%3BfontAntiAliasing%3Atrue&SCALE=50000"
+               ]
+            }
+         ]
+      }
    ]
 }

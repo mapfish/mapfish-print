@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WMT_MS_Capabilities version="1.1.1" updateSequence="78">
+    <Service>
+        <Name>OGC:WMS</Name>
+        <Title>GeoServer Web Map Service</Title>
+        <Abstract>A compliant implementation of WMS plus most of the SLD extension (dynamic styling). Can also generate PDF, SVG, KML, GeoRSS</Abstract>
+        <KeywordList>
+            <Keyword>WFS</Keyword>
+            <Keyword>WMS</Keyword>
+            <Keyword>GEOSERVER</Keyword>
+        </KeywordList>
+        <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geoserver.sourceforge.net/html/index.php"/>
+        <ContactInformation>
+            <ContactPersonPrimary>
+                <ContactPerson>Claudius Ptolomaeus</ContactPerson>
+                <ContactOrganization>The ancient geographes INC</ContactOrganization>
+            </ContactPersonPrimary>
+            <ContactPosition>Chief geographer</ContactPosition>
+            <ContactAddress>
+                <AddressType>Work</AddressType>
+                <Address/>
+                <City>Alexandria</City>
+                <StateOrProvince/>
+                <PostCode/>
+                <Country>Egypt</Country>
+            </ContactAddress>
+            <ContactVoiceTelephone/>
+            <ContactFacsimileTelephone/>
+            <ContactElectronicMailAddress>claudius.ptolomaeus@gmail.com</ContactElectronicMailAddress>
+        </ContactInformation>
+        <Fees>NONE</Fees>
+        <AccessConstraints>NONE</AccessConstraints>
+    </Service>
+    <Capability>
+        <Request>
+            <GetCapabilities>
+                <Format>application/vnd.ogc.wms_xml</Format>
+                <DCPType>
+                    <HTTP>
+                        <Get>
+                            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:@@port@@/@@serverName@@/wms?SERVICE=WMS&amp;"/>
+                        </Get>
+                        <Post>
+                            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:@@port@@/@@serverName@@/wms?SERVICE=WMS&amp;"/>
+                        </Post>
+                    </HTTP>
+                </DCPType>
+            </GetCapabilities>
+            <GetMap>
+
+                <Format>image/gif</Format>
+                <Format>image/gif;subtype=animated</Format>
+                <Format>image/jpeg</Format>
+                <Format>image/png8</Format>
+                <Format>image/png; mode=8bit</Format>
+                <Format>image/svg</Format>
+                <Format>image/svg xml</Format>
+                <Format>image/svg+xml</Format>
+                <Format>image/tiff</Format>
+                <Format>image/tiff8</Format>
+                <Format>kml</Format>
+                <Format>kmz</Format>
+                <Format>openlayers</Format>
+                <Format>rss</Format>
+                <DCPType>
+                    <HTTP>
+                        <Get>
+                            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:@@port@@/@@serverName@@/wms?SERVICE=WMS&amp;"/>
+                        </Get>
+                    </HTTP>
+                </DCPType>
+            </GetMap>
+            <GetFeatureInfo>
+                <Format>text/plain</Format>
+                <Format>application/vnd.ogc.gml</Format>
+                <Format>application/vnd.ogc.gml/3.1.1</Format>
+                <Format>text/html</Format>
+                <Format>application/json</Format>
+                <DCPType>
+                    <HTTP>
+                        <Get>
+                            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:@@port@@/@@serverName@@/wms?SERVICE=WMS&amp;"/>
+                        </Get>
+                        <Post>
+                            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:@@port@@/@@serverName@@/wms?SERVICE=WMS&amp;"/>
+                        </Post>
+                    </HTTP>
+                </DCPType>
+            </GetFeatureInfo>
+            <DescribeLayer>
+                <Format>application/vnd.ogc.wms_xml</Format>
+                <DCPType>
+                    <HTTP>
+                        <Get>
+                            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:@@port@@/@@serverName@@/wms?SERVICE=WMS&amp;"/>
+                        </Get>
+                    </HTTP>
+                </DCPType>
+            </DescribeLayer>
+            <GetLegendGraphic>
+                <Format>image/png</Format>
+                <Format>image/jpeg</Format>
+                <Format>image/gif</Format>
+                <DCPType>
+                    <HTTP>
+                        <Get>
+                            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:@@port@@/@@serverName@@/wms?SERVICE=WMS&amp;"/>
+                        </Get>
+                    </HTTP>
+                </DCPType>
+            </GetLegendGraphic>
+            <GetStyles>
+                <Format>application/vnd.ogc.sld+xml</Format>
+                <DCPType>
+                    <HTTP>
+                        <Get>
+                            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:@@port@@/@@serverName@@/wms?SERVICE=WMS&amp;"/>
+                        </Get>
+                    </HTTP>
+                </DCPType>
+            </GetStyles>
+        </Request>
+        <Exception>
+            <Format>application/vnd.ogc.se_xml</Format>
+            <Format>application/vnd.ogc.se_inimage</Format>
+        </Exception>
+        <UserDefinedSymbolization SupportSLD="1" UserLayer="1" UserStyle="1" RemoteWFS="1"/>
+        <Layer>
+            <Title>GeoServer Web Map Service</Title>
+            <Abstract>A compliant implementation of WMS plus most of the SLD extension (dynamic styling). Can also generate PDF, SVG, KML, GeoRSS</Abstract>
+            <!--All supported EPSG projections:-->
+            <SRS>EPSG:4326</SRS>
+            <LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0"/>
+            <Layer queryable="1">
+                <Name>layerName</Name>
+                <Title>layerName</Title>
+                <SRS>EPSG:4326</SRS>
+                <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90"/>
+                <BoundingBox SRS="EPSG:4326" minx="-180" miny="-90" maxx="180" maxy="90"/>
+            </Layer>
+        </Layer>
+    </Capability>
+</WMT_MS_Capabilities>
