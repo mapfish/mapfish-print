@@ -34,6 +34,7 @@ import com.vividsolutions.jts.geom.LineString;
 public class LineStringRenderer extends GeometriesRenderer<LineString> {
     protected static void applyStyle(RenderingContext context, PdfContentByte dc, PJsonObject style, PdfGState state) {
         if (style == null) return;
+
         if (style.optString("strokeColor") != null) {
             dc.setColorStroke(ColorWrapper.convertColor(style.getString("strokeColor")));
         }
@@ -52,6 +53,18 @@ public class LineStringRenderer extends GeometriesRenderer<LineString> {
                 dc.setLineCap(PdfContentByte.LINE_CAP_PROJECTING_SQUARE);
             } else {
                 throw new InvalidValueException("strokeLinecap", linecap);
+            }
+        }
+        final String linejoin = style.optString("strokeLinejoin");
+        if (linejoin != null) {
+            if (linejoin.equalsIgnoreCase("bevel")) {
+                dc.setLineJoin(PdfContentByte.LINE_JOIN_BEVEL);
+            } else if (linejoin.equalsIgnoreCase("miter")) {
+                dc.setLineJoin(PdfContentByte.LINE_JOIN_MITER);
+            } else if (linejoin.equalsIgnoreCase("round")) {
+                dc.setLineJoin(PdfContentByte.LINE_JOIN_ROUND);
+            } else {
+                throw new InvalidValueException("strokeLinecap", linejoin);
             }
         }
         final String dashStyle = style.optString("strokeDashstyle");
