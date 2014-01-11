@@ -20,6 +20,7 @@
 package org.mapfish.print.map.readers;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,6 +31,8 @@ import org.mapfish.print.utils.PJsonArray;
  * Holds the information we need to manage a tilecache layer.
  */
 public class TileCacheLayerInfo {
+    private List<String> versions;
+
     /**
      * Tolerance we accept when trying to determine the nearest resolution.
      */

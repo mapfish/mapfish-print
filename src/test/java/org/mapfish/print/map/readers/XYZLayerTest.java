@@ -44,10 +44,7 @@ public class XYZLayerTest extends MapTestBasic {
     public void setUp() throws Exception {
         super.setUp();
 
-        xyzSpec = MapPrinter.parseSpec(FileUtilities.readWholeTextFile(
-                new File(XYZLayerTest.class.getClassLoader().getResource("layers/xyz_layer_spec.json").getFile())
-        ));
-
+        xyzSpec = loadJson("layers/xyz_layer_spec.json");
     }
 
     @Test

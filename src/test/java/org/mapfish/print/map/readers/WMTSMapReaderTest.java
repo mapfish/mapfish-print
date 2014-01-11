@@ -25,8 +25,7 @@ public class WMTSMapReaderTest extends MapTestBasic {
     public void setUp() throws Exception {
         super.setUp();
 
-        wmtsSpec = MapPrinter.parseSpec(FileUtilities.readWholeTextFile(new File(TmsMapReaderTest.class.getClassLoader()
-                .getResource("layers/wmts_layer_spec.json").getFile())));
+        wmtsSpec = loadJson("layers/wmts_layer_spec.json");
 
     }
 

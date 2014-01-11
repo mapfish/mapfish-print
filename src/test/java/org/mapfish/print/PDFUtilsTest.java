@@ -78,7 +78,7 @@ public class PDFUtilsTest extends PdfTestCase {
             fail("Supposed to have thrown an IOException");
         } catch (IOException ex) {
             //expected
-            assertEquals("Error (status=500) while reading the image from " + uri + ": Server error", ex.getMessage());
+            assertEquals("Error (status=500) while reading the image from " + uri + ": Internal Server Error", ex.getMessage());
         }
     }
 
@@ -91,7 +91,7 @@ public class PDFUtilsTest extends PdfTestCase {
             fail("Supposed to have thrown an IOException");
         } catch (IOException ex) {
             //expected
-            assertEquals("Error (status=500) while reading the image from " + uri + ": Server error", ex.getMessage());
+            assertEquals("Error (status=500) while reading the image from " + uri + ": Internal Server Error", ex.getMessage());
         }
     }
 
