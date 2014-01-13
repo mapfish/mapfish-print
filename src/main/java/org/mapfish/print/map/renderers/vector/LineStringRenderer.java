@@ -64,7 +64,7 @@ public class LineStringRenderer extends GeometriesRenderer<LineString> {
             } else if (linejoin.equalsIgnoreCase("round")) {
                 dc.setLineJoin(PdfContentByte.LINE_JOIN_ROUND);
             } else {
-                throw new InvalidValueException("strokeLinecap", linejoin);
+                throw new InvalidValueException("strokeLinejoin", linejoin);
             }
         }
         final String dashStyle = style.optString("strokeDashstyle");
