@@ -1,0 +1,3 @@
+[submodule "e2e-tests"]
+	path = e2e-tests
+	url = https://github.com/mapfish/mapfish-print-e2e-test.git
