@@ -102,7 +102,7 @@ public abstract class PdfTestCase extends PrintTestCase {
         Config config = new Config();
         try {
         config.setDpis(new TreeSet<Integer>(Arrays.asList(96, 190, 254)));
-        config.setScales(new TreeSet<Integer>(Arrays.asList(20000, 25000, 100000, 500000, 4000000)));
+        config.setScales(new TreeSet<Double>(Arrays.<Double>asList(20000.0, 25000.0, 100000.0, 500000.0, 4000000.0)));
         context = new RenderingContext(doc, writer, config, spec, null, layout, Collections.<String, String>emptyMap());
         } finally {
             config.close();

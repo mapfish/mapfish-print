@@ -105,7 +105,7 @@ public class KaMapMapReader extends TileableMapReader {
         if (unitEnum == null) {
             throw new RuntimeException("Unknown unit: '" + units + "'");
         }
-        final int scale = context.getConfig().getBestScale(Math.max(
+        final double scale = context.getConfig().getBestScale(Math.max(
             (maxGeoX - minGeoX) / (DistanceUnit.PT.convertTo(w, unitEnum)),
             (maxGeoY- minGeoY) / (DistanceUnit.PT.convertTo(h, unitEnum))));
         path.append("s=").append(scale).append('&');

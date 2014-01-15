@@ -41,15 +41,19 @@ public class TransformerTest extends PrintTestCase {
 
     @Test
     public void testGeodetic() {
-        DistanceUnit unitEnum = DistanceUnit.fromString("m");
+        DistanceUnit unitEnum = DistanceUnit.DEGREES;
 		int dpi = 2;
-		int scale = 10;
+		int scale = 100000;
         Transformer geodetic = new Transformer(0, 0, 100, 70, scale, dpi, unitEnum, 0, "EPSG:4326", false);
         Transformer linear = new Transformer(0, 0, 100, 70, scale, dpi, unitEnum, 0, null, false);
         assertEquals(linear.getPaperW(), geodetic.getPaperW(), 0.00001);
         assertEquals(linear.getPaperH(), geodetic.getPaperH(), 0.00001);
 
         assertTrue(Math.abs(linear.getGeoH() - geodetic.getGeoH()) > 0.00000001);
+        assertTrue(Math.abs(linear.getMaxGeoX() - geodetic.getMaxGeoX()) > 0.00000001);
+        assertTrue(Math.abs(linear.getMinGeoX() - geodetic.getMinGeoX()) > 0.00000001);
+        assertTrue(Math.abs(linear.getMaxGeoY() - geodetic.getMaxGeoY()) > 0.00000001);
+        assertTrue(Math.abs(linear.getMinGeoY() - geodetic.getMinGeoY()) > 0.00000001);
     }
 
     @Test
@@ -65,5 +69,4 @@ public class TransformerTest extends PrintTestCase {
         assertTrue(Math.abs(linear.getGeoH() - geodetic.getGeoH()) > 0.00000001);
 
     }
-
 }

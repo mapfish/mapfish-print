@@ -16,7 +16,8 @@
          "styles":[
             "wmsstyle"
          ],
-         "singleTile":false
+         "singleTile":false,
+         "customParams":{"TRANSPARENT":"true","EXCEPTIONS":"INIMAGE"}}],
       }
    ],
    "pages":[

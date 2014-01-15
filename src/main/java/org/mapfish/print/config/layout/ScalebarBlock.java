@@ -83,7 +83,7 @@ public class ScalebarBlock extends FontBlock {
             throw new InvalidJsonValueException(globalParams, "units", globalParams.getString("units"));
         }
         DistanceUnit scaleUnit = (units != null ? units : mapUnits);
-        final int scale = context.getLayout().getMainPage().getMap().createTransformer(context, params).getScale();
+        final double scale = context.getLayout().getMainPage().getMap().createTransformer(context, params).getScale();
 
         final double maxWidthIntervaleDistance = DistanceUnit.PT.convertTo(maxSize, scaleUnit) * scale / intervals;
         final double intervalDistance = getNearestNiceValue(maxWidthIntervaleDistance, scaleUnit);
@@ -95,7 +95,7 @@ public class ScalebarBlock extends FontBlock {
     /**
      * Try recursively to find the correct layout.
      */
-    private void tryLayout(RenderingContext context, PdfElement target, Font pdfFont, DistanceUnit scaleUnit, int scale, double intervalDistance, int tryNumber) throws DocumentException {
+    private void tryLayout(RenderingContext context, PdfElement target, Font pdfFont, DistanceUnit scaleUnit, double scale, double intervalDistance, int tryNumber) throws DocumentException {
         if (tryNumber > 3) {
             // no inspection ThrowableInstanceNeverThrown
             context.addError(new InvalidValueException("maxSize too small", maxSize));

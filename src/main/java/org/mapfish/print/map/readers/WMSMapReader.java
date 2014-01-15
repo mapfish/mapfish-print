@@ -80,7 +80,7 @@ public class WMSMapReader extends TileableMapReader {
         final PJsonObject customParams = params.optJSONObject("customParams");
 
         if (customParams != null) {
-            version = customParams.optString("version", DEFAULT_VERSION);
+            version = customParams.optString("version", version);
         }
     }
 

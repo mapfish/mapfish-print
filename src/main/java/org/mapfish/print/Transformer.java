@@ -20,11 +20,14 @@
 package org.mapfish.print;
 
 import java.awt.geom.AffineTransform;
+import java.util.logging.Logger;
 
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.GeodeticCalculator;
+import org.mapfish.print.config.Config;
 import org.mapfish.print.utils.DistanceUnit;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.lowagie.text.pdf.PdfContentByte;
@@ -53,13 +56,14 @@ public class Transformer implements Cloneable {
             + "PARAMETER[\"false_northing\", 0.0]," + "UNIT[\"m\", 1.0],"
             + "AXIS[\"Easting\", EAST]," + "AXIS[\"Northing\", NORTH],"
             + "AUTHORITY[\"EPSG\",\"900913\"]]";
+    public static final boolean LONGITUDE_FIRST = true;
 
     private float svgFactor = 1.0f;
     public double minGeoX;
     public double minGeoY;
     public double maxGeoX;
     public double maxGeoY;
-    private final int scale;
+    private final double scale;
     private final float paperWidth;
     private final float paperHeight;
     private double pixelPerGeoUnit;
@@ -93,15 +97,89 @@ public class Transformer implements Cloneable {
      *            if not null then it is a the srs to use with the geodetic
      *            calculator. if null it is assumed that it is non-geodetic
      */
-    public Transformer(float centerX, float centerY, float paperWidth,
-            float paperHeight, int scale, int dpi, DistanceUnit unitEnum,
+    public Transformer(double centerX, double centerY, float paperWidth,
+            float paperHeight, double scale, int dpi, DistanceUnit unitEnum,
             double rotation, String geodeticSRS, boolean isIntegerSvg) {
         this.dpi = dpi;
-        pixelPerGeoUnit = (unitEnum.convertTo(dpi, DistanceUnit.IN) / scale);
+        calculatePixelPerGeoUnit(centerX, centerY, scale, dpi, unitEnum, geodeticSRS);
 
         double geoWidth = paperWidth * dpi / 72.0f / pixelPerGeoUnit;
         double geoHeight = paperHeight * dpi / 72.0f / pixelPerGeoUnit;
+        adjustSvgFactor(dpi, isIntegerSvg);
 
+
+        this.paperWidth = paperWidth;
+        this.paperHeight = paperHeight;
+        this.scale = scale;
+        this.rotation = rotation;
+
+        if (geodeticSRS != null) {
+            computeGeodeticBBox(geoWidth, geoHeight, centerX, centerY, dpi,
+                    geodeticSRS);
+        } else {
+            this.minGeoX = centerX - (geoWidth / 2.0);
+            this.minGeoY = centerY - (geoHeight / 2.0);
+            this.maxGeoX = minGeoX + geoWidth;
+            this.maxGeoY = minGeoY + geoHeight;
+        }
+    }
+
+    protected void calculatePixelPerGeoUnit(double centerX, double centerY, double scale, int dpi, DistanceUnit unitEnum,
+                                            String geodeticSRS) {
+        if (unitEnum == DistanceUnit.DEGREES && geodeticSRS != null) {
+            // It is possible to get a more accurate calculation if we take into account
+            // the area in the world that is being mapped in lat/long
+            GeodeticCalculator calculator;
+            try {
+                calculator = new GeodeticCalculator(CRS.decode(geodeticSRS, LONGITUDE_FIRST));
+            } catch (FactoryException e) {
+                throw new RuntimeException(e);
+            }
+            calculator.setStartingGeographicPoint(centerX, centerY);
+            calculator.setDestinationGeographicPoint(centerX + 1, centerY);
+
+            final double oneDegreeDistanceInMeters = calculator.getOrthodromicDistance();
+            final double dpiDegreeInInches = DistanceUnit.M.convertTo(dpi * oneDegreeDistanceInMeters, DistanceUnit.IN);
+            pixelPerGeoUnit = dpiDegreeInInches / scale;
+        } else {
+            if (unitEnum == DistanceUnit.DEGREES) {
+                Logger.getLogger(Transformer.class.getName()).warning("The distance unit is degrees but no SRS was provided so a less " +
+                                                                      "accurate pixelPerGeoUnit calculation is being made.");
+            }
+            pixelPerGeoUnit = (unitEnum.convertTo(dpi, DistanceUnit.IN) / scale);
+        }
+    }
+
+    public Transformer(double minX, double minY, double maxX, double maxY, float paperWidth,
+                       float paperHeight, int dpi, DistanceUnit unitEnum,
+                       double rotation, boolean isIntegerSvg, Config config) {
+        this.dpi = dpi;
+
+        adjustSvgFactor(dpi, isIntegerSvg);
+
+        rotation *= Math.PI / 180;
+        double projWidth  = (maxX - minX) * Math.abs(Math.cos(rotation)) +
+                            (maxY - minY) * Math.abs(Math.sin(rotation));
+        double projHeight = (maxY - minY) * Math.abs(Math.cos(rotation)) +
+                            (maxX - minX) * Math.abs(Math.sin(rotation));
+        scale = config.getBestScale(Math.max(
+                projWidth / (DistanceUnit.PT.convertTo(paperWidth, unitEnum)),
+                projHeight / (DistanceUnit.PT.convertTo(paperHeight, unitEnum))));
+
+        pixelPerGeoUnit = (unitEnum.convertTo(dpi, DistanceUnit.IN) / scale);
+
+
+        this.paperWidth = paperWidth;
+        this.paperHeight = paperHeight;
+        this.rotation = rotation;
+
+        this.minGeoX = minX;
+        this.minGeoY = minY;
+        this.maxGeoX = maxX;
+        this.maxGeoY = maxY;
+    }
+
+    private void adjustSvgFactor(int dpi, boolean isIntegerSvg) {
         /**
          * The following code has been changed due to the fact that it seems
          * wrong. However, I'm not sure if my "correction" solves the problem
@@ -120,10 +198,10 @@ public class Transformer implements Cloneable {
          * to get bigger if DPI increases and at standard 72 DPI needs to be 1.0
          */
         if (isIntegerSvg) { // integerSvg: true # in yaml
-                                                   // config file
+            // config file
             if (dpi < 600) { // target at least 600 DPI, this is a hack and only
-                             // needed for MapServer <= 5.6 where integers
-                             // are put into SVG
+                // needed for MapServer <= 5.6 where integers
+                // are put into SVG
                 svgFactor = 600f / 72.0f;
                 /**
                  * = 8.33 so almost 9 as before with svgFactor being (600 + dpi
@@ -133,23 +211,7 @@ public class Transformer implements Cloneable {
                 svgFactor = dpi / 72.0f; // gets greater than 8.33
             }
         } // else defaults to 1.0 as it should with MapServer >= 6 and CAIRO SVG
-          // rendering with floating point values
-
-        this.paperWidth = paperWidth;
-        this.paperHeight = paperHeight;
-        this.scale = scale;
-        this.rotation = rotation;
-
-        if (geodeticSRS != null) {
-            computeGeodeticBBox(geoWidth, geoHeight, centerX, centerY, dpi,
-                    geodeticSRS);
-        } else {
-            this.minGeoX = centerX - (geoWidth / 2.0);
-            this.minGeoY = centerY - (geoHeight / 2.0);
-            this.maxGeoX = minGeoX + geoWidth;
-            this.maxGeoY = minGeoY + geoHeight;
-        }
-
+        // rendering with floating point values
     }
 
     private void computeGeodeticBBox(double geoWidth, double geoHeight,
@@ -159,7 +221,7 @@ public class Transformer implements Cloneable {
             if (srsCode.equalsIgnoreCase("EPSG:900913")) {
                 crs = CRS.parseWKT(GOOGLE_WKT);
             } else {
-                crs = CRS.decode(srsCode, true);
+                crs = CRS.decode(srsCode, LONGITUDE_FIRST);
             }
             GeodeticCalculator calc = new GeodeticCalculator(crs);
             DirectPosition2D directPosition2D = new DirectPosition2D(centerX,
@@ -365,7 +427,7 @@ public class Transformer implements Cloneable {
         return getPdfTransform();
     }
 
-    public int getScale() {
+    public double getScale() {
         return scale;
     }
 
