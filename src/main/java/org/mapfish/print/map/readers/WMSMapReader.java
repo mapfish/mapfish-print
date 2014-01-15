@@ -30,6 +30,12 @@ import org.pvalsecc.misc.StringUtils;
 import org.pvalsecc.misc.URIUtils;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Support for the WMS protocol with possibilities to go through a WMS-C service
@@ -74,7 +80,7 @@ public class WMSMapReader extends TileableMapReader {
         final PJsonObject customParams = params.optJSONObject("customParams");
 
         if (customParams != null) {
-            version = customParams.optString("version", DEFAULT_VERSION);
+            version = customParams.optString("version", version);
         }
     }
 
@@ -190,12 +196,7 @@ public class WMSMapReader extends TileableMapReader {
     }
 
     @Override
-    protected URI createCommonURI(Transformer transformer, String srs, boolean first) throws URISyntaxException,
-            UnsupportedEncodingException {
-        return super.createCommonURI(transformer, srs, first);
-    }
-
-    protected URI getTileUri(URI commonUri, Transformer transformer, double minGeoX, double minGeoY, double maxGeoX, double maxGeoY,
+    protected URI getTileUri(URI commonUri, Transformer transformer, float minGeoX, float minGeoY, float maxGeoX, float maxGeoY,
                              long w, long h) throws URISyntaxException, UnsupportedEncodingException {
 
         Map<String, List<String>> tileParams = new HashMap<String, List<String>>();
@@ -248,9 +249,3 @@ public class WMSMapReader extends TileableMapReader {
         return StringUtils.join(layers, ", ");
     }
 }
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;

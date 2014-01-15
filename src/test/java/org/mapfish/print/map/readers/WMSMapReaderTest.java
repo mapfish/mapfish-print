@@ -92,9 +92,8 @@ public class WMSMapReaderTest extends MapTestBasic {
         routes.put("/testServer", new FakeHttpd.HttpAnswerer(200, "OK",
                 "application/xml", loadFileFromClasspath("/capabilities/wms1.3.0.xml")));
         final PJsonObject jsonParams = loadSpec(null);
-        JSONObject customParams = new JSONObject();
+        JSONObject customParams = jsonParams.getJSONArray("layers").getJSONObject(0).getJSONObject("customParams").getInternalObj();
         customParams.accumulate("version", "1.3.0");
-        jsonParams.getJSONArray("layers").getJSONObject(0).getInternalObj().accumulate("customParams", customParams);
         final URI tileUri = createTileUri(jsonParams, routes);
 
         final Map<String, List<String>> parameters = URIUtils.getParameters(tileUri.getRawQuery().toUpperCase());
