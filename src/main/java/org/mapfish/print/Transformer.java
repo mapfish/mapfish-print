@@ -130,19 +130,24 @@ public class Transformer implements Cloneable {
     public Transformer(double minX, double minY, double maxX, double maxY, float paperWidth,
                        float paperHeight, int dpi, DistanceUnit unitEnum,
                        double rotation, boolean isIntegerSvg, Config config, boolean strictEpsg4326) {
+        double safeMinX = Math.min(minX, maxX);
+        double safeMaxX = Math.max(minX, maxX);
+        double safeMinY = Math.min(minY, maxY);
+        double safeMaxY = Math.max(minY, maxY);
         this.strictEpsg4326 = strictEpsg4326;
         this.dpi = dpi;
 
         adjustSvgFactor(dpi, isIntegerSvg);
 
         rotation *= Math.PI / 180;
-        double projWidth = (maxX - minX) * Math.abs(Math.cos(rotation)) +
-                           (maxY - minY) * Math.abs(Math.sin(rotation));
-        double projHeight = (maxY - minY) * Math.abs(Math.cos(rotation)) +
-                            (maxX - minX) * Math.abs(Math.sin(rotation));
-        scale = config.getBestScale(Math.max(
-                projWidth / (DistanceUnit.PT.convertTo(paperWidth, unitEnum)),
-                projHeight / (DistanceUnit.PT.convertTo(paperHeight, unitEnum))));
+        double geoWidth = (safeMaxX - safeMinX) * Math.abs(Math.cos(rotation)) +
+                           (safeMaxY - safeMinY) * Math.abs(Math.sin(rotation));
+        double geoHeight = (safeMaxY - safeMinY) * Math.abs(Math.cos(rotation)) +
+                            (safeMaxX - safeMinX) * Math.abs(Math.sin(rotation));
+        final double actualScale = Math.max(
+                geoWidth / (DistanceUnit.PT.convertTo(paperWidth, unitEnum)),
+                geoHeight / (DistanceUnit.PT.convertTo(paperHeight, unitEnum)));
+        scale = config.getBestScale(actualScale);
 
         pixelPerGeoUnit = (unitEnum.convertTo(dpi, DistanceUnit.IN) / scale);
 
@@ -151,10 +156,10 @@ public class Transformer implements Cloneable {
         this.paperHeight = paperHeight;
         this.rotation = rotation;
 
-        this.minGeoX = minX;
-        this.minGeoY = minY;
-        this.maxGeoX = maxX;
-        this.maxGeoY = maxY;
+        this.minGeoX = safeMinX;
+        this.minGeoY = safeMinY;
+        this.maxGeoX = safeMaxX;
+        this.maxGeoY = safeMaxY;
     }
 
     private void adjustSvgFactor(int dpi, boolean isIntegerSvg) {

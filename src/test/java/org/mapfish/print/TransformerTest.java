@@ -73,22 +73,24 @@ public class TransformerTest extends PrintTestCase {
         assertTrue(Math.abs(linear.getGeoH() - geodetic.getGeoH()) > 0.00000001);
     }
 
-    @Test @Ignore
+    @Test
     public void testGetStraightBitmapW() throws Exception {
         double minGeoX = 589434.4971235897;
         double minGeoY = 4913947.342298816;
         double maxGeoX = 609518.2117427464;
         double maxGeoY = 4928071.049965891;
 
-        Config configObj = Mockito.mock(Config.class);
+        Config configObj = new Config();
+        configObj.setDisableScaleLocking(true);
         final int paperWidth = 512;
         final int paperHeight = 360;
-        final Transformer transformer = new Transformer(minGeoX, minGeoY, maxGeoX, maxGeoY, paperWidth, paperHeight, 90, DistanceUnit.M, 0, false,
+
+        final Transformer transformer = new Transformer(minGeoX, minGeoY, maxGeoX, maxGeoY, paperWidth, paperHeight, 72, DistanceUnit.M, 0, false,
                 configObj, false);
 
 
-        assertEquals(paperWidth, transformer.getRotatedBitmapW());
-        assertEquals(paperHeight, transformer.getRotatedBitmapH());
+        assertEquals(paperWidth, transformer.getStraightBitmapW(), 0.0000001);
+        assertEquals(paperHeight, transformer.getStraightBitmapW(), 0.0000001);
 
     }
 }
