@@ -105,23 +105,23 @@ public class WMTSMapReader extends TileableMapReader {
             tileCacheLayerInfo = new WMTSLayerInfo(params.getJSONArray("resolutions"), tileSize.getInt(0), tileSize.getInt(1), maxExtent.getFloat(0), maxExtent.getFloat(1), maxExtent.getFloat(2), maxExtent.getFloat(3), formatSuffix);
         }
     }
-
+    @Override
     protected TileRenderer.Format getFormat() {
         return TileRenderer.Format.BITMAP;
     }
-
+    @Override
     protected void addCommonQueryParams(Map<String, List<String>> result, Transformer transformer, String srs, boolean first) {
         //not much query params for this protocol...
     }
-
+    @Override
     protected void renderTiles(TileRenderer formatter, Transformer transformer, URI commonUri, ParallelMapTileLoader parallelMapTileLoader) throws IOException, URISyntaxException {
         if (matrixIds != null) {
-            float diff = Float.POSITIVE_INFINITY;
-            float targetResolution = transformer.getGeoW() / transformer.getStraightBitmapW();
+            double diff = Double.POSITIVE_INFINITY;
+            double targetResolution = transformer.getGeoW() / transformer.getStraightBitmapW();
             for (int i = 0 ; i < matrixIds.size() ; i++) {
                 PJsonObject matrixId = matrixIds.getJSONObject(i);
                 float resolution = matrixId.getFloat("resolution");
-                float delta = Math.abs(1 - resolution / targetResolution);
+                double delta = Math.abs(1 - resolution / targetResolution);
                 if (delta < diff) {
                     diff = delta;
                     matrix = matrixId;
@@ -142,13 +142,13 @@ public class WMTSMapReader extends TileableMapReader {
         }
         super.renderTiles(formatter, transformer, commonUri, parallelMapTileLoader);
     }
-
-    protected URI getTileUri(URI commonUri, Transformer transformer, float minGeoX, float minGeoY, float maxGeoX, float maxGeoY, long w, long h) throws URISyntaxException, UnsupportedEncodingException {
+    @Override
+    protected URI getTileUri(URI commonUri, Transformer transformer, double minGeoX, double minGeoY, double maxGeoX, double maxGeoY, long w, long h) throws URISyntaxException, UnsupportedEncodingException {
         if (matrixIds != null) {
             PJsonArray topLeftCorner = matrix.getJSONArray("topLeftCorner");
             float factor = 1 / (matrix.getFloat("resolution") * w);
-            int row = (int)Math.round((topLeftCorner.getFloat(1) - maxGeoY) * factor);
-            int col = (int)Math.round((minGeoX - topLeftCorner.getFloat(0)) * factor);
+            int row = (int) Math.round((topLeftCorner.getDouble(1) - maxGeoY) * factor);
+            int col = (int) Math.round((minGeoX - topLeftCorner.getDouble(0)) * factor);
             if (WMTSRequestEncoding.REST == requestEncoding) {
                 String path = commonUri.getPath();
                 for (int i = 0 ; i < dimensions.size() ; i++) {
@@ -185,11 +185,11 @@ public class WMTSMapReader extends TileableMapReader {
             }
         }
         else {
-            float targetResolution = (maxGeoX - minGeoX) / w;
+            double targetResolution = (maxGeoX - minGeoX) / w;
             WMTSLayerInfo.ResolutionInfo resolution = tileCacheLayerInfo.getNearestResolution(targetResolution);
 
-            int col = (int) Math.round(Math.floor(((maxGeoX + minGeoX)/2-tileOrigin.getFloat(0)) / (resolution.value * w)));
-            int row = (int) Math.round(Math.floor((tileOrigin.getFloat(1)-(maxGeoY + minGeoY)/2) / (resolution.value * h)));
+            int col = (int) Math.round(Math.floor(((maxGeoX + minGeoX)/2-tileOrigin.getDouble(0)) / (resolution.value * w)));
+            int row = (int) Math.round(Math.floor((tileOrigin.getDouble(1)-(maxGeoY + minGeoY)/2) / (resolution.value * h)));
 
             StringBuilder path = new StringBuilder();
             if (!commonUri.getPath().endsWith("/")) {
@@ -236,15 +236,15 @@ public class WMTSMapReader extends TileableMapReader {
             }
         }
     }
-
+    @Override
     public boolean testMerge(MapReader other) {
         return false;
     }
-
+    @Override
     public boolean canMerge(MapReader other) {
         return false;
     }
-
+    @Override
     public String toString() {
         return layer;
     }

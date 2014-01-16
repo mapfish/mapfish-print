@@ -51,4 +51,5 @@ public abstract class MapReader {
     }
 
     public abstract String toString();
+
 }

@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.transform.TransformerFactory;
@@ -91,7 +92,7 @@ public class SVGTileRenderer extends TileRenderer {
         }
     }
 
-    public void render(final Transformer transformer, java.util.List<URI> uris, ParallelMapTileLoader parallelMapTileLoader, final RenderingContext context, final float opacity, int nbTilesHorizontal, float offsetX, float offsetY, long bitmapTileW, long bitmapTileH) throws IOException {
+    public void render(final Transformer transformer, List<URI> uris, ParallelMapTileLoader parallelMapTileLoader, final RenderingContext context, final float opacity, int nbTilesHorizontal, double offsetX, double offsetY, long bitmapTileW, long bitmapTileH) throws IOException {
         if (uris.size() != 1) {
             //tiling not supported in SVG
             throw new InvalidValueException("format", "application/x-pdf");

@@ -31,15 +31,18 @@ public class MapReaderFactoryFinder implements ApplicationContextAware {
     public void create(List<MapReader> readers, String type,
             RenderingContext context, PJsonObject params) {
 
-        MapReaderFactory factory = getFactory(type);
-        if (factory==null) {
-            throw new InvalidJsonValueException(params, "type", type);
-        }
+        MapReaderFactory factory = getFactory(params, type);
 
         readers.addAll(factory.create(type, context, params));
     }
 
-    MapReaderFactory getFactory(String type) {
-        return factories.get(type.toLowerCase());
+    public MapReaderFactory getFactory(PJsonObject params, String type) {
+        final MapReaderFactory factory = factories.get(type.toLowerCase());
+
+        if (factory==null) {
+            throw new InvalidJsonValueException(params, "type", type);
+        }
+
+        return factory;
     }
 }

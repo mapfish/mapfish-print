@@ -39,7 +39,7 @@ import com.lowagie.text.pdf.PdfReader;
 public class PDFTileRenderer extends TileRenderer {
     public static final Logger LOGGER = Logger.getLogger(PDFTileRenderer.class);
 
-    public void render(final Transformer transformer, List<URI> uris, ParallelMapTileLoader parallelMapTileLoader, final RenderingContext context, final float opacity, int nbTilesHorizontal, float offsetX, float offsetY, long bitmapTileW, long bitmapTileH) throws IOException {
+    public void render(final Transformer transformer, List<URI> uris, ParallelMapTileLoader parallelMapTileLoader, final RenderingContext context, final float opacity, int nbTilesHorizontal, double offsetX, double offsetY, long bitmapTileW, long bitmapTileH) throws IOException {
         if (uris.size() != 1) {
             //tiling not supported in PDF
             throw new InvalidValueException("format", "application/x-pdf");

@@ -8,7 +8,6 @@ import org.mapfish.print.FakeHttpd;
 import org.mapfish.print.MapTestBasic;
 import org.mapfish.print.Transformer;
 import org.mapfish.print.utils.DistanceUnit;
-import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
 import org.pvalsecc.misc.FileUtilities;
 import org.pvalsecc.misc.URIUtils;
@@ -48,7 +47,7 @@ public class WMSMapReaderTest extends MapTestBasic {
         routes.put("/testServer", new FakeHttpd.HttpAnswerer(200, "OK",
                 "application/xml", loadFileFromClasspath("/capabilities/wms1.1.1.xml")));
 
-        final URI tileUri = createTileUri(loadSpec("1.1.1"), routes);
+        final URI tileUri = createTileUri(loadSpec("1.1.1", "EPSG:4326"), routes);
 
         final Map<String, List<String>> parameters = URIUtils.getParameters(tileUri.getRawQuery().toUpperCase());
         assertCommonParams(tileUri, parameters);
@@ -63,7 +62,7 @@ public class WMSMapReaderTest extends MapTestBasic {
         routes.put("/testServer", new FakeHttpd.HttpAnswerer(200, "OK",
                 "application/xml", loadFileFromClasspath("/capabilities/wms1.1.1.xml")));
 
-        final URI tileUri = createTileUri(loadSpec(null), routes);
+        final URI tileUri = createTileUri(loadSpec(null, "EPSG:4326"), routes);
 
         final Map<String, List<String>> parameters = URIUtils.getParameters(tileUri.getRawQuery().toUpperCase());
         assertCommonParams(tileUri, parameters);
@@ -77,13 +76,27 @@ public class WMSMapReaderTest extends MapTestBasic {
         Map<String, FakeHttpd.HttpAnswerer> routes = new HashMap<String, FakeHttpd.HttpAnswerer>();
         routes.put("/testServer", new FakeHttpd.HttpAnswerer(200, "OK",
                 "application/xml", loadFileFromClasspath("/capabilities/wms1.3.0.xml")));
-        final URI tileUri = createTileUri(loadSpec("1.3.0"), routes);
+        final URI tileUri = createTileUri(loadSpec("1.3.0", "EPSG:4326"), routes);
 
         final Map<String, List<String>> parameters = URIUtils.getParameters(tileUri.getRawQuery().toUpperCase());
         assertCommonParams(tileUri, parameters);
         assertEquals("" + tileUri, "1.3.0", parameters.get("VERSION").get(0));
         assertEquals(""+tileUri, "EPSG:4326", parameters.get("CRS").get(0));
-        assertEquals(""+tileUri, "0.0,90.0,10.0,45.0", parameters.get("BBOX").get(0));
+        assertEquals(""+tileUri, "10.0,0.0,45.0,90.0", parameters.get("BBOX").get(0));
+    }
+
+    @Test
+    public void testGetTileUri_Version1_3_0_NonEPSG4326() throws Exception {
+        Map<String, FakeHttpd.HttpAnswerer> routes = new HashMap<String, FakeHttpd.HttpAnswerer>();
+        routes.put("/testServer", new FakeHttpd.HttpAnswerer(200, "OK",
+                "application/xml", loadFileFromClasspath("/capabilities/wms1.3.0.xml")));
+        final URI tileUri = createTileUri(loadSpec("1.3.0", "CRS:4326"), routes);
+
+        final Map<String, List<String>> parameters = URIUtils.getParameters(tileUri.getRawQuery().toUpperCase());
+        assertCommonParams(tileUri, parameters);
+        assertEquals("" + tileUri, "1.3.0", parameters.get("VERSION").get(0));
+        assertEquals(""+tileUri, "CRS:4326", parameters.get("CRS").get(0));
+        assertEquals(""+tileUri, "0.0,10.0,90.0,45.0", parameters.get("BBOX").get(0));
     }
 
     @Test
@@ -91,7 +104,7 @@ public class WMSMapReaderTest extends MapTestBasic {
         Map<String, FakeHttpd.HttpAnswerer> routes = new HashMap<String, FakeHttpd.HttpAnswerer>();
         routes.put("/testServer", new FakeHttpd.HttpAnswerer(200, "OK",
                 "application/xml", loadFileFromClasspath("/capabilities/wms1.3.0.xml")));
-        final PJsonObject jsonParams = loadSpec(null);
+        final PJsonObject jsonParams = loadSpec(null, "EPSG:4326");
         JSONObject customParams = jsonParams.getJSONArray("layers").getJSONObject(0).getJSONObject("customParams").getInternalObj();
         customParams.accumulate("version", "1.3.0");
         final URI tileUri = createTileUri(jsonParams, routes);
@@ -100,14 +113,14 @@ public class WMSMapReaderTest extends MapTestBasic {
         assertCommonParams(tileUri, parameters);
         assertEquals(""+tileUri, "1.3.0", parameters.get("VERSION").get(0));
         assertEquals(""+tileUri, "EPSG:4326", parameters.get("CRS").get(0));
-        assertEquals(""+tileUri, "0.0,90.0,10.0,45.0", parameters.get("BBOX").get(0));
+        assertEquals(""+tileUri, "10.0,0.0,45.0,90.0", parameters.get("BBOX").get(0));
     }
 
-    private PJsonObject loadSpec(String version) throws JSONException, IOException {
+    private PJsonObject loadSpec(String version, String srs) throws JSONException, IOException {
         String baseURL = "http://localhost:" + port.incrementAndGet() + CONTEXT_NAME;
 
         PJsonObject jsonParams = loadJson("layers/wms_layer_spec.json",
-                new Replacement("@@baseURL@@", baseURL));
+                new Replacement("@@baseURL@@", baseURL), new Replacement("@@srs@@", srs));
         if (version != null) {
             jsonParams.getJSONArray("layers").getJSONObject(0).getInternalObj().accumulate("version", version);
         }
@@ -128,7 +141,9 @@ public class WMSMapReaderTest extends MapTestBasic {
 
         server = new FakeHttpd(port.get(), routes);
         server.start();
+        String srs = jsonParams.getString("srs");
 
+        context.getGlobalParams().getInternalObj().accumulate("srs", srs);
         final List<MapReader> mapReaders = new WMSMapReader.Factory().create("wms", context, jsonParams.getJSONArray("layers").getJSONObject(0));
 
         assertEquals(1, mapReaders.size());
@@ -136,7 +151,7 @@ public class WMSMapReaderTest extends MapTestBasic {
         final WMSMapReader reader = (WMSMapReader) mapReaders.get(0);
 
         Transformer transformer = createTransformer();
-        URI commonUri = reader.createCommonURI(transformer, "EPSG:4326", true);
+        URI commonUri = reader.createCommonURI(transformer, srs, true);
         return reader.getTileUri(commonUri, transformer, 0, 10, 90, 45, 300, 300);
     }
 
@@ -157,6 +172,6 @@ public class WMSMapReaderTest extends MapTestBasic {
         String geodeticSRS = null;
         boolean isIntegerSvg = true;
         return new Transformer(centerX, centerY, paperWidth, paperHeight, scale, dpi, unitEnum,
-                rotation, geodeticSRS, isIntegerSvg);
+                rotation, geodeticSRS, isIntegerSvg, false);
     }
 }

@@ -41,15 +41,15 @@ public class ConfigTest extends PrintTestCase {
     public void testBestScale() {
         Config config = new Config();
         try {
-            TreeSet<Integer> scales = new TreeSet<Integer>(Arrays.asList(200000, 25000, 50000, 100000));
+            TreeSet<Double> scales = new TreeSet<Double>(Arrays.asList(200000.0, 25000.0, 50000.0, 100000.0));
             config.setScales(scales);
 
-            assertEquals("Too small scale => pick the smallest available", 25000, config.getBestScale(1));
-            assertEquals("Exact match", 25000, config.getBestScale(25000.0));
-            assertEquals("Just too big => should still take the previous one", 25000, config.getBestScale(25000.1));
-            assertEquals("Normal behaviour", 200000, config.getBestScale(150000));
-            assertEquals("Just a litle before", 200000, config.getBestScale(199999.9));
-            assertEquals("When we want a scale that is too big, pick the highest available", 200000, config.getBestScale(99999999999.0));
+            assertEquals("Too small scale => pick the smallest available", 25000, config.getBestScale(1), 0.000001);
+            assertEquals("Exact match", 25000, config.getBestScale(25000.0), 0.000001);
+            assertEquals("Just too big => should still take the previous one", 25000, config.getBestScale(25000.1), 0.000001);
+            assertEquals("Normal behaviour", 200000, config.getBestScale(150000), 0.000001);
+            assertEquals("Just a litle before", 200000, config.getBestScale(199999.9), 0.000001);
+            assertEquals("When we want a scale that is too big, pick the highest available", 200000, config.getBestScale(99999999999.0), 0.000001);
         } finally {
             config.close();
         }

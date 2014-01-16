@@ -12,20 +12,20 @@ public class MapReaderFactoryFinderTest {
 	public void test() {
 		MapReaderFactoryFinder ff = new ClassPathXmlApplicationContext(ShellMapPrinter.DEFAULT_SPRING_CONTEXT).getBean(MapReaderFactoryFinder.class);
 		
-		assertNotNull(ff.getFactory("WMS"));		
-		assertNotNull(ff.getFactory("Wms"));		
-		assertNotNull(ff.getFactory("MapServer"));		
-		assertNotNull(ff.getFactory("TileCache"));		
-		assertNotNull(ff.getFactory("Osm"));		
-		assertNotNull(ff.getFactory("Xyz"));		
-		assertNotNull(ff.getFactory("Tms"));		
-		assertNotNull(ff.getFactory("Vector"));		
-		assertNotNull(ff.getFactory("Image"));		
-		assertNotNull(ff.getFactory("TiledGoogle"));		
-		assertNotNull(ff.getFactory("Google"));		
-		assertNotNull(ff.getFactory("KaMapCache"));		
-		assertNotNull(ff.getFactory("KaMap"));		
-		assertNotNull(ff.getFactory("WMTS"));		
+		assertNotNull(ff.getFactory(null, "WMS"));
+		assertNotNull(ff.getFactory(null, "Wms"));
+		assertNotNull(ff.getFactory(null, "MapServer"));
+		assertNotNull(ff.getFactory(null, "TileCache"));
+		assertNotNull(ff.getFactory(null, "Osm"));
+		assertNotNull(ff.getFactory(null, "Xyz"));
+		assertNotNull(ff.getFactory(null, "Tms"));
+		assertNotNull(ff.getFactory(null, "Vector"));
+		assertNotNull(ff.getFactory(null, "Image"));
+		assertNotNull(ff.getFactory(null, "TiledGoogle"));
+		assertNotNull(ff.getFactory(null, "Google"));
+		assertNotNull(ff.getFactory(null, "KaMapCache"));
+		assertNotNull(ff.getFactory(null, "KaMap"));
+		assertNotNull(ff.getFactory(null, "WMTS"));
 	}
 
 }

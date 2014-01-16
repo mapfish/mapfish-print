@@ -43,7 +43,29 @@ import java.util.Map;
  */
 public class WMSMapReader extends TileableMapReader {
 
-    private static final String DEFAULT_VERSION = "1.1.1";
+    private boolean strictEpsg4326;
+
+    enum WMSVersion {
+        VERSION1_1_1("1.1.1"), VERSION1_3_0("1.3.0");
+        public final String code;
+
+        WMSVersion(String code) {
+            this.code = code;
+        }
+
+        public static WMSVersion find(String version) {
+            for (WMSVersion wmsVersion : values()) {
+                if (wmsVersion.code.equals(version)) {
+                    return wmsVersion;
+                }
+            }
+
+            throw new IllegalArgumentException("WMS Version: "+version+" is not a supported version");
+        }
+
+    }
+
+    private static final WMSVersion DEFAULT_VERSION = WMSVersion.VERSION1_1_1;
 
     public static class Factory implements MapReaderFactory {
         @Override
@@ -67,7 +89,7 @@ public class WMSMapReader extends TileableMapReader {
     public static final Logger LOGGER = Logger.getLogger(WMSMapReader.class);
     private final String format;
     protected final List<String> layers = new ArrayList<String>();
-    private String version;
+    private WMSVersion version;
     private final List<String> styles = new ArrayList<String>();
 
     private WMSMapReader(String layer, String style, RenderingContext context, PJsonObject params) {
@@ -76,14 +98,19 @@ public class WMSMapReader extends TileableMapReader {
         tileCacheLayerInfo = WMSServerInfo.getInfo(baseUrl, context).getTileCacheLayer(layer);
         styles.add(style);
         format = params.getString("format");
-        version = params.optString("version", DEFAULT_VERSION);
+        version = WMSVersion.find(params.optString("version", DEFAULT_VERSION.code));
         final PJsonObject customParams = params.optJSONObject("customParams");
 
         if (customParams != null) {
-            version = customParams.optString("version", version);
+            version = WMSVersion.find(customParams.optString("version", version.code));
+        }
+
+        if (version == WMSVersion.VERSION1_3_0 &&
+            params.optString("srs", context.getGlobalParams().optString("srs", "CRS:4326")).equals("EPSG:4326")) {
+            strictEpsg4326 = true;
         }
     }
-
+    @Override
     protected TileRenderer.Format getFormat() {
         if (format.equals("image/svg+xml")) {
             return TileRenderer.Format.SVG;
@@ -93,7 +120,7 @@ public class WMSMapReader extends TileableMapReader {
             return TileRenderer.Format.BITMAP;
         }
     }
-
+    @Override
     public void render(Transformer transformer, ParallelMapTileLoader parallelMapTileLoader, String srs, boolean first) {
         PJsonObject customParams = params.optJSONObject("customParams");
 
@@ -125,7 +152,7 @@ public class WMSMapReader extends TileableMapReader {
         // restore the rotation for other layers
         transformer.setRotation(oldAngle);
     }
-
+    @Override
     protected void addCommonQueryParams(Map<String, List<String>> result, Transformer transformer, String srs, boolean first) {
         URIUtils.setParamDefault(result, "FORMAT", format);
         URIUtils.setParamDefault(result, "LAYERS", StringUtils.join(layers, ","));
@@ -134,12 +161,14 @@ public class WMSMapReader extends TileableMapReader {
 
         final String versionParamName = "version";
 
-        if (version.equals("1.3.0")) {
-            URIUtils.setParamDefault(result, "CRS", srs);
-            URIUtils.setParamDefault(result, versionParamName, version);
-        } else {
-            URIUtils.setParamDefault(result, "SRS", srs);
-            URIUtils.setParamDefault(result, versionParamName, "1.1.1");
+        switch (version) {
+            case VERSION1_3_0:
+                URIUtils.setParamDefault(result, "CRS", srs);
+                URIUtils.setParamDefault(result, versionParamName, version.code);
+                break;
+            default:
+                URIUtils.setParamDefault(result, "SRS", srs);
+                URIUtils.setParamDefault(result, versionParamName, WMSVersion.VERSION1_1_1.code);
         }
 
         if (!first) {
@@ -150,7 +179,7 @@ public class WMSMapReader extends TileableMapReader {
         URIUtils.setParamDefault(result, "map_resolution", String.valueOf(transformer.getDpi())); // For MapServer
 
     }
-
+    @Override
     public boolean testMerge(MapReader other) {
         if (canMerge(other)) {
             WMSMapReader wms = (WMSMapReader) other;
@@ -161,14 +190,14 @@ public class WMSMapReader extends TileableMapReader {
             return false;
         }
     }
-
+    @Override
     public boolean canMerge(MapReader other) {
         if (!super.canMerge(other)) {
             return false;
         }
 
         if (tileCacheLayerInfo != null && !context.getConfig().isTilecacheMerging()) {
-            //no layer merge when tilecache is here and we are not configured to support it...
+            //no layer merge when tile cache is here and we are not configured to support it...
             return false;
         }
 
@@ -180,12 +209,12 @@ public class WMSMapReader extends TileableMapReader {
 
             if (tileCacheLayerInfo != null && wms.tileCacheLayerInfo != null) {
                 if (!tileCacheLayerInfo.equals(wms.tileCacheLayerInfo)) {
-                    //not the same tilecache config
+                    //not the same tile cache config
                     return false;
                 }
             } else if ((tileCacheLayerInfo == null) != (wms.tileCacheLayerInfo == null)) {
-                //one layer has a tilecache config and not the other?!?!? Weird...
-                LOGGER.warn("Between [" + this + "] and [" + wms + "], one has a tilecache config and not the other");
+                //one layer has a tile cache config and not the other?!?!? Weird...
+                LOGGER.warn("Between [" + this + "] and [" + wms + "], one has a tile cache config and not the other");
                 return false;
             }
         } else {
@@ -196,14 +225,14 @@ public class WMSMapReader extends TileableMapReader {
     }
 
     @Override
-    protected URI getTileUri(URI commonUri, Transformer transformer, float minGeoX, float minGeoY, float maxGeoX, float maxGeoY,
+    protected URI getTileUri(URI commonUri, Transformer transformer, double minGeoX, double minGeoY, double maxGeoX, double maxGeoY,
                              long w, long h) throws URISyntaxException, UnsupportedEncodingException {
 
         Map<String, List<String>> tileParams = new HashMap<String, List<String>>();
         if (format.equals("image/svg+xml")) {
             double maxW = context.getConfig().getMaxSvgW(); // config setting in YAML called maxSvgWidth
             double maxH = context.getConfig().getMaxSvgH(); // config setting in YAML called maxSvgHeight
-            double divisor = 1;
+            double divisor;
             double width = transformer.getRotatedSvgW(); // width of the vector map
             double height = transformer.getRotatedSvgH(); // height of the vector map
 
@@ -226,25 +255,31 @@ public class WMSMapReader extends TileableMapReader {
                     //LOGGER.warn("after width="+width+" height="+height);
                 }
             }
-            URIUtils.addParamOverride(tileParams, "WIDTH", Long.toString((long) Math.round(width)));
-            URIUtils.addParamOverride(tileParams, "HEIGHT", Long.toString((long) Math.round(height)));
+            URIUtils.addParamOverride(tileParams, "WIDTH", Long.toString(Math.round(width)));
+            URIUtils.addParamOverride(tileParams, "HEIGHT", Long.toString(Math.round(height)));
         } else {
             URIUtils.addParamOverride(tileParams, "WIDTH", Long.toString(w));
             URIUtils.addParamOverride(tileParams, "HEIGHT", Long.toString(h));
         }
 
-        Map<String, List<String>> uriParams = URIUtils.getParameters(commonUri);
         final String bbox;
 
-        if (version.contains("1.3.0")) {
-            bbox = String.format("%s,%s,%s,%s", minGeoX, maxGeoX, minGeoY, maxGeoY);
-        } else {
-            bbox = String.format("%s,%s,%s,%s", minGeoX, minGeoY, maxGeoX, maxGeoY);
+        switch (version) {
+            case VERSION1_3_0:
+                if (strictEpsg4326) {
+                    bbox = String.format("%s,%s,%s,%s", minGeoY, minGeoX, maxGeoY, maxGeoX);
+                } else {
+                    bbox = String.format("%s,%s,%s,%s", minGeoX, minGeoY, maxGeoX, maxGeoY);
+                }
+                break;
+            default:
+                bbox = String.format("%s,%s,%s,%s", minGeoX, minGeoY, maxGeoX, maxGeoY);
         }
+
         URIUtils.addParamOverride(tileParams, "BBOX", bbox);
         return URIUtils.addParams(commonUri, tileParams, OVERRIDE_ALL);
     }
-
+    @Override
     public String toString() {
         return StringUtils.join(layers, ", ");
     }

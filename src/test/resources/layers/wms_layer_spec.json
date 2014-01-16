@@ -1,7 +1,7 @@
 {
    "title":"title",
    "units":"m",
-   "srs":"EPSG:4326",
+   "srs":"@@srs@@",
    "layout":"A4",
    "dpi":91,
    "layers":[

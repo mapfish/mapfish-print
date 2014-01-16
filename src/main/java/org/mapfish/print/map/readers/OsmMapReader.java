@@ -53,21 +53,21 @@ public class OsmMapReader extends TileableMapReader {
         PJsonArray tileSize = params.getJSONArray("tileSize");
         tileCacheLayerInfo = new OsmLayerInfo(params.getJSONArray("resolutions"), tileSize.getInt(0), tileSize.getInt(1), maxExtent.getFloat(0), maxExtent.getFloat(1), maxExtent.getFloat(2), maxExtent.getFloat(3), params.getString("extension"));
     }
-
+    @Override
     protected TileRenderer.Format getFormat() {
         return TileRenderer.Format.BITMAP;
     }
-
+    @Override
     protected void addCommonQueryParams(Map<String, List<String>> result, Transformer transformer, String srs, boolean first) {
         //not much query params for this protocol...
     }
-
-    protected URI getTileUri(URI commonUri, Transformer transformer, float minGeoX, float minGeoY, float maxGeoX, float maxGeoY, long w, long h) throws URISyntaxException, UnsupportedEncodingException {
-        float targetResolution = (maxGeoX - minGeoX) / w;
+    @Override
+    protected URI getTileUri(URI commonUri, Transformer transformer, double minGeoX, double minGeoY, double maxGeoX, double maxGeoY, long w, long h) throws URISyntaxException, UnsupportedEncodingException {
+        double targetResolution = (maxGeoX - minGeoX) / w;
         OsmLayerInfo.ResolutionInfo resolution = tileCacheLayerInfo.getNearestResolution(targetResolution);
 
-        int tileX = Math.round((minGeoX - tileCacheLayerInfo.getMinX()) / (resolution.value * w));
-        int tileY = Math.round((tileCacheLayerInfo.getMaxY() - minGeoY) / (resolution.value * h));
+        int tileX = (int) Math.round((minGeoX - tileCacheLayerInfo.getMinX()) / (resolution.value * w));
+        int tileY = (int) Math.round((tileCacheLayerInfo.getMaxY() - minGeoY) / (resolution.value * h));
 
         StringBuilder path = new StringBuilder();
         if (!commonUri.getPath().endsWith("/")) {
@@ -81,15 +81,15 @@ public class OsmMapReader extends TileableMapReader {
         return new URI(commonUri.getScheme(), commonUri.getUserInfo(), commonUri.getHost(), commonUri.getPort(), commonUri.getPath() + path, commonUri.getQuery(), commonUri.getFragment());
     }
 
-
+    @Override
     public boolean testMerge(MapReader other) {
         return false;
     }
-
+    @Override
     public boolean canMerge(MapReader other) {
         return false;
     }
-
+    @Override
     public String toString() {
         return layer;
     }

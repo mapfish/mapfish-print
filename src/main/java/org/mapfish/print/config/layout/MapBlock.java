@@ -28,6 +28,7 @@ import org.mapfish.print.PDFUtils;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.Transformer;
 import org.mapfish.print.map.MapChunkDrawer;
+import org.mapfish.print.map.readers.MapReader;
 import org.mapfish.print.utils.DistanceUnit;
 import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
@@ -35,6 +36,11 @@ import org.mapfish.print.utils.PJsonObject;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfContentByte;
+
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Bean to configure the !map blocks.
@@ -73,10 +79,14 @@ public class MapBlock extends Block {
         }
     }
 
+
     /**
      * Creates the transformer in function of the JSON parameters and the block's config
      */
     public Transformer createTransformer(RenderingContext context, PJsonObject params) {
+
+        boolean strictEpsg4326 = params.optBool("strictEpsg4326", false);
+
         Integer dpi = params.optInt("dpi");
         if (dpi == null) {
             dpi = context.getGlobalParams().getInt("dpi");
@@ -91,58 +101,9 @@ public class MapBlock extends Block {
             throw new RuntimeException("Unknown unit: '" + units + "'");
         }
 
-        final int scale;
-        final float centerX;
-        final float centerY;
-
-        final float width = getWidth(context, params);
-        final float height = getHeight(context, params);
-        final PJsonArray center = params.optJSONArray("center");
-        if (center != null) {
-            //normal mode
-            scale = params.getInt("scale");
-            centerX = center.getFloat(0);
-            centerY = center.getFloat(1);
-        } else {
-            //bbox mode
-            PJsonArray bbox = params.getJSONArray("bbox");
-            float minX = bbox.getFloat(0);
-            float minY = bbox.getFloat(1);
-            float maxX = bbox.getFloat(2);
-            float maxY = bbox.getFloat(3);
-
-            if (minX >= maxX) {
-                throw new InvalidValueException("maxX", maxX);
-            }
-            if (minY >= maxY) {
-                throw new InvalidValueException("maxY", maxY);
-            }
-
-            centerX = (minX + maxX) / 2.0F;
-            centerY = (minY + maxY) / 2.0F;
-
-            double rotation = params.optDouble("rotation", 0.0);
-            rotation *= Math.PI / 180;
-            float projWidth  = (maxX - minX) * (float)Math.abs(Math.cos(rotation)) +
-                               (maxY - minY) * (float)Math.abs(Math.sin(rotation));
-            float projHeight = (maxY - minY) * (float)Math.abs(Math.cos(rotation)) +
-                               (maxX - minX) * (float)Math.abs(Math.sin(rotation));
-            scale = context.getConfig().getBestScale(Math.max(
-                    projWidth  / (DistanceUnit.PT.convertTo(width, unitEnum)),
-                    projHeight / (DistanceUnit.PT.convertTo(height, unitEnum))));
-            // if the rotation is 0:
-            // scale = context.getConfig().getBestScale(Math.max(
-            //         (maxX - minX) / (DistanceUnit.PT.convertTo(width, unitEnum)),
-            //         (maxY - minY) / (DistanceUnit.PT.convertTo(height, unitEnum))));
-        }
-
-        if (!context.getConfig().isDisableScaleLocking() && !context.getConfig().isScalePresent(scale)) {
-            throw new InvalidJsonValueException(params, "scale", scale);
-        }
-
         String srs = null;
         if (params.optBool("geodetic", false)
-                || context.getGlobalParams().optBool("geodetic", false)) {
+            || context.getGlobalParams().optBool("geodetic", false)) {
             srs = params.optString("srs");
             if (srs == null) {
                 srs = context.getGlobalParams().optString("srs");
@@ -153,8 +114,46 @@ public class MapBlock extends Block {
             }
         }
         double rotation = params.optFloat("rotation", 0.0F) * Math.PI / 180.0;
-        return new Transformer(centerX, centerY, width, height, scale, dpi,
-                unitEnum, rotation, srs, context.getConfig().getIntegerSvg());
+
+        final float width = getWidth(context, params);
+        final float height = getHeight(context, params);
+        final PJsonArray center = params.optJSONArray("center");
+        if (center != null) {
+            //normal mode
+            final double scale;
+            final double centerX;
+            final double centerY;
+            scale = params.getDouble("scale");
+            centerX = center.getDouble(0);
+            centerY = center.getDouble(1);
+
+
+            if (!context.getConfig().isDisableScaleLocking() && !context.getConfig().isScalePresent(scale)) {
+                throw new InvalidJsonValueException(params, "scale", scale);
+            }
+            return new Transformer(centerX, centerY, width, height, scale, dpi,
+                    unitEnum, rotation, srs, context.getConfig().getIntegerSvg(), strictEpsg4326);
+
+        } else {
+            //bbox mode
+            PJsonArray bbox = params.getJSONArray("bbox");
+            double minX = bbox.getDouble(0);
+            double minY = bbox.getDouble(1);
+            double maxX = bbox.getDouble(2);
+            double maxY = bbox.getDouble(3);
+
+            if (minX >= maxX) {
+                throw new InvalidValueException("maxX", maxX);
+            }
+            if (minY >= maxY) {
+                throw new InvalidValueException("maxY", maxY);
+            }
+
+            final boolean integerSvg = context.getConfig().getIntegerSvg();
+            return new Transformer(minX, minY, maxX, maxY, width, height, dpi,
+                    unitEnum, rotation, integerSvg, context.getConfig(), strictEpsg4326);
+        }
+
     }
 
     public void setHeight(String height) {

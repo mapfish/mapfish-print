@@ -42,16 +42,16 @@ public abstract class TileableMapReader extends HTTPMapReader {
 
     protected void renderTiles(TileRenderer formatter, Transformer transformer, URI commonUri, ParallelMapTileLoader parallelMapTileLoader) throws IOException, URISyntaxException {
         final List<URI> urls = new ArrayList<URI>(1);
-        final float offsetX;
-        final float offsetY;
+        final double offsetX;
+        final double offsetY;
         final long bitmapTileW;
         final long bitmapTileH;
         int nbTilesW = 0;
 
-        float minGeoX = transformer.getRotatedMinGeoX();
-        float minGeoY = transformer.getRotatedMinGeoY();
-        float maxGeoX = transformer.getRotatedMaxGeoX();
-        float maxGeoY = transformer.getRotatedMaxGeoY();
+        double minGeoX = transformer.getRotatedMinGeoX();
+        double minGeoY = transformer.getRotatedMinGeoY();
+        double maxGeoX = transformer.getRotatedMaxGeoX();
+        double maxGeoY = transformer.getRotatedMaxGeoY();
 
         if (tileCacheLayerInfo != null) {
             //tiled
@@ -66,8 +66,8 @@ public abstract class TileableMapReader extends HTTPMapReader {
 
             bitmapTileW = tileCacheLayerInfo.getWidth();
             bitmapTileH = tileCacheLayerInfo.getHeight();
-            final float tileGeoWidth = transformer.getResolution() * bitmapTileW;
-            final float tileGeoHeight = transformer.getResolution() * bitmapTileH;
+            final double tileGeoWidth = transformer.getResolution() * bitmapTileW;
+            final double tileGeoHeight = transformer.getResolution() * bitmapTileH;
 
 
             // TODO I would like to do this sort of thing by extension points for plugins
@@ -127,13 +127,13 @@ public abstract class TileableMapReader extends HTTPMapReader {
      * fix the resolution to something compatible with the resolutions available in tilecache.
      */
     private Transformer fixTiledTransformer(Transformer transformer) {
-        float resolution;
+        double resolution;
 
         // if clientResolution is passed from client use it explicitly if available otherwise calculate nearest resolution
         if (this.context.getCurrentPageParams().has("clientResolution")) {
             float clientResolution = this.context.getCurrentPageParams().getFloat("clientResolution");
             boolean hasServerResolution = false;
-            for (float serverResolution : this.tileCacheLayerInfo.getResolutions()) {
+            for (double serverResolution : this.tileCacheLayerInfo.getResolutions()) {
                 if (serverResolution == clientResolution) {
                     hasServerResolution = true;
                 }
@@ -146,7 +146,7 @@ public abstract class TileableMapReader extends HTTPMapReader {
             }
         }
         else {
-            float targetResolution = transformer.getGeoW() / transformer.getStraightBitmapW();
+            double targetResolution = transformer.getGeoW() / transformer.getStraightBitmapW();
             TileCacheLayerInfo.ResolutionInfo resolutionInfo = tileCacheLayerInfo.getNearestResolution(targetResolution);
             resolution = resolutionInfo.value;
         }
@@ -159,5 +159,5 @@ public abstract class TileableMapReader extends HTTPMapReader {
     /**
      * Adds the query parameters for the given tile.
      */
-    protected abstract URI getTileUri(URI commonUri, Transformer transformer, float minGeoX, float minGeoY, float maxGeoX, float maxGeoY, long w, long h) throws URISyntaxException, UnsupportedEncodingException;
+    protected abstract URI getTileUri(URI commonUri, Transformer transformer, double minGeoX, double minGeoY, double maxGeoX, double maxGeoY, long w, long h) throws URISyntaxException, UnsupportedEncodingException;
 }

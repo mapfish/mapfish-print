@@ -24,7 +24,7 @@ public class TileCacheLayerInfoTest {
                 extension, originX, originY);
 
 
-        for (float v : info.getResolutions()) {
+        for (double v : info.getResolutions()) {
             assertEquals(v, info.getNearestResolution(v).value, 0.000001);
 
             // test the common case where rounding gets in the way of calculating the perfect target resolution

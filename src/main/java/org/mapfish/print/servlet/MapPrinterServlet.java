@@ -359,7 +359,7 @@ public class MapPrinterServlet extends BaseMapServlet {
         final OutputStream response = httpServletResponse.getOutputStream();
         try {
             httpServletResponse.setContentType(tempFile.contentType());
-            if (inline != true) {
+            if (!inline) {
                 final String fileName = tempFile.getOutputFileName(getMapPrinter(app));
                 httpServletResponse.setHeader("Content-disposition", "attachment; filename=" + fileName);
             }

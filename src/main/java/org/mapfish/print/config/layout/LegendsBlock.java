@@ -280,10 +280,9 @@ public class LegendsBlock extends Block {
          */
         private float getTextWidth(String myString, Font pdfFont) {
             BaseFont baseFont = pdfFont.getBaseFont();
-            float width = baseFont == null
+            return baseFont == null
                     ? new Chunk(myString).getWidthPoint()
                     : baseFont.getWidthPoint(myString, pdfFont.getSize());
-            return width;
         }
 
         /**
@@ -291,8 +290,8 @@ public class LegendsBlock extends Block {
          *
          * @param context PDF rendering context
          * @param iconItem URL of the image
-         * @param iconMaxWidth width of the chunk
-         * @param iconMaxHeight height of the chunk
+         * @param maxIconWidth width of the chunk
+         * @param maxIconHeight height of the chunk
          * @return Chunk with image in it
          * @throws DocumentException
          */

@@ -146,7 +146,7 @@ public class TMSMapReaderTest extends MapTestBasic {
         String geodeticSRS = null;
         boolean isIntegerSvg = true;
         Transformer transformer = new Transformer(centerX, centerY, paperWidth, paperHeight, scale, dpi, unitEnum,
-                rotation, geodeticSRS, isIntegerSvg);
+                rotation, geodeticSRS, isIntegerSvg, false);
 
         float minGeoX = 424345.6f;
         float minGeoY = 258048.0f;

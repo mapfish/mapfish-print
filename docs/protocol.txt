@@ -90,6 +90,7 @@ The "SPEC" parameter is a JSON structure like that:
                 scale: 4000000,
                 dpi: 190,
                 geodetic: false,
+                strictEpsg4326: false,
                 ...CUSTOM_PARAMS...
             }
         ],
@@ -116,6 +117,8 @@ The location to show on the map can be specified with a **center** and a **scale
 The print module will use the nearest scale and will make sure the aspect ratio stays correct.
 
 The geodetic parameter can be set to true so the scale of geodetic layers can correctly be calculated.  Certain projections (Google and Latlong for example) are based on a spheroid and therefore require **geodetic: true** in order to correctly calculate the scale.  If the geodetic parameter is not present it will be assumed to be false.
+
+The _optional_ strictEpsg4326 parameter can be set to true to control how EPSG:4326 is interpreted. This needs to be true for WMS version 1.3.0 GetMap requests. See https://www.google.ch/search?q=epsg+4326+latitude+longitude+order&oq=epsg+4326+&aqs=chrome.3.69i57j0l5.5996j0j4&sourceid=chrome&espv=210&es_sm=93&ie=UTF-8 for some links to the history and mess that is EPSG:4326.
 
 The outputFilename parameter is optional and if omitted the values used in the server's configuration will be used instead.  If it is present it will be the name of the downloaded file.  The suffix will be added if not left off in the parameter.  The date can be substituted into the filename as well if desired.  See configuration's outputFilename for more information and examples
 

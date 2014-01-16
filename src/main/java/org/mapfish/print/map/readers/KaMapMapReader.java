@@ -71,21 +71,18 @@ public class KaMapMapReader extends TileableMapReader {
         PJsonArray tileSize = params.getJSONArray("tileSize");
         tileCacheLayerInfo = new TileCacheLayerInfo(params.getJSONArray("resolutions"), tileSize.getInt(0), tileSize.getInt(1), maxExtent.getFloat(0), maxExtent.getFloat(1), maxExtent.getFloat(2), maxExtent.getFloat(3), params.getString("extension"));
     }
-
+    @Override
     protected TileRenderer.Format getFormat() {
         return TileRenderer.Format.BITMAP;
     }
-
+    @Override
     protected void addCommonQueryParams(Map<String, List<String>> result, Transformer transformer, String srs, boolean first) {
         //not much query params for this protocol...
     }
-
-    protected URI getTileUri(URI commonUri, Transformer transformer, float minGeoX, float minGeoY, float maxGeoX, float maxGeoY, long w, long h) throws URISyntaxException, UnsupportedEncodingException {
-        float targetResolution = (maxGeoX - minGeoX) / w;
+    @Override
+    protected URI getTileUri(URI commonUri, Transformer transformer, double minGeoX, double minGeoY, double maxGeoX, double maxGeoY, long w, long h) throws URISyntaxException, UnsupportedEncodingException {
+        double targetResolution = (maxGeoX - minGeoX) / w;
         TileCacheLayerInfo.ResolutionInfo resolution = tileCacheLayerInfo.getNearestResolution(targetResolution);
-
-        Math.round((minGeoX - tileCacheLayerInfo.getMinX()) / (resolution.value * w));
-        Math.round((minGeoY - tileCacheLayerInfo.getMinY()) / (resolution.value * h));
 
         StringBuilder path = new StringBuilder();
 
@@ -105,7 +102,7 @@ public class KaMapMapReader extends TileableMapReader {
         if (unitEnum == null) {
             throw new RuntimeException("Unknown unit: '" + units + "'");
         }
-        final int scale = context.getConfig().getBestScale(Math.max(
+        final double scale = context.getConfig().getBestScale(Math.max(
             (maxGeoX - minGeoX) / (DistanceUnit.PT.convertTo(w, unitEnum)),
             (maxGeoY- minGeoY) / (DistanceUnit.PT.convertTo(h, unitEnum))));
         path.append("s=").append(scale).append('&');
@@ -121,15 +118,15 @@ public class KaMapMapReader extends TileableMapReader {
         return new URI(commonUri.getScheme(), commonUri.getUserInfo(), commonUri.getHost(), commonUri.getPort(), commonUri.getPath(), path.toString(), commonUri.getFragment());
     }
 
-
+    @Override
     public boolean testMerge(MapReader other) {
         return false;
     }
-
+    @Override
     public boolean canMerge(MapReader other) {
         return false;
     }
-
+    @Override
     public String toString() {
         return map;
     }

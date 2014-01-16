@@ -118,17 +118,17 @@ public class WMSServerInfoTest extends PrintTestCase {
         assertNotNull(layerInfo);
         assertEquals(256, layerInfo.getWidth());
         assertEquals(256, layerInfo.getHeight());
-        final float[] resolutions = layerInfo.getResolutions();
-        final float[] expectedResolutions = {
-                800.0F,
-                400.0F,
-                200.0F,
-                100.0F,
-                50.0F,
-                20.0F,
-                10.0F,
-                5.0F,
-                2.5F};
+        final double[] resolutions = layerInfo.getResolutions();
+        final double[] expectedResolutions = {
+                800.0,
+                400.0,
+                200.0,
+                100.0,
+                50.0,
+                20.0,
+                10.0,
+                5.0,
+                2.5};
         assertTrue(Arrays.equals(expectedResolutions, resolutions));
 
         final TileCacheLayerInfo.ResolutionInfo higherRes = new TileCacheLayerInfo.ResolutionInfo(8, 2.5F);
@@ -235,17 +235,17 @@ public class WMSServerInfoTest extends PrintTestCase {
         assertNotNull(layerInfo);
         assertEquals(256, layerInfo.getWidth());
         assertEquals(256, layerInfo.getHeight());
-        final float[] resolutions = layerInfo.getResolutions();
-        final float[] expectedResolutions = {
-                800.0F,
-                400.0F,
-                200.0F,
-                100.0F,
-                50.0F,
-                20.0F,
-                10.0F,
-                5.0F,
-                2.5F};
+        final double[] resolutions = layerInfo.getResolutions();
+        final double[] expectedResolutions = {
+                800.0,
+                400.0,
+                200.0,
+                100.0,
+                50.0,
+                20.0,
+                10.0,
+                5.0,
+                2.5};
         assertTrue(Arrays.equals(expectedResolutions, resolutions));
 
         final TileCacheLayerInfo.ResolutionInfo higherRes = new TileCacheLayerInfo.ResolutionInfo(8, 2.5F);

@@ -5,6 +5,7 @@ import com.lowagie.text.Document;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.pdf.PdfWriter;
 import org.apache.log4j.*;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -51,11 +52,12 @@ public abstract class MapTestBasic {
         Config config = new Config();
         try {
             config.setDpis(new TreeSet<Integer>(Arrays.asList(96, 190, 254)));
-            config.setScales(new TreeSet<Integer>(Arrays.asList(20000, 25000, 100000, 500000, 4000000)));
+            config.setScales(new TreeSet<Double>(Arrays.asList(20000.0, 25000.0, 100000.0, 500000.0, 4000000.0)));
             List<HostMatcher> hosts = new ArrayList<HostMatcher>(1);
             hosts.add(HostMatcher.ACCEPT_ALL);
             config.setHosts(hosts);
-            context = new RenderingContext(doc, writer, config, null, null, layout, Collections.<String, String>emptyMap());
+            PJsonObject globalParams = new PJsonObject(new JSONObject(), "globalParams");
+            context = new RenderingContext(doc, writer, config, globalParams, null, layout, Collections.<String, String>emptyMap());
         } finally {
             config.close();
         }

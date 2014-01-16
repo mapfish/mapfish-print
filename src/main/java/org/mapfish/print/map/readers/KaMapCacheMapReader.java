@@ -76,38 +76,33 @@ public class KaMapCacheMapReader extends TileableMapReader {
         PJsonArray tileSize = params.getJSONArray("tileSize");
         tileCacheLayerInfo = new TileCacheLayerInfo(params.getJSONArray("resolutions"), tileSize.getInt(0), tileSize.getInt(1), maxExtent.getFloat(0), maxExtent.getFloat(1), maxExtent.getFloat(2), maxExtent.getFloat(3), params.getString("extension"));
     }
-
+    @Override
     protected TileRenderer.Format getFormat() {
         return TileRenderer.Format.BITMAP;
     }
-
+    @Override
     protected void addCommonQueryParams(Map<String, List<String>> result, Transformer transformer, String srs, boolean first) {
         //not much query params for this protocol...
     }
-
-    protected URI getTileUri(URI commonUri, Transformer transformer, float minGeoX, float minGeoY, float maxGeoX, float maxGeoY, long w, long h) throws URISyntaxException, UnsupportedEncodingException {
-        float targetResolution = (maxGeoX - minGeoX) / w;
+    @Override
+    protected URI getTileUri(URI commonUri, Transformer transformer, double minGeoX, double minGeoY, double maxGeoX, double maxGeoY, long w, long h) throws URISyntaxException, UnsupportedEncodingException {
+        double targetResolution = (maxGeoX - minGeoX) / w;
         TileCacheLayerInfo.ResolutionInfo resolution = tileCacheLayerInfo.getNearestResolution(targetResolution);
-
-        //int tileX = Math.round((minGeoX - tileCacheLayerInfo.getMinX()) / (resolution.value * w));
-        Math.round((minGeoX - tileCacheLayerInfo.getMinX()) / (resolution.value * w));
-        //int tileY = Math.round((minGeoY - tileCacheLayerInfo.getMinY()) / (resolution.value * h));
-        Math.round((minGeoY - tileCacheLayerInfo.getMinY()) / (resolution.value * h));
 
         // scale, calculated from units used
         final DistanceUnit unitEnum = DistanceUnit.fromString(units);
         if (unitEnum == null) {
             throw new RuntimeException("Unknown unit: '" + units + "'");
         }
-        final int scale = context.getConfig().getBestScale(Math.max(
+        final double scale = context.getConfig().getBestScale(Math.max(
             (maxGeoX - minGeoX) / (DistanceUnit.PT.convertTo(w, unitEnum)),
             (maxGeoY- minGeoY) / (DistanceUnit.PT.convertTo(h, unitEnum))));
 
         // top & left
         double pX = Math.round(minGeoX / resolution.value);
         double pY = Math.round(maxGeoY / resolution.value) * -1;
-        pX = (double)Math.floor(pX / w) * new Double(w);
-        pY = (double)Math.floor(pY / h) * new Double(h);
+        pX = Math.floor(pX / w) * new Double(w);
+        pY = Math.floor(pY / h) * new Double(h);
         int pX4Path = (int)pX;
         int pY4Path = (int)pY;
 
@@ -115,7 +110,7 @@ public class KaMapCacheMapReader extends TileableMapReader {
         long metaX = (long)Math.floor(pX / w / metaTileWidth) * w * metaTileWidth;
         long metaY = (long)Math.floor(pY / h / metaTileHeight) * h * metaTileHeight;
 
-        // path builing
+        // path building
         StringBuilder path = new StringBuilder();
         if (!commonUri.getPath().endsWith("/")) {
             path.append('/');
@@ -130,15 +125,15 @@ public class KaMapCacheMapReader extends TileableMapReader {
 
         return new URI(commonUri.getScheme(), commonUri.getUserInfo(), commonUri.getHost(), commonUri.getPort(), commonUri.getPath() + path.toString(), commonUri.getQuery(), commonUri.getFragment());
     }
-
+    @Override
     public boolean testMerge(MapReader other) {
         return false;
     }
-
+    @Override
     public boolean canMerge(MapReader other) {
         return false;
     }
-
+    @Override
     public String toString() {
         return map;
     }

@@ -61,13 +61,13 @@ public class GoogleMapTileReader extends TileableMapReader {
         tileCacheLayerInfo = new GoogleLayerInfo(params.getJSONArray("resolutions"), 640, 640, maxExtent.getFloat(0), maxExtent.getFloat(1), maxExtent.getFloat(2), maxExtent.getFloat(3), params.getString("extension"));
         config = new GoogleConfig(context,params,LOGGER, baseUrl, false);
     }
-
+    @Override
     protected TileRenderer.Format getFormat() {
         return TileRenderer.Format.BITMAP;
     }
-
-    protected URI getTileUri(URI commonUri, Transformer transformer, float minGeoX, float minGeoY, float maxGeoX, float maxGeoY, long w, long h) throws URISyntaxException, UnsupportedEncodingException {
-        float targetResolution = (maxGeoX - minGeoX) / w;
+    @Override
+    protected URI getTileUri(URI commonUri, Transformer transformer, double minGeoX, double minGeoY, double maxGeoX, double maxGeoY, long w, long h) throws URISyntaxException, UnsupportedEncodingException {
+        double targetResolution = (maxGeoX - minGeoX) / w;
         GoogleLayerInfo.ResolutionInfo resolution = tileCacheLayerInfo.getNearestResolution(targetResolution);
 
         Map<String, List<String>> tileParams = new HashMap<String, List<String>>();
@@ -97,15 +97,15 @@ public class GoogleMapTileReader extends TileableMapReader {
             return uri;
         }
     }
-
+    @Override
     public boolean testMerge(MapReader other) {
         return false;
     }
-
+    @Override
     public boolean canMerge(MapReader other) {
         return false;
     }
-
+    @Override
     public String toString() {
         return layer;
     }

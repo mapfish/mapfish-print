@@ -63,7 +63,7 @@ public class Config implements Closeable {
 
     private Layouts layouts;
     private TreeSet<Integer> dpis;
-    private TreeSet<Integer> scales;
+    private TreeSet<Double> scales;
     private String maxSvgWidth = "";
     private String maxSvgHeight = "";
     private double maxSvgW = Double.MAX_VALUE;
@@ -160,10 +160,11 @@ public class Config implements Closeable {
         return dpis;
     }
 
+
     public void printClientConfig(JSONWriter json) throws JSONException {
         json.key("scales");
         json.array();
-        for (Integer scale : scales) {
+        for (Double scale : scales) {
             json.object();
             json.key("name").value("1:" + NumberFormat.getIntegerInstance().format(scale));
             json.key("value").value(scale.toString());
@@ -205,12 +206,17 @@ public class Config implements Closeable {
         json.endArray();
     }
 
-    public void setScales(TreeSet<Integer> scales) {
+    public void setScales(TreeSet<Double> scales) {
         this.scales = scales;
     }
 
-    public boolean isScalePresent(int scale) {
-        return scales.contains(scale);
+    public boolean isScalePresent(double targetScale) {
+        for (double scale : scales) {
+            if (Math.abs(scale - targetScale) < 0.001) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void setHosts(List<HostMatcher> hosts) {
@@ -292,15 +298,14 @@ public class Config implements Closeable {
     /**
      * @return The first scale that is bigger or equal than the target.
      */
-    public int getBestScale(double target) {
+    public double getBestScale(double target) {
         if (this.disableScaleLocking) {
-            Double forcedScale = target;
-            return forcedScale.intValue();
+            return target;
         }
         else {
-            target *= BEST_SCALE_TOLERANCE;
-            for (Integer scale : scales) {
-                if (scale >= target) {
+            double finalTarget = target * BEST_SCALE_TOLERANCE;
+            for (double scale : scales) {
+                if (scale >= finalTarget) {
                     return scale;
                 }
             }
