@@ -4,7 +4,7 @@ apply plugin: 'war'
 apply plugin: 'jetty'
 apply plugin: 'maven'
 
-defaultTasks 'test', 'jar', 'war', 'imageMagickWar', 'standalone', 'install'
+defaultTasks 'test', 'interactiveTest', 'jar', 'war', 'imageMagickWar', 'standalone', 'install'
 
 allprojects {
     group = 'org.mapfish.print'
@@ -50,6 +50,12 @@ dependencies {
 allprojects {
     dependencies {
         testCompile ("junit:junit:${project.junitVersion}", 'org.mockito:mockito-core:1.9.5')
+    }
+
+    sourceSets {
+        test {
+            output.resourcesDir = output.classesDir
+        }
     }
 }
 
@@ -198,7 +204,7 @@ if (Boolean.parseBoolean(enablePublishing)) {
     }
 
     uploadArchives {
-        dependsOn test, ':e2e-tests:test'
+        dependsOn test, ':e2e-tests:interactiveTest'
         repositories {
             mavenDeployer {
                 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
