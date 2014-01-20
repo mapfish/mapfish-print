@@ -50,7 +50,7 @@ import org.mapfish.print.config.layout.Layout;
 import org.mapfish.print.config.layout.Layouts;
 import org.mapfish.print.map.MapTileTask;
 import org.mapfish.print.map.readers.MapReaderFactoryFinder;
-import org.mapfish.print.map.readers.WMSServerInfo;
+import org.mapfish.print.map.readers.WMSServiceInfo;
 import org.mapfish.print.output.OutputFactory;
 import org.pvalsecc.concurrent.OrderedResultsExecutor;
 //import org.mapfish.print.output.OutputFormat;
@@ -207,7 +207,11 @@ public class Config implements Closeable {
     }
 
     public void setScales(TreeSet<Double> scales) {
-        this.scales = scales;
+        // it is common for the config.yaml file to have integers only in the file
+        this.scales = new TreeSet<Double>();
+        for (Number scale : scales) {
+            this.scales.add(scale.doubleValue());
+        }
     }
 
     public boolean isScalePresent(double targetScale) {
@@ -271,6 +275,7 @@ public class Config implements Closeable {
 
         if (scales == null) throw new InvalidValueException("scales", "null");
         if (scales.size() < 1) throw new InvalidValueException("scales", "[]");
+        if (!(scales.iterator().next() instanceof Double)) throw new Error("scales should be converted to Doubles");
 
         if (hosts == null) throw new InvalidValueException("hosts", "null");
         if (hosts.size() < 1) throw new InvalidValueException("hosts", "[]");
@@ -327,7 +332,7 @@ public class Config implements Closeable {
      */
     public synchronized void close() {
         try {
-            WMSServerInfo.clearCache();
+            WMSServiceInfo.clearCache();
         } finally {
             try {
                 if (mapRenderingExecutor != null) {

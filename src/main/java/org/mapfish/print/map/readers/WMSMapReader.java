@@ -95,7 +95,7 @@ public class WMSMapReader extends TileableMapReader {
     private WMSMapReader(String layer, String style, RenderingContext context, PJsonObject params) {
         super(context, params);
         layers.add(layer);
-        tileCacheLayerInfo = WMSServerInfo.getInfo(baseUrl, context).getTileCacheLayer(layer);
+        tileCacheLayerInfo = WMSServiceInfo.getInfo(baseUrl, context).getTileCacheLayer(layer);
         styles.add(style);
         format = params.getString("format");
         version = WMSVersion.find(params.optString("version", DEFAULT_VERSION.code));
@@ -159,7 +159,7 @@ public class WMSMapReader extends TileableMapReader {
         URIUtils.setParamDefault(result, "SERVICE", "WMS");
         URIUtils.setParamDefault(result, "REQUEST", "GetMap");
 
-        final String versionParamName = "version";
+        final String versionParamName = "VERSION";
 
         switch (version) {
             case VERSION1_3_0:

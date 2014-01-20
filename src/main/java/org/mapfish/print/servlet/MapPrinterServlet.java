@@ -81,7 +81,11 @@ public class MapPrinterServlet extends BaseMapServlet {
 
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
         //do the routing in function of the actual URL
-        final String additionalPath = httpServletRequest.getPathInfo();
+        String additionalPath = httpServletRequest.getPathInfo().trim();
+        if (additionalPath.isEmpty()) {
+            // handle an odd case where path info returns an empty string
+            additionalPath = httpServletRequest.getServletPath();
+        }
         if (additionalPath.equals(PRINT_URL)) {
             createAndGetPDF(httpServletRequest, httpServletResponse);
         } else if (additionalPath.equals(INFO_URL)) {

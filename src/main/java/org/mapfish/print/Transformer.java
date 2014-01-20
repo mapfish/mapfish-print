@@ -114,54 +114,6 @@ public class Transformer implements Cloneable {
 
     }
 
-    /**
-     * @param minX        bbox minY
-     * @param minY        bbox minY
-     * @param maxX        bbox maxX
-     * @param maxY        bbox maxY
-     * @param paperWidth  e.g. map width in pt on the PDF
-     * @param paperHeight e.g. map height in pt on the PDF
-     * @param dpi         as selected in request
-     * @param unitEnum    the distance unit of the map e.g. DistanceUnit.M for meters
-     * @param rotation    the rotation of the map per the request
-     * @param config      the print configuration object
-     * @param strictEpsg4326 if true then EPSG:4326 should interpretted as lat/long otherwise use the "incorrect" long/lat
-     */
-    public Transformer(double minX, double minY, double maxX, double maxY, float paperWidth,
-                       float paperHeight, int dpi, DistanceUnit unitEnum,
-                       double rotation, boolean isIntegerSvg, Config config, boolean strictEpsg4326) {
-        double safeMinX = Math.min(minX, maxX);
-        double safeMaxX = Math.max(minX, maxX);
-        double safeMinY = Math.min(minY, maxY);
-        double safeMaxY = Math.max(minY, maxY);
-        this.strictEpsg4326 = strictEpsg4326;
-        this.dpi = dpi;
-
-        adjustSvgFactor(dpi, isIntegerSvg);
-
-        rotation *= Math.PI / 180;
-        double geoWidth = (safeMaxX - safeMinX) * Math.abs(Math.cos(rotation)) +
-                           (safeMaxY - safeMinY) * Math.abs(Math.sin(rotation));
-        double geoHeight = (safeMaxY - safeMinY) * Math.abs(Math.cos(rotation)) +
-                            (safeMaxX - safeMinX) * Math.abs(Math.sin(rotation));
-        final double actualScale = Math.max(
-                geoWidth / (DistanceUnit.PT.convertTo(paperWidth, unitEnum)),
-                geoHeight / (DistanceUnit.PT.convertTo(paperHeight, unitEnum)));
-        scale = config.getBestScale(actualScale);
-
-        pixelPerGeoUnit = (unitEnum.convertTo(dpi, DistanceUnit.IN) / scale);
-
-
-        this.paperWidth = paperWidth;
-        this.paperHeight = paperHeight;
-        this.rotation = rotation;
-
-        this.minGeoX = safeMinX;
-        this.minGeoY = safeMinY;
-        this.maxGeoX = safeMaxX;
-        this.maxGeoY = safeMaxY;
-    }
-
     private void adjustSvgFactor(int dpi, boolean isIntegerSvg) {
         /**
          * The following code has been changed due to the fact that it seems
@@ -204,7 +156,7 @@ public class Transformer implements Cloneable {
             if (srsCode.equalsIgnoreCase("EPSG:900913")) {
                 crs = CRS.parseWKT(GOOGLE_WKT);
             } else {
-                crs = CRS.decode(srsCode, strictEpsg4326);
+                crs = CRS.decode(srsCode, !strictEpsg4326);
             }
             GeodeticCalculator calc = new GeodeticCalculator(crs);
             DirectPosition2D directPosition2D = new DirectPosition2D(centerX,

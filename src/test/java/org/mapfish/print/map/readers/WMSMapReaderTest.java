@@ -30,9 +30,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class WMSMapReaderTest extends MapTestBasic {
     private static final String CONTEXT_NAME = "/testServer";
-    AtomicInteger port = new AtomicInteger(new Random().nextInt(55999)+5000);
-
-    FakeHttpd server;
+    FakeHttpd server = new FakeHttpd();
 
     @After
     public void tearDown() throws IOException, InterruptedException {
@@ -43,11 +41,8 @@ public class WMSMapReaderTest extends MapTestBasic {
 
     @Test
     public void testGetTileUri_Version1_1_1() throws Exception {
-        Map<String, FakeHttpd.HttpAnswerer> routes = new HashMap<String, FakeHttpd.HttpAnswerer>();
-        routes.put("/testServer", new FakeHttpd.HttpAnswerer(200, "OK",
-                "application/xml", loadFileFromClasspath("/capabilities/wms1.1.1.xml")));
-
-        final URI tileUri = createTileUri(loadSpec("1.1.1", "EPSG:4326"), routes);
+        final URI tileUri = createTileUri(loadSpec("1.1.1", "EPSG:4326"),
+                FakeHttpd.Route.xmlResponse(CONTEXT_NAME, loadFileFromClasspath("/capabilities/wms1.1.1.xml")));
 
         final Map<String, List<String>> parameters = URIUtils.getParameters(tileUri.getRawQuery().toUpperCase());
         assertCommonParams(tileUri, parameters);
@@ -58,11 +53,8 @@ public class WMSMapReaderTest extends MapTestBasic {
 
     @Test
     public void testGetTileUri_VersionDefault() throws Exception {
-        Map<String, FakeHttpd.HttpAnswerer> routes = new HashMap<String, FakeHttpd.HttpAnswerer>();
-        routes.put("/testServer", new FakeHttpd.HttpAnswerer(200, "OK",
-                "application/xml", loadFileFromClasspath("/capabilities/wms1.1.1.xml")));
-
-        final URI tileUri = createTileUri(loadSpec(null, "EPSG:4326"), routes);
+        final URI tileUri = createTileUri(loadSpec(null, "EPSG:4326"),
+                FakeHttpd.Route.xmlResponse(CONTEXT_NAME, loadFileFromClasspath("/capabilities/wms1.1.1.xml")));
 
         final Map<String, List<String>> parameters = URIUtils.getParameters(tileUri.getRawQuery().toUpperCase());
         assertCommonParams(tileUri, parameters);
@@ -74,9 +66,10 @@ public class WMSMapReaderTest extends MapTestBasic {
     @Test
     public void testGetTileUri_Version1_3_0() throws Exception {
         Map<String, FakeHttpd.HttpAnswerer> routes = new HashMap<String, FakeHttpd.HttpAnswerer>();
-        routes.put("/testServer", new FakeHttpd.HttpAnswerer(200, "OK",
+        routes.put(CONTEXT_NAME, new FakeHttpd.HttpAnswerer(200, "OK",
                 "application/xml", loadFileFromClasspath("/capabilities/wms1.3.0.xml")));
-        final URI tileUri = createTileUri(loadSpec("1.3.0", "EPSG:4326"), routes);
+        final URI tileUri = createTileUri(loadSpec("1.3.0", "EPSG:4326"),
+                FakeHttpd.Route.xmlResponse(CONTEXT_NAME, loadFileFromClasspath("/capabilities/wms1.3.0.xml")));
 
         final Map<String, List<String>> parameters = URIUtils.getParameters(tileUri.getRawQuery().toUpperCase());
         assertCommonParams(tileUri, parameters);
@@ -88,9 +81,8 @@ public class WMSMapReaderTest extends MapTestBasic {
     @Test
     public void testGetTileUri_Version1_3_0_NonEPSG4326() throws Exception {
         Map<String, FakeHttpd.HttpAnswerer> routes = new HashMap<String, FakeHttpd.HttpAnswerer>();
-        routes.put("/testServer", new FakeHttpd.HttpAnswerer(200, "OK",
-                "application/xml", loadFileFromClasspath("/capabilities/wms1.3.0.xml")));
-        final URI tileUri = createTileUri(loadSpec("1.3.0", "CRS:4326"), routes);
+        final URI tileUri = createTileUri(loadSpec("1.3.0", "CRS:4326"),
+                FakeHttpd.Route.xmlResponse(CONTEXT_NAME, loadFileFromClasspath("/capabilities/wms1.3.0.xml")));
 
         final Map<String, List<String>> parameters = URIUtils.getParameters(tileUri.getRawQuery().toUpperCase());
         assertCommonParams(tileUri, parameters);
@@ -102,12 +94,11 @@ public class WMSMapReaderTest extends MapTestBasic {
     @Test
     public void testGetTileUri_VersionCustomParams_1_3_0() throws Exception {
         Map<String, FakeHttpd.HttpAnswerer> routes = new HashMap<String, FakeHttpd.HttpAnswerer>();
-        routes.put("/testServer", new FakeHttpd.HttpAnswerer(200, "OK",
-                "application/xml", loadFileFromClasspath("/capabilities/wms1.3.0.xml")));
         final PJsonObject jsonParams = loadSpec(null, "EPSG:4326");
         JSONObject customParams = jsonParams.getJSONArray("layers").getJSONObject(0).getJSONObject("customParams").getInternalObj();
         customParams.accumulate("version", "1.3.0");
-        final URI tileUri = createTileUri(jsonParams, routes);
+        final URI tileUri = createTileUri(jsonParams,
+                FakeHttpd.Route.xmlResponse(CONTEXT_NAME, loadFileFromClasspath("/capabilities/wms1.3.0.xml")));
 
         final Map<String, List<String>> parameters = URIUtils.getParameters(tileUri.getRawQuery().toUpperCase());
         assertCommonParams(tileUri, parameters);
@@ -117,7 +108,7 @@ public class WMSMapReaderTest extends MapTestBasic {
     }
 
     private PJsonObject loadSpec(String version, String srs) throws JSONException, IOException {
-        String baseURL = "http://localhost:" + port.incrementAndGet() + CONTEXT_NAME;
+        String baseURL = "http://localhost:" + server.getPort() + CONTEXT_NAME;
 
         PJsonObject jsonParams = loadJson("layers/wms_layer_spec.json",
                 new Replacement("@@baseURL@@", baseURL), new Replacement("@@srs@@", srs));
@@ -137,9 +128,8 @@ public class WMSMapReaderTest extends MapTestBasic {
         assertEquals(""+tileUri, "IMAGE/GIF", parameters.get("FORMAT").get(0));
     }
 
-    private URI createTileUri(PJsonObject jsonParams, Map<String, FakeHttpd.HttpAnswerer> routes) throws IOException, JSONException, URISyntaxException {
-
-        server = new FakeHttpd(port.get(), routes);
+    private URI createTileUri(PJsonObject jsonParams, FakeHttpd.Route... routes) throws IOException, JSONException, URISyntaxException {
+        server.addRoutes(routes);
         server.start();
         String srs = jsonParams.getString("srs");
 

@@ -104,9 +104,9 @@ public abstract class MapTestBasic {
         private final String tag;
         private final String replacement;
 
-        public Replacement(String tag, String replacement) {
+        public Replacement(String tag, Object replacement) {
             this.tag = tag;
-            this.replacement = replacement;
+            this.replacement = replacement.toString();
         }
     }
 

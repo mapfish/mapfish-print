@@ -30,18 +30,7 @@ import java.util.regex.Pattern;
  * Used to validate the access to a map service host
  */
 public abstract class HostMatcher {
-    public final static HostMatcher ACCEPT_ALL = new HostMatcher() {
-        @Override
-        public boolean validate(URI uri) throws UnknownHostException, SocketException, MalformedURLException {
-            return true;
-        }
-
-        @Override
-        public String toString() {
-            return "Accept All";
-        }
-
-    };
+    public final static HostMatcher ACCEPT_ALL = new AcceptAllMatcher();
 
     protected int port = -1;
     protected String pathRegex = null;
@@ -102,4 +91,5 @@ public abstract class HostMatcher {
             return false;
         return true;
     }
+
 }

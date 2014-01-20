@@ -206,7 +206,7 @@ Standard mode:
 * layer (Required) the layer name
 * version (Defaults to ``1.0.0``) WMTS protocol version
 * requestEncoding (Defaults to ``REST``) ``REST`` or ``KVP``
-* style (Required) the style name
+* style (Optional) the style name
 * dimensions (Optional) list of dimensions names
 * params (Optional) dictionary of dimensions name (capital) => value
 * matrixSet (Required) the name of the matrix set

@@ -19,40 +19,94 @@
 
 package org.mapfish.print;
 
-import java.io.*;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 import org.pvalsecc.misc.FileUtilities;
+
+import java.io.*;
+import java.net.InetSocketAddress;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A fake HTTP server to be used for tests.
  */
 public class FakeHttpd {
+
+    public static class Route {
+        final String route;
+        final HttpAnswerer response;
+
+        public Route(String route, HttpAnswerer response) {
+            this.route = route;
+            this.response = response;
+        }
+
+        /**
+         * Return a route that returns a 200 response with text payload.
+         *
+         * @return a route that returns a 200 response with text payload
+         */
+        public static Route textResponse(String route, String response) {
+            return new Route(route, new HttpAnswerer(200, "OK", "text/plain", response));
+        }
+
+        /**
+         * Return a route that returns a 200 response with xml payload.
+         *
+         * @return a route that returns a 200 response with xml payload
+         */
+        public static Route xmlResponse(String route, byte[] response) {
+            return new Route(route, new HttpAnswerer(200, "OK", "application/xml", response));
+        }
+
+        /**
+         * Return a route that returns a 200 response with xml payload.
+         *
+         * @return a route that returns a 200 response with xml payload
+         */
+        public static Route xmlResponse(String route, String  response) {
+            try {
+                return xmlResponse(route, response.getBytes("UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        /**
+         * Create a route that results in an error.
+         *
+         * @param route the path/route
+         * @param code  the error code
+         * @param msg   the error message
+         * @return a route that results in an error.
+         */
+        public static Route errorResponse(String route, int code, String msg) {
+            return new Route(route, new HttpAnswerer(code, msg, "text/plain", (byte[]) null));
+        }
+    }
+
     public static final Logger LOGGER = Logger.getLogger(FakeHttpd.class);
+    private final static AtomicInteger portInc = new AtomicInteger(20732);
     private final HttpServer server;
     private int port;
 
-    public FakeHttpd(int port, Map<String, HttpAnswerer> routings) {
-        this.port = port;
+    public FakeHttpd(Route... routes) {
+        this.port = portInc.incrementAndGet();
         try {
             this.server = HttpServer.create(new InetSocketAddress(port), 0);
-            for (Map.Entry<String, HttpAnswerer> entry : routings.entrySet()) {
-                this.server.createContext(entry.getKey(), entry.getValue());
-            }
+            addRoutes(routes);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void addRoutes(Route... routes) {
+        if (routes != null) {
+            for (Route route : routes) {
+                this.server.createContext(route.route, route.response);
+            }
         }
     }
 
@@ -69,7 +123,7 @@ public class FakeHttpd {
         server.stop(1);
     }
 
-    public static class HttpAnswerer implements HttpHandler{
+    public static class HttpAnswerer implements HttpHandler {
         private final int status;
         private final String statusTxt;
         private final String contentType;
@@ -111,15 +165,20 @@ public class FakeHttpd {
         @Override
         public void handle(HttpExchange httpExchange) throws IOException {
 
-            LOGGER.debug("received a "+httpExchange.getRequestMethod()+" request: " + httpExchange.getRequestURI());
+            LOGGER.debug("received a " + httpExchange.getRequestMethod() + " request: " + httpExchange.getRequestURI());
 
             if (contentType != null) {
                 httpExchange.getResponseHeaders().add("Content-Type", contentType);
             }
-            httpExchange.sendResponseHeaders(status, body.length);
-            final OutputStream stream = httpExchange.getResponseBody();
-            stream.write(body);
-            stream.close();
+            if (body == null) {
+                httpExchange.sendResponseHeaders(status, 0);
+                httpExchange.getResponseBody().close();
+            } else {
+                httpExchange.sendResponseHeaders(status, body.length);
+                final OutputStream stream = httpExchange.getResponseBody();
+                stream.write(body);
+                stream.close();
+            }
         }
     }
 }

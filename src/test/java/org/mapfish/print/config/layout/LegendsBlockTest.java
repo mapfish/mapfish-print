@@ -33,17 +33,16 @@ import java.util.Map;
  */
 public class LegendsBlockTest {
     private FakeHttpd httpd;
-    private static final int PORT = 8182;
 
     @Before
     public void setUp() throws Exception {
         Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.INFO);
         Logger.getLogger("httpclient").setLevel(Level.INFO);
 
-        Map<String, FakeHttpd.HttpAnswerer> routings = new HashMap<String, FakeHttpd.HttpAnswerer>();
-        routings.put("/500", new FakeHttpd.HttpAnswerer(500, "Server error", "text/plain", "Server error"));
-        routings.put("/notImage", new FakeHttpd.HttpAnswerer(200, "OK", "text/plain", "Blahblah"));
-        httpd = new FakeHttpd(PORT, routings);
+        httpd = new FakeHttpd(
+                FakeHttpd.Route.errorResponse("/500", 500, "Server error"),
+                FakeHttpd.Route.textResponse("/notImage", "Blahblah")
+                );
         httpd.start();
     }
     @After
@@ -70,7 +69,7 @@ public class LegendsBlockTest {
                 "                  {\n" +
                 "                     \"icons\" :\n" +
                 "                        [\n" +
-                "                           \""+"http://localhost:" + PORT + "/notImage"+"\"\n" +
+                "                           \""+"http://localhost:" + httpd.getPort() + "/notImage"+"\"\n" +
                 "                        ],\n" +
                 "                     \"name\" : \"name\",\n" +
                 "                     \"iconBeforeName\" : true\n" +
@@ -88,7 +87,7 @@ public class LegendsBlockTest {
                 "                  {\n" +
                 "                     \"icons\" :\n" +
                 "                        [\n" +
-                "                           \""+"http://localhost:" + PORT + "/notImage"+"\"\n" +
+                "                           \""+"http://localhost:" + httpd.getPort() + "/notImage"+"\"\n" +
                 "                        ],\n" +
                 "                     \"name\" : \"name\",\n" +
                 "                     \"iconBeforeName\" : true\n" +

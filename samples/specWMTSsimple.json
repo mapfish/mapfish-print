@@ -26,6 +26,7 @@
         "style": "default",
         "formatSuffix": "png",
         "dimensions": ["TIME"],
+        "matrixSet": "21781",
         "params": {
             "TIME": "20040101"
         },

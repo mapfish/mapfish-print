@@ -19,34 +19,32 @@
 
 package org.mapfish.print;
 
-import static org.junit.Assert.*;
+import com.lowagie.text.DocumentException;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.junit.Test;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
-import com.lowagie.text.DocumentException;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class PDFUtilsTest extends PdfTestCase {
-    public static final Logger LOGGER = Logger.getLogger(PDFUtilsTest.class);
+    private static final String FIVE_HUNDRED_ROUTE = "/500";
+    private static final String NOT_IMAGE_ROUTE = "/notImage";
     private FakeHttpd httpd;
-    private static final int PORT = 8181;
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
         Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.INFO);
         Logger.getLogger("httpclient").setLevel(Level.INFO);
 
-        Map<String, FakeHttpd.HttpAnswerer> routings = new HashMap<String, FakeHttpd.HttpAnswerer>();
-        routings.put("/500", new FakeHttpd.HttpAnswerer(500, "Server error", "text/plain", "Server error"));
-        routings.put("/notImage", new FakeHttpd.HttpAnswerer(200, "OK", "text/plain", "Blahblah"));
-        httpd = new FakeHttpd(PORT, routings);
+        httpd = new FakeHttpd(
+                FakeHttpd.Route.errorResponse(FIVE_HUNDRED_ROUTE, 500, "Server error"),
+                FakeHttpd.Route.textResponse(NOT_IMAGE_ROUTE, "Blahblah")
+                );
         httpd.start();
     }
 
@@ -58,7 +56,7 @@ public class PDFUtilsTest extends PdfTestCase {
 
     @Test
     public void testGetImageDirectWMSError() throws URISyntaxException, IOException, DocumentException {
-        URI uri = new URI("http://localhost:" + PORT + "/notImage");
+        URI uri = new URI("http://localhost:" + httpd.getPort() + NOT_IMAGE_ROUTE);
         try {
             doc.newPage();
             PDFUtils.getImageDirect(context, uri);
@@ -71,7 +69,7 @@ public class PDFUtilsTest extends PdfTestCase {
 
     @Test
     public void testGetImageDirectHTTPError() throws URISyntaxException, IOException, DocumentException {
-        URI uri = new URI("http://localhost:" + PORT + "/500");
+        URI uri = new URI("http://localhost:" + httpd.getPort() + FIVE_HUNDRED_ROUTE);
         try {
             doc.newPage();
             PDFUtils.getImageDirect(context, uri);
@@ -84,7 +82,7 @@ public class PDFUtilsTest extends PdfTestCase {
 
     @Test
     public void testPlaceholder() throws URISyntaxException, IOException, DocumentException {
-        URI uri = new URI("http://localhost:" + PORT + "/500");
+        URI uri = new URI("http://localhost:" + httpd.getPort() + FIVE_HUNDRED_ROUTE);
         try {
             doc.newPage();
             PDFUtils.getImageDirect(context, uri);

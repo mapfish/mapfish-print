@@ -79,14 +79,11 @@ public class MapBlock extends Block {
         }
     }
 
-
     /**
      * Creates the transformer in function of the JSON parameters and the block's config
      */
     public Transformer createTransformer(RenderingContext context, PJsonObject params) {
-
         boolean strictEpsg4326 = params.optBool("strictEpsg4326", false);
-
         Integer dpi = params.optInt("dpi");
         if (dpi == null) {
             dpi = context.getGlobalParams().getInt("dpi");
@@ -101,39 +98,18 @@ public class MapBlock extends Block {
             throw new RuntimeException("Unknown unit: '" + units + "'");
         }
 
-        String srs = null;
-        if (params.optBool("geodetic", false)
-            || context.getGlobalParams().optBool("geodetic", false)) {
-            srs = params.optString("srs");
-            if (srs == null) {
-                srs = context.getGlobalParams().optString("srs");
-            }
-            if (srs == null) {
-                throw new RuntimeException(
-                        "When geodetic is true the srs is value is required");
-            }
-        }
-        double rotation = params.optFloat("rotation", 0.0F) * Math.PI / 180.0;
+        final double scale;
+        final double centerX;
+        final double centerY;
 
         final float width = getWidth(context, params);
         final float height = getHeight(context, params);
         final PJsonArray center = params.optJSONArray("center");
         if (center != null) {
             //normal mode
-            final double scale;
-            final double centerX;
-            final double centerY;
-            scale = params.getDouble("scale");
+            scale = params.getInt("scale");
             centerX = center.getDouble(0);
             centerY = center.getDouble(1);
-
-
-            if (!context.getConfig().isDisableScaleLocking() && !context.getConfig().isScalePresent(scale)) {
-                throw new InvalidJsonValueException(params, "scale", scale);
-            }
-            return new Transformer(centerX, centerY, width, height, scale, dpi,
-                    unitEnum, rotation, srs, context.getConfig().getIntegerSvg(), strictEpsg4326);
-
         } else {
             //bbox mode
             PJsonArray bbox = params.getJSONArray("bbox");
@@ -149,11 +125,43 @@ public class MapBlock extends Block {
                 throw new InvalidValueException("maxY", maxY);
             }
 
-            final boolean integerSvg = context.getConfig().getIntegerSvg();
-            return new Transformer(minX, minY, maxX, maxY, width, height, dpi,
-                    unitEnum, rotation, integerSvg, context.getConfig(), strictEpsg4326);
+            centerX = (minX + maxX) / 2.0F;
+            centerY = (minY + maxY) / 2.0F;
+
+            double rotation = params.optDouble("rotation", 0.0);
+            rotation *= Math.PI / 180;
+            double projWidth  = (maxX - minX) * Math.abs(Math.cos(rotation)) +
+                               (maxY - minY) * Math.abs(Math.sin(rotation));
+            double projHeight = (maxY - minY) * Math.abs(Math.cos(rotation)) +
+                               (maxX - minX) * Math.abs(Math.sin(rotation));
+            scale = context.getConfig().getBestScale(Math.max(
+                    projWidth  / (DistanceUnit.PT.convertTo(width, unitEnum)),
+                    projHeight / (DistanceUnit.PT.convertTo(height, unitEnum))));
+            // if the rotation is 0:
+            // scale = context.getConfig().getBestScale(Math.max(
+            //         (maxX - minX) / (DistanceUnit.PT.convertTo(width, unitEnum)),
+            //         (maxY - minY) / (DistanceUnit.PT.convertTo(height, unitEnum))));
         }
 
+        if (!context.getConfig().isDisableScaleLocking() && !context.getConfig().isScalePresent(scale)) {
+            throw new InvalidJsonValueException(params, "scale", scale);
+        }
+
+        String srs = null;
+        if (params.optBool("geodetic", false)
+            || context.getGlobalParams().optBool("geodetic", false)) {
+            srs = params.optString("srs");
+            if (srs == null) {
+                srs = context.getGlobalParams().optString("srs");
+            }
+            if (srs == null) {
+                throw new RuntimeException(
+                        "When geodetic is true the srs is value is required");
+            }
+        }
+        double rotation = params.optDouble("rotation", 0.0F) * Math.PI / 180.0;
+        return new Transformer(centerX, centerY, width, height, scale, dpi,
+                unitEnum, rotation, srs, context.getConfig().getIntegerSvg(), strictEpsg4326);
     }
 
     public void setHeight(String height) {
