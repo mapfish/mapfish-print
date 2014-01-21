@@ -24,16 +24,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 
+import org.json.JSONWriter;
 import org.junit.Test;
 import org.mapfish.print.PrintTestCase;
 import org.mapfish.print.ShellMapPrinter;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ConfigTest extends PrintTestCase {
+
+    public static final String GEORCHESTRA_YAML = "config-georchestra.yaml";
 
     @Test
     public void testParse() throws FileNotFoundException {
@@ -60,16 +61,19 @@ public class ConfigTest extends PrintTestCase {
 
     @Test
     public void testReadExampleConfigFiles() throws Exception {
-        final String configTestClassFile = ConfigTest.class.getResource(ConfigTest.class.getSimpleName() + ".class").getFile();
-        final File[] filesInSamplesDir = new File(new File(configTestClassFile).getParentFile(), "sample_config_yaml").listFiles();
+        Map<String, File> filesInSamplesDir = getSampleConfigFiles();
         StringBuilder errorString = new StringBuilder("The following errors occurred while parsing yaml config files: \n");
         boolean error = false;
         final ConfigFactory configFactory = new ConfigFactory();
-        for (File file : filesInSamplesDir) {
+        for (File file : filesInSamplesDir.values()) {
             if (file.getName().endsWith(".yaml")) {
                 try {
                     final Config config = configFactory.fromYaml(file);
                     config.getBestScale(1000);
+                    JSONWriter json = new JSONWriter(new StringWriter());
+                    json.object();
+                    config.printClientConfig(json);
+
                     if (!config.getDpis().isEmpty()) {
                         final Integer next = config.getDpis().iterator().next();
                         assertNotNull(next);
@@ -86,5 +90,16 @@ public class ConfigTest extends PrintTestCase {
 
         assertFalse(errorString.toString(), error);
 
+    }
+
+    public static Map<String, File> getSampleConfigFiles() {
+        final String configTestClassFile = ConfigTest.class.getResource(ConfigTest.class.getSimpleName() + ".class").getFile();
+        final File[] sample_config_yamls = new File(new File(configTestClassFile).getParentFile(), "sample_config_yaml").listFiles();
+        Map<String, File> nameToFileMap = new HashMap<String, File>();
+
+        for (File file : sample_config_yamls) {
+            nameToFileMap.put(file.getName(), file);
+        }
+        return nameToFileMap;
     }
 }

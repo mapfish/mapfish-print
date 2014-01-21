@@ -508,24 +508,29 @@ public class PDFUtils {
     private static String format(RenderingContext context, PJsonObject params, Matcher matcher) {
         final String valueTxt = getContextValue(context, params, matcher.group(4));
         final Object value;
-        switch (matcher.group(3).charAt(0)) {
-            case 'd':
-            case 'o':
-            case 'x':
-            case 'X':
-                value = Long.valueOf(valueTxt);
-                break;
-            case 'e':
-            case 'E':
-            case 'f':
-            case 'g':
-            case 'G':
-            case 'a':
-            case 'A':
-                value = Double.valueOf(valueTxt);
-                break;
-            default:
-                value = valueTxt;
+        try {
+            switch (matcher.group(3).charAt(0)) {
+                case 'd':
+                case 'o':
+                case 'x':
+                case 'X':
+                    value = Math.round(Double.valueOf(valueTxt));
+                    break;
+                case 'e':
+                case 'E':
+                case 'f':
+                case 'g':
+                case 'G':
+                case 'a':
+                case 'A':
+                    value = Double.valueOf(valueTxt);
+                    break;
+                default:
+                    value = valueTxt;
+            }
+        } catch (Throwable e) {
+            context.addError(new RuntimeException("Error converting valueTxt: '" + valueTxt + "' to a number.  Pattern: " + matcher.group(3)));
+            return valueTxt;
         }
         try {
             return String.format(matcher.group(1), value);

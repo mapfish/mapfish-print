@@ -20,13 +20,21 @@
 package org.mapfish.print;
 
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Font;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 import org.junit.Test;
+import org.mapfish.print.config.Config;
+import org.mapfish.print.config.ConfigFactory;
+import org.mapfish.print.config.ConfigTest;
+import org.mapfish.print.utils.PJsonObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -93,5 +101,23 @@ public class PDFUtilsTest extends PdfTestCase {
         }
     }
 
+    @Test
+    public void testRenderString_Scale() throws Exception {
+        final File file = ConfigTest.getSampleConfigFiles().get(ConfigTest.GEORCHESTRA_YAML);
+        Config config = new ConfigFactory().fromYaml(file);
+        context = new RenderingContext(doc, context.getWriter(), config, context.getGlobalParams(), file.getParent(),
+                context.getLayout(), context.getHeaders());
+        JSONObject internal = new JSONObject();
+        internal.accumulate("scaleLbl", "Scale Label");
+        internal.append("bbox", "-10");
+        internal.append("bbox", "-10");
+        internal.append("bbox", "10");
+        internal.append("bbox", "10");
+        PJsonObject params = new PJsonObject(internal, "params");
+        Font font = new Font();
+        context.getLayout().getMainPage().getMap().setWidth("300");
+        context.getLayout().getMainPage().getMap().setHeight("600");
+        PDFUtils.renderString(context, params, "${scaleLbl}1:${format %,d scale}", font);
 
+    }
 }

@@ -184,10 +184,12 @@ public class Config implements Closeable {
 
         json.key("outputFormats");
         json.array();
-        for (String format : outputFactory.getSupportedFormats(this)) {
-            json.object();
-            json.key("name").value(format);
-            json.endObject();
+        if (outputFactory != null) {
+            for (String format : outputFactory.getSupportedFormats(this)) {
+                json.object();
+                json.key("name").value(format);
+                json.endObject();
+            }
         }
         json.endArray();
 
