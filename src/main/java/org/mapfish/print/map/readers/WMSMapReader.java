@@ -177,6 +177,7 @@ public class WMSMapReader extends TileableMapReader {
         URIUtils.setParamDefault(result, "STYLES", StringUtils.join(styles, ","));
         URIUtils.setParamDefault(result, "format_options", "dpi:" + transformer.getDpi()); // For GeoServer
         URIUtils.setParamDefault(result, "map_resolution", String.valueOf(transformer.getDpi())); // For MapServer
+        URIUtils.setParamDefault(result, "DPI", String.valueOf(transformer.getDpi())); // For QGIS mapserver
 
     }
     @Override
