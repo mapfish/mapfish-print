@@ -52,16 +52,20 @@ public abstract class MapTestBasic {
         Config config = new Config();
         try {
             config.setDpis(new TreeSet<Integer>(Arrays.asList(96, 190, 254)));
-            config.setScales(new TreeSet<Double>(Arrays.asList(20000.0, 25000.0, 100000.0, 500000.0, 4000000.0)));
+            config.setScales(new TreeSet<Number>(Arrays.asList(20000.0, 25000.0, 100000.0, 500000.0, 4000000.0)));
             List<HostMatcher> hosts = new ArrayList<HostMatcher>(1);
             hosts.add(HostMatcher.ACCEPT_ALL);
             config.setHosts(hosts);
-            PJsonObject globalParams = new PJsonObject(new JSONObject(), "globalParams");
+            PJsonObject globalParams = createGlobalParams();
             context = new RenderingContext(doc, writer, config, globalParams, null, layout, Collections.<String, String>emptyMap());
         } finally {
             config.close();
         }
     }
+
+	protected PJsonObject createGlobalParams() throws IOException {
+		return new PJsonObject(new JSONObject(), "globalParams");
+	}
 
     @After
     public void tearDown() throws Exception {

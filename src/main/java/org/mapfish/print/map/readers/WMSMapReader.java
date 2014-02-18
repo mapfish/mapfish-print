@@ -20,6 +20,7 @@
 package org.mapfish.print.map.readers;
 
 import org.apache.log4j.Logger;
+import org.json.JSONException;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.Transformer;
 import org.mapfish.print.map.ParallelMapTileLoader;
@@ -110,6 +111,32 @@ public class WMSMapReader extends TileableMapReader {
             strictEpsg4326 = true;
         }
     }
+    
+    @Override
+    protected String getMergeableValue(PJsonObject customParams,
+            final List<String> toBeSkipped, String key) throws JSONException {
+        // adds support for an array of values for mergeable parameters
+        // so that a single value can be specified for each single layer
+        if(customParams.optJSONArray(key) != null) {
+            String value = null;
+            PJsonArray listOfValues = customParams.getJSONArray(key);
+            int notUsed = -1;
+            for(int count = 0; count< listOfValues.size() && notUsed == -1; count++) {
+                value = listOfValues.getInternalArray().optString(count, null);
+                if(value != null) {
+                    notUsed = count;
+                    listOfValues.getInternalArray().put(count, (String)null);
+                }
+            }
+            if(notUsed == (listOfValues.size() - 1)) {
+                toBeSkipped.add(key);
+            }
+            return value;
+        } else {
+            return super.getMergeableValue(customParams, toBeSkipped, key);
+        }
+    }
+    
     @Override
     protected TileRenderer.Format getFormat() {
         if (format.equals("image/svg+xml")) {
@@ -186,7 +213,7 @@ public class WMSMapReader extends TileableMapReader {
             WMSMapReader wms = (WMSMapReader) other;
             layers.addAll(wms.layers);
             styles.addAll(wms.styles);
-            return true;
+            return super.testMerge(other);
         } else {
             return false;
         }

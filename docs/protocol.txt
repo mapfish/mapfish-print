@@ -76,6 +76,13 @@ The "SPEC" parameter is a JSON structure like that:
         geodetic: false,
         outputFilename: 'political-boundaries',
         outputFormat: 'pdf',
+        mergeableParams: {
+            cql_filter: {
+                defaultValue: 'INCLUDE',
+                separator: ';',
+                context: 'http://labs.metacarta.com/wms/vmap0'
+            }
+        },
         layers: [
             {
                 type: 'WMS',
@@ -125,6 +132,10 @@ The outputFilename parameter is optional and if omitted the values used in the s
 The outputFormat parameter is optional and if omitted the value 'pdf' will be used.  Only the formats returned in the info are permitted.
 
 There are two locations where custom parameters can be added. Those will be ignored by the web service but, will be accessible from the layout templates.
+
+Some layer types support merging more layers request into one, when the server is the same (for example WMS). For those, a mergeableParams section can be used to define merging strategies for some custom parameters.
+The default rule is to merge layers with identical custom parameters. Using mergeableParams, defined parameters values can be joined using a given separator and a default value if some of the layers miss the parameter.
+Mergeable parameters can have a context, that is the baseURL they can be used for (if not defined they will be used for every layer).
 
 For the format of the **layers** section, please look at the implementations pointed by mapfish.PrintProtocol.SUPPORTED_TYPES.
 

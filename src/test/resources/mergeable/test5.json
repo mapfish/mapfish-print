@@ -1,0 +1,19 @@
+{      
+   "layers":[
+      {
+         "baseURL":"@@baseURL@@",
+         "opacity":1,
+         "type":"WMS",
+         "layers":[
+            "layerName1",
+            "layerName2"
+         ],
+         "format":"image/gif",
+         "styles":[
+            "wmsstyle"
+         ],
+         "singleTile":false,
+         "customParams":{"TRANSPARENT":"true","EXCEPTIONS":"INIMAGE", "CQL_FILTER":["ATTRIBUTE1=1","ATTRIBUTE2=2"]}
+      }
+   ]
+}
