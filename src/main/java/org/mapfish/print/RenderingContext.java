@@ -22,6 +22,7 @@ package org.mapfish.print;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.mapfish.print.config.Config;
@@ -45,6 +46,18 @@ public class RenderingContext {
     private final PDFCustomBlocks customBlocks;
     private final Layout layout;
     private final Map<String, String> headers;
+    
+    /**
+     * Store the set of mergeable parameters, indexed by context
+     * and then by parameter name.
+     * The special context '*' is used for universal parameters, and
+     * is used when the context property is not specified.
+     * Each parameter can have 3 properties:
+     *  - defaultValue: the value to be used when the parameter is empty for a merged layer (defaults to empty string)
+     *  - separator: the separator to use to join merged values (defaults to comma)
+     *  - context: the context the parameter should be merged in (defaults to *, that is any context)
+     */
+    private final Map<String,Map<String,PJsonObject>> mergeableParams;
 
     /**
      * Current page being rendered
@@ -76,12 +89,57 @@ public class RenderingContext {
         this.writer = writer;
         this.config = config;
         this.globalParams = globalParams;
+        if (globalParams.has("mergeableParams")) {
+            mergeableParams = buildMergeableParams();
+        } else {
+            mergeableParams = null;
+        }
+        
         this.configDir = configDir;
         this.layout = layout;
         this.headers = headers;
         customBlocks = new PDFCustomBlocks(writer, this);
     }
 
+    private Map<String, Map<String, PJsonObject>> buildMergeableParams() {
+        Map<String, Map<String, PJsonObject>> result = new HashMap<String, Map<String, PJsonObject>>();
+        PJsonObject mergeableParamsObj = globalParams
+                .getJSONObject("mergeableParams");
+        Iterator<String> mergeableParamsIt = mergeableParamsObj.keys();
+        while (mergeableParamsIt.hasNext()) {
+            String key = mergeableParamsIt.next();
+            PJsonObject mergeableParam = mergeableParamsObj.getJSONObject(key);
+            String context = mergeableParam.optString("context", "*");
+            Map<String, PJsonObject> container = result.get(context.toUpperCase());
+            if(container == null) {
+                container = new HashMap<String, PJsonObject>();
+            }
+            container.put(key.toUpperCase(), mergeableParam);
+            result.put(context.toUpperCase(), container);
+        }
+        return result;
+    }
+    
+    /**
+     * Gets the set of mergeable parameters for the given context.
+     * The default (*) context parameters are added to the set.
+     * 
+     * @param context
+     * @return
+     */
+    public Map<String, PJsonObject> getMergeableParams(String context) {
+        Map<String, PJsonObject> result = new HashMap<String, PJsonObject>();
+        if(mergeableParams != null) {
+            if(mergeableParams.containsKey(context.toUpperCase())) {
+                result.putAll(mergeableParams.get(context.toUpperCase()));
+            } 
+            if(mergeableParams.containsKey("*")) {
+                result.putAll(mergeableParams.get("*"));
+            }
+        }
+        return result;
+    }
+    
     public PDFCustomBlocks getCustomBlocks() {
         return customBlocks;
     }

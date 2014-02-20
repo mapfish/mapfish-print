@@ -1,0 +1,11 @@
+{    
+   "mergeableParams": {
+      "cql_filter": {
+      	"defaultValue": "INCLUDE",
+      	"separator": ";"
+      },
+      "other_param": {
+        "context": "sampleContext"
+      }
+   }
+}

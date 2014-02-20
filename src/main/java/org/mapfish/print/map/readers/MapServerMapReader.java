@@ -115,7 +115,7 @@ public class MapServerMapReader extends HTTPMapReader {
         if (canMerge(other)) {
             MapServerMapReader ms = (MapServerMapReader) other;
             layers.addAll(ms.layers);
-            return true;
+            return super.testMerge(other);
         }
         return false;
     }

@@ -45,7 +45,7 @@ public class ConfigTest extends PrintTestCase {
     public void testBestScale() {
         Config config = new Config();
         try {
-            TreeSet<Double> scales = new TreeSet<Double>(Arrays.asList(200000.0, 25000.0, 50000.0, 100000.0));
+            TreeSet<Number> scales = new TreeSet<Number>(Arrays.asList(200000.0, 25000.0, 50000.0, 100000.0));
             config.setScales(scales);
 
             assertEquals("Too small scale => pick the smallest available", 25000, config.getBestScale(1), 0.000001);

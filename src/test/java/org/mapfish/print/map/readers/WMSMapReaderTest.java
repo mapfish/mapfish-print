@@ -7,7 +7,11 @@ import org.junit.Test;
 import org.mapfish.print.FakeHttpd;
 import org.mapfish.print.MapTestBasic;
 import org.mapfish.print.Transformer;
+import org.mapfish.print.map.ParallelMapTileLoader;
+import org.mapfish.print.map.renderers.TileRenderer;
+import org.mapfish.print.map.renderers.TileRenderer.Format;
 import org.mapfish.print.utils.DistanceUnit;
+import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
 import org.pvalsecc.misc.FileUtilities;
 import org.pvalsecc.misc.URIUtils;
@@ -39,6 +43,11 @@ public class WMSMapReaderTest extends MapTestBasic {
         }
     }
 
+    @Override
+    protected PJsonObject createGlobalParams() throws IOException {
+        return loadJson("mergeable/global.json");
+    }
+    
     @Test
     public void testGetTileUri_Version1_1_1() throws Exception {
         final URI tileUri = createTileUri(loadSpec("1.1.1", "EPSG:4326"),
@@ -126,6 +135,35 @@ public class WMSMapReaderTest extends MapTestBasic {
         assertEquals("" + tileUri, "WMSSTYLE", parameters.get("STYLES").get(0));
         assertEquals(""+tileUri, "DPI:300", parameters.get("FORMAT_OPTIONS").get(0));
         assertEquals(""+tileUri, "IMAGE/GIF", parameters.get("FORMAT").get(0));
+    }
+    
+    @Test
+    public void testMergeableParamsWithArrayCustomParams() throws Exception {
+        URI commonURI = createMergedUri(loadJson("mergeable/test5.json"));
+        
+        Map<String, List<String>> parameters = URIUtils.getParameters(commonURI.getRawQuery().toUpperCase());
+        assertEquals(""+commonURI, "ATTRIBUTE1=1;ATTRIBUTE2=2", parameters.get("CQL_FILTER").get(0));        
+    }
+    
+    private URI createMergedUri(PJsonObject jsonParams)
+            throws IOException, JSONException, URISyntaxException {
+
+        PJsonArray layers = jsonParams.getJSONArray("layers");
+        WMSMapReader mapReader = createMapReader(layers.getJSONObject(0));
+        
+        Transformer transformer = createTransformer();
+        return mapReader.createCommonURI(transformer, "", true);
+
+    }
+    
+    private WMSMapReader createMapReader(PJsonObject layer) {
+        final List<MapReader> mapReaders = new WMSMapReader.Factory().create("wms", context, layer);
+        
+        WMSMapReader mapReader = (WMSMapReader) mapReaders.get(0);
+        for(int count = 1; count< mapReaders.size(); count++) {
+            mapReader.testMerge(mapReaders.get(count));
+        }
+        return mapReader;
     }
 
     private URI createTileUri(PJsonObject jsonParams, FakeHttpd.Route... routes) throws IOException, JSONException, URISyntaxException {

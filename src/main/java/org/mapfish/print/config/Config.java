@@ -208,7 +208,7 @@ public class Config implements Closeable {
         json.endArray();
     }
 
-    public void setScales(TreeSet<Double> scales) {
+    public void setScales(TreeSet<Number> scales) {
         // it is common for the config.yaml file to have integers only in the file
         this.scales = new TreeSet<Double>();
         for (Number scale : scales) {

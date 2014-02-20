@@ -31,7 +31,7 @@ public class MapBlockTest {
     double minx, maxx, miny, maxy;
     TreeSet<Integer> dpis = new TreeSet<Integer>();
 
-    TreeSet<Double> scales;
+    TreeSet<Number> scales;
     private Config config;
     private double centerY;
     private double centerX;
@@ -52,7 +52,7 @@ public class MapBlockTest {
         double scale = Math.max(
                 projWidth / (DistanceUnit.PT.convertTo(width, DistanceUnit.DEGREES)),
                 projHeight / (DistanceUnit.PT.convertTo(height, DistanceUnit.DEGREES)));
-        scales = new TreeSet<Double>();
+        scales = new TreeSet<Number>();
         scales.add(scale);
 
 

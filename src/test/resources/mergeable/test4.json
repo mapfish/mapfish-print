@@ -1,0 +1,32 @@
+{      
+   "layers":[
+      {
+         "baseURL":"@@baseURL@@",
+         "opacity":1,
+         "type":"WMS",
+         "layers":[
+            "layerName"
+         ],
+         "format":"image/gif",
+         "styles":[
+            "wmsstyle"
+         ],
+         "singleTile":false,
+         "customParams":{"TRANSPARENT":"true","EXCEPTIONS":"INIMAGE", "CQL_FILTER":"ATTRIBUTE1=1"}
+      },
+      {
+         "baseURL":"@@baseURL@@",
+         "opacity":1,
+         "type":"WMS",
+         "layers":[
+            "layerName"
+         ],
+         "format":"image/gif",
+         "styles":[
+            "wmsstyle"
+         ],
+         "singleTile":false,
+         "customParams":{"TRANSPARENT":"false","EXCEPTIONS":"INIMAGE", "CQL_FILTER":"ATTRIBUTE1=1"}
+      }
+   ]
+}

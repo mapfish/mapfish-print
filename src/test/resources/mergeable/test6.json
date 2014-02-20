@@ -1,0 +1,32 @@
+{      
+   "layers":[
+      {
+         "baseURL":"sampleContext",
+         "opacity":1,
+         "type":"WMS",
+         "layers":[
+            "layerName"
+         ],
+         "format":"image/gif",
+         "styles":[
+            "wmsstyle"
+         ],
+         "singleTile":false,
+         "customParams":{"TRANSPARENT":"true","EXCEPTIONS":"INIMAGE", "OTHER_PARAM":"ATTRIBUTE1=1"}
+      },
+      {
+         "baseURL":"otherContext",
+         "opacity":1,
+         "type":"WMS",
+         "layers":[
+            "layerName"
+         ],
+         "format":"image/gif",
+         "styles":[
+            "wmsstyle"
+         ],
+         "singleTile":false,
+         "customParams":{"TRANSPARENT":"true","EXCEPTIONS":"INIMAGE", "OTHER_PARAM":"ATTRIBUTE1=1"}
+      }
+   ]
+}
