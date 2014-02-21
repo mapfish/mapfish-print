@@ -7,7 +7,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.output.OutputFormat;
 
-import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.Map;
 

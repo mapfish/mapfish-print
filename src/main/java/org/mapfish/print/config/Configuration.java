@@ -36,7 +36,8 @@ public class Configuration {
         }
     }
     public void printClientConfig(JSONWriter json) {
-
+        // TODO implement
+        throw new UnsupportedOperationException();
     }
 
     public boolean isReloadConfig() {
@@ -62,4 +63,10 @@ public class Configuration {
     public void setHeaders(TreeSet<String> headers) {
         this.headers = headers;
     }
+
+    public String getOutputFilename(String layoutName) {
+        // TODO implement
+        throw new UnsupportedOperationException();
+    }
+
 }

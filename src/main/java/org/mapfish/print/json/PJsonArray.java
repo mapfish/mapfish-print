@@ -21,7 +21,6 @@ package org.mapfish.print.json;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.mapfish.print.JsonMissingException;
 
 /**
  * Wrapper around the {@link org.json.JSONArray} class to have a better
