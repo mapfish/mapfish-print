@@ -1,0 +1,74 @@
+<html>
+  <head>
+      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+      <script type="text/javascript">
+          function post() {
+          var data = $('#spec').serialize(true);
+          $.ajax({
+              type: 'POST',
+              url: 'pdf/create.json',
+              data: data,
+              success: function (data) {
+                var result = jQuery.parseJSON(data)
+                location.href = result.getURL;
+              },
+              dataType: 'application/json'
+            });
+
+          }
+      </script>
+  </head>
+  <body>
+    <h1>Test page</h1>
+
+    <form id="spec" action="pdf/print.pdf">
+      <textarea name="spec" cols="80" rows="30">
+          {
+             layout: 'A4 portrait',
+             title: 'A simple example',
+             srs: 'EPSG:4326',
+             units: 'dd',
+             outputFilename: 'mapfish-print',
+             outputFormat: 'pdf',
+             layers: [
+                 {
+                     type: 'WMS',
+                     format: 'image/png',
+                     layers: ['basic'],
+                     baseURL: 'http://labs.metacarta.com/wms/vmap0'
+                 }
+             ],
+             pages: [
+                 {
+                     center: [6, 45.5],
+                     scale: 4000000,
+                     dpi: 190,
+                     mapTitle: "First map",
+                     comment: "The \"routes\" layer is not shown (the scale is too small)",
+                     data: [
+                         {id:1, name: 'blah', icon: 'icon_pan'},
+                         {id:2, name: 'blip', icon: 'icon_zoomin'}
+                     ]
+                 },
+                 {
+                     center: [6.9, 46.2],
+                     scale: 500000,
+                     dpi: 190,
+                     mapTitle: "Second map",
+                     comment: "This is a zoomed in version of the first map. Since the scale is more appropriate, we show the \"routes\" layer.",
+                     data: [
+                         {id:1, name: 'blah', icon: 'icon_pan'},
+                         {id:2, name: 'blip', icon: 'icon_zoomin'}
+                     ]
+                 }
+             ]
+          }
+      </textarea><br>
+        <button name="Print">Get Print</button>
+        <button name="Post Print" type="button" onclick="javascript:post()">Post Print</button>
+    </form>
+    <p>
+      To get informations: <a href="pdf/info.json">printInfo</a>
+    </p>
+  </body>
+</html>
