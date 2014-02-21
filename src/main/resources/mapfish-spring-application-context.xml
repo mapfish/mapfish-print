@@ -7,4 +7,7 @@
 	<context:annotation-config></context:annotation-config>
 	<bean id="mapPrinter" class="org.mapfish.print.MapPrinter" scope="prototype"></bean>
 
+    <bean id="registry" class="org.mapfish.print.servlet.registry.BasicRegistry"></bean>
+    <bean id="queue" class="org.mapfish.print.servlet.queue.BasicQueue"></bean>
+
 </beans>

@@ -46,9 +46,7 @@ import org.json.JSONWriter;
 import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.json.PJsonObject;
-import org.mapfish.print.servlet.queue.BasicQueue;
 import org.mapfish.print.servlet.queue.Queue;
-import org.mapfish.print.servlet.registry.BasicRegistry;
 import org.mapfish.print.servlet.registry.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,11 +85,14 @@ public class MapPrinterServlet extends BaseMapServlet {
     private static final String JSON_HEADERS = "headers";
     private static final String JSON_FILENAME = "filename";
 
-    private static final Queue queue = new BasicQueue();
-    private static final Registry registry = new BasicRegistry();
-
+    private static Queue queue;
+    private static Registry registry;
 
     public MapPrinterServlet() {
+        MapPrinter mapPrinter = getApplicationContext().getBean(MapPrinter.class);;
+        queue = mapPrinter.getQueue();
+        registry = mapPrinter.getRegistry();
+
         PrintThread thread = new PrintThread();
         thread.start();
     }

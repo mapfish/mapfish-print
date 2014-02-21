@@ -1,14 +1,16 @@
 package org.mapfish.print;
 
+import java.io.OutputStream;
+import java.util.Map;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.output.OutputFormat;
-
-import java.io.OutputStream;
-import java.util.Map;
+import org.mapfish.print.servlet.queue.Queue;
+import org.mapfish.print.servlet.registry.Registry;
 
 /**
  * The main class for printing maps. Will parse the spec, create the PDF
@@ -20,6 +22,24 @@ import java.util.Map;
 public class MapPrinter {
 
     private Configuration configuration;
+    private Queue queue;
+    private Registry registry;
+
+    public Queue getQueue() {
+        return queue;
+    }
+
+    public void setQueue(Queue queue) {
+        this.queue = queue;
+    }
+
+    public Registry getRegistry() {
+        return registry;
+    }
+
+    public void setRegistry(Registry registry) {
+        this.registry = registry;
+    }
 
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
