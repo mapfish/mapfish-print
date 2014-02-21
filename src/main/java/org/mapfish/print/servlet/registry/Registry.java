@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Camptocamp
+ * Copyright (C) 2014  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -17,27 +17,31 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print;
+package org.mapfish.print.servlet.registry;
 
-/**
- * Strings used in configurations etc...
- * User: jeichar
- * Date: Sep 30, 2010
- * Time: 4:27:46 PM
- */
-public interface Constants {
-    /**
-     * The layout tag in the json spec file.
-     */
-    String JSON_LAYOUT_KEY = "layout";
+import org.json.JSONObject;
 
-    /**
-     * The output filename in the json spec file.
-     */
-    String OUTPUT_FILENAME_KEY = "outputFilename";
-    public interface ImagePlaceHolderConstants {
-        String THROW = "throw";
-        String DEFAULT = "default";
-        String DEFAULT_ERROR_IMAGE = "default_error.png";
-    }
+public interface Registry {
+
+    boolean containsKey(String key);
+
+    void setString(String key, String value);
+
+    String getString(String key);
+
+    void setInteger(String key, Integer value);
+
+    Integer getInteger(String key);
+
+    void setLong(String key, Long value);
+
+    Long getLong(String key);
+
+    void setJSON(String key, JSONObject value);
+
+    JSONObject getJSON(String key);
+
+    void setBytes(String key, byte[] value);
+
+    byte[] getBytes(String key);
 }

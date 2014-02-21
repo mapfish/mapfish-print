@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Camptocamp
+ * Copyright (C) 2014  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -17,27 +17,27 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print;
+package org.mapfish.print.servlet.queue;
 
-/**
- * Strings used in configurations etc...
- * User: jeichar
- * Date: Sep 30, 2010
- * Time: 4:27:46 PM
- */
-public interface Constants {
-    /**
-     * The layout tag in the json spec file.
-     */
-    String JSON_LAYOUT_KEY = "layout";
+import java.util.LinkedList;
 
-    /**
-     * The output filename in the json spec file.
-     */
-    String OUTPUT_FILENAME_KEY = "outputFilename";
-    public interface ImagePlaceHolderConstants {
-        String THROW = "throw";
-        String DEFAULT = "default";
-        String DEFAULT_ERROR_IMAGE = "default_error.png";
+import org.json.JSONObject;
+
+public class BasicQueue implements Queue {
+    private final LinkedList<JSONObject> fifo = new LinkedList<JSONObject>();
+
+    @Override
+    public void push(JSONObject job) {
+        fifo.push(job);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return fifo.isEmpty();
+    }
+
+    @Override
+    public JSONObject get() {
+        return fifo.remove();
     }
 }
