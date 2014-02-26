@@ -27,14 +27,14 @@ hosts:
     host: www.geocat.ch
     port: 80
 
-#security:
-#  - !basicAuth
-#    matcher: !dnsMatch
-#      host: c2cpc61.camptocamp.com
-#      port: 80
-#    username: xyz
-#    password: yxz
-#    preemptive: true
+security:
+  - !basicAuth
+    matcher: !dnsMatch
+      host: c2cpc61.camptocamp.com
+      port: 80
+    username: xyz
+    password: yxz
+    preemptive: true
 
 #dynamicReport:
 #    tableWidth: 555

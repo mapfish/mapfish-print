@@ -1,6 +1,7 @@
 package org.mapfish.print.config;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -16,6 +17,7 @@ public class Configuration {
     private String proxyBaseUrl;
     private TreeSet<String> headers;
     private List<HostMatcher> hosts = new ArrayList<HostMatcher>();
+    private List<SecurityStrategy> security = Collections.emptyList();
 
     public void printClientConfig(JSONWriter json) {
         // TODO implement
@@ -57,5 +59,13 @@ public class Configuration {
 
     public void setHosts(List<HostMatcher> hosts) {
         this.hosts = hosts;
+    }
+
+    public List<SecurityStrategy> getSecurity() {
+        return security;
+    }
+
+    public void setSecurity(List<SecurityStrategy> security) {
+        this.security = security;
     }
 }
