@@ -1,0 +1,83 @@
+#maxDpi: 254
+
+#===========================================================================
+# allowed Formats
+#===========================================================================
+#formats: ['*']
+
+#outputFilename: 'mapfish-print-${date}.pdf'
+
+#===========================================================================
+# the list of allowed hosts
+#===========================================================================
+hosts:
+  - !localMatch {}
+  - !ipMatch
+    ip: www.camptocamp.org
+  - !dnsMatch
+    host: labs.metacarta.com
+    port: 80
+  - !dnsMatch
+    host: terraservice.net
+    port: 80
+  - !dnsMatch
+    host: tile.openstreetmap.org
+    port: 80
+  - !dnsMatch
+    host: www.geocat.ch
+    port: 80
+
+#security:
+#  - !basicAuth
+#    matcher: !dnsMatch
+#      host: c2cpc61.camptocamp.com
+#      port: 80
+#    username: xyz
+#    password: yxz
+#    preemptive: true
+
+#dynamicReport:
+#    tableWidth: 555
+#    font: DejaVu Sans
+#    fontSize: 12
+#    titleFontSize: 14
+#    titleFont: DejaVu Sans
+#    
+#templates:
+#  A4 portrait:
+#    jasperTemplate: report.jrxml
+#    mapsLayout:
+#        main: A4 portrait
+
+#layouts:
+#  #===========================================================================
+#  A4 portrait:
+#  #===========================================================================
+#    width: 555
+#    height: 230
+#    items:
+#      - !map
+#        top: 20
+#        left: 20
+#        bottom: 20
+#        right: 20
+#      - !text
+#        top: 50
+#        left: 0
+#        text: '${comment}'
+#      - !text
+#        top: 10
+#        left: 100
+#        font: Helvetica
+#        fontSize: 9
+#        text: '1:${scale} ${now MM.dd.yyyy}'
+#        what:
+#          text: 123
+#          hi: abc
+#      - !scalebar
+#        bottom: 10
+#        left: 10
+#        type: bar
+#        maxSize: 100
+#        fontSize: 8
+#        align: left

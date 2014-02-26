@@ -1,14 +1,10 @@
 package org.mapfish.print.config;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeSet;
 
 import org.json.JSONWriter;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 /**
  * The Main Configuration Bean.
@@ -19,24 +15,8 @@ public class Configuration {
     private boolean reloadConfig;
     private String proxyBaseUrl;
     private TreeSet<String> headers;
+    private List<HostMatcher> hosts = new ArrayList<HostMatcher>();
 
-    public static Configuration loadFile(String configFile) throws IOException {
-        return loadFile(new File(configFile));
-    }
-
-    public static Configuration loadFile(File configFile) throws IOException {
-        Yaml yaml = new Yaml(new Constructor(Configuration.class));
-
-        FileInputStream in = null;
-        try {
-            in  = new FileInputStream(configFile);
-            return (Configuration) yaml.load(new InputStreamReader(in, "UTF-8"));
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-        }
-    }
     public void printClientConfig(JSONWriter json) {
         // TODO implement
         throw new UnsupportedOperationException();
@@ -71,4 +51,11 @@ public class Configuration {
         throw new UnsupportedOperationException();
     }
 
+    public List<HostMatcher> getHosts() {
+        return hosts;
+    }
+
+    public void setHosts(List<HostMatcher> hosts) {
+        this.hosts = hosts;
+    }
 }

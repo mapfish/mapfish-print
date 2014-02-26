@@ -41,7 +41,8 @@ dependencies {
             'org.json:json:20080701',
             'ch.qos.logback:logback-classic:1.1.1',
             'org.yaml:snakeyaml:1.13',
-            "com.github.spullara.cli-parser:cli-parser:1.1.1")
+            "com.github.spullara.cli-parser:cli-parser:1.1.1",
+        	'commons-httpclient:commons-httpclient:3.1')
     compile ('org.apache.xmlgraphics:batik-transcoder:1.7'){
         exclude module: 'fop'
     }

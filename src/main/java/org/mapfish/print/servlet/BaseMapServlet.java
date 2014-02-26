@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.cli.Main;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.ConfigurationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -166,11 +167,9 @@ public abstract class BaseMapServlet extends HttpServlet {
 
         if (printer == null) {
             lastModified = configFile.lastModified();
-            // debugPath +=
-            // "printer == null, lastModified from configFile = "+lastModified+"\n";
             try {
                 LOGGER.info("Loading configuration file: " + configFile.getAbsolutePath());
-                final Configuration configuration = Configuration.loadFile(configFile);
+                final Configuration configuration = context.getBean(ConfigurationFactory.class).getConfig(configFile);
                 printer = getApplicationContext().getBean(MapPrinter.class);
                 printer.setConfiguration(configuration);
 
