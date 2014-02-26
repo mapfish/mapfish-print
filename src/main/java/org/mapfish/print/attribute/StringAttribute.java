@@ -19,17 +19,17 @@
 
 package org.mapfish.print.attribute;
 
-import org.json.JSONException;
-import org.json.JSONWriter;
 import org.mapfish.print.json.PJsonObject;
 
-/**
- * Represents an attribute passed in from a web-client to be used to populate the report.
- *
- * Created by Jesse on 2/21/14.
- */
-public interface Attribute {
-    Object getValue(PJsonObject values, String name);
+public class StringAttribute extends AbstractAttribute {
 
-    public void printClientConfig(JSONWriter json) throws JSONException;
+    @Override
+    public Object getValue(PJsonObject values, String name) {
+        return values.getString(name);
+    }
+
+    @Override
+    protected String getType() {
+        return "string";
+    }
 }

@@ -17,19 +17,35 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.attribute;
+package org.mapfish.print.config;
+
+import java.util.Map;
 
 import org.json.JSONException;
 import org.json.JSONWriter;
-import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.attribute.Attribute;
 
-/**
- * Represents an attribute passed in from a web-client to be used to populate the report.
- *
- * Created by Jesse on 2/21/14.
- */
-public interface Attribute {
-    Object getValue(PJsonObject values, String name);
 
-    public void printClientConfig(JSONWriter json) throws JSONException;
+public class Template {
+    private Map<String, Attribute> attributes;
+    
+    public void printClientConfig(JSONWriter json) throws JSONException {
+        json.key("attributes");
+        json.array();
+        for (String name : attributes.keySet()) {
+            json.object();
+            json.key("name").value(name);
+            attributes.get(name).printClientConfig(json);
+            json.endObject();
+        }
+        json.endArray();    
+    }
+
+    public Map<String, Attribute> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(Map<String, Attribute> attributes) {
+        this.attributes = attributes;
+    }
 }

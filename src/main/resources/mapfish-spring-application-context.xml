@@ -17,6 +17,14 @@
                 <entry key="!dnsMatch" value="org.mapfish.print.config.DnsHostMatcher"/>
                 <entry key="!acceptAll" value="org.mapfish.print.config.AcceptAllMatcher"/>
                 <entry key="!basicAuth" value="org.mapfish.print.config.BasicAuthSecurity"/>
+
+                <entry key="!template" value="org.mapfish.print.config.Template"/>
+
+                <entry key="!integer" value="org.mapfish.print.attribute.IntegerAttribute"/>
+                <entry key="!float" value="org.mapfish.print.attribute.FloatAttribute"/>
+                <entry key="!string" value="org.mapfish.print.attribute.StringAttribute"/>
+                <entry key="!map" value="org.mapfish.print.attribute.MapAttribute"/>
+                <entry key="!legend" value="org.mapfish.print.attribute.LegendAttribute"/>
             </map>
         </property>
     </bean>
