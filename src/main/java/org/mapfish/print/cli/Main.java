@@ -23,8 +23,10 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
+
 import com.google.common.io.CharStreams;
 import com.sampullara.cli.Args;
+
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.MapPrinter;
@@ -50,7 +52,8 @@ import static org.mapfish.print.cli.CliDefinition.*;
  * from other languages than Java.
  */
 public class Main {
-    public static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    @SuppressWarnings("unused")
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     public static final String DEFAULT_SPRING_CONTEXT = "mapfish-spring-application-context.xml";
 
