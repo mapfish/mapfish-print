@@ -50,5 +50,5 @@ Run in Eclipse
 --------------
 
 - Create new Java Run Configuration
-- Main class is org.mapfish.print.ShellMapPrinter
+- Main class is org.mapfish.print.cli.Main
 - Program arguments: --config=samples/config.yaml --spec=samples/spec.json --output=$HOME/print.pdf
