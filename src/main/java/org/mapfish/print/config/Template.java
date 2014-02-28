@@ -19,15 +19,25 @@
 
 package org.mapfish.print.config;
 
+import java.util.List;
 import java.util.Map;
 
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.attribute.Attribute;
+import org.mapfish.print.processor.Processor;
 
 
 public class Template {
+    private String jasperTemplate;
     private Map<String, Attribute> attributes;
+    private List<Processor> processors;
+    private String iterValue;
+    private List<Processor> iterProcessors;
+    
+    private String jdbcUrl;
+    private String jdbcUser;
+    private String jdbcPassword;
     
     public void printClientConfig(JSONWriter json) throws JSONException {
         json.key("attributes");
@@ -47,5 +57,61 @@ public class Template {
 
     public void setAttributes(Map<String, Attribute> attributes) {
         this.attributes = attributes;
+    }
+
+    public String getJasperTemplate() {
+        return jasperTemplate;
+    }
+
+    public void setJasperTemplate(String jasperTemplate) {
+        this.jasperTemplate = jasperTemplate;
+    }
+
+    public List<Processor> getProcessors() {
+        return processors;
+    }
+
+    public void setProcessors(List<Processor> processors) {
+        this.processors = processors;
+    }
+
+    public String getIterValue() {
+        return iterValue;
+    }
+
+    public void setIterValue(String iterValue) {
+        this.iterValue = iterValue;
+    }
+
+    public List<Processor> getIterProcessors() {
+        return iterProcessors;
+    }
+
+    public void setIterProcessors(List<Processor> iterProcessors) {
+        this.iterProcessors = iterProcessors;
+    }
+
+    public String getJdbcUrl() {
+        return jdbcUrl;
+    }
+
+    public void setJdbcUrl(String jdbcUrl) {
+        this.jdbcUrl = jdbcUrl;
+    }
+
+    public String getJdbcUser() {
+        return jdbcUser;
+    }
+
+    public void setJdbcUser(String jdbcUser) {
+        this.jdbcUser = jdbcUser;
+    }
+
+    public String getJdbcPassword() {
+        return jdbcPassword;
+    }
+
+    public void setJdbcPassword(String jdbcPassword) {
+        this.jdbcPassword = jdbcPassword;
     }
 }

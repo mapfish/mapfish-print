@@ -83,6 +83,10 @@ public class Configuration {
         return templates;
     }
 
+    public Template getTemplate(String name) {
+        return templates.get(name);
+    }
+
     public void setTemplates(Map<String, Template> templates) {
         this.templates = templates;
     }
