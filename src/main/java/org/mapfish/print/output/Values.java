@@ -6,7 +6,15 @@ import java.util.Map;
 import org.mapfish.print.attribute.Attribute;
 
 public class Values {
-    private Map<String, Object> values = new HashMap<String, Object>();
+    private final Map<String, Object> values;
+    
+    protected Values() {
+        values = new HashMap<String, Object>();
+    }
+    
+    public Values(Map<String, Object> values) {
+        this.values = values;
+    }
     
     protected void put(String key, Object value) {
         values.put(key, value);

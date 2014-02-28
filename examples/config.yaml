@@ -45,7 +45,16 @@ templates:
         clientOptions:
           multilines: true
       length: !float {}
+      tableList: !tableList {}
       map: !map
         maxDpi: 300
         width: 400
         height: 200
+    processors:
+        - !prepareTableList
+          dynamicReport:
+            tableWidth: 555
+            font: DejaVu Sans
+            fontSize: 12
+            titleFontSize: 14
+            titleFont: DejaVu Sans 

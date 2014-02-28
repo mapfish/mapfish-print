@@ -26,6 +26,13 @@
                 <entry key="!string" value="org.mapfish.print.attribute.StringAttribute"/>
                 <entry key="!map" value="org.mapfish.print.attribute.MapAttribute"/>
                 <entry key="!legend" value="org.mapfish.print.attribute.LegendAttribute"/>
+                <entry key="!table" value="org.mapfish.print.attribute.TableAttribute"/>
+                <entry key="!tableList" value="org.mapfish.print.attribute.TableListAttribute"/>
+
+                <entry key="!reportBuilder" value="org.mapfish.print.processor.JasperReportBuilder"/>
+                <entry key="!prepareLegend" value="org.mapfish.print.processor.LegendProcessor"/>
+                <entry key="!prepareTable" value="org.mapfish.print.processor.TableProcessor"/>
+                <entry key="!prepareTableList" value="org.mapfish.print.processor.TableListProcessor"/>
             </map>
         </property>
     </bean>
