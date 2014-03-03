@@ -17,7 +17,7 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.processor;
+package org.mapfish.print.processor.jasper;
 
 import java.awt.Image;
 import java.io.IOException;
@@ -31,12 +31,12 @@ import javax.imageio.ImageIO;
 
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 
-import org.mapfish.print.jasper.TableDataSource;
 import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.output.Values;
+import org.mapfish.print.processor.AbstractProcessor;
 
-public class LegendProcessor extends AbstractProsessor {
+public class LegendProcessor extends AbstractProcessor {
     private String legendRef; 
 
     @Override

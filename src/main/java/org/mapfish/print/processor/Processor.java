@@ -28,6 +28,17 @@ import org.mapfish.print.output.Values;
  * Created by Jesse on 2/21/14.
  */
 public interface Processor {
+    /**
+     *
+     *
+     * @param values Actual values from attributes and the previous processor.
+     * @return An id of the value for lookup in the output mapper?
+     * @throws Exception
+     */
     Map<String, Object> doProcess(Values values) throws Exception;
+
+    /**
+     * Map output from processor to the variable in the Jasper Report.
+     */
     Map<String, String> getOutputMapper();
 }

@@ -93,12 +93,12 @@ public class JasperReportOutputFormat implements OutputFormat {
                 for (Processor process : template.getIterProcessors()) {
                     runProcess(process, iterValues);
                 }
-                dataSource.add(values.getParamters());
+                dataSource.add(values.getParameters());
             }
             final JRDataSource jrDataSource = new JRMapCollectionDataSource(dataSource);
             final JasperPrint print = JasperFillManager.fillReport(
                     jasperTemplateBuild.getAbsolutePath(),
-                    values.getParamters(),
+                    values.getParameters(),
                     jrDataSource);
             JasperExportManager.exportReportToPdfStream(print, outputStream);
         }
@@ -107,7 +107,7 @@ public class JasperReportOutputFormat implements OutputFormat {
                     template.getJdbcUrl(), template.getJdbcUser(), template.getJdbcPassword());
             final JasperPrint print = JasperFillManager.fillReport(
                     jasperTemplateBuild.getAbsolutePath(),
-                    values.getParamters(),
+                    values.getParameters(),
                     connection);
             JasperExportManager.exportReportToPdfStream(print, outputStream);
         }
@@ -115,14 +115,14 @@ public class JasperReportOutputFormat implements OutputFormat {
             Connection connection = DriverManager.getConnection(template.getJdbcUrl());
             final JasperPrint print = JasperFillManager.fillReport(
                     jasperTemplateBuild.getAbsolutePath(),
-                    values.getParamters(),
+                    values.getParameters(),
                     connection);
             JasperExportManager.exportReportToPdfStream(print, outputStream);
         }
         else {
             final JasperPrint print = JasperFillManager.fillReport(
                     jasperTemplateBuild.getAbsolutePath(),
-                    values.getParamters(),
+                    values.getParameters(),
                     new JREmptyDataSource());
             JasperExportManager.exportReportToPdfStream(print, outputStream);
         }

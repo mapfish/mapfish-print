@@ -9,7 +9,7 @@ import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.output.Values;
 
-public class TableProcessor extends AbstractProsessor {
+public class TableProcessor extends AbstractProcessor {
     private String tableRef; 
 
     @Override

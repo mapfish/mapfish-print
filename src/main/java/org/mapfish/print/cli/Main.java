@@ -81,7 +81,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException, InterruptedException, JSONException {
         try {
-            List<String> unusedArguments = Args.parse(Main.class, args);
+            List<String> unusedArguments = Args.parse(CliDefinition.class, args);
 
             if (!unusedArguments.isEmpty()) {
                 System.out.println("The following arguments are not recognized: " + unusedArguments);
@@ -89,6 +89,7 @@ public class Main {
                 return;
             }
         } catch (IllegalArgumentException invalidOption) {
+            System.out.println(invalidOption.getMessage());
             printUsage();
             return;
         }

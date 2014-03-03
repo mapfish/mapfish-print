@@ -20,6 +20,7 @@
 package org.mapfish.print;
 
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Map;
 
 import org.json.JSONException;
@@ -30,6 +31,7 @@ import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.servlet.queue.Queue;
 import org.mapfish.print.servlet.registry.Registry;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * The main class for printing maps. Will parse the spec, create the PDF
@@ -41,8 +43,12 @@ import org.mapfish.print.servlet.registry.Registry;
 public class MapPrinter {
 
     private Configuration configuration;
+    @Autowired
     private Queue queue;
+    @Autowired
     private Registry registry;
+    @Autowired
+    private List<OutputFormat> outputFormat;
 
     public Queue getQueue() {
         return queue;
@@ -92,7 +98,6 @@ public class MapPrinter {
     }
 
     public OutputFormat getOutputFormat(PJsonObject specJson) {
-        // TODO implement
         throw new UnsupportedOperationException();
     }
 

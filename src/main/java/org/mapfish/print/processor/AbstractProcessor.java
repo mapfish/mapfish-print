@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 import org.mapfish.print.output.Values;
 
-public abstract class AbstractProsessor implements Processor {
+public abstract class AbstractProcessor implements Processor {
     private Map<String, String> outputMapper;
 
 //    private static final Pattern FULL_VARIABLE_REGEXP = Pattern.compile("^\\$\\{([^}]+)\\}$");
@@ -43,14 +43,14 @@ public abstract class AbstractProsessor implements Processor {
     }
 */
     String getString(String config, Values values) {
-        String acctualValue = config;
+        String actualValue = config;
         StringBuffer result = new StringBuffer();
         while (true) {
-            Matcher matcher = VARIABLE_REGEXP.matcher(acctualValue);
+            Matcher matcher = VARIABLE_REGEXP.matcher(actualValue);
             if (matcher.find()) {
-                result.append(acctualValue.substring(0, matcher.start()));
+                result.append(actualValue.substring(0, matcher.start()));
                 result.append(values.getString(matcher.group(1)));
-                acctualValue = acctualValue.substring(matcher.end());
+                actualValue = actualValue.substring(matcher.end());
             } else {
                 break;
             }

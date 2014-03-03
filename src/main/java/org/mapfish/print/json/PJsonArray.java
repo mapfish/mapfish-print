@@ -24,7 +24,7 @@ import org.json.JSONObject;
 
 /**
  * Wrapper around the {@link org.json.JSONArray} class to have a better
- * error managment.
+ * error management.
  */
 public class PJsonArray extends PJsonElement {
     private final JSONArray array;

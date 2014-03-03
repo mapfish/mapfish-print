@@ -27,7 +27,7 @@ import java.util.Iterator;
 
 /**
  * Wrapper around the {@link org.json.JSONObject} class to have a better
- * error managment.
+ * error management.
  */
 public class PJsonObject extends PJsonElement {
     private final JSONObject obj;

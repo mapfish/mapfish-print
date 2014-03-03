@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.mapfish.print.attribute.Attribute;
 
+
 public class Values {
     private final Map<String, Object> values;
     
@@ -20,7 +21,7 @@ public class Values {
         values.put(key, value);
     }
     
-    protected Map<String, Object>  getParamters() {
+    protected Map<String, Object> getParameters() {
         return values;
     }
     

@@ -20,7 +20,7 @@ public class MapAttribute extends AbstractAttribute {
         return "map";
     }
 
-    protected void additionaPrintClientConfig(JSONWriter json) throws JSONException {
+    protected void additionalPrintClientConfig(JSONWriter json) throws JSONException {
         json.key("maxDpi").value(maxDpi);
         json.key("width").value(width);
         json.key("height").value(height);

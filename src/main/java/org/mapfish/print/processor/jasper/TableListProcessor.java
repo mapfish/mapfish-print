@@ -1,4 +1,4 @@
-package org.mapfish.print.processor;
+package org.mapfish.print.processor.jasper;
 
 import java.awt.Color;
 import java.io.File;
@@ -13,6 +13,8 @@ import net.sf.jasperreports.engine.JasperCompileManager;
 import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.output.Values;
+import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.jasper.JasperReportBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +29,7 @@ import ar.com.fdvs.dj.domain.constants.Font;
 import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
 import ar.com.fdvs.dj.domain.constants.VerticalAlign;
 
-public class TableListProcessor extends AbstractProsessor {
+public class TableListProcessor extends AbstractProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
 
     private String tableListRef;

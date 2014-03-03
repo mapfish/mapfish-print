@@ -56,7 +56,7 @@ public abstract class BaseMapServlet extends HttpServlet {
     private Map<String, MapPrinter> printers = null;
     private long lastModified = 0L;
     private long defaultLastModified = 0L;
-    private Map<String,Long> lastModifieds = null;
+    private Map<String,Long> lastModifiedTimes = null;
 
     private volatile ApplicationContext context;
 
@@ -85,8 +85,8 @@ public abstract class BaseMapServlet extends HttpServlet {
         MapPrinter printer = null;
         File configFile = null;
         if (app != null) {
-            if (lastModifieds == null) {
-                lastModifieds = new HashMap<String, Long>();
+            if (lastModifiedTimes == null) {
+                lastModifiedTimes = new HashMap<String, Long>();
                 // debugPath += "new HashMap\n";
             }
             if (printers instanceof HashMap && printers.containsKey(app)) {
@@ -119,8 +119,8 @@ public abstract class BaseMapServlet extends HttpServlet {
             }
         }
         if (app != null) {
-            if (lastModifieds instanceof HashMap && lastModifieds.containsKey(app)) {
-                lastModified = lastModifieds.get(app);
+            if (lastModifiedTimes instanceof HashMap && lastModifiedTimes.containsKey(app)) {
+                lastModified = lastModifiedTimes.get(app);
                 // debugPath +=
                 // "app = "+app+" lastModifieds has key and gotten: "+
                 // lastModified +"\n";
@@ -178,7 +178,7 @@ public abstract class BaseMapServlet extends HttpServlet {
                         printers = new HashMap<String, MapPrinter>();
                     }
                     printers.put(app, printer);
-                    lastModifieds.put(app, lastModified);
+                    lastModifiedTimes.put(app, lastModified);
                 } else {
                     defaultLastModified = lastModified; // need this for default
                                                         // application

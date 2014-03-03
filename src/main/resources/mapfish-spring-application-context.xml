@@ -7,7 +7,7 @@
 	<context:annotation-config></context:annotation-config>
 	<bean id="main" class="org.mapfish.print.cli.Main"></bean>
 
-	<bean id="jasperReportOuputFormat" class="org.mapfish.print.output.JasperReportOutputFormat"></bean>
+	<bean id="jasperReportOutputFormat" class="org.mapfish.print.output.JasperReportOutputFormat"></bean>
 	<bean id="mapPrinter" class="org.mapfish.print.MapPrinter" scope="prototype"></bean>
 
 	<bean id="configurationFactory" class="org.mapfish.print.config.ConfigurationFactory">
@@ -29,10 +29,10 @@
                 <entry key="!table" value="org.mapfish.print.attribute.TableAttribute"/>
                 <entry key="!tableList" value="org.mapfish.print.attribute.TableListAttribute"/>
 
-                <entry key="!reportBuilder" value="org.mapfish.print.processor.JasperReportBuilder"/>
-                <entry key="!prepareLegend" value="org.mapfish.print.processor.LegendProcessor"/>
+                <entry key="!reportBuilder" value="org.mapfish.print.processor.jasper.JasperReportBuilder"/>
+                <entry key="!prepareLegend" value="org.mapfish.print.processor.jasper.LegendProcessor"/>
                 <entry key="!prepareTable" value="org.mapfish.print.processor.TableProcessor"/>
-                <entry key="!prepareTableList" value="org.mapfish.print.processor.TableListProcessor"/>
+                <entry key="!prepareTableList" value="org.mapfish.print.processor.jasper.TableListProcessor"/>
             </map>
         </property>
     </bean>

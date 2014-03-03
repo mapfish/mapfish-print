@@ -375,8 +375,6 @@ public class MapPrinterServlet extends BaseMapServlet {
      * Do the actual work of creating the PDF temporary file.
      *
      * @throws InterruptedException
-     * @throws JRException
-     * @throws ColumnBuilderException
      */
     protected byte[] doCreatePDFFile(PJsonObject job, MapPrinter mapPrinter)
             throws IOException, ServletException, InterruptedException {

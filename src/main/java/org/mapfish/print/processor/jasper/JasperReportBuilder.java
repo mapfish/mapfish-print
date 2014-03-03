@@ -1,4 +1,4 @@
-package org.mapfish.print.processor;
+package org.mapfish.print.processor.jasper;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -8,6 +8,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 
 import org.mapfish.print.output.Values;
+import org.mapfish.print.processor.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

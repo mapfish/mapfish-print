@@ -33,13 +33,13 @@ public abstract class AbstractAttribute implements Attribute {
     
     public void printClientConfig(JSONWriter json) throws JSONException {
         json.key("name").value(getType());
-        additionaPrintClientConfig(json);
+        additionalPrintClientConfig(json);
         json.key("clientOptions");
         addMapToJSON(clientOptions, json);
         json.endObject();
     }
 
-    protected void additionaPrintClientConfig(JSONWriter json) throws JSONException {};
+    protected void additionalPrintClientConfig(JSONWriter json) throws JSONException {};
 
     @SuppressWarnings("unchecked")
     protected void addMapToJSON(LinkedHashMap<String, ?> map, JSONWriter json) throws JSONException {
