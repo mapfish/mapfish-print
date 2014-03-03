@@ -1,12 +1,13 @@
 package org.mapfish.print.config;
 
-import org.json.JSONWriter;
-import org.yaml.snakeyaml.LoaderOptions;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor ;
-
-import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
+
+import org.json.JSONException;
+import org.json.JSONWriter;
 
 /**
  * The Main Configuration Bean.
@@ -17,27 +18,20 @@ public class Configuration {
     private boolean reloadConfig;
     private String proxyBaseUrl;
     private TreeSet<String> headers;
+    private List<HostMatcher> hosts = new ArrayList<HostMatcher>();
+    private List<SecurityStrategy> security = Collections.emptyList();
+    private Map<String, Template> templates;
 
-    public static Configuration loadFile(String configFile) throws IOException {
-        return loadFile(new File(configFile));
-    }
-
-    public static Configuration loadFile(File configFile) throws IOException {
-        Yaml yaml = new Yaml(new Constructor(Configuration.class));
-
-        FileInputStream in = null;
-        try {
-            in  = new FileInputStream(configFile);
-            return (Configuration) yaml.load(new InputStreamReader(in, "UTF-8"));
-        } finally {
-            if (in != null) {
-                in.close();
-            }
+    public void printClientConfig(JSONWriter json) throws JSONException {
+        json.key("layouts");
+        json.array();
+        for (String name : templates.keySet()) {
+            json.object();
+            json.key("name").value(name);
+            templates.get(name).printClientConfig(json);
+            json.endObject();
         }
-    }
-    public void printClientConfig(JSONWriter json) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        json.endArray();
     }
 
     public boolean isReloadConfig() {
@@ -69,4 +63,31 @@ public class Configuration {
         throw new UnsupportedOperationException();
     }
 
+    public List<HostMatcher> getHosts() {
+        return hosts;
+    }
+
+    public void setHosts(List<HostMatcher> hosts) {
+        this.hosts = hosts;
+    }
+
+    public List<SecurityStrategy> getSecurity() {
+        return security;
+    }
+
+    public void setSecurity(List<SecurityStrategy> security) {
+        this.security = security;
+    }
+
+    public Map<String, Template> getTemplates() {
+        return templates;
+    }
+
+    public Template getTemplate(String name) {
+        return templates.get(name);
+    }
+
+    public void setTemplates(Map<String, Template> templates) {
+        this.templates = templates;
+    }
 }

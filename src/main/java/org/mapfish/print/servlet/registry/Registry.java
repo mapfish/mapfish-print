@@ -17,19 +17,31 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.attribute;
+package org.mapfish.print.servlet.registry;
 
-import org.json.JSONException;
-import org.json.JSONWriter;
-import org.mapfish.print.json.PJsonObject;
+import org.json.JSONObject;
 
-/**
- * Represents an attribute passed in from a web-client to be used to populate the report.
- *
- * Created by Jesse on 2/21/14.
- */
-public interface Attribute {
-    Object getValue(PJsonObject values, String name);
+public interface Registry {
 
-    public void printClientConfig(JSONWriter json) throws JSONException;
+    boolean containsKey(String key);
+
+    void setString(String key, String value);
+
+    String getString(String key);
+
+    void setInteger(String key, Integer value);
+
+    Integer getInteger(String key);
+
+    void setLong(String key, Long value);
+
+    Long getLong(String key);
+
+    void setJSON(String key, JSONObject value);
+
+    JSONObject getJSON(String key);
+
+    void setBytes(String key, byte[] value);
+
+    byte[] getBytes(String key);
 }

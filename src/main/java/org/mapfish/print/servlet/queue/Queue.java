@@ -17,19 +17,26 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.attribute;
+package org.mapfish.print.servlet.queue;
 
-import org.json.JSONException;
-import org.json.JSONWriter;
-import org.mapfish.print.json.PJsonObject;
+import org.json.JSONObject;
 
-/**
- * Represents an attribute passed in from a web-client to be used to populate the report.
- *
- * Created by Jesse on 2/21/14.
- */
-public interface Attribute {
-    Object getValue(PJsonObject values, String name);
+public interface Queue {
+    /**
+     * Push a job in the queue
+     * @param job
+     */
+    void push(JSONObject job);
 
-    public void printClientConfig(JSONWriter json) throws JSONException;
+    /**
+     * Is the queue empty
+     * @return
+     */
+    public boolean isEmpty();
+
+    /**
+     * Get a job from the queue
+     * @return a job
+     */
+    public JSONObject get();
 }

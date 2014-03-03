@@ -19,16 +19,35 @@
 
 package org.mapfish.print.cli;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
-import ch.qos.logback.core.util.StatusPrinter;
-import com.google.common.io.CharStreams;
-import com.sampullara.cli.Args;
+import static org.mapfish.print.cli.CliDefinition.clientConfig;
+import static org.mapfish.print.cli.CliDefinition.config;
+import static org.mapfish.print.cli.CliDefinition.cookie;
+import static org.mapfish.print.cli.CliDefinition.output;
+import static org.mapfish.print.cli.CliDefinition.referer;
+import static org.mapfish.print.cli.CliDefinition.spec;
+import static org.mapfish.print.cli.CliDefinition.springConfig;
+import static org.mapfish.print.cli.CliDefinition.verbose;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,21 +55,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractXmlApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import java.io.*;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
+import ch.qos.logback.core.util.StatusPrinter;
 
-import static org.mapfish.print.cli.CliDefinition.*;
+import com.google.common.io.CharStreams;
+import com.sampullara.cli.Args;
 
 /**
  * A shell version of the MapPrinter. Can be used for testing or for calling
  * from other languages than Java.
  */
 public class Main {
-    public static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    @SuppressWarnings("unused")
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+
+    static AbstractXmlApplicationContext context;
 
     public static final String DEFAULT_SPRING_CONTEXT = "mapfish-spring-application-context.xml";
 
@@ -72,13 +93,15 @@ public class Main {
             return;
         }
         configureLogs();
-        AbstractXmlApplicationContext context = new ClassPathXmlApplicationContext(DEFAULT_SPRING_CONTEXT);
+        context = new ClassPathXmlApplicationContext(DEFAULT_SPRING_CONTEXT);
 
         if (springConfig != null) {
             context = new ClassPathXmlApplicationContext(new String[]{DEFAULT_SPRING_CONTEXT, springConfig});
         }
 
         try {
+            config = "examples/config.yaml";
+            spec = "examples/spec.json";
             context.getBean(Main.class).run();
         } finally {
             context.destroy();
@@ -91,7 +114,7 @@ public class Main {
     }
 
     public void run() throws IOException, InterruptedException, JSONException {
-        Configuration configuration = Configuration.loadFile(config);
+        Configuration configuration = context.getBean(ConfigurationFactory.class).getConfig(new File(config));
         mapPrinter.setConfiguration(configuration);
         OutputStream outFile = null;
         try {
@@ -133,19 +156,19 @@ public class Main {
         URL logfile;
         switch (verbose) {
             case 0:
-                logfile = classLoader.getResource("shell-quiet-log4j.properties");
+                logfile = classLoader.getResource("shell-quiet-log.xml");
                 break;
             case 1:
-                logfile = classLoader.getResource("shell-info-log4j.properties");
+                logfile = classLoader.getResource("shell-info-log.xml");
                 break;
             case 2:
-                logfile = classLoader.getResource("shell-default-log4j.properties");
+                logfile = classLoader.getResource("shell-default-log.xml");
                 break;
             case 3:
-                logfile = classLoader.getResource("shell-verbose-log4j.properties");
+                logfile = classLoader.getResource("shell-verbose-log.xml");
                 break;
             default:
-                logfile = classLoader.getResource("shell-default-log4j.properties");
+                logfile = classLoader.getResource("shell-default-log.xml");
                 break;
         }
 
@@ -165,7 +188,6 @@ public class Main {
 
     }
 
-    @SuppressWarnings("resource")
     private OutputStream getOutputStream(String suffix) throws FileNotFoundException {
         final OutputStream outFile;
         if (output != null) {
@@ -180,7 +202,6 @@ public class Main {
         return outFile;
     }
 
-    @SuppressWarnings("resource")
     private InputStream getInputStream() throws FileNotFoundException {
         final InputStream file;
         if (spec != null) {

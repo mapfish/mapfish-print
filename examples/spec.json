@@ -1,0 +1,132 @@
+{
+    "layout": "A4 portrait",
+    "dpi": 254,
+    "units": "degrees",
+    "outputFormat": "pdf",
+    "srs": "EPSG:4326",
+    "attributes": {
+        "srs": "EPSG:4326",
+        "units": "degrees",
+        "center_esting": 6,
+        "center_northing": 45.5,
+        "scale": 4000000,
+        "title": "A simple example",
+        "comment": "This is the first page selected by the user.",
+        "rotation": 0
+    },
+    "maps": {
+        "main": {
+            "center": [6, 45.5],
+            "scale": 40000,
+            "rotation": 0,
+            "layers": [/*{
+                "type": "WMS",
+                "baseURL": "http://labs.metacarta.com/wms/vmap0",
+                "params": {
+                    "service": "WMS",
+                    "request": "GetMap",
+                    "version": "1.1.1",
+                    "layers": "basic",
+                    "format": "image/jpeg",
+                    "srs": "EPSG:4326",
+                    "styles": "",
+                    "transparent": "TRUE"
+                }
+            }, {
+                "type": "WMS",
+                "baseURL": "http://www.camptocamp.org/cgi-bin/mapserv_c2corg",
+                "params": {
+                    "service": "WMS",
+                    "request": "GetMap",
+                    "version": "1.1.1",
+                    "layers": "routes",
+                    "format": "image/jpeg",
+                    "srs": "EPSG:4326",
+                    "styles": "",
+                    "transparent": "TRUE"
+                }
+            }, */{
+                "opacity": 0.5,
+                "customParams": {},
+                "type": "Vector",
+                "styles": {
+                    "1": {
+                        "fillColor": "red",
+                        "strokeColor": "red",
+                        "fillOpacity": 0.4000000000000001,
+                        "hoverFillColor": "white",
+                        "hoverFillOpacity": 0.8000000000000002,
+                        "strokeOpacity": 1,
+                        "strokeWidth": 0.5,
+                        "strokeLinecap": "round",
+                        "strokeDashstyle": "solid",
+                        "hoverStrokeColor": "red",
+                        "hoverStrokeOpacity": 1.0,
+                        "hoverStrokeWidth": 0.2,
+                        "pointRadius": 6,
+                        "hoverPointRadius": 1,
+                        "hoverPointUnit": "%",
+                        "pointerEvents": "visiblePainted",
+                        "cursor": "inherit"
+                    }
+                },
+                "styleProperty": "_style",
+                "geoJson": {
+                    "type": "FeatureCollection",
+                    "features": [{
+                        "type": "Feature",
+                        "id": "OpenLayers.Feature.Vector_243",
+                        "properties": {
+                            "_style": 1,
+                            "name": "",
+                            "description": "",
+                            "ext-comp-1048": "default"
+                        },
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [[[5, 45], [5, 47], [7, 47], [7, 45], [5, 45]]]
+                        }
+                    }]
+                },
+                "name": "Cosmetic"
+            }]
+        }
+    },
+    "legends": {
+        "main": {
+            "name": "",
+            "classes": [/*{
+                "name": "Bâtiments RCB (n° EGID)",
+                "icon": "http://map.cartoriviera.ch/main/wsgi/mapserv_proxy?TRANSPARENT=TRUE&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=batiments_egid&FORMAT=image%2Fpng&SCALE=100000"
+            }, {
+                "name": "Limite de commune",
+                "icon": "http://map.cartoriviera.ch/main/wsgi/mapserv_proxy?TRANSPARENT=TRUE&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=limite_commune&FORMAT=image%2Fpng&SCALE=100000"
+            }, {
+                "name": "Bâtiments projetés ou non cadastrés",
+                "icon": "http://map.cartoriviera.ch/main/wsgi/mapserv_proxy?TRANSPARENT=TRUE&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=batiments_projetes&FORMAT=image%2Fpng&SCALE=100000"
+            }*/]
+        }
+    },
+    "namedTable": {
+        "table 1": {
+            "columns": ["id", "name", "icon"],
+            "data": [[1, "blah", "icon_pan"], [2, "blip", "icon_zoomin"]]
+        },
+        "table 2": {
+            "columns": ["id", "name", "icon"],
+            "data": [[10, "blah2", "icon_pan2"], [20, "blip2", "icon_zoomin2"]]
+        }
+    },
+    "tableList": {
+        "f1": {
+            "displayName": "Feature 1",
+            "columns": ["id", "name", "icon"],
+            "data": [[1, "blah", "icon_pan"], [2, "blip", "icon_zoomin"]]
+        },
+        "f2": {
+            "displayName": "Feature 2",
+            "columns": ["id", "name", "icon"],
+            "data": [[10, "blah2", "icon_pan2"], [20, "blip2", "icon_zoomin2"]]
+        }
+    }
+}

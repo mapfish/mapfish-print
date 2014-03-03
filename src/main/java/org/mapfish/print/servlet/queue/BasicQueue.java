@@ -17,19 +17,27 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.attribute;
+package org.mapfish.print.servlet.queue;
 
-import org.json.JSONException;
-import org.json.JSONWriter;
-import org.mapfish.print.json.PJsonObject;
+import java.util.LinkedList;
 
-/**
- * Represents an attribute passed in from a web-client to be used to populate the report.
- *
- * Created by Jesse on 2/21/14.
- */
-public interface Attribute {
-    Object getValue(PJsonObject values, String name);
+import org.json.JSONObject;
 
-    public void printClientConfig(JSONWriter json) throws JSONException;
+public class BasicQueue implements Queue {
+    private final LinkedList<JSONObject> fifo = new LinkedList<JSONObject>();
+
+    @Override
+    public void push(JSONObject job) {
+        fifo.push(job);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return fifo.isEmpty();
+    }
+
+    @Override
+    public JSONObject get() {
+        return fifo.remove();
+    }
 }

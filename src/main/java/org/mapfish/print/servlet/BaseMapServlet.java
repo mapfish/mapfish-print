@@ -19,9 +19,25 @@
 
 package org.mapfish.print.servlet;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.cli.Main;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.ConfigurationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -29,20 +45,13 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Base class for MapPrinter servlets (deals with the configuration loading)
  */
 public abstract class BaseMapServlet extends HttpServlet {
     private static final long serialVersionUID = -6342262849725708850L;
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(BaseMapServlet.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseMapServlet.class);
 
     private Map<String, MapPrinter> printers = null;
     private long lastModified = 0L;
@@ -56,65 +65,78 @@ public abstract class BaseMapServlet extends HttpServlet {
      * configuration. The location can be configured in two locations:
      * <ul>
      * <li>web-app/servlet/init-param[param-name=config] (top priority)
-     * <li>web-app/context-param[param-name=config] (used only if the servlet has no config)
+     * <li>web-app/context-param[param-name=config] (used only if the servlet
+     * has no config)
      * </ul>
      * <p/>
-     * If the location is a relative path, it's taken from the servlet's root directory.
+     * If the location is a relative path, it's taken from the servlet's root
+     * directory.
+     *
+     * @param servletContext
      */
     protected synchronized MapPrinter getMapPrinter(String app) throws ServletException {
         String configPath = getInitParameter("config");
         if (configPath == null) {
-            throw new ServletException("Missing configuration in web.xml 'web-app/servlet/init-param[param-name=config]' or 'web-app/context-param[param-name=config]'");
+            throw new ServletException(
+                    "Missing configuration in web.xml 'web-app/servlet/init-param[param-name=config]' or 'web-app/context-param[param-name=config]'");
         }
-        //String debugPath = "";
+        // String debugPath = "";
 
         MapPrinter printer = null;
         File configFile = null;
         if (app != null) {
             if (lastModifieds == null) {
                 lastModifieds = new HashMap<String, Long>();
-                //debugPath += "new HashMap\n";
+                // debugPath += "new HashMap\n";
             }
-            if (printers instanceof HashMap &&  printers.containsKey(app)) {
+            if (printers instanceof HashMap && printers.containsKey(app)) {
                 printer = printers.get(app);
-                //debugPath += "get printer from hashmap\n";
+                // debugPath += "get printer from hashmap\n";
             } else {
                 printer = null;
-                //debugPath += "printer = null 1\n";
+                // debugPath += "printer = null 1\n";
             }
             configFile = new File(app);
         } else {
             configFile = new File(configPath);
-            //debugPath += "configFile = new ..., 1\n";
+            // debugPath += "configFile = new ..., 1\n";
         }
         if (!configFile.isAbsolute()) {
             if (app != null) {
-                //debugPath += "config is absolute app = "+app+"\n";
-                if(app.toLowerCase().endsWith(".yaml")) {
+                // debugPath += "config is absolute app = "+app+"\n";
+                if (app.toLowerCase().endsWith(".yaml")) {
                     configFile = new File(getServletContext().getRealPath(app));
                 } else {
-                    configFile = new File(getServletContext().getRealPath(app +".yaml"));
+                    configFile = new File(getServletContext().getRealPath(app + ".yaml"));
                 }
             } else {
-                if(configPath.toLowerCase().endsWith(".yaml")) {
+                if (configPath.toLowerCase().endsWith(".yaml")) {
                     configFile = new File(getServletContext().getRealPath(configPath));
                 } else {
-                    configFile = new File(getServletContext().getRealPath(configPath+".yaml"));
+                    configFile = new File(getServletContext().getRealPath(configPath + ".yaml"));
                 }
-                //debugPath += "config is absolute app DEFAULT\n";
+                // debugPath += "config is absolute app DEFAULT\n";
             }
         }
         if (app != null) {
             if (lastModifieds instanceof HashMap && lastModifieds.containsKey(app)) {
                 lastModified = lastModifieds.get(app);
-                //debugPath += "app = "+app+" lastModifieds has key and gotten: "+ lastModified +"\n";
+                // debugPath +=
+                // "app = "+app+" lastModifieds has key and gotten: "+
+                // lastModified +"\n";
             } else {
                 lastModified = 0L;
-                //debugPath += "app = "+app+" lastModifieds has NOT key and gotten: "+ lastModified +" (0L)\n";
+                // debugPath +=
+                // "app = "+app+" lastModifieds has NOT key and gotten: "+
+                // lastModified +" (0L)\n";
             }
         } else {
-            lastModified = defaultLastModified; // this is a fix for when configuration files have changed
-            //debugPath += "app = NULL lastModifieds from defaultLastModified: "+ lastModified +"\n";
+            lastModified = defaultLastModified; // this is a fix for when
+                                                // configuration files have
+                                                // changed
+            // debugPath +=
+            // "app = NULL lastModifieds from defaultLastModified: "+
+            // lastModified +"\n";
         }
 
         boolean forceReload = false;
@@ -123,31 +145,31 @@ public abstract class BaseMapServlet extends HttpServlet {
         }
 
         if (forceReload || (printer != null && configFile.lastModified() != lastModified)) {
-            //file modified, reload it
+            // file modified, reload it
             if (!forceReload) {
                 LOGGER.info("Configuration file modified. Reloading...");
             }
             try {
                 printer.stop();
 
-                //debugPath += "printer stopped, setting NULL\n";
+                // debugPath += "printer stopped, setting NULL\n";
             } catch (NullPointerException npe) {
-                LOGGER.info("BaseMapServlet.java: printer was not stopped. This happens when a switch between applications happens.\n"+ npe);
+                LOGGER.info("BaseMapServlet.java: printer was not stopped. This happens when a switch between applications happens.\n"
+                        + npe);
             }
 
             printer = null;
             if (app != null) {
-                LOGGER.info("Printer for "+ app +" stopped");
+                LOGGER.info("Printer for " + app + " stopped");
                 printers.put(app, null);
             }
         }
 
         if (printer == null) {
             lastModified = configFile.lastModified();
-            //debugPath += "printer == null, lastModified from configFile = "+lastModified+"\n";
             try {
                 LOGGER.info("Loading configuration file: " + configFile.getAbsolutePath());
-                final Configuration configuration = Configuration.loadFile(configFile);
+                final Configuration configuration = context.getBean(ConfigurationFactory.class).getConfig(configFile);
                 printer = getApplicationContext().getBean(MapPrinter.class);
                 printer.setConfiguration(configuration);
 
@@ -158,36 +180,116 @@ public abstract class BaseMapServlet extends HttpServlet {
                     printers.put(app, printer);
                     lastModifieds.put(app, lastModified);
                 } else {
-                    defaultLastModified = lastModified; // need this for default application
+                    defaultLastModified = lastModified; // need this for default
+                                                        // application
                 }
             } catch (FileNotFoundException e) {
                 throw new ServletException("Cannot read configuration file: " + configPath, e);
             } catch (Throwable e) {
                 LOGGER.error("Error occurred while reading configuration file", e);
-                throw new ServletException("Error occurred while reading configuration file '" + configFile + "': " + e );
+                throw new ServletException("Error occurred while reading configuration file '"
+                        + configFile + "': " + e);
             }
         }
 
         return printer;
     }
 
-    private ApplicationContext getApplicationContext() {
-        if (this.context == null) {
+    protected ApplicationContext getApplicationContext() {
+        if (context == null) {
             synchronized (this) {
-                if (this.context == null) {
-                    this.context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-                    if (this.context == null || context.getBean(MapPrinter.class) == null) {
+                if (context == null) {
+                    context = WebApplicationContextUtils
+                            .getWebApplicationContext(getServletContext());
+                    if (context == null || context.getBean(MapPrinter.class) == null) {
                         String springConfig = System.getProperty("mapfish.print.springConfig");
-                        if(springConfig != null) {
-                            this.context = new FileSystemXmlApplicationContext(new String[]{"classpath:/"+ Main.DEFAULT_SPRING_CONTEXT, springConfig});
+                        if (springConfig != null) {
+                            context = new FileSystemXmlApplicationContext(new String[] {
+                                    "classpath:/" + Main.DEFAULT_SPRING_CONTEXT, springConfig });
                         } else {
-                            this.context = new ClassPathXmlApplicationContext(Main.DEFAULT_SPRING_CONTEXT);
+                            context = new ClassPathXmlApplicationContext(
+                                    Main.DEFAULT_SPRING_CONTEXT);
                         }
                     }
                 }
             }
         }
-        return this.context;
+        return context;
     }
 
+    protected String getBaseUrl(HttpServletRequest httpServletRequest) {
+        final String additionalPath = httpServletRequest.getPathInfo();
+        String fullUrl = httpServletRequest.getParameter("url");
+        if (fullUrl != null) {
+            return fullUrl.replaceFirst(additionalPath + "$", "");
+        } else {
+            return httpServletRequest.getRequestURL().toString()
+                    .replaceFirst(additionalPath + "$", "");
+        }
+    }
+
+    protected static String cleanUpName(String original) {
+        return original.replace(",", "").replaceAll("\\s+", "_");
+    }
+
+    protected static String findReplacement(String pattern, Date date) {
+        if (pattern.toLowerCase().equals("date")) {
+            return cleanUpName(DateFormat.getDateInstance().format(date));
+        } else if (pattern.toLowerCase().equals("datetime")) {
+            return cleanUpName(DateFormat.getDateTimeInstance().format(date));
+        } else if (pattern.toLowerCase().equals("time")) {
+            return cleanUpName(DateFormat.getTimeInstance().format(date));
+        } else {
+            try {
+                return new SimpleDateFormat(pattern).format(date);
+            } catch (Exception e) {
+                LOGGER.error("Unable to format timestamp according to pattern: "+pattern, e);
+                return "${"+pattern+"}";
+            }
+        }
+    }
+
+    /**
+     * Send an error to the client with an exception
+     */
+    protected void error(HttpServletResponse httpServletResponse, Throwable e) {
+        PrintWriter out = null;
+        try {
+            httpServletResponse.setContentType("text/plain");
+            httpServletResponse.setStatus(500);
+            out = httpServletResponse.getWriter();
+            out.println("Error while generating PDF:");
+            e.printStackTrace(out);
+
+            LOGGER.error("Error while generating PDF", e);
+        } catch (IOException ex) {
+            throw new RuntimeException(e);
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+        }
+    }
+
+    /**
+     * Send an error to the client with a message
+     */
+    protected void error(HttpServletResponse httpServletResponse, String message, int code) {
+        PrintWriter out = null;
+        try {
+            httpServletResponse.setContentType("text/plain");
+            httpServletResponse.setStatus(code);
+            out = httpServletResponse.getWriter();
+            out.println("Error while generating PDF:");
+            out.println(message);
+
+            LOGGER.error("Error while generating PDF: " + message);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+        }
+    }
 }

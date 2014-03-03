@@ -5,6 +5,39 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 	<context:annotation-config></context:annotation-config>
+	<bean id="main" class="org.mapfish.print.cli.Main"></bean>
+
+	<bean id="jasperReportOuputFormat" class="org.mapfish.print.output.JasperReportOutputFormat"></bean>
 	<bean id="mapPrinter" class="org.mapfish.print.MapPrinter" scope="prototype"></bean>
+
+	<bean id="configurationFactory" class="org.mapfish.print.config.ConfigurationFactory">
+        <property name="yamlObjects">
+            <map>
+                <entry key="!localMatch" value="org.mapfish.print.config.AcceptAllMatcher"/>
+                <entry key="!ipMatch" value="org.mapfish.print.config.AddressHostMatcher"/>
+                <entry key="!dnsMatch" value="org.mapfish.print.config.DnsHostMatcher"/>
+                <entry key="!acceptAll" value="org.mapfish.print.config.AcceptAllMatcher"/>
+                <entry key="!basicAuth" value="org.mapfish.print.config.BasicAuthSecurity"/>
+
+                <entry key="!template" value="org.mapfish.print.config.Template"/>
+
+                <entry key="!integer" value="org.mapfish.print.attribute.IntegerAttribute"/>
+                <entry key="!float" value="org.mapfish.print.attribute.FloatAttribute"/>
+                <entry key="!string" value="org.mapfish.print.attribute.StringAttribute"/>
+                <entry key="!map" value="org.mapfish.print.attribute.MapAttribute"/>
+                <entry key="!legend" value="org.mapfish.print.attribute.LegendAttribute"/>
+                <entry key="!table" value="org.mapfish.print.attribute.TableAttribute"/>
+                <entry key="!tableList" value="org.mapfish.print.attribute.TableListAttribute"/>
+
+                <entry key="!reportBuilder" value="org.mapfish.print.processor.JasperReportBuilder"/>
+                <entry key="!prepareLegend" value="org.mapfish.print.processor.LegendProcessor"/>
+                <entry key="!prepareTable" value="org.mapfish.print.processor.TableProcessor"/>
+                <entry key="!prepareTableList" value="org.mapfish.print.processor.TableListProcessor"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="registry" class="org.mapfish.print.servlet.registry.BasicRegistry"></bean>
+    <bean id="queue" class="org.mapfish.print.servlet.queue.BasicQueue"></bean>
 
 </beans>

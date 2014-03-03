@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Camptocamp
+ * Copyright (C) 2014  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -19,6 +19,11 @@
 
 package org.mapfish.print.output;
 
+import java.io.OutputStream;
+
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.json.PJsonObject;
+
 /**
  * Interface for exporting the generated PDF from MapPrinter.
  *
@@ -36,4 +41,6 @@ public interface OutputFormat {
      * The file suffix to use when writing to a file.
      */
     String getFileSuffix();
+    
+    void print(PJsonObject spec, Configuration config, String configDir, OutputStream outputStream) throws Exception;
 }

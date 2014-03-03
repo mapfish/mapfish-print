@@ -19,6 +19,7 @@ allprojects {
         mavenLocal()
         maven {url "http://download.osgeo.org/webdav/geotools"}
         mavenCentral()
+        maven {url "http://archiva.fdvs.com.ar/repository/public1"}
     }
 }
 
@@ -41,7 +42,10 @@ dependencies {
             'org.json:json:20080701',
             'ch.qos.logback:logback-classic:1.1.1',
             'org.yaml:snakeyaml:1.13',
-            "com.github.spullara.cli-parser:cli-parser:1.1.1")
+            "com.github.spullara.cli-parser:cli-parser:1.1.1",
+        	'commons-httpclient:commons-httpclient:3.1',
+	        'net.sf.jasperreports:jasperreports:5.5.0',
+	        'ar.com.fdvs:DynamicJasper:5.0.0')
     compile ('org.apache.xmlgraphics:batik-transcoder:1.7'){
         exclude module: 'fop'
     }

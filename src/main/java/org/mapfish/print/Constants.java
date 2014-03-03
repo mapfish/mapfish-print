@@ -30,6 +30,7 @@ public interface Constants {
      * The layout tag in the json spec file.
      */
     String JSON_LAYOUT_KEY = "layout";
+
     /**
      * The output filename in the json spec file.
      */
