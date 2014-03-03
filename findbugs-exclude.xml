@@ -1,0 +1,6 @@
+<FindBugsFilter>
+    <Match>
+        <Class name="org.mapfish.print.cli.CliDefinition"/>
+        <Bug pattern="MS_SHOULD_BE_FINAL"/>
+    </Match>
+</FindBugsFilter>
