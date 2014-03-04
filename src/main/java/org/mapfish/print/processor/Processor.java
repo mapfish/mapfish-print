@@ -21,13 +21,14 @@ package org.mapfish.print.processor;
 
 import java.util.Map;
 
+import org.mapfish.print.config.ConfigurationObject;
 import org.mapfish.print.output.Values;
 
 /**
  * Interface for processing input attributes
  * Created by Jesse on 2/21/14.
  */
-public interface Processor {
+public interface Processor extends ConfigurationObject {
     /**
      *
      *
@@ -35,7 +36,7 @@ public interface Processor {
      * @return An id of the value for lookup in the output mapper?
      * @throws Exception
      */
-    Map<String, Object> doProcess(Values values) throws Exception;
+    Map<String, Object> execute(Values values) throws Exception;
 
     /**
      * Map output from processor to the variable in the Jasper Report.

@@ -21,6 +21,13 @@ package org.mapfish.print.servlet.registry;
 
 import org.json.JSONObject;
 
+/**
+ * A variable store for sharing common values across all nodes in a cluster.
+ * <p>
+ *     For example the PDF key and URI might be put in this registry.
+ *     Also queue length perhaps.
+ * </p>
+ */
 public interface Registry {
 
     boolean containsKey(String key);

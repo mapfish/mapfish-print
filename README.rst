@@ -17,11 +17,11 @@ This will build three artifacts:  print-servlet-xxx.war, print-lib.jar, print-st
 Deploy
 ------
 
-The following command will build and upload all artifacts to the dev.mapfish.org repository.
+The following command will build and upload all artifacts to the maven central repository.
 
 .. code::
 
-  > ./gradlew upload -DsshPassphrase=...
+  > ./gradlew uploadArchives -DsshPassphrase=...
 
 
 To use in Eclipse
@@ -43,7 +43,7 @@ The following command will run the mapfish printer.  If you do no supply any -Dx
 
 .. code::
 
-  > ./gradlew run -Dconfig=samples/config.yaml -Dspec=samples/spec.json -Doutput=/tmp/print-out.pdf
+  > ./gradlew print -Dconfig=samples/config.yaml -Dspec=samples/spec.json -Doutput=/tmp/print-out.pdf
 
 
 Run in Eclipse

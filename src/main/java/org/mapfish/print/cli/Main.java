@@ -19,31 +19,12 @@
 
 package org.mapfish.print.cli;
 
-import static org.mapfish.print.cli.CliDefinition.clientConfig;
-import static org.mapfish.print.cli.CliDefinition.config;
-import static org.mapfish.print.cli.CliDefinition.cookie;
-import static org.mapfish.print.cli.CliDefinition.output;
-import static org.mapfish.print.cli.CliDefinition.referer;
-import static org.mapfish.print.cli.CliDefinition.spec;
-import static org.mapfish.print.cli.CliDefinition.springConfig;
-import static org.mapfish.print.cli.CliDefinition.verbose;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.json.JSONException;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
+import ch.qos.logback.core.util.StatusPrinter;
+import com.google.common.io.CharStreams;
+import com.sampullara.cli.Args;
 import org.json.JSONWriter;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.config.Configuration;
@@ -55,13 +36,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractXmlApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
-import ch.qos.logback.core.util.StatusPrinter;
+import java.io.*;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.google.common.io.CharStreams;
-import com.sampullara.cli.Args;
+import static org.mapfish.print.cli.CliDefinition.*;
 
 /**
  * A shell version of the MapPrinter. Can be used for testing or for calling
@@ -79,7 +61,7 @@ public class Main {
     private MapPrinter mapPrinter;
 
 
-    public static void main(String[] args) throws IOException, InterruptedException, JSONException {
+    public static void main(String[] args) throws Exception {
         try {
             List<String> unusedArguments = Args.parse(CliDefinition.class, args);
 
@@ -114,9 +96,9 @@ public class Main {
         System.exit(1);
     }
 
-    public void run() throws IOException, InterruptedException, JSONException {
-        Configuration configuration = context.getBean(ConfigurationFactory.class).getConfig(new File(config));
-        mapPrinter.setConfiguration(configuration);
+    public void run() throws Exception {
+        final File configFile = new File(config);
+        mapPrinter.setConfiguration(configFile);
         OutputStream outFile = null;
         try {
             if (clientConfig) {

@@ -344,9 +344,9 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
             mapPrinter.print(specJson, out, headers);
 
             return tempFile;
-        } catch (IOException e) {
+        } catch (Exception e) {
             deleteFile(tempFile);
-            throw e;
+            throw new RuntimeException(e);
         } finally {
             if (out != null) {
                 out.close();

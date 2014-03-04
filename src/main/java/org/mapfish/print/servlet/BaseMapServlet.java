@@ -19,6 +19,19 @@
 
 package org.mapfish.print.servlet;
 
+import org.mapfish.print.MapPrinter;
+import org.mapfish.print.cli.Main;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -28,22 +41,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.mapfish.print.MapPrinter;
-import org.mapfish.print.cli.Main;
-import org.mapfish.print.config.Configuration;
-import org.mapfish.print.config.ConfigurationFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Base class for MapPrinter servlets (deals with the configuration loading)
@@ -72,7 +69,7 @@ public abstract class BaseMapServlet extends HttpServlet {
      * If the location is a relative path, it's taken from the servlet's root
      * directory.
      *
-     * @param servletContext
+     * @param app get the map printer identified by the application string.
      */
     protected synchronized MapPrinter getMapPrinter(String app) throws ServletException {
         String configPath = getInitParameter("config");
@@ -169,9 +166,8 @@ public abstract class BaseMapServlet extends HttpServlet {
             lastModified = configFile.lastModified();
             try {
                 LOGGER.info("Loading configuration file: " + configFile.getAbsolutePath());
-                final Configuration configuration = context.getBean(ConfigurationFactory.class).getConfig(configFile);
                 printer = getApplicationContext().getBean(MapPrinter.class);
-                printer.setConfiguration(configuration);
+                printer.setConfiguration(configFile);
 
                 if (app != null) {
                     if (printers == null) {

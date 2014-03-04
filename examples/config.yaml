@@ -38,6 +38,7 @@ security:
 
 templates:
   A4 portrait: !template
+    jasperTemplate: simpleReport.jrxml
     attributes:
       number: !integer {}
       name: !string {}

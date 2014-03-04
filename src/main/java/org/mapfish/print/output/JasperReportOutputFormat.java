@@ -60,15 +60,14 @@ public class JasperReportOutputFormat implements OutputFormat {
     }
 
     @Override
-    public void print(PJsonObject spec, Configuration config, String configDir, OutputStream outputStream) 
+    public void print(PJsonObject spec, Configuration config, File configDir, OutputStream outputStream)
             throws Exception {
         final String templateName = spec.getString(Constants.JSON_LAYOUT_KEY);
 
         final Template template = config.getTemplate(templateName);
         final Values values = new Values();
         final File jasperTemplateFile = new File(configDir, template.getJasperTemplate());
-        final File jasperTemplateBuild = new File(configDir, template.getJasperTemplate()
-                .replaceAll("\\.jrxml$", ".jasper"));
+        final File jasperTemplateBuild = new File(configDir, template.getJasperTemplate().replaceAll("\\.jrxml$", ".jasper"));
         final File jasperTemplateDirectory = jasperTemplateFile.getParentFile();
 
         values.put("SUBREPORT_DIR", jasperTemplateDirectory.getAbsolutePath());
@@ -129,7 +128,7 @@ public class JasperReportOutputFormat implements OutputFormat {
     }
 
     private void runProcess(Processor process, Values values) throws Exception {
-        Map<String, Object> output = process.doProcess(values);
+        Map<String, Object> output = process.execute(values);
         Map<String, String> outputMap = process.getOutputMapper();
         for (String value : outputMap.keySet()) {
             values.put(

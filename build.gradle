@@ -1,8 +1,8 @@
 import org.gradle.api.plugins.jetty.JettyRun
 
 apply plugin: 'war'
-apply plugin: 'jetty'
 apply plugin: 'maven'
+apply from: 'gretty.plugin'
 
 defaultTasks 'checkstyleMain', 'findbugsMain', 'test', 'jar', 'war', 'standalone', 'install'
 
@@ -322,7 +322,7 @@ def prop(key) {
     return System.getProperty(key) == null ? null : "--${key}=${System.getProperty(key)}"
 }
 
-task run (dependsOn: compileJava) << {
+task print (dependsOn: compileJava) << {
     def warning = """[WARNING] config parameter is required.
 
   Usage:
@@ -337,7 +337,7 @@ task run (dependsOn: compileJava) << {
     -Dlog4jConfig={String}: Property file for the log4j configuration (defaults to [null])
 
   Example:
-    gradle run -Dconfig=samples/config.yaml -Dspec=samples/spec.json -Doutput=/tmp/print-out.pdf
+    gradle print -Dconfig=samples/config.yaml -Dspec=samples/spec.json -Doutput=/tmp/print-out.pdf
 
 
   """
@@ -356,10 +356,10 @@ task run (dependsOn: compileJava) << {
 }
 run.description = 'Run mapfish print from commandline.  All commandline parameters apply. Execute task without system parameters to get help'
 
-jettyRun {
-    httpPort = 8080
-    scanTargets = (fileTree("src/main/").include("webapp/WEB-INF/**") + fileTree(compileJava.destinationDir)).files
-    reload = 'manual'
+gretty {
+    port = 8080
+    contextPath = '/print'
+    scanInterval = 5
 }
 
 /* task jettyRunImgMgk (type: JettyRun) {

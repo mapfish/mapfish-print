@@ -18,7 +18,7 @@ public class JasperReportBuilder  implements Processor {
     private File directory = new File(".");
     
     @Override
-    public Map<String, Object> doProcess(Values values) throws JRException {
+    public Map<String, Object> execute(Values values) throws JRException {
         final FilenameFilter filter = new FilenameFilter() {
             @Override
             public boolean accept(File file, String name) {

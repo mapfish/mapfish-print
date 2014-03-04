@@ -21,6 +21,7 @@ package org.mapfish.print.attribute;
 
 import org.json.JSONException;
 import org.json.JSONWriter;
+import org.mapfish.print.config.ConfigurationObject;
 import org.mapfish.print.json.PJsonObject;
 
 /**
@@ -28,7 +29,7 @@ import org.mapfish.print.json.PJsonObject;
  *
  * Created by Jesse on 2/21/14.
  */
-public interface Attribute {
+public interface Attribute  extends ConfigurationObject {
     Object getValue(PJsonObject values, String name);
 
     public void printClientConfig(JSONWriter json) throws JSONException;

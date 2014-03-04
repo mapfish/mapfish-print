@@ -28,7 +28,7 @@ import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.processor.Processor;
 
 
-public class Template {
+public class Template implements ConfigurationObject{
     private String jasperTemplate;
     private Map<String, Attribute> attributes;
     private List<Processor> processors;

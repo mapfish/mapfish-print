@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 /**
  * Used to validate the access to a map service host
  */
-public abstract class HostMatcher {
+public abstract class HostMatcher implements ConfigurationObject {
     public final static HostMatcher ACCEPT_ALL = new AcceptAllMatcher();
 
     protected int port = -1;

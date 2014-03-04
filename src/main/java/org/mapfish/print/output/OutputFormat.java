@@ -19,6 +19,7 @@
 
 package org.mapfish.print.output;
 
+import java.io.File;
 import java.io.OutputStream;
 
 import org.mapfish.print.config.Configuration;
@@ -42,5 +43,5 @@ public interface OutputFormat {
      */
     String getFileSuffix();
     
-    void print(PJsonObject spec, Configuration config, String configDir, OutputStream outputStream) throws Exception;
+    void print(PJsonObject spec, Configuration config, File configDir, OutputStream outputStream) throws Exception;
 }

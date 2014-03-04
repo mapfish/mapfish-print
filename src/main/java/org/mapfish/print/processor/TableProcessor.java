@@ -13,7 +13,7 @@ public class TableProcessor extends AbstractProcessor {
     private String tableRef; 
 
     @Override
-    public Map<String, Object> doProcess(Values values) throws Exception {
+    public Map<String, Object> execute(Values values) throws Exception {
         final Map<String, Object> output = new HashMap<String, Object>();
         final PJsonObject jsonTable = (PJsonObject)values.getObject(tableRef);
         final List<Map<String, String>> table = new ArrayList<Map<String, String>>();

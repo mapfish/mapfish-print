@@ -19,6 +19,8 @@
 
 package org.mapfish.print;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.servlet.queue.Queue;
@@ -48,26 +51,22 @@ public class MapPrinter {
     @Autowired
     private Registry registry;
     @Autowired
-    private List<OutputFormat> outputFormat;
+    private Map<String, OutputFormat> outputFormat;
+    @Autowired
+    private ConfigurationFactory configurationFactory;
+    private File configFile;
 
     public Queue getQueue() {
         return queue;
-    }
-
-    public void setQueue(Queue queue) {
-        this.queue = queue;
     }
 
     public Registry getRegistry() {
         return registry;
     }
 
-    public void setRegistry(Registry registry) {
-        this.registry = registry;
-    }
-
-    public void setConfiguration(Configuration configuration) {
-        this.configuration = configuration;
+    public void setConfiguration(File configFile) throws IOException {
+        this.configFile = configFile;
+        this.configuration = configurationFactory.getConfig(configFile);
     }
 
     public Configuration getConfiguration() {
@@ -98,10 +97,14 @@ public class MapPrinter {
     }
 
     public OutputFormat getOutputFormat(PJsonObject specJson) {
-        throw new UnsupportedOperationException();
+        String format = specJson.getString("outputFormat");
+        return outputFormat.get(format);
     }
 
-    public void print(PJsonObject specJson, OutputStream out, Map<String, String> headers) {
+    public void print(PJsonObject specJson, OutputStream out, Map<String, String> headers) throws Exception {
+        // TODO use queue etc..
+        final OutputFormat format = getOutputFormat(specJson);
+        format.print(specJson, getConfiguration(), configFile.getParentFile(), out);
     }
 
     public String getOutputFilename(String layout, String defaultName) {

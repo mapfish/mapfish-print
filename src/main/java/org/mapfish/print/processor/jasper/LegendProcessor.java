@@ -40,7 +40,7 @@ public class LegendProcessor extends AbstractProcessor {
     private String legendRef; 
 
     @Override
-    public Map<String, Object> doProcess(Values values) throws Exception {
+    public Map<String, Object> execute(Values values) throws Exception {
         Map<String, Object> output = new HashMap<String, Object>();
 
         final List<Object[]> legendList = new ArrayList<Object[]>();

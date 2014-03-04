@@ -377,7 +377,7 @@ public class MapPrinterServlet extends BaseMapServlet {
      * @throws InterruptedException
      */
     protected byte[] doCreatePDFFile(PJsonObject job, MapPrinter mapPrinter)
-            throws IOException, ServletException, InterruptedException {
+            throws Exception {
 
         Map<String, String> headers = new HashMap<String, String>();
         TreeSet<String> configHeaders = mapPrinter.getConfiguration().getHeaders();
