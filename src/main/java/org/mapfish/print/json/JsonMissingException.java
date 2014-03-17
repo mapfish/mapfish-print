@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Camptocamp
+ * Copyright (C) 2014  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -25,9 +25,7 @@ import org.mapfish.print.PrintException;
  * Thrown when an attribute is missing in the spec.
  */
 public class JsonMissingException extends PrintException {
-    /**
-     *
-     */
+
     private static final long serialVersionUID = 1L;
 
     public JsonMissingException(PJsonElement pJsonObject, String key) {

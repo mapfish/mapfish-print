@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Camptocamp
+ * Copyright (C) 2014  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -19,27 +19,7 @@
 
 package org.mapfish.print.servlet;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeSet;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.common.io.ByteStreams;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
@@ -49,7 +29,14 @@ import org.mapfish.print.output.OutputFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.io.ByteStreams;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Main print servlet.
@@ -81,7 +68,8 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     private final Map<String, TempFile> tempFiles = new HashMap<String, TempFile>();
 
     @Override
-    protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException,
+            IOException {
         //do the routing in function of the actual URL
         String additionalPath = httpServletRequest.getPathInfo().trim();
         if (additionalPath.isEmpty()) {
@@ -93,14 +81,16 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
         } else if (additionalPath.equals(INFO_URL)) {
             getInfo(httpServletRequest, httpServletResponse, getBaseUrl(httpServletRequest));
         } else if (additionalPath.startsWith("/") && additionalPath.endsWith(TEMP_FILE_SUFFIX)) {
-            getFile(httpServletRequest, httpServletResponse, additionalPath.substring(1, additionalPath.length() - TEMP_FILE_SUFFIX.length()));
+            getFile(httpServletRequest, httpServletResponse, additionalPath.substring(1, additionalPath.length() - TEMP_FILE_SUFFIX
+                    .length()));
         } else {
             error(httpServletResponse, "Unknown method: " + additionalPath, 404);
         }
     }
 
     @Override
-    protected void doPost(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException,
+            IOException {
         final String additionalPath = httpServletRequest.getPathInfo();
         if (additionalPath.equals(PRINT_URL)) {
             createAndGetPDF(httpServletRequest, httpServletResponse);
@@ -173,7 +163,8 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     /**
      * Create the PDF and returns to the client (in JSON) the URL to get the PDF.
      */
-    protected void createPDF(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, String basePath) throws ServletException {
+    protected void createPDF(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
+                             String basePath) throws ServletException {
         TempFile tempFile = null;
         try {
             purgeOldTemporaryFiles();
@@ -208,7 +199,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
             deleteFile(tempFile);
             throw new ServletException(e);
         } finally {
-            if(writer != null) {
+            if (writer != null) {
                 writer.close();
             }
         }
@@ -222,7 +213,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     }
 
     protected String getSpecFromPostBody(HttpServletRequest httpServletRequest) throws IOException {
-        if(httpServletRequest.getParameter("spec") != null) {
+        if (httpServletRequest.getParameter("spec") != null) {
             return httpServletRequest.getParameter("spec");
         }
         BufferedReader data = httpServletRequest.getReader();
@@ -234,7 +225,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
             }
             return spec.toString();
         } finally {
-            if(data != null) {
+            if (data != null) {
                 data.close();
             }
         }
@@ -243,7 +234,8 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     /**
      * To get the PDF created previously.
      */
-    protected void getFile(HttpServletRequest req, HttpServletResponse httpServletResponse, String id) throws IOException, ServletException {
+    protected void getFile(HttpServletRequest req, HttpServletResponse httpServletResponse, String id) throws IOException,
+            ServletException {
         final TempFile file;
         synchronized (tempFiles) {
             file = tempFiles.get(id);
@@ -304,9 +296,11 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
 
     /**
      * Do the actual work of creating the PDF temporary file.
+     *
      * @throws InterruptedException
      */
-    protected TempFile doCreatePDFFile(String spec, HttpServletRequest httpServletRequest) throws IOException, ServletException, InterruptedException {
+    protected TempFile doCreatePDFFile(String spec, HttpServletRequest httpServletRequest) throws IOException, ServletException,
+            InterruptedException {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Generating PDF for spec=" + spec);
         }
@@ -335,7 +329,8 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
 
         final OutputFormat outputFormat = mapPrinter.getOutputFormat(specJson);
         //create a temporary file that will contain the PDF
-        final File tempJavaFile = File.createTempFile(TEMP_FILE_PREFIX, "."+outputFormat.getFileSuffix()+TEMP_FILE_SUFFIX, getTempDir());
+        final File tempJavaFile = File.createTempFile(TEMP_FILE_PREFIX, "." + outputFormat.getFileSuffix() + TEMP_FILE_SUFFIX,
+                getTempDir());
         TempFile tempFile = new TempFile(tempJavaFile, specJson, outputFormat);
 
         FileOutputStream out = null;
@@ -357,7 +352,8 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     /**
      * copy the PDF into the output stream
      */
-    protected void sendPdfFile(HttpServletResponse httpServletResponse, TempFile tempFile, boolean inline) throws IOException, ServletException {
+    protected void sendPdfFile(HttpServletResponse httpServletResponse, TempFile tempFile, boolean inline) throws IOException,
+            ServletException {
         FileInputStream pdf = new FileInputStream(tempFile);
         final OutputStream response = httpServletResponse.getOutputStream();
         try {
@@ -370,7 +366,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
         } finally {
             try {
                 pdf.close();
-            } finally{
+            } finally {
                 response.close();
             }
         }
@@ -460,7 +456,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
         }
 
         public String getOutputFileName(MapPrinter mapPrinter) {
-            if(outputFileName != null) {
+            if (outputFileName != null) {
                 return formatFileName(suffix, outputFileName, new Date());
             } else {
                 return formatFileName(suffix, mapPrinter.getOutputFilename(printedLayoutName, getName()), new Date());
@@ -470,24 +466,24 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
 
         public static String formatFileName(String suffix, String startingName, Date date) {
             Matcher matcher = Pattern.compile("\\$\\{(.+?)\\}").matcher(startingName);
-            HashMap<String,String> replacements = new HashMap<String,String>();
-            while(matcher.find()) {
+            HashMap<String, String> replacements = new HashMap<String, String>();
+            while (matcher.find()) {
                 String pattern = matcher.group(1);
-                String key = "${"+pattern+"}";
+                String key = "${" + pattern + "}";
                 replacements.put(key, findReplacement(pattern, date));
             }
             String result = startingName;
-            for(Map.Entry<String,String> entry: replacements.entrySet()) {
+            for (Map.Entry<String, String> entry : replacements.entrySet()) {
                 result = result.replace(entry.getKey(), entry.getValue());
             }
 
-            while(suffix.startsWith(".")) {
+            while (suffix.startsWith(".")) {
                 suffix = suffix.substring(1);
             }
-            if(suffix.isEmpty() || result.toLowerCase().endsWith("."+suffix.toLowerCase())) {
+            if (suffix.isEmpty() || result.toLowerCase().endsWith("." + suffix.toLowerCase())) {
                 return result;
             } else {
-                return result+"."+suffix;
+                return result + "." + suffix;
             }
         }
 

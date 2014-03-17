@@ -19,9 +19,9 @@
 
 package org.mapfish.print.servlet.queue;
 
-import java.util.LinkedList;
-
 import org.json.JSONObject;
+
+import java.util.LinkedList;
 
 public class BasicQueue implements Queue {
     private final LinkedList<JSONObject> fifo = new LinkedList<JSONObject>();

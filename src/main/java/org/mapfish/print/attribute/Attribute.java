@@ -25,12 +25,27 @@ import org.mapfish.print.config.ConfigurationObject;
 import org.mapfish.print.json.PJsonObject;
 
 /**
- * Represents an attribute passed in from a web-client to be used to populate the report.
- *
+ * Represents an attribute passed in from a web-client to be used to populate the report.  It reads a value from the request data
+ * <p/>
  * Created by Jesse on 2/21/14.
+ *
+ * @param <T> The attribute type object read from the parameters by this attribute.
  */
-public interface Attribute  extends ConfigurationObject {
-    Object getValue(PJsonObject values, String name);
+public interface Attribute<T> extends ConfigurationObject {
+    /**
+     * Read the attribute object
+     *
+     * @param values the request data to read the attribute from.
+     * @param name
+     * @return the read attribute value
+     */
+    T getValue(PJsonObject values, String name);
 
-    public void printClientConfig(JSONWriter json) throws JSONException;
+    /**
+     * Write this attribute out the the json writer so that clients can know what attributes are expected.
+     *
+     * @param json the json writer to write to
+     * @throws JSONException
+     */
+    void printClientConfig(JSONWriter json) throws JSONException;
 }

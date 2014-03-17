@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Camptocamp
+ * Copyright (C) 2014  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -25,14 +25,18 @@ import com.sampullara.cli.Argument;
  * A shell version of the MapPrinter. Can be used for testing or for calling
  * from other languages than Java.
  */
-public class CliDefinition {
+public final class CliDefinition {
+    private CliDefinition() {}
+
+    // CHECKSTYLE:OFF
     @Argument(description = "Filename for the configuration (templates&CO)", required = true)
     public static String config = null;
 
     @Argument(description = "The location of the description of what has to be printed. By default, STDIN")
     public static String spec = null;
 
-    @Argument(description = "Used only if log4jConfig is not specified. 3 if you want everything, 2 if you want the debug information (stacktraces are shown), 1 for infos and 0 for only warnings and errors")
+    @Argument(description = "Used only if log4jConfig is not specified. 3 if you want everything, " +
+                            "2 if you want the debug information (stacktraces are shown), 1 for infos and 0 for only warnings and errors")
     public static int verbose = 1;
 
     @Argument(description = "The destination file. By default, Standard Out")
@@ -47,7 +51,7 @@ public class CliDefinition {
     @Argument(description = "Cookie to use when doing queries")
     public static String cookie = null;
 
-    @Argument(description = "Spring configuration file to use in addition to the default.  This allows overriding certain values if desired")
+    @Argument(description = "Spring configuration file to use in addition to the default.  This allows overriding certain values if " +
+                            "desired")
     public static String springConfig = null;
-
 }

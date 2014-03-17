@@ -19,7 +19,14 @@
 
 package org.mapfish.print.processor.jasper;
 
-import java.awt.Image;
+import net.sf.jasperreports.engine.data.JRTableModelDataSource;
+import org.mapfish.print.json.PJsonArray;
+import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.output.Values;
+import org.mapfish.print.processor.AbstractProcessor;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -27,25 +34,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.imageio.ImageIO;
-
-import net.sf.jasperreports.engine.data.JRTableModelDataSource;
-
-import org.mapfish.print.json.PJsonArray;
-import org.mapfish.print.json.PJsonObject;
-import org.mapfish.print.output.Values;
-import org.mapfish.print.processor.AbstractProcessor;
-
 public class LegendProcessor extends AbstractProcessor {
-    private String legendRef; 
+    private String legendRef;
 
     @Override
     public Map<String, Object> execute(Values values) throws Exception {
         Map<String, Object> output = new HashMap<String, Object>();
 
         final List<Object[]> legendList = new ArrayList<Object[]>();
-        final String[] legendColumns = { "name", "icon", "level" };
-        final PJsonObject jsonLegend = (PJsonObject)values.getObject(legendRef);
+        final String[] legendColumns = {"name", "icon", "level"};
+        final PJsonObject jsonLegend = (PJsonObject) values.getObject(this.legendRef);
         fillLegend(jsonLegend, legendList, 0);
         final Object[][] legend = new Object[legendList.size()][];
         output.put("legend", new JRTableModelDataSource(new TableDataSource(legendColumns, legendList.toArray(legend))));
@@ -61,7 +59,7 @@ public class LegendProcessor extends AbstractProcessor {
             image = ImageIO.read(url);
         }
 
-        final Object[] row = { jsonLegend.optString("name"), image, level };
+        final Object[] row = {jsonLegend.optString("name"), image, level};
         legendList.add(row);
 
         PJsonArray jsonClass = jsonLegend.optJSONArray("classes");
@@ -72,6 +70,7 @@ public class LegendProcessor extends AbstractProcessor {
             }
         }
     }
+
     public String getLegendRef() {
         return legendRef;
     }

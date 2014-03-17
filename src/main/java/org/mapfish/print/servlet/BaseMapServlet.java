@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Camptocamp
+ * Copyright (C) 2014  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -53,7 +53,7 @@ public abstract class BaseMapServlet extends HttpServlet {
     private Map<String, MapPrinter> printers = null;
     private long lastModified = 0L;
     private long defaultLastModified = 0L;
-    private Map<String,Long> lastModifiedTimes = null;
+    private Map<String, Long> lastModifiedTimes = null;
 
     private volatile ApplicationContext context;
 
@@ -75,7 +75,8 @@ public abstract class BaseMapServlet extends HttpServlet {
         String configPath = getInitParameter("config");
         if (configPath == null) {
             throw new ServletException(
-                    "Missing configuration in web.xml 'web-app/servlet/init-param[param-name=config]' or 'web-app/context-param[param-name=config]'");
+                    "Missing configuration in web.xml 'web-app/servlet/init-param[param-name=config]' or " +
+                    "'web-app/context-param[param-name=config]'");
         }
         // String debugPath = "";
 
@@ -129,8 +130,8 @@ public abstract class BaseMapServlet extends HttpServlet {
             }
         } else {
             lastModified = defaultLastModified; // this is a fix for when
-                                                // configuration files have
-                                                // changed
+            // configuration files have
+            // changed
             // debugPath +=
             // "app = NULL lastModifieds from defaultLastModified: "+
             // lastModified +"\n";
@@ -152,7 +153,7 @@ public abstract class BaseMapServlet extends HttpServlet {
                 // debugPath += "printer stopped, setting NULL\n";
             } catch (NullPointerException npe) {
                 LOGGER.info("BaseMapServlet.java: printer was not stopped. This happens when a switch between applications happens.\n"
-                        + npe);
+                            + npe);
             }
 
             printer = null;
@@ -177,14 +178,14 @@ public abstract class BaseMapServlet extends HttpServlet {
                     lastModifiedTimes.put(app, lastModified);
                 } else {
                     defaultLastModified = lastModified; // need this for default
-                                                        // application
+                    // application
                 }
             } catch (FileNotFoundException e) {
                 throw new ServletException("Cannot read configuration file: " + configPath, e);
             } catch (Throwable e) {
                 LOGGER.error("Error occurred while reading configuration file", e);
                 throw new ServletException("Error occurred while reading configuration file '"
-                        + configFile + "': " + e);
+                                           + configFile + "': " + e);
             }
         }
 
@@ -200,8 +201,8 @@ public abstract class BaseMapServlet extends HttpServlet {
                     if (context == null || context.getBean(MapPrinter.class) == null) {
                         String springConfig = System.getProperty("mapfish.print.springConfig");
                         if (springConfig != null) {
-                            context = new FileSystemXmlApplicationContext(new String[] {
-                                    "classpath:/" + Main.DEFAULT_SPRING_CONTEXT, springConfig });
+                            context = new FileSystemXmlApplicationContext(new String[]{
+                                    "classpath:/" + Main.DEFAULT_SPRING_CONTEXT, springConfig});
                         } else {
                             context = new ClassPathXmlApplicationContext(
                                     Main.DEFAULT_SPRING_CONTEXT);
@@ -239,8 +240,8 @@ public abstract class BaseMapServlet extends HttpServlet {
             try {
                 return new SimpleDateFormat(pattern).format(date);
             } catch (Exception e) {
-                LOGGER.error("Unable to format timestamp according to pattern: "+pattern, e);
-                return "${"+pattern+"}";
+                LOGGER.error("Unable to format timestamp according to pattern: " + pattern, e);
+                return "${" + pattern + "}";
             }
         }
     }

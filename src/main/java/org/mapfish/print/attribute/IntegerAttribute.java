@@ -21,15 +21,18 @@ package org.mapfish.print.attribute;
 
 import org.mapfish.print.json.PJsonObject;
 
-public class IntegerAttribute extends AbstractAttribute {
+/**
+ * An integer type attribute.
+ */
+public class IntegerAttribute extends AbstractAttribute<Integer> {
 
     @Override
-    public Object getValue(PJsonObject values, String name) {
+    public final Integer getValue(final PJsonObject values, final String name) {
         return values.getInt(name);
     }
 
     @Override
-    protected String getType() {
+    protected final String getType() {
         return "integer";
     }
 }

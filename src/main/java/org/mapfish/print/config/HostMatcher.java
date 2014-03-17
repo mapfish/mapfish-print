@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Camptocamp
+ * Copyright (C) 2014  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -27,25 +27,37 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Used to validate the access to a map service host
+ * Used to validate the access to a map service host.
  */
 public abstract class HostMatcher implements ConfigurationObject {
-    public final static HostMatcher ACCEPT_ALL = new AcceptAllMatcher();
-
+    /**
+     * The request port.  -1 is the unset/default number
+     * CSOFF: VisibilityModifier
+     */
     protected int port = -1;
+    /**
+     * A regex that will be ran against the host name.  If there is a match then the matcher accepts the uri.
+     */
     protected String pathRegex = null;
+    // CSON: VisibilityModifier
 
-    public boolean validate(URI uri) throws UnknownHostException, SocketException, MalformedURLException {
+    /**
+     * Check that the uri matches the criteria of this matcher.
+     *
+     * @param uri uri to check.
+     * @return false if the uri is not permitted to be accessed.
+     */
+    public boolean validate(final URI uri) throws UnknownHostException, SocketException, MalformedURLException {
         int uriPort = uri.getPort();
         if (uriPort < 0) {
             uriPort = uri.toURL().getDefaultPort();
         }
-        if (port > 0 && uriPort != port) {
+        if (this.port > 0 && uriPort != this.port) {
             return false;
         }
 
-        if (pathRegex != null) {
-            Matcher matcher = Pattern.compile(pathRegex).matcher(uri.getPath());
+        if (this.pathRegex != null) {
+            Matcher matcher = Pattern.compile(this.pathRegex).matcher(uri.getPath());
             if (!matcher.matches()) {
                 return false;
             }
@@ -53,17 +65,19 @@ public abstract class HostMatcher implements ConfigurationObject {
         return true;
     }
 
-    public void setPort(int port) {
+    public void setPort(final int port) {
         this.port = port;
     }
 
-    public void setPathRegex(String pathRegex) {
+    public void setPathRegex(final String pathRegex) {
         this.pathRegex = pathRegex;
     }
 
     @Override
     public abstract String toString();
 
+    // CHECKSTYLE:OFF
+    // Don't run checkstyle on generated methods
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -97,5 +111,6 @@ public abstract class HostMatcher implements ConfigurationObject {
         }
         return true;
     }
+    // CHECKSTYLE:ON
 
 }

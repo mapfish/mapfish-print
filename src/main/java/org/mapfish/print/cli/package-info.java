@@ -17,24 +17,9 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.attribute;
-
-import org.mapfish.print.json.PJsonObject;
-
-
 /**
- * The attributes for {@link org.mapfish.print.processor.jasper.TableListProcessor}.
+ * This package contains classes for the command-line interface
+ *
+ * Created by Jesse on 3/17/14.
  */
-public class TableListAttribute extends AbstractAttribute {
-
-    @Override
-    public Object getValue(PJsonObject values, String name) {
-        return values.getJSONObject(name);
-    }
-
-    @Override
-    protected String getType() {
-        return "tablelist";
-    }
-
-}
+package org.mapfish.print.cli;

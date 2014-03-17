@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Camptocamp
+ * Copyright (C) 2014  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -19,26 +19,27 @@
 
 package org.mapfish.print.config;
 
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.SocketException;
-import java.net.URI;
-import java.net.UnknownHostException;
-import java.util.Arrays;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.*;
+import java.util.Arrays;
+
 /**
- * Allows to check that a given URL matches an IP address (numeric format)
+ * Allows to check that a given URL matches an IP address (numeric format).
  */
 public abstract class InetHostMatcher extends HostMatcher {
     private static final Logger LOGGER = LoggerFactory.getLogger(InetHostMatcher.class);
 
+    /**
+     * The ip addresses that are considered legal.
+     * CSOFF: VisibilityModifier
+     */
     protected byte[][] authorizedIPs = null;
+    // CSON: VisibilityModifier
 
     @Override
-    public boolean validate(URI uri) throws UnknownHostException, SocketException, MalformedURLException {
+    public boolean validate(final URI uri) throws UnknownHostException, SocketException, MalformedURLException {
         final InetAddress maskAddress = getMaskAddress();
         final InetAddress[] requestedIPs;
         try {
@@ -57,12 +58,12 @@ public abstract class InetHostMatcher extends HostMatcher {
         return oneMatching && super.validate(uri);
     }
 
-    private boolean isInAuthorized(InetAddress requestedIP, InetAddress mask) throws UnknownHostException,
-    SocketException {
+    private boolean isInAuthorized(final InetAddress requestedIP, final InetAddress mask) throws UnknownHostException,
+            SocketException {
         byte[] rBytes = mask(requestedIP, mask);
-        final byte[][] authorizedIPs = getAuthorizedIPs(mask);
-        for (int i = 0; i < authorizedIPs.length; ++i) {
-            byte[] authorizedIP = authorizedIPs[i];
+        final byte[][] finalAuthorizedIPs = getAuthorizedIPs(mask);
+        for (int i = 0; i < finalAuthorizedIPs.length; ++i) {
+            byte[] authorizedIP = finalAuthorizedIPs[i];
             if (compareIP(rBytes, authorizedIP)) {
                 return true;
             }
@@ -71,7 +72,7 @@ public abstract class InetHostMatcher extends HostMatcher {
         return false;
     }
 
-    private boolean compareIP(byte[] rBytes, byte[] authorizedIP) {
+    private boolean compareIP(final byte[] rBytes, final byte[] authorizedIP) {
         if (rBytes.length != authorizedIP.length) {
             return false;
         }
@@ -85,7 +86,7 @@ public abstract class InetHostMatcher extends HostMatcher {
         return true;
     }
 
-    private byte[] mask(InetAddress address, InetAddress mask) {
+    private byte[] mask(final InetAddress address, final InetAddress mask) {
         byte[] aBytes = address.getAddress();
         if (mask != null) {
             byte[] mBytes = mask.getAddress();
@@ -104,18 +105,37 @@ public abstract class InetHostMatcher extends HostMatcher {
         }
     }
 
+    /**
+     * Get the mask IP address.
+     *
+     * @return the ask addresses.
+     */
     protected abstract InetAddress getMaskAddress() throws UnknownHostException;
 
-    protected void buildMaskedAuthorizedIPs(InetAddress[] ips) throws UnknownHostException {
+    /**
+     * calculate the authorized Ip addresses and assign them to the field.
+     *
+     * @param ips the addresses get the IP addresses from.
+     */
+    protected byte[][] buildMaskedAuthorizedIPs(final InetAddress[] ips) throws UnknownHostException {
         final InetAddress maskAddress = getMaskAddress();
-        authorizedIPs = new byte[ips.length][];
+        byte[][] tmpAuthorizedIPs = new byte[ips.length][];
         for (int i = 0; i < ips.length; ++i) {
-            authorizedIPs[i] = mask(ips[i], maskAddress);
+            tmpAuthorizedIPs[i] = mask(ips[i], maskAddress);
         }
+
+        return tmpAuthorizedIPs;
     }
 
-    protected abstract byte[][] getAuthorizedIPs(InetAddress mask) throws UnknownHostException, SocketException;
+    /**
+     * Get the full list of authorized IP addresses for the provided mask.
+     *
+     * @param mask the mask address
+     */
+    protected abstract byte[][] getAuthorizedIPs(final InetAddress mask) throws UnknownHostException, SocketException;
 
+    // CHECKSTYLE:OFF
+    // Don't run checkstyle on generated methods
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -141,4 +161,6 @@ public abstract class InetHostMatcher extends HostMatcher {
         }
         return true;
     }
+    // CHECKSTYLE:ON
+
 }

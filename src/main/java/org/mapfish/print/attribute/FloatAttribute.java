@@ -21,15 +21,18 @@ package org.mapfish.print.attribute;
 
 import org.mapfish.print.json.PJsonObject;
 
-public class FloatAttribute extends AbstractAttribute {
+/**
+ * A float type attribute.
+ */
+public class FloatAttribute extends AbstractAttribute<Double> {
 
     @Override
-    public Object getValue(PJsonObject values, String name) {
+    public final Double getValue(final PJsonObject values, final String name) {
         return values.getDouble(name);
     }
 
     @Override
-    protected String getType() {
+    protected final String getType() {
         return "float";
     }
 }

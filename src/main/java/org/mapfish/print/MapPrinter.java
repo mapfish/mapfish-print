@@ -19,12 +19,6 @@
 
 package org.mapfish.print;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.Map;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
@@ -36,10 +30,15 @@ import org.mapfish.print.servlet.queue.Queue;
 import org.mapfish.print.servlet.registry.Registry;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Map;
+
 /**
  * The main class for printing maps. Will parse the spec, create the PDF
  * document and generate it.
- *
+ * <p/>
  * This class should not be directly created but rather obtained from an application
  * context object so that all plugins and dependencies are correctly injected into it
  */
@@ -85,6 +84,7 @@ public class MapPrinter {
 
     /**
      * Use by /info.json to generate its returned content.
+     *
      * @param json the writer for outputting the config specification
      */
     public void printClientConfig(JSONWriter json) throws JSONException {

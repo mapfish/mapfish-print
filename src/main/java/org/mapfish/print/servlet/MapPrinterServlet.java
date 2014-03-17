@@ -19,27 +19,7 @@
 
 package org.mapfish.print.servlet;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.common.io.ByteStreams;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
@@ -51,7 +31,13 @@ import org.mapfish.print.servlet.registry.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.io.ByteStreams;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MapPrinterServlet extends BaseMapServlet {
     private static final long serialVersionUID = -5038318057436063687L;
@@ -89,7 +75,8 @@ public class MapPrinterServlet extends BaseMapServlet {
     private static Registry registry;
 
     public MapPrinterServlet() {
-        MapPrinter mapPrinter = getApplicationContext().getBean(MapPrinter.class);;
+        MapPrinter mapPrinter = getApplicationContext().getBean(MapPrinter.class);
+        ;
         queue = mapPrinter.getQueue();
         registry = mapPrinter.getRegistry();
 
@@ -248,6 +235,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * Create the PDF and returns to the client (in JSON) the URL to get the
      * PDF.
+     *
      * @throws JSONException
      */
     protected void createPDF(PJsonObject job) throws ServletException, JSONException {
@@ -277,8 +265,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             status.put(JSON_ERROR, e.getMessage());
             registry.setJSON(RESULT_METADATA + ref, status);
             return;
-        }
-        finally {
+        } finally {
             registry.setString(LAST_PRINT_COUNT, job.getString(JSON_COUNT));
         }
         registry.setBytes(RESULT_DATA + ref, pdf);
@@ -291,14 +278,14 @@ public class MapPrinterServlet extends BaseMapServlet {
 
     public static String getFileName(String fileName, Date date) {
         Matcher matcher = Pattern.compile("\\$\\{(.+?)\\}").matcher(fileName);
-        HashMap<String,String> replacements = new HashMap<String,String>();
-        while(matcher.find()) {
+        HashMap<String, String> replacements = new HashMap<String, String>();
+        while (matcher.find()) {
             String pattern = matcher.group(1);
-            String key = "${"+pattern+"}";
+            String key = "${" + pattern + "}";
             replacements.put(key, findReplacement(pattern, date));
         }
         String result = fileName;
-        for(Map.Entry<String,String> entry: replacements.entrySet()) {
+        for (Map.Entry<String, String> entry : replacements.entrySet()) {
             result = result.replace(entry.getKey(), entry.getValue());
         }
 
@@ -346,7 +333,7 @@ public class MapPrinterServlet extends BaseMapServlet {
      * To get (in JSON) the information about the available formats and CO.
      */
     protected void getInfo(String app, HttpServletRequest req, HttpServletResponse resp, String basePath) throws ServletException,
-    IOException {
+            IOException {
         MapPrinter printer = getMapPrinter(app);
         resp.setContentType("application/json; charset=utf-8");
         final PrintWriter writer = resp.getWriter();

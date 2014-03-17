@@ -19,21 +19,8 @@
 
 package org.mapfish.print.output;
 
-import java.io.File;
-import java.io.OutputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JREmptyDataSource;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
-
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.config.Configuration;
@@ -43,6 +30,13 @@ import org.mapfish.print.processor.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 
 public class JasperReportOutputFormat implements OutputFormat {
@@ -73,20 +67,20 @@ public class JasperReportOutputFormat implements OutputFormat {
         values.put("SUBREPORT_DIR", jasperTemplateDirectory.getAbsolutePath());
 
         final PJsonObject jsonAttributes = spec.getJSONObject("attributes");
-        
+
         Map<String, Attribute> attributes = template.getAttributes();
         for (String attributeName : attributes.keySet()) {
             values.put(attributeName, attributes.get(attributeName).
                     getValue(jsonAttributes, attributeName));
-            
+
         }
-        
+
         for (Processor process : template.getProcessors()) {
             runProcess(process, values);
         }
 
         if (template.getIterValue() != null) {
-            List<Map<String,?>> dataSource = new ArrayList<Map<String,?>>();
+            List<Map<String, ?>> dataSource = new ArrayList<Map<String, ?>>();
             Iterable<Values> iter = values.getIterator(template.getIterValue());
             for (Values iterValues : iter) {
                 for (Processor process : template.getIterProcessors()) {
@@ -100,8 +94,7 @@ public class JasperReportOutputFormat implements OutputFormat {
                     values.getParameters(),
                     jrDataSource);
             JasperExportManager.exportReportToPdfStream(print, outputStream);
-        }
-        else if (template.getJdbcUrl() != null && template.getJdbcUser() != null && template.getJdbcPassword() != null) {
+        } else if (template.getJdbcUrl() != null && template.getJdbcUser() != null && template.getJdbcPassword() != null) {
             Connection connection = DriverManager.getConnection(
                     template.getJdbcUrl(), template.getJdbcUser(), template.getJdbcPassword());
             final JasperPrint print = JasperFillManager.fillReport(
@@ -109,16 +102,14 @@ public class JasperReportOutputFormat implements OutputFormat {
                     values.getParameters(),
                     connection);
             JasperExportManager.exportReportToPdfStream(print, outputStream);
-        }
-        else if (template.getJdbcUrl() != null) {
+        } else if (template.getJdbcUrl() != null) {
             Connection connection = DriverManager.getConnection(template.getJdbcUrl());
             final JasperPrint print = JasperFillManager.fillReport(
                     jasperTemplateBuild.getAbsolutePath(),
                     values.getParameters(),
                     connection);
             JasperExportManager.exportReportToPdfStream(print, outputStream);
-        }
-        else {
+        } else {
             final JasperPrint print = JasperFillManager.fillReport(
                     jasperTemplateBuild.getAbsolutePath(),
                     values.getParameters(),

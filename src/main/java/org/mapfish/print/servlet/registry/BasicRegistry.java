@@ -19,10 +19,10 @@
 
 package org.mapfish.print.servlet.registry;
 
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import org.json.JSONObject;
 
 
 public class BasicRegistry implements Registry {
@@ -41,7 +41,7 @@ public class BasicRegistry implements Registry {
 
     @Override
     public String getString(String key) {
-        return (String)registry.get(key);
+        return (String) registry.get(key);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class BasicRegistry implements Registry {
 
     @Override
     public Integer getInteger(String key) {
-        return (Integer)registry.get(key);
+        return (Integer) registry.get(key);
     }
 
     @Override
@@ -61,8 +61,9 @@ public class BasicRegistry implements Registry {
 
     @Override
     public Long getLong(String key) {
-        return (Long)registry.get(key);
+        return (Long) registry.get(key);
     }
+
     @Override
     public void setJSON(String key, JSONObject value) {
         registry.put(key, value);
@@ -70,7 +71,7 @@ public class BasicRegistry implements Registry {
 
     @Override
     public JSONObject getJSON(String key) {
-        return (JSONObject)registry.get(key);
+        return (JSONObject) registry.get(key);
     }
 
     @Override
@@ -80,6 +81,6 @@ public class BasicRegistry implements Registry {
 
     @Override
     public byte[] getBytes(String key) {
-        return (byte[])registry.get(key);
+        return (byte[]) registry.get(key);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Camptocamp
+ * Copyright (C) 2014  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -23,6 +23,9 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+/**
+ * Compares ip address string and mask string by using {@link java.net.InetAddress} comparison.
+ */
 public class AddressHostMatcher extends InetHostMatcher {
     private String ip = null;
     private String mask = null;
@@ -30,30 +33,32 @@ public class AddressHostMatcher extends InetHostMatcher {
     private InetAddress maskAddress = null;
 
     @Override
-    protected byte[][] getAuthorizedIPs(InetAddress mask) throws UnknownHostException, SocketException {
+    protected byte[][] getAuthorizedIPs(final InetAddress mask) throws UnknownHostException, SocketException {
         if (authorizedIPs == null) {
             InetAddress[] ips = InetAddress.getAllByName(ip);
-            buildMaskedAuthorizedIPs(ips);
+            this.authorizedIPs = buildMaskedAuthorizedIPs(ips);
         }
         return authorizedIPs;
     }
 
     @Override
     protected InetAddress getMaskAddress() throws UnknownHostException {
-        if (maskAddress == null && mask != null) {
-            maskAddress = InetAddress.getByName(mask);
+        if (this.maskAddress == null && this.mask != null) {
+            this.maskAddress = InetAddress.getByName(this.mask);
         }
-        return maskAddress;
+        return this.maskAddress;
     }
 
-    public void setIp(String ip) {
+    public void setIp(final String ip) {
         this.ip = ip;
     }
 
-    public void setMask(String mask) {
+    public void setMask(final String mask) {
         this.mask = mask;
     }
 
+    // Don't use checkstyle on generated methods
+    // CHECKSTYLE:OFF
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
@@ -117,5 +122,6 @@ public class AddressHostMatcher extends InetHostMatcher {
         }
         return true;
     }
+    // CHECKSTYLE:ON
 
 }

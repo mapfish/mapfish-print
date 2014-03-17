@@ -24,18 +24,21 @@ import org.json.JSONObject;
 public interface Queue {
     /**
      * Push a job in the queue
+     *
      * @param job
      */
     void push(JSONObject job);
 
     /**
      * Is the queue empty
+     *
      * @return
      */
     public boolean isEmpty();
 
     /**
      * Get a job from the queue
+     *
      * @return a job
      */
     public JSONObject get();

@@ -19,15 +19,15 @@
 
 package org.mapfish.print.output;
 
-import java.io.File;
-import java.io.OutputStream;
-
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.json.PJsonObject;
 
+import java.io.File;
+import java.io.OutputStream;
+
 /**
  * Interface for exporting the generated PDF from MapPrinter.
- *
+ * <p/>
  * User: jeichar
  * Date: Oct 18, 2010
  * Time: 1:49:41 PM
@@ -42,6 +42,6 @@ public interface OutputFormat {
      * The file suffix to use when writing to a file.
      */
     String getFileSuffix();
-    
+
     void print(PJsonObject spec, Configuration config, File configDir, OutputStream outputStream) throws Exception;
 }

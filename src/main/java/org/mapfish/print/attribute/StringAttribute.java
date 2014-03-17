@@ -21,10 +21,13 @@ package org.mapfish.print.attribute;
 
 import org.mapfish.print.json.PJsonObject;
 
-public class StringAttribute extends AbstractAttribute {
+/**
+ * Attribute that reads a string from the request data.
+ */
+public class StringAttribute extends AbstractAttribute<String> {
 
     @Override
-    public Object getValue(PJsonObject values, String name) {
+    public String getValue(final PJsonObject values, final String name) {
         return values.getString(name);
     }
 

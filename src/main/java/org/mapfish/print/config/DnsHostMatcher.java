@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Camptocamp
+ * Copyright (C) 2014  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -32,17 +32,25 @@ public class DnsHostMatcher extends HostMatcher {
 
     /**
      * Check the given URI to see if it matches.
-     * 
+     *
+     * @param uri the uri to validate.
+     *
      * @return True if it matches.
      */
     @Override
-    public boolean validate(URI uri) throws UnknownHostException, SocketException, MalformedURLException {
-        if (!uri.getHost().equals(host)) {
+    public boolean validate(final URI uri) throws UnknownHostException, SocketException, MalformedURLException {
+        if (!uri.getHost().equals(this.host)) {
             return false;
         }
         return super.validate(uri);
     }
 
+    public void setHost(final String host) {
+        this.host = host;
+    }
+
+    // CHECKSTYLE:OFF
+    // Don't run checkstyle on generated methods
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
@@ -56,10 +64,6 @@ public class DnsHostMatcher extends HostMatcher {
         }
         sb.append('}');
         return sb.toString();
-    }
-
-    public void setHost(String host) {
-        this.host = host;
     }
 
     @Override
@@ -91,5 +95,5 @@ public class DnsHostMatcher extends HostMatcher {
         }
         return true;
     }
-
+    // CHECKSTYLE:ON
 }

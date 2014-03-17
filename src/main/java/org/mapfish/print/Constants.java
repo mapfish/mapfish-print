@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Camptocamp
+ * Copyright (C) 2014  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -35,6 +35,7 @@ public interface Constants {
      * The output filename in the json spec file.
      */
     String OUTPUT_FILENAME_KEY = "outputFilename";
+
     public interface ImagePlaceHolderConstants {
         String THROW = "throw";
         String DEFAULT = "default";

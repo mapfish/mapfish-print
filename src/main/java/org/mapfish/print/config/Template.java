@@ -19,99 +19,106 @@
 
 package org.mapfish.print.config;
 
-import java.util.List;
-import java.util.Map;
-
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.processor.Processor;
 
+import java.util.List;
+import java.util.Map;
 
-public class Template implements ConfigurationObject{
+/**
+ * Represents a report template configuration.
+ */
+public class Template implements ConfigurationObject {
     private String jasperTemplate;
     private Map<String, Attribute> attributes;
     private List<Processor> processors;
     private String iterValue;
     private List<Processor> iterProcessors;
-    
+
     private String jdbcUrl;
     private String jdbcUser;
     private String jdbcPassword;
-    
-    public void printClientConfig(JSONWriter json) throws JSONException {
+
+    /**
+     * Print out the template information that the client needs for performing a request.
+     *
+     * @param json the writer to write the information to.
+     */
+    public void printClientConfig(final JSONWriter json) throws JSONException {
         json.key("attributes");
         json.array();
-        for (String name : attributes.keySet()) {
+        for (String name : this.attributes.keySet()) {
             json.object();
             json.key("name").value(name);
-            attributes.get(name).printClientConfig(json);
+            this.attributes.get(name).printClientConfig(json);
             json.endObject();
         }
-        json.endArray();    
+        json.endArray();
     }
 
     public Map<String, Attribute> getAttributes() {
-        return attributes;
+        return this.attributes;
     }
 
-    public void setAttributes(Map<String, Attribute> attributes) {
+    public void setAttributes(final Map<String, Attribute> attributes) {
         this.attributes = attributes;
     }
 
     public String getJasperTemplate() {
-        return jasperTemplate;
+        return this.jasperTemplate;
     }
 
-    public void setJasperTemplate(String jasperTemplate) {
+    public void setJasperTemplate(final String jasperTemplate) {
         this.jasperTemplate = jasperTemplate;
     }
 
     public List<Processor> getProcessors() {
-        return processors;
+        return this.processors;
     }
 
-    public void setProcessors(List<Processor> processors) {
+    public void setProcessors(final List<Processor> processors) {
         this.processors = processors;
     }
 
     public String getIterValue() {
-        return iterValue;
+        return this.iterValue;
     }
 
-    public void setIterValue(String iterValue) {
+    public void setIterValue(final String iterValue) {
         this.iterValue = iterValue;
     }
 
     public List<Processor> getIterProcessors() {
-        return iterProcessors;
+        return this.iterProcessors;
     }
 
-    public void setIterProcessors(List<Processor> iterProcessors) {
+    public void setIterProcessors(final List<Processor> iterProcessors) {
         this.iterProcessors = iterProcessors;
     }
 
     public String getJdbcUrl() {
-        return jdbcUrl;
+        return this.jdbcUrl;
     }
 
-    public void setJdbcUrl(String jdbcUrl) {
+    public void setJdbcUrl(final String jdbcUrl) {
         this.jdbcUrl = jdbcUrl;
     }
 
     public String getJdbcUser() {
-        return jdbcUser;
+        return this.jdbcUser;
     }
 
-    public void setJdbcUser(String jdbcUser) {
+    public void setJdbcUser(final String jdbcUser) {
         this.jdbcUser = jdbcUser;
     }
 
     public String getJdbcPassword() {
-        return jdbcPassword;
+        return this.jdbcPassword;
     }
 
-    public void setJdbcPassword(String jdbcPassword) {
+    public void setJdbcPassword(final String jdbcPassword) {
         this.jdbcPassword = jdbcPassword;
     }
 }

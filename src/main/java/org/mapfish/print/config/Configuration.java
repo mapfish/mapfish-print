@@ -1,17 +1,32 @@
-package org.mapfish.print.config;
+/*
+ * Copyright (C) 2014  Camptocamp
+ *
+ * This file is part of MapFish Print
+ *
+ * MapFish Print is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MapFish Print is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
+package org.mapfish.print.config;
 
 import org.json.JSONException;
 import org.json.JSONWriter;
 
+import java.util.*;
+
 /**
  * The Main Configuration Bean.
- *
+ * <p/>
  * Created by Jesse on 2/20/14.
  */
 public class Configuration {
@@ -22,31 +37,38 @@ public class Configuration {
     private List<SecurityStrategy> security = Collections.emptyList();
     private Map<String, Template> templates;
 
-    public void printClientConfig(JSONWriter json) throws JSONException {
+    /**
+     * Print out the configuration that the client needs to make a request.
+     *
+     * @param json the output writer.
+     *
+     * @throws JSONException
+     */
+    public void printClientConfig(final JSONWriter json) throws JSONException {
         json.key("layouts");
         json.array();
-        for (String name : templates.keySet()) {
+        for (String name : this.templates.keySet()) {
             json.object();
             json.key("name").value(name);
-            templates.get(name).printClientConfig(json);
+            this.templates.get(name).printClientConfig(json);
             json.endObject();
         }
         json.endArray();
     }
 
     public boolean isReloadConfig() {
-        return reloadConfig;
+        return this.reloadConfig;
     }
 
-    public void setReloadConfig(boolean reloadConfig) {
+    public void setReloadConfig(final boolean reloadConfig) {
         this.reloadConfig = reloadConfig;
     }
 
     public String getProxyBaseUrl() {
-        return proxyBaseUrl;
+        return this.proxyBaseUrl;
     }
 
-    public void setProxyBaseUrl(String proxyBaseUrl) {
+    public void setProxyBaseUrl(final String proxyBaseUrl) {
         this.proxyBaseUrl = proxyBaseUrl;
     }
 
@@ -54,40 +76,49 @@ public class Configuration {
         return headers;
     }
 
-    public void setHeaders(TreeSet<String> headers) {
+    public void setHeaders(final TreeSet<String> headers) {
         this.headers = headers;
     }
 
-    public String getOutputFilename(String layoutName) {
+    /**
+     * Calculate the name of the pdf file to return to the user.
+     *
+     * @param layoutName the name of file from the configuration.
+     */
+    public String getOutputFilename(final String layoutName) {
         // TODO implement
         throw new UnsupportedOperationException();
     }
 
     public List<HostMatcher> getHosts() {
-        return hosts;
+        return this.hosts;
     }
 
-    public void setHosts(List<HostMatcher> hosts) {
+    public void setHosts(final List<HostMatcher> hosts) {
         this.hosts = hosts;
     }
 
     public List<SecurityStrategy> getSecurity() {
-        return security;
+        return this.security;
     }
 
-    public void setSecurity(List<SecurityStrategy> security) {
+    public void setSecurity(final List<SecurityStrategy> security) {
         this.security = security;
     }
 
     public Map<String, Template> getTemplates() {
-        return templates;
+        return this.templates;
     }
 
-    public Template getTemplate(String name) {
-        return templates.get(name);
+    /**
+     * Retrieve the configuration of the named template.
+     * @param name the template name;
+     */
+    public Template getTemplate(final String name) {
+        return this.templates.get(name);
     }
 
-    public void setTemplates(Map<String, Template> templates) {
+    public void setTemplates(final Map<String, Template> templates) {
         this.templates = templates;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Camptocamp
+ * Copyright (C) 2014  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -33,7 +33,7 @@ import java.util.Enumeration;
 public class LocalHostMatcher extends InetHostMatcher {
 
     @Override
-    protected byte[][] getAuthorizedIPs(InetAddress mask) throws UnknownHostException, SocketException {
+    protected byte[][] getAuthorizedIPs(final InetAddress mask) throws UnknownHostException, SocketException {
         if (authorizedIPs == null) {
             InetAddress[] result;
             Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
@@ -47,7 +47,7 @@ public class LocalHostMatcher extends InetHostMatcher {
             }
             result = addresses.toArray(new InetAddress[addresses.size()]);
 
-            buildMaskedAuthorizedIPs(result);
+            this.authorizedIPs = buildMaskedAuthorizedIPs(result);
         }
         return authorizedIPs;
     }
@@ -70,9 +70,5 @@ public class LocalHostMatcher extends InetHostMatcher {
     @Override
     protected InetAddress getMaskAddress() throws UnknownHostException {
         return null;
-    }
-
-    public void setDummy(boolean dummy) {
-        // YAML parser always need some content
     }
 }

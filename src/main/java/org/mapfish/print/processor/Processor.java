@@ -19,10 +19,10 @@
 
 package org.mapfish.print.processor;
 
-import java.util.Map;
-
 import org.mapfish.print.config.ConfigurationObject;
 import org.mapfish.print.output.Values;
+
+import java.util.Map;
 
 /**
  * Interface for processing input attributes
@@ -30,8 +30,6 @@ import org.mapfish.print.output.Values;
  */
 public interface Processor extends ConfigurationObject {
     /**
-     *
-     *
      * @param values Actual values from attributes and the previous processor.
      * @return An id of the value for lookup in the output mapper?
      * @throws Exception

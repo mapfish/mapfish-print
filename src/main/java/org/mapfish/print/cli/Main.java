@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Camptocamp
+ * Copyright (C) 2014  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -27,8 +27,6 @@ import com.google.common.io.CharStreams;
 import com.sampullara.cli.Args;
 import org.json.JSONWriter;
 import org.mapfish.print.MapPrinter;
-import org.mapfish.print.config.Configuration;
-import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,16 +50,28 @@ import static org.mapfish.print.cli.CliDefinition.*;
 public class Main {
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    private static final int LOGLEVEL_QUIET = 0;
+    private static final int LOGLEVEL_INFO = 1;
+    private static final int LOGLEVEL_DEFAULT = 2;
+    private static final int LOGLEVEL_VERBOSE = 3;
 
-    static AbstractXmlApplicationContext context;
+    private static AbstractXmlApplicationContext context;
 
+    /**
+     * Name of the default spring context file.
+     */
     public static final String DEFAULT_SPRING_CONTEXT = "mapfish-spring-application-context.xml";
 
     @Autowired
     private MapPrinter mapPrinter;
 
-
-    public static void main(String[] args) throws Exception {
+    /**
+     * Main method.
+     *
+     * @param args the cli arguments
+     * @throws Exception
+     */
+    public static void main(final String[] args) throws Exception {
         try {
             List<String> unusedArguments = Args.parse(CliDefinition.class, args);
 
@@ -96,9 +106,9 @@ public class Main {
         System.exit(1);
     }
 
-    public void run() throws Exception {
+    private void run() throws Exception {
         final File configFile = new File(config);
-        mapPrinter.setConfiguration(configFile);
+        this.mapPrinter.setConfiguration(configFile);
         OutputStream outFile = null;
         try {
             if (clientConfig) {
@@ -107,9 +117,7 @@ public class Main {
 
                 JSONWriter json = new JSONWriter(writer);
                 json.object();
-                {
-                    mapPrinter.printClientConfig(json);
-                }
+                this.mapPrinter.printClientConfig(json);
                 json.endObject();
 
                 writer.close();
@@ -118,7 +126,7 @@ public class Main {
                 final InputStream inFile = getInputStream();
                 final String jsonConfiguration = CharStreams.toString(new InputStreamReader(inFile, "UTF-8"));
                 final PJsonObject jsonSpec = MapPrinter.parseSpec(jsonConfiguration);
-                outFile = getOutputStream(mapPrinter.getOutputFormat(jsonSpec).getFileSuffix());
+                outFile = getOutputStream(this.mapPrinter.getOutputFormat(jsonSpec).getFileSuffix());
                 Map<String, String> headers = new HashMap<String, String>();
                 if (referer != null) {
                     headers.put("Referer", referer);
@@ -126,7 +134,7 @@ public class Main {
                 if (cookie != null) {
                     headers.put("Cookie", cookie);
                 }
-                mapPrinter.print(jsonSpec, outFile, headers);
+                this.mapPrinter.print(jsonSpec, outFile, headers);
             }
         } finally {
             if (outFile != null) outFile.close();
@@ -138,16 +146,16 @@ public class Main {
         final ClassLoader classLoader = Main.class.getClassLoader();
         URL logfile;
         switch (verbose) {
-            case 0:
+            case LOGLEVEL_QUIET:
                 logfile = classLoader.getResource("shell-quiet-log.xml");
                 break;
-            case 1:
+            case LOGLEVEL_INFO:
                 logfile = classLoader.getResource("shell-info-log.xml");
                 break;
-            case 2:
+            case LOGLEVEL_DEFAULT:
                 logfile = classLoader.getResource("shell-default-log.xml");
                 break;
-            case 3:
+            case LOGLEVEL_VERBOSE:
                 logfile = classLoader.getResource("shell-verbose-log.xml");
                 break;
             default:
@@ -155,23 +163,23 @@ public class Main {
                 break;
         }
 
-        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 
         try {
             JoranConfigurator configurator = new JoranConfigurator();
-            configurator.setContext(context);
+            configurator.setContext(loggerContext);
             // Call context.reset() to clear any previous configuration, e.g. default
             // configuration. For multi-step configuration, omit calling context.reset().
-            context.reset();
+            loggerContext.reset();
             configurator.doConfigure(logfile);
         } catch (JoranException je) {
             // StatusPrinter will handle this
         }
-        StatusPrinter.printInCaseOfErrorsOrWarnings(context);
+        StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext);
 
     }
 
-    private OutputStream getOutputStream(String suffix) throws FileNotFoundException {
+    private OutputStream getOutputStream(final String suffix) throws FileNotFoundException {
         final OutputStream outFile;
         if (output != null) {
             if (!output.endsWith("." + suffix)) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Camptocamp
+ * Copyright (C) 2014  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -25,19 +25,33 @@ import org.mapfish.print.PrintException;
  * Thrown when an attribute has an invalid value in the spec.
  */
 public class InvalidJsonValueException extends PrintException {
-    /**
-     *
-     */
+
     private static final long serialVersionUID = 1L;
 
-    public InvalidJsonValueException(PJsonElement element, String key, Object value) {
+    /**
+     * Constructor.
+     *
+     * @param element element that was queried
+     * @param key key that was desired
+     * @param value the illegal value obtained.
+     */
+    public InvalidJsonValueException(final PJsonElement element, final String key, final Object value) {
         this(element, key, value, null);
     }
 
-    public InvalidJsonValueException(PJsonElement element, String key, Object value, Throwable e) {
+    /**
+     * Constructor.
+     *
+     * @param element element that was queried
+     * @param key key that was desired
+     * @param value the illegal value obtained.
+     * @param e the exception to wrap by this exception
+     */
+    public InvalidJsonValueException(final PJsonElement element, final String key, final Object value, final Throwable e) {
         super(element.getPath(key) + " has an invalid value: " + value.toString(), e);
     }
 
+    @Override
     public String toString() {
         if (getCause() != null) {
             return super.toString() + " (" + getCause().getMessage() + ")";
