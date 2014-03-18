@@ -27,12 +27,12 @@ import org.mapfish.print.json.PJsonObject;
 public class TableAttribute extends AbstractAttribute<TableAttribute.TableAttributeValue> {
 
     @Override
-    public TableAttributeValue getValue(final PJsonObject values, final String name) {
+	public final TableAttributeValue getValue(final PJsonObject values, final String name) {
         return new TableAttributeValue(values.getJSONObject(name));
     }
 
     @Override
-    protected String getType() {
+	protected final String getType() {
         return "table";
     }
 
@@ -47,7 +47,7 @@ public class TableAttribute extends AbstractAttribute<TableAttribute.TableAttrib
             this.jsonObject = jsonObject;
         }
 
-        public PJsonObject getJsonObject() {
+        public final PJsonObject getJsonObject() {
             return this.jsonObject;
         }
     }

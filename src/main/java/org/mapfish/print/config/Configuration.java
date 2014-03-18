@@ -44,7 +44,7 @@ public class Configuration {
      *
      * @throws JSONException
      */
-    public void printClientConfig(final JSONWriter json) throws JSONException {
+    public final void printClientConfig(final JSONWriter json) throws JSONException {
         json.key("layouts");
         json.array();
         for (String name : this.templates.keySet()) {
@@ -56,27 +56,27 @@ public class Configuration {
         json.endArray();
     }
 
-    public boolean isReloadConfig() {
+    public final boolean isReloadConfig() {
         return this.reloadConfig;
     }
 
-    public void setReloadConfig(final boolean reloadConfig) {
+    public final void setReloadConfig(final boolean reloadConfig) {
         this.reloadConfig = reloadConfig;
     }
 
-    public String getProxyBaseUrl() {
+    public final String getProxyBaseUrl() {
         return this.proxyBaseUrl;
     }
 
-    public void setProxyBaseUrl(final String proxyBaseUrl) {
+    public final void setProxyBaseUrl(final String proxyBaseUrl) {
         this.proxyBaseUrl = proxyBaseUrl;
     }
 
-    public TreeSet<String> getHeaders() {
-        return headers;
+    public final TreeSet<String> getHeaders() {
+        return this.headers;
     }
 
-    public void setHeaders(final TreeSet<String> headers) {
+    public final void setHeaders(final TreeSet<String> headers) {
         this.headers = headers;
     }
 
@@ -85,28 +85,28 @@ public class Configuration {
      *
      * @param layoutName the name of file from the configuration.
      */
-    public String getOutputFilename(final String layoutName) {
+    public final String getOutputFilename(final String layoutName) {
         // TODO implement
         throw new UnsupportedOperationException();
     }
 
-    public List<HostMatcher> getHosts() {
+    public final List<HostMatcher> getHosts() {
         return this.hosts;
     }
 
-    public void setHosts(final List<HostMatcher> hosts) {
+    public final void setHosts(final List<HostMatcher> hosts) {
         this.hosts = hosts;
     }
 
-    public List<SecurityStrategy> getSecurity() {
+    public final List<SecurityStrategy> getSecurity() {
         return this.security;
     }
 
-    public void setSecurity(final List<SecurityStrategy> security) {
+    public final void setSecurity(final List<SecurityStrategy> security) {
         this.security = security;
     }
 
-    public Map<String, Template> getTemplates() {
+    public final Map<String, Template> getTemplates() {
         return this.templates;
     }
 
@@ -114,11 +114,11 @@ public class Configuration {
      * Retrieve the configuration of the named template.
      * @param name the template name;
      */
-    public Template getTemplate(final String name) {
+    public final Template getTemplate(final String name) {
         return this.templates.get(name);
     }
 
-    public void setTemplates(final Map<String, Template> templates) {
+    public final void setTemplates(final Map<String, Template> templates) {
         this.templates = templates;
     }
 }

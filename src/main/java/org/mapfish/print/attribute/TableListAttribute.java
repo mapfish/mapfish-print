@@ -25,16 +25,30 @@ import org.mapfish.print.json.PJsonObject;
 /**
  * The attributes for {@link org.mapfish.print.processor.jasper.TableListProcessor}.
  */
-public class TableListAttribute extends AbstractAttribute {
+public class TableListAttribute extends AbstractAttribute<TableListAttribute.TableListAttributeValue> {
 
     @Override
-    public Object getValue(PJsonObject values, String name) {
-        return values.getJSONObject(name);
+	public final TableListAttributeValue getValue(final PJsonObject values, final String name) {
+        return new TableListAttributeValue(values.getJSONObject(name));
     }
 
     @Override
-    protected String getType() {
+	protected final String getType() {
         return "tablelist";
     }
+    /**
+     * The value of {@link org.mapfish.print.attribute.TableAttribute}.
+     */
+    public static class TableListAttributeValue {
 
+        private final PJsonObject jsonObject;
+
+        TableListAttributeValue(final PJsonObject jsonObject) {
+            this.jsonObject = jsonObject;
+        }
+
+        public final PJsonObject getJsonObject() {
+            return this.jsonObject;
+        }
+    }
 }

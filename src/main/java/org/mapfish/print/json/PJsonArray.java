@@ -29,17 +29,30 @@ import org.json.JSONObject;
 public class PJsonArray extends PJsonElement {
     private final JSONArray array;
 
-    public PJsonArray(PJsonElement parent, JSONArray array, String contextName) {
+    /**
+     * Constructor.
+     * @param parent the parent object.
+     * @param array the array to wrap
+     * @param contextName the name of this object within the parent.
+     */
+    public PJsonArray(final PJsonElement parent, final JSONArray array, final String contextName) {
         super(parent, contextName);
         this.array = array;
     }
 
-    public int size() {
-        return array.length();
+    /**
+     * Return the size of the array.
+     */
+    public final int size() {
+        return this.array.length();
     }
 
-    public PJsonObject getJSONObject(int i) {
-        JSONObject val = array.optJSONObject(i);
+    /**
+     * Get the element at the index as a json object.
+     * @param i the index of the object to access
+     */
+    public final PJsonObject getJSONObject(final int i) {
+        JSONObject val = this.array.optJSONObject(i);
         final String context = "[" + i + "]";
         if (val == null) {
             throw new JsonMissingException(this, context);
@@ -47,8 +60,12 @@ public class PJsonArray extends PJsonElement {
         return new PJsonObject(this, val, context);
     }
 
-    public PJsonArray getJSONArray(int i) {
-        JSONArray val = array.optJSONArray(i);
+    /**
+     * Get the element at the index as a json array.
+     * @param i the index of the element to access
+     */
+    public final PJsonArray getJSONArray(final int i) {
+        JSONArray val = this.array.optJSONArray(i);
         final String context = "[" + i + "]";
         if (val == null) {
             throw new JsonMissingException(this, context);
@@ -56,32 +73,48 @@ public class PJsonArray extends PJsonElement {
         return new PJsonArray(this, val, context);
     }
 
-    public int getInt(int i) {
-        int val = array.optInt(i, Integer.MIN_VALUE);
+    /**
+     * Get the element at the index as an integer.
+     * @param i the index of the element to access
+     */
+    public final int getInt(final int i) {
+        int val = this.array.optInt(i, Integer.MIN_VALUE);
         if (val == Integer.MIN_VALUE) {
             throw new JsonMissingException(this, "[" + i + "]");
         }
         return val;
     }
 
-    public float getFloat(int i) {
-        double val = array.optDouble(i, Double.MAX_VALUE);
+    /**
+     * Get the element at the index as a float.
+     * @param i the index of the element to access
+     */
+    public final float getFloat(final int i) {
+        double val = this.array.optDouble(i, Double.MAX_VALUE);
         if (val == Double.MAX_VALUE) {
             throw new JsonMissingException(this, "[" + i + "]");
         }
         return (float) val;
     }
 
-    public double getDouble(int i) {
-        double val = array.optDouble(i, Double.MAX_VALUE);
+    /**
+     * Get the element at the index as a double.
+     * @param i the index of the element to access
+     */
+    public final double getDouble(final int i) {
+        double val = this.array.optDouble(i, Double.MAX_VALUE);
         if (val == Double.MAX_VALUE) {
             throw new JsonMissingException(this, "[" + i + "]");
         }
         return val;
     }
 
-    public String getString(int i) {
-        String val = array.optString(i, null);
+    /**
+     * Get the element at the index as a string.
+     * @param i the index of the element to access
+     */
+    public final String getString(final int i) {
+        String val = this.array.optString(i, null);
         if (val == null) {
             throw new JsonMissingException(this, "[" + i + "]");
         }
@@ -91,7 +124,7 @@ public class PJsonArray extends PJsonElement {
     /**
      * @deprecated Use only if you know what you are doing!
      */
-    public JSONArray getInternalArray() {
-        return array;
+    public final JSONArray getInternalArray() {
+        return this.array;
     }
 }

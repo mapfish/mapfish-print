@@ -35,8 +35,6 @@ allprojects {
         reportsDir = file("$project.buildDir/findbugsReports")
         effort = "max"
         reportLevel = "high"
-//        visitors = ["FindSqlInjection", "SwitchFallthrough"]
-//        omitVisitors = ["FindNonShortCircuit"]
         excludeFilter = file("$rootProject.projectDir/findbugs-exclude.xml")
     }
 
@@ -64,12 +62,13 @@ dependencies {
             "com.github.spullara.cli-parser:cli-parser:1.1.1",
         	'commons-httpclient:commons-httpclient:3.1',
 	        'net.sf.jasperreports:jasperreports:5.5.0',
-	        'ar.com.fdvs:DynamicJasper:5.0.0')
+	        'ar.com.fdvs:DynamicJasper:5.0.0',
+            'org.springframework.batch:spring-batch-core:2.2.5.RELEASE')
     compile ('org.apache.xmlgraphics:batik-transcoder:1.7'){
         exclude module: 'fop'
     }
-    providedCompile 'javax.servlet:servlet-api:2.5'
-
+    providedCompile ('javax.servlet:servlet-api:2.5',
+            'com.google.code.findbugs:jsr305:2.0.1')
 }
 
 allprojects {
@@ -114,14 +113,6 @@ war {
             'Build-Time': new Date().getDateTimeString(),
             'git-revision': gitRevision())
 }
-/* task imageMagickWar (type: War) {
-    baseName = "print-servlet"
-    manifest.mainAttributes(
-            'Build-Time': new Date().getDateTimeString(),
-            'git-revision': gitRevision())
-    classifier = "IMG-MAGICK"
-    from fileTree('sample-spring/imagemagick')
-} */
 
 task standalone (type: Jar) {
     baseName = "print-standalone"

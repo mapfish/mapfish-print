@@ -22,20 +22,25 @@ package org.mapfish.print.attribute;
 import org.mapfish.print.json.PJsonObject;
 
 /**
- * Objects needed by the {@link org.mapfish.print.processor.jasper.LegendProcessor}
+ * Objects needed by the {@link org.mapfish.print.processor.jasper.LegendProcessor}.
  */
 public class LegendAttribute extends AbstractAttribute<LegendAttribute.LegendAttributeValue> {
 
     @Override
-    public LegendAttributeValue getValue(final PJsonObject values, final String name) {
+	public final LegendAttributeValue getValue(final PJsonObject values, final String name) {
         return new LegendAttributeValue(values.getJSONObject(name));
     }
 
     @Override
-    protected String getType() {
+	protected final String getType() {
         return "legend";
     }
 
+    /**
+     * The value read from the json by this attribute object.
+     * 
+     * @author Jesse
+     */
     public static class LegendAttributeValue {
 
         private final PJsonObject json;
@@ -48,7 +53,7 @@ public class LegendAttribute extends AbstractAttribute<LegendAttribute.LegendAtt
         /**
          * TODO Change this to be actual configuration in well typed data.
          */
-        public PJsonObject getJson() {
+        public final PJsonObject getJson() {
             return this.json;
         }
     }

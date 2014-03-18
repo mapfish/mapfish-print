@@ -31,168 +31,280 @@ import java.util.Iterator;
  */
 public class PJsonObject extends PJsonElement {
     private final JSONObject obj;
-
-    public PJsonObject(JSONObject obj, String contextName) {
+    /**
+     * Constructor.
+     * 
+     * @param obj the internal json element
+     * @param contextName the field name of this element in the parent.
+     */
+    public PJsonObject(final JSONObject obj, final String contextName) {
         this(null, obj, contextName);
     }
-
-    public PJsonObject(PJsonElement parent, JSONObject obj, String contextName) {
+    /**
+     * Constructor.
+     * 
+     * @param parent the parent element
+     * @param obj the internal json element
+     * @param contextName the field name of this element in the parent.
+     */
+    public PJsonObject(final PJsonElement parent, final JSONObject obj, final String contextName) {
         super(parent, contextName);
         this.obj = obj;
     }
 
-    public String optString(String key) {
+    /**
+     * Get a property as a string or null.
+     * @param key the property name
+     */
+    public final String optString(final String key) {
         return optString(key, null);
     }
 
-    public String optString(String key, String defaultValue) {
-        return obj.optString(key, defaultValue);
+    /**
+     * Get a property as a string or defaultValue.
+     * @param key the property name
+     * @param defaultValue the default value
+     */
+    public final String optString(final String key, final String defaultValue) {
+        return this.obj.optString(key, defaultValue);
     }
-
-    public String getString(String key) {
-        String result = obj.optString(key, null);
+    
+    /**
+     * Get a property as a string or throw an exception.
+     * @param key the property name
+     */
+    public final String getString(final String key) {
+        String result = this.obj.optString(key, null);
         if (result == null) {
             throw new JsonMissingException(this, key);
         }
         return result;
     }
 
-    public int getInt(String key) {
-        Integer result = obj.optInt(key, Integer.MIN_VALUE);
+    /**
+     * Get a property as a int or throw an exception.
+     * @param key the property name
+     */ 
+    public final int getInt(final String key) {
+        Integer result = this.obj.optInt(key, Integer.MIN_VALUE);
         if (result == Integer.MIN_VALUE) {
             throw new JsonMissingException(this, key);
         }
         return result;
     }
-
-    public Integer optInt(String key) {
-        final int result = obj.optInt(key, Integer.MIN_VALUE);
+    
+    /**
+     * Get a property as a int or MIN_VALUE.
+     * @param key the property name
+     */
+    public final Integer optInt(final String key) {
+        final int result = this.obj.optInt(key, Integer.MIN_VALUE);
         return result == Integer.MIN_VALUE ? null : result;
     }
-
-    public int optInt(String key, int defaultValue) {
-        return obj.optInt(key, defaultValue);
+    /**
+     * Get a property as a int or default value.
+     * @param key the property name
+     * @param defaultValue the default value
+     */
+    public final int optInt(final String key, final int defaultValue) {
+        return this.obj.optInt(key, defaultValue);
     }
 
-    public double getDouble(String key) {
-        double result = obj.optDouble(key, Double.NaN);
+    /**
+     * Get a property as a double or throw an exception.
+     * @param key the property name
+     */
+    public final double getDouble(final String key) {
+        double result = this.obj.optDouble(key, Double.NaN);
         if (Double.isNaN(result)) {
             throw new JsonMissingException(this, key);
         }
         return result;
     }
 
-    public double optDouble(String key, double defaultValue) {
-        return obj.optDouble(key, defaultValue);
+    /**
+     * Get a property as a double or defaultValue.
+     * @param key the property name
+     * @param defaultValue the default value
+     */
+    public final double optDouble(final String key, final double defaultValue) {
+        return this.obj.optDouble(key, defaultValue);
     }
 
-    public float getFloat(String key) {
+    /**
+     * Get a property as a float or throw an exception.
+     * @param key the property name
+     */
+    public final float getFloat(final String key) {
         return (float) getDouble(key);
     }
 
-    public Float optFloat(String key) {
-        double result = obj.optDouble(key, Double.NaN);
+    /**
+     * Get a property as a float or null.
+     * @param key the property name
+     */
+    public final Float optFloat(final String key) {
+        double result = this.obj.optDouble(key, Double.NaN);
         if (Double.isNaN(result)) {
             return null;
         }
         return (float) result;
     }
 
-    public Float optFloat(String key, float defaultValue) {
-        return (float) obj.optDouble(key, defaultValue);
+    /**
+     * Get a property as a float or Default vaule.
+     * @param key the property name
+     * @param defaultValue default value
+     */
+    public final Float optFloat(final String key, final float defaultValue) {
+        return (float) this.obj.optDouble(key, defaultValue);
     }
 
-    public boolean getBool(String key) {
+    /**
+     * Get a property as a boolean or throw exception.
+     * @param key the property name
+     */
+    public final boolean getBool(final String key) {
         try {
-            return obj.getBoolean(key);
+            return this.obj.getBoolean(key);
         } catch (JSONException e) {
             throw new JsonMissingException(this, key);
         }
     }
 
-    public Boolean optBool(String key) {
-        if (obj.optString(key) == null) {
+    /**
+     * Get a property as a boolean or null.
+     * @param key the property name
+     */
+    public final Boolean optBool(final String key) {
+        if (this.obj.optString(key) == null) {
             return null;
         } else {
-            return obj.optBoolean(key);
+            return this.obj.optBoolean(key);
         }
     }
 
-    public boolean optBool(String key, boolean defaultValue) {
-        return obj.optBoolean(key, defaultValue);
+    /**
+     * Get a property as a boolean or default value.
+     * @param key the property name
+     * @param defaultValue the default
+     */
+    public final boolean optBool(final String key, final boolean defaultValue) {
+        return this.obj.optBoolean(key, defaultValue);
     }
 
-    public PJsonObject optJSONObject(String key) {
-        final JSONObject val = obj.optJSONObject(key);
+    /**
+     * Get a property as a json object or null.
+     * @param key the property name
+     */
+    public final PJsonObject optJSONObject(final String key) {
+        final JSONObject val = this.obj.optJSONObject(key);
         return val != null ? new PJsonObject(this, val, key) : null;
     }
 
-    public PJsonObject getJSONObject(String key) {
-        final JSONObject val = obj.optJSONObject(key);
+    /**
+     * Get a property as a json object or throw exception.
+     * @param key the property name
+     */
+    public final PJsonObject getJSONObject(final String key) {
+        final JSONObject val = this.obj.optJSONObject(key);
         if (val == null) {
             throw new JsonMissingException(this, key);
         }
         return new PJsonObject(this, val, key);
     }
 
-    public PJsonArray getJSONArray(String key) {
-        final JSONArray val = obj.optJSONArray(key);
+    /**
+     * Get a property as a json array or throw exception.
+     * @param key the property name
+     */
+    public final PJsonArray getJSONArray(final String key) {
+        final JSONArray val = this.obj.optJSONArray(key);
         if (val == null) {
             throw new JsonMissingException(this, key);
         }
         return new PJsonArray(this, val, key);
     }
 
-    public PJsonArray optJSONArray(String key) {
-        final JSONArray val = obj.optJSONArray(key);
+    /**
+     * Get a property as a json array or null.
+     * @param key the property name
+     */
+    public final PJsonArray optJSONArray(final String key) {
+        final JSONArray val = this.obj.optJSONArray(key);
         if (val == null) {
             return null;
         }
         return new PJsonArray(this, val, key);
     }
 
-    public PJsonArray optJSONArray(String key, PJsonArray defaultValue) {
+    /**
+     * Get a property as a json array or default.
+     * @param key the property name
+     * @param defaultValue default
+     */
+    public final PJsonArray optJSONArray(final String key, final PJsonArray defaultValue) {
         PJsonArray result = optJSONArray(key);
         return result != null ? result : defaultValue;
     }
 
+    /**
+     * Get an iterator of all keys in this objects.
+     * @return
+     */
     @SuppressWarnings("unchecked")
-    public Iterator<String> keys() {
-        return obj.keys();
+	public final Iterator<String> keys() {
+        return this.obj.keys();
     }
 
-    public int size() {
-        return obj.length();
+    /**
+     * Get the number of properties in this object.
+     */
+    public final int size() {
+        return this.obj.length();
     }
 
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        if (obj instanceof PJsonObject) {
-            PJsonObject other = (PJsonObject) obj;
-            if (size() != other.size()) {
-                return false;
-            }
-            final Iterator<String> iterator = keys();
-            while (iterator.hasNext()) {
-                String key = iterator.next();
-                if (!getString(key).equals(other.optString(key))) {
-                    return false;
-                }
-            }
-            return true;
-        } else {
-            return false;
-        }
+    // CHECKSTYLE:OFF
+    // Don't run checkstyle on generated methods
+    @Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((obj == null) ? 0 : obj.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PJsonObject other = (PJsonObject) obj;
+		if (this.obj == null) {
+			if (other.obj != null)
+				return false;
+		} else if (!this.obj.equals(other.obj))
+			return false;
+		return true;
+	}
+	// CHECKSTYLE:ON
+	
+	/**
+     * Get the internal json object.
+     * @return
+     */
+    public final JSONObject getInternalObj() {
+        return this.obj;
     }
 
-    public JSONObject getInternalObj() {
-        return obj;
-    }
-
-    public boolean has(String key) {
-        String result = obj.optString(key, null);
+    /**
+     * Check if the object has a property with the key.
+     * @param key key to check for.
+     */
+    public final boolean has(final String key) {
+        String result = this.obj.optString(key, null);
         return result != null;
     }
 }

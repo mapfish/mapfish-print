@@ -17,29 +17,31 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.servlet.queue;
+package org.mapfish.print.servlet.job;
 
-import org.json.JSONObject;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
+import java.util.NoSuchElementException;
 
-public interface Queue {
-    /**
-     * Push a job in the queue
-     *
-     * @param job
-     */
-    void push(JSONObject job);
-
-    /**
-     * Is the queue empty
-     *
-     * @return
-     */
-    public boolean isEmpty();
+/**
+ * Load a generated report from a supported URI.
+ *
+ * Created by Jesse on 3/18/14.
+ */
+public interface ReportLoader {
 
     /**
-     * Get a job from the queue
+     * Returns true if this loader can process the provided URI.
      *
-     * @return a job
+     * @param reportURI the uri to test.
      */
-    public JSONObject get();
+    boolean accepts(URI reportURI);
+    /**
+     * Reads a report from the URI and writes it to the output stream.
+     *
+     * @param reportURI uri of the report.
+     * @param out output stream to write to.
+     */
+    void loadReport(URI reportURI, OutputStream out) throws IOException;
 }

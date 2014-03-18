@@ -25,6 +25,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Basic functionality of a processor.  Mostly utility methods.
+ * 
+ * @author Jesse
+ */
 public abstract class AbstractProcessor implements Processor {
     private Map<String, String> outputMapper;
 
@@ -62,7 +67,7 @@ public abstract class AbstractProcessor implements Processor {
             }
         }
     */
-    String getString(String config, Values values) {
+    final String getString(final String config, final Values values) {
         String actualValue = config;
         StringBuffer result = new StringBuffer();
         while (true) {
@@ -78,11 +83,11 @@ public abstract class AbstractProcessor implements Processor {
         return result.toString();
     }
 
-    public Map<String, String> getOutputMapper() {
-        return outputMapper;
+    public final Map<String, String> getOutputMapper() {
+        return this.outputMapper;
     }
 
-    public void setOutputs(Map<String, String> outputMapper) {
+    public final void setOutputMapper(final Map<String, String> outputMapper) {
         this.outputMapper = outputMapper;
     }
 }

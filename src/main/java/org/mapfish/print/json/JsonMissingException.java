@@ -28,7 +28,13 @@ public class JsonMissingException extends PrintException {
 
     private static final long serialVersionUID = 1L;
 
-    public JsonMissingException(PJsonElement pJsonObject, String key) {
+    /**
+     * Constructor.
+     *
+     * @param pJsonObject the json object queried
+     * @param key the key that was expected to exist.
+     */
+    public JsonMissingException(final PJsonElement pJsonObject, final String key) {
         super("attribute [" + pJsonObject.getPath(key) + "] missing");
     }
 }

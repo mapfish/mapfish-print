@@ -30,22 +30,27 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Map;
 
+/**
+ * A processor that actually compiles a jasper report.
+ * 
+ * @author Jesse
+ */
 public class JasperReportBuilder implements Processor {
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
 
     private File directory = new File(".");
 
     @Override
-    public Map<String, Object> execute(Values values) throws JRException {
+	public final Map<String, Object> execute(final Values values) throws JRException {
         final FilenameFilter filter = new FilenameFilter() {
             @Override
-            public boolean accept(File file, String name) {
+            public boolean accept(final File file, final String name) {
                 return name.toLowerCase().endsWith(".jrxml");
             }
         };
-        for (String jasperFileName : directory.list(filter)) {
-            final File jasperFile = new File(directory.getAbsolutePath(), jasperFileName);
-            final File buildFile = new File(directory.getAbsolutePath(),
+        for (String jasperFileName : this.directory.list(filter)) {
+            final File jasperFile = new File(this.directory.getAbsolutePath(), jasperFileName);
+            final File buildFile = new File(this.directory.getAbsolutePath(),
                     jasperFileName.replaceAll("\\.jrxml$", ".jasper"));
             if (!buildFile.exists() || jasperFile.lastModified() > buildFile.lastModified()) {
                 LOGGER.info("Building Jasper report: " + jasperFile.getAbsolutePath());
@@ -59,15 +64,15 @@ public class JasperReportBuilder implements Processor {
     }
 
     @Override
-    public Map<String, String> getOutputMapper() {
+	public final Map<String, String> getOutputMapper() {
         return null;
     }
 
-    public String getDirectory() {
-        return directory.getPath();
+    public final String getDirectory() {
+        return this.directory.getPath();
     }
 
-    public void setDirectory(String directory) {
+    public final void setDirectory(final String directory) {
         this.directory = new File(directory);
     }
 }

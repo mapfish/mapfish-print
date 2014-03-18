@@ -34,7 +34,7 @@ import java.io.OutputStream;
  */
 public interface OutputFormat {
     /**
-     * The content type of the output
+     * The content type of the output.
      */
     String getContentType();
 
@@ -43,5 +43,13 @@ public interface OutputFormat {
      */
     String getFileSuffix();
 
+    /**
+     * Performs the print and writes to the report in the correct format to the outputStream.
+     * 
+     * @param spec the data from the client, required for writing.
+     * @param config the configuration object representing the server side configuration.
+     * @param configDir the directory that contains the configuration, used for resolving resources like images etc...
+     * @param outputStream the stream to write the result to
+     */
     void print(PJsonObject spec, Configuration config, File configDir, OutputStream outputStream) throws Exception;
 }

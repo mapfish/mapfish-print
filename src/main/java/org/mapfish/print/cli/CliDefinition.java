@@ -26,7 +26,9 @@ import com.sampullara.cli.Argument;
  * from other languages than Java.
  */
 public final class CliDefinition {
-    private CliDefinition() {}
+    private CliDefinition() { 
+    	// this is intentionally empty
+    }
 
     // CHECKSTYLE:OFF
     @Argument(description = "Filename for the configuration (templates&CO)", required = true)

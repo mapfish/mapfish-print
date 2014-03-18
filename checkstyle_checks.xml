@@ -54,21 +54,21 @@
       <property name="tokens" value="BNOT,DEC,DOT,INC,LNOT,UNARY_MINUS,UNARY_PLUS"/>
     </module>
     <module name="NoWhitespaceBefore"/>
-    <module name="OperatorWrap"/>
+    <!-- <module name="OperatorWrap"/>  -->
     <module name="ParenPad"/>
     <module name="TypecastParenPad"/>
     <module name="WhitespaceAfter"/>
     <module name="WhitespaceAround"/>
     <module name="ModifierOrder"/>
     <module name="RedundantModifier"/>
-    <module name="AvoidNestedBlocks"/>
+    <!-- <module name="AvoidNestedBlocks"/>  -->
     <module name="EmptyBlock">
         <property name="option" value="text"/>
     </module>
     <module name="LeftCurly"/>
     <module name="NeedBraces"/>
     <module name="RightCurly"/>
-    <module name="AvoidInlineConditionals"/>
+    <!-- <module name="AvoidInlineConditionals"/> -->
     <module name="EmptyStatement"/>
     <module name="EqualsHashCode"/>
     <module name="HiddenField">
@@ -87,7 +87,7 @@
     <module name="DesignForExtension"/>
     <module name="FinalClass"/>
     <module name="HideUtilityClassConstructor"/>
-    <module name="InterfaceIsType"/>
+    <!-- <module name="InterfaceIsType"/>  -->
     <module name="VisibilityModifier"/>
     <module name="ArrayTypeStyle"/>
     <module name="FinalParameters"/>

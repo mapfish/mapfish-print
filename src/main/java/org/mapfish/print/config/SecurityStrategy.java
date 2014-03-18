@@ -56,7 +56,7 @@ public abstract class SecurityStrategy {
      * Set the matching strategy for determining if this strategy can be used to secure a give URL.
      * @param matcher the matcher.
      */
-    public void setMatcher(final HostMatcher matcher) {
+    public final void setMatcher(final HostMatcher matcher) {
         this.matcher = matcher;
     }
 }

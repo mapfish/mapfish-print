@@ -33,27 +33,27 @@ public class AddressHostMatcher extends InetHostMatcher {
     private InetAddress maskAddress = null;
 
     @Override
-    protected byte[][] getAuthorizedIPs(final InetAddress mask) throws UnknownHostException, SocketException {
-        if (authorizedIPs == null) {
-            InetAddress[] ips = InetAddress.getAllByName(ip);
+	protected final byte[][] getAuthorizedIPs(final InetAddress maskForCalculation) throws UnknownHostException, SocketException {
+        if (this.authorizedIPs == null) {
+            InetAddress[] ips = InetAddress.getAllByName(this.ip);
             this.authorizedIPs = buildMaskedAuthorizedIPs(ips);
         }
         return authorizedIPs;
     }
 
     @Override
-    protected InetAddress getMaskAddress() throws UnknownHostException {
+    protected final InetAddress getMaskAddress() throws UnknownHostException {
         if (this.maskAddress == null && this.mask != null) {
             this.maskAddress = InetAddress.getByName(this.mask);
         }
         return this.maskAddress;
     }
 
-    public void setIp(final String ip) {
+    public final void setIp(final String ip) {
         this.ip = ip;
     }
 
-    public void setMask(final String mask) {
+    public final void setMask(final String mask) {
         this.mask = mask;
     }
 

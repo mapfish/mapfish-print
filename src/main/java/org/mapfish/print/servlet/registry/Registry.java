@@ -21,6 +21,8 @@ package org.mapfish.print.servlet.registry;
 
 import org.json.JSONObject;
 
+import java.net.URI;
+
 /**
  * A variable store for sharing common values across all nodes in a cluster.
  * <p>
@@ -30,25 +32,89 @@ import org.json.JSONObject;
  */
 public interface Registry {
 
+    /**
+     * Check if something is registered for the key.
+     * @param key key to check for
+     */
     boolean containsKey(String key);
 
-    void setString(String key, String value);
+    /**
+     * Put a URI in the registry.
+     * @param key the key of the entry
+     * @param value the value
+     */
+    void put(String key, URI value);
 
+    /**
+     * Get a URI from the registry.
+     * @param key the key to use for lookup.
+     */
+    URI getURI(String key);
+    /**
+     * Put a string in the registry.
+     * @param key the key of the entry
+     * @param value the value
+     */
+    void put(String key, String value);
+
+    /**
+     * Get string from the registry.
+     * @param key the key to use for lookup.
+     */
     String getString(String key);
 
-    void setInteger(String key, Integer value);
+    /**
+     * Put a number in the registry.
+     * @param key the key of the entry
+     * @param value the value
+     */
+    void put(String key, Number value);
 
-    Integer getInteger(String key);
+    /**
+     * Get a number from the registry.
+     *
+     * @param key the number
+     */
+    Number getNumber(String key);
 
-    void setLong(String key, Long value);
+    /**
+     * Put a json object in the registry.
+     *
+     * @param key the key of the entry
+     * @param value the value
+     */
+    void put(String key, JSONObject value);
 
-    Long getLong(String key);
-
-    void setJSON(String key, JSONObject value);
-
+    /**
+     * Get a json object from the registry.
+     *
+     * @param key the key use for lookup
+     */
     JSONObject getJSON(String key);
 
-    void setBytes(String key, byte[] value);
+    /**
+     * Increment the value currently stored in the registry by the amount.  This assumes it is an integer.
+     *
+     * If there is not value present in registry then a value will be registered as amount.
+     *
+     *
+     * @param key the key of the element to increment
+     *
+     * @param amount th amount to increment
+     * @return the new value
+     */
+    int incrementInt(String key, int amount);
 
-    byte[] getBytes(String key);
+    /**
+     * Increment the value currently stored in the registry by the amount.  This assumes it is an long.
+     *
+     * If there is not value present in registry then a value will be registered as amount.
+     *
+     *
+     * @param key the key of the element to increment
+     *
+     * @param amount the amount to increment
+     * @return the new value
+     */
+    long incrementLong(String key, long amount);
 }

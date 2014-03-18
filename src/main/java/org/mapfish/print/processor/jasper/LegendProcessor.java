@@ -34,16 +34,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Create a legend.
+ *
+ * @author Jesse
+ */
 public class LegendProcessor extends AbstractProcessor {
     private String legendRef;
 
     @Override
-    public Map<String, Object> execute(Values values) throws Exception {
+	public final Map<String, Object> execute(final Values values) throws Exception {
         Map<String, Object> output = new HashMap<String, Object>();
 
         final List<Object[]> legendList = new ArrayList<Object[]>();
         final String[] legendColumns = {"name", "icon", "level"};
-        final PJsonObject jsonLegend = (PJsonObject) values.getObject(this.legendRef);
+        final PJsonObject jsonLegend = values.getObject(this.legendRef, PJsonObject.class);
         fillLegend(jsonLegend, legendList, 0);
         final Object[][] legend = new Object[legendList.size()][];
         output.put("legend", new JRTableModelDataSource(new TableDataSource(legendColumns, legendList.toArray(legend))));
@@ -51,7 +56,7 @@ public class LegendProcessor extends AbstractProcessor {
         return output;
     }
 
-    private void fillLegend(PJsonObject jsonLegend, List<Object[]> legendList, int level) throws IOException {
+    private void fillLegend(final PJsonObject jsonLegend, final List<Object[]> legendList, final int level) throws IOException {
         final String icon = jsonLegend.optString("icon");
         Image image = null;
         if (icon != null) {
@@ -71,11 +76,11 @@ public class LegendProcessor extends AbstractProcessor {
         }
     }
 
-    public String getLegendRef() {
-        return legendRef;
+    public final String getLegendRef() {
+        return this.legendRef;
     }
 
-    public void setLegendRef(String legendRef) {
+    public final void setLegendRef(final String legendRef) {
         this.legendRef = legendRef;
     }
 }

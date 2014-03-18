@@ -17,27 +17,17 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.servlet.queue;
+package org.mapfish.print;
 
-import org.json.JSONObject;
-
-import java.util.LinkedList;
-
-public class BasicQueue implements Queue {
-    private final LinkedList<JSONObject> fifo = new LinkedList<JSONObject>();
-
-    @Override
-    public void push(JSONObject job) {
-        fifo.push(job);
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return fifo.isEmpty();
-    }
-
-    @Override
-    public JSONObject get() {
-        return fifo.remove();
-    }
+/**
+ * Interface for a class that creates MapPrinters.
+ * Created by Jesse on 3/18/14.
+ */
+public interface MapPrinterFactory {
+    /**
+     * Creates the appropriate map printer.
+     *
+     * @param app an identifier that controls which configuration to use.
+     */
+    MapPrinter create(String app);
 }

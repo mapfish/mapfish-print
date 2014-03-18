@@ -21,6 +21,7 @@ package org.mapfish.print.output;
 
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.config.Configuration;
@@ -38,23 +39,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * An PDF output format that uses Jasper reports to generate the result.
+ * 
+ * @author Jesse
+ *
+ */
 public class JasperReportOutputFormat implements OutputFormat {
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportOutputFormat.class);
 
     @Override
-    public String getContentType() {
+	public final String getContentType() {
         return "application/pdf";
     }
 
     @Override
-    public String getFileSuffix() {
+	public final String getFileSuffix() {
         return "pdf";
     }
 
     @Override
-    public void print(PJsonObject spec, Configuration config, File configDir, OutputStream outputStream)
+	public final void print(final PJsonObject spec, final Configuration config, final File configDir, final OutputStream outputStream)
             throws Exception {
         final String templateName = spec.getString(Constants.JSON_LAYOUT_KEY);
 
@@ -68,7 +74,7 @@ public class JasperReportOutputFormat implements OutputFormat {
 
         final PJsonObject jsonAttributes = spec.getJSONObject("attributes");
 
-        Map<String, Attribute> attributes = template.getAttributes();
+        Map<String, Attribute<?>> attributes = template.getAttributes();
         for (String attributeName : attributes.keySet()) {
             values.put(attributeName, attributes.get(attributeName).
                     getValue(jsonAttributes, attributeName));
@@ -118,7 +124,7 @@ public class JasperReportOutputFormat implements OutputFormat {
         }
     }
 
-    private void runProcess(Processor process, Values values) throws Exception {
+    private void runProcess(final Processor process, final Values values) throws Exception {
         Map<String, Object> output = process.execute(values);
         Map<String, String> outputMap = process.getOutputMapper();
         for (String value : outputMap.keySet()) {

@@ -30,6 +30,7 @@ import ar.com.fdvs.dj.domain.constants.Font;
 import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
 import ar.com.fdvs.dj.domain.constants.VerticalAlign;
 import net.sf.jasperreports.engine.JasperCompileManager;
+
 import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.output.Values;
@@ -42,17 +43,36 @@ import java.io.File;
 import java.util.*;
 import java.util.List;
 
+/**
+ * Processor for creating a table.
+ * 
+ * @author Jesse
+ */
 public class TableListProcessor extends AbstractProcessor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
+    private static final int DEFAULT_TABLE_WIDTH = 500;
+
+	private static final int DEFAULT_BLUE = 230;
+
+	private static final int DEFAULT_GREEN = 230;
+
+	private static final int DEFAULT_RED = 230;
+
+	private static final String DEFAULT_FONT = "DejaVu Sans";
+
+	private static final int DEFAULT_TITLE_FONT_SIZE = 14;
+
+	private static final int DEFAULT_FONT_SIZE = 12;
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
 
     private String tableListRef;
     private String dynamicReportDirectory;
     private Map<String, Object> dynamicReport = null;
 
     @Override
-    public Map<String, Object> execute(Values values) throws Exception {
+	public final Map<String, Object> execute(final Values values) throws Exception {
         final Map<String, Object> output = new HashMap<String, Object>();
-        final PJsonObject jsonTableList = (PJsonObject) values.getObject(tableListRef);
+        final PJsonObject jsonTableList = values.getObject(this.tableListRef, PJsonObject.class);
         final List<Values> tableList = new ArrayList<Values>();
 
         if (jsonTableList != null) {
@@ -80,30 +100,30 @@ public class TableListProcessor extends AbstractProcessor {
                 tableValues.put("table", table);
                 tableList.add(new Values(tableValues));
 
-                if (dynamicReport != null) {
+                if (this.dynamicReport != null) {
                     Style detailStyle = new Style();
-                    detailStyle.setFont(new Font(dynamicReportOptInt("fontSize", 12),
-                            dynamicReportOptString("font", "DejaVu Sans"), false));
+                    detailStyle.setFont(new Font(dynamicReportOptInt("fontSize", DEFAULT_FONT_SIZE),
+                            dynamicReportOptString("font", DEFAULT_FONT), false));
                     detailStyle.setVerticalAlign(VerticalAlign.MIDDLE);
                     Style headerStyle = new Style();
-                    headerStyle.setFont(new Font(dynamicReportOptInt("titleFontSize", 14),
-                            dynamicReportOptString("titleFont", "DejaVu Sans"), true));
+                    headerStyle.setFont(new Font(dynamicReportOptInt("titleFontSize", DEFAULT_TITLE_FONT_SIZE),
+                            dynamicReportOptString("titleFont", DEFAULT_FONT), true));
                     headerStyle.setHorizontalAlign(HorizontalAlign.CENTER);
                     headerStyle.setVerticalAlign(VerticalAlign.MIDDLE);
                     headerStyle.setBorderBottom(Border.PEN_1_POINT());
                     Style oddRowStyle = new Style();
-                    oddRowStyle.setBackgroundColor(new Color(230, 230, 230));
-                    oddRowStyle.setFont(new Font(dynamicReportOptInt("fontSize", 12),
-                            dynamicReportOptString("font", "DejaVu Sans"), false));
+                    oddRowStyle.setBackgroundColor(new Color(DEFAULT_RED, DEFAULT_GREEN, DEFAULT_BLUE));
+                    oddRowStyle.setFont(new Font(dynamicReportOptInt("fontSize", DEFAULT_FONT_SIZE),
+                            dynamicReportOptString("font", DEFAULT_FONT), false));
                     oddRowStyle.setVerticalAlign(VerticalAlign.MIDDLE);
 
-                    File tableTempate = new File(dynamicReportDirectory, "table_" + key + ".jrxml");
+                    File tableTempate = new File(this.dynamicReportDirectory, "table_" + key + ".jrxml");
                     if (!tableTempate.exists()) {
                         DynamicReportBuilder drb = new DynamicReportBuilder();
                         drb.setMargins(0, 0, 0, 0);
                         drb.setPrintBackgroundOnOddRows(true);
                         drb.setOddRowBackgroundStyle(oddRowStyle);
-                        int width = dynamicReportOptInt("tableWidth", 500)
+                        int width = dynamicReportOptInt("tableWidth", DEFAULT_TABLE_WIDTH)
                                     / jsonColumns.size();
                         for (int i = 0; i < jsonColumns.size(); i++) {
                             String column = jsonColumns.getString(i);
@@ -116,7 +136,7 @@ public class TableListProcessor extends AbstractProcessor {
                         DynamicJasperHelper.generateJRXML(dr, new ClassicLayoutManager(), null,
                                 "UTF-8", tableTempate.getAbsolutePath());
                     }
-                    File tableTempateBuild = new File(dynamicReportDirectory, "table_" + key
+                    File tableTempateBuild = new File(this.dynamicReportDirectory, "table_" + key
                                                                               + ".jasper");
                     if (!tableTempateBuild.exists()
                         || (tableTempate.lastModified() > tableTempateBuild.lastModified())) {
@@ -136,43 +156,43 @@ public class TableListProcessor extends AbstractProcessor {
         return output;
     }
 
-    public String getTableListRef() {
-        return tableListRef;
+    public final String getTableListRef() {
+        return this.tableListRef;
     }
 
-    public void setTableListRef(String tableListRef) {
+    public final void setTableListRef(final String tableListRef) {
         this.tableListRef = tableListRef;
     }
 
-    private String dynamicReportOptString(String key, String defaultValue) {
-        if (dynamicReport.containsKey(key)) {
-            return dynamicReport.get(key).toString();
+    private String dynamicReportOptString(final String key, final String defaultValue) {
+        if (this.dynamicReport.containsKey(key)) {
+            return this.dynamicReport.get(key).toString();
         } else {
             return defaultValue;
         }
     }
 
-    private int dynamicReportOptInt(String key, int defaultValue) {
-        if (dynamicReport.containsKey(key)) {
-            return ((Number) dynamicReport.get(key)).intValue();
+    private int dynamicReportOptInt(final String key, final int defaultValue) {
+        if (this.dynamicReport.containsKey(key)) {
+            return ((Number) this.dynamicReport.get(key)).intValue();
         } else {
             return defaultValue;
         }
     }
 
-    public Map<String, Object> getDynamicReport() {
-        return dynamicReport;
+    public final Map<String, Object> getDynamicReport() {
+        return this.dynamicReport;
     }
 
-    public void setDynamicReport(Map<String, Object> dynamicReport) {
+    public final void setDynamicReport(final Map<String, Object> dynamicReport) {
         this.dynamicReport = dynamicReport;
     }
 
-    public String getDynamicReportDirectory() {
-        return dynamicReportDirectory;
+    public final String getDynamicReportDirectory() {
+        return this.dynamicReportDirectory;
     }
 
-    public void setDynamicReportDirectory(String dynamicReportDirectory) {
+    public final void setDynamicReportDirectory(final String dynamicReportDirectory) {
         this.dynamicReportDirectory = dynamicReportDirectory;
     }
 }

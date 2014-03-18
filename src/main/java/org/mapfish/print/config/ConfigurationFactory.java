@@ -19,41 +19,52 @@
 
 package org.mapfish.print.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.yaml.snakeyaml.TypeDescription;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
-
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
 
-public class ConfigurationFactory {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationFactory.class);
+import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.yaml.snakeyaml.TypeDescription;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+
+/**
+ * Strategy/plug-in for loading {@link Configuration} objects.
+ *  
+ * @author Jesse
+ *
+ */
+public class ConfigurationFactory {
     @Autowired
     private Map<String, ConfigurationObject> yamlObjects;
     private Yaml yaml;
 
+    /**
+     * initialize this factory.  Called by spring after construction.
+     */
     @PostConstruct
-    public void init() {
+	public final void init() {
         Constructor constructor = new Constructor(Configuration.class);
-        for (Map.Entry<String, ConfigurationObject> entry : yamlObjects.entrySet()) {
+        for (Map.Entry<String, ConfigurationObject> entry : this.yamlObjects.entrySet()) {
             constructor.addTypeDescription(new TypeDescription(entry.getValue().getClass(), entry.getKey()));
         }
         this.yaml = new Yaml(constructor);
     }
 
-    public Configuration getConfig(File configFile) throws IOException {
+    /**
+     * Create a configuration object from a config file.
+     * 
+     * @param configFile the file to read the configuration from.
+     */
+    public final Configuration getConfig(final File configFile) throws IOException {
         FileInputStream in = null;
         try {
             in = new FileInputStream(configFile);
-            return (Configuration) yaml.load(new InputStreamReader(in, "UTF-8"));
+            return (Configuration) this.yaml.load(new InputStreamReader(in, "UTF-8"));
         } finally {
             if (in != null) {
                 in.close();

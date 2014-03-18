@@ -26,33 +26,45 @@ public abstract class PJsonElement {
     private final PJsonElement parent;
     private final String contextName;
 
-    protected PJsonElement(PJsonElement parent, String contextName) {
+    /**
+     * Constructor.
+     * 
+     * @param parent the parent element
+     * @param contextName the field name of this element in the parent.
+     */
+    protected PJsonElement(final PJsonElement parent, final String contextName) {
         this.parent = parent;
         this.contextName = contextName;
     }
 
     /**
      * Gets the string representation of the path to the current JSON element.
+     * 
+     * @param key the leave key
      */
-    public String getPath(String key) {
+    public final String getPath(final String key) {
         StringBuilder result = new StringBuilder();
-        getPath(result);
+        addPathTo(result);
         result.append(".");
         result.append(getPathElement(key));
         return result.toString();
     }
 
-    protected void getPath(StringBuilder result) {
-        if (parent != null) {
-            parent.getPath(result);
-            if (!(parent instanceof PJsonArray)) {
+    /**
+     * Append the path to the StringBuilder.
+     * @param result the string builder to add the path to.
+     */
+    protected final void addPathTo(final StringBuilder result) {
+        if (this.parent != null) {
+            this.parent.addPathTo(result);
+            if (!(this.parent instanceof PJsonArray)) {
                 result.append(".");
             }
         }
-        result.append(getPathElement(contextName));
+        result.append(getPathElement(this.contextName));
     }
 
-    private static String getPathElement(String val) {
+    private static String getPathElement(final String val) {
         if (val.contains(" ")) {
             return "'" + val + "'";
         } else {
@@ -61,7 +73,7 @@ public abstract class PJsonElement {
     }
 
 
-    public PJsonElement getParent() {
-        return parent;
+    public final PJsonElement getParent() {
+        return this.parent;
     }
 }

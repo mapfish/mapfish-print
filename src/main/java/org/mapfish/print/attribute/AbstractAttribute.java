@@ -65,7 +65,8 @@ public abstract class AbstractAttribute<T> implements Attribute<T> {
      * @param json writer to write to.
      * @throws JSONException
      */
-    protected void addMapToJSON(final LinkedHashMap<String, ?> map, final JSONWriter json) throws JSONException {
+    @SuppressWarnings("unchecked")
+	protected final void addMapToJSON(final LinkedHashMap<String, ?> map, final JSONWriter json) throws JSONException {
         json.object();
         for (String key : map.keySet()) {
             Object value = map.get(key);
@@ -91,11 +92,11 @@ public abstract class AbstractAttribute<T> implements Attribute<T> {
     }
 
     /**
-     * Setter called by the yaml parser
+     * Setter called by the yaml parser.
      *
      * @param clientOptions the options.
      */
-    public void setClientOptions(final LinkedHashMap<String, ?> clientOptions) {
+    public final void setClientOptions(final LinkedHashMap<String, ?> clientOptions) {
         this.clientOptions = clientOptions;
     }
 }

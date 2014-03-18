@@ -32,7 +32,7 @@ import java.util.Map;
  */
 public class Template implements ConfigurationObject {
     private String jasperTemplate;
-    private Map<String, Attribute> attributes;
+    private Map<String, Attribute<?>> attributes;
     private List<Processor> processors;
     private String iterValue;
     private List<Processor> iterProcessors;
@@ -46,7 +46,7 @@ public class Template implements ConfigurationObject {
      *
      * @param json the writer to write the information to.
      */
-    public void printClientConfig(final JSONWriter json) throws JSONException {
+    public final void printClientConfig(final JSONWriter json) throws JSONException {
         json.key("attributes");
         json.array();
         for (String name : this.attributes.keySet()) {
@@ -58,67 +58,67 @@ public class Template implements ConfigurationObject {
         json.endArray();
     }
 
-    public Map<String, Attribute> getAttributes() {
+    public final Map<String, Attribute<?>> getAttributes() {
         return this.attributes;
     }
 
-    public void setAttributes(final Map<String, Attribute> attributes) {
+    public final void setAttributes(final Map<String, Attribute<?>> attributes) {
         this.attributes = attributes;
     }
 
-    public String getJasperTemplate() {
+    public final String getJasperTemplate() {
         return this.jasperTemplate;
     }
 
-    public void setJasperTemplate(final String jasperTemplate) {
+    public final void setJasperTemplate(final String jasperTemplate) {
         this.jasperTemplate = jasperTemplate;
     }
 
-    public List<Processor> getProcessors() {
+    public final List<Processor> getProcessors() {
         return this.processors;
     }
 
-    public void setProcessors(final List<Processor> processors) {
+    public final void setProcessors(final List<Processor> processors) {
         this.processors = processors;
     }
 
-    public String getIterValue() {
+    public final String getIterValue() {
         return this.iterValue;
     }
 
-    public void setIterValue(final String iterValue) {
+    public final void setIterValue(final String iterValue) {
         this.iterValue = iterValue;
     }
 
-    public List<Processor> getIterProcessors() {
+    public final List<Processor> getIterProcessors() {
         return this.iterProcessors;
     }
 
-    public void setIterProcessors(final List<Processor> iterProcessors) {
+    public final void setIterProcessors(final List<Processor> iterProcessors) {
         this.iterProcessors = iterProcessors;
     }
 
-    public String getJdbcUrl() {
+    public final String getJdbcUrl() {
         return this.jdbcUrl;
     }
 
-    public void setJdbcUrl(final String jdbcUrl) {
+    public final void setJdbcUrl(final String jdbcUrl) {
         this.jdbcUrl = jdbcUrl;
     }
 
-    public String getJdbcUser() {
+    public final String getJdbcUser() {
         return this.jdbcUser;
     }
 
-    public void setJdbcUser(final String jdbcUser) {
+    public final void setJdbcUser(final String jdbcUser) {
         this.jdbcUser = jdbcUser;
     }
 
-    public String getJdbcPassword() {
+    public final String getJdbcPassword() {
         return this.jdbcPassword;
     }
 
-    public void setJdbcPassword(final String jdbcPassword) {
+    public final void setJdbcPassword(final String jdbcPassword) {
         this.jdbcPassword = jdbcPassword;
     }
 }

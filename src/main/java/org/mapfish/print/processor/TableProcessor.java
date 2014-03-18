@@ -28,13 +28,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A processor for generating a table.
+ * 
+ * @author Jesse
+ */
 public class TableProcessor extends AbstractProcessor {
     private String tableRef;
 
     @Override
-    public Map<String, Object> execute(Values values) throws Exception {
+	public final Map<String, Object> execute(final Values values) throws Exception {
         final Map<String, Object> output = new HashMap<String, Object>();
-        final PJsonObject jsonTable = (PJsonObject) values.getObject(tableRef);
+        final PJsonObject jsonTable = values.getObject(this.tableRef, PJsonObject.class);
         final List<Map<String, String>> table = new ArrayList<Map<String, String>>();
 
         final PJsonArray jsonColumns = jsonTable.getJSONArray("columns");
@@ -52,11 +57,11 @@ public class TableProcessor extends AbstractProcessor {
         return output;
     }
 
-    public String getTableRef() {
-        return tableRef;
+    public final String getTableRef() {
+        return this.tableRef;
     }
 
-    public void setTableRef(String tableRef) {
+    public final void setTableRef(final String tableRef) {
         this.tableRef = tableRef;
     }
 }

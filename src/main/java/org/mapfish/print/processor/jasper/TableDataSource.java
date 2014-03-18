@@ -27,6 +27,12 @@ import org.mapfish.print.json.PJsonObject;
 
 import javax.swing.table.AbstractTableModel;
 
+/**
+ * Processor that has data for a table in a jasper report.
+ *  
+ * @author Jesse
+ *
+ */
 public class TableDataSource extends AbstractTableModel {
 
     private static final long serialVersionUID = -3012559112008645883L;
@@ -34,71 +40,62 @@ public class TableDataSource extends AbstractTableModel {
     private final Object[][] data;
 
     /**
-     *
+     * Constructor.
+     * 
+     * @param table the table data.
      */
-    public TableDataSource(PJsonObject table) {
+    public TableDataSource(final PJsonObject table) {
         PJsonArray jsonColumns = table.getJSONArray("columns");
-        columnNames = new String[jsonColumns.size()];
+        this.columnNames = new String[jsonColumns.size()];
         for (int i = 0; i < jsonColumns.size(); i++) {
-            columnNames[i] = jsonColumns.getString(i);
+            this.columnNames[i] = jsonColumns.getString(i);
         }
 
         PJsonArray jsonData = table.getJSONArray("data");
-        data = new String[jsonData.size()][];
+        this.data = new String[jsonData.size()][];
         for (int i = 0; i < jsonData.size(); i++) {
             PJsonArray jsonRow = jsonData.getJSONArray(i);
-            data[i] = new String[jsonRow.size()];
+            this.data[i] = new String[jsonRow.size()];
             for (int j = 0; j < jsonRow.size(); j++) {
-                data[i][j] = jsonRow.getString(j);
+                this.data[i][j] = jsonRow.getString(j);
             }
         }
 
     }
 
+
     /**
-     *
+     * Constructor.
+     * 
+     * @param columnNames the names of each column in the table
+     * @param data the table data.
      */
-    public TableDataSource(String[] columnNames, Object[][] data) {
+    public TableDataSource(final String[] columnNames, final Object[][] data) {
         this.columnNames = columnNames;
         this.data = data;
     }
 
-    /**
-     *
-     */
     @Override
-    public int getColumnCount() {
-        return columnNames.length;
+	public final int getColumnCount() {
+        return this.columnNames.length;
     }
 
-    /**
-     *
-     */
     @Override
-    public String getColumnName(int columnIndex) {
-        return columnNames[columnIndex];
+	public final String getColumnName(final int columnIndex) {
+        return this.columnNames[columnIndex];
     }
 
-    /**
-     *
-     */
-    public String[] getColumnNames() {
-        return columnNames;
+    public final String[] getColumnNames() {
+        return this.columnNames;
     }
 
-    /**
-     *
-     */
     @Override
-    public int getRowCount() {
-        return data.length;
+	public final int getRowCount() {
+        return this.data.length;
     }
 
-    /**
-     *
-     */
     @Override
-    public Object getValueAt(int rowIndex, int columnIndex) {
-        return data[rowIndex][columnIndex];
+	public final Object getValueAt(final int rowIndex, final int columnIndex) {
+        return this.data[rowIndex][columnIndex];
     }
 }

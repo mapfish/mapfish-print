@@ -22,43 +22,93 @@ package org.mapfish.print.output;
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ * Values that go into a processor from previous processors in the processor processing graph.
+ * @author Jesse
+ *
+ */
 public class Values {
-    private final Map<String, Object> values;
+    private final Map<String, Object> values = new HashMap<String, Object>();
 
-    protected Values() {
-        values = new HashMap<String, Object>();
+    /**
+     * Constructor.
+     * 
+     * @param values initial values.
+     */
+    public Values(final Map<String, Object> values) {
+        this.values.putAll(values);
+    }
+    
+    /**
+     * Constructor.
+     */
+    public Values() {
+    	// nothing to do
     }
 
-    public Values(Map<String, Object> values) {
-        this.values = values;
+    /**
+     * Put a new value in map.
+     * 
+     * @param key id of the value for looking up.
+     * @param value the value.
+     */
+    protected final void put(final String key, final Object value) {
+        this.values.put(key, value);
     }
 
-    protected void put(String key, Object value) {
-        values.put(key, value);
+    /**
+     * Get all parameters.
+     */
+    protected final Map<String, Object> getParameters() {
+        return this.values;
     }
 
-    protected Map<String, Object> getParameters() {
-        return values;
+    /**
+     * Get a value as a string.
+     * 
+     * @param key the key for looking up the value.
+     */
+    public final String getString(final String key) {
+        return (String) this.values.get(key);
     }
 
-    public String getString(String key) {
-        return (String) values.get(key);
+    /**
+     * Get a value as a double.
+     * 
+     * @param key the key for looking up the value.
+     */
+    public final Double getDouble(final String key) {
+        return (Double) this.values.get(key);
     }
 
-    public Double getDouble(String key) {
-        return (Double) values.get(key);
+    /**
+     * Get a value as a integer.
+     * 
+     * @param key the key for looking up the value.
+     */
+    public final Integer getInteger(final String key) {
+        return (Integer) this.values.get(key);
     }
 
-    public Integer getInteger(String key) {
-        return (Integer) values.get(key);
+    /**
+     * Get a value as a string.
+     * 
+     * @param key the key for looking up the value.
+     * @param type the type of the object
+     * @param <V> the type
+     * 
+     */
+    public final <V> V getObject(final String key, final Class<V> type) {
+        return type.cast(this.values.get(key));
     }
 
-    public Object getObject(String key) {
-        return values.get(key);
-    }
-
-    protected Iterable<Values> getIterator(String key) {
-        return (Iterable<Values>) values.get(key);
+    /**
+     * Get an a value as an interator of values.
+     * 
+     * @param key the key
+     */
+    @SuppressWarnings("unchecked")
+	protected final Iterable<Values> getIterator(final String key) {
+        return (Iterable<Values>) this.values.get(key);
     }
 }

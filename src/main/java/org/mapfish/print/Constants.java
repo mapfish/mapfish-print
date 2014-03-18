@@ -36,9 +36,4 @@ public interface Constants {
      */
     String OUTPUT_FILENAME_KEY = "outputFilename";
 
-    public interface ImagePlaceHolderConstants {
-        String THROW = "throw";
-        String DEFAULT = "default";
-        String DEFAULT_ERROR_IMAGE = "default_error.png";
-    }
 }

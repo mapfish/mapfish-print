@@ -47,7 +47,10 @@ import static org.mapfish.print.cli.CliDefinition.*;
  * A shell version of the MapPrinter. Can be used for testing or for calling
  * from other languages than Java.
  */
-public class Main {
+public final class Main {
+	private Main() {
+		// intentionally empty
+	}
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
     private static final int LOGLEVEL_QUIET = 0;
@@ -137,7 +140,9 @@ public class Main {
                 this.mapPrinter.print(jsonSpec, outFile, headers);
             }
         } finally {
-            if (outFile != null) outFile.close();
+            if (outFile != null) {
+				outFile.close();
+			}
         }
     }
 

@@ -51,6 +51,8 @@
     <bean id="configurationFactory" class="org.mapfish.print.config.ConfigurationFactory"></bean>
 
     <bean id="registry" class="org.mapfish.print.servlet.registry.BasicRegistry"></bean>
-    <bean id="queue" class="org.mapfish.print.servlet.queue.BasicQueue"></bean>
+    <bean id="mapPrinterFactory" class="org.mapfish.print.servlet.ServletMapPrinterFactory"></bean>
+    <bean id="jobManager" class="org.mapfish.print.servlet.job.ThreadPoolJobManager"></bean>
+    <bean id="printJobFactory" class="org.mapfish.print.servlet.job.FilePrintJob"></bean>
 
 </beans>

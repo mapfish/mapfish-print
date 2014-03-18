@@ -21,66 +21,82 @@ package org.mapfish.print.servlet.registry;
 
 import org.json.JSONObject;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ * A simple implementation of {@link org.mapfish.print.servlet.registry.Registry} based on a
+ * {@link java.util.HashMap}.
+ */
 public class BasicRegistry implements Registry {
 
     private final Map<String, Object> registry = new HashMap<String, Object>();
 
     @Override
-    public boolean containsKey(String key) {
-        return registry.containsKey(key);
+	public final synchronized boolean containsKey(final String key) {
+        return this.registry.containsKey(key);
     }
 
     @Override
-    public void setString(String key, String value) {
-        registry.put(key, value);
+    public final synchronized void put(final String key, final URI value) {
+        this.registry.put(key, value);
     }
 
     @Override
-    public String getString(String key) {
-        return (String) registry.get(key);
+    public final long incrementLong(final String key, final long amount) {
+        long newValue = amount;
+        if (containsKey(key)) {
+            newValue = getNumber(key).longValue() + amount;
+        }
+        put(key, newValue);
+        return newValue;
+
     }
 
     @Override
-    public void setInteger(String key, Integer value) {
-        registry.put(key, value);
+    public final synchronized int incrementInt(final String key, final int amount) {
+        int newValue = amount;
+        if (containsKey(key)) {
+            newValue = getNumber(key).intValue() + amount;
+        }
+        put(key, newValue);
+        return newValue;
     }
 
     @Override
-    public Integer getInteger(String key) {
-        return (Integer) registry.get(key);
+    public final synchronized URI getURI(final String key) {
+        return (URI) this.registry.get(key);
     }
 
     @Override
-    public void setLong(String key, Long value) {
-        registry.put(key, value);
+	public final synchronized void put(final String key, final String value) {
+        this.registry.put(key, value);
     }
 
     @Override
-    public Long getLong(String key) {
-        return (Long) registry.get(key);
+	public final synchronized String getString(final String key) {
+        return (String) this.registry.get(key);
     }
 
     @Override
-    public void setJSON(String key, JSONObject value) {
-        registry.put(key, value);
+	public final synchronized void put(final String key, final Number value) {
+        this.registry.put(key, value);
     }
 
     @Override
-    public JSONObject getJSON(String key) {
-        return (JSONObject) registry.get(key);
+	public final synchronized Number getNumber(final String key) {
+        return (Number) this.registry.get(key);
     }
 
     @Override
-    public void setBytes(String key, byte[] value) {
-        registry.put(key, value);
+	public final synchronized void put(final String key, final JSONObject value) {
+        this.registry.put(key, value);
     }
 
     @Override
-    public byte[] getBytes(String key) {
-        return (byte[]) registry.get(key);
+	public final synchronized JSONObject getJSON(final String key) {
+        return (JSONObject) this.registry.get(key);
     }
+
 }

@@ -19,11 +19,16 @@
 
 package org.mapfish.print.config;
 
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.URI;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.*;
-import java.util.Arrays;
+import com.google.common.base.Optional;
 
 /**
  * Allows to check that a given URL matches an IP address (numeric format).
@@ -39,23 +44,21 @@ public abstract class InetHostMatcher extends HostMatcher {
     // CSON: VisibilityModifier
 
     @Override
-    public boolean validate(final URI uri) throws UnknownHostException, SocketException, MalformedURLException {
+	protected final Optional<Boolean> tryOverrideValidation(final URI uri) throws UnknownHostException, SocketException {
         final InetAddress maskAddress = getMaskAddress();
         final InetAddress[] requestedIPs;
         try {
             requestedIPs = InetAddress.getAllByName(uri.getHost());
         } catch (UnknownHostException ex) {
-            return false;
+            return Optional.of(false);
         }
-        boolean oneMatching = false;
         for (int i = 0; i < requestedIPs.length; ++i) {
             InetAddress requestedIP = requestedIPs[i];
             if (isInAuthorized(requestedIP, maskAddress)) {
-                oneMatching = true;
-                break;
+                return Optional.absent();
             }
         }
-        return oneMatching && super.validate(uri);
+        return Optional.of(false);
     }
 
     private boolean isInAuthorized(final InetAddress requestedIP, final InetAddress mask) throws UnknownHostException,
@@ -117,7 +120,7 @@ public abstract class InetHostMatcher extends HostMatcher {
      *
      * @param ips the addresses get the IP addresses from.
      */
-    protected byte[][] buildMaskedAuthorizedIPs(final InetAddress[] ips) throws UnknownHostException {
+    protected final byte[][] buildMaskedAuthorizedIPs(final InetAddress[] ips) throws UnknownHostException {
         final InetAddress maskAddress = getMaskAddress();
         byte[][] tmpAuthorizedIPs = new byte[ips.length][];
         for (int i = 0; i < ips.length; ++i) {

@@ -19,10 +19,9 @@
 
 package org.mapfish.print.config;
 
-import java.net.MalformedURLException;
-import java.net.SocketException;
 import java.net.URI;
-import java.net.UnknownHostException;
+
+import com.google.common.base.Optional;
 
 /**
  * Allows to check that a given URL matches a DNS address (textual format).
@@ -38,14 +37,14 @@ public class DnsHostMatcher extends HostMatcher {
      * @return True if it matches.
      */
     @Override
-    public boolean validate(final URI uri) throws UnknownHostException, SocketException, MalformedURLException {
+	public final Optional<Boolean> tryOverrideValidation(final URI uri) {
         if (!uri.getHost().equals(this.host)) {
-            return false;
+            return Optional.of(false);
         }
-        return super.validate(uri);
+        return Optional.absent();
     }
 
-    public void setHost(final String host) {
+    public final void setHost(final String host) {
         this.host = host;
     }
 

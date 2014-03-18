@@ -26,6 +26,8 @@ import java.net.UnknownHostException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Optional;
+
 /**
  * Used to validate the access to a map service host.
  */
@@ -47,29 +49,42 @@ public abstract class HostMatcher implements ConfigurationObject {
      * @param uri uri to check.
      * @return false if the uri is not permitted to be accessed.
      */
-    public boolean validate(final URI uri) throws UnknownHostException, SocketException, MalformedURLException {
-        int uriPort = uri.getPort();
-        if (uriPort < 0) {
-            uriPort = uri.toURL().getDefaultPort();
-        }
-        if (this.port > 0 && uriPort != this.port) {
-            return false;
-        }
-
-        if (this.pathRegex != null) {
-            Matcher matcher = Pattern.compile(this.pathRegex).matcher(uri.getPath());
-            if (!matcher.matches()) {
-                return false;
-            }
-        }
-        return true;
+    public final boolean validate(final URI uri) throws UnknownHostException, SocketException, MalformedURLException {
+    	Optional<Boolean> overridden = tryOverrideValidation(uri);
+    	if (overridden.isPresent()) {
+    		return overridden.get();
+    	} else {
+	        int uriPort = uri.getPort();
+	        if (uriPort < 0) {
+	            uriPort = uri.toURL().getDefaultPort();
+	        }
+	        if (this.port > 0 && uriPort != this.port) {
+	            return false;
+	        }
+	
+	        if (this.pathRegex != null) {
+	            Matcher matcher = Pattern.compile(this.pathRegex).matcher(uri.getPath());
+	            if (!matcher.matches()) {
+	                return false;
+	            }
+	        }
+	        return true;
+    	}
     }
 
-    public void setPort(final int port) {
+    /**
+     * If the subclass has its own checks or if it has a different validation method this method can return a 
+     * valid value.
+     * 
+     * @param uri the uri to validate.
+     */
+    protected abstract Optional<Boolean> tryOverrideValidation(URI uri) throws UnknownHostException, SocketException;
+
+	public final void setPort(final int port) {
         this.port = port;
     }
 
-    public void setPathRegex(final String pathRegex) {
+    public final void setPathRegex(final String pathRegex) {
         this.pathRegex = pathRegex;
     }
 

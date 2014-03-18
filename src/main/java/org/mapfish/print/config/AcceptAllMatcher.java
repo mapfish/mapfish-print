@@ -19,10 +19,9 @@
 
 package org.mapfish.print.config;
 
-import java.net.MalformedURLException;
-import java.net.SocketException;
 import java.net.URI;
-import java.net.UnknownHostException;
+
+import com.google.common.base.Optional;
 
 /**
  * A matcher that always returns true.
@@ -31,12 +30,12 @@ import java.net.UnknownHostException;
  */
 public class AcceptAllMatcher extends HostMatcher {
     @Override
-    public boolean validate(final URI uri) throws UnknownHostException, SocketException, MalformedURLException {
-        return true;
+	public final Optional<Boolean> tryOverrideValidation(final URI uri) {
+        return Optional.of(true);
     }
 
     @Override
-    public String toString() {
+	public final String toString() {
         return "Accept All";
     }
 

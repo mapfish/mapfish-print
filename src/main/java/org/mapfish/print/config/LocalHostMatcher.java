@@ -33,7 +33,7 @@ import java.util.Enumeration;
 public class LocalHostMatcher extends InetHostMatcher {
 
     @Override
-    protected byte[][] getAuthorizedIPs(final InetAddress mask) throws UnknownHostException, SocketException {
+	protected final byte[][] getAuthorizedIPs(final InetAddress mask) throws UnknownHostException, SocketException {
         if (authorizedIPs == null) {
             InetAddress[] result;
             Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
@@ -53,7 +53,7 @@ public class LocalHostMatcher extends InetHostMatcher {
     }
 
     @Override
-    public String toString() {
+	public final String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("LocalHostMatcher");
         sb.append("{");
@@ -68,7 +68,7 @@ public class LocalHostMatcher extends InetHostMatcher {
     }
 
     @Override
-    protected InetAddress getMaskAddress() throws UnknownHostException {
+	protected final InetAddress getMaskAddress() throws UnknownHostException {
         return null;
     }
 }

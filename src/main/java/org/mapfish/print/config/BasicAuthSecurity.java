@@ -24,35 +24,39 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 
 import java.net.URI;
-
+/**
+ * Authenticate using basic auth.
+ * 
+ * @author Jesse
+ */
 public class BasicAuthSecurity extends SecurityStrategy {
 
-    String username = null;
-    String password = null;
-    boolean preemptive = false;
+    private String username = null;
+    private String password = null;
+    private boolean preemptive = false;
 
     @Override
-    public void configure(URI uri, HttpClient httpClient) {
-        if (username == null || password == null) {
+	public final void configure(final URI uri, final HttpClient httpClient) {
+        if (this.username == null || this.password == null) {
             throw new IllegalStateException("username and password configuration of BasicAuthSecurity is required");
         }
 
-        if (preemptive) {
+        if (this.preemptive) {
             httpClient.getParams().setAuthenticationPreemptive(true);
         }
         httpClient.getState().setCredentials(new AuthScope(uri.getHost(), uri.getPort()),
-                new UsernamePasswordCredentials(username, password));
+                new UsernamePasswordCredentials(this.username, this.password));
     }
 
-    public void setUsername(String username) {
+    public final void setUsername(final String username) {
         this.username = username;
     }
 
-    public void setPassword(String password) {
+    public final void setPassword(final String password) {
         this.password = password;
     }
 
-    public void setPreemptive(boolean preemptive) {
+    public final void setPreemptive(final boolean preemptive) {
         this.preemptive = preemptive;
     }
 }
