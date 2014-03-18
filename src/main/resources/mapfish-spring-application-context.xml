@@ -54,5 +54,6 @@
     <bean id="mapPrinterFactory" class="org.mapfish.print.servlet.ServletMapPrinterFactory"></bean>
     <bean id="jobManager" class="org.mapfish.print.servlet.job.ThreadPoolJobManager"></bean>
     <bean id="printJobFactory" class="org.mapfish.print.servlet.job.FilePrintJob"></bean>
+    <bean id="fileReportLoader" class="org.mapfish.print.servlet.job.loader.FileReportLoader"></bean>
 
 </beans>

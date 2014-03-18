@@ -36,7 +36,7 @@ public interface Attribute<T> extends ConfigurationObject {
      * Read the attribute object.
      *
      * @param values the request data to read the attribute from.
-     * @param name
+     * @param name the name of the property to load the attribute from
      * @return the read attribute value
      */
     T getValue(PJsonObject values, String name);

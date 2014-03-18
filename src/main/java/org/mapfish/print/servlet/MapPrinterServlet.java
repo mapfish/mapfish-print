@@ -27,11 +27,14 @@ import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
 import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.servlet.job.*;
+import org.mapfish.print.servlet.job.loader.ReportLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -45,10 +48,10 @@ import java.util.UUID;
 
 /**
  * The default servlet.
- * 
- * @author Jesse
  *
+ * @author Jesse
  */
+@Controller
 public class MapPrinterServlet extends BaseMapServlet {
     private static final long serialVersionUID = -5038318057436063687L;
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseMapServlet.class);
@@ -56,8 +59,8 @@ public class MapPrinterServlet extends BaseMapServlet {
     // can be /app/capabilities.json
     private static final String CAPABILITIES_URL = "/capabilities.json";
     private static final String CREATE_URL = "/create";
-    private static final String STATUS_URL = "/status/";
-    private static final String RESULT_URL = "/get/";
+    private static final String STATUS_URL = "/status";
+    private static final String RESULT_URL = "/get";
 
     /* Registry keys */
 
@@ -86,33 +89,9 @@ public class MapPrinterServlet extends BaseMapServlet {
     @Autowired
     private PrintJobFactory printJobFactory;
 
-
-    @Override
-	protected final void doGet(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse)
-            throws ServletException, IOException {
-        // do the routing in function of the actual URL
-        String additionalPath = httpServletRequest.getPathInfo().trim();
-        if (additionalPath.isEmpty()) {
-            // handle an odd case where path info returns an empty string
-            additionalPath = httpServletRequest.getServletPath();
-        }
-        if (additionalPath.equals(CAPABILITIES_URL)) {
-            getInfo(null, httpServletResponse);
-        } else if (additionalPath.endsWith(CAPABILITIES_URL)) {
-            final String app = additionalPath.substring(1, additionalPath.length() - CAPABILITIES_URL.length());
-            getInfo(app, httpServletResponse);
-        } else if (additionalPath.startsWith(STATUS_URL)) {
-            getStatus(additionalPath, httpServletResponse);
-        } else if (additionalPath.startsWith(RESULT_URL)) {
-            getFile(additionalPath, httpServletRequest, httpServletResponse);
-        } else {
-            error(httpServletResponse, "Unknown method: " + additionalPath, HttpStatus.NOT_FOUND);
-        }
-    }
-
-    private void getStatus(final String additionalPath, final HttpServletResponse httpServletResponse) {
-        String ref = readReportReference(additionalPath);
-        boolean done = this.jobManager.isDone(ref);
+    @RequestMapping(value = STATUS_URL + "/{referenceId}", method = RequestMethod.GET)
+    private void getStatus(final String referenceId, final HttpServletResponse httpServletResponse) {
+        boolean done = this.jobManager.isDone(referenceId);
 
         PrintWriter writer = null;
         try {
@@ -122,7 +101,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             json.object();
             {
                 json.key(JSON_DONE).value(done);
-                Optional<? extends CompletedPrintJob> metadata = this.jobManager.getCompletedPrintJob(ref);
+                Optional<? extends CompletedPrintJob> metadata = this.jobManager.getCompletedPrintJob(referenceId);
                 if (metadata.isPresent() && metadata.get() instanceof FailedPrintJob) {
                     json.key(JSON_ERROR).value(((FailedPrintJob) metadata.get()).getError());
                 }
@@ -148,20 +127,9 @@ public class MapPrinterServlet extends BaseMapServlet {
         return additionalPath.substring(index + 1);
     }
 
-    @Override
-	protected final void doPost(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse)
-            throws ServletException, IOException {
-        final String additionalPath = httpServletRequest.getPathInfo();
-        if (additionalPath.equals(CREATE_URL)) {
-            queueJob(httpServletRequest, httpServletResponse);
-        } else {
-            error(httpServletResponse, "Unknown method: " + additionalPath, HttpStatus.NOT_FOUND);
-        }
-    }
-
     /**
      * Read the headers from the request.
-     * 
+     *
      * @param httpServletRequest the request object
      */
     protected final HttpHeaders getHeaders(final HttpServletRequest httpServletRequest) {
@@ -174,7 +142,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             @SuppressWarnings("unchecked")
             Enumeration<String> e = httpServletRequest.getHeaders(name);
             while (e.hasMoreElements()) {
-            	headerValues.add(e.nextElement());
+                headerValues.add(e.nextElement());
             }
             headers.put(name, headerValues);
         }
@@ -183,43 +151,31 @@ public class MapPrinterServlet extends BaseMapServlet {
 
     /**
      * add the print job to the job queue.
-     * 
-     * @param httpServletRequest the request object
+     *
+     * @param requestData a json formatted string with the request data required to perform the report generation.
+     * @param httpServletRequest  the request object
      * @param httpServletResponse the response object
      */
-    protected final void queueJob(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) {
-        String spec;
-        try {
-            httpServletRequest.setCharacterEncoding("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-        if (httpServletRequest.getMethod().equalsIgnoreCase("POST")) {
-            try {
-                spec = getSpecFromPostBody(httpServletRequest);
-            } catch (IOException e) {
-                error(httpServletResponse, "Missing 'spec' in request body", HttpStatus.INTERNAL_SERVER_ERROR);
-                return;
-            }
-        } else {
-            spec = httpServletRequest.getParameter(JSON_SPEC);
-        }
-        if (spec == null) {
+    @RequestMapping(value = CREATE_URL, method = RequestMethod.POST)
+    public final void createReport(@RequestBody final String requestData, final HttpServletRequest httpServletRequest,
+                                   final HttpServletResponse httpServletResponse) {
+
+        if (requestData == null) {
             error(httpServletResponse, "Missing 'spec' parameter", HttpStatus.INTERNAL_SERVER_ERROR);
             return;
         }
 
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Queue spec=" + spec);
+            LOGGER.debug("Report request data=" + requestData);
         }
 
-        PJsonObject specJson = MapPrinter.parseSpec(spec);
+        PJsonObject specJson = MapPrinter.parseSpec(requestData);
 
         String ref = UUID.randomUUID().toString();
         PrintWriter writer = null;
         try {
             PrintJob job = this.printJobFactory.create();
-            
+
             job.setReferenceId(ref);
             job.setRequestData(specJson);
             job.setHeaders(getHeaders(httpServletRequest));
@@ -248,6 +204,7 @@ public class MapPrinterServlet extends BaseMapServlet {
 
     /**
      * Get the json request data from the request object.
+     *
      * @param httpServletRequest the request object.
      */
     protected final String getSpecFromPostBody(final HttpServletRequest httpServletRequest) throws IOException {
@@ -271,16 +228,17 @@ public class MapPrinterServlet extends BaseMapServlet {
 
     /**
      * To get the PDF created previously.
-     * 
-     * @param additionalPath the path to the file.
-     * @param httpServletRequest the request object
+     *
+     * @param referenceId         the path to the file.
+     * @param inline              whether or not to inline the
      * @param httpServletResponse the response object
      */
-    protected final void getFile(final String additionalPath, final HttpServletRequest httpServletRequest, 
-    		final HttpServletResponse httpServletResponse)
+    @RequestMapping(value = RESULT_URL + "/{referenceId}", method = RequestMethod.GET)
+    public final void getReport(@PathVariable final String referenceId,
+                                @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
+                                final HttpServletResponse httpServletResponse)
             throws IOException, ServletException {
-        String ref = readReportReference(additionalPath);
-        URI pdfURI = this.jobManager.getURI(ref);
+        URI pdfURI = this.jobManager.getURI(referenceId);
         ReportLoader loader = null;
         for (ReportLoader reportLoader : this.reportLoaders) {
             if (reportLoader.accepts(pdfURI)) {
@@ -288,23 +246,34 @@ public class MapPrinterServlet extends BaseMapServlet {
                 break;
             }
         }
-        Optional<? extends CompletedPrintJob> metadata = this.jobManager.getCompletedPrintJob(ref);
+        Optional<? extends CompletedPrintJob> metadata = this.jobManager.getCompletedPrintJob(referenceId);
 
         if (loader == null) {
-            error(httpServletResponse, "Print with ref=" + ref + " unknown", HttpStatus.NOT_FOUND);
+            error(httpServletResponse, "Print with ref=" + referenceId + " unknown", HttpStatus.NOT_FOUND);
             return;
         }
-        sendPdfFile(metadata.get(), httpServletResponse, loader, pdfURI,
-                Boolean.parseBoolean(httpServletRequest.getParameter("inline")));
+        sendPdfFile(metadata.get(), httpServletResponse, loader, pdfURI, inline);
     }
 
     /**
      * To get (in JSON) the information about the available formats and CO.
      *
-     * @param app the name of the "app" or in other words, a mapping to the configuration file for this request.
      * @param resp the response object
      */
-    protected final void getInfo(final String app, final HttpServletResponse resp) throws ServletException,
+    @RequestMapping(value = CAPABILITIES_URL, method = RequestMethod.GET)
+    public final void getInfo(final HttpServletResponse resp) throws ServletException,
+            IOException {
+        getInfo(null, resp);
+    }
+
+    /**
+     * To get (in JSON) the information about the available formats and CO.
+     *
+     * @param app  the name of the "app" or in other words, a mapping to the configuration file for this request.
+     * @param resp the response object
+     */
+    @RequestMapping(value = "/{appId}" + CAPABILITIES_URL, method = RequestMethod.GET)
+    public final void getInfo(final String app, final HttpServletResponse resp) throws ServletException,
             IOException {
         MapPrinter printer = this.printerFactory.create(app);
         resp.setContentType("application/json; charset=utf-8");
@@ -332,15 +301,15 @@ public class MapPrinterServlet extends BaseMapServlet {
 
     /**
      * Copy the PDF into the output stream.
-     * 
-     * @param metadata the client request data
+     *
+     * @param metadata            the client request data
      * @param httpServletResponse the response object
-     * @param reportLoader the object used for loading the report
-     * @param reportURI the uri of the report
-     * @param inline whether or not to inline the content
+     * @param reportLoader        the object used for loading the report
+     * @param reportURI           the uri of the report
+     * @param inline              whether or not to inline the content
      */
     protected final void sendPdfFile(final CompletedPrintJob metadata, final HttpServletResponse httpServletResponse,
-    		final ReportLoader reportLoader, final URI reportURI, final boolean inline)
+                                     final ReportLoader reportLoader, final URI reportURI, final boolean inline)
             throws IOException, ServletException {
 
         final OutputStream response = httpServletResponse.getOutputStream();

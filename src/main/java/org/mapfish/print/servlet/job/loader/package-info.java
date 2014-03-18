@@ -17,31 +17,10 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.servlet.job;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URI;
-import java.util.NoSuchElementException;
-
 /**
- * Load a generated report from a supported URI.
- *
  * Created by Jesse on 3/18/14.
  */
-public interface ReportLoader {
-
-    /**
-     * Returns true if this loader can process the provided URI.
-     *
-     * @param reportURI the uri to test.
-     */
-    boolean accepts(URI reportURI);
-    /**
-     * Reads a report from the URI and writes it to the output stream.
-     *
-     * @param reportURI uri of the report.
-     * @param out output stream to write to.
-     */
-    void loadReport(URI reportURI, OutputStream out) throws IOException;
-}
+/**
+ * This package contains classes that can load generated reports from various URLs.
+ */
+package org.mapfish.print.servlet.job.loader;

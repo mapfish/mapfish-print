@@ -20,7 +20,6 @@
 package org.mapfish.print.servlet.job;
 
 import com.google.common.base.Optional;
-import org.json.JSONException;
 
 import java.net.URI;
 

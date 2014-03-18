@@ -19,16 +19,15 @@
 
 package org.mapfish.print.config;
 
+import com.google.common.base.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
 
 /**
  * Allows to check that a given URL matches an IP address (numeric format).

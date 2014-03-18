@@ -21,7 +21,6 @@ package org.mapfish.print.output;
 
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
-
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.config.Configuration;

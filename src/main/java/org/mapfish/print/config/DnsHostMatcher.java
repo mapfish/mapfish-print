@@ -19,9 +19,9 @@
 
 package org.mapfish.print.config;
 
-import java.net.URI;
-
 import com.google.common.base.Optional;
+
+import java.net.URI;
 
 /**
  * Allows to check that a given URL matches a DNS address (textual format).

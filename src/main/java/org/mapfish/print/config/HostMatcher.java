@@ -19,14 +19,14 @@
 
 package org.mapfish.print.config;
 
+import com.google.common.base.Optional;
+
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.google.common.base.Optional;
 
 /**
  * Used to validate the access to a map service host.

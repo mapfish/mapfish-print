@@ -19,7 +19,6 @@
 
 package org.mapfish.print.servlet.job;
 
-import java.net.URI;
 import java.util.Date;
 import java.util.concurrent.Future;
 

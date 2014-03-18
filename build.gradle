@@ -63,7 +63,7 @@ dependencies {
         	'commons-httpclient:commons-httpclient:3.1',
 	        'net.sf.jasperreports:jasperreports:5.5.0',
 	        'ar.com.fdvs:DynamicJasper:5.0.0',
-            'org.springframework.batch:spring-batch-core:2.2.5.RELEASE')
+            'org.springframework:spring-webmvc:4.0.2.RELEASE')
     compile ('org.apache.xmlgraphics:batik-transcoder:1.7'){
         exclude module: 'fop'
     }

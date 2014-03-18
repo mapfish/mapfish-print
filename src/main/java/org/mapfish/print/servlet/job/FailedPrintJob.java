@@ -58,7 +58,8 @@ public class FailedPrintJob extends CompletedPrintJob {
      * @param appId the appId used for loading the configuration.
      * @param fileName the fileName to send to the client.
      */
-    public static FailedPrintJob load(final JSONObject metadata, final String referenceId, final String appId, final String fileName) throws JSONException {
+    public static FailedPrintJob load(final JSONObject metadata, final String referenceId, final String appId,
+                                      final String fileName) throws JSONException {
         String error = metadata.getString(JSON_ERROR);
 
         return new FailedPrintJob(referenceId, appId, fileName, error);

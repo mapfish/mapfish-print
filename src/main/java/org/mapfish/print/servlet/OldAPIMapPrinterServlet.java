@@ -20,7 +20,6 @@
 package org.mapfish.print.servlet;
 
 import com.google.common.io.ByteStreams;
-
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
@@ -32,11 +31,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -76,29 +76,6 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
 
     @Autowired
     private MapPrinterFactory printerFactory;
-
-
-    @Override
-	protected final void doGet(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) 
-			throws ServletException,
-            IOException {
-        //do the routing in function of the actual URL
-        String additionalPath = httpServletRequest.getPathInfo().trim();
-        if (additionalPath.isEmpty()) {
-            // handle an odd case where path info returns an empty string
-            additionalPath = httpServletRequest.getServletPath();
-        }
-        if (additionalPath.equals(PRINT_URL)) {
-            createAndGetPDF(httpServletRequest, httpServletResponse);
-        } else if (additionalPath.equals(INFO_URL)) {
-            getInfo(httpServletRequest, httpServletResponse, getBaseUrl(httpServletRequest));
-        } else if (additionalPath.startsWith("/") && additionalPath.endsWith(TEMP_FILE_SUFFIX)) {
-            getFile(httpServletRequest, httpServletResponse, additionalPath.substring(1, additionalPath.length() - TEMP_FILE_SUFFIX
-                    .length()));
-        } else {
-            error(httpServletResponse, "Unknown method: " + additionalPath, HttpStatus.NOT_FOUND);
-        }
-    }
 
     @Override
 	protected final void doPost(final HttpServletRequest httpServletRequest, 
@@ -142,6 +119,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
      * @param httpServletRequest the request object
      * @param httpServletResponse the response object
      */
+    @RequestMapping(PRINT_URL)
     protected final void createAndGetPDF(final HttpServletRequest httpServletRequest, 
     		final HttpServletResponse httpServletResponse) {
         //get the spec from the query
@@ -152,7 +130,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-        if (httpServletRequest.getMethod() == "POST") {
+        if (httpServletRequest.getMethod().equals("POST")) {
             try {
                 spec = getSpecFromPostBody(httpServletRequest);
             } catch (IOException e) {
@@ -269,8 +247,9 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
      * @param response the http response
      * @param id the id for the file 
      */
-    protected final void getFile(final HttpServletRequest req, final HttpServletResponse response, final String id) throws IOException,
-            ServletException {
+    @RequestMapping("/{id}" + TEMP_FILE_SUFFIX)
+    protected final void getFile(@PathVariable final String id, final HttpServletRequest req, final HttpServletResponse response)
+            throws IOException, ServletException {
         final TempFile file;
         synchronized (this.tempFiles) {
             file = this.tempFiles.get(id);
@@ -289,6 +268,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
      * @param resp the http response
      * @param basePath the path to the webapp
      */
+    @RequestMapping(INFO_URL)
     protected final void getInfo(final HttpServletRequest req, final HttpServletResponse resp, final String basePath) 
     		throws ServletException, IOException {
         this.app = req.getParameter("app");
@@ -494,11 +474,11 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
      * @author Jesse
      *
      */
-    static class TempFile extends File {
+    private static class TempFile extends File {
         private static final long serialVersionUID = 455104129549002361L;
 
-        private final long creationTime;
         // CSOFF: VisibilityModifier
+        final long creationTime;
         public final String printedLayoutName;
         public final String outputFileName;
         // CSON: VisibilityModifier

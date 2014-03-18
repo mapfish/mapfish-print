@@ -28,7 +28,10 @@ import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.concurrent.*;
 
 /**
@@ -41,7 +44,7 @@ public class ThreadPoolJobManager implements JobManager {
      */
     private static final String REPORT_URI_PREFIX = "REPORT_URI_";
     /**
-     * Key for storing the number of print jobs currently running
+     * Key for storing the number of print jobs currently running.
      */
     private static final String NEW_PRINT_COUNT = "newPrintCount";
     /**

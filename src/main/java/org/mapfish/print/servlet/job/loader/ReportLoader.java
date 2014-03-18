@@ -17,26 +17,30 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.config;
+package org.mapfish.print.servlet.job.loader;
 
-import com.google.common.base.Optional;
-
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 
 /**
- * A matcher that always returns true.
+ * Load a generated report from a supported URI.
  *
- * Created by Jesse on 1/20/14.
+ * Created by Jesse on 3/18/14.
  */
-public class AcceptAllMatcher extends HostMatcher {
-    @Override
-	public final Optional<Boolean> tryOverrideValidation(final URI uri) {
-        return Optional.of(true);
-    }
+public interface ReportLoader {
 
-    @Override
-	public final String toString() {
-        return "Accept All";
-    }
-
+    /**
+     * Returns true if this loader can process the provided URI.
+     *
+     * @param reportURI the uri to test.
+     */
+    boolean accepts(URI reportURI);
+    /**
+     * Reads a report from the URI and writes it to the output stream.
+     *
+     * @param reportURI uri of the report.
+     * @param out output stream to write to.
+     */
+    void loadReport(URI reportURI, OutputStream out) throws IOException;
 }
