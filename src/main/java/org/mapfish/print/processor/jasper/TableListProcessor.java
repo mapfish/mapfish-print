@@ -74,9 +74,9 @@ public class TableListProcessor extends AbstractProcessor {
     private Map<String, Object> dynamicReport = null;
 
     @Override
-    public final Map<String, Object> execute(final Values values) throws Exception {
+    public final Map<String, Object> execute(final Map<String, Object> values) throws Exception {
         final Map<String, Object> output = new HashMap<String, Object>();
-        final PJsonObject jsonTableList = values.getObject(this.tableListRef, PJsonObject.class);
+        final PJsonObject jsonTableList = (PJsonObject) values.get(this.tableListRef);
         final List<Values> tableList = new ArrayList<Values>();
 
         if (jsonTableList != null) {

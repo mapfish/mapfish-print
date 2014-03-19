@@ -25,6 +25,7 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.config.Configuration;
@@ -39,6 +40,7 @@ import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -128,7 +130,15 @@ public class JasperReportOutputFormat implements OutputFormat {
     }
 
     private void runProcess(final Processor process, final Values values) throws Exception {
-        Map<String, Object> output = process.execute(values);
+        Map<String, Object> input = new HashMap<String, Object>();
+        Map<String, String> inputMap = process.getInputMapper();
+        for (String value : inputMap.keySet()) {
+            input.put(
+                    inputMap.get(value),
+                    values.getObject(value, Object.class));
+        }
+
+        Map<String, Object> output = process.execute(input);
         Map<String, String> outputMap = process.getOutputMapper();
         for (String value : outputMap.keySet()) {
             values.put(

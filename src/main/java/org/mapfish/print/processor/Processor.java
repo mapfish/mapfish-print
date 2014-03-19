@@ -20,7 +20,6 @@
 package org.mapfish.print.processor;
 
 import org.mapfish.print.config.ConfigurationObject;
-import org.mapfish.print.output.Values;
 
 import java.util.Map;
 
@@ -30,11 +29,16 @@ import java.util.Map;
  */
 public interface Processor extends ConfigurationObject {
     /**
+     * Map the variable names to the processor inputs.
+     */
+    Map<String, String> getInputMapper();
+
+    /**
      * @param values Actual values from attributes and the previous processor.
      * @return An id of the value for lookup in the output mapper?
      * @throws Exception
      */
-    Map<String, Object> execute(Values values) throws Exception;
+    Map<String, Object> execute(Map<String, Object> values) throws Exception;
 
     /**
      * Map output from processor to the variable in the Jasper Report.

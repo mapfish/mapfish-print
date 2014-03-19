@@ -19,7 +19,6 @@
 
 package org.mapfish.print.processor.map;
 
-import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.AbstractProcessor;
 
 import java.util.Map;
@@ -29,8 +28,7 @@ import java.util.Map;
  */
 public class DataStoreProcessor extends AbstractProcessor {
     @Override
-    public final Map<String, Object> execute(final Values values) throws Exception {
-//        values.
+    public final Map<String, Object> execute(final Map<String, Object> values) throws Exception {
         return null;
     }
 }

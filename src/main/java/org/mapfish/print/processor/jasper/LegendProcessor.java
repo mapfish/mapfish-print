@@ -23,7 +23,6 @@ import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 
 import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
-import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.AbstractProcessor;
 
 import java.awt.Image;
@@ -45,12 +44,12 @@ public class LegendProcessor extends AbstractProcessor {
     private String legendRef;
 
     @Override
-    public final Map<String, Object> execute(final Values values) throws Exception {
+    public final Map<String, Object> execute(final Map<String, Object> values) throws Exception {
         Map<String, Object> output = new HashMap<String, Object>();
 
         final List<Object[]> legendList = new ArrayList<Object[]>();
         final String[] legendColumns = {"name", "icon", "level"};
-        final PJsonObject jsonLegend = values.getObject(this.legendRef, PJsonObject.class);
+        final PJsonObject jsonLegend = (PJsonObject) values.get(this.legendRef);
         fillLegend(jsonLegend, legendList, 0);
         final Object[][] legend = new Object[legendList.size()][];
         output.put("legend", new JRTableModelDataSource(new TableDataSource(legendColumns, legendList.toArray(legend))));
