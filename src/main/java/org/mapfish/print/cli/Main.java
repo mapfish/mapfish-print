@@ -112,8 +112,6 @@ public final class Main {
         }
 
         try {
-            config = "examples/config.yaml";
-            spec = "examples/spec.json";
             context.getBean(Main.class).run();
         } finally {
             context.destroy();
