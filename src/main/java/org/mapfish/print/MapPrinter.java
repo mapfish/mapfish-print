@@ -48,22 +48,10 @@ public class MapPrinter implements Closeable {
 
     private Configuration configuration;
     @Autowired
-    private Queue<PrintJob> queue;
-    @Autowired
-    private Registry registry;
-    @Autowired
     private Map<String, OutputFormat> outputFormat;
     @Autowired
     private ConfigurationFactory configurationFactory;
     private File configFile;
-
-    public final java.util.Queue<PrintJob> getQueue() {
-        return this.queue;
-    }
-
-    public final Registry getRegistry() {
-        return this.registry;
-    }
 
     /**
      * Set the configuration file and update the configuration for this printer.
@@ -118,7 +106,7 @@ public class MapPrinter implements Closeable {
      */
     public final OutputFormat getOutputFormat(final PJsonObject specJson) {
         String format = specJson.getString("outputFormat");
-        return this.outputFormat.get(format);
+        return this.outputFormat.get(format + "OutputFormat");
     }
 
     /**

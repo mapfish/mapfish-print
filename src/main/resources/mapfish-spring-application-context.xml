@@ -22,9 +22,11 @@
     xmlns:context="http://www.springframework.org/schema/context" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
     <context:annotation-config></context:annotation-config>
+    <context:property-placeholder system-properties-mode="FALLBACK" />
+
     <bean id="main" class="org.mapfish.print.cli.Main"></bean>
 
-    <bean id="pdf" class="org.mapfish.print.output.JasperReportOutputFormat"></bean>
+    <bean id="pdfOutputFormat" class="org.mapfish.print.output.JasperReportOutputFormat"></bean>
     <bean id="mapPrinter" class="org.mapfish.print.MapPrinter" scope="prototype"></bean>
 
     <bean id="!localMatch" class="org.mapfish.print.config.AcceptAllMatcher" />
@@ -53,7 +55,9 @@
     <bean id="registry" class="org.mapfish.print.servlet.registry.BasicRegistry"></bean>
     <bean id="mapPrinterFactory" class="org.mapfish.print.servlet.ServletMapPrinterFactory"></bean>
     <bean id="jobManager" class="org.mapfish.print.servlet.job.ThreadPoolJobManager"></bean>
-    <bean id="printJobFactory" class="org.mapfish.print.servlet.job.FilePrintJob"></bean>
+    <bean id="printJobFactory" class="org.mapfish.print.servlet.job.FilePrintJob">
+        <property name="directory" value="${java.io.tmpdir}/mapfish-print-reports" />
+    </bean>
     <bean id="fileReportLoader" class="org.mapfish.print.servlet.job.loader.FileReportLoader"></bean>
 
 </beans>

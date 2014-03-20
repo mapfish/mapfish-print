@@ -27,7 +27,7 @@ import java.net.URI;
 /**
  * A strategy for authenticating with a URI.
  */
-public abstract class SecurityStrategy {
+public abstract class SecurityStrategy implements ConfigurationObject {
     private HostMatcher matcher;
 
     /**
