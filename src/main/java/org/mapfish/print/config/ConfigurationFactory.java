@@ -24,16 +24,17 @@ import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 /**
  * Strategy/plug-in for loading {@link Configuration} objects.
- *  
+ *
  * @author Jesse
  *
  */
@@ -46,7 +47,7 @@ public class ConfigurationFactory {
      * initialize this factory.  Called by spring after construction.
      */
     @PostConstruct
-	public final void init() {
+    public final void init() {
         Constructor constructor = new Constructor(Configuration.class);
         for (Map.Entry<String, ConfigurationObject> entry : this.yamlObjects.entrySet()) {
             constructor.addTypeDescription(new TypeDescription(entry.getValue().getClass(), entry.getKey()));
@@ -56,7 +57,7 @@ public class ConfigurationFactory {
 
     /**
      * Create a configuration object from a config file.
-     * 
+     *
      * @param configFile the file to read the configuration from.
      */
     public final Configuration getConfig(final File configFile) throws IOException {

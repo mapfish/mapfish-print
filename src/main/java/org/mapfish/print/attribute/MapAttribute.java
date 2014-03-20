@@ -37,17 +37,17 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
     private float height;
 
     @Override
-	public final MapAttributeValues getValue(final PJsonObject values, final String name) {
+    public final MapAttributeValues getValue(final PJsonObject values, final String name) {
         return new MapAttributeValues(values.getJSONObject(name));
     }
 
     @Override
-	protected final String getType() {
+    protected final String getType() {
         return "map";
     }
 
     @Override
-	protected final void additionalPrintClientConfig(final JSONWriter json) throws JSONException {
+    protected final void additionalPrintClientConfig(final JSONWriter json) throws JSONException {
         json.key(MAX_DPI).value(this.maxDpi);
         json.key(WIDTH).value(this.width);
         json.key(HEIGHT).value(this.height);
@@ -84,18 +84,16 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
             this.height = jsonObject.getInt(HEIGHT);
         }
 
-		public final double getMaxDPI() {
-			return this.maxDPI;
-		}
+        public final double getMaxDPI() {
+            return this.maxDPI;
+        }
 
-		public final int getWidth() {
-			return this.width;
-		}
+        public final int getWidth() {
+            return this.width;
+        }
 
-		public final int getHeight() {
-			return this.height;
-		}
-        
-        
+        public final int getHeight() {
+            return this.height;
+        }
     }
 }

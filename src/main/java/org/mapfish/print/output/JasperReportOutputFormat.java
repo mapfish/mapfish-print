@@ -19,7 +19,11 @@
 
 package org.mapfish.print.output;
 
-import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.Attribute;
@@ -40,7 +44,7 @@ import java.util.Map;
 
 /**
  * An PDF output format that uses Jasper reports to generate the result.
- * 
+ *
  * @author Jesse
  *
  */
@@ -49,17 +53,17 @@ public class JasperReportOutputFormat implements OutputFormat {
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportOutputFormat.class);
 
     @Override
-	public final String getContentType() {
+    public final String getContentType() {
         return "application/pdf";
     }
 
     @Override
-	public final String getFileSuffix() {
+    public final String getFileSuffix() {
         return "pdf";
     }
 
     @Override
-	public final void print(final PJsonObject spec, final Configuration config, final File configDir, final OutputStream outputStream)
+    public final void print(final PJsonObject spec, final Configuration config, final File configDir, final OutputStream outputStream)
             throws Exception {
         final String templateName = spec.getString(Constants.JSON_LAYOUT_KEY);
 

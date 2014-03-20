@@ -66,7 +66,7 @@ public abstract class AbstractAttribute<T> implements Attribute<T> {
      * @throws JSONException
      */
     @SuppressWarnings("unchecked")
-	protected final void addMapToJSON(final LinkedHashMap<String, ?> map, final JSONWriter json) throws JSONException {
+    protected final void addMapToJSON(final LinkedHashMap<String, ?> map, final JSONWriter json) throws JSONException {
         json.object();
         for (String key : map.keySet()) {
             Object value = map.get(key);

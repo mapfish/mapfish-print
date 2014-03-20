@@ -33,7 +33,7 @@ public class PJsonObject extends PJsonElement {
     private final JSONObject obj;
     /**
      * Constructor.
-     * 
+     *
      * @param obj the internal json element
      * @param contextName the field name of this element in the parent.
      */
@@ -42,7 +42,7 @@ public class PJsonObject extends PJsonElement {
     }
     /**
      * Constructor.
-     * 
+     *
      * @param parent the parent element
      * @param obj the internal json element
      * @param contextName the field name of this element in the parent.
@@ -68,7 +68,7 @@ public class PJsonObject extends PJsonElement {
     public final String optString(final String key, final String defaultValue) {
         return this.obj.optString(key, defaultValue);
     }
-    
+
     /**
      * Get a property as a string or throw an exception.
      * @param key the property name
@@ -84,7 +84,7 @@ public class PJsonObject extends PJsonElement {
     /**
      * Get a property as a int or throw an exception.
      * @param key the property name
-     */ 
+     */
     public final int getInt(final String key) {
         Integer result = this.obj.optInt(key, Integer.MIN_VALUE);
         if (result == Integer.MIN_VALUE) {
@@ -92,7 +92,7 @@ public class PJsonObject extends PJsonElement {
         }
         return result;
     }
-    
+
     /**
      * Get a property as a int or MIN_VALUE.
      * @param key the property name
@@ -250,10 +250,10 @@ public class PJsonObject extends PJsonElement {
 
     /**
      * Get an iterator of all keys in this objects.
-     * @return
+     * @return The keys iterator
      */
     @SuppressWarnings("unchecked")
-	public final Iterator<String> keys() {
+    public final Iterator<String> keys() {
         return this.obj.keys();
     }
 
@@ -267,33 +267,38 @@ public class PJsonObject extends PJsonElement {
     // CHECKSTYLE:OFF
     // Don't run checkstyle on generated methods
     @Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((obj == null) ? 0 : obj.hashCode());
-		return result;
-	}
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		PJsonObject other = (PJsonObject) obj;
-		if (this.obj == null) {
-			if (other.obj != null)
-				return false;
-		} else if (!this.obj.equals(other.obj))
-			return false;
-		return true;
-	}
-	// CHECKSTYLE:ON
-	
-	/**
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((obj == null) ? 0 : obj.hashCode());
+        return result;
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        PJsonObject other = (PJsonObject) obj;
+        if (this.obj == null) {
+            if (other.obj != null) {
+                return false;
+            }
+        } else if (!this.obj.equals(other.obj)) {
+            return false;
+        }
+        return true;
+    }
+    // CHECKSTYLE:ON
+
+    /**
      * Get the internal json object.
-     * @return
+     * @return The internal object
      */
     public final JSONObject getInternalObj() {
         return this.obj;

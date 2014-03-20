@@ -23,8 +23,10 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
+
 import com.google.common.io.CharStreams;
 import com.sampullara.cli.Args;
+
 import org.json.JSONWriter;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.json.PJsonObject;
@@ -34,23 +36,37 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractXmlApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.mapfish.print.cli.CliDefinition.*;
+import static org.mapfish.print.cli.CliDefinition.clientConfig;
+import static org.mapfish.print.cli.CliDefinition.config;
+import static org.mapfish.print.cli.CliDefinition.cookie;
+import static org.mapfish.print.cli.CliDefinition.output;
+import static org.mapfish.print.cli.CliDefinition.referer;
+import static org.mapfish.print.cli.CliDefinition.spec;
+import static org.mapfish.print.cli.CliDefinition.springConfig;
+import static org.mapfish.print.cli.CliDefinition.verbose;
 
 /**
  * A shell version of the MapPrinter. Can be used for testing or for calling
  * from other languages than Java.
  */
 public final class Main {
-	private Main() {
-		// intentionally empty
-	}
+    private Main() {
+        // intentionally empty
+    }
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
     private static final int LOGLEVEL_QUIET = 0;
@@ -141,8 +157,8 @@ public final class Main {
             }
         } finally {
             if (outFile != null) {
-				outFile.close();
-			}
+                outFile.close();
+            }
         }
     }
 

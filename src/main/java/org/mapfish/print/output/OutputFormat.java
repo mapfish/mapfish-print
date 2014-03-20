@@ -45,7 +45,7 @@ public interface OutputFormat {
 
     /**
      * Performs the print and writes to the report in the correct format to the outputStream.
-     * 
+     *
      * @param spec the data from the client, required for writing.
      * @param config the configuration object representing the server side configuration.
      * @param configDir the directory that contains the configuration, used for resolving resources like images etc...

@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 
 /**
  * Basic functionality of a processor.  Mostly utility methods.
- * 
+ *
  * @author Jesse
  */
 public abstract class AbstractProcessor implements Processor {
@@ -83,6 +83,7 @@ public abstract class AbstractProcessor implements Processor {
         return result.toString();
     }
 
+    @Override
     public final Map<String, String> getOutputMapper() {
         return this.outputMapper;
     }

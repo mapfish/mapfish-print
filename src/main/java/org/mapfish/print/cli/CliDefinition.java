@@ -26,8 +26,8 @@ import com.sampullara.cli.Argument;
  * from other languages than Java.
  */
 public final class CliDefinition {
-    private CliDefinition() { 
-    	// this is intentionally empty
+    private CliDefinition() {
+        // this is intentionally empty
     }
 
     // CHECKSTYLE:OFF

@@ -30,14 +30,14 @@ import java.util.Map;
 
 /**
  * A processor for generating a table.
- * 
+ *
  * @author Jesse
  */
 public class TableProcessor extends AbstractProcessor {
     private String tableRef;
 
     @Override
-	public final Map<String, Object> execute(final Values values) throws Exception {
+    public final Map<String, Object> execute(final Values values) throws Exception {
         final Map<String, Object> output = new HashMap<String, Object>();
         final PJsonObject jsonTable = values.getObject(this.tableRef, PJsonObject.class);
         final List<Map<String, String>> table = new ArrayList<Map<String, String>>();

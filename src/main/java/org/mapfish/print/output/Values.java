@@ -32,23 +32,23 @@ public class Values {
 
     /**
      * Constructor.
-     * 
+     *
      * @param values initial values.
      */
     public Values(final Map<String, Object> values) {
         this.values.putAll(values);
     }
-    
+
     /**
      * Constructor.
      */
     public Values() {
-    	// nothing to do
+        // nothing to do
     }
 
     /**
      * Put a new value in map.
-     * 
+     *
      * @param key id of the value for looking up.
      * @param value the value.
      */
@@ -65,7 +65,7 @@ public class Values {
 
     /**
      * Get a value as a string.
-     * 
+     *
      * @param key the key for looking up the value.
      */
     public final String getString(final String key) {
@@ -74,7 +74,7 @@ public class Values {
 
     /**
      * Get a value as a double.
-     * 
+     *
      * @param key the key for looking up the value.
      */
     public final Double getDouble(final String key) {
@@ -83,7 +83,7 @@ public class Values {
 
     /**
      * Get a value as a integer.
-     * 
+     *
      * @param key the key for looking up the value.
      */
     public final Integer getInteger(final String key) {
@@ -92,11 +92,11 @@ public class Values {
 
     /**
      * Get a value as a string.
-     * 
+     *
      * @param key the key for looking up the value.
      * @param type the type of the object
      * @param <V> the type
-     * 
+     *
      */
     public final <V> V getObject(final String key, final Class<V> type) {
         return type.cast(this.values.get(key));
@@ -104,11 +104,11 @@ public class Values {
 
     /**
      * Get an a value as an interator of values.
-     * 
+     *
      * @param key the key
      */
     @SuppressWarnings("unchecked")
-	protected final Iterable<Values> getIterator(final String key) {
+    protected final Iterable<Values> getIterator(final String key) {
         return (Iterable<Values>) this.values.get(key);
     }
 }

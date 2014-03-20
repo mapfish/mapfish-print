@@ -33,7 +33,7 @@ public class AddressHostMatcher extends InetHostMatcher {
     private InetAddress maskAddress = null;
 
     @Override
-	protected final byte[][] getAuthorizedIPs(final InetAddress maskForCalculation) throws UnknownHostException, SocketException {
+    protected final byte[][] getAuthorizedIPs(final InetAddress maskForCalculation) throws UnknownHostException, SocketException {
         if (this.authorizedIPs == null) {
             InetAddress[] ips = InetAddress.getAllByName(this.ip);
             this.authorizedIPs = buildMaskedAuthorizedIPs(ips);
@@ -123,5 +123,4 @@ public class AddressHostMatcher extends InetHostMatcher {
         return true;
     }
     // CHECKSTYLE:ON
-
 }

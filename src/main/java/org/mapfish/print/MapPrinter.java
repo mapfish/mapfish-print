@@ -26,8 +26,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.output.OutputFormat;
-import org.mapfish.print.servlet.job.PrintJob;
-import org.mapfish.print.servlet.registry.Registry;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Closeable;
@@ -35,7 +33,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
-import java.util.Queue;
 
 /**
  * The main class for printing maps. Will parse the spec, create the PDF
@@ -55,7 +52,7 @@ public class MapPrinter implements Closeable {
 
     /**
      * Set the configuration file and update the configuration for this printer.
-     * 
+     *
      * @param newConfigFile the file containing the new configuration.
      */
     public final void setConfiguration(final File newConfigFile) throws IOException {
@@ -66,7 +63,7 @@ public class MapPrinter implements Closeable {
     public final Configuration getConfiguration() {
         return this.configuration;
     }
-    
+
     /**
      * Use by /info.json to generate its returned content.
      * @param json the writer for outputting the config specification
@@ -76,10 +73,10 @@ public class MapPrinter implements Closeable {
     }
 
     /**
-     * parse the json string and return the object.  The string is expected to be the json print data from the client.
-     * 
-     * @param spec the json formatted string.
-     * @return
+     * Parse the JSON string and return the object.  The string is expected to be the JSON print data from the client.
+     *
+     * @param spec the JSON formatted string.
+     * @return The encapsulated JSON object
      */
     public static PJsonObject parseSpec(final String spec) {
         final JSONObject jsonSpec;
@@ -94,6 +91,7 @@ public class MapPrinter implements Closeable {
     /**
      * Shut down any resources that the mapprinter might have started like HTTP connections or open files, database connections, etc...
      */
+    @Override
     public final void close() {
         // TODO implement
         throw new UnsupportedOperationException();
@@ -101,7 +99,7 @@ public class MapPrinter implements Closeable {
 
     /**
      * Get the object responsible for printing to the correct output format.
-     * 
+     *
      * @param specJson the request json from the client
      */
     public final OutputFormat getOutputFormat(final PJsonObject specJson) {
@@ -111,13 +109,13 @@ public class MapPrinter implements Closeable {
 
     /**
      * Start a print.
-     * 
+     *
      * @param specJson the client json request.
      * @param out the stream to write to.
      * @param headers the headers passed from client.
      */
-    public final void print(final PJsonObject specJson, final OutputStream out, final Map<String, String> headers) 
-    		throws Exception {
+    public final void print(final PJsonObject specJson, final OutputStream out, final Map<String, String> headers)
+            throws Exception {
         // TODO use queue etc..
         final OutputFormat format = getOutputFormat(specJson);
         format.print(specJson, getConfiguration(), this.configFile.getParentFile(), out);
@@ -125,7 +123,7 @@ public class MapPrinter implements Closeable {
 
     /**
      * Get the output filename.  It is the name of the file that the client should receive.
-     * 
+     *
      * @param layout the layout that will be printed (it can affect the filename chosen).
      * @param defaultName the default name (from configuration)
      */

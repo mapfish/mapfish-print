@@ -34,7 +34,7 @@ public class BasicRegistry implements Registry {
     private final Map<String, Object> registry = new HashMap<String, Object>();
 
     @Override
-	public final synchronized boolean containsKey(final String key) {
+    public final synchronized boolean containsKey(final String key) {
         return this.registry.containsKey(key);
     }
 
@@ -70,32 +70,32 @@ public class BasicRegistry implements Registry {
     }
 
     @Override
-	public final synchronized void put(final String key, final String value) {
+    public final synchronized void put(final String key, final String value) {
         this.registry.put(key, value);
     }
 
     @Override
-	public final synchronized String getString(final String key) {
+    public final synchronized String getString(final String key) {
         return (String) this.registry.get(key);
     }
 
     @Override
-	public final synchronized void put(final String key, final Number value) {
+    public final synchronized void put(final String key, final Number value) {
         this.registry.put(key, value);
     }
 
     @Override
-	public final synchronized Number getNumber(final String key) {
+    public final synchronized Number getNumber(final String key) {
         return (Number) this.registry.get(key);
     }
 
     @Override
-	public final synchronized void put(final String key, final JSONObject value) {
+    public final synchronized void put(final String key, final JSONObject value) {
         this.registry.put(key, value);
     }
 
     @Override
-	public final synchronized JSONObject getJSON(final String key) {
+    public final synchronized JSONObject getJSON(final String key) {
         return (JSONObject) this.registry.get(key);
     }
 

@@ -30,13 +30,12 @@ import java.net.URI;
  */
 public class AcceptAllMatcher extends HostMatcher {
     @Override
-	public final Optional<Boolean> tryOverrideValidation(final URI uri) {
+    public final Optional<Boolean> tryOverrideValidation(final URI uri) {
         return Optional.of(true);
     }
 
     @Override
-	public final String toString() {
+    public final String toString() {
         return "Accept All";
     }
-
 }

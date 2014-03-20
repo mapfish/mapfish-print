@@ -27,18 +27,18 @@ import org.mapfish.print.json.PJsonObject;
 public class LegendAttribute extends AbstractAttribute<LegendAttribute.LegendAttributeValue> {
 
     @Override
-	public final LegendAttributeValue getValue(final PJsonObject values, final String name) {
+    public final LegendAttributeValue getValue(final PJsonObject values, final String name) {
         return new LegendAttributeValue(values.getJSONObject(name));
     }
 
     @Override
-	protected final String getType() {
+    protected final String getType() {
         return "legend";
     }
 
     /**
      * The value read from the json by this attribute object.
-     * 
+     *
      * @author Jesse
      */
     public static class LegendAttributeValue {

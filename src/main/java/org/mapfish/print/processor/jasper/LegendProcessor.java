@@ -20,19 +20,21 @@
 package org.mapfish.print.processor.jasper;
 
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
+
 import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.AbstractProcessor;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Image;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.imageio.ImageIO;
 
 /**
  * Create a legend.
@@ -43,7 +45,7 @@ public class LegendProcessor extends AbstractProcessor {
     private String legendRef;
 
     @Override
-	public final Map<String, Object> execute(final Values values) throws Exception {
+    public final Map<String, Object> execute(final Values values) throws Exception {
         Map<String, Object> output = new HashMap<String, Object>();
 
         final List<Object[]> legendList = new ArrayList<Object[]>();

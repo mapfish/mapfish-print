@@ -52,7 +52,7 @@ public class InvalidJsonValueException extends PrintException {
     }
 
     @Override
-	public final String toString() {
+    public final String toString() {
         if (getCause() != null) {
             return super.toString() + " (" + getCause().getMessage() + ")";
         } else {
