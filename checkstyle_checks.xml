@@ -39,10 +39,14 @@
     <module name="ParameterName"/>
     <module name="StaticVariableName"/>
     <module name="TypeName"/>
-    <!--<module name="AvoidStarImport"/>-->
+    <module name="AvoidStarImport"/>
     <module name="IllegalImport"/>
     <module name="RedundantImport"/>
     <module name="UnusedImports"/>
+    <module name="ImportOrder">
+        <property name="groups" value="/^ar\./,/^ch\./,/^com\./,/^net\./,/^org\./,/^java\./,/^javax\./"/>
+        <property name="option" value="bottom"/>
+    </module>
     <module name="LineLength">
       <property name="max" value="140"/>
     </module>
@@ -99,13 +103,11 @@
   </module>
   <module name="JavadocPackage"/>
   <module name="NewlineAtEndOfFile">
-    <property name="severity" value="ignore"/>
     <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
   </module>
   <module name="Translation"/>
   <module name="FileLength"/>
   <module name="FileTabCharacter">
-    <property name="severity" value="ignore"/>
     <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
   </module>
   <module name="RegexpSingleline">
@@ -115,7 +117,7 @@
     <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
   </module>
   <module name="SuppressionFilter">
-    <property name="file" value="${basedir}\checkstyle_suppressions.xml"/>
+    <property name="file" value="${basedir}/checkstyle_suppressions.xml"/>
   </module>
   <module name="SuppressionCommentFilter"/>
   <module name="SuppressionCommentFilter">
