@@ -9,6 +9,9 @@
 	<parameter name="length" class="java.lang.Double"/>
 	<parameter name="table" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
 	<parameter name="legend" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
+	<field name="dataSource" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
+	<field name="displayName" class="java.lang.String"/>
+	<field name="name" class="java.lang.String"/>
 	<title>
 		<band height="390" splitType="Stretch">
 			<staticText>
@@ -48,8 +51,20 @@
 	</title>
 	<detail>
 		<band height="65" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="555" height="23" uuid="d07b4b5c-e5f3-45ce-8c22-f020b1473383"/>
+				<textElement>
+					<font size="16" isBold="true" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{displayName}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="0" y="23" width="555" height="42" uuid="b4cae0ad-a520-425e-b790-d6984af7ddc8"/>
+				<dataSourceExpression><![CDATA[$F{dataSource}]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "/dynamic/table_" + $F{name} + ".jasper"]]></subreportExpression>
+			</subreport>
 			<break>
-				<reportElement x="0" y="64" width="100" height="1" uuid="93050d5d-f2e9-4a89-ba9e-96db0cb040b9"/>
+				<reportElement x="0" y="64" width="100" height="1" uuid="7e3114a8-51b8-438d-94ee-9878ddf894dd"/>
 			</break>
 		</band>
 	</detail>

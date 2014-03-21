@@ -31,7 +31,9 @@ import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
 import ar.com.fdvs.dj.domain.constants.VerticalAlign;
 
 import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 
+import org.mapfish.print.attribute.TableListAttribute.TableListAttributeValue;
 import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.output.Values;
@@ -51,32 +53,37 @@ import java.util.Map;
  * Processor for creating a table.
  *
  * @author Jesse
+ * @author sbrunner
  */
 public class TableListProcessor extends AbstractProcessor {
-    private static final int DEFAULT_TABLE_WIDTH = 500;
-
-    private static final int DEFAULT_BLUE = 230;
-
-    private static final int DEFAULT_GREEN = 230;
-
-    private static final int DEFAULT_RED = 230;
-
-    private static final String DEFAULT_FONT = "DejaVu Sans";
-
-    private static final int DEFAULT_TITLE_FONT_SIZE = 14;
-
-    private static final int DEFAULT_FONT_SIZE = 12;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
 
-    private String tableListRef;
+    private static final String TABLELIST_INPUT = "tablelist";
+    private static final String TABLELIST_OUTPUT = "tablelist";
+
+    private static final String JSON_COLUMNS = "columns";
+    private static final String JSON_DISPLAYNAME = "displayName";
+    private static final String JSON_DATA = "data";
+
+    private static final String COLUMN_NAME = "name";
+    private static final String COLUMN_DISPLAYNAME = "displayName";
+    private static final String COLUMN_DATASOURCE = "dataSource";
+
+    private static final int DEFAULT_TABLE_WIDTH = 500;
+    private static final int DEFAULT_BLUE = 230;
+    private static final int DEFAULT_GREEN = 230;
+    private static final int DEFAULT_RED = 230;
+    private static final String DEFAULT_FONT = "DejaVu Sans";
+    private static final int DEFAULT_TITLE_FONT_SIZE = 14;
+    private static final int DEFAULT_FONT_SIZE = 12;
+
     private String dynamicReportDirectory;
     private Map<String, Object> dynamicReport = null;
 
     @Override
     public final Map<String, Object> execute(final Map<String, Object> values) throws Exception {
         final Map<String, Object> output = new HashMap<String, Object>();
-        final PJsonObject jsonTableList = (PJsonObject) values.get(this.tableListRef);
+        final PJsonObject jsonTableList = ((TableListAttributeValue) values.get(TABLELIST_INPUT)).getJsonObject();
         final List<Values> tableList = new ArrayList<Values>();
 
         if (jsonTableList != null) {
@@ -84,13 +91,13 @@ public class TableListProcessor extends AbstractProcessor {
             while (iterTL.hasNext()) {
                 final String key = iterTL.next();
                 final PJsonObject jsonTable = jsonTableList.getJSONObject(key);
-                final PJsonArray jsonColumns = jsonTable.getJSONArray("columns");
-                final PJsonArray jsonData = jsonTable.getJSONArray("data");
-                final List<Map<String, String>> table = new ArrayList<Map<String, String>>();
+                final PJsonArray jsonColumns = jsonTable.getJSONArray(JSON_COLUMNS);
+                final PJsonArray jsonData = jsonTable.getJSONArray(JSON_DATA);
+                final List<Map<String, ?>> table = new ArrayList<Map<String, ?>>();
 
                 Map<String, Object> tableValues = new HashMap<String, Object>();
-                tableValues.put("name", key);
-                tableValues.put("displayName", jsonTable.optString("displayName", key));
+                tableValues.put(COLUMN_NAME, key);
+                tableValues.put(COLUMN_DISPLAYNAME, jsonTable.optString(JSON_DISPLAYNAME, key));
 
                 for (int i = 0; i < jsonData.size(); i++) {
                     final PJsonArray jsonRow = jsonData.getJSONArray(i);
@@ -101,7 +108,7 @@ public class TableListProcessor extends AbstractProcessor {
                     table.add(row);
                 }
 
-                tableValues.put("table", table);
+                tableValues.put(COLUMN_DATASOURCE, new JRMapCollectionDataSource(table));
                 tableList.add(new Values(tableValues));
 
                 if (this.dynamicReport != null) {
@@ -155,17 +162,9 @@ public class TableListProcessor extends AbstractProcessor {
             }
         }
 
-        output.put("tableList", tableList);
+        output.put(TABLELIST_OUTPUT, tableList);
 
         return output;
-    }
-
-    public final String getTableListRef() {
-        return this.tableListRef;
-    }
-
-    public final void setTableListRef(final String tableListRef) {
-        this.tableListRef = tableListRef;
     }
 
     private String dynamicReportOptString(final String key, final String defaultValue) {

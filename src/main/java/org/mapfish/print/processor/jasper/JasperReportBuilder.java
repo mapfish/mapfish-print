@@ -35,6 +35,7 @@ import java.util.Map;
  * A processor that actually compiles a jasper report.
  *
  * @author Jesse
+ * @author sbrunner
  */
 public class JasperReportBuilder implements Processor {
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
