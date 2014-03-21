@@ -1,21 +1,15 @@
 {
     "layout": "A4 portrait",
     "dpi": 254,
-    "units": "degrees",
+/*    "units": "degrees",*/
     "outputFormat": "pdf",
-    "srs": "EPSG:4326",
+/*    "srs": "EPSG:4326",*/
     "attributes": {
-        "srs": "EPSG:4326",
-        "units": "degrees",
-        "center_esting": 6,
-        "center_northing": 45.5,
-        "scale": 4000000,
-        "title": "A simple example",
-        "comment": "This is the first page selected by the user.",
-        "rotation": 0
-    },
-    "maps": {
-        "main": {
+        "number": 45,
+        "name": "Hello",
+        "description": "Hello every body !",
+        "length": 45.123,
+        "map": {
             "center": [6, 45.5],
             "scale": 40000,
             "rotation": 0,
@@ -90,43 +84,6 @@
                 },
                 "name": "Cosmetic"
             }]
-        }
-    },
-    "legends": {
-        "main": {
-            "name": "",
-            "classes": [/*{
-                "name": "Bâtiments RCB (n° EGID)",
-                "icon": "http://map.cartoriviera.ch/main/wsgi/mapserv_proxy?TRANSPARENT=TRUE&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=batiments_egid&FORMAT=image%2Fpng&SCALE=100000"
-            }, {
-                "name": "Limite de commune",
-                "icon": "http://map.cartoriviera.ch/main/wsgi/mapserv_proxy?TRANSPARENT=TRUE&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=limite_commune&FORMAT=image%2Fpng&SCALE=100000"
-            }, {
-                "name": "Bâtiments projetés ou non cadastrés",
-                "icon": "http://map.cartoriviera.ch/main/wsgi/mapserv_proxy?TRANSPARENT=TRUE&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=batiments_projetes&FORMAT=image%2Fpng&SCALE=100000"
-            }*/]
-        }
-    },
-    "namedTable": {
-        "table 1": {
-            "columns": ["id", "name", "icon"],
-            "data": [[1, "blah", "icon_pan"], [2, "blip", "icon_zoomin"]]
-        },
-        "table 2": {
-            "columns": ["id", "name", "icon"],
-            "data": [[10, "blah2", "icon_pan2"], [20, "blip2", "icon_zoomin2"]]
-        }
-    },
-    "tableList": {
-        "f1": {
-            "displayName": "Feature 1",
-            "columns": ["id", "name", "icon"],
-            "data": [[1, "blah", "icon_pan"], [2, "blip", "icon_zoomin"]]
-        },
-        "f2": {
-            "displayName": "Feature 2",
-            "columns": ["id", "name", "icon"],
-            "data": [[10, "blah2", "icon_pan2"], [20, "blip2", "icon_zoomin2"]]
         }
     }
 }

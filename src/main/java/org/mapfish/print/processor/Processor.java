@@ -28,6 +28,7 @@ import java.util.Map;
  * Created by Jesse on 2/21/14.
  */
 public interface Processor extends ConfigurationObject {
+
     /**
      * Map the variable names to the processor inputs.
      */

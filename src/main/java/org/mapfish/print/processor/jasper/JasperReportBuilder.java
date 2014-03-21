@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -65,12 +66,12 @@ public class JasperReportBuilder implements Processor {
 
     @Override
     public final Map<String, String> getInputMapper() {
-        return null;
+        return Collections.emptyMap();
     }
 
     @Override
     public final Map<String, String> getOutputMapper() {
-        return null;
+        return Collections.emptyMap();
     }
 
     public final String getDirectory() {

@@ -60,6 +60,7 @@ public class JasperReportOutputFormat implements OutputFormat {
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportOutputFormat.class);
 
+    private static final int WAIT_TIME = 200;
     private static final int DEFAULT_THREAD_NUMBER = 4;
 
     /**
@@ -189,10 +190,16 @@ public class JasperReportOutputFormat implements OutputFormat {
                         }
                         throw new RuntimeException("Error while running a Processor, seel log for details");
                     }
+                    break;
                 }
             }
             if (threads.isEmpty()) {
                 break; // finish
+            }
+            try {
+                Thread.sleep(WAIT_TIME);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -263,6 +270,8 @@ public class JasperReportOutputFormat implements OutputFormat {
                         } catch (InterruptedException e) {
                             // continue
                         }
+                    } else {
+                        return; // finish
                     }
                 }
             }
