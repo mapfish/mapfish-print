@@ -40,6 +40,7 @@ import javax.imageio.ImageIO;
  * Create a legend.
  *
  * @author Jesse
+ * @author sbrunner
  */
 public class LegendProcessor extends AbstractProcessor {
     private static final String LEGEND_INPUT = "legend";
@@ -59,7 +60,7 @@ public class LegendProcessor extends AbstractProcessor {
 
         final List<Object[]> legendList = new ArrayList<Object[]>();
         final String[] legendColumns = {NAME_COLUMN, ICON_COLUMN, LEVEL_COLUMN};
-        final PJsonObject jsonLegend = ((LegendAttributeValue) values.get(LEGEND_INPUT)).getJson();
+        final PJsonObject jsonLegend = ((LegendAttributeValue) values.get(LEGEND_INPUT)).getJsonObject();
         fillLegend(jsonLegend, legendList, 0);
         final Object[][] legend = new Object[legendList.size()][];
         output.put(LEGEND_OUTPUT, new JRTableModelDataSource(new TableDataSource(legendColumns, legendList.toArray(legend))));

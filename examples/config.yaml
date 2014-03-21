@@ -51,6 +51,7 @@ templates:
         width: 400
         height: 200
       legend: !legend {}
+      table: !table {}
     processors:
     - !reportBuilder
       directory: examples
@@ -60,3 +61,6 @@ templates:
     - !prepareLegend
       inputMapper: {legend: legend}
       outputMapper: {legend: legend}
+    - !prepareTable
+      inputMapper: {table: table}
+      outputMapper: {table: table}

@@ -9,6 +9,13 @@
         "name": "Hello",
         "description": "Hello every body !",
         "length": 45.123,
+        "table": {
+            "columns": ["id", "name", "icon"],
+            "data": [
+                [1, "blah", "icon_pan"],
+                [2, "blip", "icon_zoomin"]
+            ]
+        },
         "legend": {
             "name": "",
             "classes": [{

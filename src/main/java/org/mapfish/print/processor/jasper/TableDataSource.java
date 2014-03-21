@@ -31,7 +31,7 @@ import javax.swing.table.AbstractTableModel;
  * Processor that has data for a table in a jasper report.
  *
  * @author Jesse
- *
+ * @author sbrunner
  */
 public class TableDataSource extends AbstractTableModel {
 
