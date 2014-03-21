@@ -15,7 +15,7 @@
     <parameter name="rotation" class="java.lang.String"/>
     <parameter name="table_table 1" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
     <parameter name="table_table 2" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
-    <parameter name="legend_main" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
+    <parameter name="legend" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
     <field name="table" class="javax.swing.table.AbstractTableModel"/>
     <field name="displayName" class="java.lang.String"/>
     <field name="name" class="java.lang.String"/>
@@ -53,6 +53,18 @@
     </detail>
     <summary>
         <band height="65" splitType="Stretch">
+            <textField>
+                <reportElement x="0" y="0" width="555" height="23" uuid="d07b4b5c-e5f3-45ce-8c22-f020b1473383"/>
+                <textElement>
+                    <font size="16" isBold="true" isItalic="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Legend"]]></textFieldExpression>
+            </textField>
+            <subreport>
+                <reportElement x="0" y="23" width="555" height="42" uuid="b4cae0ad-a520-425e-b790-d6984af7ddc8"/>
+                <dataSourceExpression><![CDATA[$P{legend}]]></dataSourceExpression>
+                <subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "/legend.jasper"]]></subreportExpression>
+            </subreport>
         </band>
     </summary>
 </jasperReport>
