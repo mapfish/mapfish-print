@@ -30,7 +30,7 @@ import java.net.URI;
  *
  * @author Jesse
  */
-public class BasicAuthSecurity extends SecurityStrategy {
+public class BasicAuthSecurity extends SecurityStrategy implements ConfigurationObject {
 
     private String username = null;
     private String password = null;
