@@ -21,18 +21,19 @@ package org.mapfish.print.processor.jasper;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
-import org.mapfish.print.output.Values;
+
 import org.mapfish.print.processor.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.Collections;
 import java.util.Map;
 
 /**
  * A processor that actually compiles a jasper report.
- * 
+ *
  * @author Jesse
  */
 public class JasperReportBuilder implements Processor {
@@ -41,7 +42,7 @@ public class JasperReportBuilder implements Processor {
     private File directory = new File(".");
 
     @Override
-	public final Map<String, Object> execute(final Values values) throws JRException {
+    public final Map<String, Object> execute(final Map<String, Object> values) throws JRException {
         final FilenameFilter filter = new FilenameFilter() {
             @Override
             public boolean accept(final File file, final String name) {
@@ -64,8 +65,13 @@ public class JasperReportBuilder implements Processor {
     }
 
     @Override
-	public final Map<String, String> getOutputMapper() {
-        return null;
+    public final Map<String, String> getInputMapper() {
+        return Collections.emptyMap();
+    }
+
+    @Override
+    public final Map<String, String> getOutputMapper() {
+        return Collections.emptyMap();
     }
 
     public final String getDirectory() {

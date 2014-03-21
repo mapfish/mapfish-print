@@ -20,7 +20,7 @@
 
 <beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:context="http://www.springframework.org/schema/context" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
     <context:annotation-config></context:annotation-config>
     <context:property-placeholder system-properties-mode="FALLBACK" />
 
@@ -45,10 +45,11 @@
     <bean id="!table" class="org.mapfish.print.attribute.TableAttribute" />
     <bean id="!tableList" class="org.mapfish.print.attribute.TableListAttribute" />
 
+    <bean id="!prepareTable" class="org.mapfish.print.processor.TableProcessor" />
+    <bean id="!createMap" class="org.mapfish.print.processor.map.MapProcessor" />
+    <bean id="!prepareTableList" class="org.mapfish.print.processor.jasper.TableListProcessor" />
     <bean id="!reportBuilder" class="org.mapfish.print.processor.jasper.JasperReportBuilder" />
     <bean id="!prepareLegend" class="org.mapfish.print.processor.jasper.LegendProcessor" />
-    <bean id="!prepareTable" class="org.mapfish.print.processor.TableProcessor" />
-    <bean id="!prepareTableList" class="org.mapfish.print.processor.jasper.TableListProcessor" />
 
     <bean id="configurationFactory" class="org.mapfish.print.config.ConfigurationFactory"></bean>
 
@@ -59,5 +60,4 @@
         <property name="directory" value="${java.io.tmpdir}/mapfish-print-reports" />
     </bean>
     <bean id="fileReportLoader" class="org.mapfish.print.servlet.job.loader.FileReportLoader"></bean>
-
 </beans>

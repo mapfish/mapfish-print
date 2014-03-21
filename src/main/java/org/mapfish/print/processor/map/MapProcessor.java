@@ -19,8 +19,23 @@
 
 package org.mapfish.print.processor.map;
 
+import org.mapfish.print.processor.AbstractProcessor;
+
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Jesse on 3/17/14.
+ * @author sbrunner
  */
-public class MapProcessor {
+public class MapProcessor extends AbstractProcessor {
+    private static final int TEMPORARY_MAP_SIZE = 200;
+
+    @Override
+    public final Map<String, Object> execute(final Map<String, Object> values) throws Exception {
+        final Map<String, Object> output = new HashMap<String, Object>();
+        output.put("map", new BufferedImage(TEMPORARY_MAP_SIZE, TEMPORARY_MAP_SIZE, BufferedImage.TYPE_INT_ARGB_PRE));
+        return output;
+    }
 }

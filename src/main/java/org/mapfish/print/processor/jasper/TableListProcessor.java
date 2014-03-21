@@ -29,7 +29,9 @@ import ar.com.fdvs.dj.domain.constants.Border;
 import ar.com.fdvs.dj.domain.constants.Font;
 import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
 import ar.com.fdvs.dj.domain.constants.VerticalAlign;
+
 import net.sf.jasperreports.engine.JasperCompileManager;
+
 import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.output.Values;
@@ -37,41 +39,44 @@ import org.mapfish.print.processor.AbstractProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Processor for creating a table.
- * 
+ *
  * @author Jesse
  */
 public class TableListProcessor extends AbstractProcessor {
     private static final int DEFAULT_TABLE_WIDTH = 500;
 
-	private static final int DEFAULT_BLUE = 230;
+    private static final int DEFAULT_BLUE = 230;
 
-	private static final int DEFAULT_GREEN = 230;
+    private static final int DEFAULT_GREEN = 230;
 
-	private static final int DEFAULT_RED = 230;
+    private static final int DEFAULT_RED = 230;
 
-	private static final String DEFAULT_FONT = "DejaVu Sans";
+    private static final String DEFAULT_FONT = "DejaVu Sans";
 
-	private static final int DEFAULT_TITLE_FONT_SIZE = 14;
+    private static final int DEFAULT_TITLE_FONT_SIZE = 14;
 
-	private static final int DEFAULT_FONT_SIZE = 12;
+    private static final int DEFAULT_FONT_SIZE = 12;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
 
     private String tableListRef;
     private String dynamicReportDirectory;
     private Map<String, Object> dynamicReport = null;
 
     @Override
-	public final Map<String, Object> execute(final Values values) throws Exception {
+    public final Map<String, Object> execute(final Map<String, Object> values) throws Exception {
         final Map<String, Object> output = new HashMap<String, Object>();
-        final PJsonObject jsonTableList = values.getObject(this.tableListRef, PJsonObject.class);
+        final PJsonObject jsonTableList = (PJsonObject) values.get(this.tableListRef);
         final List<Values> tableList = new ArrayList<Values>();
 
         if (jsonTableList != null) {

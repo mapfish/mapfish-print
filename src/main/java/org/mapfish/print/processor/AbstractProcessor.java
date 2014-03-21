@@ -27,10 +27,11 @@ import java.util.regex.Pattern;
 
 /**
  * Basic functionality of a processor.  Mostly utility methods.
- * 
+ *
  * @author Jesse
  */
 public abstract class AbstractProcessor implements Processor {
+    private Map<String, String> inputMapper;
     private Map<String, String> outputMapper;
 
     //    private static final Pattern FULL_VARIABLE_REGEXP = Pattern.compile("^\\$\\{([^}]+)\\}$");
@@ -83,6 +84,16 @@ public abstract class AbstractProcessor implements Processor {
         return result.toString();
     }
 
+    @Override
+    public final Map<String, String> getInputMapper() {
+        return this.inputMapper;
+    }
+
+    public final void setInputMapper(final Map<String, String> inputMapper) {
+        this.inputMapper = inputMapper;
+    }
+
+    @Override
     public final Map<String, String> getOutputMapper() {
         return this.outputMapper;
     }

@@ -20,6 +20,7 @@
 package org.mapfish.print.config;
 
 import com.google.common.base.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +44,7 @@ public abstract class InetHostMatcher extends HostMatcher {
     // CSON: VisibilityModifier
 
     @Override
-	protected final Optional<Boolean> tryOverrideValidation(final URI uri) throws UnknownHostException, SocketException {
+    protected final Optional<Boolean> tryOverrideValidation(final URI uri) throws UnknownHostException, SocketException {
         final InetAddress maskAddress = getMaskAddress();
         final InetAddress[] requestedIPs;
         try {
@@ -51,8 +52,7 @@ public abstract class InetHostMatcher extends HostMatcher {
         } catch (UnknownHostException ex) {
             return Optional.of(false);
         }
-        for (int i = 0; i < requestedIPs.length; ++i) {
-            InetAddress requestedIP = requestedIPs[i];
+        for (InetAddress requestedIP : requestedIPs) {
             if (isInAuthorized(requestedIP, maskAddress)) {
                 return Optional.absent();
             }
@@ -64,8 +64,7 @@ public abstract class InetHostMatcher extends HostMatcher {
             SocketException {
         byte[] rBytes = mask(requestedIP, mask);
         final byte[][] finalAuthorizedIPs = getAuthorizedIPs(mask);
-        for (int i = 0; i < finalAuthorizedIPs.length; ++i) {
-            byte[] authorizedIP = finalAuthorizedIPs[i];
+        for (byte[] authorizedIP : finalAuthorizedIPs) {
             if (compareIP(rBytes, authorizedIP)) {
                 return true;
             }

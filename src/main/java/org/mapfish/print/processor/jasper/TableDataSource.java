@@ -29,7 +29,7 @@ import javax.swing.table.AbstractTableModel;
 
 /**
  * Processor that has data for a table in a jasper report.
- *  
+ *
  * @author Jesse
  *
  */
@@ -41,7 +41,7 @@ public class TableDataSource extends AbstractTableModel {
 
     /**
      * Constructor.
-     * 
+     *
      * @param table the table data.
      */
     public TableDataSource(final PJsonObject table) {
@@ -66,7 +66,7 @@ public class TableDataSource extends AbstractTableModel {
 
     /**
      * Constructor.
-     * 
+     *
      * @param columnNames the names of each column in the table
      * @param data the table data.
      */
@@ -76,12 +76,12 @@ public class TableDataSource extends AbstractTableModel {
     }
 
     @Override
-	public final int getColumnCount() {
+    public final int getColumnCount() {
         return this.columnNames.length;
     }
 
     @Override
-	public final String getColumnName(final int columnIndex) {
+    public final String getColumnName(final int columnIndex) {
         return this.columnNames[columnIndex];
     }
 
@@ -90,12 +90,12 @@ public class TableDataSource extends AbstractTableModel {
     }
 
     @Override
-	public final int getRowCount() {
+    public final int getRowCount() {
         return this.data.length;
     }
 
     @Override
-	public final Object getValueAt(final int rowIndex, final int columnIndex) {
+    public final Object getValueAt(final int rowIndex, final int columnIndex) {
         return this.data[rowIndex][columnIndex];
     }
 }

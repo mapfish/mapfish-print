@@ -19,12 +19,13 @@
 
 package org.mapfish.print.servlet.job;
 
-import javax.annotation.PostConstruct;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
+
+import javax.annotation.PostConstruct;
 
 /**
  * A PrintJob implementation that write results to files.

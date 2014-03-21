@@ -21,6 +21,7 @@ package org.mapfish.print.attribute;
 
 import org.json.JSONException;
 import org.json.JSONWriter;
+import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
 
 /**
@@ -37,17 +38,17 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
     private float height;
 
     @Override
-	public final MapAttributeValues getValue(final PJsonObject values, final String name) {
+    public final MapAttributeValues getValue(final PJsonObject values, final String name) {
         return new MapAttributeValues(values.getJSONObject(name));
     }
 
     @Override
-	protected final String getType() {
+    protected final String getType() {
         return "map";
     }
 
     @Override
-	protected final void additionalPrintClientConfig(final JSONWriter json) throws JSONException {
+    protected final void additionalPrintClientConfig(final JSONWriter json) throws JSONException {
         json.key(MAX_DPI).value(this.maxDpi);
         json.key(WIDTH).value(this.width);
         json.key(HEIGHT).value(this.height);
@@ -69,33 +70,41 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
      * The value of {@link org.mapfish.print.attribute.MapAttribute}.
      */
     public static class MapAttributeValues {
+        static final String CENTER = "center";
+        static final String SCALE = "scale";
+        static final String ROTATION = "rotation";
+        static final String LAYERS = "layers";
 
-        private final double maxDPI;
-        private final int width;
-        private final int height;
+        private final PJsonArray center;
+        private final double scale;
+        private final double rotation;
+        private final PJsonArray layers;
 
         /**
          * Constructor.
          * @param jsonObject json containing attribute information.
          */
         public MapAttributeValues(final PJsonObject jsonObject) {
-            this.maxDPI = jsonObject.getDouble(MAX_DPI);
-            this.width = jsonObject.getInt(WIDTH);
-            this.height = jsonObject.getInt(HEIGHT);
+            this.center = jsonObject.getJSONArray(CENTER);
+            this.scale = jsonObject.getDouble(SCALE);
+            this.rotation = jsonObject.getInt(ROTATION);
+            this.layers = jsonObject.getJSONArray(LAYERS);
         }
 
-		public final double getMaxDPI() {
-			return this.maxDPI;
-		}
+        public final PJsonArray getCenter() {
+            return this.center;
+        }
 
-		public final int getWidth() {
-			return this.width;
-		}
+        public final double getScale() {
+            return this.scale;
+        }
 
-		public final int getHeight() {
-			return this.height;
-		}
-        
-        
+        public final double getRotation() {
+            return this.rotation;
+        }
+
+        public final PJsonArray getLayers() {
+            return this.layers;
+        }
     }
 }

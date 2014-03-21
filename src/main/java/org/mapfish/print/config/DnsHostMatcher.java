@@ -37,7 +37,7 @@ public class DnsHostMatcher extends HostMatcher {
      * @return True if it matches.
      */
     @Override
-	public final Optional<Boolean> tryOverrideValidation(final URI uri) {
+    public final Optional<Boolean> tryOverrideValidation(final URI uri) {
         if (!uri.getHost().equals(this.host)) {
             return Optional.of(false);
         }

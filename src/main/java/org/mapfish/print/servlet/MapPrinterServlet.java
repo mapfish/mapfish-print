@@ -21,12 +21,17 @@ package org.mapfish.print.servlet;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
 import org.mapfish.print.json.PJsonObject;
-import org.mapfish.print.servlet.job.*;
+import org.mapfish.print.servlet.job.CompletedPrintJob;
+import org.mapfish.print.servlet.job.FailedPrintJob;
+import org.mapfish.print.servlet.job.JobManager;
+import org.mapfish.print.servlet.job.PrintJob;
+import org.mapfish.print.servlet.job.PrintJobFactory;
 import org.mapfish.print.servlet.job.loader.ReportLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,17 +39,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.UUID;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * The default servlet.

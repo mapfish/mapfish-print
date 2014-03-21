@@ -27,12 +27,12 @@ import org.mapfish.print.json.PJsonObject;
 public class StringAttribute extends AbstractAttribute<String> {
 
     @Override
-	public final String getValue(final PJsonObject values, final String name) {
+    public final String getValue(final PJsonObject values, final String name) {
         return values.getString(name);
     }
 
     @Override
-	protected final String getType() {
+    protected final String getType() {
         return "string";
     }
 }

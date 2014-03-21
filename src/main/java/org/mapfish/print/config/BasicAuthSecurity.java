@@ -24,19 +24,20 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 
 import java.net.URI;
+
 /**
  * Authenticate using basic auth.
- * 
+ *
  * @author Jesse
  */
-public class BasicAuthSecurity extends SecurityStrategy {
+public class BasicAuthSecurity extends SecurityStrategy implements ConfigurationObject {
 
     private String username = null;
     private String password = null;
     private boolean preemptive = false;
 
     @Override
-	public final void configure(final URI uri, final HttpClient httpClient) {
+    public final void configure(final URI uri, final HttpClient httpClient) {
         if (this.username == null || this.password == null) {
             throw new IllegalStateException("username and password configuration of BasicAuthSecurity is required");
         }

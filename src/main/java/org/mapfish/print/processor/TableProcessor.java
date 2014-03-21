@@ -21,7 +21,6 @@ package org.mapfish.print.processor;
 
 import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
-import org.mapfish.print.output.Values;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,16 +29,16 @@ import java.util.Map;
 
 /**
  * A processor for generating a table.
- * 
+ *
  * @author Jesse
  */
 public class TableProcessor extends AbstractProcessor {
     private String tableRef;
 
     @Override
-	public final Map<String, Object> execute(final Values values) throws Exception {
+    public final Map<String, Object> execute(final Map<String, Object> values) throws Exception {
         final Map<String, Object> output = new HashMap<String, Object>();
-        final PJsonObject jsonTable = values.getObject(this.tableRef, PJsonObject.class);
+        final PJsonObject jsonTable = (PJsonObject) values.get(this.tableRef);
         final List<Map<String, String>> table = new ArrayList<Map<String, String>>();
 
         final PJsonArray jsonColumns = jsonTable.getJSONArray("columns");
