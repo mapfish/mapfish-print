@@ -19,12 +19,14 @@
 
 package org.mapfish.print.processor.jasper;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
-
 import org.mapfish.print.processor.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -40,6 +42,8 @@ public class JasperReportBuilder implements Processor {
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
 
     private File directory = new File(".");
+    @Autowired
+    private MetricRegistry metricRegistry;
 
     @Override
     public final Map<String, Object> execute(final Map<String, Object> values) throws JRException {
@@ -55,10 +59,14 @@ public class JasperReportBuilder implements Processor {
                     jasperFileName.replaceAll("\\.jrxml$", ".jasper"));
             if (!buildFile.exists() || jasperFile.lastModified() > buildFile.lastModified()) {
                 LOGGER.info("Building Jasper report: " + jasperFile.getAbsolutePath());
-                long start = System.currentTimeMillis();
-                JasperCompileManager.compileReportToFile(jasperFile.getAbsolutePath(),
-                        buildFile.getAbsolutePath());
-                LOGGER.info("Report built in " + (System.currentTimeMillis() - start) + "ms.");
+                final Timer.Context compileJasperReport = this.metricRegistry.timer("CompileJasperReport").time();
+                try {
+                    JasperCompileManager.compileReportToFile(jasperFile.getAbsolutePath(),
+                            buildFile.getAbsolutePath());
+                } finally {
+                    final long compileTime = compileJasperReport.stop();
+                    LOGGER.info("Report built in " + compileTime + "ms.");
+                }
             }
         }
         return null;
@@ -72,10 +80,6 @@ public class JasperReportBuilder implements Processor {
     @Override
     public final Map<String, String> getOutputMapper() {
         return Collections.emptyMap();
-    }
-
-    public final String getDirectory() {
-        return this.directory.getPath();
     }
 
     public final void setDirectory(final String directory) {
