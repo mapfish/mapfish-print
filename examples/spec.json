@@ -9,6 +9,41 @@
         "name": "Hello",
         "description": "Hello every body !",
         "length": 45.123,
+        "table": {
+            "columns": ["id", "name", "icon"],
+            "data": [
+                [1, "blah", "icon_pan"],
+                [2, "blip", "icon_zoomin"]
+            ]
+        },
+        "tablelist": {
+            "f1": {
+                "displayName": "Feature 1",
+                "columns": ["id", "name", "icon"],
+                "data": [[1, "blah", "icon_pan"], [2, "blip", "icon_zoomin"]]
+            },
+            "f2": {
+                "displayName": "Feature 2",
+                "columns": ["id", "name", "icon"],
+                "data": [[10, "blah2", "icon_pan2"], [20, "blip2", "icon_zoomin2"]]
+            }
+        },
+        "legend": {
+            "name": "",
+            "classes": [{
+                "name": "Polling station",
+                "icons": ["http://mapfish-geoportal.demo-camptocamp.com/demo/wsgi/mapserv_proxy?TRANSPARENT=TRUE&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=bureaux_vote&FORMAT=image%2Fpng&SCALE=200000"]
+            }, {
+                "name": "Sub-districts",
+                "icons": ["http://mapfish-geoportal.demo-camptocamp.com/demo/wsgi/mapserv_proxy?TRANSPARENT=TRUE&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=sous_quartiers&FORMAT=image%2Fpng&SCALE=200000"]
+            }, {
+                "name": "Districts",
+                "icons": ["http://mapfish-geoportal.demo-camptocamp.com/demo/wsgi/mapserv_proxy?TRANSPARENT=TRUE&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=quartiers&FORMAT=image%2Fpng&SCALE=200000"]
+            }, {
+                "name": "Area",
+                "icons": ["http://mapfish-geoportal.demo-camptocamp.com/demo/wsgi/mapserv_proxy?TRANSPARENT=TRUE&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=circonscription&FORMAT=image%2Fpng&SCALE=200000"]
+            }]
+        },
         "map": {
             "center": [6, 45.5],
             "scale": 40000,

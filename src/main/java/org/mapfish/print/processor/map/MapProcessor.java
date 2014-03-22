@@ -31,11 +31,13 @@ import java.util.Map;
  */
 public class MapProcessor extends AbstractProcessor {
     private static final int TEMPORARY_MAP_SIZE = 200;
+//    private static final String MAP_INPUT = "map";
+    private static final String MAP_OUTPUT = "map";
 
     @Override
     public final Map<String, Object> execute(final Map<String, Object> values) throws Exception {
         final Map<String, Object> output = new HashMap<String, Object>();
-        output.put("map", new BufferedImage(TEMPORARY_MAP_SIZE, TEMPORARY_MAP_SIZE, BufferedImage.TYPE_INT_ARGB_PRE));
+        output.put(MAP_OUTPUT, new BufferedImage(TEMPORARY_MAP_SIZE, TEMPORARY_MAP_SIZE, BufferedImage.TYPE_INT_ARGB_PRE));
         return output;
     }
 }

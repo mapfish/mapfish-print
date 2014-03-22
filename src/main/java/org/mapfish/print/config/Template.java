@@ -24,18 +24,21 @@ import org.json.JSONWriter;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.processor.Processor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Represents a report template configuration.
+ *
+ * @author sbrunner
  */
 public class Template implements ConfigurationObject {
     private String jasperTemplate;
     private Map<String, Attribute<?>> attributes;
     private List<Processor> processors;
     private String iterValue;
-    private List<Processor> iterProcessors;
+    private List<Processor> iterProcessors = new ArrayList<Processor>();
 
     private String jdbcUrl;
     private String jdbcUser;

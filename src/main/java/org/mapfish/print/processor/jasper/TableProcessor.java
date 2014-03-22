@@ -17,32 +17,41 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.processor;
+package org.mapfish.print.processor.jasper;
 
+import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+
+import org.mapfish.print.attribute.TableAttribute.TableAttributeValue;
 import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.processor.AbstractProcessor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * A processor for generating a table.
  *
  * @author Jesse
+ * @author sbrunner
  */
 public class TableProcessor extends AbstractProcessor {
-    private String tableRef;
+    private static final String TABLE_INPUT = "table";
+    private static final String TABLE_OUTPUT = "table";
+
+    private static final String JSON_COLUMNS = "columns";
+    private static final String JSON_DATA = "data";
 
     @Override
     public final Map<String, Object> execute(final Map<String, Object> values) throws Exception {
         final Map<String, Object> output = new HashMap<String, Object>();
-        final PJsonObject jsonTable = (PJsonObject) values.get(this.tableRef);
-        final List<Map<String, String>> table = new ArrayList<Map<String, String>>();
+        final PJsonObject jsonTable = ((TableAttributeValue) values.get(TABLE_INPUT)).getJsonObject();
+        final Collection<Map<String, ?>> table = new ArrayList<Map<String, ?>>();
 
-        final PJsonArray jsonColumns = jsonTable.getJSONArray("columns");
-        final PJsonArray jsonData = jsonTable.getJSONArray("data");
+        final PJsonArray jsonColumns = jsonTable.getJSONArray(JSON_COLUMNS);
+        final PJsonArray jsonData = jsonTable.getJSONArray(JSON_DATA);
         for (int i = 0; i < jsonData.size(); i++) {
             final PJsonArray jsonRow = jsonData.getJSONArray(i);
             final Map<String, String> row = new HashMap<String, String>();
@@ -52,15 +61,7 @@ public class TableProcessor extends AbstractProcessor {
             table.add(row);
         }
 
-        output.put("table", table);
+        output.put(TABLE_OUTPUT, new JRMapCollectionDataSource(table));
         return output;
-    }
-
-    public final String getTableRef() {
-        return this.tableRef;
-    }
-
-    public final void setTableRef(final String tableRef) {
-        this.tableRef = tableRef;
     }
 }

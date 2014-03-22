@@ -21,6 +21,7 @@ package org.mapfish.print.processor.jasper;
 
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 
+import org.mapfish.print.attribute.LegendAttribute.LegendAttributeValue;
 import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.processor.AbstractProcessor;
@@ -39,49 +40,54 @@ import javax.imageio.ImageIO;
  * Create a legend.
  *
  * @author Jesse
+ * @author sbrunner
  */
 public class LegendProcessor extends AbstractProcessor {
-    private String legendRef;
+    private static final String LEGEND_INPUT = "legend";
+    private static final String LEGEND_OUTPUT = "legend";
+
+    private static final String NAME_COLUMN = "name";
+    private static final String ICON_COLUMN = "icon";
+    private static final String LEVEL_COLUMN = "level";
+
+    private static final String JSON_NAME = "name";
+    private static final String JSON_ICONS = "icons";
+    private static final String JSON_CLASSES = "classes";
 
     @Override
     public final Map<String, Object> execute(final Map<String, Object> values) throws Exception {
         Map<String, Object> output = new HashMap<String, Object>();
 
         final List<Object[]> legendList = new ArrayList<Object[]>();
-        final String[] legendColumns = {"name", "icon", "level"};
-        final PJsonObject jsonLegend = (PJsonObject) values.get(this.legendRef);
+        final String[] legendColumns = {NAME_COLUMN, ICON_COLUMN, LEVEL_COLUMN};
+        final PJsonObject jsonLegend = ((LegendAttributeValue) values.get(LEGEND_INPUT)).getJsonObject();
         fillLegend(jsonLegend, legendList, 0);
         final Object[][] legend = new Object[legendList.size()][];
-        output.put("legend", new JRTableModelDataSource(new TableDataSource(legendColumns, legendList.toArray(legend))));
+        output.put(LEGEND_OUTPUT, new JRTableModelDataSource(new TableDataSource(legendColumns, legendList.toArray(legend))));
 
         return output;
     }
 
     private void fillLegend(final PJsonObject jsonLegend, final List<Object[]> legendList, final int level) throws IOException {
-        final String icon = jsonLegend.optString("icon");
-        Image image = null;
-        if (icon != null) {
-            final URL url = new URL(icon);
-            image = ImageIO.read(url);
-        }
-
-        final Object[] row = {jsonLegend.optString("name"), image, level};
+        final Object[] row = {jsonLegend.optString(JSON_NAME), null, level};
         legendList.add(row);
 
-        PJsonArray jsonClass = jsonLegend.optJSONArray("classes");
+        final PJsonArray icons = jsonLegend.optJSONArray(JSON_ICONS);
+        if (icons != null) {
+            for (int i = 0; i < icons.size(); i++) {
+                final URL url = new URL(icons.getString(i));
+                final Image image = ImageIO.read(url);
+                final Object[] iconRow = {null, image, level};
+                legendList.add(iconRow);
+            }
+        }
+
+        PJsonArray jsonClass = jsonLegend.optJSONArray(JSON_CLASSES);
 
         if (jsonClass != null) {
             for (int i = 0; i < jsonClass.size(); i++) {
                 fillLegend(jsonClass.getJSONObject(i), legendList, level + 1);
             }
         }
-    }
-
-    public final String getLegendRef() {
-        return this.legendRef;
-    }
-
-    public final void setLegendRef(final String legendRef) {
-        this.legendRef = legendRef;
     }
 }

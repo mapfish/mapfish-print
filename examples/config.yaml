@@ -50,9 +50,26 @@ templates:
         maxDpi: 300
         width: 400
         height: 200
+      legend: !legend {}
+      table: !table {}
+      tablelist: !tableList {}
     processors:
     - !reportBuilder
       directory: examples
     - !createMap
       inputMapper: {map: map}
       outputMapper: {map: map}
+    - !prepareLegend
+      inputMapper: {legend: legend}
+      outputMapper: {legend: legend}
+    - !prepareTable
+      inputMapper: {table: table}
+      outputMapper: {table: table}
+    - !prepareTableList
+      inputMapper: {tablelist: tablelist}
+      dynamicReport: {}
+      dynamicReportDirectory: "examples/dynamic"
+      outputMapper: {tablelist: tablelist}
+    - !reportBuilder
+      directory: "examples/dynamic"
+    iterValue: tablelist
