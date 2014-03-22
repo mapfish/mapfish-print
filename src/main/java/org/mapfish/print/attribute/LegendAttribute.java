@@ -53,7 +53,7 @@ public class LegendAttribute extends AbstractAttribute<LegendAttribute.LegendAtt
         /**
          * TODO Change this to be actual configuration in well typed data.
          */
-        public final PJsonObject getJson() {
+        public final PJsonObject getJsonObject() {
             return this.json;
         }
     }

@@ -22,7 +22,7 @@ package org.mapfish.print.attribute;
 import org.mapfish.print.json.PJsonObject;
 
 /**
- * The attributes for {@link org.mapfish.print.processor.TableProcessor}.
+ * The attributes for {@link org.mapfish.print.processor.jasper.TableProcessor}.
  */
 public class TableAttribute extends AbstractAttribute<TableAttribute.TableAttributeValue> {
 

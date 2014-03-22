@@ -115,7 +115,7 @@ public class JasperReportOutputFormat implements OutputFormat {
             Iterable<Values> iter = values.getIterator(template.getIterValue());
             for (Values iterValues : iter) {
                 runProcessors(template.getIterProcessors(), iterValues);
-                dataSource.add(values.getParameters());
+                dataSource.add(iterValues.getParameters());
             }
             final JRDataSource jrDataSource = new JRMapCollectionDataSource(dataSource);
             final JasperPrint print = JasperFillManager.fillReport(
