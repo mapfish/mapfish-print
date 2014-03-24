@@ -44,7 +44,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.ForkJoinPool;
 
 /**
@@ -149,63 +148,6 @@ public class JasperReportOutputFormat implements OutputFormat {
             values.put(
                     outputMap.get(value),
                     output.get(value));
-        }
-    }
-
-    /**
-     * The runnable that process the prossessor.
-     *
-     * @author sbrunner
-     */
-    private class ProcessRun implements Runnable {
-        private final Map<Processor, List<Processor>> required;
-        private final Queue<Processor> ready;
-        private final Values values;
-        private boolean stopped = false;
-        private boolean errored = false;
-
-        private static final int STEEP_TIME = 1000;
-
-        public ProcessRun(final Map<Processor, List<Processor>> required,
-                          final Queue<Processor> ready, final Values values) {
-            this.required = required;
-            this.ready = ready;
-            this.values = values;
-        }
-
-        @Override
-        public void run() {
-            while (!this.stopped) {
-                Processor p = this.ready.poll();
-                if (p != null) {
-                    try {
-                        runProcess(p, this.values);
-
-                        for (Processor proc : this.required.keySet()) {
-                            List<Processor> procList = this.required.get(proc);
-                            procList.remove(p);
-                            if (procList.isEmpty()) {
-                                this.ready.add(proc);
-                                this.required.remove(proc);
-                            }
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        this.errored = true;
-                        return;
-                    }
-                } else {
-                    if (!this.required.isEmpty()) {
-                        try {
-                            Thread.sleep(STEEP_TIME);
-                        } catch (InterruptedException e) {
-                            // continue
-                        }
-                    } else {
-                        return; // finish
-                    }
-                }
-            }
         }
     }
 }

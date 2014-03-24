@@ -20,7 +20,7 @@
 package org.mapfish.print.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.yaml.snakeyaml.TypeDescription;
+import org.springframework.context.ApplicationContext;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -28,18 +28,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Map;
 import javax.annotation.PostConstruct;
 
 /**
  * Strategy/plug-in for loading {@link Configuration} objects.
  *
  * @author Jesse
- *
  */
 public class ConfigurationFactory {
     @Autowired
-    private Map<String, ConfigurationObject> yamlObjects;
+    private ApplicationContext context;
     private Yaml yaml;
 
     /**
@@ -47,10 +45,7 @@ public class ConfigurationFactory {
      */
     @PostConstruct
     public final void init() {
-        Constructor constructor = new Constructor(Configuration.class);
-        for (Map.Entry<String, ConfigurationObject> entry : this.yamlObjects.entrySet()) {
-            constructor.addTypeDescription(new TypeDescription(entry.getValue().getClass(), entry.getKey()));
-        }
+        Constructor constructor = new MapfishPrintConstructor(this.context);
         this.yaml = new Yaml(constructor);
     }
 

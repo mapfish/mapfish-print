@@ -21,6 +21,7 @@ package org.mapfish.print.processor.jasper;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.google.common.io.Files;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import org.mapfish.print.processor.Processor;
@@ -29,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.Collections;
 import java.util.Map;
 
@@ -41,36 +41,40 @@ import java.util.Map;
  */
 public class JasperReportBuilder implements Processor {
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
+    private static final String JASPER_REPORT_XML_FILE_EXT = ".jrxml";
+    private static final String JASPER_REPORT_COMPILED_FILE_EXT = ".jasper";
 
     private File directory = new File(".");
+    private File compilationDirectory = new File(".");
     @Autowired
     private MetricRegistry metricRegistry;
 
     @Override
     public final Map<String, Object> execute(final Map<String, Object> values) throws JRException {
-        final FilenameFilter filter = new FilenameFilter() {
-            @Override
-            public boolean accept(final File file, final String name) {
-                return name.toLowerCase().endsWith(".jrxml");
-            }
-        };
-        for (String jasperFileName : this.directory.list(filter)) {
-            final File jasperFile = new File(this.directory.getAbsolutePath(), jasperFileName);
-            final File buildFile = new File(this.directory.getAbsolutePath(),
-                    jasperFileName.replaceAll("\\.jrxml$", ".jasper"));
-            if (!buildFile.exists() || jasperFile.lastModified() > buildFile.lastModified()) {
-                LOGGER.info("Building Jasper report: " + jasperFile.getAbsolutePath());
-                final Timer.Context compileJasperReport = this.metricRegistry.timer("CompileJasperReport").time();
-                try {
-                    JasperCompileManager.compileReportToFile(jasperFile.getAbsolutePath(),
-                            buildFile.getAbsolutePath());
-                } finally {
-                    final long compileTime = compileJasperReport.stop();
-                    LOGGER.info("Report built in " + compileTime + "ms.");
+        Timer.Context buildReports = this.metricRegistry.timer(getClass() + "_execute()").time();
+        try {
+            for (final File jasperFile : Files.fileTreeTraverser().children(this.directory)) {
+                if (!jasperFile.getName().endsWith(JASPER_REPORT_XML_FILE_EXT)) {
+                    continue;
+                }
+                final String nameWithoutExtension = Files.getNameWithoutExtension(jasperFile.getName());
+                final File buildFile = new File(this.compilationDirectory, nameWithoutExtension + JASPER_REPORT_COMPILED_FILE_EXT);
+
+                if (!buildFile.exists() || jasperFile.lastModified() > buildFile.lastModified()) {
+                    LOGGER.info("Building Jasper report: " + jasperFile.getAbsolutePath());
+                    final Timer.Context compileJasperReport = this.metricRegistry.timer("compile_" + jasperFile).time();
+                    try {
+                        JasperCompileManager.compileReportToFile(jasperFile.getAbsolutePath(), buildFile.getAbsolutePath());
+                    } finally {
+                        final long compileTime = compileJasperReport.stop();
+                        LOGGER.info("Report built in " + compileTime + "ms.");
+                    }
                 }
             }
+            return null;
+        } finally {
+            buildReports.stop();
         }
-        return null;
     }
 
     @Override

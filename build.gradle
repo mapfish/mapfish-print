@@ -80,8 +80,10 @@ dependencies {
     compile ('org.apache.xmlgraphics:batik-transcoder:1.7'){
         exclude module: 'fop'
     }
-    providedCompile ('javax.servlet:servlet-api:2.5',
-            'com.google.code.findbugs:jsr305:2.0.1')
+    testCompile ("org.springframework:spring-test:${springVersion}")
+    providedCompile('com.google.code.findbugs:jsr305:2.0.1')
+
+    compile('javax.servlet:servlet-api:2.5')
 }
 
 allprojects {

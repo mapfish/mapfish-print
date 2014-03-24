@@ -29,7 +29,7 @@ import java.util.Map;
 
 /**
  * Class for constructing {@link org.mapfish.print.processor.ProcessorDependencyGraph} instances.
- *
+ * <p/>
  * Created by Jesse on 3/24/14.
  */
 public final class ProcessorDependencyGraphFactory {
@@ -44,34 +44,43 @@ public final class ProcessorDependencyGraphFactory {
      * @param processors the processors that will be part of the graph
      * @return a {@link org.mapfish.print.processor.ProcessorDependencyGraph} constructed from the passed in processors
      */
-    public ProcessorDependencyGraph build(final List<Processor> processors) {
+    public ProcessorDependencyGraph build(final List<? extends Processor> processors) {
         ProcessorDependencyGraph graph = new ProcessorDependencyGraph();
 
         final Map<String, ProcessorGraphNode> provideBy = new HashMap<String, ProcessorGraphNode>();
         final List<ProcessorGraphNode> nodes = new ArrayList<ProcessorGraphNode>(processors.size());
 
         for (Processor processor : processors) {
-            final Map<String, String> outputMapper = processor.getOutputMapper();
 
-            for (String value : outputMapper.values()) {
+            final ProcessorGraphNode node = new ProcessorGraphNode(processor, this.metricRegistry);
+            for (String value : node.getOutputMapper().values()) {
                 if (provideBy.containsKey(value)) {
-                    throw new IllegalStateException("Multiple processors provide the same output value: '" + processor + "' and '" +
-                                                    provideBy.get(value) + "' both provide: '" + value + "'");
+                    throw new IllegalArgumentException("Multiple processors provide the same output mapping: '" + processor + "' and '" +
+                                                       provideBy.get(value) + "' both provide: '" + value +
+                                                       "'.  You have to rename one of the outputs and the corresponding input so that" +
+                                                       " there is no ambiguity with regards to the input a processor consumes.");
                 }
 
-                final ProcessorGraphNode node = new ProcessorGraphNode(processor, this.metricRegistry);
-                nodes.add(node);
                 provideBy.put(value, node);
             }
+            nodes.add(node);
         }
 
         for (ProcessorGraphNode node : nodes) {
-            if (node.getProcessor().getInputMapper().isEmpty()) {
+            if (node.getInputMapper().isEmpty()) {
                 graph.addRoot(node);
             } else {
-                for (String requiredKey : node.getProcessor().getInputMapper().keySet()) {
+                boolean isDependency = false;
+                for (String requiredKey : node.getInputMapper().keySet()) {
                     final ProcessorGraphNode solution = provideBy.get(requiredKey);
-                    solution.addDependency(node);
+                    if (solution != null) {
+                        isDependency = true;
+                        solution.addDependency(node);
+                    }
+                }
+
+                if (!isDependency) {
+                    graph.addRoot(node);
                 }
             }
         }

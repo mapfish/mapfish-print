@@ -103,12 +103,21 @@ public class Values {
     }
 
     /**
-     * Get an a value as an interator of values.
+     * Get an a value as an iterator of values.
      *
      * @param key the key
      */
     @SuppressWarnings("unchecked")
     protected final Iterable<Values> getIterator(final String key) {
         return (Iterable<Values>) this.values.get(key);
+    }
+
+    /**
+     * Return true if the identified value is present in this values.
+     *
+     * @param key the key to check for.
+     */
+    public final boolean containsKey(final String key) {
+        return this.values.containsKey(key);
     }
 }

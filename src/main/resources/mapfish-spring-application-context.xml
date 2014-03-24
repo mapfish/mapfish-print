@@ -49,7 +49,7 @@
     <bean id="metricNameStrategy" class="org.mapfish.print.metrics.MetricsNameStrategyFactory" factory-method="hostAndMethod" />
     <bean id="loggingMetricsConfigurator" class="org.mapfish.print.metrics.LoggingMetricsConfigurator" />
 
-    <bean id="forkJoinPool" class="java.util.concurrent.ForkJoinPool">
+    <bean id="forkJoinPool" class="java.util.concurrent.ForkJoinPool" destroy-method="shutdownNow">
         <!--
             Number of threads to user in pool we want a large number because http requests will block make the thread hang until
             the request completes.  Because of this we want many threads available to the processors.
@@ -59,6 +59,7 @@
 
     <bean id="pdfOutputFormat" class="org.mapfish.print.output.JasperReportOutputFormat"/>
     <bean id="mapPrinter" class="org.mapfish.print.MapPrinter" scope="prototype"/>
+    <bean id="configuration" class="org.mapfish.print.config.Configuration" scope="prototype"/>
 
     <bean id="!localMatch" class="org.mapfish.print.config.AcceptAllMatcher" />
     <bean id="!ipMatch" class="org.mapfish.print.config.AddressHostMatcher" />
@@ -79,7 +80,5 @@
     <bean id="!prepareLegend" class="org.mapfish.print.processor.jasper.LegendProcessor" />
     <bean id="!prepareTable" class="org.mapfish.print.processor.jasper.TableProcessor" />
     <bean id="!prepareTableList" class="org.mapfish.print.processor.jasper.TableListProcessor" />
-    <bean id="!reportBuilder" class="org.mapfish.print.processor.jasper.JasperReportBuilder" >
-        <property name="directory" value="${java.io.tmpdir}/mapfish-print/jasper" />
-    </bean>
+    <bean id="!reportBuilder" class="org.mapfish.print.processor.jasper.JasperReportBuilder" />
 </beans>

@@ -19,11 +19,15 @@
 
 package org.mapfish.print.processor;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.mapfish.print.output.Values;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ForkJoinTask;
+import java.util.Set;
 import java.util.concurrent.RecursiveTask;
 import javax.annotation.Nonnull;
 
@@ -47,48 +51,83 @@ public final class ProcessorDependencyGraph {
      * @return a task ready to be submitted to a fork join pool.
      */
     public ProcessorGraphForkJoinTask createTask(@Nonnull final Values values) {
+        List<String> missingAttributes = Lists.newArrayList();
+        for (String attribute : getAllRequiredAttributes()) {
+            if (!values.containsKey(attribute)) {
+                missingAttributes.add(attribute);
+            }
+        }
+
+        if (!missingAttributes.isEmpty()) {
+            throw new IllegalArgumentException("The following attributes are not in the values object. " + missingAttributes);
+        }
+
         return new ProcessorGraphForkJoinTask(values);
     }
 
-
+    /**
+     * Add a new root node.
+     *
+     * @param node new root node.
+     */
     void addRoot(final ProcessorGraphNode node) {
         this.roots.add(node);
+    }
+
+    /**
+     * Get all the names of inputs that are required to be in the Values object when this graph is executed.
+     */
+    public Collection<String> getAllRequiredAttributes() {
+        Set<String> requiredInputs = Sets.newHashSet();
+        for (ProcessorGraphNode root : this.roots) {
+            requiredInputs.addAll(root.getInputMapper().keySet());
+        }
+
+        return requiredInputs;
+    }
+
+    public List<ProcessorGraphNode> getRoots() {
+        return this.roots;
     }
 
     /**
      * A ForkJoinTask that will create ForkJoinTasks from each root and run each of them.
      */
     public final class ProcessorGraphForkJoinTask extends RecursiveTask<Values> {
-        private final Values values;
+        private final ProcessorExecutionContext execContext;
 
         private ProcessorGraphForkJoinTask(@Nonnull final Values values) {
-            this.values = values;
+            this.execContext = new ProcessorExecutionContext(values);
         }
 
         @Override
         protected Values compute() {
             final ProcessorDependencyGraph graph = ProcessorDependencyGraph.this;
 
-            final List<ProcessorGraphNode> dependencyNodes = graph.roots;
-            if (!dependencyNodes.isEmpty()) {
-                List<ForkJoinTask<Values>> tasks = new ArrayList<ForkJoinTask<Values>>(dependencyNodes.size());
+            List<ProcessorGraphNode.ProcessorNodeForkJoinTask> tasks =
+                    new ArrayList<ProcessorGraphNode.ProcessorNodeForkJoinTask>(graph.roots.size());
 
-                // fork all but 1 dependencies (the first will be ran in current thread)
-                for (int i = 1; i < dependencyNodes.size(); i++) {
-                    final ForkJoinTask<Values> task = dependencyNodes.get(i).createTask(this.values);
-                    tasks.add(task);
-                    task.fork();
+            // fork all but 1 dependencies (the first will be ran in current thread)
+            for (int i = 0; i < graph.roots.size(); i++) {
+                Optional<ProcessorGraphNode.ProcessorNodeForkJoinTask> task = graph.roots.get(i).createTask(this.execContext);
+                if (task.isPresent()) {
+                    tasks.add(task.get());
+                    if (tasks.size() > 1) {
+                        task.get().fork();
+                    }
                 }
+            }
 
+            if (!tasks.isEmpty()) {
                 // compute one task in current thread so as not to waste threads
-                dependencyNodes.get(0).createTask(this.values).compute();
+                tasks.get(0).compute();
 
-                for (ForkJoinTask<Values> task : tasks) {
+                for (ProcessorGraphNode.ProcessorNodeForkJoinTask task : tasks.subList(1, tasks.size())) {
                     task.join();
                 }
             }
 
-            return this.values;
+            return this.execContext.getValues();
         }
     }
 }
