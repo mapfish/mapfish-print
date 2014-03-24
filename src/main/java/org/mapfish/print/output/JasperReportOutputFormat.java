@@ -90,7 +90,6 @@ public class JasperReportOutputFormat implements OutputFormat {
         for (String attributeName : attributes.keySet()) {
             values.put(attributeName, attributes.get(attributeName).
                     getValue(jsonAttributes, attributeName));
-
         }
 
         this.forkJoinPool.invoke(template.getProcessorGraph(this.processorGraphFactory).createTask(values));
@@ -132,22 +131,4 @@ public class JasperReportOutputFormat implements OutputFormat {
         }
     }
 
-
-    private void runProcess(final Processor process, final Values values) throws Exception {
-        Map<String, Object> input = new HashMap<String, Object>();
-        Map<String, String> inputMap = process.getInputMapper();
-        for (String value : inputMap.keySet()) {
-            input.put(
-                    inputMap.get(value),
-                    values.getObject(value, Object.class));
-        }
-
-        Map<String, Object> output = process.execute(input);
-        Map<String, String> outputMap = process.getOutputMapper();
-        for (String value : outputMap.keySet()) {
-            values.put(
-                    outputMap.get(value),
-                    output.get(value));
-        }
-    }
 }
