@@ -19,8 +19,8 @@
 
 package org.mapfish.print.output;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Values that go into a processor from previous processors in the processor processing graph.
@@ -28,7 +28,7 @@ import java.util.Map;
  *
  */
 public class Values {
-    private final Map<String, Object> values = new HashMap<String, Object>();
+    private final Map<String, Object> values = new ConcurrentHashMap<String, Object>();
 
     /**
      * Constructor.
@@ -52,7 +52,7 @@ public class Values {
      * @param key id of the value for looking up.
      * @param value the value.
      */
-    protected final void put(final String key, final Object value) {
+    public final void put(final String key, final Object value) {
         this.values.put(key, value);
     }
 

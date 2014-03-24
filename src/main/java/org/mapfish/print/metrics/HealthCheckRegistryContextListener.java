@@ -19,10 +19,8 @@
 
 package org.mapfish.print.metrics;
 
-import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.codahale.metrics.servlets.HealthCheckServlet;
-import com.codahale.metrics.servlets.MetricsServlet;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContext;

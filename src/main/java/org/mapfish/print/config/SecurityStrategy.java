@@ -19,7 +19,7 @@
 
 package org.mapfish.print.config;
 
-import org.apache.commons.httpclient.HttpClient;
+import org.apache.http.client.methods.HttpRequestBase;
 
 import java.io.IOException;
 import java.net.URI;
@@ -33,10 +33,10 @@ public abstract class SecurityStrategy implements ConfigurationObject {
     /**
      * Configure security of the http client for the uri.
      *
-     * @param uri uri of request
+     * @param uri        uri of request
      * @param httpClient http client which will make request.
      */
-    public abstract void configure(URI uri, HttpClient httpClient);
+    public abstract void configure(URI uri, HttpRequestBase httpClient);
 
     /**
      * Return true if this strategy can be used for the provided URI.
@@ -54,6 +54,7 @@ public abstract class SecurityStrategy implements ConfigurationObject {
 
     /**
      * Set the matching strategy for determining if this strategy can be used to secure a give URL.
+     *
      * @param matcher the matcher.
      */
     public final void setMatcher(final HostMatcher matcher) {

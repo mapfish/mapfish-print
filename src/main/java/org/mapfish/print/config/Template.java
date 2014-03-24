@@ -23,10 +23,13 @@ import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.processor.Processor;
+import org.mapfish.print.processor.ProcessorDependencyGraph;
+import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 /**
  * Represents a report template configuration.
@@ -43,6 +46,8 @@ public class Template implements ConfigurationObject {
     private String jdbcUrl;
     private String jdbcUser;
     private String jdbcPassword;
+    private volatile ProcessorDependencyGraph processorGraph;
+    private volatile ProcessorDependencyGraph iterProcessorGraph;
 
     /**
      * Print out the template information that the client needs for performing a request.
@@ -75,10 +80,6 @@ public class Template implements ConfigurationObject {
 
     public final void setJasperTemplate(final String jasperTemplate) {
         this.jasperTemplate = jasperTemplate;
-    }
-
-    public final List<Processor> getProcessors() {
-        return this.processors;
     }
 
     public final void setProcessors(final List<Processor> processors) {
@@ -123,5 +124,41 @@ public class Template implements ConfigurationObject {
 
     public final void setJdbcPassword(final String jdbcPassword) {
         this.jdbcPassword = jdbcPassword;
+    }
+
+    /**
+     * Get the processor graph to use for executing all the processors for the template.
+     *
+     * @param factory a factory for creating graphs.
+     *
+     * @return the processor graph.
+     */
+    public final ProcessorDependencyGraph getProcessorGraph(@Nonnull final ProcessorDependencyGraphFactory factory) {
+        if (this.processorGraph == null) {
+            synchronized (this) {
+                if (this.processorGraph == null) {
+                    this.processorGraph = factory.build(this.processors);
+                }
+            }
+        }
+        return this.processorGraph;
+    }
+
+    /**
+     * Get the processor graph to use for executing all the iter processors for the template.
+     *
+     * @param factory a factory for creating graphs.
+     *
+     * @return the processor graph.
+     */
+    public final ProcessorDependencyGraph getIterProcessorGraph(@Nonnull final ProcessorDependencyGraphFactory factory) {
+        if (this.iterProcessorGraph == null) {
+            synchronized (this) {
+                if (this.iterProcessorGraph == null) {
+                    this.iterProcessorGraph = factory.build(this.iterProcessors);
+                }
+            }
+        }
+        return this.iterProcessorGraph;
     }
 }

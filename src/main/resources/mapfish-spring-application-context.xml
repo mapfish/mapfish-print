@@ -24,16 +24,46 @@
     <context:annotation-config/>
     <context:property-placeholder system-properties-mode="FALLBACK" />
 
-    <bean id="main" class="org.mapfish.print.cli.Main"></bean>
+    <bean id="main" class="org.mapfish.print.cli.Main"/>
 
-    <bean id="pdfOutputFormat" class="org.mapfish.print.output.JasperReportOutputFormat"></bean>
-    <bean id="mapPrinter" class="org.mapfish.print.MapPrinter" scope="prototype"></bean>
+    <bean id="configurationFactory" class="org.mapfish.print.config.ConfigurationFactory"/>
+    <bean id="processorDependencyGraphFactory" class="org.mapfish.print.processor.ProcessorDependencyGraphFactory" />
+
+    <bean id="registry" class="org.mapfish.print.servlet.registry.BasicRegistry"/>
+    <bean id="mapPrinterFactory" class="org.mapfish.print.servlet.ServletMapPrinterFactory"/>
+    <bean id="jobManager" class="org.mapfish.print.servlet.job.ThreadPoolJobManager"/>
+    <bean id="printJobFactory" class="org.mapfish.print.servlet.job.FilePrintJob">
+        <property name="directory" value="${java.io.tmpdir}/mapfish-print/reports" />
+    </bean>
+    <bean id="fileReportLoader" class="org.mapfish.print.servlet.job.loader.FileReportLoader"/>
+
+    <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+    <bean id="healthCheckRegistry" class="com.codahale.metrics.health.HealthCheckRegistry"/>
+    <bean id="httpClientFactory" class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory">
+        <property name="httpClient" ref="httpClient" />
+    </bean>
+    <bean id="httpClient" class="com.codahale.metrics.httpclient.InstrumentedHttpClient">
+        <constructor-arg index="0" ref="metricRegistry"/>
+        <constructor-arg index="1" ref="metricNameStrategy" />
+    </bean>
+    <bean id="metricNameStrategy" class="org.mapfish.print.metrics.MetricsNameStrategyFactory" factory-method="hostAndMethod" />
+    <bean id="loggingMetricsConfigurator" class="org.mapfish.print.metrics.LoggingMetricsConfigurator" />
+
+    <bean id="forkJoinPool" class="java.util.concurrent.ForkJoinPool">
+        <!--
+            Number of threads to user in pool we want a large number because http requests will block make the thread hang until
+            the request completes.  Because of this we want many threads available to the processors.
+        -->
+        <constructor-arg index="0" value="100" />
+    </bean>
+
+    <bean id="pdfOutputFormat" class="org.mapfish.print.output.JasperReportOutputFormat"/>
+    <bean id="mapPrinter" class="org.mapfish.print.MapPrinter" scope="prototype"/>
 
     <bean id="!localMatch" class="org.mapfish.print.config.AcceptAllMatcher" />
     <bean id="!ipMatch" class="org.mapfish.print.config.AddressHostMatcher" />
     <bean id="!dnsMatch" class="org.mapfish.print.config.DnsHostMatcher" />
     <bean id="!acceptAll" class="org.mapfish.print.config.AcceptAllMatcher" />
-    <bean id="!basicAuth" class="org.mapfish.print.config.BasicAuthSecurity" />
 
     <bean id="!template" class="org.mapfish.print.config.Template" />
 
@@ -45,7 +75,6 @@
     <bean id="!table" class="org.mapfish.print.attribute.TableAttribute" />
     <bean id="!tableList" class="org.mapfish.print.attribute.TableListAttribute" />
 
-    <bean id="!prepareTable" class="org.mapfish.print.processor.TableProcessor" />
     <bean id="!createMap" class="org.mapfish.print.processor.map.MapProcessor" />
     <bean id="!prepareLegend" class="org.mapfish.print.processor.jasper.LegendProcessor" />
     <bean id="!prepareTable" class="org.mapfish.print.processor.jasper.TableProcessor" />
@@ -53,27 +82,4 @@
     <bean id="!reportBuilder" class="org.mapfish.print.processor.jasper.JasperReportBuilder" >
         <property name="directory" value="${java.io.tmpdir}/mapfish-print/jasper" />
     </bean>
-
-    <bean id="configurationFactory" class="org.mapfish.print.config.ConfigurationFactory"></bean>
-
-    <bean id="registry" class="org.mapfish.print.servlet.registry.BasicRegistry"></bean>
-    <bean id="mapPrinterFactory" class="org.mapfish.print.servlet.ServletMapPrinterFactory"></bean>
-    <bean id="jobManager" class="org.mapfish.print.servlet.job.ThreadPoolJobManager"></bean>
-    <bean id="printJobFactory" class="org.mapfish.print.servlet.job.FilePrintJob">
-        <property name="directory" value="${java.io.tmpdir}/mapfish-print/reports" />
-    </bean>
-    <bean id="fileReportLoader" class="org.mapfish.print.servlet.job.loader.FileReportLoader"></bean>
-
-    <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"></bean>
-    <bean id="healthCheckRegistry" class="com.codahale.metrics.health.HealthCheckRegistry"></bean>
-    <bean id="httpClientFactory" class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory">
-        <property name="httpClient" ref="httpClient" />
-    </bean>
-    <bean id="httpClient" class="com.codahale.metrics.httpclient.InstrumentedHttpClient">
-        <constructor-arg index="0" ref="metricRegistry"/>
-        <constructor-arg index="1" ref="metricNameStrategy" />
-    </bean>
-    <bean id="metricNameStrategy" class="org.mapfish.print.metrics.MetricsNameStrategyFactory" factory-method="hostAndMethod" />
-    <bean id="loggingMetricsConfigurator" class="org.mapfish.print.metrics.LoggingMetricsConfigurator" />
-
 </beans>

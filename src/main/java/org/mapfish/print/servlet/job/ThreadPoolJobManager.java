@@ -20,7 +20,6 @@
 package org.mapfish.print.servlet.job;
 
 import com.google.common.base.Optional;
-
 import org.json.JSONException;
 import org.mapfish.print.servlet.registry.Registry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +35,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 

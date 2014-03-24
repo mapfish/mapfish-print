@@ -17,6 +17,8 @@ allprojects {
     apply plugin: 'project-report'
     apply plugin: 'checkstyle'
 
+    jar.dependsOn(checkstyleMain, findbugsMain)
+
     repositories {
         mavenLocal()
         maven {url "http://download.osgeo.org/webdav/geotools"}
@@ -50,7 +52,7 @@ configurations {
 
 project.ext.junitVersion = "4.11"
 dependencies {
-    def springVersion = "3.1.0.RELEASE"
+    def springVersion = "4.0.2.RELEASE"
     def metricsVersion = "3.0.2"
     compile (
             "org.springframework:spring-context:$springVersion",
@@ -69,6 +71,11 @@ dependencies {
             "com.codahale.metrics:metrics-servlets:$metricsVersion",
             "com.codahale.metrics:metrics-logback:$metricsVersion",
             'org.springframework:spring-webmvc:4.0.2.RELEASE')
+
+
+    // This jsr166 dependendency is here only so long as Java 6 is supported
+    // it is the forkjoin code and can be removed if java 7 is a required library
+    compile ('org.codehaus.jsr166-mirror:jsr166:1.7.0')
 
     compile ('org.apache.xmlgraphics:batik-transcoder:1.7'){
         exclude module: 'fop'

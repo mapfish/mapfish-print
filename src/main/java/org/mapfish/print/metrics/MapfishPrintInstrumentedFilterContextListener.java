@@ -20,8 +20,7 @@
 package org.mapfish.print.metrics;
 
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.health.HealthCheckRegistry;
-import com.codahale.metrics.servlets.HealthCheckServlet;
+import com.codahale.metrics.servlet.InstrumentedFilterContextListener;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContext;
@@ -31,10 +30,10 @@ import static org.springframework.web.context.support.WebApplicationContextUtils
 
 /**
  * Allows the AdminServlet to get access to the MetricRegistry so it can display the statistics via the admin servlet.
- *
+ * <p/>
  * Created by Jesse on 3/21/2014.
  */
-public class InstrumentedFilterContextListener extends com.codahale.metrics.servlet.InstrumentedFilterContextListener {
+public class MapfishPrintInstrumentedFilterContextListener extends InstrumentedFilterContextListener {
     private ServletContext servletContext;
 
     @Override

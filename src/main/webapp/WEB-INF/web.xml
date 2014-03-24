@@ -33,7 +33,7 @@
     </listener>
 
     <listener>
-        <listener-class>org.mapfish.print.metrics.InstrumentedFilterContextListener</listener-class>
+        <listener-class>org.mapfish.print.metrics.MapfishPrintInstrumentedFilterContextListener</listener-class>
     </listener>
 
     <context-param>

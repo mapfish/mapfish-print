@@ -20,7 +20,6 @@
 package org.mapfish.print.processor.jasper;
 
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
-
 import org.mapfish.print.attribute.TableAttribute.TableAttributeValue;
 import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
