@@ -30,7 +30,7 @@ import java.net.URI;
 /**
  * A PrintJob implementation that write results to files.
  * <p/>
- * Created by Jesse on 3/18/14.
+ * @author jesseeichar on 3/18/14.
  */
 public class FilePrintJob extends PrintJob implements PrintJobFactory {
 

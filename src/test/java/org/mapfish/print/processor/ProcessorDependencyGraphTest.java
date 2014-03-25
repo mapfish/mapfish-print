@@ -25,7 +25,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
- * Created by Jesse on 3/25/14.
+ * @author jesseeichar on 3/25/14.
  */
 public class ProcessorDependencyGraphTest extends TestCase {
     public void testToString() throws Exception {

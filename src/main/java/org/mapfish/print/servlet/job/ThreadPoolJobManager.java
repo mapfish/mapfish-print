@@ -39,8 +39,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 /**
- * A JobManager backed by a {@link java.util.concurrent.ThreadPoolExecutor}
- * Created by Jesse on 3/18/14.
+ * A JobManager backed by a {@link java.util.concurrent.ThreadPoolExecutor}.
+ *
+ * @author jesseeichar on 3/18/14.
  */
 public class ThreadPoolJobManager implements JobManager {
     /**

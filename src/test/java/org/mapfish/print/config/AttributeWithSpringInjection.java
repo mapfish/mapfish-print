@@ -33,7 +33,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Test Attribute.
  *
- * Created by Jesse on 3/25/14.
+ * @author jesseeichar on 3/25/14.
  */
 public class AttributeWithSpringInjection extends AbstractAttribute<Integer> {
 

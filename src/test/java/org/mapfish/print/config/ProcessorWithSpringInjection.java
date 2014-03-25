@@ -32,7 +32,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Test Processor.
  *
- * Created by Jesse on 3/25/14.
+ * @author jesseeichar on 3/25/14.
  */
 public class ProcessorWithSpringInjection extends AbstractProcessor {
 

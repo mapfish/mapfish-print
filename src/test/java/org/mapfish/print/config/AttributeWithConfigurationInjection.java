@@ -27,7 +27,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Attribute that needs the configuration object injected.
  *
- * Created by Jesse on 3/25/14.
+ * @author jesseeichar on 3/25/14.
  */
 public class AttributeWithConfigurationInjection extends AbstractAttribute<Integer> implements HasConfiguration {
 

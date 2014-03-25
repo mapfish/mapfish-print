@@ -47,7 +47,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Test building processor graphs.
  * <p/>
- * Created by Jesse on 3/24/14.
+ * @author jesseeichar on 3/24/14.
  */
 public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTest {
     private static final String EXECUTION_TRACKER = "executionOrder";

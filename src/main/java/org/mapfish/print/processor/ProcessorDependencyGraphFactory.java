@@ -31,7 +31,7 @@ import java.util.Map;
 /**
  * Class for constructing {@link org.mapfish.print.processor.ProcessorDependencyGraph} instances.
  * <p/>
- * Created by Jesse on 3/24/14.
+ * @author jesseeichar on 3/24/14.
  */
 public final class ProcessorDependencyGraphFactory {
 

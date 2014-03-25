@@ -39,7 +39,7 @@ import javax.annotation.Nonnull;
 /**
  * Represents one node in the Processor dependency graph ({@link ProcessorDependencyGraph}).
  * <p/>
- * Created by Jesse on 3/24/14.
+ * @author jesseeichar on 3/24/14.
  */
 public final class ProcessorGraphNode {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessorGraphNode.class);

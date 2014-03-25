@@ -32,7 +32,7 @@ import java.util.TreeSet;
 /**
  * The Main Configuration Bean.
  * <p/>
- * Created by Jesse on 2/20/14.
+ * @author jesseeicharon 2/20/14.
  */
 public class Configuration {
     private boolean reloadConfig;
@@ -41,7 +41,7 @@ public class Configuration {
     private List<HostMatcher> hosts = new ArrayList<HostMatcher>();
     private List<SecurityStrategy> security = Collections.emptyList();
     private Map<String, Template> templates;
-    private File directory;
+    private File configurationFile;
 
     /**
      * Print out the configuration that the client needs to make a request.
@@ -129,10 +129,10 @@ public class Configuration {
     }
 
     public final File getDirectory() {
-        return this.directory;
+        return this.configurationFile.getParentFile();
     }
 
-    final void setDirectory(final File directory) {
-        this.directory = directory;
+    public final void setConfigurationFile(final File configurationFile) {
+        this.configurationFile = configurationFile;
     }
 }

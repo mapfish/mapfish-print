@@ -103,8 +103,24 @@ public class JasperReportBuilder implements Processor, HasConfiguration {
         return Collections.emptyMap();
     }
 
+    /**
+     * Set the directory and test that the directory exists and is contained within the Configuration directory.
+     *
+     * @param directory the new directory
+     */
     public final void setDirectory(final String directory) {
         this.directory = new File(this.configuration.getDirectory(), directory);
+        if (!this.directory.exists()) {
+            throw new IllegalArgumentException("Directory does not exist: "
+                                               + this.directory + ".\nConfiguration contained value "
+                                               + directory + " which is supposed to be relative to configuration directory");
+        }
+
+        if (!this.directory.getAbsolutePath().startsWith(this.configuration.getDirectory().getAbsolutePath())) {
+            throw new IllegalArgumentException("All files and directories must be contained in the configuration directory" +
+                                               " the directory provided in the configuration breaks that contract: " + directory
+                                               + " in config file resolved to " + this.directory);
+        }
     }
 
     public final void setConfiguration(final Configuration configuration) {

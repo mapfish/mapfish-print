@@ -26,7 +26,7 @@ import java.net.URI;
 /**
  * Manages and Executes Print Jobs.
  *
- * Created by Jesse on 3/17/14.
+ * @author jesseeichar on 3/17/14.
  */
 public interface JobManager {
     /**

@@ -26,7 +26,7 @@ import java.util.IdentityHashMap;
 /**
  * Contains information shared across all nodes being executed.
  * <p/>
- * Created by Jesse on 3/24/14.
+ * @author jesseeichar on 3/24/14.
  */
 public final class ProcessorExecutionContext {
     private final Values values;

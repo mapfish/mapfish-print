@@ -20,7 +20,6 @@
 package org.mapfish.print.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.yaml.snakeyaml.Yaml;
 
@@ -60,7 +59,7 @@ public class ConfigurationFactory {
         try {
             in = new FileInputStream(configFile);
             final Configuration configuration = this.context.getBean(Configuration.class);
-            configuration.setDirectory(configFile.getParentFile());
+            configuration.setConfigurationFile(configFile);
             MapfishPrintConstructor.setConfigurationUnderConstruction(configuration);
 
             return (Configuration) this.yaml.load(new InputStreamReader(in, "UTF-8"));

@@ -19,7 +19,6 @@
 
 package org.mapfish.print.config;
 
-import com.vividsolutions.jts.util.Assert;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -39,7 +38,7 @@ import java.util.Map;
  * <p/>
  * If an object has the interface HashConfiguration then this class will inject the configuration object after creating the object.
  * <p/>
- * Created by Jesse on 3/24/14.
+ * @author jesseeichar on 3/24/14.
  */
 public final class MapfishPrintConstructor extends Constructor {
     private static final String CONFIGURATION_TAG = "configuration";

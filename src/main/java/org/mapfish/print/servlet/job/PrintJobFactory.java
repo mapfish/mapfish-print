@@ -22,7 +22,7 @@ package org.mapfish.print.servlet.job;
 /**
  * Create PrintJob instance.
  *
- * Created by Jesse on 3/18/14.
+ * @author jesseeichar on 3/18/14.
  */
 public interface PrintJobFactory {
     /**

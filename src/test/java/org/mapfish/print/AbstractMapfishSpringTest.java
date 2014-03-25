@@ -31,7 +31,7 @@ import java.net.URL;
  * Class that loads the normal spring application context from the spring config file.
  * Subclasses can use Autowired to get dependencies from the application context.
  *
- * Created by Jesse on 3/25/14.
+ * @author jesseeichar on 3/25/14.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {

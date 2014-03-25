@@ -28,7 +28,7 @@ import java.net.URISyntaxException;
 /**
  * Represents a successfully completed job.
  *
- * Created by Jesse on 3/18/14.
+ * @author jesseeichar on 3/18/14.
  */
 public class SuccessfulPrintJob extends CompletedPrintJob {
     private static final String JSON_REPORT_URI = "reportURI";

@@ -25,8 +25,9 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
- * Interface for processing input attributes
- * Created by Jesse on 2/21/14.
+ * Interface for processing input attributes.
+ *
+ * @author jesseeichar on 2/21/14.
  */
 public interface Processor extends ConfigurationObject {
 

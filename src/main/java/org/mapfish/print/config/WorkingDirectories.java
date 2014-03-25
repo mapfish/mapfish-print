@@ -29,11 +29,10 @@ import static com.google.common.io.Files.getNameWithoutExtension;
 /**
  * Class for configuring the working directories and ensuring they exist correctly.
  * <p/>
- * Created by Jesse on 3/25/14.
+ * @author jesseeichar on 3/25/14.
  */
 public class WorkingDirectories {
     private File working;
-    private File jasperCompilation;
     private File reports;
 
     public final void setWorking(final File working) {
@@ -45,7 +44,6 @@ public class WorkingDirectories {
      */
     @PostConstruct
     public final void init() {
-        this.jasperCompilation = new File(this.working, "jasper-bin");
         this.reports = new File(this.working, "reports");
     }
     /**
@@ -53,8 +51,9 @@ public class WorkingDirectories {
      * @param configuration the configuration for the current app.
      */
     public final File getJasperCompilation(final Configuration configuration) {
-        createIfMissing(this.jasperCompilation, "Jasper Compilation");
-        return this.jasperCompilation;
+        File jasperCompilation = new File(getWorking(configuration), "jasper-bin");
+        createIfMissing(jasperCompilation, "Jasper Compilation");
+        return jasperCompilation;
     }
 
     /**
@@ -100,5 +99,14 @@ public class WorkingDirectories {
             logger.error("Unable to create directory for containing compiled jasper report templates: " + buildFile.getParentFile());
         }
         return buildFile;
+    }
+
+    /**
+     * Get the working directory for the configuration.
+     *
+     * @param configuration the configuration for the current app.
+     */
+    public final File getWorking(final Configuration configuration) {
+        return this.working;
     }
 }

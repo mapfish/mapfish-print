@@ -55,7 +55,7 @@ templates:
       tablelist: !tableList {}
     processors:
     - !reportBuilder
-      directory: examples
+      directory: .
     - !createMap
       inputMapper: {map: map}
       outputMapper: {map: map}
