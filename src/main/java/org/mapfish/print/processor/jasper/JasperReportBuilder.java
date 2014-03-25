@@ -24,6 +24,7 @@ import com.codahale.metrics.Timer;
 import com.google.common.io.Files;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +47,7 @@ public class JasperReportBuilder implements Processor {
 
     private File directory = new File(".");
     private File compilationDirectory = new File(".");
+    private Configuration configuration;
     @Autowired
     private MetricRegistry metricRegistry;
 
@@ -89,5 +91,18 @@ public class JasperReportBuilder implements Processor {
 
     public final void setDirectory(final String directory) {
         this.directory = new File(directory);
+    }
+
+    public final void setCompilationDirectory(final File compilationDirectory) {
+        this.compilationDirectory = compilationDirectory;
+    }
+
+    public final void setConfiguration(final Configuration configuration) {
+        this.configuration = configuration;
+    }
+
+    @Override
+    public final String toString() {
+        return getClass().getSimpleName() + "(" + this.directory + ")";
     }
 }

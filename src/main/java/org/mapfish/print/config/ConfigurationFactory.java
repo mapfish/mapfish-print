@@ -21,8 +21,8 @@ package org.mapfish.print.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,15 +37,16 @@ import javax.annotation.PostConstruct;
  */
 public class ConfigurationFactory {
     @Autowired
-    private ApplicationContext context;
+    private ConfigurableApplicationContext context;
     private Yaml yaml;
+
 
     /**
      * initialize this factory.  Called by spring after construction.
      */
     @PostConstruct
     public final void init() {
-        Constructor constructor = new MapfishPrintConstructor(this.context);
+        MapfishPrintConstructor constructor = new MapfishPrintConstructor(this.context);
         this.yaml = new Yaml(constructor);
     }
 
@@ -58,6 +59,8 @@ public class ConfigurationFactory {
         FileInputStream in = null;
         try {
             in = new FileInputStream(configFile);
+            final Configuration configuration = this.context.getBean(Configuration.class);
+            MapfishPrintConstructor.setConfigurationUnderConstruction(configuration);
             return (Configuration) this.yaml.load(new InputStreamReader(in, "UTF-8"));
         } finally {
             if (in != null) {

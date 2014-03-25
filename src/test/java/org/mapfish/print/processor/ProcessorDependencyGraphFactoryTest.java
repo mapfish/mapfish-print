@@ -26,6 +26,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.output.Values;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -48,12 +49,7 @@ import static org.junit.Assert.assertTrue;
  * <p/>
  * Created by Jesse on 3/24/14.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-        ProcessorDependencyGraphFactoryTest.DEFAULT_SPRING_XML
-})
-public class ProcessorDependencyGraphFactoryTest {
-    public static final String DEFAULT_SPRING_XML = "classpath:mapfish-spring-application-context.xml";
+public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTest {
     private static final String EXECUTION_TRACKER = "executionOrder";
 
     @Autowired
@@ -121,15 +117,37 @@ public class ProcessorDependencyGraphFactoryTest {
 
     /**
      * This test checks that when there are 2 or more processors that produce the same output there is an exception thrown
+     *
      * @throws Exception
      */
     @Test(expected = IllegalArgumentException.class)
     public void testBuildDependencyAttachesToLastElementProducingTheValue() throws Exception {
-            final ArrayList<TestProcessor> processors = Lists.newArrayList(NeedsMap, RootMapOut,
-                    NeedsMapAndWidthOutputsMap, RootTableAndWidthOut);
+        final ArrayList<TestProcessor> processors = Lists.newArrayList(NeedsMap, RootMapOut,
+                NeedsMapAndWidthOutputsMap, RootTableAndWidthOut);
 
-            ProcessorDependencyGraph graph = this.processorDependencyGraphFactory.build(processors);
-            assertContainsProcessors(graph.getRoots(), RootMapOut, RootTableAndWidthOut);
+        ProcessorDependencyGraph graph = this.processorDependencyGraphFactory.build(processors);
+        assertContainsProcessors(graph.getRoots(), RootMapOut, RootTableAndWidthOut);
+    }
+
+    /**
+     * This test addresses the case where the processors have the same input and output and therefore could be dependent on itself.
+     */
+    @Test
+    public void testBuildWhenOutputsMapToAllOtherInputs() throws Exception {
+        final ArrayList<TestProcessor> processors = Lists.newArrayList(NeedsMapProducesMap, NeedsTableProducesTable);
+        ProcessorDependencyGraph graph = this.processorDependencyGraphFactory.build(processors);
+        assertContainsProcessors(graph.getRoots(), NeedsMapProducesMap, NeedsTableProducesTable);
+        final TestOrderExecution execution = new TestOrderExecution();
+        Values values = new Values();
+        values.put(EXECUTION_TRACKER, execution);
+        values.put("table", "tableValue");
+        values.put("map", "mapValue");
+
+        forkJoinPool.invoke(graph.createTask(values));
+
+        assertEquals(2, execution.testOrderExecution.size());
+
+        assertTrue(execution.testOrderExecution.containsAll(Arrays.asList(NeedsMapProducesMap, NeedsTableProducesTable)));
     }
 
     private void assertHasOrdering(TestOrderExecution execution, TestProcessor... processors) {
@@ -333,6 +351,50 @@ public class ProcessorDependencyGraphFactoryTest {
         @Override
         public Map<String, String> getOutputMapper() {
             return Collections.singletonMap(EXECUTION_TRACKER, EXECUTION_TRACKER);
+        }
+    };
+
+    private static TestProcessor NeedsMapProducesMap = new TestProcessor() {
+        {
+            name = "NeedsMapProducesMap";
+        }
+        @Nullable
+        @Override
+        public Map<String, String> getInputMapper() {
+            final HashMap<String, String> map = Maps.newHashMap();
+            map.put("map", "map");
+            map.put(EXECUTION_TRACKER, EXECUTION_TRACKER);
+            return map;
+        }
+
+        @Nullable
+        @Override
+        public Map<String, String> getOutputMapper() {
+            final HashMap<String, String> map = Maps.newHashMap();
+            map.put("map", "map");
+            return map;
+        }
+    };
+
+    private static TestProcessor NeedsTableProducesTable = new TestProcessor() {
+        {
+            name = "NeedsTableProducesTable";
+        }
+        @Nullable
+        @Override
+        public Map<String, String> getInputMapper() {
+            final HashMap<String, String> map = Maps.newHashMap();
+            map.put("table", "table");
+            map.put(EXECUTION_TRACKER, EXECUTION_TRACKER);
+            return map;
+        }
+
+        @Nullable
+        @Override
+        public Map<String, String> getOutputMapper() {
+            final HashMap<String, String> map = Maps.newHashMap();
+            map.put("table", "table");
+            return map;
         }
     };
 }

@@ -23,9 +23,12 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.mapfish.print.output.Values;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.RecursiveTask;
@@ -38,6 +41,7 @@ import javax.annotation.Nonnull;
  * Created by Jesse on 3/24/14.
  */
 public final class ProcessorDependencyGraph {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessorDependencyGraph.class);
     private final List<ProcessorGraphNode> roots;
 
     ProcessorDependencyGraph() {
@@ -90,6 +94,32 @@ public final class ProcessorDependencyGraph {
         return this.roots;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (ProcessorGraphNode root : this.roots) {
+            if (this.roots.indexOf(root) != 0) {
+                builder.append('\n');
+            }
+            builder.append("+ ");
+            root.toString(builder, 0);
+        }
+        return builder.toString();
+    }
+
+    /**
+     * Create a set containing all the processors in the graph.
+     */
+    public Set<Processor> getAllProcessors() {
+        IdentityHashMap<Processor, Void> all = new IdentityHashMap<Processor, Void>();
+        for (ProcessorGraphNode root : this.roots) {
+            for (Processor p : root.getAllProcessors()) {
+                all.put(p, null);
+            }
+        }
+        return all.keySet();
+    }
+
     /**
      * A ForkJoinTask that will create ForkJoinTasks from each root and run each of them.
      */
@@ -104,29 +134,33 @@ public final class ProcessorDependencyGraph {
         protected Values compute() {
             final ProcessorDependencyGraph graph = ProcessorDependencyGraph.this;
 
-            List<ProcessorGraphNode.ProcessorNodeForkJoinTask> tasks =
-                    new ArrayList<ProcessorGraphNode.ProcessorNodeForkJoinTask>(graph.roots.size());
+            LOGGER.debug("Starting to execute processor graph: " + graph);
+            try {
+                List<ProcessorGraphNode.ProcessorNodeForkJoinTask> tasks =
+                        new ArrayList<ProcessorGraphNode.ProcessorNodeForkJoinTask>(graph.roots.size());
 
-            // fork all but 1 dependencies (the first will be ran in current thread)
-            for (int i = 0; i < graph.roots.size(); i++) {
-                Optional<ProcessorGraphNode.ProcessorNodeForkJoinTask> task = graph.roots.get(i).createTask(this.execContext);
-                if (task.isPresent()) {
-                    tasks.add(task.get());
-                    if (tasks.size() > 1) {
-                        task.get().fork();
+                // fork all but 1 dependencies (the first will be ran in current thread)
+                for (int i = 0; i < graph.roots.size(); i++) {
+                    Optional<ProcessorGraphNode.ProcessorNodeForkJoinTask> task = graph.roots.get(i).createTask(this.execContext);
+                    if (task.isPresent()) {
+                        tasks.add(task.get());
+                        if (tasks.size() > 1) {
+                            task.get().fork();
+                        }
                     }
                 }
-            }
 
-            if (!tasks.isEmpty()) {
-                // compute one task in current thread so as not to waste threads
-                tasks.get(0).compute();
+                if (!tasks.isEmpty()) {
+                    // compute one task in current thread so as not to waste threads
+                    tasks.get(0).compute();
 
-                for (ProcessorGraphNode.ProcessorNodeForkJoinTask task : tasks.subList(1, tasks.size())) {
-                    task.join();
+                    for (ProcessorGraphNode.ProcessorNodeForkJoinTask task : tasks.subList(1, tasks.size())) {
+                        task.join();
+                    }
                 }
+            } finally {
+                LOGGER.debug("Finished executing processor graph: " + graph);
             }
-
             return this.execContext.getValues();
         }
     }

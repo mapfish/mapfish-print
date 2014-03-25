@@ -30,7 +30,6 @@ import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.json.PJsonObject;
-import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +40,6 @@ import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
@@ -59,7 +57,8 @@ public class JasperReportOutputFormat implements OutputFormat {
     private ForkJoinPool forkJoinPool;
     @Autowired
     private ProcessorDependencyGraphFactory processorGraphFactory;
-
+    private File compilationDirectory;
+    private Configuration configuration;
 
     @Override
     public final String getContentType() {
@@ -92,13 +91,13 @@ public class JasperReportOutputFormat implements OutputFormat {
                     getValue(jsonAttributes, attributeName));
         }
 
-        this.forkJoinPool.invoke(template.getProcessorGraph(this.processorGraphFactory).createTask(values));
+        this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         if (template.getIterValue() != null) {
             List<Map<String, ?>> dataSource = new ArrayList<Map<String, ?>>();
             Iterable<Values> iter = values.getIterator(template.getIterValue());
             for (Values iterValues : iter) {
-                this.forkJoinPool.invoke(template.getIterProcessorGraph(this.processorGraphFactory).createTask(values));
+                this.forkJoinPool.invoke(template.getIterProcessorGraph().createTask(values));
                 dataSource.add(iterValues.getParameters());
             }
             final JRDataSource jrDataSource = new JRMapCollectionDataSource(dataSource);
@@ -131,4 +130,11 @@ public class JasperReportOutputFormat implements OutputFormat {
         }
     }
 
+    public final void setCompilationDirectory(final File compilationDirectory) {
+        this.compilationDirectory = compilationDirectory;
+    }
+
+    public final void setConfiguration(final Configuration configuration) {
+        this.configuration = configuration;
+    }
 }

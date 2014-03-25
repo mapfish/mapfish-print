@@ -29,8 +29,10 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.RecursiveTask;
 import javax.annotation.Nonnull;
 
@@ -108,6 +110,49 @@ public final class ProcessorGraphNode {
     }
 
     /**
+     * Create a string representing this node.
+     *
+     * @param builder the builder to add the string to.
+     * @param indent  the number of steps of indent for this node
+     */
+    public void toString(final StringBuilder builder, final int indent) {
+        int spaces = (indent) * 2;
+        for (int i = 0; i < spaces; i++) {
+            builder.append(' ');
+        }
+        if (indent > 0) {
+            builder.append("+-- ");
+        }
+
+        builder.append(this.processor);
+        for (ProcessorGraphNode dependency : this.dependencies) {
+            builder.append('\n');
+            dependency.toString(builder, indent + 1);
+        }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        toString(builder, 0);
+        return builder.toString();
+    }
+
+    /**
+     * Create a set containing all the processor at the current node and the entire subgraph.
+     */
+    public Set<? extends Processor> getAllProcessors() {
+        IdentityHashMap<Processor, Void> all = new IdentityHashMap<Processor, Void>();
+        all.put(this.getProcessor(), null);
+        for (ProcessorGraphNode dependency : this.dependencies) {
+            for (Processor p : dependency.getAllProcessors()) {
+                all.put(p, null);
+            }
+        }
+        return all.keySet();
+    }
+
+    /**
      * A ForkJoinTask that will run the processor and all of its dependencies.
      */
     public final class ProcessorNodeForkJoinTask extends RecursiveTask<Values> {
@@ -123,8 +168,9 @@ public final class ProcessorGraphNode {
 
             final Processor process = ProcessorGraphNode.this.processor;
             final MetricRegistry registry = ProcessorGraphNode.this.metricRegistry;
-            Timer.Context timerContext = registry.timer(ProcessorGraphNode.class.getName() + "_compute():" +
-                                                        process.getClass()).time();
+            final String name = ProcessorGraphNode.class.getName() + "_compute():" +
+                                process.getClass();
+            Timer.Context timerContext = registry.timer(name).time();
             try {
                 Map<String, Object> input = new HashMap<String, Object>();
                 Map<String, String> inputMap = getInputMapper();
@@ -136,8 +182,11 @@ public final class ProcessorGraphNode {
 
                 Map<String, Object> output;
                 try {
+                    LOGGER.debug("Executing process: " + process);
                     output = process.execute(input);
+                    LOGGER.debug("Succeeded in executing process: " + process);
                 } catch (Exception e) {
+                    LOGGER.error("Error while executing process: " + process, e);
                     throw new RuntimeException(e);
                 }
 

@@ -17,37 +17,35 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.processor;
+package org.mapfish.print.config;
 
-import org.mapfish.print.config.ConfigurationObject;
+import com.codahale.metrics.MetricRegistry;
+import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.Processor;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 import javax.annotation.Nullable;
 
+import static org.junit.Assert.assertNotNull;
+
 /**
- * Interface for processing input attributes
- * Created by Jesse on 2/21/14.
+ * Test Processor.
+ *
+ * Created by Jesse on 3/25/14.
  */
-public interface Processor extends ConfigurationObject {
+public class ProcessorWithSpringInjection extends AbstractProcessor {
 
-    /**
-     * Map the variable names to the processor inputs.
-     */
+    @Autowired
+    private MetricRegistry registry;
+
+    public void assertInjected() {
+        assertNotNull(registry);
+    }
+
     @Nullable
-    Map<String, String> getInputMapper();
-
-    /**
-     * @param values Actual values from attributes and the previous processor.
-     * @return An id of the value for lookup in the output mapper?
-     * @throws Exception
-     */
-    @Nullable
-    Map<String, Object> execute(Map<String, Object> values) throws Exception;
-
-    /**
-     * Map output from processor to the variable in the Jasper Report.
-     */
-    @Nullable
-    Map<String, String> getOutputMapper();
-
+    @Override
+    public Map<String, Object> execute(Map<String, Object> values) throws Exception {
+        return null;
+    }
 }

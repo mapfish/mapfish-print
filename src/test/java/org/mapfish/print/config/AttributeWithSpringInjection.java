@@ -17,37 +17,40 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.processor;
+package org.mapfish.print.config;
 
-import org.mapfish.print.config.ConfigurationObject;
+import com.codahale.metrics.MetricRegistry;
+import org.mapfish.print.attribute.AbstractAttribute;
+import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.processor.AbstractProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 import javax.annotation.Nullable;
 
+import static org.junit.Assert.assertNotNull;
+
 /**
- * Interface for processing input attributes
- * Created by Jesse on 2/21/14.
+ * Test Attribute.
+ *
+ * Created by Jesse on 3/25/14.
  */
-public interface Processor extends ConfigurationObject {
+public class AttributeWithSpringInjection extends AbstractAttribute<Integer> {
 
-    /**
-     * Map the variable names to the processor inputs.
-     */
-    @Nullable
-    Map<String, String> getInputMapper();
+    @Autowired
+    private MetricRegistry registry;
 
-    /**
-     * @param values Actual values from attributes and the previous processor.
-     * @return An id of the value for lookup in the output mapper?
-     * @throws Exception
-     */
-    @Nullable
-    Map<String, Object> execute(Map<String, Object> values) throws Exception;
+    public void assertInjected() {
+        assertNotNull(registry);
+    }
 
-    /**
-     * Map output from processor to the variable in the Jasper Report.
-     */
-    @Nullable
-    Map<String, String> getOutputMapper();
+    @Override
+    protected String getType() {
+        return "springInjection";
+    }
 
+    @Override
+    public Integer getValue(PJsonObject values, String name) {
+        return null;
+    }
 }

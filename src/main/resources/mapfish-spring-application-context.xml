@@ -22,7 +22,8 @@
     xmlns:context="http://www.springframework.org/schema/context" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
     <context:annotation-config/>
-    <context:property-placeholder system-properties-mode="FALLBACK" />
+    <context:property-placeholder system-properties-mode="FALLBACK" file-encoding="UTF-8" location="mapfish-spring.properties"/>
+
 
     <bean id="main" class="org.mapfish.print.cli.Main"/>
 
@@ -33,7 +34,7 @@
     <bean id="mapPrinterFactory" class="org.mapfish.print.servlet.ServletMapPrinterFactory"/>
     <bean id="jobManager" class="org.mapfish.print.servlet.job.ThreadPoolJobManager"/>
     <bean id="printJobFactory" class="org.mapfish.print.servlet.job.FilePrintJob">
-        <property name="directory" value="${java.io.tmpdir}/mapfish-print/reports" />
+        <property name="directory" value="${reportGenerationDir}"/>
     </bean>
     <bean id="fileReportLoader" class="org.mapfish.print.servlet.job.loader.FileReportLoader"/>
 
@@ -57,28 +58,30 @@
         <constructor-arg index="0" value="100" />
     </bean>
 
-    <bean id="pdfOutputFormat" class="org.mapfish.print.output.JasperReportOutputFormat"/>
+    <bean id="pdfOutputFormat" class="org.mapfish.print.output.JasperReportOutputFormat" scope="prototype" />
     <bean id="mapPrinter" class="org.mapfish.print.MapPrinter" scope="prototype"/>
     <bean id="configuration" class="org.mapfish.print.config.Configuration" scope="prototype"/>
 
-    <bean id="!localMatch" class="org.mapfish.print.config.AcceptAllMatcher" />
-    <bean id="!ipMatch" class="org.mapfish.print.config.AddressHostMatcher" />
-    <bean id="!dnsMatch" class="org.mapfish.print.config.DnsHostMatcher" />
-    <bean id="!acceptAll" class="org.mapfish.print.config.AcceptAllMatcher" />
+    <bean id="!localMatch" class="org.mapfish.print.config.AcceptAllMatcher" scope="prototype" />
+    <bean id="!ipMatch" class="org.mapfish.print.config.AddressHostMatcher" scope="prototype" />
+    <bean id="!dnsMatch" class="org.mapfish.print.config.DnsHostMatcher" scope="prototype" />
+    <bean id="!acceptAll" class="org.mapfish.print.config.AcceptAllMatcher" scope="prototype" />
 
-    <bean id="!template" class="org.mapfish.print.config.Template" />
+    <bean id="!template" class="org.mapfish.print.config.Template" scope="prototype" />
 
-    <bean id="!integer" class="org.mapfish.print.attribute.IntegerAttribute" />
-    <bean id="!float" class="org.mapfish.print.attribute.FloatAttribute" />
-    <bean id="!string" class="org.mapfish.print.attribute.StringAttribute" />
-    <bean id="!map" class="org.mapfish.print.attribute.MapAttribute" />
-    <bean id="!legend" class="org.mapfish.print.attribute.LegendAttribute" />
-    <bean id="!table" class="org.mapfish.print.attribute.TableAttribute" />
-    <bean id="!tableList" class="org.mapfish.print.attribute.TableListAttribute" />
+    <bean id="!integer" class="org.mapfish.print.attribute.IntegerAttribute" scope="prototype" />
+    <bean id="!float" class="org.mapfish.print.attribute.FloatAttribute" scope="prototype" />
+    <bean id="!string" class="org.mapfish.print.attribute.StringAttribute" scope="prototype" />
+    <bean id="!map" class="org.mapfish.print.attribute.MapAttribute" scope="prototype" />
+    <bean id="!legend" class="org.mapfish.print.attribute.LegendAttribute" scope="prototype" />
+    <bean id="!table" class="org.mapfish.print.attribute.TableAttribute" scope="prototype" />
+    <bean id="!tableList" class="org.mapfish.print.attribute.TableListAttribute" scope="prototype" />
 
-    <bean id="!createMap" class="org.mapfish.print.processor.map.MapProcessor" />
-    <bean id="!prepareLegend" class="org.mapfish.print.processor.jasper.LegendProcessor" />
-    <bean id="!prepareTable" class="org.mapfish.print.processor.jasper.TableProcessor" />
-    <bean id="!prepareTableList" class="org.mapfish.print.processor.jasper.TableListProcessor" />
-    <bean id="!reportBuilder" class="org.mapfish.print.processor.jasper.JasperReportBuilder" />
+    <bean id="!createMap" class="org.mapfish.print.processor.map.MapProcessor" scope="prototype" />
+    <bean id="!prepareLegend" class="org.mapfish.print.processor.jasper.LegendProcessor" scope="prototype" />
+    <bean id="!prepareTable" class="org.mapfish.print.processor.jasper.TableProcessor" scope="prototype" />
+    <bean id="!prepareTableList" class="org.mapfish.print.processor.jasper.TableListProcessor" scope="prototype" />
+    <bean id="!reportBuilder" class="org.mapfish.print.processor.jasper.JasperReportBuilder" scope="prototype" >
+        <property name="compilationDirectory" value="${jasperCompilationDir}"/>
+    </bean>
 </beans>

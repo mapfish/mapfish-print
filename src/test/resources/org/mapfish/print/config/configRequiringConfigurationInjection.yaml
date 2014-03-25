@@ -1,0 +1,8 @@
+
+templates:
+  main: !template
+    attributes:
+     att: !configInjectionAttribute {}
+    processors:
+    - !configInjectionProcessor {}
+

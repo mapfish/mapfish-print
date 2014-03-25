@@ -20,6 +20,7 @@
 package org.mapfish.print.processor;
 
 import com.codahale.metrics.MetricRegistry;
+import com.vividsolutions.jts.util.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -73,7 +74,7 @@ public final class ProcessorDependencyGraphFactory {
                 boolean isDependency = false;
                 for (String requiredKey : node.getInputMapper().keySet()) {
                     final ProcessorGraphNode solution = provideBy.get(requiredKey);
-                    if (solution != null) {
+                    if (solution != null && solution != node) {
                         isDependency = true;
                         solution.addDependency(node);
                     }
@@ -84,6 +85,9 @@ public final class ProcessorDependencyGraphFactory {
                 }
             }
         }
+
+        Assert.isTrue(graph.getAllProcessors().containsAll(processors), graph + "does not contain all the processors: " + processors);
+
         return graph;
     }
 
