@@ -96,12 +96,8 @@ public class JasperReportOutputFormat implements OutputFormat {
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         if (template.getIterValue() != null) {
-            List<Map<String, ?>> dataSource = new ArrayList<Map<String, ?>>();
-            Iterable<Values> iter = values.getIterator(template.getIterValue());
-            for (Values iterValues : iter) {
-                this.forkJoinPool.invoke(template.getIterProcessorGraph().createTask(values));
-                dataSource.add(iterValues.getParameters());
-            }
+            final List<Map<String, ?>> dataSource = this.forkJoinPool.invoke(new ExecuteIterProcessorsTask(values, template));
+
             final JRDataSource jrDataSource = new JRMapCollectionDataSource(dataSource);
             final JasperPrint print = JasperFillManager.fillReport(
                     jasperTemplateBuild.getAbsolutePath(),
