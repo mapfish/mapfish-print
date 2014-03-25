@@ -60,7 +60,9 @@ public class ConfigurationFactory {
         try {
             in = new FileInputStream(configFile);
             final Configuration configuration = this.context.getBean(Configuration.class);
+            configuration.setDirectory(configFile.getParentFile());
             MapfishPrintConstructor.setConfigurationUnderConstruction(configuration);
+
             return (Configuration) this.yaml.load(new InputStreamReader(in, "UTF-8"));
         } finally {
             if (in != null) {

@@ -29,8 +29,9 @@ import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.json.PJsonObject;
-import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
+import org.mapfish.print.processor.jasper.JasperReportBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,10 +56,9 @@ public class JasperReportOutputFormat implements OutputFormat {
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportOutputFormat.class);
     @Autowired
     private ForkJoinPool forkJoinPool;
+
     @Autowired
-    private ProcessorDependencyGraphFactory processorGraphFactory;
-    private File compilationDirectory;
-    private Configuration configuration;
+    private WorkingDirectories workingDirectories;
 
     @Override
     public final String getContentType() {
@@ -78,8 +78,10 @@ public class JasperReportOutputFormat implements OutputFormat {
         final Template template = config.getTemplate(templateName);
         final Values values = new Values();
         final File jasperTemplateFile = new File(configDir, template.getJasperTemplate());
-        final File jasperTemplateBuild = new File(configDir, template.getJasperTemplate().replaceAll("\\.jrxml$", ".jasper"));
-        final File jasperTemplateDirectory = jasperTemplateFile.getParentFile();
+        final File jasperTemplateBuild = this.workingDirectories.getBuildFileFor(config, jasperTemplateFile,
+                JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT, LOGGER);
+
+        final File jasperTemplateDirectory = jasperTemplateBuild.getParentFile();
 
         values.put("SUBREPORT_DIR", jasperTemplateDirectory.getAbsolutePath());
 
@@ -128,13 +130,5 @@ public class JasperReportOutputFormat implements OutputFormat {
                     new JREmptyDataSource());
             JasperExportManager.exportReportToPdfStream(print, outputStream);
         }
-    }
-
-    public final void setCompilationDirectory(final File compilationDirectory) {
-        this.compilationDirectory = compilationDirectory;
-    }
-
-    public final void setConfiguration(final Configuration configuration) {
-        this.configuration = configuration;
     }
 }

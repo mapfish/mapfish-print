@@ -19,12 +19,13 @@
 
 package org.mapfish.print.servlet.job;
 
+import org.mapfish.print.config.WorkingDirectories;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.URI;
-import javax.annotation.PostConstruct;
 
 /**
  * A PrintJob implementation that write results to files.
@@ -32,33 +33,15 @@ import javax.annotation.PostConstruct;
  * Created by Jesse on 3/18/14.
  */
 public class FilePrintJob extends PrintJob implements PrintJobFactory {
-    private File directory;
 
 
-    /**
-     * Set the directory that the will contain the report files.  By default it will be in the temporary folder.
-     *
-     * @param directory the directory to contain the report files
-     */
-    public final void setDirectory(final String directory) {
-        this.directory = new File(directory);
-    }
-
-    /**
-     * Check that the directory can be written to.
-     */
-    @PostConstruct
-    public final void init() throws IOException {
-        if (!this.directory.exists() && !this.directory.mkdirs()) {
-            throw new IOException("Unable to write to report storage directory: " + this.directory +
-                                  " Change the spring configuration file (default is mapfish-spirng-application-context.mxml)");
-        }
-    }
+    @Autowired
+    private WorkingDirectories workingDirectories;
 
 
     @Override
     protected final URI withOpenOutputStream(final PrintAction function) throws Throwable {
-        final File reportFile = new File(this.directory, getReferenceId());
+        final File reportFile = new File(this.workingDirectories.getReports(), getReferenceId());
         FileOutputStream out = null;
         BufferedOutputStream bout = null;
         try {

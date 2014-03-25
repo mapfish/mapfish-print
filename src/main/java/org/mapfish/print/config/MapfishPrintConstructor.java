@@ -57,8 +57,10 @@ public final class MapfishPrintConstructor extends Constructor {
         for (Map.Entry<String, ConfigurationObject> entry : yamlObjects.entrySet()) {
             final BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition(entry.getKey());
             final String message = "Error: Spring bean: " + entry.getKey() + " is not defined as scope = prototype";
-            LOGGER.error(message);
-            Assert.isTrue(beanDefinition.isPrototype(), message);
+            if (!beanDefinition.isPrototype()) {
+                LOGGER.error(message);
+                throw new AssertionError(message);
+            }
             addTypeDescription(new TypeDescription(entry.getValue().getClass(), entry.getKey()));
         }
 

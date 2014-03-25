@@ -50,6 +50,8 @@ public class ConfigurationFactoryTest extends AbstractMapfishSpringTest {
     public void testSpringInjection() throws Exception {
         File configFile = super.getFile(ConfigurationFactoryTest.class, "configRequiringSpringInjection.yaml");
         final Configuration config = configurationFactory.getConfig(configFile);
+
+        assertNotNull(config.getDirectory());
         assertEquals(1, config.getTemplates().size());
         final Template template = config.getTemplate("main");
         assertNotNull(template);
@@ -69,6 +71,8 @@ public class ConfigurationFactoryTest extends AbstractMapfishSpringTest {
     public void testConfigurationInjection() throws Exception {
         File configFile = super.getFile(ConfigurationFactoryTest.class, "configRequiringConfigurationInjection.yaml");
         final Configuration config = configurationFactory.getConfig(configFile);
+        assertNotNull(config.getDirectory());
+
         assertEquals(1, config.getTemplates().size());
         final Template template = config.getTemplate("main");
         assertNotNull(template);

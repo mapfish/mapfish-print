@@ -22,6 +22,7 @@ package org.mapfish.print.config;
 import org.json.JSONException;
 import org.json.JSONWriter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +41,7 @@ public class Configuration {
     private List<HostMatcher> hosts = new ArrayList<HostMatcher>();
     private List<SecurityStrategy> security = Collections.emptyList();
     private Map<String, Template> templates;
+    private File directory;
 
     /**
      * Print out the configuration that the client needs to make a request.
@@ -124,5 +126,13 @@ public class Configuration {
 
     public final void setTemplates(final Map<String, Template> templates) {
         this.templates = templates;
+    }
+
+    public final File getDirectory() {
+        return this.directory;
+    }
+
+    final void setDirectory(final File directory) {
+        this.directory = directory;
     }
 }

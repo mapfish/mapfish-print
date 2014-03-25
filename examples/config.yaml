@@ -68,8 +68,8 @@ templates:
     - !prepareTableList
       inputMapper: {tablelist: tablelist}
       dynamicReport: {}
-      dynamicReportDirectory: "examples/dynamic"
+      dynamicReportDirectory: "dynamic"
       outputMapper: {tablelist: tablelist}
     - !reportBuilder
-      directory: "examples/dynamic"
+      directory: "dynamic"
     iterValue: tablelist

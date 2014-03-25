@@ -25,6 +25,8 @@ import com.google.common.io.Files;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.HasConfiguration;
+import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.processor.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,27 +42,39 @@ import java.util.Map;
  * @author Jesse
  * @author sbrunner
  */
-public class JasperReportBuilder implements Processor {
+public class JasperReportBuilder implements Processor, HasConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
-    private static final String JASPER_REPORT_XML_FILE_EXT = ".jrxml";
-    private static final String JASPER_REPORT_COMPILED_FILE_EXT = ".jasper";
+    /**
+     * Extension for Jasper XML Report Template files.
+     */
+    public static final String JASPER_REPORT_XML_FILE_EXT = ".jrxml";
+    /**
+     * Extension for Compiled Jasper Report Template files.
+     */
+    public static final String JASPER_REPORT_COMPILED_FILE_EXT = ".jasper";
 
     private File directory = new File(".");
-    private File compilationDirectory = new File(".");
     private Configuration configuration;
     @Autowired
     private MetricRegistry metricRegistry;
+    @Autowired
+    private WorkingDirectories workingDirectories;
 
     @Override
     public final Map<String, Object> execute(final Map<String, Object> values) throws JRException {
+        final String configurationAbsolutePath = this.configuration.getDirectory().getAbsolutePath();
+        if (!this.directory.getAbsolutePath().startsWith(configurationAbsolutePath)) {
+            throw new IllegalArgumentException("All directories and files referenced in the configuration must be in the configuration " +
+                                               "directory: " + this.directory + " is not in " + this.configuration.getDirectory());
+        }
         Timer.Context buildReports = this.metricRegistry.timer(getClass() + "_execute()").time();
         try {
             for (final File jasperFile : Files.fileTreeTraverser().children(this.directory)) {
                 if (!jasperFile.getName().endsWith(JASPER_REPORT_XML_FILE_EXT)) {
                     continue;
                 }
-                final String nameWithoutExtension = Files.getNameWithoutExtension(jasperFile.getName());
-                final File buildFile = new File(this.compilationDirectory, nameWithoutExtension + JASPER_REPORT_COMPILED_FILE_EXT);
+                final File buildFile = this.workingDirectories.getBuildFileFor(this.configuration, jasperFile,
+                        JASPER_REPORT_COMPILED_FILE_EXT, LOGGER);
 
                 if (!buildFile.exists() || jasperFile.lastModified() > buildFile.lastModified()) {
                     LOGGER.info("Building Jasper report: " + jasperFile.getAbsolutePath());
@@ -90,11 +104,7 @@ public class JasperReportBuilder implements Processor {
     }
 
     public final void setDirectory(final String directory) {
-        this.directory = new File(directory);
-    }
-
-    public final void setCompilationDirectory(final File compilationDirectory) {
-        this.compilationDirectory = compilationDirectory;
+        this.directory = new File(this.configuration.getDirectory(), directory);
     }
 
     public final void setConfiguration(final Configuration configuration) {
