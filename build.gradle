@@ -31,6 +31,8 @@ allprojects {
         ignoreFailures = false
         reportsDir = file("$project.buildDir/checkstyleReports")
     }
+    checkstyleTest.enabled = false
+
     findbugs {
         toolVersion = "2.0.3"
         ignoreFailures = false
@@ -39,6 +41,7 @@ allprojects {
         reportLevel = "high"
         excludeFilter = file("$rootProject.projectDir/findbugs-exclude.xml")
     }
+    findbugsTest.enabled = false
 
 }
 
