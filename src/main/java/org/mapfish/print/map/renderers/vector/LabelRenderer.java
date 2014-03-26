@@ -31,7 +31,6 @@ import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
 
 public class LabelRenderer {
 
@@ -65,6 +64,8 @@ public class LabelRenderer {
                         "'COURIER', 'TIMES_ROMAN', defaults to 'HELVETICA'");
                 fontFamily = "HELVETICA";
             }
+            
+            String[] labels = label.split("\n");
             String fontSize = style.optString("fontSize", "12");
             String fontWeight = style.optString("fontWeight", "normal");
             Coordinate center = geometry.getCentroid().getCoordinate();
@@ -79,16 +80,19 @@ public class LabelRenderer {
             dc.beginText();
             dc.setTextMatrix((float) center.x + labelXOffset * f,
                 (float) center.y + labelYOffset * f);
-            dc.showTextAligned(
-                    PDFUtils.getHorizontalAlignment(labelAlign),
-                    label,
-                    (float) center.x + labelXOffset * f,
-                    (float) center.y
-                            + labelYOffset
-                            * f
-                            - PDFUtils
-                                    .getVerticalOffset(labelAlign, fontHeight),
-                    0);
+            for (int i = 0; i < labels.length; i++){
+                dc.showTextAligned(
+		                    PDFUtils.getHorizontalAlignment(labelAlign),
+		                    labels[i],
+		                    (float) center.x + labelXOffset * f,
+		                    (float) center.y
+		                            + labelYOffset
+		                            * f
+		                            - PDFUtils
+		                                    .getVerticalOffset(labelAlign, fontHeight) - ((PDFUtils.getVerticalOffset(labelAlign, fontHeight)+2)*i),
+		                    0);
+	            
+            }
             dc.endText();
         }
     }

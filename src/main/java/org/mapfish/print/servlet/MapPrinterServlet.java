@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -70,6 +71,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     private static final int TEMP_FILE_PURGE_SECONDS = 10 * 60;
 
     private File tempDir = null;
+    private String encoding = null;
     /**
      * Tells if a thread is alread purging the old temporary files or not.
      */
@@ -220,7 +222,14 @@ public class MapPrinterServlet extends BaseMapServlet {
         if(httpServletRequest.getParameter("spec") != null) {
             return httpServletRequest.getParameter("spec");
         }
-        BufferedReader data = httpServletRequest.getReader();
+        String encoding = getEncoding();
+        BufferedReader data = null;
+        if (encoding == null){
+        	data = new BufferedReader(new InputStreamReader(httpServletRequest.getInputStream()));
+        }else{
+        	data = new BufferedReader(new InputStreamReader(httpServletRequest.getInputStream(), encoding));
+        }
+         
         try {
             StringBuilder spec = new StringBuilder();
             String cur;
@@ -234,6 +243,18 @@ public class MapPrinterServlet extends BaseMapServlet {
             }
         }
     }
+    
+    /**
+     * Get and cache the used Encoding.
+     */
+    protected String getEncoding() {
+        if (encoding == null) {
+        	encoding = getInitParameter("encoding");
+        	LOGGER.debug("Using '" + encoding + "' to encode Inputcontent.");
+        }
+        return encoding;
+    }
+    
 
     /**
      * To get the PDF created previously.
