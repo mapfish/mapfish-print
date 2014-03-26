@@ -22,6 +22,7 @@ package org.mapfish.print.attribute;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.config.ConfigurationObject;
+import org.mapfish.print.config.Template;
 import org.mapfish.print.json.PJsonObject;
 
 /**
@@ -35,11 +36,13 @@ public interface Attribute<T> extends ConfigurationObject {
     /**
      * Read the attribute object.
      *
+     *
+     * @param template the template this attribute is part of.
      * @param values the request data to read the attribute from.
      * @param name the name of the property to load the attribute from
      * @return the read attribute value
      */
-    T getValue(PJsonObject values, String name);
+    T getValue(Template template, PJsonObject values, String name);
 
     /**
      * Write this attribute out the the json writer so that clients can know what attributes are expected.

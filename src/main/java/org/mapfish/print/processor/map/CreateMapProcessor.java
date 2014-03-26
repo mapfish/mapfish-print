@@ -19,18 +19,25 @@
 
 package org.mapfish.print.processor.map;
 
-import org.mapfish.print.attribute.MapAttribute;
+import com.google.common.collect.Lists;
+import org.mapfish.print.attribute.map.MapAttribute;
+import org.mapfish.print.attribute.map.MapBounds;
+import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.processor.AbstractProcessor;
 
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author jesseeichar on 3/17/14.
  * @author sbrunner
  */
-public class MapProcessor extends AbstractProcessor {
+public class CreateMapProcessor extends AbstractProcessor {
     private static final String MAP_INPUT = "map";
     private static final String MAP_OUTPUT = "map";
 
@@ -38,10 +45,27 @@ public class MapProcessor extends AbstractProcessor {
     @Override
     public final Map<String, Object> execute(final Map<String, Object> values) throws Exception {
         MapAttribute.MapAttributeValues mapValues = (MapAttribute.MapAttributeValues) values.get(MAP_INPUT);
-        final BufferedImage bufferedImage = new BufferedImage(mapValues.getWidth(), mapValues.getHeight(),
+        final int mapWidth = mapValues.getWidth();
+        final int mapHeight = mapValues.getHeight();
+
+        final BufferedImage bufferedImage = new BufferedImage(mapWidth, mapHeight,
                 BufferedImage.TYPE_INT_ARGB_PRE);
 
-        mapValues.getLayers()
+        Graphics2D graphics2D = bufferedImage.createGraphics();
+        try {
+            // reverse layer list to draw from bottom to top.  normally position 0 is top-most layer.
+            final List<MapLayer> layers = Lists.reverse(mapValues.getLayers());
+
+            final MapBounds bounds = mapValues.getMapBounds();
+            final Rectangle paintArea = new Rectangle(mapWidth, mapHeight);
+
+            for (MapLayer layer : layers) {
+                layer.render(graphics2D, bounds, paintArea);
+            }
+        } finally {
+            graphics2D.dispose();
+        }
+
         final Map<String, Object> output = new HashMap<String, Object>();
         output.put(MAP_OUTPUT, bufferedImage);
         return output;

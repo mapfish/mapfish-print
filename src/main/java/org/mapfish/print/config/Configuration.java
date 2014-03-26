@@ -19,12 +19,17 @@
 
 package org.mapfish.print.config;
 
+import com.google.common.base.Optional;
+import org.geotools.styling.Style;
 import org.json.JSONException;
 import org.json.JSONWriter;
+import org.mapfish.print.map.style.StyleParser;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -42,6 +47,10 @@ public class Configuration {
     private List<SecurityStrategy> security = Collections.emptyList();
     private Map<String, Template> templates;
     private File configurationFile;
+    private Map<String, Style> styles = new HashMap<String, Style>();
+
+    @Autowired
+    private StyleParser styleParser;
 
     /**
      * Print out the configuration that the client needs to make a request.
@@ -134,5 +143,26 @@ public class Configuration {
 
     public final void setConfigurationFile(final File configurationFile) {
         this.configurationFile = configurationFile;
+    }
+
+    /**
+     * Set the named styles defined in the configuration for this
+     *
+     * @param styles the style definition.  StyleParser plugins will be used to load the style.
+     */
+    public final void setStyles(final Map<String, String> styles) {
+        Map<String, Style> map = StyleParser.loadStyles(this, this.styleParser, styles);
+
+        this.styles = map;
+    }
+
+    /**
+     * Return the named style ot Optional.absent() if there is not a style with the given name.
+     *
+     * @param styleName the name of the style to look up
+     */
+    public final Optional<? extends Style> getStyle(final String styleName) {
+        return Optional.fromNullable(this.styles.get(styleName));
+
     }
 }

@@ -19,13 +19,9 @@
 
 package org.mapfish.print;
 
-import com.google.common.io.CharStreams;
 import com.google.common.io.Files;
 import org.junit.runner.RunWith;
-import org.mapfish.print.config.ConfigurationFactoryTest;
-import org.mapfish.print.json.PJsonElement;
 import org.mapfish.print.json.PJsonObject;
-import org.mapfish.print.processor.map.MapProcessorTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 

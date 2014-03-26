@@ -63,7 +63,7 @@ public class Values {
         Map<String, Attribute<?>> attributes = template.getAttributes();
         for (String attributeName : attributes.keySet()) {
             final Attribute<?> attribute = attributes.get(attributeName);
-            final Object value = attribute.getValue(jsonAttributes, attributeName);
+            final Object value = attribute.getValue(template, jsonAttributes, attributeName);
             put(attributeName, value);
         }
     }

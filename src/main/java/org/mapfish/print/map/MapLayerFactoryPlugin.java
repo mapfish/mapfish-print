@@ -17,27 +17,28 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.processor.map;
+package org.mapfish.print.map;
 
-import com.vividsolutions.jts.geom.Envelope;
+import com.google.common.base.Optional;
+import org.mapfish.print.attribute.map.MapLayer;
+import org.mapfish.print.config.Template;
+import org.mapfish.print.json.PJsonObject;
+
+import javax.annotation.Nonnull;
 
 /**
- * Represent the map bounds with a bounding box.
+ * Parses layer request data and creates a MapLayer from it.
  *
- * Created by Jesse on 3/26/14.
+ * @author Jesse on 3/26/14.
  */
-public class BBoxMapBounds implements MapBounds {
-    private final Envelope bbox;
-
+public interface MapLayerFactoryPlugin {
     /**
-     * Constructor.
+     * Inspect the json data and return Optional&lt;MapLayer> or Optional.absent().
      *
-     * @param minx min X coordinate for the MapBounds
-     * @param miny min Y coordinate for the MapBounds
-     * @param maxx max X coordinate for the MapBounds
-     * @param maxy max Y coordinate for the MapBounds
+     * @param template the configuration related to the current request.
+     * @param layerJson the layer data to parse.
      */
-    public BBoxMapBounds(final double minx, final double miny, final double maxx, final double maxy) {
-        this.bbox = new Envelope(minx, maxx, miny, maxy);
-    }
+    @Nonnull
+    Optional<? extends MapLayer> parse(Template template, @Nonnull PJsonObject layerJson) throws Throwable;
+
 }

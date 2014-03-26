@@ -17,28 +17,9 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.processor.map;
-
-import com.vividsolutions.jts.geom.Coordinate;
-
 /**
- * Represent Map Bounds with a center location and a scale of the map.
- * <p/>
- * Created by Jesse on 3/26/14.
+ * Contains parsers for parsing styles for rendering layers.
+ *
+ * @author Jesse on 3/26/14.
  */
-public class CenterScaleMapBounds implements MapBounds {
-    private Coordinate center;
-    private double scale;
-
-    /**
-     * Constructor.
-     *
-     * @param centerX the x coordinate of the center point.
-     * @param centerY the y coordinate of the center point.
-     * @param scale   the scale denominator of the map
-     */
-    public CenterScaleMapBounds(final double centerX, final double centerY, final double scale) {
-        this.center = new Coordinate(centerX, centerY);
-        this.scale = scale;
-    }
-}
+package org.mapfish.print.map.style;

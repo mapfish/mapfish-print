@@ -19,28 +19,37 @@
 
 package org.mapfish.print.config;
 
+import com.google.common.base.Optional;
+import org.geotools.styling.LineSymbolizer;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyleBuilder;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.attribute.Attribute;
+import org.mapfish.print.map.style.StyleParser;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 /**
  * Represents a report template configuration.
  *
  * @author sbrunner
  */
-public class Template implements ConfigurationObject {
+public class Template implements ConfigurationObject, HasConfiguration {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Template.class);
     @Autowired
     private ProcessorDependencyGraphFactory processorGraphFactory;
+
 
     private String jasperTemplate;
     private Map<String, Attribute<?>> attributes;
@@ -53,6 +62,11 @@ public class Template implements ConfigurationObject {
     private String jdbcPassword;
     private volatile ProcessorDependencyGraph processorGraph;
     private volatile ProcessorDependencyGraph iterProcessorGraph;
+    private Map<String, Style> styles = new HashMap<String, Style>();
+    private Configuration configuration;
+    private Style defaultStyle;
+    @Autowired
+    private StyleParser styleParser;
 
     /**
      * Print out the template information that the client needs for performing a request.
@@ -197,5 +211,52 @@ public class Template implements ConfigurationObject {
             }
         }
         return this.iterProcessorGraph;
+    }
+
+    /**
+     * Set the named styles defined in the configuration for this.
+     *
+     * @param styles set the styles specific for this template.
+     */
+    public final void setStyles(final Map<String, String> styles) {
+        Map<String, Style> map = StyleParser.loadStyles(this.configuration, this.styleParser, styles);
+
+        this.styles = map;
+    }
+
+    /**
+     * Look for a style in the named styles provided in the configuration.
+     *
+     * @param styleName the name of the style to look for.
+     */
+    @Nonnull
+    public final Optional<Style> getStyle(final String styleName) {
+        return Optional.fromNullable(this.styles.get(styleName))
+                .or(this.configuration.getStyle(styleName));
+    }
+
+    @Override
+    public final void setConfiguration(final Configuration configuration) {
+        this.configuration = configuration;
+    }
+
+    public final Configuration getConfiguration() {
+        return this.configuration;
+    }
+
+    /**
+     * Get a default style.  If null a simple black line style will be returned.
+     */
+    public final Style getDefaultStyle() {
+        if (this.defaultStyle == null) {
+            StyleBuilder builder = new StyleBuilder();
+            final LineSymbolizer symbolizer = builder.createLineSymbolizer(Color.black, 2);
+            return builder.createStyle(symbolizer);
+        }
+        return this.defaultStyle;
+    }
+
+    public final void setDefaultStyle(final Style defaultStyle) {
+        this.defaultStyle = defaultStyle;
     }
 }

@@ -30,24 +30,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.image.BufferedImage;
 
-import static org.mapfish.print.attribute.MapAttribute.MapAttributeValues.BBOX;
-import static org.mapfish.print.attribute.MapAttribute.MapAttributeValues.PROJECTION;
-
 /**
  * Basic test of the Map processor.
  * <p/>
  * Created by Jesse on 3/26/14.
  */
-public class MapProcessorTest extends AbstractMapfishSpringTest {
+public class CreateMapProcessorTest extends AbstractMapfishSpringTest {
 
     @Autowired
     private ConfigurationFactory configurationFactory;
 
     @Test
     public void testExecute() throws Exception {
-        final Configuration config = configurationFactory.getConfig(getFile(MapProcessorTest.class, "basicMapProcessor.yaml"));
+        final Configuration config = configurationFactory.getConfig(getFile(CreateMapProcessorTest.class, "basicMapProcessor.yaml"));
         final Template template = config.getTemplate("main");
-        PJsonObject requestData = super.parseJSONObjectFromFile(MapProcessorTest.class, "basicMapRequestData.json");
+        PJsonObject requestData = super.parseJSONObjectFromFile(CreateMapProcessorTest.class, "basicMapRequestData.json");
         Values values = new Values(requestData, template);
         template.getProcessorGraph().createTask(values).invoke();
 

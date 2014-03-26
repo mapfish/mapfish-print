@@ -17,23 +17,9 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.attribute;
-
-import org.mapfish.print.config.Template;
-import org.mapfish.print.json.PJsonObject;
-
 /**
- * A float type attribute.
+ * Attributes related to map.
+ *
+ * @author Jesse on 3/26/14.
  */
-public class FloatAttribute extends AbstractAttribute<Double> {
-
-    @Override
-    public final Double getValue(final Template template, final PJsonObject values, final String name) {
-        return values.getDouble(name);
-    }
-
-    @Override
-    protected final String getType() {
-        return "float";
-    }
-}
+package org.mapfish.print.attribute.map;

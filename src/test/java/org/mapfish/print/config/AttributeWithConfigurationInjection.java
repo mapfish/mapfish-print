@@ -48,7 +48,7 @@ public class AttributeWithConfigurationInjection extends AbstractAttribute<Integ
     }
 
     @Override
-    public Integer getValue(PJsonObject values, String name) {
+    public Integer getValue(Template template, PJsonObject values, String name) {
         return null;
     }
 }

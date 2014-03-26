@@ -17,22 +17,29 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.attribute;
+package org.mapfish.print.attribute.map;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import org.geotools.referencing.CRS;
 import org.json.JSONException;
 import org.json.JSONWriter;
+import org.mapfish.print.attribute.AbstractAttribute;
+import org.mapfish.print.config.Template;
 import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
-import org.mapfish.print.processor.map.BBoxMapBounds;
-import org.mapfish.print.processor.map.CenterScaleMapBounds;
-import org.mapfish.print.processor.map.MapBounds;
+import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+
+import java.util.List;
+import java.util.Map;
 
 /**
- * The attributes for {@link org.mapfish.print.processor.map.MapProcessor}.
+ * The attributes for {@link org.mapfish.print.processor.map.CreateMapProcessor}.
  */
 public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeValues> {
 
@@ -49,13 +56,15 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
      */
     static final String HEIGHT = "height";
 
+    @Autowired
+    private ApplicationContext applicationContext;
     private float[] dpi;
     private int width;
     private int height;
 
     @Override
-    public final MapAttributeValues getValue(final PJsonObject values, final String name) {
-        return new MapAttributeValues(values.getJSONObject(name));
+    public final MapAttributeValues getValue(final Template template, final PJsonObject values, final String name) {
+        return new MapAttributeValues(template, values.getJSONObject(name));
     }
 
     @Override
@@ -87,7 +96,7 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
     }
 
     /**
-     * The value of {@link org.mapfish.print.attribute.MapAttribute}.
+     * The value of {@link MapAttribute}.
      */
     public final class MapAttributeValues {
         static final String CENTER = "center";
@@ -106,20 +115,56 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
         private static final String LONGITUDE_FIRST = "longitudeFirst ";
 
         private final MapBounds mapBounds;
-        private final CoordinateReferenceSystem projection;
         private final double rotation;
-        private final PJsonArray layers;
-        /**
-         * Constructor.
-         *
-         * @param jsonObject json containing attribute information.
-         */
-        public MapAttributeValues(final PJsonObject jsonObject) {
+        private final List<MapLayer> layers;
 
-            this.mapBounds = parseBounds(jsonObject);
-            this.projection = parseProjection(jsonObject);
-            this.rotation = jsonObject.optDouble(ROTATION, 0.0);
-            this.layers = jsonObject.getJSONArray(LAYERS);
+        MapAttributeValues(final Template template, final PJsonObject requestData) {
+
+            this.mapBounds = parseBounds(requestData);
+            this.rotation = requestData.optDouble(ROTATION, 0.0);
+            this.layers = parseLayers(template, requestData);
+        }
+
+        private List<MapLayer> parseLayers(final Template template, final PJsonObject requestData) {
+            List<MapLayer> layerList = Lists.newArrayList();
+            final PJsonArray jsonLayers = requestData.getJSONArray(LAYERS);
+
+            for (int i = 0; i < jsonLayers.size(); i++) {
+                try {
+                    parseSingleLayer(template, layerList, jsonLayers, i);
+                } catch (Throwable throwable) {
+                    throw new RuntimeException(throwable);
+                }
+            }
+
+            return layerList;
+        }
+
+        private void parseSingleLayer(final Template template, final List<MapLayer> layerList,
+                                      final PJsonArray jsonLayers, final int i) throws Throwable {
+            PJsonObject layerJson = jsonLayers.getJSONObject(i);
+
+            final Map<String, MapLayerFactoryPlugin> layerParsers = MapAttribute.this.applicationContext.getBeansOfType(MapLayerFactoryPlugin.class);
+            for (MapLayerFactoryPlugin layerParser : layerParsers.values()) {
+                final Optional<? extends MapLayer> layerOption = layerParser.parse(template, layerJson);
+                if (layerOption.isPresent()) {
+                    final MapLayer newLayer = layerOption.get();
+                    if (layerList.isEmpty()) {
+                        layerList.add(newLayer);
+                    } else {
+                        final int lastLayerIndex = layerList.size() - 1;
+                        final MapLayer lastLayer = layerList.get(lastLayerIndex);
+                        Optional<MapLayer> combinedLayer = lastLayer.tryAddLayer(newLayer);
+                        if (combinedLayer.isPresent()) {
+                            layerList.remove(lastLayerIndex);
+                            layerList.add(lastLayerIndex, combinedLayer.get());
+                        } else {
+                            layerList.add(newLayer);
+                        }
+                    }
+                    break;
+                }
+            }
         }
 
         private CoordinateReferenceSystem parseProjection(final PJsonObject requestData) {
@@ -141,6 +186,7 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
         private MapBounds parseBounds(final PJsonObject requestData) {
             final PJsonArray center = requestData.optJSONArray(CENTER);
             final PJsonArray bbox = requestData.optJSONArray(BBOX);
+            final CoordinateReferenceSystem projection = parseProjection(requestData);
             if (center != null && bbox != null) {
                 throw new IllegalArgumentException("Cannot have both center and bbox defined");
             }
@@ -149,14 +195,14 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
                 double centerX = center.getDouble(0);
                 double centerY = center.getDouble(1);
                 double scale = requestData.getDouble(SCALE);
-                bounds = new CenterScaleMapBounds(centerX, centerY, scale);
+                bounds = new CenterScaleMapBounds(projection, centerX, centerY, scale);
             } else if (bbox != null) {
                 final int maxYIndex = 3;
                 double minX = bbox.getDouble(0);
                 double minY = bbox.getDouble(1);
                 double maxX = bbox.getDouble(2);
                 double maxY = bbox.getDouble(maxYIndex);
-                bounds = new BBoxMapBounds(minX, minY, maxX, maxY);
+                bounds = new BBoxMapBounds(projection, minX, minY, maxX, maxY);
             } else {
                 throw new IllegalArgumentException("Expected either center and scale or bbox for the map bounds");
             }
@@ -167,16 +213,12 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
             return this.mapBounds;
         }
 
-        public CoordinateReferenceSystem getProjection() {
-            return this.projection;
-        }
-
         public double getRotation() {
             return this.rotation;
         }
 
-        public Layer getLayers() {
-            return this.layers;
+        public List<MapLayer> getLayers() {
+            return Lists.newArrayList(this.layers);
         }
 
         public int getWidth() {

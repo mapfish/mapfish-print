@@ -17,12 +17,23 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.processor.map;
+package org.mapfish.print.attribute.map;
+
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Class Represents the bounds of the map in some way.  The implementations will represent the as a bbox or as a center and scale.
  * Created by Jesse on 3/26/14.
  */
-public interface MapBounds {
+public abstract class MapBounds {
+    private final CoordinateReferenceSystem projection;
 
+    /**
+     * Constructor.
+     *
+     * @param projection the projection these bounds are defined in.
+     */
+    protected MapBounds(final CoordinateReferenceSystem projection) {
+        this.projection = projection;
+    }
 }
