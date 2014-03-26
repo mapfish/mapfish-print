@@ -32,7 +32,7 @@ import java.util.TreeSet;
 /**
  * The Main Configuration Bean.
  * <p/>
- * @author jesseeicharon 2/20/14.
+ * @author jesseeichar on 2/20/14.
  */
 public class Configuration {
     private boolean reloadConfig;
