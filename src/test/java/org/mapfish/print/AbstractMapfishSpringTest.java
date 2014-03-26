@@ -19,13 +19,20 @@
 
 package org.mapfish.print;
 
+import com.google.common.io.CharStreams;
+import com.google.common.io.Files;
 import org.junit.runner.RunWith;
 import org.mapfish.print.config.ConfigurationFactoryTest;
+import org.mapfish.print.json.PJsonElement;
+import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.processor.map.MapProcessorTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
 
 /**
  * Class that loads the normal spring application context from the spring config file.
@@ -53,5 +60,19 @@ public abstract class AbstractMapfishSpringTest {
         }
 
         return new File(resource.getFile());
+    }
+
+    /**
+     * Parse the json string.
+     *
+     * @param jsonString the json string to parse.
+     */
+    public PJsonObject parseJSONObjectFromString(String jsonString) {
+        return MapPrinter.parseSpec(jsonString);
+    }
+
+    public PJsonObject parseJSONObjectFromFile(Class<?> testClass, String fileName) throws IOException {
+        String jsonString = Files.asCharSource(getFile(testClass, fileName), Charset.forName(Constants.ENCODING)).read();
+        return parseJSONObjectFromString(jsonString);
     }
 }

@@ -19,23 +19,39 @@
 
 package org.mapfish.print.attribute;
 
+import org.geotools.referencing.CRS;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.processor.map.BBoxMapBounds;
+import org.mapfish.print.processor.map.CenterScaleMapBounds;
+import org.mapfish.print.processor.map.MapBounds;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * The attributes for {@link org.mapfish.print.processor.map.MapProcessor}.
  */
 public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeValues> {
 
-    static final String MAX_DPI = "maxDpi";
+    /**
+     * The key in the config.yaml file of the set of DPIs allowed for this map.
+     */
+    static final String CONFIG_DPI = "dpi";
+    /**
+     * The key in the config.yaml file of the width of the map.  This is used by the client to determine the area that will be printed.
+     */
     static final String WIDTH = "width";
+    /**
+     * The key in the config.yaml file of the height of the map.  This is used by the client to determine the area that will be printed.
+     */
     static final String HEIGHT = "height";
 
-    private float maxDpi;
-    private float width;
-    private float height;
+    private float[] dpi;
+    private int width;
+    private int height;
 
     @Override
     public final MapAttributeValues getValue(final PJsonObject values, final String name) {
@@ -49,62 +65,126 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
 
     @Override
     protected final void additionalPrintClientConfig(final JSONWriter json) throws JSONException {
-        json.key(MAX_DPI).value(this.maxDpi);
+        final JSONWriter array = json.key(CONFIG_DPI).array();
+        for (float currentDpi : this.dpi) {
+            array.value(currentDpi);
+        }
+        array.endArray();
         json.key(WIDTH).value(this.width);
         json.key(HEIGHT).value(this.height);
     }
 
-    public final void setMaxDpi(final float maxDpi) {
-        this.maxDpi = maxDpi;
+    public final void setDpi(final float[] dpi) {
+        this.dpi = dpi;
     }
 
-    public final void setWidth(final float width) {
+    public final void setWidth(final int width) {
         this.width = width;
     }
 
-    public final void setHeight(final float height) {
+    public final void setHeight(final int height) {
         this.height = height;
     }
 
     /**
      * The value of {@link org.mapfish.print.attribute.MapAttribute}.
      */
-    public static class MapAttributeValues {
+    public final class MapAttributeValues {
         static final String CENTER = "center";
         static final String SCALE = "scale";
+        /**
+         * The property name of the bbox attribute.
+         */
+        public static final String BBOX = "bbox";
         static final String ROTATION = "rotation";
         static final String LAYERS = "layers";
+        /**
+         * Name of the projection property.
+         */
+        public static final String PROJECTION = "projection";
+        private static final String DEFAULT_PROJECTION = "EPSG:3857";
+        private static final String LONGITUDE_FIRST = "longitudeFirst ";
 
-        private final PJsonArray center;
-        private final double scale;
+        private final MapBounds mapBounds;
+        private final CoordinateReferenceSystem projection;
         private final double rotation;
         private final PJsonArray layers;
-
         /**
          * Constructor.
+         *
          * @param jsonObject json containing attribute information.
          */
         public MapAttributeValues(final PJsonObject jsonObject) {
-            this.center = jsonObject.getJSONArray(CENTER);
-            this.scale = jsonObject.getDouble(SCALE);
-            this.rotation = jsonObject.getInt(ROTATION);
+
+            this.mapBounds = parseBounds(jsonObject);
+            this.projection = parseProjection(jsonObject);
+            this.rotation = jsonObject.optDouble(ROTATION, 0.0);
             this.layers = jsonObject.getJSONArray(LAYERS);
         }
 
-        public final PJsonArray getCenter() {
-            return this.center;
+        private CoordinateReferenceSystem parseProjection(final PJsonObject requestData) {
+            final String projectionString = requestData.optString(PROJECTION, DEFAULT_PROJECTION);
+            final Boolean longitudeFirst = requestData.optBool(LONGITUDE_FIRST);
+            try {
+                if (longitudeFirst == null) {
+                    return CRS.decode(projectionString);
+                } else {
+                    return CRS.decode(projectionString, longitudeFirst);
+                }
+            } catch (NoSuchAuthorityCodeException e) {
+                throw new RuntimeException(projectionString + "was not recognized as a crs code", e);
+            } catch (FactoryException e) {
+                throw new RuntimeException("Error occured while parsing: " + projectionString, e);
+            }
         }
 
-        public final double getScale() {
-            return this.scale;
+        private MapBounds parseBounds(final PJsonObject requestData) {
+            final PJsonArray center = requestData.optJSONArray(CENTER);
+            final PJsonArray bbox = requestData.optJSONArray(BBOX);
+            if (center != null && bbox != null) {
+                throw new IllegalArgumentException("Cannot have both center and bbox defined");
+            }
+            MapBounds bounds;
+            if (center != null) {
+                double centerX = center.getDouble(0);
+                double centerY = center.getDouble(1);
+                double scale = requestData.getDouble(SCALE);
+                bounds = new CenterScaleMapBounds(centerX, centerY, scale);
+            } else if (bbox != null) {
+                final int maxYIndex = 3;
+                double minX = bbox.getDouble(0);
+                double minY = bbox.getDouble(1);
+                double maxX = bbox.getDouble(2);
+                double maxY = bbox.getDouble(maxYIndex);
+                bounds = new BBoxMapBounds(minX, minY, maxX, maxY);
+            } else {
+                throw new IllegalArgumentException("Expected either center and scale or bbox for the map bounds");
+            }
+            return bounds;
         }
 
-        public final double getRotation() {
+        public MapBounds getMapBounds() {
+            return this.mapBounds;
+        }
+
+        public CoordinateReferenceSystem getProjection() {
+            return this.projection;
+        }
+
+        public double getRotation() {
             return this.rotation;
         }
 
-        public final PJsonArray getLayers() {
+        public Layer getLayers() {
             return this.layers;
+        }
+
+        public int getWidth() {
+            return MapAttribute.this.width;
+        }
+
+        public int getHeight() {
+            return MapAttribute.this.height;
         }
     }
 }

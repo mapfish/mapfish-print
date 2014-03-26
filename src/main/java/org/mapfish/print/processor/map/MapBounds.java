@@ -17,29 +17,12 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print;
-
-import java.nio.charset.Charset;
+package org.mapfish.print.processor.map;
 
 /**
- * Strings used in configurations etc...
- * User: jeichar
- * Date: Sep 30, 2010
- * Time: 4:27:46 PM
+ * Class Represents the bounds of the map in some way.  The implementations will represent the as a bbox or as a center and scale.
+ * Created by Jesse on 3/26/14.
  */
-public interface Constants {
-    /**
-     * The layout tag in the json spec file.
-     */
-    String JSON_LAYOUT_KEY = "layout";
+public interface MapBounds {
 
-    /**
-     * The output filename in the json spec file.
-     */
-    String OUTPUT_FILENAME_KEY = "outputFilename";
-
-    /**
-     * The default encoding to use throughout the system
-     */
-    String ENCODING = System.getProperty("mapfish.file.encoding", "UTF-8");
 }

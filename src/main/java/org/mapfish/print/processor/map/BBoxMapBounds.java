@@ -17,29 +17,27 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print;
+package org.mapfish.print.processor.map;
 
-import java.nio.charset.Charset;
+import com.vividsolutions.jts.geom.Envelope;
 
 /**
- * Strings used in configurations etc...
- * User: jeichar
- * Date: Sep 30, 2010
- * Time: 4:27:46 PM
+ * Represent the map bounds with a bounding box.
+ *
+ * Created by Jesse on 3/26/14.
  */
-public interface Constants {
-    /**
-     * The layout tag in the json spec file.
-     */
-    String JSON_LAYOUT_KEY = "layout";
+public class BBoxMapBounds implements MapBounds {
+    private final Envelope bbox;
 
     /**
-     * The output filename in the json spec file.
+     * Constructor.
+     *
+     * @param minx min X coordinate for the MapBounds
+     * @param miny min Y coordinate for the MapBounds
+     * @param maxx max X coordinate for the MapBounds
+     * @param maxy max Y coordinate for the MapBounds
      */
-    String OUTPUT_FILENAME_KEY = "outputFilename";
-
-    /**
-     * The default encoding to use throughout the system
-     */
-    String ENCODING = System.getProperty("mapfish.file.encoding", "UTF-8");
+    public BBoxMapBounds(final double minx, final double miny, final double maxx, final double maxy) {
+        this.bbox = new Envelope(minx, maxx, miny, maxy);
+    }
 }

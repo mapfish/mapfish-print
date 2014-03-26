@@ -17,29 +17,28 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print;
+package org.mapfish.print.processor.map;
 
-import java.nio.charset.Charset;
+import com.vividsolutions.jts.geom.Coordinate;
 
 /**
- * Strings used in configurations etc...
- * User: jeichar
- * Date: Sep 30, 2010
- * Time: 4:27:46 PM
+ * Represent Map Bounds with a center location and a scale of the map.
+ * <p/>
+ * Created by Jesse on 3/26/14.
  */
-public interface Constants {
-    /**
-     * The layout tag in the json spec file.
-     */
-    String JSON_LAYOUT_KEY = "layout";
+public class CenterScaleMapBounds implements MapBounds {
+    private Coordinate center;
+    private double scale;
 
     /**
-     * The output filename in the json spec file.
+     * Constructor.
+     *
+     * @param centerX the x coordinate of the center point.
+     * @param centerY the y coordinate of the center point.
+     * @param scale   the scale denominator of the map
      */
-    String OUTPUT_FILENAME_KEY = "outputFilename";
-
-    /**
-     * The default encoding to use throughout the system
-     */
-    String ENCODING = System.getProperty("mapfish.file.encoding", "UTF-8");
+    public CenterScaleMapBounds(final double centerX, final double centerY, final double scale) {
+        this.center = new Coordinate(centerX, centerY);
+        this.scale = scale;
+    }
 }

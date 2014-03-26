@@ -19,6 +19,7 @@
 
 package org.mapfish.print.processor.map;
 
+import org.mapfish.print.attribute.MapAttribute;
 import org.mapfish.print.processor.AbstractProcessor;
 
 import java.awt.image.BufferedImage;
@@ -30,14 +31,19 @@ import java.util.Map;
  * @author sbrunner
  */
 public class MapProcessor extends AbstractProcessor {
-    private static final int TEMPORARY_MAP_SIZE = 200;
-//    private static final String MAP_INPUT = "map";
+    private static final String MAP_INPUT = "map";
     private static final String MAP_OUTPUT = "map";
+
 
     @Override
     public final Map<String, Object> execute(final Map<String, Object> values) throws Exception {
+        MapAttribute.MapAttributeValues mapValues = (MapAttribute.MapAttributeValues) values.get(MAP_INPUT);
+        final BufferedImage bufferedImage = new BufferedImage(mapValues.getWidth(), mapValues.getHeight(),
+                BufferedImage.TYPE_INT_ARGB_PRE);
+
+        mapValues.getLayers()
         final Map<String, Object> output = new HashMap<String, Object>();
-        output.put(MAP_OUTPUT, new BufferedImage(TEMPORARY_MAP_SIZE, TEMPORARY_MAP_SIZE, BufferedImage.TYPE_INT_ARGB_PRE));
+        output.put(MAP_OUTPUT, bufferedImage);
         return output;
     }
 }

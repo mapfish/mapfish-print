@@ -1,0 +1,13 @@
+
+templates:
+  main: !template
+    attributes:
+      map: !map
+        width: 512
+        height: 512
+        dpi: [72, 96]
+    processors:
+    - !createMap
+        inputMapper: {map: map}
+        outputMapper: {map: map}
+
