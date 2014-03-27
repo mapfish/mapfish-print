@@ -154,6 +154,16 @@ if $cygwin ; then
     esac
 fi
 
+
+case `$JAVACMD -version 2>&1` in
+*1.6.0*)
+    echo "Detected Java version is 1.6.  Adding backwards compatibility jar for fork join"
+    BOOTCLASSPATH="-Xbootclasspath/p:APP_HOME/jsr166.jar"
+    ;;
+*)         ;;
+esac
+
+
 # Split up the JVM_OPTS And GRADLE_OPTS values into an array, following the shell quoting and substitution rules
 function splitJvmOpts() {
     JVM_OPTS=("$@")
@@ -161,4 +171,4 @@ function splitJvmOpts() {
 eval splitJvmOpts $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS
 JVM_OPTS[${#JVM_OPTS[*]}]="-Dorg.gradle.appname=$APP_BASE_NAME"
 
-exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@"
+exec "$JAVACMD" "$BOOTCLASSPATH" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@"
