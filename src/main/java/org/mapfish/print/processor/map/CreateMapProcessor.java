@@ -41,6 +41,8 @@ public class CreateMapProcessor extends AbstractProcessor {
     private static final String MAP_INPUT = "map";
     private static final String MAP_OUTPUT = "map";
 
+    private int imageType = BufferedImage.TYPE_4BYTE_ABGR;
+
 
     @Override
     public final Map<String, Object> execute(final Map<String, Object> values) throws Exception {
@@ -49,7 +51,7 @@ public class CreateMapProcessor extends AbstractProcessor {
         final int mapHeight = mapValues.getHeight();
 
         final BufferedImage bufferedImage = new BufferedImage(mapWidth, mapHeight,
-                BufferedImage.TYPE_INT_ARGB_PRE);
+                this.imageType);
 
         Graphics2D graphics2D = bufferedImage.createGraphics();
         try {
@@ -70,5 +72,13 @@ public class CreateMapProcessor extends AbstractProcessor {
         final Map<String, Object> output = new HashMap<String, Object>();
         output.put(MAP_OUTPUT, bufferedImage);
         return output;
+    }
+
+    /**
+     * Set the type of buffered image rendered to.  By default the image is
+     * @param imageType one of the {@link java.awt.image.BufferedImage} constants.
+     */
+    public final void setImageType(final int imageType) {
+        this.imageType = imageType;
     }
 }

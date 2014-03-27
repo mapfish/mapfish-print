@@ -54,6 +54,10 @@ public final class Scale {
     }
 
     public double getDenominator() {
-        return denominator;
+        return this.denominator;
+    }
+
+    public DistanceUnit getUnit() {
+        return this.unit;
     }
 }

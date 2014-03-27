@@ -49,4 +49,11 @@ public abstract class MapBounds {
      * @return
      */
     public abstract ReferencedEnvelope toReferencedEnvelope(Rectangle paintArea, double dpi);
+
+    /**
+     * Get the projection these bounds are calculated in.
+     */
+    protected final CoordinateReferenceSystem getProjection() {
+        return this.projection;
+    }
 }

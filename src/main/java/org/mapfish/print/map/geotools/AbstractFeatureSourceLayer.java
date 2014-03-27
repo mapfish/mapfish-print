@@ -26,6 +26,7 @@ import org.geotools.styling.Style;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @author Jesse on 3/26/14.
@@ -39,8 +40,10 @@ public class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
      *
      * @param featureSource the featureSource containing the feature data.
      * @param style style to use for rendering the data.
+     * @param executorService the thread pool for doing the rendering.
      */
-    public AbstractFeatureSourceLayer(final FeatureSource featureSource, final Style style) {
+    public AbstractFeatureSourceLayer(final FeatureSource featureSource, final Style style, final ExecutorService executorService) {
+        super(executorService);
         this.layers = Collections.singletonList(new FeatureLayer(featureSource, style));
     }
 

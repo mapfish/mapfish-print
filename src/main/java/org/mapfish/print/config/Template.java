@@ -20,9 +20,7 @@
 package org.mapfish.print.config;
 
 import com.google.common.base.Optional;
-import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.Style;
-import org.geotools.styling.StyleBuilder;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.attribute.Attribute;
@@ -33,7 +31,6 @@ import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,7 +61,6 @@ public class Template implements ConfigurationObject, HasConfiguration {
     private volatile ProcessorDependencyGraph iterProcessorGraph;
     private Map<String, Style> styles = new HashMap<String, Style>();
     private Configuration configuration;
-    private Style defaultStyle;
     @Autowired
     private StyleParser styleParser;
 
@@ -244,19 +240,4 @@ public class Template implements ConfigurationObject, HasConfiguration {
         return this.configuration;
     }
 
-    /**
-     * Get a default style.  If null a simple black line style will be returned.
-     */
-    public final Style getDefaultStyle() {
-        if (this.defaultStyle == null) {
-            StyleBuilder builder = new StyleBuilder();
-            final LineSymbolizer symbolizer = builder.createLineSymbolizer(Color.black, 2);
-            return builder.createStyle(symbolizer);
-        }
-        return this.defaultStyle;
-    }
-
-    public final void setDefaultStyle(final Style defaultStyle) {
-        this.defaultStyle = defaultStyle;
-    }
 }

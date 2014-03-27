@@ -19,16 +19,36 @@
 
 package org.mapfish.print.attribute.map;
 
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
 
-import static org.junit.Assert.fail;
+import java.awt.Rectangle;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Jesse on 3/27/14.
  */
 public class BBoxMapBoundsTest {
+    @Test(expected = IllegalArgumentException.class)
+    public void testToReferencedEnvelopeMismatchAspectRatio() throws Exception {
+        final BBoxMapBounds bboxMapBounds = new BBoxMapBounds(DefaultGeographicCRS.WGS84, 0, 0, 10, 10);
+
+        bboxMapBounds.toReferencedEnvelope(new Rectangle(5, 10), 90);
+    }
     @Test
     public void testToReferencedEnvelope() throws Exception {
-        fail("to implement");
+        final BBoxMapBounds bboxMapBounds = new BBoxMapBounds(DefaultGeographicCRS.WGS84, -180, -90, 180, 90);
+
+        final ReferencedEnvelope envelope = bboxMapBounds.toReferencedEnvelope(new Rectangle(10, 5), 90);
+
+
+        assertEquals(-180, envelope.getMinX(), 0.001);
+        assertEquals(180, envelope.getMaxX(), 0.001);
+        assertEquals(-90, envelope.getMinY(), 0.001);
+        assertEquals(90, envelope.getMaxY(), 0.001);
+        assertEquals(DefaultGeographicCRS.WGS84, envelope.getCoordinateReferenceSystem());
     }
+
 }

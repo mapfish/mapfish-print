@@ -20,12 +20,20 @@
 package org.mapfish.print.config;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import org.geotools.styling.Style;
+import org.geotools.styling.StyleBuilder;
+import org.geotools.styling.Symbolizer;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.map.style.StyleParser;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+import javax.annotation.Nonnull;
 
 /**
  * The Main Configuration Bean.
@@ -40,6 +49,28 @@ import java.util.TreeSet;
  * @author jesseeichar on 2/20/14.
  */
 public class Configuration {
+    private static final Map<String, String> GEOMETRY_NAME_ALIASES;
+    static {
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put(Geometry.class.getSimpleName().toLowerCase(), Geometry.class.getSimpleName().toLowerCase());
+        map.put("geom", Geometry.class.getSimpleName().toLowerCase());
+        map.put("geometrycollection", Geometry.class.getSimpleName().toLowerCase());
+        map.put("multigeometry", Geometry.class.getSimpleName().toLowerCase());
+
+        map.put("line", LineString.class.getSimpleName().toLowerCase());
+        map.put(LineString.class.getSimpleName().toLowerCase(), LineString.class.getSimpleName().toLowerCase());
+        map.put("linearring", LineString.class.getSimpleName().toLowerCase());
+        map.put("multilinestring", LineString.class.getSimpleName().toLowerCase());
+        map.put("multiline", LineString.class.getSimpleName().toLowerCase());
+
+        map.put("poly", Polygon.class.getSimpleName().toLowerCase());
+        map.put(Polygon.class.getSimpleName().toLowerCase(), Polygon.class.getSimpleName().toLowerCase());
+        map.put("multipolygon", Polygon.class.getSimpleName().toLowerCase());
+
+        map.put(Point.class.getSimpleName().toLowerCase(), Point.class.getSimpleName().toLowerCase());
+        map.put("multipoint", Point.class.getSimpleName().toLowerCase());
+        GEOMETRY_NAME_ALIASES = map;
+    }
     private boolean reloadConfig;
     private String proxyBaseUrl;
     private TreeSet<String> headers;
@@ -48,6 +79,7 @@ public class Configuration {
     private Map<String, Template> templates;
     private File configurationFile;
     private Map<String, Style> styles = new HashMap<String, Style>();
+    private Map<String, Style> defaultStyle = new HashMap<String, Style>();
 
     @Autowired
     private StyleParser styleParser;
@@ -146,7 +178,7 @@ public class Configuration {
     }
 
     /**
-     * Set the named styles defined in the configuration for this
+     * Set the named styles defined in the configuration for this.
      *
      * @param styles the style definition.  StyleParser plugins will be used to load the style.
      */
@@ -164,5 +196,57 @@ public class Configuration {
     public final Optional<? extends Style> getStyle(final String styleName) {
         return Optional.fromNullable(this.styles.get(styleName));
 
+    }
+
+    /**
+     * Get a default style.  If null a simple black line style will be returned.
+     *
+     * @param geometryType the name of the geometry type (point, line, polygon)
+     */
+     @Nonnull
+     public final Style getDefaultStyle(@Nonnull final String geometryType) {
+        String normalizedGeomName = GEOMETRY_NAME_ALIASES.get(geometryType.toLowerCase());
+        if (normalizedGeomName == null) {
+            normalizedGeomName = geometryType.toLowerCase();
+        }
+        Style style = this.defaultStyle.get(normalizedGeomName.toLowerCase());
+        if (style == null) {
+            StyleBuilder builder = new StyleBuilder();
+            final Symbolizer symbolizer;
+            if (normalizedGeomName.equalsIgnoreCase(Point.class.getSimpleName())) {
+                symbolizer = builder.createPointSymbolizer();
+            } else if (normalizedGeomName.equalsIgnoreCase(LineString.class.getSimpleName())) {
+                symbolizer = builder.createLineSymbolizer(Color.black, 2);
+            } else if (normalizedGeomName.equalsIgnoreCase(Polygon.class.getSimpleName())) {
+                symbolizer = builder.createPolygonSymbolizer(Color.lightGray, Color.black, 2);
+            } else {
+                final Style geomStyle = this.defaultStyle.get(Geometry.class.getSimpleName().toLowerCase());
+                if (geomStyle != null) {
+                    return geomStyle;
+                } else {
+                    symbolizer = builder.createPointSymbolizer();
+                }
+            }
+            style =  builder.createStyle(symbolizer);
+        }
+        return style;
+    }
+
+    /**
+     * Set the default styles.  the case of the keys are not important.  The retrieval will be case insensitive.
+     *
+     * @param defaultStyle the mapping from geometry type name (point, polygon, etc...) to the style to use for that type.
+     */
+    public final void setDefaultStyle(final Map<String, Style> defaultStyle) {
+        this.defaultStyle = Maps.newHashMapWithExpectedSize(defaultStyle.size());
+        for (Map.Entry<String, Style> entry : defaultStyle.entrySet()) {
+            String normalizedName = GEOMETRY_NAME_ALIASES.get(entry.getKey().toLowerCase());
+
+            if (normalizedName == null) {
+                normalizedName = entry.getKey().toLowerCase();
+            }
+
+            this.defaultStyle.put(normalizedName, entry.getValue());
+        }
     }
 }

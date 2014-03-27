@@ -3,11 +3,12 @@ templates:
   main: !template
     attributes:
       map: !map
-        width: 512
-        height: 512
+        width: 500
+        height: 100
         dpi: [72, 96]
     processors:
     - !createMap
         inputMapper: {map: map}
         outputMapper: {map: map}
+        imageType: 6
 

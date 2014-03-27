@@ -31,6 +31,7 @@ import java.awt.Rectangle;
  * Created by Jesse on 3/26/14.
  */
 public final class BBoxMapBounds extends MapBounds {
+    private static final double ASPECT_RATIO_ACCEPTABLE_DIFFERENCE = 0.00001;
     private final Envelope bbox;
 
     /**
@@ -50,6 +51,15 @@ public final class BBoxMapBounds extends MapBounds {
 
     @Override
     public ReferencedEnvelope toReferencedEnvelope(final Rectangle paintArea, final double dpi) {
-        return null;
+        final double paintAreaAspectRatio = paintArea.getWidth() / paintArea.getHeight();
+        final double bboxAspectRatio = this.bbox.getWidth() / this.bbox.getHeight();
+        final double aspectRatioDifference = Math.abs(paintAreaAspectRatio - bboxAspectRatio);
+
+        if (aspectRatioDifference > ASPECT_RATIO_ACCEPTABLE_DIFFERENCE) {
+            throw new IllegalArgumentException("bbox and paint area aspect ratio must be within " + ASPECT_RATIO_ACCEPTABLE_DIFFERENCE +
+                                               " of each other.\n\tPaintArea ratio: " + paintAreaAspectRatio +
+                                               "\n\tbbox ratio: "+ bboxAspectRatio);
+        }
+        return new ReferencedEnvelope(this.bbox, getProjection());
     }
 }

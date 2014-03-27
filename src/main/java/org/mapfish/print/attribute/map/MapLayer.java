@@ -50,7 +50,7 @@ public interface MapLayer {
      * @param graphics2D the graphics object.
      * @param bounds the map bounds
      * @param paintArea the area to paint
-     * @param dpi
+     * @param dpi the DPI to render at
      */
     void render(Graphics2D graphics2D, MapBounds bounds, Rectangle paintArea, double dpi);
 }

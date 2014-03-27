@@ -1,3 +1,6 @@
+.. image:: https://magnum.travis-ci.com/camptocamp/mapfish-printV3.svg?token=MAvNLXTm92VaWzkhpFvd&branch=development   :target: https://magnum.travis-ci.com/camptocamp/mapfish-printV3
+
+
 Please read the documentation available here:
 http://trac.mapfish.org/trac/mapfish/wiki/PrintModuleDoc
 

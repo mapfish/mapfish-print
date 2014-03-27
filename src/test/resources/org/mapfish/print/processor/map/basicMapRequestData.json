@@ -2,7 +2,8 @@
   "attributes": {
     "map": {
       "bbox": [95, -1, 110, 2],
-      "projection": "EPSG:4326",
+      "projection": "CRS:84",
+      "dpi": 90,
       "layers": [
         {
           "type": "geojson",

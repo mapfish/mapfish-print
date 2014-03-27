@@ -20,6 +20,7 @@
 package org.mapfish.print.map.geotools;
 
 import com.google.common.base.Optional;
+import jsr166y.ForkJoinPool;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -35,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
 
 /**
@@ -49,9 +51,10 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
      *
      * @param featureSource the featureSource containing the feature data.
      * @param style         style to use for rendering the data.
+     * @param executorService the thread pool for doing the rendering.
      */
-    public GeoJsonLayer(final FeatureSource featureSource, final Style style) {
-        super(featureSource, style);
+    public GeoJsonLayer(final FeatureSource featureSource, final Style style, final ExecutorService executorService) {
+        super(featureSource, style, executorService);
     }
 
     /**
@@ -67,6 +70,9 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
 
         @Autowired
         private StyleParser parser;
+        @Autowired
+        private ForkJoinPool forkJoinPool;
+
 
         @Nonnull
         @Override
@@ -84,11 +90,12 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
 
                 final String styleRef = layerJson.getString("style");
 
+                String geomType = featureCollection.getSchema().getGeometryDescriptor().getType().getBinding().getSimpleName();
                 Style style = template.getStyle(styleRef)
                         .or(this.parser.loadStyle(template.getConfiguration(), styleRef))
-                        .or(template.getDefaultStyle());
+                        .or(template.getConfiguration().getDefaultStyle(geomType));
 
-                result = Optional.of(new GeoJsonLayer(featureSource, style));
+                result = Optional.of(new GeoJsonLayer(featureSource, style, this.forkJoinPool));
             } else {
                 result = Optional.absent();
             }

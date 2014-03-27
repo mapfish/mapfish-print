@@ -28,12 +28,27 @@ import org.mapfish.print.attribute.map.MapLayer;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @author Jesse on 3/26/14.
  */
 public abstract class AbstractGeotoolsLayer implements MapLayer {
+
+    private final ExecutorService executorService;
+
+    /**
+     * Constructor.
+     *
+     * @param executorService the thread pool for doing the rendering.
+     */
+    protected AbstractGeotoolsLayer(final ExecutorService executorService) {
+        this.executorService = executorService;
+    }
+
     @Override
     public final Optional<MapLayer> tryAddLayer(final MapLayer newLayer) {
         return null;
@@ -47,8 +62,31 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
         content.addLayers(layers);
 
         StreamingRenderer renderer = new StreamingRenderer();
-        renderer.setMapContent(content);
 
+
+        RenderingHints hints = new RenderingHints(Collections.EMPTY_MAP);
+        hints.add(new RenderingHints(RenderingHints.KEY_RENDERING,
+                RenderingHints.VALUE_RENDER_SPEED));
+        hints.add(new RenderingHints(RenderingHints.KEY_DITHERING,
+                RenderingHints.VALUE_DITHER_DISABLE));
+        hints.add(new RenderingHints(RenderingHints.KEY_ALPHA_INTERPOLATION,
+                RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED));
+        hints.add(new RenderingHints(RenderingHints.KEY_COLOR_RENDERING,
+                RenderingHints.VALUE_COLOR_RENDER_SPEED));
+        hints.add(new RenderingHints(RenderingHints.KEY_INTERPOLATION,
+                RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR));
+        hints.add(new RenderingHints(RenderingHints.KEY_STROKE_CONTROL,
+                RenderingHints.VALUE_STROKE_PURE));
+        hints.add(new RenderingHints(RenderingHints.KEY_FRACTIONALMETRICS,
+                RenderingHints.VALUE_FRACTIONALMETRICS_OFF));
+
+        hints.add(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
+
+        graphics2D.addRenderingHints(hints);
+        renderer.setJava2DHints(hints);
+
+        renderer.setMapContent(content);
+        renderer.setThreadPool(this.executorService);
         renderer.paint(graphics2D, paintArea, bounds.toReferencedEnvelope(paintArea, dpi));
 
     }
@@ -57,4 +95,5 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
      * Get the {@link org.geotools.data.DataStore} object that contains the data for this layer.
      */
     protected abstract List<? extends Layer> getLayers();
+
 }
