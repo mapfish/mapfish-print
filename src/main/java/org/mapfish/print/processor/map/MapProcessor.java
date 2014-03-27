@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Jesse on 3/17/14.
+ * @author jesseeichar on 3/17/14.
  * @author sbrunner
  */
 public class MapProcessor extends AbstractProcessor {

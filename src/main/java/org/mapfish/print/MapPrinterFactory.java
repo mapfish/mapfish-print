@@ -21,7 +21,7 @@ package org.mapfish.print;
 
 /**
  * Interface for a class that creates MapPrinters.
- * Created by Jesse on 3/18/14.
+ * @author jesseeichar on 3/18/14.
  */
 public interface MapPrinterFactory {
     /**

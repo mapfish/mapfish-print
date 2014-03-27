@@ -26,7 +26,7 @@ import java.net.URI;
 /**
  * Load a generated report from a supported URI.
  *
- * Created by Jesse on 3/18/14.
+ * @author jesseeichar on 3/18/14.
  */
 public interface ReportLoader {
 

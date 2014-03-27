@@ -28,13 +28,13 @@ hosts:
     port: 80
 
 security:
-  - !basicAuth
-    matcher: !dnsMatch
-      host: c2cpc61.camptocamp.com
-      port: 80
-    username: xyz
-    password: yxz
-    preemptive: true
+#  - !basicAuth
+#    matcher: !dnsMatch
+#      host: c2cpc61.camptocamp.com
+#      port: 80
+#    username: xyz
+#    password: yxz
+#    preemptive: true
 
 templates:
   A4 portrait: !template
@@ -55,7 +55,7 @@ templates:
       tablelist: !tableList {}
     processors:
     - !reportBuilder
-      directory: examples
+      directory: .
     - !createMap
       inputMapper: {map: map}
       outputMapper: {map: map}
@@ -68,8 +68,8 @@ templates:
     - !prepareTableList
       inputMapper: {tablelist: tablelist}
       dynamicReport: {}
-      dynamicReportDirectory: "examples/dynamic"
+      dynamicReportDirectory: "dynamic"
       outputMapper: {tablelist: tablelist}
     - !reportBuilder
-      directory: "examples/dynamic"
+      directory: "dynamic"
     iterValue: tablelist

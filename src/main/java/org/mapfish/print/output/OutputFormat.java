@@ -52,4 +52,5 @@ public interface OutputFormat {
      * @param outputStream the stream to write the result to
      */
     void print(PJsonObject spec, Configuration config, File configDir, OutputStream outputStream) throws Exception;
+
 }

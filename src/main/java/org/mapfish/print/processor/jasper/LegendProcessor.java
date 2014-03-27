@@ -20,7 +20,6 @@
 package org.mapfish.print.processor.jasper;
 
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
-
 import org.mapfish.print.attribute.LegendAttribute.LegendAttributeValue;
 import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
@@ -33,7 +32,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.imageio.ImageIO;
 
 /**

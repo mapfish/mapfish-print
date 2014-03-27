@@ -25,7 +25,7 @@ import org.json.JSONObject;
 /**
  * Represents a failed print job.
  *
- * Created by Jesse on 3/18/14.
+ * @author jesseeichar on 3/18/14.
  */
 public class FailedPrintJob extends CompletedPrintJob {
     private static final String JSON_ERROR = "errorMessage";

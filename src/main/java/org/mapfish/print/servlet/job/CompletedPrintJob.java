@@ -26,7 +26,7 @@ import org.mapfish.print.servlet.registry.Registry;
 
 /**
  * Represent a print job that has completed.  Contains the information about the print job.
- * Created by Jesse on 3/18/14.
+ * @author jesseeichar on 3/18/14.
  */
 public abstract class CompletedPrintJob {
     /**

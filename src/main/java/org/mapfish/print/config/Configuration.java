@@ -22,6 +22,7 @@ package org.mapfish.print.config;
 import org.json.JSONException;
 import org.json.JSONWriter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +32,7 @@ import java.util.TreeSet;
 /**
  * The Main Configuration Bean.
  * <p/>
- * Created by Jesse on 2/20/14.
+ * @author jesseeichar on 2/20/14.
  */
 public class Configuration {
     private boolean reloadConfig;
@@ -40,6 +41,7 @@ public class Configuration {
     private List<HostMatcher> hosts = new ArrayList<HostMatcher>();
     private List<SecurityStrategy> security = Collections.emptyList();
     private Map<String, Template> templates;
+    private File configurationFile;
 
     /**
      * Print out the configuration that the client needs to make a request.
@@ -124,5 +126,13 @@ public class Configuration {
 
     public final void setTemplates(final Map<String, Template> templates) {
         this.templates = templates;
+    }
+
+    public final File getDirectory() {
+        return this.configurationFile.getParentFile();
+    }
+
+    public final void setConfigurationFile(final File configurationFile) {
+        this.configurationFile = configurationFile;
     }
 }

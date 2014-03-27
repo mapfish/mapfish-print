@@ -23,10 +23,8 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
-
 import com.google.common.io.CharStreams;
 import com.sampullara.cli.Args;
-
 import org.json.JSONWriter;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.json.PJsonObject;
@@ -74,8 +72,6 @@ public final class Main {
     private static final int LOGLEVEL_DEFAULT = 2;
     private static final int LOGLEVEL_VERBOSE = 3;
 
-    private static AbstractXmlApplicationContext context;
-
     /**
      * Name of the default spring context file.
      */
@@ -104,12 +100,12 @@ public final class Main {
             printUsage();
             return;
         }
-        configureLogs();
-        context = new ClassPathXmlApplicationContext(DEFAULT_SPRING_CONTEXT);
+        AbstractXmlApplicationContext context = new ClassPathXmlApplicationContext(DEFAULT_SPRING_CONTEXT);
 
         if (springConfig != null) {
-            context = new ClassPathXmlApplicationContext(new String[]{DEFAULT_SPRING_CONTEXT, springConfig});
+            context = new ClassPathXmlApplicationContext(DEFAULT_SPRING_CONTEXT, springConfig);
         }
+        configureLogs();
 
         try {
             context.getBean(Main.class).run();
@@ -195,7 +191,6 @@ public final class Main {
             // StatusPrinter will handle this
         }
         StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext);
-
     }
 
     private OutputStream getOutputStream(final String suffix) throws FileNotFoundException {

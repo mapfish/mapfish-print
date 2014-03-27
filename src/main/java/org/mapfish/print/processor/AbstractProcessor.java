@@ -101,4 +101,11 @@ public abstract class AbstractProcessor implements Processor {
     public final void setOutputMapper(final Map<String, String> outputMapper) {
         this.outputMapper = outputMapper;
     }
+
+    // CHECKSTYLE:OFF
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
+    }
+    // CHECKSTYLE:ON
 }

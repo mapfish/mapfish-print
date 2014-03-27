@@ -21,6 +21,8 @@ package org.mapfish.print.attribute;
 
 import org.mapfish.print.json.PJsonObject;
 
+import java.util.Iterator;
+
 
 /**
  * The attributes for {@link org.mapfish.print.processor.jasper.TableListProcessor}.
@@ -39,7 +41,7 @@ public class TableListAttribute extends AbstractAttribute<TableListAttribute.Tab
     /**
      * The value of {@link org.mapfish.print.attribute.TableAttribute}.
      */
-    public static class TableListAttributeValue {
+    public static class TableListAttributeValue implements Iterable<Object> {
 
         private final PJsonObject jsonObject;
 
@@ -49,6 +51,11 @@ public class TableListAttribute extends AbstractAttribute<TableListAttribute.Tab
 
         public final PJsonObject getJsonObject() {
             return this.jsonObject;
+        }
+
+        @Override
+        public final Iterator<Object> iterator() {
+            return null;
         }
     }
 }

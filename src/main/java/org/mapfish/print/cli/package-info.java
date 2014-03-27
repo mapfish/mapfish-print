@@ -18,8 +18,8 @@
  */
 
 /**
- * This package contains classes for the command-line interface
+ * This package contains classes for the command-line interface.
  *
- * Created by Jesse on 3/17/14.
+ * @author jesseeichar on 3/17/14.
  */
 package org.mapfish.print.cli;

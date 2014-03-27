@@ -27,7 +27,7 @@ import org.mapfish.print.json.PJsonObject;
 /**
  * Represents an attribute passed in from a web-client to be used to populate the report.  It reads a value from the request data
  * <p/>
- * Created by Jesse on 2/21/14.
+ * @author jesseeichar on 2/21/14.
  *
  * @param <T> The attribute type object read from the parameters by this attribute.
  */

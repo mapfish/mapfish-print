@@ -22,16 +22,19 @@ package org.mapfish.print.processor;
 import org.mapfish.print.config.ConfigurationObject;
 
 import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
- * Interface for processing input attributes
- * Created by Jesse on 2/21/14.
+ * Interface for processing input attributes.
+ *
+ * @author jesseeichar on 2/21/14.
  */
 public interface Processor extends ConfigurationObject {
 
     /**
      * Map the variable names to the processor inputs.
      */
+    @Nullable
     Map<String, String> getInputMapper();
 
     /**
@@ -39,10 +42,13 @@ public interface Processor extends ConfigurationObject {
      * @return An id of the value for lookup in the output mapper?
      * @throws Exception
      */
+    @Nullable
     Map<String, Object> execute(Map<String, Object> values) throws Exception;
 
     /**
      * Map output from processor to the variable in the Jasper Report.
      */
+    @Nullable
     Map<String, String> getOutputMapper();
+
 }

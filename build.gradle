@@ -17,6 +17,8 @@ allprojects {
     apply plugin: 'project-report'
     apply plugin: 'checkstyle'
 
+    jar.dependsOn(checkstyleMain, findbugsMain)
+
     repositories {
         mavenLocal()
         maven {url "http://download.osgeo.org/webdav/geotools"}
@@ -29,6 +31,8 @@ allprojects {
         ignoreFailures = false
         reportsDir = file("$project.buildDir/checkstyleReports")
     }
+    checkstyleTest.enabled = false
+
     findbugs {
         toolVersion = "2.0.3"
         ignoreFailures = false
@@ -37,6 +41,7 @@ allprojects {
         reportLevel = "high"
         excludeFilter = file("$rootProject.projectDir/findbugs-exclude.xml")
     }
+    findbugsTest.enabled = false
 
 }
 
@@ -50,25 +55,39 @@ configurations {
 
 project.ext.junitVersion = "4.11"
 dependencies {
-    def springVersion = "3.1.0.RELEASE"
+    def springVersion = "4.0.2.RELEASE"
+    def metricsVersion = "3.0.2"
     compile (
             "org.springframework:spring-context:$springVersion",
             "org.springframework:spring-web:$springVersion",
             "com.google.guava:guava:16.0.1",
             'org.slf4j:slf4j-api:1.7.6',
             'org.json:json:20080701',
+            'com.vividsolutions:jts:1.13',
             'ch.qos.logback:logback-classic:1.1.1',
             'org.yaml:snakeyaml:1.13',
             "com.github.spullara.cli-parser:cli-parser:1.1.1",
-        	'commons-httpclient:commons-httpclient:3.1',
 	        'net.sf.jasperreports:jasperreports:5.5.0',
 	        'ar.com.fdvs:DynamicJasper:5.0.0',
+            "com.codahale.metrics:metrics-core:$metricsVersion",
+            "com.codahale.metrics:metrics-servlet:$metricsVersion",
+            "com.codahale.metrics:metrics-httpclient:$metricsVersion",
+            "com.codahale.metrics:metrics-servlets:$metricsVersion",
+            "com.codahale.metrics:metrics-logback:$metricsVersion",
             'org.springframework:spring-webmvc:4.0.2.RELEASE')
+
+
+    // This jsr166 dependendency is here only so long as Java 6 is supported
+    // it is the forkjoin code and can be removed if java 7 is a required library
+    providedCompile ('org.codehaus.jsr166-mirror:jsr166y:1.7.0')
+
     compile ('org.apache.xmlgraphics:batik-transcoder:1.7'){
         exclude module: 'fop'
     }
-    providedCompile ('javax.servlet:servlet-api:2.5',
-            'com.google.code.findbugs:jsr305:2.0.1')
+    testCompile ("org.springframework:spring-test:${springVersion}")
+    providedCompile('com.google.code.findbugs:jsr305:2.0.1')
+
+    compile('javax.servlet:servlet-api:2.5')
 }
 
 allprojects {

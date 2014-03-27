@@ -30,7 +30,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.annotation.Nullable;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
@@ -39,7 +38,7 @@ import javax.servlet.ServletConfig;
  * A {@link org.mapfish.print.MapPrinterFactory} that reads configuration from files and uses servlet's methods for resolving
  * the paths to the files.
  * <p/>
- * Created by Jesse on 3/18/14.
+ * @author jesseeichar on 3/18/14.
  */
 public class ServletMapPrinterFactory implements MapPrinterFactory {
 

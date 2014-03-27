@@ -23,6 +23,10 @@ import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.processor.Processor;
+import org.mapfish.print.processor.ProcessorDependencyGraph;
+import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +38,10 @@ import java.util.Map;
  * @author sbrunner
  */
 public class Template implements ConfigurationObject {
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Template.class);
+    @Autowired
+    private ProcessorDependencyGraphFactory processorGraphFactory;
+
     private String jasperTemplate;
     private Map<String, Attribute<?>> attributes;
     private List<Processor> processors;
@@ -43,6 +51,8 @@ public class Template implements ConfigurationObject {
     private String jdbcUrl;
     private String jdbcUser;
     private String jdbcPassword;
+    private volatile ProcessorDependencyGraph processorGraph;
+    private volatile ProcessorDependencyGraph iterProcessorGraph;
 
     /**
      * Print out the template information that the client needs for performing a request.
@@ -65,7 +75,20 @@ public class Template implements ConfigurationObject {
         return this.attributes;
     }
 
+    /**
+     * Set the attributes for this template.
+     *
+     * @param attributes the attribute map
+     */
     public final void setAttributes(final Map<String, Attribute<?>> attributes) {
+        for (Map.Entry<String, Attribute<?>> entry : attributes.entrySet()) {
+            Object attribute = entry.getValue();
+            if (!(attribute instanceof Attribute)) {
+                final String msg = "Attribute: '" + entry.getKey() + "' is not an attribute. It is a: " + attribute;
+                LOGGER.error("Error setting the Attributes: " + msg);
+                throw new IllegalArgumentException(msg);
+            }
+        }
         this.attributes = attributes;
     }
 
@@ -77,12 +100,25 @@ public class Template implements ConfigurationObject {
         this.jasperTemplate = jasperTemplate;
     }
 
-    public final List<Processor> getProcessors() {
-        return this.processors;
+    /**
+     * Set the normal processors.
+     *
+     * @param processors the processors to set.
+     */
+    public final void setProcessors(final List<Processor> processors) {
+        assertProcessors(processors);
+        this.processors = processors;
     }
 
-    public final void setProcessors(final List<Processor> processors) {
-        this.processors = processors;
+    private void assertProcessors(final List<Processor> processorsToCheck) {
+        for (Processor entry : processorsToCheck) {
+            if (!(entry instanceof Processor)) {
+                final String msg = "Processor: " + entry + " is not a processor.";
+                LOGGER.error("Error setting the Attributes: " + msg);
+                throw new IllegalArgumentException(msg);
+            }
+        }
+
     }
 
     public final String getIterValue() {
@@ -97,7 +133,13 @@ public class Template implements ConfigurationObject {
         return this.iterProcessors;
     }
 
+    /**
+     * Set the processors that require Iterable inputs.
+     *
+     * @param iterProcessors the processors to set.
+     */
     public final void setIterProcessors(final List<Processor> iterProcessors) {
+        assertProcessors(iterProcessors);
         this.iterProcessors = iterProcessors;
     }
 
@@ -123,5 +165,37 @@ public class Template implements ConfigurationObject {
 
     public final void setJdbcPassword(final String jdbcPassword) {
         this.jdbcPassword = jdbcPassword;
+    }
+
+    /**
+     * Get the processor graph to use for executing all the processors for the template.
+     *
+     * @return the processor graph.
+     */
+    public final ProcessorDependencyGraph getProcessorGraph() {
+        if (this.processorGraph == null) {
+            synchronized (this) {
+                if (this.processorGraph == null) {
+                    this.processorGraph = this.processorGraphFactory.build(this.processors);
+                }
+            }
+        }
+        return this.processorGraph;
+    }
+
+    /**
+     * Get the processor graph to use for executing all the iter processors for the template.
+     *
+     * @return the processor graph.
+     */
+    public final ProcessorDependencyGraph getIterProcessorGraph() {
+        if (this.iterProcessorGraph == null) {
+            synchronized (this) {
+                if (this.iterProcessorGraph == null) {
+                    this.iterProcessorGraph = this.processorGraphFactory.build(this.iterProcessors);
+                }
+            }
+        }
+        return this.iterProcessorGraph;
     }
 }

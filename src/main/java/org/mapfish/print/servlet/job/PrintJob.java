@@ -1,11 +1,15 @@
 package org.mapfish.print.servlet.job;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
 import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.servlet.BaseMapServlet;
 import org.mapfish.print.servlet.MapPrinterServlet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 
@@ -28,6 +32,7 @@ import java.util.regex.Pattern;
  */
 public abstract class PrintJob implements Callable<CompletedPrintJob> {
     private static final String JSON_HEADERS = "headers";
+    private static final Logger LOGGER = LoggerFactory.getLogger(PrintJob.class);
 
     private String referenceId;
     private PJsonObject requestData;
@@ -37,7 +42,8 @@ public abstract class PrintJob implements Callable<CompletedPrintJob> {
     private JobManager jobManager;
     @Autowired
     private MapPrinterFactory mapPrinterFactory;
-
+    @Autowired
+    private MetricRegistry metricRegistry;
 
     /**
      * Get the reference id of the job so it can be looked up again later.
@@ -94,21 +100,24 @@ public abstract class PrintJob implements Callable<CompletedPrintJob> {
         final PJsonObject spec = PrintJob.this.requestData.getJSONObject(MapPrinterServlet.JSON_SPEC);
         final String fileName = getFileName(spec.optString(Constants.OUTPUT_FILENAME_KEY), new Date());
 
+        Timer.Context timer = this.metricRegistry.timer(getClass().getName() + " call()").time();
         try {
             URI reportURI = withOpenOutputStream(new PrintAction() {
                 @Override
                 public void run(final OutputStream outputStream) throws Throwable {
                     final MapPrinter mapPrinter = PrintJob.this.mapPrinterFactory.create(appId);
-
-
                     doCreatePDFFile(PrintJob.this.requestData, mapPrinter, outputStream);
                 }
             });
 
-
+            this.metricRegistry.counter(getClass().getName() + "success").inc();
             return new SuccessfulPrintJob(this.referenceId, reportURI, appId, fileName);
         } catch (Throwable e) {
+            this.metricRegistry.counter(getClass().getName() + "failure").inc();
             return new FailedPrintJob(this.referenceId, appId, fileName, e.getMessage());
+        } finally {
+            final long stop = timer.stop();
+            LOGGER.debug("Print Job completed in " + stop + "ms");
         }
     }
 

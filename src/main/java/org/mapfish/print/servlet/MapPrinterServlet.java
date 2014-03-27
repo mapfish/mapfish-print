@@ -21,7 +21,6 @@ package org.mapfish.print.servlet;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.MapPrinter;
@@ -54,7 +53,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.UUID;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

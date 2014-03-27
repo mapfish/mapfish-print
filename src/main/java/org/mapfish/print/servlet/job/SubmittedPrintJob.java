@@ -25,7 +25,7 @@ import java.util.concurrent.Future;
 /**
  * Encapsulates a job that has been submitted to the JobManager.
  *
- * Created by Jesse on 3/18/14.
+ * @author jesseeichar on 3/18/14.
  */
 public class SubmittedPrintJob {
     private final String reportRef;

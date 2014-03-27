@@ -26,7 +26,7 @@ import java.net.URI;
 /**
  * A matcher that always returns true.
  *
- * Created by Jesse on 1/20/14.
+ * @author jesseeichar on 1/20/14.
  */
 public class AcceptAllMatcher extends HostMatcher {
     @Override
