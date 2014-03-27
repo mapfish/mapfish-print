@@ -20,7 +20,11 @@
 package org.mapfish.print.attribute.map;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.mapfish.print.map.Scale;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import java.awt.Rectangle;
 
 /**
  * Represent Map Bounds with a center location and a scale of the map.
@@ -29,7 +33,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 public class CenterScaleMapBounds extends MapBounds {
     private Coordinate center;
-    private double scale;
+    private Scale scale;
 
     /**
      * Constructor.
@@ -37,12 +41,19 @@ public class CenterScaleMapBounds extends MapBounds {
      * @param projection the projection these bounds are defined in.
      * @param centerX the x coordinate of the center point.
      * @param centerY the y coordinate of the center point.
-     * @param scale   the scale denominator of the map
+     * @param scale   the scale of the map
      */
     public CenterScaleMapBounds(final CoordinateReferenceSystem projection, final double centerX,
-                                final double centerY, final double scale) {
+                                final double centerY, final Scale scale) {
         super(projection);
         this.center = new Coordinate(centerX, centerY);
         this.scale = scale;
+    }
+
+
+    @Override
+    public final ReferencedEnvelope toReferencedEnvelope(final Rectangle paintArea, final double dpi) {
+
+        return null;
     }
 }

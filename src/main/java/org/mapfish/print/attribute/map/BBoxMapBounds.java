@@ -20,14 +20,17 @@
 package org.mapfish.print.attribute.map;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import java.awt.Rectangle;
 
 /**
  * Represent the map bounds with a bounding box.
  *
  * Created by Jesse on 3/26/14.
  */
-public class BBoxMapBounds extends MapBounds {
+public final class BBoxMapBounds extends MapBounds {
     private final Envelope bbox;
 
     /**
@@ -43,5 +46,10 @@ public class BBoxMapBounds extends MapBounds {
                          final double maxX, final double maxY) {
         super(projection);
         this.bbox = new Envelope(minX, maxX, minY, maxY);
+    }
+
+    @Override
+    public ReferencedEnvelope toReferencedEnvelope(final Rectangle paintArea, final double dpi) {
+        return null;
     }
 }

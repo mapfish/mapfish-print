@@ -55,6 +55,87 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         assertEquals(1, styleOptional.get().featureTypeStyles().get(0).rules().get(1).symbolizers().size());
     }
 
+    @Test
+    public void testParseStyle_SingleStyleRelativeToConfig_HasStyleIndex() throws Exception {
+        File file = getFile(FileSLDParserPluginTest.class, "singleStyle.sld");
+        Configuration config = new Configuration();
+        config.setConfigurationFile(file);
+
+        final Optional<Style> styleOptional = this.parser.parseStyle(config, file.getName()+"##1");
+        assertTrue (styleOptional.isPresent());
+        assertTrue(styleOptional.get() instanceof Style);
+        assertEquals(1, styleOptional.get().featureTypeStyles().size());
+        assertEquals(2, styleOptional.get().featureTypeStyles().get(0).rules().size());
+        assertEquals(1, styleOptional.get().featureTypeStyles().get(0).rules().get(0).symbolizers().size());
+        assertEquals(1, styleOptional.get().featureTypeStyles().get(0).rules().get(1).symbolizers().size());
+    }
+
+    @Test
+    public void testParseStyle_SingleStyleAbsoluteFile() throws Exception {
+        File file = getFile(FileSLDParserPluginTest.class, "singleStyle.sld");
+        Configuration config = new Configuration();
+        config.setConfigurationFile(file);
+
+        final Optional<Style> styleOptional = this.parser.parseStyle(config, file.getAbsolutePath());
+        assertTrue (styleOptional.isPresent());
+        assertTrue(styleOptional.get() instanceof Style);
+        assertEquals(1, styleOptional.get().featureTypeStyles().size());
+        assertEquals(2, styleOptional.get().featureTypeStyles().get(0).rules().size());
+        assertEquals(1, styleOptional.get().featureTypeStyles().get(0).rules().get(0).symbolizers().size());
+        assertEquals(1, styleOptional.get().featureTypeStyles().get(0).rules().get(1).symbolizers().size());
+    }
+
+    @Test(expected = Exception.class)
+    public void testParseStyle_MultipleStyles_NoIndex() throws Exception {
+        File file = getFile(FileSLDParserPluginTest.class, "multipleStyles.sld");
+        Configuration config = new Configuration();
+        config.setConfigurationFile(file);
+
+        this.parser.parseStyle(config, file.getName());
+    }
+
+    @Test
+    public void testParseStyle_MultipleStyles() throws Exception {
+        File file = getFile(FileSLDParserPluginTest.class, "multipleStyles.sld");
+        Configuration config = new Configuration();
+        config.setConfigurationFile(file);
+
+        Optional<Style> styleOptional = this.parser.parseStyle(config, file.getName()+"##1");
+        assertTrue (styleOptional.isPresent());
+        assertTrue(styleOptional.get() instanceof Style);
+        assertEquals(1, styleOptional.get().featureTypeStyles().size());
+        assertEquals(2, styleOptional.get().featureTypeStyles().get(0).rules().size());
+        assertEquals(1, styleOptional.get().featureTypeStyles().get(0).rules().get(0).symbolizers().size());
+        assertEquals(1, styleOptional.get().featureTypeStyles().get(0).rules().get(1).symbolizers().size());
+
+
+        styleOptional = this.parser.parseStyle(config, file.getName()+"##2");
+        assertTrue (styleOptional.isPresent());
+        assertTrue(styleOptional.get() instanceof Style);
+        assertEquals(1, styleOptional.get().featureTypeStyles().size());
+        assertEquals(1, styleOptional.get().featureTypeStyles().get(0).rules().size());
+        assertEquals(2, styleOptional.get().featureTypeStyles().get(0).rules().get(0).symbolizers().size());
+
+    }
+
+    @Test(expected = Exception.class)
+    public void testIndexOutOfBounds() throws Exception {
+        File file = getFile(FileSLDParserPluginTest.class, "singleStyle.sld");
+        Configuration config = new Configuration();
+        config.setConfigurationFile(file);
+
+        this.parser.parseStyle(config, file.getName()+"##3");
+    }
+
+    @Test(expected = Exception.class)
+    public void testIndexTooLow() throws Exception {
+        File file = getFile(FileSLDParserPluginTest.class, "singleStyle.sld");
+        Configuration config = new Configuration();
+        config.setConfigurationFile(file);
+
+        this.parser.parseStyle(config, file.getName()+"##-1");
+    }
+
     @Test(expected = Exception.class)
     public void testFileNotInConfigDir() throws Exception {
         final File tempFile = File.createTempFile("config", ".yaml");
@@ -62,6 +143,6 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         Configuration config = new Configuration();
         config.setConfigurationFile(tempFile);
 
-        final Optional<Style> styleOptional = this.parser.parseStyle(config, file.getAbsolutePath());
+        this.parser.parseStyle(config, file.getAbsolutePath());
     }
 }

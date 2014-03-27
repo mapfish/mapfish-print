@@ -41,11 +41,11 @@ public final class FileSLDParserPlugin implements StyleParserPlugin {
     @Override
     public Optional<Style> parseStyle(final Configuration configuration, final String ref) throws FileNotFoundException {
         String styleString = ref;
-        int styleIndex = 0;
+        Integer styleIndex = null;
         int styleIdentifier = ref.lastIndexOf("##");
         if (styleIdentifier > 0) {
             styleString = ref.substring(0, styleIdentifier);
-            styleIndex = Integer.parseInt(ref.substring(styleIdentifier + 2));
+            styleIndex = Integer.parseInt(ref.substring(styleIdentifier + 2)) - 1;
         }
         final File configDirectory = configuration.getDirectory();
         File file = new File(configDirectory, styleString);
@@ -67,16 +67,25 @@ public final class FileSLDParserPlugin implements StyleParserPlugin {
         return Optional.fromNullable(style);
     }
 
-    private Style tryLoadSLD(final File file, final int styleIndex) throws FileNotFoundException {
-        Assert.isTrue(styleIndex > -1, "styleIndex must be > -1 but was: " + styleIndex);
+    private Style tryLoadSLD(final File file, final Integer styleIndex) throws FileNotFoundException {
+        Assert.isTrue(styleIndex == null || styleIndex > -1, "styleIndex must be > -1 but was: " + styleIndex);
 
         final SLDParser sldParser = new SLDParser(CommonFactoryFinder.getStyleFactory());
         sldParser.setInput(file);
         final Style[] styles = sldParser.readXML();
 
-        Assert.isTrue(styleIndex < styles.length, "There where " + styles.length + " styles in file but requested index was: " +
-                                                  styleIndex);
+        if (styleIndex != null) {
+            Assert.isTrue(styleIndex < styles.length, "There where " + styles.length + " styles in file but requested index was: " +
+                                                                        (styleIndex + 1));
+        } else {
+            Assert.isTrue(styles.length < 2, "There are " + styles.length + " therefore the styleRef must contain an index identifying" +
+                                             " the style.  The index starts at 1 for the first style.\n\tExample: " + file + "##1");
+        }
 
-        return styles[styleIndex];
+        if (styleIndex == null) {
+            return styles[0];
+        } else {
+            return styles[styleIndex];
+        }
     }
 }

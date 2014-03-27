@@ -19,7 +19,10 @@
 
 package org.mapfish.print.attribute.map;
 
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import java.awt.Rectangle;
 
 /**
  * Class Represents the bounds of the map in some way.  The implementations will represent the as a bbox or as a center and scale.
@@ -36,4 +39,14 @@ public abstract class MapBounds {
     protected MapBounds(final CoordinateReferenceSystem projection) {
         this.projection = projection;
     }
+
+    /**
+     * Create a {@link org.geotools.geometry.jts.ReferencedEnvelope} representing the bounds.
+     * <p/>
+     *
+     * @param paintArea the size of the map that will be drawn.
+     * @param dpi
+     * @return
+     */
+    public abstract ReferencedEnvelope toReferencedEnvelope(Rectangle paintArea, double dpi);
 }

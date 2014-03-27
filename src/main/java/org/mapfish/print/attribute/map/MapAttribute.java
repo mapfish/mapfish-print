@@ -28,7 +28,9 @@ import org.mapfish.print.attribute.AbstractAttribute;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
+import org.mapfish.print.map.Scale;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -100,7 +102,6 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
      */
     public final class MapAttributeValues {
         static final String CENTER = "center";
-        static final String SCALE = "scale";
         /**
          * The property name of the bbox attribute.
          */
@@ -117,9 +118,10 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
         private final MapBounds mapBounds;
         private final double rotation;
         private final List<MapLayer> layers;
+        private double dpi;
 
         MapAttributeValues(final Template template, final PJsonObject requestData) {
-
+            this.dpi = requestData.getDouble(CONFIG_DPI);
             this.mapBounds = parseBounds(requestData);
             this.rotation = requestData.optDouble(ROTATION, 0.0);
             this.layers = parseLayers(template, requestData);
@@ -144,7 +146,8 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
                                       final PJsonArray jsonLayers, final int i) throws Throwable {
             PJsonObject layerJson = jsonLayers.getJSONObject(i);
 
-            final Map<String, MapLayerFactoryPlugin> layerParsers = MapAttribute.this.applicationContext.getBeansOfType(MapLayerFactoryPlugin.class);
+            final Map<String, MapLayerFactoryPlugin> layerParsers =
+                    MapAttribute.this.applicationContext.getBeansOfType(MapLayerFactoryPlugin.class);
             for (MapLayerFactoryPlugin layerParser : layerParsers.values()) {
                 final Optional<? extends MapLayer> layerOption = layerParser.parse(template, layerJson);
                 if (layerOption.isPresent()) {
@@ -179,7 +182,7 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
             } catch (NoSuchAuthorityCodeException e) {
                 throw new RuntimeException(projectionString + "was not recognized as a crs code", e);
             } catch (FactoryException e) {
-                throw new RuntimeException("Error occured while parsing: " + projectionString, e);
+                throw new RuntimeException("Error occurred while parsing: " + projectionString, e);
             }
         }
 
@@ -194,7 +197,7 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
             if (center != null) {
                 double centerX = center.getDouble(0);
                 double centerY = center.getDouble(1);
-                double scale = requestData.getDouble(SCALE);
+                Scale scale = new Scale(requestData);
                 bounds = new CenterScaleMapBounds(projection, centerX, centerY, scale);
             } else if (bbox != null) {
                 final int maxYIndex = 3;
@@ -227,6 +230,10 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
 
         public int getHeight() {
             return MapAttribute.this.height;
+        }
+
+        public double getDpi() {
+            return dpi;
         }
     }
 }

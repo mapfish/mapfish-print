@@ -29,6 +29,8 @@ import org.mapfish.print.output.Values;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+import javax.imageio.ImageIO;
 
 /**
  * Basic test of the Map processor.
@@ -49,5 +51,7 @@ public class CreateMapProcessorTest extends AbstractMapfishSpringTest {
         template.getProcessorGraph().createTask(values).invoke();
 
         BufferedImage map = values.getObject("map", BufferedImage.class);
+        final File output = new File(config.getDirectory(), "expectedSimpleImage.png");
+        ImageIO.write(map, "png", output);
     }
 }

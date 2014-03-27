@@ -40,7 +40,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
     }
 
     @Override
-    public final void render(final Graphics2D graphics2D, final MapBounds bounds, final Rectangle paintArea) {
+    public final void render(final Graphics2D graphics2D, final MapBounds bounds, final Rectangle paintArea, final double dpi) {
         List<? extends Layer> layers = getLayers();
 
         MapContent content = new MapContent();
@@ -48,6 +48,8 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
 
         StreamingRenderer renderer = new StreamingRenderer();
         renderer.setMapContent(content);
+
+        renderer.paint(graphics2D, paintArea, bounds.toReferencedEnvelope(paintArea, dpi));
 
     }
 

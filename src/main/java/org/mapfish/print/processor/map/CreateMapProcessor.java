@@ -57,10 +57,11 @@ public class CreateMapProcessor extends AbstractProcessor {
             final List<MapLayer> layers = Lists.reverse(mapValues.getLayers());
 
             final MapBounds bounds = mapValues.getMapBounds();
+            final double dpi = mapValues.getDpi();
             final Rectangle paintArea = new Rectangle(mapWidth, mapHeight);
 
             for (MapLayer layer : layers) {
-                layer.render(graphics2D, bounds, paintArea);
+                layer.render(graphics2D, bounds, paintArea, dpi);
             }
         } finally {
             graphics2D.dispose();
