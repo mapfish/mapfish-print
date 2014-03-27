@@ -47,7 +47,7 @@ templates:
           multilines: true
       length: !float {}
       map: !map
-        maxDpi: 300
+        dpi: [72, 90, 120, 300]
         width: 400
         height: 200
       legend: !legend {}

@@ -30,6 +30,7 @@ import org.mapfish.print.util.ImageSimilarity;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 /**
  * Basic test of the Map processor.
@@ -43,13 +44,18 @@ public class CreateMapProcessorTest extends AbstractMapfishSpringTest {
 
     @Test
     public void testExecute() throws Exception {
-        final Configuration config = configurationFactory.getConfig(getFile(CreateMapProcessorTest.class, "basicMapProcessor.yaml"));
+        final Configuration config = configurationFactory.getConfig(getFile("basicMapExample/basicMapProcessor.yaml"));
         final Template template = config.getTemplate("main");
-        PJsonObject requestData = super.parseJSONObjectFromFile(CreateMapProcessorTest.class, "basicMapRequestData.json");
+        PJsonObject requestData = loadJsonRequestData();
         Values values = new Values(requestData, template);
         template.getProcessorGraph().createTask(values).invoke();
 
         BufferedImage map = values.getObject("map", BufferedImage.class);
-        new ImageSimilarity(map, 2).assertSimilarity(getFile(CreateMapProcessorTest.class, "expectedSimpleImage.png"), 0);
+        new ImageSimilarity(map, 2).assertSimilarity(getFile("basicMapExample/expectedSimpleImage.png"), 0);
     }
+
+    public static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorTest.class, "basicMapExample/basicMapRequestData.json");
+    }
+
 }

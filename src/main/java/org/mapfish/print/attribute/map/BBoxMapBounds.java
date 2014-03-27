@@ -27,7 +27,7 @@ import java.awt.Rectangle;
 
 /**
  * Represent the map bounds with a bounding box.
- *
+ * <p/>
  * Created by Jesse on 3/26/14.
  */
 public final class BBoxMapBounds extends MapBounds {
@@ -38,10 +38,10 @@ public final class BBoxMapBounds extends MapBounds {
      * Constructor.
      *
      * @param projection the projection these bounds are defined in.
-     * @param minX min X coordinate for the MapBounds
-     * @param minY min Y coordinate for the MapBounds
-     * @param maxX max X coordinate for the MapBounds
-     * @param maxY max Y coordinate for the MapBounds
+     * @param minX       min X coordinate for the MapBounds
+     * @param minY       min Y coordinate for the MapBounds
+     * @param maxX       max X coordinate for the MapBounds
+     * @param maxY       max Y coordinate for the MapBounds
      */
     public BBoxMapBounds(final CoordinateReferenceSystem projection, final double minX, final double minY,
                          final double maxX, final double maxY) {
@@ -58,7 +58,7 @@ public final class BBoxMapBounds extends MapBounds {
         if (aspectRatioDifference > ASPECT_RATIO_ACCEPTABLE_DIFFERENCE) {
             throw new IllegalArgumentException("bbox and paint area aspect ratio must be within " + ASPECT_RATIO_ACCEPTABLE_DIFFERENCE +
                                                " of each other.\n\tPaintArea ratio: " + paintAreaAspectRatio +
-                                               "\n\tbbox ratio: "+ bboxAspectRatio);
+                                               "\n\tbbox ratio: " + bboxAspectRatio);
         }
         return new ReferencedEnvelope(this.bbox, getProjection());
     }

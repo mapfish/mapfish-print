@@ -53,4 +53,6 @@ public interface MapLayer {
      * @param dpi the DPI to render at
      */
     void render(Graphics2D graphics2D, MapBounds bounds, Rectangle paintArea, double dpi);
+
+
 }

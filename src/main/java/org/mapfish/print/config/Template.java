@@ -240,4 +240,12 @@ public class Template implements ConfigurationObject, HasConfiguration {
         return this.configuration;
     }
 
+    /**
+     * Register the named style.
+     * @param styleName the style name
+     * @param style the style to register under that name.
+     */
+    public final void setStyle(final String styleName, final Style style) {
+        this.styles.put(styleName, style);
+    }
 }

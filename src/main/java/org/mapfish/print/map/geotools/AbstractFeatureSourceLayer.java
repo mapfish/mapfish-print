@@ -48,7 +48,8 @@ public class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
     }
 
     @Override
-    protected final List<? extends Layer> getLayers() {
+    public final List<? extends Layer> getLayers() {
         return this.layers;
     }
+
 }

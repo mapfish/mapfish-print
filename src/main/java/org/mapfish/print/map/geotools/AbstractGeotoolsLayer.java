@@ -59,35 +59,39 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
         List<? extends Layer> layers = getLayers();
 
         MapContent content = new MapContent();
-        content.addLayers(layers);
+        try {
+            content.addLayers(layers);
 
-        StreamingRenderer renderer = new StreamingRenderer();
+            StreamingRenderer renderer = new StreamingRenderer();
 
 
-        RenderingHints hints = new RenderingHints(Collections.EMPTY_MAP);
-        hints.add(new RenderingHints(RenderingHints.KEY_RENDERING,
-                RenderingHints.VALUE_RENDER_SPEED));
-        hints.add(new RenderingHints(RenderingHints.KEY_DITHERING,
-                RenderingHints.VALUE_DITHER_DISABLE));
-        hints.add(new RenderingHints(RenderingHints.KEY_ALPHA_INTERPOLATION,
-                RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED));
-        hints.add(new RenderingHints(RenderingHints.KEY_COLOR_RENDERING,
-                RenderingHints.VALUE_COLOR_RENDER_SPEED));
-        hints.add(new RenderingHints(RenderingHints.KEY_INTERPOLATION,
-                RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR));
-        hints.add(new RenderingHints(RenderingHints.KEY_STROKE_CONTROL,
-                RenderingHints.VALUE_STROKE_PURE));
-        hints.add(new RenderingHints(RenderingHints.KEY_FRACTIONALMETRICS,
-                RenderingHints.VALUE_FRACTIONALMETRICS_OFF));
+            RenderingHints hints = new RenderingHints(Collections.EMPTY_MAP);
+            hints.add(new RenderingHints(RenderingHints.KEY_RENDERING,
+                    RenderingHints.VALUE_RENDER_SPEED));
+            hints.add(new RenderingHints(RenderingHints.KEY_DITHERING,
+                    RenderingHints.VALUE_DITHER_DISABLE));
+            hints.add(new RenderingHints(RenderingHints.KEY_ALPHA_INTERPOLATION,
+                    RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED));
+            hints.add(new RenderingHints(RenderingHints.KEY_COLOR_RENDERING,
+                    RenderingHints.VALUE_COLOR_RENDER_SPEED));
+            hints.add(new RenderingHints(RenderingHints.KEY_INTERPOLATION,
+                    RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR));
+            hints.add(new RenderingHints(RenderingHints.KEY_STROKE_CONTROL,
+                    RenderingHints.VALUE_STROKE_PURE));
+            hints.add(new RenderingHints(RenderingHints.KEY_FRACTIONALMETRICS,
+                    RenderingHints.VALUE_FRACTIONALMETRICS_OFF));
 
-        hints.add(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
+            hints.add(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
 
-        graphics2D.addRenderingHints(hints);
-        renderer.setJava2DHints(hints);
+            graphics2D.addRenderingHints(hints);
+            renderer.setJava2DHints(hints);
 
-        renderer.setMapContent(content);
-        renderer.setThreadPool(this.executorService);
-        renderer.paint(graphics2D, paintArea, bounds.toReferencedEnvelope(paintArea, dpi));
+            renderer.setMapContent(content);
+            renderer.setThreadPool(this.executorService);
+            renderer.paint(graphics2D, paintArea, bounds.toReferencedEnvelope(paintArea, dpi));
+        } finally {
+            content.dispose();
+        }
 
     }
 

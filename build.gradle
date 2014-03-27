@@ -95,7 +95,7 @@ dependencies {
 
     // This jsr166 dependendency is here only so long as Java 6 is supported
     // it is the forkjoin code and can be removed if java 7 is a required library
-    providedCompile ('org.codehaus.jsr166-mirror:jsr166y:1.7.0')
+    compile ('org.codehaus.jsr166-mirror:jsr166y:1.7.0')
 
     compile ('org.apache.xmlgraphics:batik-transcoder:1.7'){
         exclude module: 'fop'

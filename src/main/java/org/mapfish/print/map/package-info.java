@@ -17,31 +17,9 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print;
-
 /**
- * Strings used in configurations etc...
- * User: jeichar
- * Date: Sep 30, 2010
- * Time: 4:27:46 PM
+ * Map rendering code and plugins.
+ *
+ * @author Jesse on 3/27/14.
  */
-public interface Constants {
-    /**
-     * The layout tag in the json spec file.
-     */
-    String JSON_LAYOUT_KEY = "layout";
-
-    /**
-     * The output filename in the json spec file.
-     */
-    String OUTPUT_FILENAME_KEY = "outputFilename";
-
-    /**
-     * The default encoding to use throughout the system.
-     */
-    String ENCODING = System.getProperty("mapfish.file.encoding", "UTF-8");
-    /**
-     * The DPI of a PDF according to the spec.
-     */
-    float PDF_DPI = 72.0f;
-}
+package org.mapfish.print.map;

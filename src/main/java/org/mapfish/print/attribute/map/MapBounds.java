@@ -45,8 +45,7 @@ public abstract class MapBounds {
      * <p/>
      *
      * @param paintArea the size of the map that will be drawn.
-     * @param dpi
-     * @return
+     * @param dpi the dpi of the map
      */
     public abstract ReferencedEnvelope toReferencedEnvelope(Rectangle paintArea, double dpi);
 

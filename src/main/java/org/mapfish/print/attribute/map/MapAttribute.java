@@ -28,7 +28,6 @@ import org.mapfish.print.attribute.AbstractAttribute;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
-import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.map.Scale;
 import org.opengis.referencing.FactoryException;
@@ -233,7 +232,7 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
         }
 
         public double getDpi() {
-            return dpi;
+            return this.dpi;
         }
     }
 }
