@@ -51,7 +51,7 @@
     <bean id="metricNameStrategy" class="org.mapfish.print.metrics.MetricsNameStrategyFactory" factory-method="hostAndMethod" />
     <bean id="loggingMetricsConfigurator" class="org.mapfish.print.metrics.LoggingMetricsConfigurator" />
 
-    <bean id="forkJoinPool" class="java.util.concurrent.ForkJoinPool" destroy-method="shutdownNow">
+    <bean id="forkJoinPool" class="jsr166y.ForkJoinPool" destroy-method="shutdownNow">
         <!--
             Number of threads to user in pool we want a large number because http requests will block make the thread hang until
             the request completes.  Because of this we want many threads available to the processors.

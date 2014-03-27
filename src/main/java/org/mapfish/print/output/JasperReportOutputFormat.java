@@ -19,6 +19,7 @@
 
 package org.mapfish.print.output;
 
+import jsr166y.ForkJoinPool;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -42,7 +43,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ForkJoinPool;
 
 /**
  * An PDF output format that uses Jasper reports to generate the result.

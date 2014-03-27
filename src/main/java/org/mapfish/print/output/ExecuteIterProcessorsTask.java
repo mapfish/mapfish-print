@@ -19,14 +19,14 @@
 
 package org.mapfish.print.output;
 
+import jsr166y.ForkJoinTask;
+import jsr166y.RecursiveTask;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.RecursiveTask;
 
 /**
  * Created by Jesse on 3/25/14.

@@ -6,9 +6,8 @@
 ##
 ##############################################################################
 
-set -x
 # Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
-DEFAULT_JVM_OPTS=""
+DEFAULT_JVM_OPTS="-XX:MaxPermSize=128m -Xmx512M"
 
 APP_NAME="Gradle"
 APP_BASE_NAME=`basename "$0"`
@@ -155,20 +154,11 @@ if $cygwin ; then
     esac
 fi
 
-
-case `$JAVACMD -version 2>&1` in
-*1.6.0*)
-    echo "Detected Java version is 1.6.  Adding backwards compatibility jar for fork join"
-    JVM_OPTS="$JVM_OPTS -Xbootclasspath/p:APP_HOME/jsr166.jar"
-    ;;
-*) ;;
-esac
-
-
 # Split up the JVM_OPTS And GRADLE_OPTS values into an array, following the shell quoting and substitution rules
 function splitJvmOpts() {
     JVM_OPTS=("$@")
 }
 eval splitJvmOpts $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS
 JVM_OPTS[${#JVM_OPTS[*]}]="-Dorg.gradle.appname=$APP_BASE_NAME"
+
 exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@"
