@@ -6,6 +6,7 @@
 ##
 ##############################################################################
 
+set -x
 # Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
 DEFAULT_JVM_OPTS=""
 
@@ -158,9 +159,9 @@ fi
 case `$JAVACMD -version 2>&1` in
 *1.6.0*)
     echo "Detected Java version is 1.6.  Adding backwards compatibility jar for fork join"
-    BOOTCLASSPATH="-Xbootclasspath/p:APP_HOME/jsr166.jar"
+    JVM_OPTS="$JVM_OPTS -Xbootclasspath/p:APP_HOME/jsr166.jar"
     ;;
-*)         ;;
+*) ;;
 esac
 
 
@@ -170,5 +171,4 @@ function splitJvmOpts() {
 }
 eval splitJvmOpts $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS
 JVM_OPTS[${#JVM_OPTS[*]}]="-Dorg.gradle.appname=$APP_BASE_NAME"
-
-exec "$JAVACMD" "$BOOTCLASSPATH" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@"
+exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@"
