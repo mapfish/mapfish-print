@@ -51,11 +51,6 @@ task wrapper(type: Wrapper) {
 
 configurations {
     compile.transitive = true
-
-    standalone {
-        extendsFrom runtime
-        description 'configuration for standalone artifact'
-    }
 }
 
 project.ext.junitVersion = "4.11"
@@ -104,7 +99,6 @@ dependencies {
     providedCompile('com.google.code.findbugs:jsr305:2.0.1')
 
     providedCompile('javax.servlet:servlet-api:2.5')
-    standalone('javax.servlet:servlet-api:2.5')
 }
 
 allprojects {
@@ -150,7 +144,7 @@ war {
             'git-revision': gitRevision())
 }
 
-task standalone (type: Jar, dependsOn: configurations.standalone) {
+task standalone (type: Jar) {
     baseName = "print-standalone"
 
     manifest = jar.manifest
