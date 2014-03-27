@@ -22,6 +22,7 @@ package org.mapfish.print.processor;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
+import jsr166y.RecursiveTask;
 import org.mapfish.print.output.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,12 +34,12 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.RecursiveTask;
 import javax.annotation.Nonnull;
 
 /**
  * Represents one node in the Processor dependency graph ({@link ProcessorDependencyGraph}).
  * <p/>
+ *
  * @author jesseeichar on 3/24/14.
  */
 public final class ProcessorGraphNode {

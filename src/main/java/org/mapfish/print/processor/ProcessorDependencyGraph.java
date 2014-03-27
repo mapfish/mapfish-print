@@ -22,6 +22,7 @@ package org.mapfish.print.processor;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import jsr166y.RecursiveTask;
 import org.mapfish.print.output.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,6 @@ import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.RecursiveTask;
 import javax.annotation.Nonnull;
 
 /**
