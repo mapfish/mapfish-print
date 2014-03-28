@@ -21,8 +21,9 @@ allprojects {
 
     repositories {
         mavenLocal()
-        mavenCentral()
+        // geotools repo has to be before mavenCentral in order to get jai dependencies correctly
         maven {url "http://download.osgeo.org/webdav/geotools"}
+        mavenCentral()
         maven {url "http://archiva.fdvs.com.ar/repository/public1"}
     }
     checkstyle {
@@ -74,7 +75,6 @@ dependencies {
             "org.geotools:gt-epsg-hsql:$geotoolsVersion",
             "org.geotools:gt-render:$geotoolsVersion",
             "org.geotools:gt-geojson:$geotoolsVersion",
-
     )
     compile (
             "com.google.guava:guava:16.0.1",
