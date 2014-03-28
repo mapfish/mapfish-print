@@ -2,7 +2,7 @@ import org.gradle.api.plugins.jetty.JettyRun
 
 apply plugin: 'war'
 apply plugin: 'maven'
-apply from: 'gretty.plugin'
+// apply from: 'gretty.plugin'
 
 defaultTasks 'checkstyleMain', 'findbugsMain', 'test', 'jar', 'war'
 
@@ -311,8 +311,8 @@ task print (dependsOn: compileJava) << {
 }
 print.description = 'Run mapfish print from commandline.  All commandline parameters apply. Execute task without system parameters to get help'
 
-gretty {
-    port = 8080
-    contextPath = '/print'
-    scanInterval = 5
-}
+//gretty {
+//    port = 8080
+//    contextPath = '/print'
+//    scanInterval = 5
+//}
