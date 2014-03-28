@@ -42,7 +42,7 @@ import java.util.Map;
  * @author Jesse
  * @author sbrunner
  */
-public class JasperReportBuilder implements Processor, HasConfiguration {
+public class JasperReportBuilder implements Processor<Object, Void>, HasConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
     /**
      * Extension for Jasper XML Report Template files.
@@ -61,7 +61,7 @@ public class JasperReportBuilder implements Processor, HasConfiguration {
     private WorkingDirectories workingDirectories;
 
     @Override
-    public final Map<String, Object> execute(final Map<String, Object> values) throws JRException {
+    public final Void execute(final Object param) throws JRException {
         final String configurationAbsolutePath = this.configuration.getDirectory().getAbsolutePath();
         if (!this.directory.getAbsolutePath().startsWith(configurationAbsolutePath)) {
             throw new IllegalArgumentException("All directories and files referenced in the configuration must be in the configuration " +
@@ -94,8 +94,18 @@ public class JasperReportBuilder implements Processor, HasConfiguration {
     }
 
     @Override
+    public final Class<Void> getOutputType() {
+        return Void.class;
+    }
+
+    @Override
     public final Map<String, String> getInputMapper() {
         return Collections.emptyMap();
+    }
+
+    @Override
+    public final Object createInputParameter() {
+        return new Object();
     }
 
     @Override
@@ -131,4 +141,5 @@ public class JasperReportBuilder implements Processor, HasConfiguration {
     public final String toString() {
         return getClass().getSimpleName() + "(" + this.directory + ")";
     }
+
 }

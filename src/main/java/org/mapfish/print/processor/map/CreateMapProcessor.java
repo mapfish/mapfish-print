@@ -28,25 +28,31 @@ import org.mapfish.print.processor.AbstractProcessor;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author jesseeichar on 3/17/14.
  * @author sbrunner
  */
-public class CreateMapProcessor extends AbstractProcessor {
-    private static final String MAP_INPUT = "map";
-    private static final String MAP_OUTPUT = "map";
-
+public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcessor.Params, CreateMapProcessor.Output> {
     private int imageType = BufferedImage.TYPE_4BYTE_ABGR;
+
+    /**
+     * Constructor.
+     */
+    protected CreateMapProcessor() {
+        super(Output.class);
+    }
 
 
     @Override
-    public final Map<String, Object> execute(final Map<String, Object> values) throws Exception {
-        MapAttribute.MapAttributeValues mapValues = (MapAttribute.MapAttributeValues) values.get(MAP_INPUT);
+    public Params createInputParameter() {
+        return new Params();
+    }
+
+    @Override
+    public Output execute(final Params param) throws Exception {
+        MapAttribute.MapAttributeValues mapValues = param.getMapAttributes();
         final int mapWidth = mapValues.getWidth();
         final int mapHeight = mapValues.getHeight();
 
@@ -69,16 +75,39 @@ public class CreateMapProcessor extends AbstractProcessor {
             graphics2D.dispose();
         }
 
-        final Map<String, Object> output = new HashMap<String, Object>();
-        output.put(MAP_OUTPUT, bufferedImage);
-        return output;
+        return new Output(bufferedImage);
     }
 
     /**
      * Set the type of buffered image rendered to.  By default the image is
      * @param imageType one of the {@link java.awt.image.BufferedImage} constants.
      */
-    public final void setImageType(final int imageType) {
+    public void setImageType(final int imageType) {
         this.imageType = imageType;
+    }
+
+    static final class Params {
+
+        private MapAttribute.MapAttributeValues mapAttributes;
+
+        public MapAttribute.MapAttributeValues getMapAttributes() {
+            return this.mapAttributes;
+        }
+
+        public void setMapAttributes(final MapAttribute.MapAttributeValues mapAttributes) {
+            this.mapAttributes = mapAttributes;
+        }
+    }
+
+    static final class Output {
+        private BufferedImage image;
+
+        private Output(final BufferedImage bufferedImage) {
+            this.image = bufferedImage;
+        }
+
+        public BufferedImage getImage() {
+            return this.image;
+        }
     }
 }

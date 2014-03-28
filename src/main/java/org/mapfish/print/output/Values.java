@@ -19,12 +19,14 @@
 
 package org.mapfish.print.output;
 
+import com.sun.istack.internal.Nullable;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.json.PJsonObject;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.annotation.Nonnull;
 
 /**
  * Values that go into a processor from previous processors in the processor processing graph.
@@ -141,5 +143,15 @@ public class Values {
      */
     public final boolean containsKey(final String key) {
         return this.values.containsKey(key);
+    }
+
+    /**
+     * Get a boolean value from the values or null.
+     *
+     * @param key the look up key of the value
+     */
+    @Nullable
+    public final Boolean getBoolean(@Nonnull final String key) {
+        return (Boolean) this.values.get(key);
     }
 }

@@ -110,9 +110,9 @@ public final class ProcessorDependencyGraph {
     /**
      * Create a set containing all the processors in the graph.
      */
-    public Set<Processor> getAllProcessors() {
-        IdentityHashMap<Processor, Void> all = new IdentityHashMap<Processor, Void>();
-        for (ProcessorGraphNode root : this.roots) {
+    public Set<Processor<?, ?>> getAllProcessors() {
+        IdentityHashMap<Processor<?, ?>, Void> all = new IdentityHashMap<Processor<?, ?>, Void>();
+        for (ProcessorGraphNode<?, ?> root : this.roots) {
             for (Processor p : root.getAllProcessors()) {
                 all.put(p, null);
             }

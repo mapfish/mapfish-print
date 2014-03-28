@@ -22,6 +22,7 @@ package org.mapfish.print.processor;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import jsr166y.RecursiveTask;
 import org.mapfish.print.output.Values;
 import org.slf4j.Logger;
@@ -29,7 +30,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,12 +40,15 @@ import javax.annotation.Nonnull;
  * Represents one node in the Processor dependency graph ({@link ProcessorDependencyGraph}).
  * <p/>
  *
+ * @param <In>  Same as {@link org.mapfish.print.processor.Processor} <em>In</em> parameter
+ * @param <Out>  Same as {@link org.mapfish.print.processor.Processor} <em>Out</em> parameter
+ *
  * @author jesseeichar on 3/24/14.
  */
-public final class ProcessorGraphNode {
+public final class ProcessorGraphNode<In, Out> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessorGraphNode.class);
-    private final Processor processor;
-    private final List<ProcessorGraphNode> dependencies = new ArrayList<ProcessorGraphNode>();
+    private final Processor<In, Out> processor;
+    private final List<ProcessorGraphNode<?, ?>> dependencies = Lists.newArrayList();
     private final MetricRegistry metricRegistry;
 
     /**
@@ -54,12 +57,12 @@ public final class ProcessorGraphNode {
      * @param processor      The processor associated with this node.
      * @param metricRegistry registry for timing the execution time of the processor.
      */
-    public ProcessorGraphNode(@Nonnull final Processor processor, @Nonnull final MetricRegistry metricRegistry) {
+    public ProcessorGraphNode(@Nonnull final Processor<In, Out> processor, @Nonnull final MetricRegistry metricRegistry) {
         this.processor = processor;
         this.metricRegistry = metricRegistry;
     }
 
-    public Processor getProcessor() {
+    public Processor<?, ?> getProcessor() {
         return this.processor;
     }
 
@@ -82,7 +85,7 @@ public final class ProcessorGraphNode {
         if (execContext.isFinished(this)) {
             return Optional.absent();
         } else {
-            return Optional.of(new ProcessorNodeForkJoinTask(execContext));
+            return Optional.of(new ProcessorNodeForkJoinTask(this, execContext));
         }
     }
 
@@ -142,11 +145,11 @@ public final class ProcessorGraphNode {
     /**
      * Create a set containing all the processor at the current node and the entire subgraph.
      */
-    public Set<? extends Processor> getAllProcessors() {
-        IdentityHashMap<Processor, Void> all = new IdentityHashMap<Processor, Void>();
+    public Set<? extends Processor<?, ?>> getAllProcessors() {
+        IdentityHashMap<Processor<?, ?>, Void> all = new IdentityHashMap<Processor<?, ?>, Void>();
         all.put(this.getProcessor(), null);
-        for (ProcessorGraphNode dependency : this.dependencies) {
-            for (Processor p : dependency.getAllProcessors()) {
+        for (ProcessorGraphNode<?, ?> dependency : this.dependencies) {
+            for (Processor<?, ?> p : dependency.getAllProcessors()) {
                 all.put(p, null);
             }
         }
@@ -156,10 +159,12 @@ public final class ProcessorGraphNode {
     /**
      * A ForkJoinTask that will run the processor and all of its dependencies.
      */
-    public final class ProcessorNodeForkJoinTask extends RecursiveTask<Values> {
+    public static final class ProcessorNodeForkJoinTask<In, Out> extends RecursiveTask<Values> {
         private final ProcessorExecutionContext execContext;
+        private final ProcessorGraphNode<In, Out> node;
 
-        private ProcessorNodeForkJoinTask(final ProcessorExecutionContext execContext) {
+        private ProcessorNodeForkJoinTask(final ProcessorGraphNode<In, Out> node, final ProcessorExecutionContext execContext) {
+            this.node = node;
             this.execContext = execContext;
         }
 
@@ -167,59 +172,49 @@ public final class ProcessorGraphNode {
         protected Values compute() {
             final Values values = this.execContext.getValues();
 
-            final Processor process = ProcessorGraphNode.this.processor;
-            final MetricRegistry registry = ProcessorGraphNode.this.metricRegistry;
+            final Processor<In, Out> process = this.node.processor;
+            final MetricRegistry registry = this.node.metricRegistry;
             final String name = ProcessorGraphNode.class.getName() + "_compute():" +
                                 process.getClass();
             Timer.Context timerContext = registry.timer(name).time();
             try {
-                Map<String, Object> input = new HashMap<String, Object>();
-                Map<String, String> inputMap = getInputMapper();
-                for (String value : inputMap.keySet()) {
-                    input.put(
-                            inputMap.get(value),
-                            values.getObject(value, Object.class));
-                }
 
-                Map<String, Object> output;
+                In inputParameter = populateInputParameter(process, values);
+
+                Out output;
                 try {
                     LOGGER.debug("Executing process: " + process);
-                    output = process.execute(input);
+                    output = process.execute(inputParameter);
                     LOGGER.debug("Succeeded in executing process: " + process);
                 } catch (Exception e) {
                     LOGGER.error("Error while executing process: " + process, e);
                     throw new RuntimeException(e);
                 }
 
-                if (output == null) {
-                    output = new HashMap<String, Object>();
-                }
 
-                Map<String, String> outputMap = getOutputMapper();
-                for (String value : outputMap.keySet()) {
-                    values.put(
-                            outputMap.get(value),
-                            output.get(value));
+                if (output != null) {
+                    writeProcessorOutputToValues(output, process.getOutputMapper(), values);
                 }
 
                 executeDependencyProcessors();
 
                 return values;
             } finally {
-                this.execContext.finished(ProcessorGraphNode.this);
+                this.execContext.finished(this.node);
                 final long processorTime = timerContext.stop();
                 LOGGER.debug("Time taken to run processor: '" + process.getClass() + "' was " + processorTime + " ms");
             }
         }
 
         private void executeDependencyProcessors() {
-            final List<ProcessorGraphNode> dependencyNodes = ProcessorGraphNode.this.dependencies;
+            final List<ProcessorGraphNode<?, ?>> dependencyNodes = this.node.dependencies;
 
             List<ProcessorNodeForkJoinTask> tasks = new ArrayList<ProcessorNodeForkJoinTask>(dependencyNodes.size());
 
             // fork all but 1 dependencies (the first will be ran in current thread)
-            for (int i = 0; i < dependencyNodes.size(); i++) {
-                Optional<ProcessorNodeForkJoinTask> task = dependencyNodes.get(i).createTask(this.execContext);
+            for (final ProcessorGraphNode<?, ?> depNode : dependencyNodes) {
+                Optional<ProcessorNodeForkJoinTask> task = depNode.createTask(this.execContext);
+
                 if (task.isPresent()) {
                     tasks.add(task.get());
                     if (tasks.size() > 1) {
@@ -237,5 +232,14 @@ public final class ProcessorGraphNode {
                 }
             }
         }
+    }
+
+
+    static <In, Out> In populateInputParameter(final Processor<In, Out> process, final Values values) {
+        return null;
+    }
+
+    static void writeProcessorOutputToValues(final Object output, final Map<String, String> outputMapper, final Values values) {
+
     }
 }

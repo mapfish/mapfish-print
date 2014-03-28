@@ -21,7 +21,6 @@ package org.mapfish.print.processor;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import jsr166y.ForkJoinPool;
 import org.junit.After;
 import org.junit.Before;
@@ -32,10 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
@@ -175,223 +171,201 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         assertTrue(comparison, actualProcessorsList.containsAll(Arrays.asList(processors)));
     }
 
-    private abstract static class TestProcessor implements Processor {
+    static class TrackerContainer {
+        private TestOrderExecution executionOrder;
+
+        public TestOrderExecution getExecutionOrder() {
+            return this.executionOrder;
+        }
+
+        public void setExecutionOrder(TestOrderExecution executionOrder) {
+            this.executionOrder = executionOrder;
+        }
+    }
+    private abstract static class TestProcessor<In extends TrackerContainer, Out>
+            extends AbstractProcessor<In, Out> {
         public String name;
 
+        protected TestProcessor(String name, Class<Out> outputType) {
+            super(outputType);
+            this.name = name;
+        }
+
         @Override
-        public final Map<String, Object> execute(Map<String, Object> values) throws Exception {
-            TestOrderExecution tracker = (TestOrderExecution) values.get(EXECUTION_TRACKER);
+        public final Out execute(In values) throws Exception {
+            TestOrderExecution tracker = values.getExecutionOrder();
             if (tracker != null) {
                 tracker.doExecute(this);
             }
-            values.putAll(getExtras());
-            return values;
+            return getExtras();
         }
 
-        protected Map<? extends String, ?> getExtras() {
-            return Collections.emptyMap();
-        }
+        protected abstract Out getExtras();
 
+        @Override
+        public In createInputParameter() {
+            return (In) new TrackerContainer();
+        }
         @Override
         public String toString() {
             return name;
         }
     }
 
-    private static TestProcessor RootNoOutput = new TestProcessor() {
-        {
-            this.name = "RootNoOutput";
-        }
+    private static TestProcessor RootNoOutput = new TestProcessor<TrackerContainer, Void>("RootNoOutput", Void.class) {
 
         @Override
-        public Map<String, String> getInputMapper() {
-            return Collections.singletonMap(EXECUTION_TRACKER, EXECUTION_TRACKER);
-        }
-
-        @Override
-        public Map<String, String> getOutputMapper() {
+        protected Void getExtras() {
             return null;
         }
     };
+    private static class MapOutput {
+        String map = "map";
 
-    private static TestProcessor RootMapOut = new TestProcessor() {
-        {
-            this.name = "RootMapOut";
+        public String getMap() {
+            return map;
+        }
+    }
+    private static TestProcessor RootMapOut = new TestProcessor<TrackerContainer, MapOutput>("RootMapOut", MapOutput.class) {
+
+        @Override
+        protected MapOutput getExtras() {
+            return new MapOutput();
+        }
+
+    };
+    private static class TableAndWidth {
+
+        private final String tableData = "tableData";
+        private final int width = 1;
+
+        public String getTableData() {
+            return tableData;
+        }
+
+        public int getWidth() {
+            return width;
+        }
+    }
+    private static TestProcessor RootTableAndWidthOut = new TestProcessor<TrackerContainer, TableAndWidth>("RootTableAndWidthOut",
+            TableAndWidth.class) {
+
+        @Override
+        protected TableAndWidth getExtras() {
+            return new TableAndWidth();
+        }
+    };
+    static class MapInput extends TrackerContainer {
+        String map = "map";
+
+        public String getMap() {
+            return map;
+        }
+
+        public void setMap(String map) {
+            this.map = map;
+        }
+    }
+
+    private static class MapAndWidth extends MapInput {
+        int width;
+
+        public int getWidth() {
+            return width;
+        }
+
+        public void setWidth(int width) {
+            this.width = width;
+        }
+    }
+    private static TestProcessor NeedsMapAndWidthOutputsMap = new TestProcessor<MapAndWidth, MapOutput>("NeedsMapAndWidthOutputsMap",
+            MapOutput.class) {
+        @Override
+        public MapAndWidth createInputParameter() {
+            return new MapAndWidth();
         }
 
         @Override
-        public Map<String, String> getInputMapper() {
-            return Collections.singletonMap(EXECUTION_TRACKER, EXECUTION_TRACKER);
-        }
-
-        @Override
-        protected Map<? extends String, ?> getExtras() {
-            return Collections.singletonMap("map", "map");
-        }
-
-        @Override
-        public Map<String, String> getOutputMapper() {
-            return Collections.singletonMap("map", "map");
+        protected MapOutput getExtras() {
+            return new MapOutput();
         }
     };
 
-    private static TestProcessor RootTableAndWidthOut = new TestProcessor() {
-        {
-            this.name = "RootTableAndWidthOut";
-        }
-
+    private static TestProcessor NeedsMap = new TestProcessor<MapInput, Void>("NeedsMap", Void.class) {
         @Override
-        public Map<String, String> getInputMapper() {
-            return Collections.singletonMap(EXECUTION_TRACKER, EXECUTION_TRACKER);
-        }
-
-        @Override
-        protected Map<? extends String, ?> getExtras() {
-            final HashMap<String, Object> map = Maps.newHashMap();
-            map.put("table", "tableData");
-            map.put("width", 1);
-            return map;
-        }
-
-        @Override
-        public Map<String, String> getOutputMapper() {
-            final HashMap<String, String> map = Maps.newHashMap();
-            map.put("table", "table");
-            map.put("width", "width");
-            return map;
-        }
-    };
-
-    private static TestProcessor NeedsMapAndWidthOutputsMap = new TestProcessor() {
-        {
-            this.name = "NeedsMapAndWidthOutputsMap";
-        }
-
-        @Override
-        public Map<String, String> getInputMapper() {
-            final HashMap<String, String> map = Maps.newHashMap();
-            map.put(EXECUTION_TRACKER, EXECUTION_TRACKER);
-            map.put("map", "map");
-            map.put("width", "width");
-            return map;
-        }
-
-        @Override
-        protected Map<? extends String, ?> getExtras() {
-            return Collections.singletonMap("map", "map");
-        }
-
-        @Override
-        public Map<String, String> getOutputMapper() {
-            final HashMap<String, String> map = Maps.newHashMap();
-            map.put("map", "map");
-            return map;
-        }
-    };
-
-    private static TestProcessor NeedsMap = new TestProcessor() {
-        {
-            this.name = "NeedsMap";
-        }
-
-        @Override
-        public Map<String, String> getInputMapper() {
-            final HashMap<String, String> map = Maps.newHashMap();
-            map.put(EXECUTION_TRACKER, EXECUTION_TRACKER);
-            map.put("map", "map");
-            return map;
-        }
-
-        @Override
-        public Map<String, String> getOutputMapper() {
-            return null;
-        }
-    };
-
-    private static TestProcessor NeedsTable = new TestProcessor() {
-        {
-            this.name = "NeedsTable";
-        }
-
-        @Override
-        public Map<String, String> getInputMapper() {
-            final HashMap<String, String> map = Maps.newHashMap();
-            map.put("table", "table");
-            map.put(EXECUTION_TRACKER, EXECUTION_TRACKER);
-            return map;
-        }
-
-        @Override
-        public Map<String, String> getOutputMapper() {
-            return null;
-        }
-    };
-
-    private static TestProcessor RootOutputExecutionTracker = new TestProcessor() {
-        {
-            this.name = "RootOutputExecutionTracker";
-        }
-
-        @Override
-        public Map<String, String> getInputMapper() {
+        protected Void getExtras() {
             return null;
         }
 
         @Override
-        protected Map<? extends String, ?> getExtras() {
-            final TestOrderExecution value = new TestOrderExecution();
-            value.testOrderExecution.add(this);
-            value.testOrderExecution.add(this);
-            return Collections.singletonMap(EXECUTION_TRACKER, value);
-        }
-
-        @Override
-        public Map<String, String> getOutputMapper() {
-            return Collections.singletonMap(EXECUTION_TRACKER, EXECUTION_TRACKER);
+        public MapInput createInputParameter() {
+            return new MapInput();
         }
     };
 
-    private static TestProcessor NeedsMapProducesMap = new TestProcessor() {
-        {
-            name = "NeedsMapProducesMap";
-        }
-        @Nullable
-        @Override
-        public Map<String, String> getInputMapper() {
-            final HashMap<String, String> map = Maps.newHashMap();
-            map.put("map", "map");
-            map.put(EXECUTION_TRACKER, EXECUTION_TRACKER);
-            return map;
+    static class TableInput extends TrackerContainer {
+        private String table;
+
+        public String getTable() {
+            return table;
         }
 
-        @Nullable
+        public void setTable(String table) {
+            this.table = table;
+        }
+    }
+    private static TestProcessor NeedsTable = new TestProcessor<TableInput, Void>("NeedsTable", Void.class) {
+
         @Override
-        public Map<String, String> getOutputMapper() {
-            final HashMap<String, String> map = Maps.newHashMap();
-            map.put("map", "map");
-            return map;
+        protected Void getExtras() {
+            return null;
+        }
+
+        @Override
+        public TableInput createInputParameter() {
+            return new TableInput();
         }
     };
 
-    private static TestProcessor NeedsTableProducesTable = new TestProcessor() {
-        {
-            name = "NeedsTableProducesTable";
-        }
-        @Nullable
+    private static TestProcessor RootOutputExecutionTracker = new TestProcessor<TrackerContainer,
+            TrackerContainer>("RootOutputExecutionTracker", TrackerContainer.class) {
+
         @Override
-        public Map<String, String> getInputMapper() {
-            final HashMap<String, String> map = Maps.newHashMap();
-            map.put("table", "table");
-            map.put(EXECUTION_TRACKER, EXECUTION_TRACKER);
-            return map;
+        protected TrackerContainer getExtras() {
+            return new TrackerContainer();
+        }
+    };
+
+    private static TestProcessor NeedsMapProducesMap = new TestProcessor<MapInput, MapOutput>("NeedsMapProducesMap",
+            MapOutput.class) {
+        @Override
+        public MapInput createInputParameter() {
+            return new MapInput();
         }
 
-        @Nullable
         @Override
-        public Map<String, String> getOutputMapper() {
-            final HashMap<String, String> map = Maps.newHashMap();
-            map.put("table", "table");
-            return map;
+        protected MapOutput getExtras() {
+            return new MapOutput();
+        }
+    };
+    private static class TableOutput {
+        String table = "table";
+
+        public String getTable() {
+            return table;
+        }
+    }
+    private static TestProcessor NeedsTableProducesTable = new TestProcessor<TableInput, TableOutput>("NeedsTableProducesTable",
+            TableOutput.class) {
+
+        @Override
+        protected TableOutput getExtras() {
+            return new TableOutput();
+        }
+
+        @Override
+        public TableInput createInputParameter() {
+            return new TableInput();
         }
     };
 }

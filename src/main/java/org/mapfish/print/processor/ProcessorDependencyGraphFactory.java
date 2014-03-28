@@ -53,7 +53,7 @@ public final class ProcessorDependencyGraphFactory {
 
         for (Processor processor : processors) {
 
-            final ProcessorGraphNode node = new ProcessorGraphNode(processor, this.metricRegistry);
+            final ProcessorGraphNode<Object, Object> node = new ProcessorGraphNode<Object, Object>(processor, this.metricRegistry);
             for (String value : node.getOutputMapper().values()) {
                 if (provideBy.containsKey(value)) {
                     throw new IllegalArgumentException("Multiple processors provide the same output mapping: '" + processor + "' and '" +
@@ -67,7 +67,7 @@ public final class ProcessorDependencyGraphFactory {
             nodes.add(node);
         }
 
-        for (ProcessorGraphNode node : nodes) {
+        for (ProcessorGraphNode<Object, Object> node : nodes) {
             if (node.getInputMapper().isEmpty()) {
                 graph.addRoot(node);
             } else {

@@ -21,7 +21,6 @@ package org.mapfish.print.processor;
 
 import junit.framework.TestCase;
 
-import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
@@ -49,10 +48,11 @@ public class ProcessorDependencyGraphTest extends TestCase {
         assertEquals("+ root1\n  +-- dep11\n    +-- dep11_1\n    +-- dep11_2\n+ root2\n  +-- dep21", graph.toString());
     }
 
-    private static class TestProcessor extends AbstractProcessor {
+    private static class TestProcessor extends AbstractProcessor<Object, Void> {
         private final String name;
 
-        private TestProcessor(String name) {
+        protected TestProcessor(String name) {
+            super(Void.class);
             this.name = name;
         }
 
@@ -61,9 +61,14 @@ public class ProcessorDependencyGraphTest extends TestCase {
             return this.name;
         }
 
+        @Override
+        public Object createInputParameter() {
+            return new Object();
+        }
+
         @Nullable
         @Override
-        public Map<String, Object> execute(Map<String, Object> values) throws Exception {
+        public Void execute(Object values) throws Exception {
             return null;
         }
     }

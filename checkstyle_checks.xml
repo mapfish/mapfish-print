@@ -23,7 +23,9 @@
     <module name="RequireThis">
         <property name="checkMethods" value="false"/>
     </module>
-    <module name="JavadocType"/>
+    <module name="JavadocType">
+        <property name="scope" value="protected" />
+    </module>
     <module name="JavadocVariable">
       <property name="scope" value="protected"/>
     </module>

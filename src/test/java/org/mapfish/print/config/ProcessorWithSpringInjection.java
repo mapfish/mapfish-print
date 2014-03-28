@@ -34,18 +34,30 @@ import static org.junit.Assert.assertNotNull;
  *
  * @author jesseeichar on 3/25/14.
  */
-public class ProcessorWithSpringInjection extends AbstractProcessor {
+public class ProcessorWithSpringInjection extends AbstractProcessor<Object, Void> {
 
     @Autowired
     private MetricRegistry registry;
+
+    /**
+     * Constructor.
+     */
+    protected ProcessorWithSpringInjection() {
+        super(Void.class);
+    }
 
     public void assertInjected() {
         assertNotNull(registry);
     }
 
+    @Override
+    public Object createInputParameter() {
+        return null;
+    }
+
     @Nullable
     @Override
-    public Map<String, Object> execute(Map<String, Object> values) throws Exception {
+    public Void execute(Object values) throws Exception {
         return null;
     }
 }

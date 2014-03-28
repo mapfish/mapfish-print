@@ -19,86 +19,57 @@
 
 package org.mapfish.print.processor;
 
-import org.mapfish.print.output.Values;
+import com.google.common.collect.Maps;
 
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
 
 /**
  * Basic functionality of a processor.  Mostly utility methods.
  *
  * @author Jesse
+ * @param <In>  A Java bean input parameter object of the execute method.
+ *              Object is populated from the {@link org.mapfish.print.output.Values} object.
+ * @param <Out> A Java bean output/return object from the execute method.
+ *              properties will be put into the {@link org.mapfish.print.output.Values} object so other processor can access the values.
  */
-public abstract class AbstractProcessor implements Processor {
-    private Map<String, String> inputMapper;
-    private Map<String, String> outputMapper;
+public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
+    private Map<String, String> inputMapper = Maps.newHashMap();
+    private Map<String, String> outputMapper = Maps.newHashMap();
 
-    //    private static final Pattern FULL_VARIABLE_REGEXP = Pattern.compile("^\\$\\{([^}]+)\\}$");
-    private static final Pattern VARIABLE_REGEXP = Pattern.compile("\\$\\{([^}]+)\\}");
+    private final Class<Out> outputType;
 
-    /*
-        Integer getInteger(String config, Values values) {
-            Matcher matcher = FULL_VARIABLE_REGEXP.matcher(config);
-            if (matcher.find()) {
-                return values.getInteger(matcher.group(1));
-            }
-            else {
-                return Integer.parseInt(config);
-            }
-        }
-
-        Double getDouble(String config, Values values) {
-            Matcher matcher = FULL_VARIABLE_REGEXP.matcher(config);
-            if (matcher.find()) {
-                return values.getDouble(matcher.group(1));
-            }
-            else {
-                return Double.parseDouble(config);
-            }
-        }
-
-        Object getObject(String config, Values values) {
-            Matcher matcher = FULL_VARIABLE_REGEXP.matcher(config);
-            if (matcher.find()) {
-                return values.getDouble(matcher.group(1));
-            }
-            else {
-                return config;
-            }
-        }
-    */
-    final String getString(final String config, final Values values) {
-        String actualValue = config;
-        StringBuffer result = new StringBuffer();
-        while (true) {
-            Matcher matcher = VARIABLE_REGEXP.matcher(actualValue);
-            if (matcher.find()) {
-                result.append(actualValue.substring(0, matcher.start()));
-                result.append(values.getString(matcher.group(1)));
-                actualValue = actualValue.substring(matcher.end());
-            } else {
-                break;
-            }
-        }
-        return result.toString();
+    /**
+     * Constructor.
+     *
+     * @param outputType the type of the output of this processor.  Used to calculate processor dependencies.
+     */
+    protected AbstractProcessor(final Class<Out> outputType) {
+        this.outputType = outputType;
     }
 
     @Override
+    public final Class<Out> getOutputType() {
+        return this.outputType;
+    }
+
+    @Override
+    @Nonnull
     public final Map<String, String> getInputMapper() {
         return this.inputMapper;
     }
 
-    public final void setInputMapper(final Map<String, String> inputMapper) {
+    public final void setInputMapper(@Nonnull final Map<String, String> inputMapper) {
         this.inputMapper = inputMapper;
     }
 
+    @Nonnull
     @Override
     public final Map<String, String> getOutputMapper() {
         return this.outputMapper;
     }
 
-    public final void setOutputMapper(final Map<String, String> outputMapper) {
+    public final void setOutputMapper(@Nonnull final Map<String, String> outputMapper) {
         this.outputMapper = outputMapper;
     }
 

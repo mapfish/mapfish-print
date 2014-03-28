@@ -19,11 +19,8 @@
 
 package org.mapfish.print.config;
 
-import com.codahale.metrics.MetricRegistry;
 import org.mapfish.print.processor.AbstractProcessor;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Map;
 import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertNotNull;
@@ -33,9 +30,16 @@ import static org.junit.Assert.assertNotNull;
  *
  * @author jesseeichar on 3/25/14.
  */
-public class ProcessorWithConfigurationInjection extends AbstractProcessor implements HasConfiguration {
+public class ProcessorWithConfigurationInjection extends AbstractProcessor<Object, Void> implements HasConfiguration {
 
     private Configuration configuration;
+
+    /**
+     * Constructor.
+     */
+    protected ProcessorWithConfigurationInjection() {
+        super(Void.class);
+    }
 
     public void assertInjected() {
         assertNotNull(configuration);
@@ -49,7 +53,13 @@ public class ProcessorWithConfigurationInjection extends AbstractProcessor imple
 
     @Nullable
     @Override
-    public Map<String, Object> execute(Map<String, Object> values) throws Exception {
+    public Void execute(Object values) throws Exception {
         return null;
     }
+
+    @Override
+    public Object createInputParameter() {
+        return null;
+    }
+
 }
