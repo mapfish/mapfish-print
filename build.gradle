@@ -76,7 +76,7 @@ dependencies {
             "org.geotools:gt-render:$geotoolsVersion",
             "org.geotools:gt-geojson:$geotoolsVersion"
     )
-    runtime fileTree(dir: 'libs', include: '*.jar')
+    runtime fileTree(dir: "$rootProject.projectDir/libs", include: '*.jar')
     compile (
             "com.google.guava:guava:16.0.1",
             'org.slf4j:slf4j-api:1.7.6',
