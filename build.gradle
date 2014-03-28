@@ -21,9 +21,8 @@ allprojects {
 
     repositories {
         mavenLocal()
-        // geotools repo has to be before mavenCentral in order to get jai dependencies correctly
-        maven {url "http://download.osgeo.org/webdav/geotools"}
         mavenCentral()
+        maven {url "http://download.osgeo.org/webdav/geotools"}
         maven {url "http://archiva.fdvs.com.ar/repository/public1"}
     }
     checkstyle {
@@ -52,6 +51,7 @@ task wrapper(type: Wrapper) {
 
 configurations {
     compile.transitive = true
+    compile.exclude module: 'jai_core'
 }
 
 project.ext.junitVersion = "4.11"
@@ -74,8 +74,9 @@ dependencies {
     compile (
             "org.geotools:gt-epsg-hsql:$geotoolsVersion",
             "org.geotools:gt-render:$geotoolsVersion",
-            "org.geotools:gt-geojson:$geotoolsVersion",
+            "org.geotools:gt-geojson:$geotoolsVersion"
     )
+    runtime fileTree(dir: 'libs', include: '*.jar')
     compile (
             "com.google.guava:guava:16.0.1",
             'org.slf4j:slf4j-api:1.7.6',
