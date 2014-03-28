@@ -4,7 +4,7 @@ apply plugin: 'war'
 apply plugin: 'maven'
 apply from: 'gretty.plugin'
 
-defaultTasks 'checkstyleMain', 'findbugsMain', 'test', 'jar', 'war', 'standalone', 'install'
+defaultTasks 'checkstyleMain', 'findbugsMain', 'test', 'jar', 'war'
 
 allprojects {
     group = 'org.mapfish.print'
@@ -144,55 +144,6 @@ war {
             'git-revision': gitRevision())
 }
 
-task standalone (type: Jar) {
-    baseName = "print-standalone"
-
-    manifest = jar.manifest
-
-    from sourceSets.main.output
-
-
-    def dependencies = configurations.compile.resolve().findAll{ file ->
-        return !file.name.contains("servlet-api")
-    }
-
-
-    def serviceDir = new File("$buildDir/META-INF/services")
-    def metaInfDir = new File("$buildDir/META-INF/")
-
-    for(file in dependencies) {
-
-        def files = zipTree(file).matching {
-            exclude 'META-INF/**'
-            exclude 'LICENSE'
-        }
-
-        from files
-    }
-
-    doFirst {
-
-        serviceDir.deleteDir()
-        serviceDir.mkdirs()
-        for(file in dependencies.findAll({it.name.matches("((gt)|(spring-)).*")})) {
-            zipTree(file).matching {
-                include 'META-INF/services/*'
-                include 'META-INF/spring.*'
-            }.each {f ->
-                def base = serviceDir
-                if (f.name.startsWith("spring")) {
-                    base = metaInfDir;
-                }
-                new File(base,f.name) << f.getText("UTF-8")
-            }
-        }
-    }
-
-    from fileTree(buildDir).matching{include 'META-INF/*'}
-
-    into ""
-
-}
 
 task libJavadocJar(type: Jar, dependsOn: javadoc) {
     baseName = 'print-lib'
@@ -206,29 +157,15 @@ task libSourcesJar(type: Jar) {
     classifier = 'sources'
 }
 
-task standaloneJavadocJar(type: Jar, dependsOn: javadoc) {
-    baseName = 'print-standalone'
-    classifier = 'javadoc'
-    from 'build/docs/javadoc'
-}
-
-task standaloneSourcesJar(type: Jar) {
-    baseName = 'print-standalone'
-    from sourceSets.main.allSource
-    classifier = 'sources'
-}
-
 task show << {
 //    sourceSets.main.classes.asFileTree.each {println it}
     println gitRevision()
 }
 artifacts {
-    archives jar, war, standalone, 
-    //imageMagickWar,  
-    libSourcesJar, libJavadocJar, standaloneSourcesJar, standaloneJavadocJar
+    archives jar, war, libSourcesJar, libJavadocJar
 }
 
-def artifactFilterMapping = ['lib':'print-lib', 'standalone':'print-standalone', 'war':'print-servlet']
+def artifactFilterMapping = ['lib':'print-lib', 'war':'print-servlet']
 configure(install.repositories.mavenInstaller) {
     artifactFilterMapping.each {entry ->
         addFilter(entry.key) { artifact, file ->
@@ -279,11 +216,7 @@ if (Boolean.parseBoolean(enablePublishing)) {
                     packaging 'war'
                     description 'Web application for generating PDFs and images from oneline webmapping services'
                 }
-                pom('standalone').project {
-                    name 'print-standalone'
-                    packaging 'jar'
-                    description 'Application for generating PDFs and images from oneline webmapping services. All dependencies are included'
-                }
+
                 artifactFilterMapping.keySet().each { filterName ->
                     pom(filterName).project {
                         url 'http://www.mapfish.org/doc/print/'
@@ -375,62 +308,10 @@ task print (dependsOn: compileJava) << {
         }
     }
 }
-run.description = 'Run mapfish print from commandline.  All commandline parameters apply. Execute task without system parameters to get help'
+print.description = 'Run mapfish print from commandline.  All commandline parameters apply. Execute task without system parameters to get help'
 
 gretty {
     port = 8080
     contextPath = '/print'
     scanInterval = 5
 }
-
-/* task jettyRunImgMgk (type: JettyRun) {
-    description = 'Run mapfish-print within jetty with the imagemagick format installed'
-    httpPort = 8080
-    def imgMagickSpring = file("sample-spring/imagemagick/WEB-INF/classes/imagemagick-spring-application-context-override.xml")
-    scanTargets = (fileTree("src/main/").include("webapp/WEB-INF/**") + fileTree(compileJava.destinationDir)).files
-    reload = 'manual'
-
-    def tmpFile = file("src/main/webapp/WEB-INF/classes/imagemagick-spring-application-context-override.xml")
-    tmpFile.deleteOnExit()
-    doFirst {
-        //tmpFile.createNewFile()
-        tmpFile << imgMagickSpring.bytes
-    }
-    doLast {
-        tmpFile.delete()
-    }
-}
- */
-
-
-
-/* 
-def proguardConfig = file("$buildDir/proguardconfig.pro")
-def proguardOutput = file("$buildDir/standalone.min.jar")
-task generateProguardConfigFile << {
-    logger.info('Creating proguard configuration file for obfsucate task')
-    proguardConfig.withWriter{
-        writer ->
-
-            writer << "-injars ${standalone.archivePath}\n"
-            writer << "-outjars ${proguardOutput}\n"
-            writer << '-printseeds\n'
-            writer << '-dontskipnonpubliclibraryclasses\n'
-            writer << '-dontskipnonpubliclibraryclassmembers\n'
-            writer << '-keepclasseswithmembers public class * {\n'
-            writer << '    public static void main(java.lang.String[]);\n'
-            writer << '}\n'
-//          writer << '-optimizations !code/simplification/cast' + '\n'
-            writer << '-allowaccessmodification\n'
-    }
-}
-
-task minify(dependsOn: [generateProguardConfigFile]) << {
-    inputs.file standalone.archivePath
-    outputs.file proguardOutput
-    ant.taskdef(resource: 'proguard/ant/task.properties',
-            classpath:  configurations.proguard.asPath    )
-    ant.proguard(configuration: proguardConfig)
-}
-minify.description = 'Minify standalone jar, not yet functioning'
- */
