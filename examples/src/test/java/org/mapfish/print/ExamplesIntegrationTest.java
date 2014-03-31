@@ -55,10 +55,12 @@ public class ExamplesIntegrationTest {
     public void testAllExamples() throws Exception {
         Map<String, Throwable> errors = Maps.newHashMap();
 
-        final File examplesDir = getFile(ExamplesIntegrationTest.class, "examples");
+        final File examplesDir = getFile(ExamplesIntegrationTest.class, "/examples");
 
         for (File example : Files.fileTreeTraverser().children(examplesDir)) {
-            runExample(example, errors);
+            if (example.isDirectory()) {
+                runExample(example, errors);
+            }
         }
 
         if (!errors.isEmpty()) {

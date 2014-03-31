@@ -3,4 +3,4 @@ up-to-date and functional.
 
 The examples are at: `src/test/resources/org/mapfish/print/examples`__
 
-__ src/test/resources/org/mapfish/print/examples
+__ src/test/resources/examples

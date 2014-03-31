@@ -4,6 +4,10 @@ task wrapper(type: Wrapper) {
     gradleVersion = '1.11'
 }
 
+task travisBuild {
+    dependsOn ("core:build")
+}
+
 project.ext.junitVersion = "4.11"
 project.ext.springVersion = "4.0.2.RELEASE"
 
