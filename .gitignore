@@ -6,3 +6,4 @@
 /.settings/
 /examples/*.jasper
 examples/build/
+core/build/

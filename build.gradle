@@ -1,12 +1,11 @@
-import org.gradle.api.plugins.jetty.JettyRun
-
-apply plugin: 'war'
-apply plugin: 'maven'
-apply plugin: 'maven-publish'
-apply plugin: 'application'
-// apply from: 'gretty.plugin'
-
 defaultTasks 'build'
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.11'
+}
+
+project.ext.junitVersion = "4.11"
+project.ext.springVersion = "4.0.2.RELEASE"
 
 allprojects {
     group = 'org.mapfish.print'
@@ -46,65 +45,11 @@ allprojects {
     }
     findbugsTest.enabled = false
 
-}
-build.dependsOn(':examples:test')
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.10'
-}
+    sourceCompatibility = 1.6
+    targetCompatibility = 1.6
 
-configurations {
-    compile.transitive = true
-    compile.exclude module: 'jai_core'
-}
+    compileJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
 
-project.ext.junitVersion = "4.11"
-def springVersion = "4.0.2.RELEASE"
-dependencies {
-    compile (
-            "org.springframework:spring-context:$springVersion",
-            "org.springframework:spring-web:$springVersion",
-            "org.springframework:spring-webmvc:$springVersion"
-    )
-    def metricsVersion = "3.0.2"
-    compile (
-            "com.codahale.metrics:metrics-core:$metricsVersion",
-            "com.codahale.metrics:metrics-servlet:$metricsVersion",
-            "com.codahale.metrics:metrics-httpclient:$metricsVersion",
-            "com.codahale.metrics:metrics-servlets:$metricsVersion",
-            "com.codahale.metrics:metrics-logback:$metricsVersion"
-    )
-    def geotoolsVersion = "11.0"
-    compile (
-            "org.geotools:gt-epsg-hsql:$geotoolsVersion",
-            "org.geotools:gt-render:$geotoolsVersion",
-            "org.geotools:gt-geojson:$geotoolsVersion"
-    )
-    compile fileTree(dir: "$rootProject.projectDir/libs", include: '*.jar')
-    compile (
-            "com.google.guava:guava:16.0.1",
-            'org.slf4j:slf4j-api:1.7.6',
-            'org.json:json:20080701',
-            'ch.qos.logback:logback-classic:1.1.1',
-            'org.yaml:snakeyaml:1.13',
-            "com.github.spullara.cli-parser:cli-parser:1.1.1",
-	        'net.sf.jasperreports:jasperreports:5.5.0',
-	        'ar.com.fdvs:DynamicJasper:5.0.0'
-    )
-
-
-    // This jsr166 dependendency is here only so long as Java 6 is supported
-    // it is the forkjoin code and can be removed if java 7 is a required library
-    compile ('org.codehaus.jsr166-mirror:jsr166y:1.7.0')
-
-    compile ('org.apache.xmlgraphics:batik-transcoder:1.7'){
-        exclude module: 'fop'
-    }
-    providedCompile('com.google.code.findbugs:jsr305:2.0.1')
-
-    providedCompile('javax.servlet:servlet-api:2.5')
-}
-
-allprojects {
     dependencies {
         testCompile (
                 "junit:junit:${project.junitVersion}",
@@ -119,96 +64,7 @@ allprojects {
             output.resourcesDir = output.classesDir
         }
     }
-}
 
-def gitRevision() {
-    try {
-        def cmd = "git rev-parse HEAD"
-        def proc = cmd.execute()
-        return proc.getText()
-    } catch (Exception e) {
-        return "Error occurred while trying to execute git commandline tool: "+e
-    }
-}
-
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
-
-compileJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
-
-jar {
-    enabled = true
-    baseName = "print-lib"
-    manifest.mainAttributes(
-        'Build-Time': new Date().getDateTimeString(),
-        'git-revision': gitRevision()
-    )
-}
-
-war {
-    baseName = "print-servlet"
-    manifest.mainAttributes(
-            'Build-Time': new Date().getDateTimeString(),
-            'git-revision': gitRevision())
-}
-
-
-task libJavadocJar(type: Jar, dependsOn: javadoc) {
-    baseName = 'print-lib'
-    classifier = 'javadoc'
-    from 'build/docs/javadoc'
-}
-
-task libSourcesJar(type: Jar) {
-    baseName = 'print-lib'
-    from sourceSets.main.allSource
-    classifier = 'sources'
-}
-
-task show << {
-//    sourceSets.main.classes.asFileTree.each {println it}
-    artifacts.each {println it}
-}
-artifacts {
-    archives jar, war, distZip, libSourcesJar, libJavadocJar
-}
-
-def artifactFilterMapping = ['lib':'print-lib', 'war':'print-servlet']
-configure(install.repositories.mavenInstaller) {
-    artifactFilterMapping.each {entry ->
-        addFilter(entry.key) { artifact, file ->
-            artifact.name.contains entry.value
-        }
-    }
-}
-
-gradle.taskGraph.whenReady {taskGraph ->
-    if (taskGraph.hasTask(run)) {
-        if (project.hasProperty("printArgs")) {
-            run.args printArgs.toString().split(" ").toList()
-        } else {
-            throw new IllegalArgumentException("You must supply the -PprintArgs=\"...\" arguments.\nFor Example:\n\n./gradlew run " +
-                    "-PprintArgs=\"-config examples/config.yaml -spec examples/spec.json -output ./output.pdf\"\n\n")
-        }
-    }
-
-}
-
-startScripts {
-    // clear up the classpath because the launcher jar has it.
-    applicationName="print"
-    mainClassName = "org.mapfish.print.cli.Main"
-    classpath = files(jar.archivePath)
-
-    doLast {
-        fileTree(startScripts.outputDir).each {file ->
-            def encoding = "UTF-8"
-            // there was a bug in the start script where all jars were listed and that failed in windows.
-            // now I just have the main jar and replace it with * so that all jars in that directory
-            // are loaded on classpath.
-            file.setText(file.getText(encoding).replace(jar.archivePath.name, '*'), encoding)
-        }
-    }
 }
 
 
@@ -218,100 +74,3 @@ startScripts {
 //    scanInterval = 5
 //}
 
-
-/*
- * This upload Archives configuration I took from:
- * http://jedicoder.blogspot.ch/2011/11/automated-gradle-project-deployment-to.html
- *
- * For deploying see section about "Create a gradle properties file"
- */
-// need to sign jars for uploading releases to maven central
-if (Boolean.parseBoolean(enablePublishing)) {
-    apply plugin: 'signing'
-    signing {
-        sign configurations.archives
-    }
-
-    uploadArchives {
-        dependsOn test, ':e2e-tests:interactiveTest'
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-                repository(url: "https://$host/service/local/staging/deploy/maven2") {
-                    authentication(userName: sonatypeUsername, password: sonatypePassword)
-                }
-                snapshotRepository(url: "https://$host/content/repositories/snapshots")  {
-                    authentication(userName: sonatypeUsername, password: sonatypePassword)
-                    uniqueVersion = false
-                }
-                artifactFilterMapping.each {entry ->
-                    addFilter(entry.key) { artifact, file ->
-                        artifact.name.contains entry.value
-                    }
-                }
-                pom('lib').project {
-                    name 'print-lib'
-                    packaging 'jar'
-                    description 'Library for generating PDFs and images from oneline webmapping services'
-                }
-                pom('war').project {
-                    name 'print'
-                    packaging 'war'
-                    description 'Web application for generating PDFs and images from oneline webmapping services'
-                }
-
-                artifactFilterMapping.keySet().each { filterName ->
-                    pom(filterName).project {
-                        url 'http://www.mapfish.org/doc/print/'
-
-                        scm {
-                            url 'scm:git@github.com:mapfish/mapfish-print.git'
-                            connection 'scm:git@github.com:mapfish/mapfish-print.git'
-                            developerConnection 'scm:git@github.com:mapfish/mapfish-print.git'
-                        }
-
-                        licenses {
-                            license {
-                                name 'GNU General Public License'
-                                url 'http://www.gnu.org/licenses/#GPL'
-                                distribution 'repo'
-                            }
-                        }
-
-                        developers {
-                            developer {
-                                id 'jesseeichar'
-                                name 'Jesse Eichar'
-                            }
-                            developer {
-                                id 'geekdenz'
-                                name 'Tim-Hinnerk Heuer'
-                            }
-                        }
-                        mailingLists {
-                            mailingList {
-                                name ='Users'
-                                subscribe='users-subscribe@mapfish.org'
-                                unsubscribe='users-subscribe@mapfish.org'
-                                post='users@mapfish.org'
-                                archive='http://www.mapfish.org/pipermail/users/'
-                            }
-                            mailingList {
-                                name ='Dev'
-                                subscribe='dev-subscribe@mapfish.org'
-                                unsubscribe='dev-subscribe@mapfish.org'
-                                post='dev@mapfish.org'
-                                archive='http://www.mapfish.org/pipermail/dev/'
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-} else {
-    uploadArchives << {
-        throw new IllegalStateException("Cannot upload archives because enablePublishing property is not true.  It is $enablePublishing")
-    }
-}

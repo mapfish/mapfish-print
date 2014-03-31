@@ -22,9 +22,11 @@ configurations {
     testCompile.transitive = true
 }
 dependencies {
-    testCompile rootProject
+    testCompile project(path: ":core")
 }
 
 task show << {
    rootProject.properties.each {println it}
 }
+
+test.dependsOn
