@@ -2,6 +2,8 @@ import org.gradle.api.plugins.jetty.JettyRun
 
 apply plugin: 'war'
 apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'application'
 // apply from: 'gretty.plugin'
 
 defaultTasks 'build'
@@ -124,10 +126,6 @@ def gitRevision() {
         return "Error occurred while trying to execute git commandline tool: "+e
     }
 }
-manifest.mainAttributes(
-        'Main-Class':'org.mapfish.print.ShellMapPrinter',
-        'Build-Time': new Date().getDateTimeString(),
-        'git-revision': gitRevision())
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
@@ -137,6 +135,10 @@ compileJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
 jar {
     enabled = true
     baseName = "print-lib"
+    manifest.mainAttributes(
+        'Build-Time': new Date().getDateTimeString(),
+        'git-revision': gitRevision()
+    )
 }
 
 war {
@@ -161,10 +163,10 @@ task libSourcesJar(type: Jar) {
 
 task show << {
 //    sourceSets.main.classes.asFileTree.each {println it}
-    println gitRevision()
+    artifacts.each {println it}
 }
 artifacts {
-    archives jar, war, libSourcesJar, libJavadocJar
+    archives jar, war, distZip, libSourcesJar, libJavadocJar
 }
 
 def artifactFilterMapping = ['lib':'print-lib', 'war':'print-servlet']
@@ -175,6 +177,44 @@ configure(install.repositories.mavenInstaller) {
         }
     }
 }
+
+gradle.taskGraph.whenReady {taskGraph ->
+    if (taskGraph.hasTask(run)) {
+        if (project.hasProperty("printArgs")) {
+            run.args printArgs.toString().split(" ").toList()
+        } else {
+            throw new IllegalArgumentException("You must supply the -PprintArgs=\"...\" arguments.\nFor Example:\n\n./gradlew run " +
+                    "-PprintArgs=\"-config examples/config.yaml -spec examples/spec.json -output ./output.pdf\"\n\n")
+        }
+    }
+
+}
+
+startScripts {
+    // clear up the classpath because the launcher jar has it.
+    applicationName="print"
+    mainClassName = "org.mapfish.print.cli.Main"
+    classpath = files(jar.archivePath)
+
+    doLast {
+        fileTree(startScripts.outputDir).each {file ->
+            def encoding = "UTF-8"
+            // there was a bug in the start script where all jars were listed and that failed in windows.
+            // now I just have the main jar and replace it with * so that all jars in that directory
+            // are loaded on classpath.
+            file.setText(file.getText(encoding).replace(jar.archivePath.name, '*'), encoding)
+        }
+    }
+}
+
+
+//gretty {
+//    port = 8080
+//    contextPath = '/print'
+//    scanInterval = 5
+//}
+
+
 
 
 /*
@@ -273,47 +313,3 @@ if (Boolean.parseBoolean(enablePublishing)) {
         throw new IllegalStateException("Cannot upload archives because enablePublishing property is not true.  It is $enablePublishing")
     }
 }
-
-def prop(key) {
-    return System.getProperty(key) == null ? null : "--${key}=${System.getProperty(key)}"
-}
-
-task print (dependsOn: compileJava) << {
-    def warning = """[WARNING] config parameter is required.
-
-  Usage:
-    gradle run -Dconfig={value} [-Dspec={value}] [-Dverbose={value}] [-Doutput={value}] [-DclientConfig] [-Dreferer={value}] [-Dlog4jConfig={value}]
-  Params:
-    -Dconfig={String}: Filename for the configuration (templates&CO)
-    -Dspec={String}: The location of the description of what has to be printed. By default, STDIN (defaults to [null])
-    -Dverbose={int}: Used only if log4jConfig is not specified. 3 if you want everything, 2 if you want the debug information (stacktraces are shown), 1 for infos and 0 for only warnings and errors (defaults to [1])
-    -Doutput={String}: The destination file. By default, STDOUT (defaults to [null])
-    -DclientConfig={on|off}: Get the config for the client form. Doesn't generate a PDF (defaults to [off])
-    -Dreferer={String}: Referer address to use when doing queries (defaults to [null])
-    -Dlog4jConfig={String}: Property file for the log4j configuration (defaults to [null])
-
-  Example:
-    gradle print -Dconfig=samples/config.yaml -Dspec=samples/spec.json -Doutput=/tmp/print-out.pdf
-
-
-  """
-
-    def args = [prop("config"),prop("spec"),prop("output"),prop("verbose"),prop("clientConfig"),prop("referer"),prop("log4jConfig")]
-    if(prop("config") == null) {
-        println(warning)
-    } else {
-        ant.java(classname: 'org.mapfish.print.ShellMapPrinter', fork: false, logError: false,
-                classpath: "${sourceSets.main.runtimeClasspath.asPath}")  {
-            for(a in args.findAll {it!=null}){
-                arg(value: a)
-            }
-        }
-    }
-}
-print.description = 'Run mapfish print from commandline.  All commandline parameters apply. Execute task without system parameters to get help'
-
-//gretty {
-//    port = 8080
-//    contextPath = '/print'
-//    scanInterval = 5
-//}

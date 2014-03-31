@@ -87,17 +87,27 @@ public final class Main {
      * @throws Exception
      */
     public static void main(final String[] args) throws Exception {
+
+        if (args.length == 1 || args.length == 0) {
+            if (args.length == 0 ||
+                "--help".equalsIgnoreCase(args[0])
+                || "-help".equalsIgnoreCase(args[0])
+                || "-?".equals(args[0])) {
+                System.out.println("\n\n");
+                printUsage(0);
+            }
+        }
         try {
             List<String> unusedArguments = Args.parse(CliDefinition.class, args);
 
             if (!unusedArguments.isEmpty()) {
-                System.out.println("The following arguments are not recognized: " + unusedArguments);
-                printUsage();
+                System.out.println("\n\nThe following arguments are not recognized: " + unusedArguments);
+                printUsage(1);
                 return;
             }
         } catch (IllegalArgumentException invalidOption) {
-            System.out.println(invalidOption.getMessage());
-            printUsage();
+            System.out.println("\n\n" + invalidOption.getMessage());
+            printUsage(1);
             return;
         }
         AbstractXmlApplicationContext context = new ClassPathXmlApplicationContext(DEFAULT_SPRING_CONTEXT);
@@ -114,9 +124,9 @@ public final class Main {
         }
     }
 
-    private static void printUsage() {
+    private static void printUsage(final int exitCode) {
         Args.usage(CliDefinition.class);
-        System.exit(1);
+        System.exit(exitCode);
     }
 
     private void run() throws Exception {
