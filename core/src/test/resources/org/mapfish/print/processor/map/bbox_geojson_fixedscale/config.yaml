@@ -1,0 +1,16 @@
+
+templates:
+  main: !template
+    attributes:
+      mapDef: !map
+        width: 500
+        height: 100
+        dpi: [72, 96]
+        scales: [500, 1000, 5000, 10000, 25000, 50000],
+    processors:
+    - !createMap
+        inputMapper: {mapDef: map}
+        outputMapper: {image: mapOut}
+        imageType: TYPE_4BYTE_ABGR
+
+

@@ -59,7 +59,10 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
 
     @Autowired
     private ApplicationContext applicationContext;
-    private float[] dpi;
+
+    private double[] dpi;
+    private double[] scales;
+
     private int width;
     private int height;
 
@@ -76,7 +79,7 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
     @Override
     protected final void additionalPrintClientConfig(final JSONWriter json) throws JSONException {
         final JSONWriter array = json.key(CONFIG_DPI).array();
-        for (float currentDpi : this.dpi) {
+        for (double currentDpi : this.dpi) {
             array.value(currentDpi);
         }
         array.endArray();
@@ -84,7 +87,7 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
         json.key(HEIGHT).value(this.height);
     }
 
-    public final void setDpi(final float[] dpi) {
+    public final void setDpi(final double[] dpi) {
         this.dpi = dpi;
     }
 
@@ -94,6 +97,10 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
 
     public final void setHeight(final int height) {
         this.height = height;
+    }
+
+    public final void setScales(final double[] scales) {
+        this.scales = scales;
     }
 
     /**
@@ -113,13 +120,16 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
         public static final String PROJECTION = "projection";
         private static final String DEFAULT_PROJECTION = "EPSG:3857";
         private static final String LONGITUDE_FIRST = "longitudeFirst ";
+        private static final String USE_NEAREST_SCALE = "useNearestScale";
 
         private final MapBounds mapBounds;
         private final double rotation;
         private final List<MapLayer> layers;
+        private final boolean useNearestScale;
         private double dpi;
 
         MapAttributeValues(final Template template, final PJsonObject requestData) {
+            this.useNearestScale = requestData.optBool(USE_NEAREST_SCALE, true) && MapAttribute.this.scales != null;
             this.dpi = requestData.getDouble(CONFIG_DPI);
             this.mapBounds = parseBounds(requestData);
             this.rotation = requestData.optDouble(ROTATION, 0.0);
@@ -233,6 +243,14 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
 
         public double getDpi() {
             return this.dpi;
+        }
+
+        public boolean isUseNearestScale() {
+            return this.useNearestScale;
+        }
+
+        public double[] getScales() {
+            return MapAttribute.this.scales;
         }
     }
 }

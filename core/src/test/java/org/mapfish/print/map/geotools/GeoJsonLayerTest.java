@@ -28,7 +28,7 @@ import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.json.PJsonObject;
-import org.mapfish.print.processor.map.CreateMapProcessorTest;
+import org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
@@ -49,7 +49,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
     @Test
     public void testGeoJsonEmbedded() throws Exception {
-        final PJsonObject requestData = CreateMapProcessorTest.loadJsonRequestData()
+        final PJsonObject requestData = CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.loadJsonRequestData()
                 .getJSONObject("attributes")
                 .getJSONObject("mapDef")
                 .getJSONArray("layers").getJSONObject(0);
@@ -76,7 +76,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
     @Test
     public void testGeoJsonMissingType() throws Exception {
-        final File file = getFile(CreateMapProcessorTest.class, "basicMapExample/geojson.json");
+        final File file = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, "basicMapExample/geojson.json");
         final PJsonObject requestData = parseJSONObjectFromString("{type:\"wfs\";style:\"polygon\";geoJson:\""
                                                                   + file.toURI().toURL() + "\"}");
 
@@ -93,7 +93,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
     }
     @Test
     public void testGeoJsonWrongType() throws Exception {
-        final File file = getFile(CreateMapProcessorTest.class, "basicMapExample/geojson.json");
+        final File file = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, "basicMapExample/geojson.json");
         final PJsonObject requestData = parseJSONObjectFromString("{type:\"wfs\";style:\"polygon\";geoJson:\""
                                                                   + file.toURI().toURL() + "\"}");
 
@@ -110,7 +110,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
     }
     @Test(expected = IllegalArgumentException.class)
     public void testGeoIllegalFileUrl() throws Exception {
-        final File file = getFile(CreateMapProcessorTest.class, "basicMapExample/geojson.json");
+        final File file = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, "basicMapExample/geojson.json");
         final PJsonObject requestData = parseJSONObjectFromString("{type:\"geojson\";style:\"polygon\";geoJson:\""
                                                                   + file.toURI().toURL() + "\"}");
 
@@ -126,7 +126,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
     }
     @Test(expected = Exception.class)
     public void testGeoNotUrlNotGeoJson() throws Exception {
-        final File file = getFile(CreateMapProcessorTest.class, "basicMapExample/geojson.json");
+        final File file = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, "basicMapExample/geojson.json");
         final PJsonObject requestData = parseJSONObjectFromString("{type:\"geojson\";style:\"polygon\";geoJson:\"Random\"}");
 
         final Configuration configuration = new Configuration();
@@ -141,7 +141,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
     @Test
     public void testGeoJsonUrl() throws Exception {
-        final File file = getFile(CreateMapProcessorTest.class, "basicMapExample/geojson.json");
+        final File file = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, "basicMapExample/geojson.json");
         final PJsonObject requestData = parseJSONObjectFromString("{type:\"geojson\";style:\"polygon\";geoJson:\""
                                                                   + file.toURI().toURL() + "\"}");
 
@@ -166,7 +166,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
     }
     @Test
     public void testRelativeUrl() throws Exception {
-        final File file = getFile(CreateMapProcessorTest.class, "basicMapExample/geojson.json");
+        final File file = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, "basicMapExample/geojson.json");
         final PJsonObject requestData = parseJSONObjectFromString("{type:\"geojson\";style:\"polygon\";geoJson:\"file://"
                                                                   + file.getName() + "\"}");
 
