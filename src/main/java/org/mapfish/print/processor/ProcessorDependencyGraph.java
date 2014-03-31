@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
 
@@ -89,11 +90,22 @@ public final class ProcessorDependencyGraph {
     public Collection<String> getAllRequiredAttributes() {
         Set<String> requiredInputs = Sets.newHashSet();
         for (ProcessorGraphNode root : this.roots) {
-            requiredInputs.addAll(root.getInputMapper().keySet());
-            final Class<?> inputParamaterClass = root.getProcessor().createInputParameter().getClass();
-            final Set<String> requiredAttributesDefinedInInputParameter = getAttributeNames(inputParamaterClass,
-                    FILTER_ONLY_REQUIRED_ATTRIBUTES);
-            requiredInputs.addAll(requiredAttributesDefinedInInputParameter);
+            final Map<String, String> inputMapper = root.getInputMapper().inverse();
+            requiredInputs.addAll(inputMapper.values());
+            final Object inputParameter = root.getProcessor().createInputParameter();
+            if (inputParameter != null) {
+                final Class<?> inputParameterClass = inputParameter.getClass();
+                final Set<String> requiredAttributesDefinedInInputParameter = getAttributeNames(inputParameterClass,
+                        FILTER_ONLY_REQUIRED_ATTRIBUTES);
+                for (String attName : requiredAttributesDefinedInInputParameter) {
+                    String mappedName = inputMapper.get(attName);
+                    if (mappedName != null) {
+                        requiredInputs.add(mappedName);
+                    } else {
+                        requiredInputs.add(attName);
+                    }
+                }
+            }
         }
 
         return requiredInputs;

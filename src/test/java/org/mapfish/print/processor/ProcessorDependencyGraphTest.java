@@ -19,15 +19,18 @@
 
 package org.mapfish.print.processor;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import org.mapfish.print.output.Values;
 
 import javax.annotation.Nullable;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author jesseeichar on 3/25/14.
  */
 @SuppressWarnings("unchecked")
-public class ProcessorDependencyGraphTest extends TestCase {
+public class ProcessorDependencyGraphTest {
     public void testToString() throws Exception {
         ProcessorDependencyGraph graph = new ProcessorDependencyGraph();
         ProcessorGraphNode root1 = new ProcessorGraphNode(new TestProcessor("root1"), null);
@@ -49,7 +52,41 @@ public class ProcessorDependencyGraphTest extends TestCase {
         assertEquals("+ root1\n  +-- dep11\n    +-- dep11_1\n    +-- dep11_2\n+ root2\n  +-- dep21", graph.toString());
     }
 
-    private static class TestProcessor extends AbstractProcessor<Object, Void> {
+
+    @Test
+    public void testCreateTaskAllDependenciesAreSatisfied() throws Exception {
+        Values values = new Values();
+        values.put("pp", "value");
+
+        final TestProcessor processor = new TestProcessor("p");
+        processor.getInputMapperBiMap().put("pp", "prop");
+
+        final ProcessorDependencyGraph graph = new ProcessorDependencyGraph();
+        graph.addRoot(new ProcessorGraphNode(processor, null));
+        graph.createTask(values);
+
+        // no exception ... good
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateTaskAllDependenciesAreMissing() throws Exception {
+        Values values = new Values();
+        // this is a misconfiguration prop should be pp thus an exception should be thrown below.
+        values.put("prop", "value");
+
+        final TestProcessor processor = new TestProcessor("p");
+        processor.getInputMapperBiMap().put("pp", "prop");
+
+        final ProcessorDependencyGraph graph = new ProcessorDependencyGraph();
+        graph.addRoot(new ProcessorGraphNode(processor, null));
+        graph.createTask(values);
+    }
+
+    static class TestIn {
+        public String prop;
+    }
+    private static class TestProcessor extends AbstractProcessor<TestIn, Void> {
         private final String name;
 
         protected TestProcessor(String name) {
@@ -63,13 +100,13 @@ public class ProcessorDependencyGraphTest extends TestCase {
         }
 
         @Override
-        public Object createInputParameter() {
-            return new Object();
+        public TestIn createInputParameter() {
+            return new TestIn();
         }
 
         @Nullable
         @Override
-        public Void execute(Object values) throws Exception {
+        public Void execute(TestIn values) throws Exception {
             return null;
         }
     }

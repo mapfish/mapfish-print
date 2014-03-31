@@ -24,19 +24,20 @@ allprojects {
         mavenCentral()
         maven {url "http://download.osgeo.org/webdav/geotools"}
         maven {url "http://archiva.fdvs.com.ar/repository/public1"}
+        maven {url "http://dev.mapfish.org/maven/repository"}
     }
     checkstyle {
         configFile = file("$rootProject.rootDir/checkstyle_checks.xml")
         configProperties = ['basedir': project.rootDir.path]
         ignoreFailures = false
-        reportsDir = file("$project.buildDir/checkstyleReports")
+        reportsDir = file("$project.buildDir/reports/checkstyleReports")
     }
     checkstyleTest.enabled = false
 
     findbugs {
         toolVersion = "2.0.3"
         ignoreFailures = false
-        reportsDir = file("$project.buildDir/findbugsReports")
+        reportsDir = file("$project.buildDir/reports/findbugsReports")
         effort = "max"
         reportLevel = "high"
         excludeFilter = file("$rootProject.projectDir/findbugs-exclude.xml")

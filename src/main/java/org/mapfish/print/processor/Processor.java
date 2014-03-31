@@ -82,6 +82,7 @@ public interface Processor<In, Out> extends ConfigurationObject {
      * <p/>
      * It is important to realize that super classes will also be analyzed, so care must be had with inheritance.
      */
+    @Nullable
     In createInputParameter();
 
     /**

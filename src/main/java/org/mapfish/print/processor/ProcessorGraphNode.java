@@ -23,6 +23,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import jsr166y.RecursiveTask;
 import org.mapfish.print.output.Values;
@@ -105,10 +106,10 @@ public final class ProcessorGraphNode<In, Out> {
      * Get the output mapper from processor.
      */
     @Nonnull
-    public Map<String, String> getOutputMapper() {
-        final Map<String, String> outputMapper = this.processor.getOutputMapperBiMap();
+    public BiMap<String, String> getOutputMapper() {
+        final BiMap<String, String> outputMapper = this.processor.getOutputMapperBiMap();
         if (outputMapper == null) {
-            return Collections.emptyMap();
+            return HashBiMap.create();
         }
         return outputMapper;
     }
@@ -117,10 +118,10 @@ public final class ProcessorGraphNode<In, Out> {
      * Return input mapper from processor.
      */
     @Nonnull
-    public Map<String, String> getInputMapper() {
-        final Map<String, String> inputMapper = this.processor.getInputMapperBiMap();
+    public BiMap<String, String> getInputMapper() {
+        final BiMap<String, String> inputMapper = this.processor.getInputMapperBiMap();
         if (inputMapper == null) {
-            return Collections.emptyMap();
+            return HashBiMap.create();
         }
         return inputMapper;
     }
