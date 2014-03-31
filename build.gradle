@@ -4,7 +4,7 @@ apply plugin: 'war'
 apply plugin: 'maven'
 // apply from: 'gretty.plugin'
 
-defaultTasks 'checkstyleMain', 'findbugsMain', 'test', 'jar', 'war'
+defaultTasks 'build'
 
 allprojects {
     group = 'org.mapfish.print'
