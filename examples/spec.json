@@ -13,7 +13,7 @@
                 [2, "blip", "icon_zoomin"]
             ]
         },
-        "tablelist": {
+        "tableList": {
             "f1": {
                 "displayName": "Feature 1",
                 "columns": ["id", "name", "icon"],

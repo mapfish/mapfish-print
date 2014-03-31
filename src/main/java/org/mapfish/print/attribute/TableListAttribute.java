@@ -37,7 +37,7 @@ public class TableListAttribute extends AbstractAttribute<TableListAttribute.Tab
 
     @Override
     protected final String getType() {
-        return "tablelist";
+        return "tableList";
     }
     /**
      * The value of {@link org.mapfish.print.attribute.TableAttribute}.
