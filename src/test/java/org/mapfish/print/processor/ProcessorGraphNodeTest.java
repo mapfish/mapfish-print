@@ -53,16 +53,34 @@ public class ProcessorGraphNodeTest {
         values.put("da", daVal);
 
         TestProcessor processor = new TestProcessor();
-        processor.getInputMapper().put(iMappingName, "i");
-        processor.getInputMapper().put(bMappingName, "b");
+        processor.getInputMapperBiMap().put(iMappingName, "i");
+        processor.getInputMapperBiMap().put(bMappingName, "b");
         DataTransferObject param = ProcessorGraphNode.populateInputParameter(processor, values);
 
-        assertEquals(sVal, param.getS());
-        assertEquals(intVal.intValue(), param.getI());
-        assertEquals(true, param.isB());
-        assertEquals(new DataTransferObject().getDefaultI(), param.getDefaultI());
-        assertEquals(lsVal, param.getLs());
-        assertArrayEquals(daVal, param.getDa(), 0.00001);
+        assertEquals(sVal, param.s);
+        assertEquals(intVal.intValue(), param.i);
+        assertEquals(true, param.b);
+        assertEquals(new DataTransferObject().defaultI, param.defaultI);
+        assertEquals(lsVal, param.ls);
+        assertArrayEquals(daVal, param.da, 0.00001);
+    }
+
+    @Test (expected = RuntimeException.class)
+    public void testNullableProperty() throws Exception {
+
+        Values values = new Values();
+        values.put(iMappingName, intVal);
+        values.put(bMappingName, true);
+        values.put("s", sVal);
+        values.put("ls", lsVal);
+        // NO da value is specified so an exception should be thrown.
+
+        TestProcessor processor = new TestProcessor();
+        processor.getInputMapperBiMap().put(iMappingName, "i");
+        processor.getInputMapperBiMap().put(bMappingName, "b");
+        ProcessorGraphNode.populateInputParameter(processor, values);
+
+
     }
 
     @Test
@@ -70,81 +88,33 @@ public class ProcessorGraphNodeTest {
         Values values = new Values();
 
         final DataTransferObject dto = new DataTransferObject();
-        dto.setB(true);
-        dto.setDa(daVal);
-        dto.setDefaultI(32);
-        dto.setLs(lsVal);
+        dto.b = true;
+        dto.da = daVal;
+        dto.defaultI = 32;
+        dto.ls = lsVal;
 
         TestProcessor processor = new TestProcessor();
-        processor.getInputMapper().put(iMappingName, "i");
-        processor.getInputMapper().put(bMappingName, "b");
+        processor.getOutputMapperBiMap().put("i", iMappingName);
+        processor.getOutputMapperBiMap().put("b", bMappingName);
 
-        ProcessorGraphNode.writeProcessorOutputToValues(dto, processor.getOutputMapper(), values);
+        ProcessorGraphNode.writeProcessorOutputToValues(dto, processor.getOutputMapperBiMap(), values);
 
-        assertEquals(dto.getDefaultI(), values.getInteger("defaultI").intValue());
-        assertEquals(dto.getI(), values.getInteger(iMappingName).intValue());
-        assertEquals(dto.isB(), values.getBoolean(bMappingName));
+        assertEquals(dto.defaultI, values.getInteger("defaultI").intValue());
+        assertEquals(dto.i, values.getInteger(iMappingName).intValue());
+        assertEquals(dto.b, values.getBoolean(bMappingName));
         assertNull(values.getBoolean("s"));
-        assertEquals(dto.isB(), values.getBoolean(bMappingName));
         assertEquals(lsVal, values.getObject("ls", Object.class));
         assertArrayEquals(daVal, (double[]) values.getObject("da", Object.class), 0.00001);
     }
 
     static class DataTransferObject {
-        int defaultI = 3;
-        int i;
-        boolean b;
-        String s;
-        List<String> ls;
-        double[] da;
-
-        public int getDefaultI() {
-            return defaultI;
-        }
-
-        public void setDefaultI(int defaultI) {
-            this.defaultI = defaultI;
-        }
-
-        public int getI() {
-            return i;
-        }
-
-        public void setI(int i) {
-            this.i = i;
-        }
-
-        public boolean isB() {
-            return b;
-        }
-
-        public void setB(boolean b) {
-            this.b = b;
-        }
-
-        public String getS() {
-            return s;
-        }
-
-        public void setS(String s) {
-            this.s = s;
-        }
-
-        public List<String> getLs() {
-            return ls;
-        }
-
-        public void setLs(List<String> ls) {
-            this.ls = ls;
-        }
-
-        public double[] getDa() {
-            return da;
-        }
-
-        public void setDa(double[] da) {
-            this.da = da;
-        }
+        @HasDefaultValue
+        public int defaultI = 3;
+        public int i;
+        public boolean b;
+        public String s;
+        public List<String> ls;
+        public double[] da;
     }
 
     static class TestProcessor extends AbstractProcessor<DataTransferObject, DataTransferObject> {

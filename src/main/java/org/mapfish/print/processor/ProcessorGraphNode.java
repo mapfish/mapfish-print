@@ -22,33 +22,39 @@ package org.mapfish.print.processor;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
+import com.google.common.collect.BiMap;
 import com.google.common.collect.Lists;
 import jsr166y.RecursiveTask;
 import org.mapfish.print.output.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import javax.annotation.Nonnull;
+
+import static org.mapfish.print.processor.InputOutputValueUtils.getAllAttributes;
 
 /**
  * Represents one node in the Processor dependency graph ({@link ProcessorDependencyGraph}).
  * <p/>
  *
  * @param <In>  Same as {@link org.mapfish.print.processor.Processor} <em>In</em> parameter
- * @param <Out>  Same as {@link org.mapfish.print.processor.Processor} <em>Out</em> parameter
- *
+ * @param <Out> Same as {@link org.mapfish.print.processor.Processor} <em>Out</em> parameter
  * @author jesseeichar on 3/24/14.
  */
 public final class ProcessorGraphNode<In, Out> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessorGraphNode.class);
     private final Processor<In, Out> processor;
     private final List<ProcessorGraphNode<?, ?>> dependencies = Lists.newArrayList();
+    private final List<ProcessorGraphNode<?, ?>> requirements = Lists.newArrayList();
     private final MetricRegistry metricRegistry;
 
     /**
@@ -73,6 +79,11 @@ public final class ProcessorGraphNode<In, Out> {
      */
     public void addDependency(final ProcessorGraphNode node) {
         this.dependencies.add(node);
+        node.addRequirement(this);
+    }
+
+    private void addRequirement(final ProcessorGraphNode node) {
+        this.requirements.add(node);
     }
 
     /**
@@ -81,8 +92,9 @@ public final class ProcessorGraphNode<In, Out> {
      * @param execContext the execution context, used for tracking certain aspects of the execution.
      * @return a task ready to be submitted to a fork join pool.
      */
+    @SuppressWarnings("unchecked")
     public Optional<ProcessorNodeForkJoinTask> createTask(@Nonnull final ProcessorExecutionContext execContext) {
-        if (execContext.isFinished(this)) {
+        if (execContext.isFinished(this) || !execContext.allAreFinished(this.requirements)) {
             return Optional.absent();
         } else {
             return Optional.of(new ProcessorNodeForkJoinTask(this, execContext));
@@ -94,7 +106,7 @@ public final class ProcessorGraphNode<In, Out> {
      */
     @Nonnull
     public Map<String, String> getOutputMapper() {
-        final Map<String, String> outputMapper = this.processor.getOutputMapper();
+        final Map<String, String> outputMapper = this.processor.getOutputMapperBiMap();
         if (outputMapper == null) {
             return Collections.emptyMap();
         }
@@ -106,7 +118,7 @@ public final class ProcessorGraphNode<In, Out> {
      */
     @Nonnull
     public Map<String, String> getInputMapper() {
-        final Map<String, String> inputMapper = this.processor.getInputMapper();
+        final Map<String, String> inputMapper = this.processor.getInputMapperBiMap();
         if (inputMapper == null) {
             return Collections.emptyMap();
         }
@@ -174,11 +186,9 @@ public final class ProcessorGraphNode<In, Out> {
 
             final Processor<In, Out> process = this.node.processor;
             final MetricRegistry registry = this.node.metricRegistry;
-            final String name = ProcessorGraphNode.class.getName() + "_compute():" +
-                                process.getClass();
+            final String name = ProcessorGraphNode.class.getName() + "_compute():" + process.getClass();
             Timer.Context timerContext = registry.timer(name).time();
             try {
-
                 In inputParameter = populateInputParameter(process, values);
 
                 Out output;
@@ -193,17 +203,17 @@ public final class ProcessorGraphNode<In, Out> {
 
 
                 if (output != null) {
-                    writeProcessorOutputToValues(output, process.getOutputMapper(), values);
+                    writeProcessorOutputToValues(output, process.getOutputMapperBiMap(), values);
                 }
-
-                executeDependencyProcessors();
-
-                return values;
             } finally {
                 this.execContext.finished(this.node);
                 final long processorTime = timerContext.stop();
                 LOGGER.debug("Time taken to run processor: '" + process.getClass() + "' was " + processorTime + " ms");
             }
+
+            executeDependencyProcessors();
+
+            return values;
         }
 
         private void executeDependencyProcessors() {
@@ -236,10 +246,64 @@ public final class ProcessorGraphNode<In, Out> {
 
 
     static <In, Out> In populateInputParameter(final Processor<In, Out> process, final Values values) {
-        return null;
+        In inputObject = process.createInputParameter();
+        if (inputObject != null) {
+            Map<String, String> inputMapper = process.getInputMapperBiMap();
+            if (inputMapper == null) {
+                inputMapper = Collections.emptyMap();
+            } else {
+                inputMapper = process.getInputMapperBiMap().inverse();
+            }
+
+            Collection<Field> fields = getAllAttributes(inputObject.getClass());
+            for (Field field : fields) {
+                String name = inputMapper.get(field.getName());
+                if (name == null) {
+                    name = field.getName();
+                }
+                Object value = values.getObject(name, Object.class);
+                if (value != null) {
+                    try {
+                        field.set(inputObject, value);
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    if (field.getAnnotation(HasDefaultValue.class) == null) {
+                        throw new NoSuchElementException(name + " is a required property for " + process +
+                                                         " and therefore must be defined in the Request Data or be an output of one" +
+                                                         " of the other processors.");
+                    }
+                }
+            }
+
+        }
+        return inputObject;
     }
 
-    static void writeProcessorOutputToValues(final Object output, final Map<String, String> outputMapper, final Values values) {
+    static void writeProcessorOutputToValues(final Object output, final BiMap<String, String> outputMapper,
+                                             final Values values) {
+        Map<String, String> mapper = outputMapper;
+        if (outputMapper == null) {
+            mapper = Collections.emptyMap();
+        }
 
+        final Collection<Field> fields = getAllAttributes(output.getClass());
+        for (Field field : fields) {
+            String name = mapper.get(field.getName());
+            if (name == null) {
+                name = field.getName();
+            }
+            try {
+                final Object value = field.get(output);
+                if (value != null) {
+                    values.put(name, value);
+                } else {
+                    values.remove(name);
+                }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

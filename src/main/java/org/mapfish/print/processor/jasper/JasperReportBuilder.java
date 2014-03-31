@@ -27,14 +27,12 @@ import net.sf.jasperreports.engine.JasperCompileManager;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.HasConfiguration;
 import org.mapfish.print.config.WorkingDirectories;
-import org.mapfish.print.processor.Processor;
+import org.mapfish.print.processor.AbstractProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.Map;
 
 /**
  * A processor that actually compiles a jasper report.
@@ -42,7 +40,7 @@ import java.util.Map;
  * @author Jesse
  * @author sbrunner
  */
-public class JasperReportBuilder implements Processor<Object, Void>, HasConfiguration {
+public class JasperReportBuilder extends AbstractProcessor<Object, Void> implements HasConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
     /**
      * Extension for Jasper XML Report Template files.
@@ -59,6 +57,13 @@ public class JasperReportBuilder implements Processor<Object, Void>, HasConfigur
     private MetricRegistry metricRegistry;
     @Autowired
     private WorkingDirectories workingDirectories;
+
+    /**
+     * Constructor.
+     */
+    protected JasperReportBuilder() {
+        super(Void.class);
+    }
 
     @Override
     public final Void execute(final Object param) throws JRException {
@@ -93,24 +98,10 @@ public class JasperReportBuilder implements Processor<Object, Void>, HasConfigur
         }
     }
 
-    @Override
-    public final Class<Void> getOutputType() {
-        return Void.class;
-    }
-
-    @Override
-    public final Map<String, String> getInputMapper() {
-        return Collections.emptyMap();
-    }
 
     @Override
     public final Object createInputParameter() {
-        return new Object();
-    }
-
-    @Override
-    public final Map<String, String> getOutputMapper() {
-        return Collections.emptyMap();
+        return null;
     }
 
     /**

@@ -58,7 +58,7 @@ templates:
       directory: .
     - !createMap
       inputMapper: {map: map}
-      outputMapper: {map: map}
+      outputMapper: {image: map}
     - !prepareLegend
       inputMapper: {legend: legend}
       outputMapper: {legend: legend}

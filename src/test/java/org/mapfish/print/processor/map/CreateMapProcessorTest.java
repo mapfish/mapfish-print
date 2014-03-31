@@ -50,7 +50,7 @@ public class CreateMapProcessorTest extends AbstractMapfishSpringTest {
         Values values = new Values(requestData, template);
         template.getProcessorGraph().createTask(values).invoke();
 
-        BufferedImage map = values.getObject("map", BufferedImage.class);
+        BufferedImage map = values.getObject("mapOut", BufferedImage.class);
         new ImageSimilarity(map, 2).assertSimilarity(getFile("basicMapExample/expectedSimpleImage.png"), 0);
     }
 

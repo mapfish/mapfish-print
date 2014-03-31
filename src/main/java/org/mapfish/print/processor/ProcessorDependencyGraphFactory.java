@@ -20,17 +20,24 @@
 package org.mapfish.print.processor;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.collect.Sets;
 import com.vividsolutions.jts.util.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import static org.mapfish.print.processor.InputOutputValueUtils.getAllAttributes;
 
 /**
  * Class for constructing {@link org.mapfish.print.processor.ProcessorDependencyGraph} instances.
  * <p/>
+ *
  * @author jesseeichar on 3/24/14.
  */
 public final class ProcessorDependencyGraphFactory {
@@ -45,16 +52,17 @@ public final class ProcessorDependencyGraphFactory {
      * @param processors the processors that will be part of the graph
      * @return a {@link org.mapfish.print.processor.ProcessorDependencyGraph} constructed from the passed in processors
      */
+    @SuppressWarnings("unchecked")
     public ProcessorDependencyGraph build(final List<? extends Processor> processors) {
         ProcessorDependencyGraph graph = new ProcessorDependencyGraph();
 
         final Map<String, ProcessorGraphNode> provideBy = new HashMap<String, ProcessorGraphNode>();
         final List<ProcessorGraphNode> nodes = new ArrayList<ProcessorGraphNode>(processors.size());
 
-        for (Processor processor : processors) {
+        for (Processor<Object, Object> processor : processors) {
 
             final ProcessorGraphNode<Object, Object> node = new ProcessorGraphNode<Object, Object>(processor, this.metricRegistry);
-            for (String value : node.getOutputMapper().values()) {
+            for (String value : getOutputValues(node)) {
                 if (provideBy.containsKey(value)) {
                     throw new IllegalArgumentException("Multiple processors provide the same output mapping: '" + processor + "' and '" +
                                                        provideBy.get(value) + "' both provide: '" + value +
@@ -68,11 +76,12 @@ public final class ProcessorDependencyGraphFactory {
         }
 
         for (ProcessorGraphNode<Object, Object> node : nodes) {
-            if (node.getInputMapper().isEmpty()) {
+            final Set<String> inputs = getInputs(node);
+            if (inputs.isEmpty()) {
                 graph.addRoot(node);
             } else {
                 boolean isDependency = false;
-                for (String requiredKey : node.getInputMapper().keySet()) {
+                for (String requiredKey : inputs) {
                     final ProcessorGraphNode solution = provideBy.get(requiredKey);
                     if (solution != null && solution != node) {
                         isDependency = true;
@@ -89,6 +98,33 @@ public final class ProcessorDependencyGraphFactory {
         Assert.isTrue(graph.getAllProcessors().containsAll(processors), graph + "does not contain all the processors: " + processors);
 
         return graph;
+    }
+
+    private static Set<String> getInputs(final ProcessorGraphNode<Object, Object> node) {
+        final Map<String, String> inputMapper = node.getInputMapper();
+        final Set<String> inputs = Sets.newHashSet(inputMapper.keySet());
+
+        final Object inputParameter = node.getProcessor().createInputParameter();
+        if (inputParameter != null) {
+            final Collection<Field> allProperties = getAllAttributes(inputParameter.getClass());
+            for (Field descriptor : allProperties) {
+                inputs.add(descriptor.getName());
+            }
+        }
+
+        return inputs;
+    }
+
+    private static Collection<String> getOutputValues(final ProcessorGraphNode<Object, Object> node) {
+        final Map<String, String> outputMapper = node.getOutputMapper();
+        final Set<String> values = Sets.newHashSet(outputMapper.values());
+
+        final Collection<Field> allProperties = getAllAttributes(node.getProcessor().getOutputType());
+        for (Field field : allProperties) {
+            values.add(field.getName());
+        }
+
+        return values;
     }
 
 }

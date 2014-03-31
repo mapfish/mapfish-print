@@ -34,10 +34,14 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
 
+import static org.mapfish.print.processor.InputOutputValueUtils.FILTER_ONLY_REQUIRED_ATTRIBUTES;
+import static org.mapfish.print.processor.InputOutputValueUtils.getAttributeNames;
+
 /**
  * Represents a graph of the processors dependencies.  The root nodes can execute in parallel but processors with
  * dependencies must wait for their dependencies to complete before execution.
  * <p/>
+ *
  * @author jesseeichar on 3/24/14.
  */
 public final class ProcessorDependencyGraph {
@@ -81,10 +85,15 @@ public final class ProcessorDependencyGraph {
     /**
      * Get all the names of inputs that are required to be in the Values object when this graph is executed.
      */
+    @SuppressWarnings("unchecked")
     public Collection<String> getAllRequiredAttributes() {
         Set<String> requiredInputs = Sets.newHashSet();
         for (ProcessorGraphNode root : this.roots) {
             requiredInputs.addAll(root.getInputMapper().keySet());
+            final Class<?> inputParamaterClass = root.getProcessor().createInputParameter().getClass();
+            final Set<String> requiredAttributesDefinedInInputParameter = getAttributeNames(inputParamaterClass,
+                    FILTER_ONLY_REQUIRED_ATTRIBUTES);
+            requiredInputs.addAll(requiredAttributesDefinedInInputParameter);
         }
 
         return requiredInputs;
@@ -134,13 +143,14 @@ public final class ProcessorDependencyGraph {
         protected Values compute() {
             final ProcessorDependencyGraph graph = ProcessorDependencyGraph.this;
 
-            LOGGER.debug("Starting to execute processor graph: " + graph);
+            LOGGER.debug("Starting to execute processor graph: \n" + graph);
             try {
                 List<ProcessorGraphNode.ProcessorNodeForkJoinTask> tasks =
                         new ArrayList<ProcessorGraphNode.ProcessorNodeForkJoinTask>(graph.roots.size());
 
                 // fork all but 1 dependencies (the first will be ran in current thread)
                 for (int i = 0; i < graph.roots.size(); i++) {
+                    @SuppressWarnings("unchecked")
                     Optional<ProcessorGraphNode.ProcessorNodeForkJoinTask> task = graph.roots.get(i).createTask(this.execContext);
                     if (task.isPresent()) {
                         tasks.add(task.get());
@@ -159,7 +169,7 @@ public final class ProcessorDependencyGraph {
                     }
                 }
             } finally {
-                LOGGER.debug("Finished executing processor graph: " + graph);
+                LOGGER.debug("Finished executing processor graph: \n" + graph);
             }
             return this.execContext.getValues();
         }

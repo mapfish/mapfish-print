@@ -22,6 +22,9 @@ package org.mapfish.print.processor;
 import org.mapfish.print.output.Values;
 
 import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Contains information shared across all nodes being executed.
@@ -31,7 +34,7 @@ import java.util.IdentityHashMap;
 public final class ProcessorExecutionContext {
     private final Values values;
     private final IdentityHashMap<Processor, Void> executedProcessors = new IdentityHashMap<Processor, Void>();
-
+    private final Lock executedProcessorLock = new ReentrantLock();
     /**
      * Constructor.
      *
@@ -51,7 +54,12 @@ public final class ProcessorExecutionContext {
      * @param processorGraphNode the node to test.
      */
     public boolean isFinished(final ProcessorGraphNode processorGraphNode) {
-        return this.executedProcessors.containsKey(processorGraphNode.getProcessor());
+        this.executedProcessorLock.lock();
+        try {
+            return this.executedProcessors.containsKey(processorGraphNode.getProcessor());
+        } finally {
+            this.executedProcessorLock.unlock();
+        }
     }
 
     /**
@@ -60,6 +68,32 @@ public final class ProcessorExecutionContext {
      * @param processorGraphNode the node that has finished.
      */
     public void finished(final ProcessorGraphNode processorGraphNode) {
-        this.executedProcessors.put(processorGraphNode.getProcessor(), null);
+        this.executedProcessorLock.lock();
+        try {
+            this.executedProcessors.put(processorGraphNode.getProcessor(), null);
+        } finally {
+            this.executedProcessorLock.unlock();
+        }
+    }
+
+    /**
+     * Verify that all processors have finished executing atomically (within the same lock as {@link #finished(ProcessorGraphNode)}
+     * and {@link #isFinished(ProcessorGraphNode)} is within.
+     *
+     * @param processorNodes the node to check for completion.
+     */
+    public boolean allAreFinished(final List<ProcessorGraphNode<?, ?>> processorNodes) {
+        this.executedProcessorLock.lock();
+        try {
+            for (ProcessorGraphNode<?, ?> node : processorNodes) {
+                if (!isFinished(node)) {
+                    return false;
+                }
+            }
+            return true;
+        } finally {
+            this.executedProcessorLock.unlock();
+        }
+
     }
 }

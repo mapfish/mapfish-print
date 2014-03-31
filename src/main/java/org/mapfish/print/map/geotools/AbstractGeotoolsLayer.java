@@ -65,7 +65,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
             StreamingRenderer renderer = new StreamingRenderer();
 
 
-            RenderingHints hints = new RenderingHints(Collections.EMPTY_MAP);
+            RenderingHints hints = new RenderingHints(Collections.<RenderingHints.Key, Object>emptyMap());
             hints.add(new RenderingHints(RenderingHints.KEY_RENDERING,
                     RenderingHints.VALUE_RENDER_SPEED));
             hints.add(new RenderingHints(RenderingHints.KEY_DITHERING,

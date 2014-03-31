@@ -38,7 +38,7 @@ import javax.imageio.ImageIO;
  * @author Jesse
  * @author sbrunner
  */
-public class LegendProcessor extends AbstractProcessor<LegendProcessor.Params, LegendProcessor.Output> {
+public class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, LegendProcessor.Output> {
 
     private static final String NAME_COLUMN = "name";
     private static final String ICON_COLUMN = "icon";
@@ -56,16 +56,16 @@ public class LegendProcessor extends AbstractProcessor<LegendProcessor.Params, L
     }
 
     @Override
-    public final Params createInputParameter() {
-        return new Params();
+    public final Input createInputParameter() {
+        return new Input();
     }
 
     @Override
-    public final Output execute(final Params values) throws Exception {
+    public final Output execute(final Input values) throws Exception {
 
         final List<Object[]> legendList = new ArrayList<Object[]>();
         final String[] legendColumns = {NAME_COLUMN, ICON_COLUMN, LEVEL_COLUMN};
-        final PJsonObject jsonLegend = values.getLegend().getJsonObject();
+        final PJsonObject jsonLegend = values.legend.getJsonObject();
         fillLegend(jsonLegend, legendList, 0);
         final Object[][] legend = new Object[legendList.size()][];
 
@@ -97,27 +97,27 @@ public class LegendProcessor extends AbstractProcessor<LegendProcessor.Params, L
         }
     }
 
-    static final class Params {
-        private LegendAttributeValue legend;
-
-        public LegendAttributeValue getLegend() {
-            return this.legend;
-        }
-
-        public void setLegend(final LegendAttributeValue legend) {
-            this.legend = legend;
-        }
+    /**
+     * The Input Parameter object for {@link org.mapfish.print.processor.jasper.LegendProcessor}.
+     */
+    public static final class Input {
+        /**
+         * The data required for creating the legend.
+         */
+        public LegendAttributeValue legend;
     }
 
-    static final class Output {
-        private final JRTableModelDataSource legend;
+    /**
+     * The Output object of the legend processor method.
+     */
+    public static final class Output {
+        /**
+         * The datasource for the legend object in the report.
+         */
+        public final JRTableModelDataSource legend;
 
-        public Output(final JRTableModelDataSource legend) {
+        Output(final JRTableModelDataSource legend) {
             this.legend = legend;
-        }
-
-        public JRTableModelDataSource getLegend() {
-            return this.legend;
         }
     }
 }

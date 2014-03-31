@@ -61,7 +61,7 @@ import static org.mapfish.print.processor.jasper.JasperReportBuilder.JASPER_REPO
  * @author Jesse
  * @author sbrunner
  */
-public class TableListProcessor extends AbstractProcessor<TableListProcessor.Params, TableListProcessor.Output>
+public class TableListProcessor extends AbstractProcessor<TableListProcessor.Input, TableListProcessor.Output>
         implements HasConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
 
@@ -97,13 +97,13 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Par
     }
 
     @Override
-    public final Params createInputParameter() {
-        return new Params();
+    public final Input createInputParameter() {
+        return new Input();
     }
 
     @Override
-    public final Output execute(final Params values) throws Exception {
-        final PJsonObject jsonTableList = values.getTableList().getJsonObject();
+    public final Output execute(final Input values) throws Exception {
+        final PJsonObject jsonTableList = values.tableList.getJsonObject();
         final List<Values> tableList = new ArrayList<Values>();
 
         if (jsonTableList != null) {
@@ -224,27 +224,27 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Par
         this.configuration = configuration;
     }
 
-    static final class Params {
-        private TableListAttributeValue tableList;
-
-        public TableListAttributeValue getTableList() {
-            return this.tableList;
-        }
-
-        public void setTableList(final TableListAttributeValue tableList) {
-            this.tableList = tableList;
-        }
+    /**
+     * Input of processor.
+     */
+    public static final class Input {
+        /**
+         * Data for constructing the table list of values.
+         */
+        public TableListAttributeValue tableList;
     }
 
-    static final class Output {
-        private final List<Values> tableList;
+    /**
+     * Output of processor.
+     */
+    public static final class Output {
+        /**
+         * Resulting list of values for the table in the jasper report.
+         */
+        public final List<Values> tableList;
 
-        public Output(final List<Values> tableList) {
+        private Output(final List<Values> tableList) {
             this.tableList = tableList;
-        }
-
-        public List<Values> getTableList() {
-            return this.tableList;
         }
     }
 }

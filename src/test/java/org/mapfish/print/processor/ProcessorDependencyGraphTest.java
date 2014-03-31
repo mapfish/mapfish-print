@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 /**
  * @author jesseeichar on 3/25/14.
  */
+@SuppressWarnings("unchecked")
 public class ProcessorDependencyGraphTest extends TestCase {
     public void testToString() throws Exception {
         ProcessorDependencyGraph graph = new ProcessorDependencyGraph();
