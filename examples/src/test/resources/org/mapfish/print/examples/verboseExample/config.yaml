@@ -54,12 +54,12 @@ templates:
       table: !table {}
       tableList: !tableList {}
     processors:
-    - !reportBuilder
-      directory: .
+    - !reportBuilder # compile all reports in current directory
+      directory: '.'
     - !createMap
       inputMapper: {map: map}
       outputMapper: {image: map}
-    - !prepareLegend
+    - !prepareLegend # create a datasource for the report with the 'legend' attribute
       inputMapper: {legend: legend}
       outputMapper: {legend: legend}
     - !prepareTable
@@ -68,8 +68,8 @@ templates:
     - !prepareTableList
       inputMapper: {tableList: tableList}
       dynamicReport: {}
-      dynamicReportDirectory: "dynamic"
+      dynamicReportDirectory: "subreports"
       outputMapper: {tableList: tableList}
-    - !reportBuilder
-      directory: "dynamic"
+    - !reportBuilder  # compile all jasper report templates in subreports directory
+      directory: "subreports"
     iterValue: tableList

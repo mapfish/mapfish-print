@@ -47,7 +47,7 @@ allprojects {
     findbugsTest.enabled = false
 
 }
-
+build.dependsOn(':examples:test')
 task wrapper(type: Wrapper) {
     gradleVersion = '1.10'
 }
@@ -58,8 +58,8 @@ configurations {
 }
 
 project.ext.junitVersion = "4.11"
+def springVersion = "4.0.2.RELEASE"
 dependencies {
-    def springVersion = "4.0.2.RELEASE"
     compile (
             "org.springframework:spring-context:$springVersion",
             "org.springframework:spring-web:$springVersion",
@@ -99,7 +99,6 @@ dependencies {
     compile ('org.apache.xmlgraphics:batik-transcoder:1.7'){
         exclude module: 'fop'
     }
-    testCompile ("org.springframework:spring-test:${springVersion}")
     providedCompile('com.google.code.findbugs:jsr305:2.0.1')
 
     providedCompile('javax.servlet:servlet-api:2.5')
@@ -107,7 +106,12 @@ dependencies {
 
 allprojects {
     dependencies {
-        testCompile ("junit:junit:${project.junitVersion}", 'org.mockito:mockito-core:1.9.5')
+        testCompile (
+                "junit:junit:${project.junitVersion}",
+                'org.mockito:mockito-core:1.9.5',
+                "org.springframework:spring-test:${springVersion}"
+        )
+
     }
 
     sourceSets {
@@ -213,8 +217,6 @@ startScripts {
 //    contextPath = '/print'
 //    scanInterval = 5
 //}
-
-
 
 
 /*

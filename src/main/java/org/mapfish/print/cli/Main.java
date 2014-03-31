@@ -26,6 +26,7 @@ import ch.qos.logback.core.util.StatusPrinter;
 import com.google.common.io.CharStreams;
 import com.sampullara.cli.Args;
 import org.json.JSONWriter;
+import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.json.PJsonObject;
 import org.slf4j.Logger;
@@ -136,7 +137,7 @@ public final class Main {
         try {
             if (clientConfig) {
                 outFile = getOutputStream("");
-                final OutputStreamWriter writer = new OutputStreamWriter(outFile, Charset.forName("UTF-8"));
+                final OutputStreamWriter writer = new OutputStreamWriter(outFile, Charset.forName(Constants.ENCODING));
 
                 JSONWriter json = new JSONWriter(writer);
                 json.object();
@@ -147,7 +148,7 @@ public final class Main {
 
             } else {
                 final InputStream inFile = getInputStream();
-                final String jsonConfiguration = CharStreams.toString(new InputStreamReader(inFile, "UTF-8"));
+                final String jsonConfiguration = CharStreams.toString(new InputStreamReader(inFile, Constants.ENCODING));
                 final PJsonObject jsonSpec = MapPrinter.parseSpec(jsonConfiguration);
                 outFile = getOutputStream(this.mapPrinter.getOutputFormat(jsonSpec).getFileSuffix());
                 Map<String, String> headers = new HashMap<String, String>();
