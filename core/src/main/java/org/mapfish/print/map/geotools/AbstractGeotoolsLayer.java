@@ -20,6 +20,7 @@
 package org.mapfish.print.map.geotools;
 
 import com.google.common.base.Optional;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
 import org.geotools.renderer.lite.StreamingRenderer;
@@ -88,7 +89,8 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
 
             renderer.setMapContent(content);
             renderer.setThreadPool(this.executorService);
-            renderer.paint(graphics2D, paintArea, bounds.toReferencedEnvelope(paintArea, dpi));
+            final ReferencedEnvelope mapArea = bounds.toReferencedEnvelope(paintArea, dpi);
+            renderer.paint(graphics2D, paintArea, mapArea);
         } finally {
             content.dispose();
         }

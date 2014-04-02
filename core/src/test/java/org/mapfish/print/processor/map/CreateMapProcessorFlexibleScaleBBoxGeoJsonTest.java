@@ -30,7 +30,9 @@ import org.mapfish.print.util.ImageSimilarity;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import javax.imageio.ImageIO;
 
 /**
  * Basic test of the Map processor.
@@ -38,7 +40,7 @@ import java.io.IOException;
  * Created by Jesse on 3/26/14.
  */
 public class CreateMapProcessorFlexibleScaleBBoxGeoJsonTest extends AbstractMapfishSpringTest {
-    private static final String BASE_DIR ="bbox_geojson_flexible_scale/";
+    public static final String BASE_DIR ="bbox_geojson_flexible_scale/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;

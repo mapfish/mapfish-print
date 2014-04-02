@@ -25,4 +25,8 @@ package org.mapfish.print.config;
  * @author jesseeichar on 3/4/14.
  */
 public interface ConfigurationObject {
+    /**
+     * validate that the configuration was correct.
+     */
+//    List<Throwable> validate();
 }

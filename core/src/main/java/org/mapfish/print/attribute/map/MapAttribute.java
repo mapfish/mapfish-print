@@ -56,12 +56,15 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
      * The key in the config.yaml file of the height of the map.  This is used by the client to determine the area that will be printed.
      */
     static final String HEIGHT = "height";
+    private static final double DEFAULT_SNAP_TOLERANCE = 0.05;
 
     @Autowired
     private ApplicationContext applicationContext;
 
     private double[] dpi;
-    private double[] scales;
+    private ZoomLevels zoomLevels;
+    private double zoomSnapTolerance = DEFAULT_SNAP_TOLERANCE;
+    private ZoomLevelSnapStrategy zoomLevelSnapStrategy;
 
     private int width;
     private int height;
@@ -99,8 +102,16 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
         this.height = height;
     }
 
-    public final void setScales(final double[] scales) {
-        this.scales = scales;
+    public final void setZoomLevels(final ZoomLevels zoomLevels) {
+        this.zoomLevels = zoomLevels;
+    }
+
+    public final void setZoomSnapTolerance(final double zoomSnapTolerance) {
+        this.zoomSnapTolerance = zoomSnapTolerance;
+    }
+
+    public final void setZoomLevelSnapStrategy(final ZoomLevelSnapStrategy zoomLevelSnapStrategy) {
+        this.zoomLevelSnapStrategy = zoomLevelSnapStrategy;
     }
 
     /**
@@ -129,7 +140,7 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
         private double dpi;
 
         MapAttributeValues(final Template template, final PJsonObject requestData) {
-            this.useNearestScale = requestData.optBool(USE_NEAREST_SCALE, true) && MapAttribute.this.scales != null;
+            this.useNearestScale = requestData.optBool(USE_NEAREST_SCALE, true) && MapAttribute.this.zoomLevels != null;
             this.dpi = requestData.getDouble(CONFIG_DPI);
             this.mapBounds = parseBounds(requestData);
             this.rotation = requestData.optDouble(ROTATION, 0.0);
@@ -207,6 +218,7 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
                 double centerX = center.getDouble(0);
                 double centerY = center.getDouble(1);
                 Scale scale = new Scale(requestData);
+
                 bounds = new CenterScaleMapBounds(projection, centerX, centerY, scale);
             } else if (bbox != null) {
                 final int maxYIndex = 3;
@@ -249,8 +261,17 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
             return this.useNearestScale;
         }
 
-        public double[] getScales() {
-            return MapAttribute.this.scales;
+        public ZoomLevels getZoomLevels() {
+            return MapAttribute.this.zoomLevels;
         }
+
+        public double getZoomSnapTolerance() {
+            return MapAttribute.this.zoomSnapTolerance;
+        }
+
+        public ZoomLevelSnapStrategy getZoomLevelSnapStrategy() {
+            return MapAttribute.this.zoomLevelSnapStrategy;
+        }
+
     }
 }

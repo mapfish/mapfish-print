@@ -6,11 +6,13 @@ templates:
         width: 500
         height: 100
         dpi: [72, 96]
-        scales: [500, 1000, 5000, 10000, 25000, 50000],
+        zoomSnapTolerance: 0.025
+        zoomLevelSnapStrategy: CLOSEST_LOWER_SCALE_ON_TIE
+        zoomLevels: !zoomLevels
+          scales: [50000, 100000, 500000, 1000000]
     processors:
     - !createMap
         inputMapper: {mapDef: map}
         outputMapper: {image: mapOut}
-        imageType: TYPE_4BYTE_ABGR
 
 

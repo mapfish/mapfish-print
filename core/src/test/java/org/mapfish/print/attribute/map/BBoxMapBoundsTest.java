@@ -20,12 +20,14 @@
 package org.mapfish.print.attribute.map;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
+import org.mapfish.print.map.Scale;
 
 import java.awt.Rectangle;
 
+import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
 import static org.junit.Assert.assertEquals;
+import static org.mapfish.print.attribute.map.CenterScaleMapBoundsTest.CH1903;
 
 /**
  * @author Jesse on 3/27/14.
@@ -33,13 +35,14 @@ import static org.junit.Assert.assertEquals;
 public class BBoxMapBoundsTest {
     @Test(expected = IllegalArgumentException.class)
     public void testToReferencedEnvelopeMismatchAspectRatio() throws Exception {
-        final BBoxMapBounds bboxMapBounds = new BBoxMapBounds(DefaultGeographicCRS.WGS84, 0, 0, 10, 10);
+        final BBoxMapBounds bboxMapBounds = new BBoxMapBounds(WGS84, 0, 0, 10, 10);
 
         bboxMapBounds.toReferencedEnvelope(new Rectangle(5, 10), 90);
     }
+
     @Test
     public void testToReferencedEnvelope() throws Exception {
-        final BBoxMapBounds bboxMapBounds = new BBoxMapBounds(DefaultGeographicCRS.WGS84, -180, -90, 180, 90);
+        final BBoxMapBounds bboxMapBounds = new BBoxMapBounds(WGS84, -180, -90, 180, 90);
 
         final ReferencedEnvelope envelope = bboxMapBounds.toReferencedEnvelope(new Rectangle(10, 5), 90);
 
@@ -48,7 +51,62 @@ public class BBoxMapBoundsTest {
         assertEquals(180, envelope.getMaxX(), 0.001);
         assertEquals(-90, envelope.getMinY(), 0.001);
         assertEquals(90, envelope.getMaxY(), 0.001);
-        assertEquals(DefaultGeographicCRS.WGS84, envelope.getCoordinateReferenceSystem());
+        assertEquals(WGS84, envelope.getCoordinateReferenceSystem());
     }
 
+    @Test
+    public void testAdjustToScale() throws Exception {
+        int scale = 24000;
+        double dpi = 100;
+        Rectangle screen = new Rectangle(100, 100);
+        ZoomLevels zoomLevels = new ZoomLevels(15000, 20000, 25000, 30000, 350000);
+
+
+        final CenterScaleMapBounds mapBounds = new CenterScaleMapBounds(CH1903, 50000, 50000, new Scale(scale));
+        final ReferencedEnvelope originalBBox = mapBounds.toReferencedEnvelope(screen, dpi);
+
+        BBoxMapBounds linear = new BBoxMapBounds(CH1903, originalBBox.getMinX(), originalBBox.getMinY(),
+                originalBBox.getMaxX(), originalBBox.getMaxY());
+
+        final MapBounds newMapBounds = linear.adjustBoundsToNearestScale(zoomLevels, 0.05,
+                ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE, screen, dpi);
+        ReferencedEnvelope newBBox = newMapBounds.toReferencedEnvelope(screen, dpi);
+
+        final double delta = 0.00001;
+        assertEquals(originalBBox.getMedian(0), newBBox.getMedian(0), delta);
+        assertEquals(originalBBox.getMedian(1), newBBox.getMedian(1), delta);
+
+        double expectedScale = 25000;
+        CenterScaleMapBounds expectedMapBounds = new CenterScaleMapBounds(CH1903, originalBBox.centre().x, originalBBox.centre().y,
+                new Scale(expectedScale));
+        assertEquals(expectedMapBounds.toReferencedEnvelope(screen, dpi), newBBox);
+    }
+
+    @Test
+    public void testAdjustToScaleLatLong() throws Exception {
+        int scale = 24000;
+        double dpi = 100;
+        Rectangle screen = new Rectangle(100, 100);
+        ZoomLevels zoomLevels = new ZoomLevels(15000, 20000, 25000, 30000, 350000);
+
+
+        final CenterScaleMapBounds mapBounds = new CenterScaleMapBounds(WGS84, 5, 5, new Scale(scale));
+        final ReferencedEnvelope originalBBox = mapBounds.toReferencedEnvelope(screen, dpi);
+
+        BBoxMapBounds linear = new BBoxMapBounds(WGS84, originalBBox.getMinX(), originalBBox.getMinY(),
+                originalBBox.getMaxX(), originalBBox.getMaxY());
+
+        final MapBounds newMapBounds = linear.adjustBoundsToNearestScale(zoomLevels, 0.05,
+                ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE, screen, dpi);
+        ReferencedEnvelope newBBox = newMapBounds.toReferencedEnvelope(screen, dpi);
+
+        final double delta = 0.00001;
+        assertEquals(originalBBox.getMedian(0), newBBox.getMedian(0), delta);
+        assertEquals(originalBBox.getMedian(1), newBBox.getMedian(1), delta);
+
+        double expectedScale = 25000;
+        CenterScaleMapBounds expectedMapBounds = new CenterScaleMapBounds(WGS84, originalBBox.centre().x, originalBBox.centre().y,
+                new Scale(expectedScale));
+        assertEquals(expectedMapBounds.toReferencedEnvelope(screen, dpi), newBBox);
+    }
 }

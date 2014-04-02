@@ -19,12 +19,15 @@
 
 package org.mapfish.print.map;
 
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.measure.unit.Unit;
 
 
 /**
@@ -115,7 +118,11 @@ public enum DistanceUnit {
     private static Map<String, DistanceUnit> translations = null;
 
     DistanceUnit(final DistanceUnit baseUnit, final double baseFactor, final double metersFactor, final String[] texts) {
-        this.baseUnit = baseUnit;
+        if (baseUnit == null) {
+            this.baseUnit = this;
+        } else {
+            this.baseUnit = baseUnit;
+        }
         this.baseFactor = baseFactor;
         this.texts = texts;
         this.metersFactor = metersFactor;
@@ -135,6 +142,9 @@ public enum DistanceUnit {
      * @param targetUnit the unit to convert value to (from this unit)
      */
     public double convertTo(final double value, final DistanceUnit targetUnit) {
+        if (targetUnit == this) {
+            return value;
+        }
         if (isSameBaseUnit(targetUnit)) {
             return value * this.baseFactor / targetUnit.baseFactor;
         } else {
@@ -232,4 +242,13 @@ public enum DistanceUnit {
         return translations;
     }
 
+    /**
+     * Determine the unit of the given projection.
+     *
+     * @param projection the projection to determine
+     */
+    public static DistanceUnit fromProjection(final CoordinateReferenceSystem projection) {
+        final Unit<?> projectionUnit = projection.getCoordinateSystem().getAxis(0).getUnit();
+        return DistanceUnit.fromString(projectionUnit.toString());
+    }
 }

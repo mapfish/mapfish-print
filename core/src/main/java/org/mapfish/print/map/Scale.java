@@ -28,19 +28,15 @@ import org.mapfish.print.json.PJsonObject;
  */
 public final class Scale {
     private static final String SCALE = "scale";
-    private static final String UNIT = "unit";
     private double denominator;
-    private DistanceUnit unit;
 
     /**
      * Constructor.
      *
      * @param denominator the scale denominator.  a value of 1'000 would be a scale of 1:1'000
-     * @param unit        the unit the scale is in.
      */
-    public Scale(final double denominator, final DistanceUnit unit) {
+    public Scale(final double denominator) {
         this.denominator = denominator;
-        this.unit = unit;
     }
 
     /**
@@ -50,14 +46,37 @@ public final class Scale {
      */
     public Scale(final PJsonObject requestData) {
         this.denominator = requestData.getDouble(SCALE);
-        this.unit = DistanceUnit.fromString(requestData.getString(UNIT));
     }
 
     public double getDenominator() {
         return this.denominator;
     }
 
-    public DistanceUnit getUnit() {
-        return this.unit;
+    // CHECKSTYLE:OFF
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Scale scale = (Scale) o;
+
+        if (Double.compare(scale.denominator, denominator) != 0) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(denominator);
+        result = (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Scale{" + denominator + '}';
     }
 }

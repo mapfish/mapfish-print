@@ -23,7 +23,6 @@ import com.vividsolutions.jts.geom.Coordinate;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.GeodeticCalculator;
-import org.mapfish.print.Constants;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.Scale;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -36,9 +35,9 @@ import java.awt.Rectangle;
  * <p/>
  * Created by Jesse on 3/26/14.
  */
-public class CenterScaleMapBounds extends MapBounds {
-    private Coordinate center;
-    private Scale scale;
+public final class CenterScaleMapBounds extends MapBounds {
+    private final Coordinate center;
+    private final Scale scale;
 
     /**
      * Constructor.
@@ -57,21 +56,25 @@ public class CenterScaleMapBounds extends MapBounds {
 
 
     @Override
-    public final ReferencedEnvelope toReferencedEnvelope(final Rectangle paintArea, final double dpi) {
-        double pixelPerGeoUnit = (this.scale.getUnit().convertTo(dpi, DistanceUnit.IN) / this.scale.getDenominator());
+    public ReferencedEnvelope toReferencedEnvelope(final Rectangle paintArea, final double dpi) {
 
-        double geoWidth = paintArea.width * dpi / Constants.PDF_DPI / pixelPerGeoUnit;
-        double geoHeight = paintArea.height * dpi / Constants.PDF_DPI / pixelPerGeoUnit;
-        final double centerX = this.center.getOrdinate(0);
-        final double centerY = this.center.getOrdinate(1);
+        double geoWidthInches = this.scale.getDenominator() * paintArea.width / dpi;
+        double geoHeightInches = this.scale.getDenominator() * paintArea.height / dpi;
 
         ReferencedEnvelope bbox;
-        final boolean standardUnit = this.getProjection().getCoordinateSystem().getAxis(0).getUnit().isStandardUnit();
-        if (!standardUnit) {
-            bbox = computeGeodeticBBox(geoWidth, geoHeight);
+
+        final DistanceUnit projectionUnit = DistanceUnit.fromProjection(getProjection());
+        if (projectionUnit == DistanceUnit.DEGREES) {
+            bbox = computeGeodeticBBox(geoWidthInches, geoHeightInches);
         } else {
-            double minGeoX = centerX - (geoWidth / 2.0f);
-            double minGeoY = centerY - (geoHeight / 2.0f);
+            final double centerX = this.center.getOrdinate(0);
+            final double centerY = this.center.getOrdinate(1);
+
+            double geoWidth = DistanceUnit.IN.convertTo(geoWidthInches, projectionUnit);
+            double geoHeight = DistanceUnit.IN.convertTo(geoHeightInches, projectionUnit);
+
+            double minGeoX = centerX - (geoWidth / 2.0);
+            double minGeoY = centerY - (geoHeight / 2.0);
             double maxGeoX = minGeoX + geoWidth;
             double maxGeoY = minGeoY + geoHeight;
             bbox = new ReferencedEnvelope(minGeoX, maxGeoX, minGeoY, maxGeoY, getProjection());
@@ -80,29 +83,43 @@ public class CenterScaleMapBounds extends MapBounds {
         return bbox;
     }
 
-    private ReferencedEnvelope computeGeodeticBBox(final double geoWidth, final double geoHeight) {
+    @Override
+    public MapBounds adjustBoundsToNearestScale(final ZoomLevels zoomLevels, final double tolerance,
+                                                final ZoomLevelSnapStrategy zoomLevelSnapStrategy,
+                                                final Rectangle paintArea, final double dpi) {
+        final ZoomLevelSnapStrategy.SearchResult result = zoomLevelSnapStrategy.search(this.scale, tolerance, zoomLevels);
+        return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y, result.getScale());
+    }
+
+    private ReferencedEnvelope computeGeodeticBBox(final double geoWidthInInches, final double geoHeightInInches) {
         try {
+
             CoordinateReferenceSystem crs = getProjection();
 
             GeodeticCalculator calc = new GeodeticCalculator(crs);
+
+            DistanceUnit ellipsoidUnit = DistanceUnit.fromString(calc.getEllipsoid().getAxisUnit().toString());
+            double geoWidth = DistanceUnit.IN.convertTo(geoWidthInInches, ellipsoidUnit);
+            double geoHeight = DistanceUnit.IN.convertTo(geoHeightInInches, ellipsoidUnit);
+
             DirectPosition2D directPosition2D = new DirectPosition2D(this.center.x, this.center.y);
             directPosition2D.setCoordinateReferenceSystem(crs);
             calc.setStartingPosition(directPosition2D);
 
             final int west = -90;
-            calc.setDirection(west, geoWidth / 2.0f);
+            calc.setDirection(west, geoWidth / 2.0);
             double minGeoX =  calc.getDestinationPosition().getOrdinate(0);
 
             final int east = 90;
-            calc.setDirection(east, geoWidth / 2.0f);
+            calc.setDirection(east, geoWidth / 2.0);
             double maxGeoX = calc.getDestinationPosition().getOrdinate(0);
 
             final int south = 180;
-            calc.setDirection(south, geoHeight / 2.0f);
+            calc.setDirection(south, geoHeight / 2.0);
             double minGeoY = calc.getDestinationPosition().getOrdinate(1);
 
             final int north = 0;
-            calc.setDirection(north, geoHeight / 2.0f);
+            calc.setDirection(north, geoHeight / 2.0);
             double maxGeoY = calc.getDestinationPosition().getOrdinate(1);
 
             return new ReferencedEnvelope(
@@ -122,4 +139,37 @@ public class CenterScaleMapBounds extends MapBounds {
         return y - (((int) (y + Math.signum(y) * 90)) / 180) * 180.0;
     }
     // CSON: MagicNumber
+
+    // CHECKSTYLE:OFF
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        CenterScaleMapBounds that = (CenterScaleMapBounds) o;
+
+        if (!center.equals(that.center)) return false;
+        if (!scale.equals(that.scale)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + center.hashCode();
+        result = 31 * result + scale.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "CenterScaleMapBounds{" +
+               "center=" + center +
+               ", scale=" + scale +
+               '}';
+    }
+    // CHECKSTYLE:ON
 }
