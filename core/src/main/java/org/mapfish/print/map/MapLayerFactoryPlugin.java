@@ -22,23 +22,40 @@ package org.mapfish.print.map;
 import com.google.common.base.Optional;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.json.PJsonObject;
 
+import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
  * Parses layer request data and creates a MapLayer from it.
  *
  * @author Jesse on 3/26/14.
+ * @param <Param> the type of object that will be populated from the JSON and passed to the factory to create the layer.
  */
-public interface MapLayerFactoryPlugin {
+public interface MapLayerFactoryPlugin<Param> {
+
+    /**
+     * Return a set of all the values the json 'type' property should have for this plugin to apply (case insensitive)
+     */
+    Set<String> getTypeNames();
+
+    /**
+     * Create an instance of a param object.  Each instance must be new and unique. Instances must <em>NOT</em> be shared.
+     *
+     * The object will be populated from the json.  Each public field will be populated by looking up the value in the json.
+     *
+     * If a field in the Param object has the {@link org.mapfish.print.processor.HasDefaultValue} annotation then no exception
+     * will be thrown if the json does not contain a value.
+     */
+    Param createParameter();
+
     /**
      * Inspect the json data and return Optional&lt;MapLayer> or Optional.absent().
      *
      * @param template the configuration related to the current request.
-     * @param layerJson the layer data to parse.
+     * @param layerData an object populated from the json for the layer
      */
     @Nonnull
-    Optional<? extends MapLayer> parse(Template template, @Nonnull PJsonObject layerJson) throws Throwable;
+    MapLayer parse(@Nonnull Template template, @Nonnull Param layerData) throws Throwable;
 
 }

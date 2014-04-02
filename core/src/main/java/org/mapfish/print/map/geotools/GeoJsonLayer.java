@@ -20,6 +20,7 @@
 package org.mapfish.print.map.geotools;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Sets;
 import jsr166y.ForkJoinPool;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
@@ -27,10 +28,11 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.styling.Style;
 import org.mapfish.print.Constants;
+import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.map.style.StyleParser;
+import org.mapfish.print.processor.HasDefaultValue;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayInputStream;
@@ -39,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
 
@@ -63,11 +66,10 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
     /**
      * Parser for creating {@link org.mapfish.print.map.geotools.GeoJsonLayer} layers from request data.
      */
-    public static final class Plugin implements MapLayerFactoryPlugin {
+    public static final class Plugin implements MapLayerFactoryPlugin<GeoJsonParam> {
 
         private static final String TYPE = "geojson";
         private static final String COMPATIBILITY_TYPE = "vector";
-        private static final String JSON_DATA = "geoJson";
 
         private final FeatureJSON geoJsonReader = new FeatureJSON();
 
@@ -75,33 +77,40 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
         private StyleParser parser;
         @Autowired
         private ForkJoinPool forkJoinPool;
+        private Set<String> typeNames = Sets.newHashSet(TYPE, COMPATIBILITY_TYPE);
 
+
+        @Override
+        public Set<String> getTypeNames() {
+            return this.typeNames;
+        }
+
+        @Override
+        public GeoJsonParam createParameter() {
+            return new GeoJsonParam();
+        }
 
         @Nonnull
         @Override
-        public Optional<GeoJsonLayer> parse(final Template template, @Nonnull final PJsonObject layerJson) throws IOException {
+        public MapLayer parse(final Template template, @Nonnull final GeoJsonParam param) throws IOException {
             final Optional<GeoJsonLayer> result;
-            final String type = layerJson.getString("type");
-            final String geoJsonString = layerJson.optString(JSON_DATA);
-            if ((TYPE.equalsIgnoreCase(type) || COMPATIBILITY_TYPE.equalsIgnoreCase(type)) && geoJsonString != null) {
+            SimpleFeatureCollection featureCollection = treatStringAsURL(template, param.geoJson);
+            if (featureCollection == null) {
+                featureCollection = treatStringAsGeoJson(param.geoJson);
+            }
+            FeatureSource featureSource = new CollectionFeatureSource(featureCollection);
 
-                SimpleFeatureCollection featureCollection = treatStringAsURL(template, geoJsonString);
-                if (featureCollection == null) {
-                    featureCollection = treatStringAsGeoJson(geoJsonString);
-                }
-                FeatureSource featureSource = new CollectionFeatureSource(featureCollection);
+            String geomType = featureCollection.getSchema().getGeometryDescriptor().getType().getBinding().getSimpleName();
+            String styleRef = param.style;
 
-                String geomType = featureCollection.getSchema().getGeometryDescriptor().getType().getBinding().getSimpleName();
-                final String styleRef = layerJson.optString("style", geomType);
-
-                Style style = template.getStyle(styleRef)
+            if (styleRef == null) {
+                styleRef = geomType;
+            }
+            Style style = template.getStyle(styleRef)
                         .or(this.parser.loadStyle(template.getConfiguration(), styleRef))
                         .or(template.getConfiguration().getDefaultStyle(geomType));
 
-                result = Optional.of(new GeoJsonLayer(featureSource, style, this.forkJoinPool));
-            } else {
-                result = Optional.absent();
-            }
+            result = Optional.of(new GeoJsonLayer(featureSource, style, this.forkJoinPool));
             return result;
         }
 
@@ -150,5 +159,25 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
                 }
             }
         }
+    }
+
+    /**
+     * The parameters for creating a layer that renders GeoJSON formatted data.
+     */
+    private static class GeoJsonParam {
+        /**
+         * A url to the geoJson or the raw GeoJSON data.
+         * <p/>
+         * The url can be a file url, however if it is it must be relative to the configuration directory.
+         */
+        public String geoJson;
+        /**
+         * The style name of a style to apply to the features during rendering.  The style name must map to a style in the
+         * template or the configuration objects.
+         * <p/>
+         * If no style is defined then the default style for the geometry type will be used.
+         */
+        @HasDefaultValue
+        public String style;
     }
 }

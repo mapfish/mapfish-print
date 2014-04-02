@@ -132,6 +132,7 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
         private static final String DEFAULT_PROJECTION = "EPSG:3857";
         private static final String LONGITUDE_FIRST = "longitudeFirst ";
         private static final String USE_NEAREST_SCALE = "useNearestScale";
+        private static final String TYPE = "type";
 
         private final MapBounds mapBounds;
         private final double rotation;
@@ -169,9 +170,10 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
             final Map<String, MapLayerFactoryPlugin> layerParsers =
                     MapAttribute.this.applicationContext.getBeansOfType(MapLayerFactoryPlugin.class);
             for (MapLayerFactoryPlugin layerParser : layerParsers.values()) {
-                final Optional<? extends MapLayer> layerOption = layerParser.parse(template, layerJson);
-                if (layerOption.isPresent()) {
-                    final MapLayer newLayer = layerOption.get();
+                final boolean layerApplies = layerParser.getTypeNames().contains(layerJson.getString(TYPE).toLowerCase());
+                if (layerApplies) {
+                    Object param = layerParser.createParameter();
+                    final MapLayer newLayer = layerParser.parse(template, param);
                     if (layerList.isEmpty()) {
                         layerList.add(newLayer);
                     } else {

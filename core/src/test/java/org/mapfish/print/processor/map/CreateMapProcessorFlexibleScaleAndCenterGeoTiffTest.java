@@ -37,7 +37,7 @@ import java.io.IOException;
  * <p/>
  * Created by Jesse on 3/26/14.
  */
-public class CreateMapProcessorFlexibleScaleBBoxGeoTiffTest extends AbstractMapfishSpringTest {
+public class CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest extends AbstractMapfishSpringTest {
     public static final String BASE_DIR ="center_geotiff_flexible_scale/";
 
     @Autowired
@@ -56,7 +56,7 @@ public class CreateMapProcessorFlexibleScaleBBoxGeoTiffTest extends AbstractMapf
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleBBoxGeoTiffTest.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest.class, BASE_DIR + "requestData.json");
     }
 
 }
