@@ -21,4 +21,5 @@
 <beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
     <bean id="geojsonLayerParser" class="org.mapfish.print.map.geotools.GeoJsonLayer$Plugin" />
+    <bean id="geotiffLayerParser" class="org.mapfish.print.map.geotools.GeotiffLayer$Plugin" />
 </beans>

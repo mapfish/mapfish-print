@@ -30,6 +30,7 @@ import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.Symbolizer;
 import org.json.JSONException;
 import org.json.JSONWriter;
+import org.mapfish.print.Constants;
 import org.mapfish.print.map.style.StyleParser;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -219,6 +220,8 @@ public class Configuration {
                 symbolizer = builder.createLineSymbolizer(Color.black, 2);
             } else if (normalizedGeomName.equalsIgnoreCase(Polygon.class.getSimpleName())) {
                 symbolizer = builder.createPolygonSymbolizer(Color.lightGray, Color.black, 2);
+            } else if (normalizedGeomName.equalsIgnoreCase(Constants.RASTER_STYLE_NAME)) {
+                symbolizer = builder.createRasterSymbolizer();
             } else {
                 final Style geomStyle = this.defaultStyle.get(Geometry.class.getSimpleName().toLowerCase());
                 if (geomStyle != null) {

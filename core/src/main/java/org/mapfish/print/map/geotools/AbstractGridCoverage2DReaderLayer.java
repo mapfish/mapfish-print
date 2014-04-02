@@ -19,8 +19,8 @@
 
 package org.mapfish.print.map.geotools;
 
-import org.geotools.data.FeatureSource;
-import org.geotools.map.FeatureLayer;
+import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.map.GridReaderLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
 
@@ -31,20 +31,21 @@ import java.util.concurrent.ExecutorService;
 /**
  * @author Jesse on 3/26/14.
  */
-public class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
+public class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
 
     private final List<? extends Layer> layers;
 
     /**
      * Constructor.
      *
-     * @param featureSource the featureSource containing the feature data.
-     * @param style style to use for rendering the data.
-     * @param executorService the thread pool for doing the rendering.
+     * @param coverage2DReader the coverage2DReader containing the feature data.
+     * @param style            style to use for rendering the data.
+     * @param executorService  the thread pool for doing the rendering.
      */
-    public AbstractFeatureSourceLayer(final FeatureSource featureSource, final Style style, final ExecutorService executorService) {
+    public AbstractGridCoverage2DReaderLayer(final AbstractGridCoverage2DReader coverage2DReader, final Style style,
+                                             final ExecutorService executorService) {
         super(executorService);
-        this.layers = Collections.singletonList(new FeatureLayer(featureSource, style));
+        this.layers = Collections.singletonList(new GridReaderLayer(coverage2DReader, style));
     }
 
     @Override

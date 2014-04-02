@@ -37,29 +37,17 @@ import java.io.IOException;
  * <p/>
  * Created by Jesse on 3/26/14.
  */
-public class CreateMapProcessorFlexibleScaleBBoxGeoJsonTest extends AbstractMapfishSpringTest {
-    public static final String BASE_DIR ="bbox_geojson_flexible_scale/";
+public class CreateMapProcessorFlexibleScaleBBoxGeoTiffTest extends AbstractMapfishSpringTest {
+    public static final String BASE_DIR ="center_geotiff_flexible_scale/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
 
     @Test
     public void testExecute() throws Exception {
-        PJsonObject requestData = loadJsonRequestData();
-        doTest(requestData);
-    }
-
-    @Test
-    public void testExecuteCompatibilityWithOldAPI() throws Exception {
-        PJsonObject requestData = parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR +
-                                                                                                                "requestDataOldAPI.json");
-        doTest(requestData);
-    }
-
-
-    private void doTest(PJsonObject requestData) throws IOException {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
+        PJsonObject requestData = loadJsonRequestData();
         Values values = new Values(requestData, template);
         template.getProcessorGraph().createTask(values).invoke();
 
@@ -68,7 +56,7 @@ public class CreateMapProcessorFlexibleScaleBBoxGeoJsonTest extends AbstractMapf
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleBBoxGeoTiffTest.class, BASE_DIR + "requestData.json");
     }
 
 }

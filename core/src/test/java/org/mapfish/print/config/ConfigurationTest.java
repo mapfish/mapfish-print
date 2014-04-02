@@ -23,10 +23,12 @@ import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.PolygonSymbolizer;
+import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 import org.junit.Test;
+import org.mapfish.print.Constants;
 import org.mockito.Mockito;
 
 import java.util.HashMap;
@@ -42,6 +44,7 @@ import static org.junit.Assert.assertTrue;
  * @author Jesse on 3/27/14.
  */
 public class ConfigurationTest {
+
     @Test
     public void testGetDefaultStyle_IsPresentInMap() throws Exception {
         final Configuration configuration = new Configuration();
@@ -99,6 +102,8 @@ public class ConfigurationTest {
         assertStyleType(PolygonSymbolizer.class, configuration.getDefaultStyle("polygon"));
         assertStyleType(PolygonSymbolizer.class, configuration.getDefaultStyle("multiPolygon"));
 
+        assertStyleType(RasterSymbolizer.class, configuration.getDefaultStyle(Constants.RASTER_STYLE_NAME));
+
         assertSame(geomStyle, configuration.getDefaultStyle("geom"));
         assertSame(geomStyle, configuration.getDefaultStyle("geometry"));
         assertSame(geomStyle, configuration.getDefaultStyle("geometryCollection"));
@@ -112,6 +117,7 @@ public class ConfigurationTest {
         assertStyleType(Symbolizer.class, configuration.getDefaultStyle("geometry"));
         assertStyleType(Symbolizer.class, configuration.getDefaultStyle("geometryCollection"));
         assertStyleType(Symbolizer.class, configuration.getDefaultStyle("MultiGeometry"));
+        assertStyleType(Symbolizer.class, configuration.getDefaultStyle(Constants.RASTER_STYLE_NAME));
     }
 
     private void assertStyleType(Class<?> expectedSymbolizerType, Style style) {

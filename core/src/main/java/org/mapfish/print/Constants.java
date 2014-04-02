@@ -44,4 +44,5 @@ public interface Constants {
      * The DPI of a PDF according to the spec.
      */
     float PDF_DPI = 72.0f;
+    String RASTER_STYLE_NAME = "raster";
 }
