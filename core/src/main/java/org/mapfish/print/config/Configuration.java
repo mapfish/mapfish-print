@@ -81,6 +81,7 @@ public class Configuration {
     private File configurationFile;
     private Map<String, Style> styles = new HashMap<String, Style>();
     private Map<String, Style> defaultStyle = new HashMap<String, Style>();
+    private boolean throwErrorOnExtraParameters = true;
 
     @Autowired
     private StyleParser styleParser;
@@ -251,5 +252,16 @@ public class Configuration {
 
             this.defaultStyle.put(normalizedName, entry.getValue());
         }
+    }
+
+    /**
+     * If true then if the request JSON has extra parameters exceptions will be thrown.  Otherwise the information will be logged.
+     */
+    public final boolean isThrowErrorOnExtraParameters() {
+        return this.throwErrorOnExtraParameters;
+    }
+
+    public final void setThrowErrorOnExtraParameters(final boolean throwErrorOnExtraParameters) {
+        this.throwErrorOnExtraParameters = throwErrorOnExtraParameters;
     }
 }

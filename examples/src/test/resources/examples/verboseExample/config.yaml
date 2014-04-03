@@ -27,6 +27,8 @@ hosts:
     host: www.geocat.ch
     port: 80
 
+throwErrorOnExtraParameters: true
+
 security:
 #  - !basicAuth
 #    matcher: !dnsMatch

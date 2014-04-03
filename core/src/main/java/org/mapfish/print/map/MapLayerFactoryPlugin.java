@@ -46,6 +46,21 @@ public interface MapLayerFactoryPlugin<Param> {
      *
      * If a field in the Param object has the {@link org.mapfish.print.processor.HasDefaultValue} annotation then no exception
      * will be thrown if the json does not contain a value.
+     *
+     * The type of the parameter is limited to:
+     * <ul>
+     *     <li>String</li>
+     *     <li>Integer or int</li>
+     *     <li>Double or double</li>
+     *     <li>Float or float</li>
+     *     <li>Boolean or boolean</li>
+     *     <li>PJsonObject</li>
+     *     <li>URL</li>
+     *     <li>PJsonArray</li>
+     *     <li>array of any of the above (String[], boolean[], PJsonObject[])</li>
+     * </ul>
+     *
+     * If there is a public <code>postConstruct()</code> method then it will be called after the fields are all set.
      */
     Param createParameter();
 

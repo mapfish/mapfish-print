@@ -40,13 +40,21 @@ public abstract class PJsonElement {
     /**
      * Gets the string representation of the path to the current JSON element.
      * 
-     * @param key the leave key
+     * @param key the leaf key
      */
     public final String getPath(final String key) {
         StringBuilder result = new StringBuilder();
         addPathTo(result);
         result.append(".");
         result.append(getPathElement(key));
+        return result.toString();
+    }
+    /**
+     * Gets the string representation of the path to the current JSON element.
+     */
+    public final String getCurrentPath() {
+        StringBuilder result = new StringBuilder();
+        addPathTo(result);
         return result.toString();
     }
 

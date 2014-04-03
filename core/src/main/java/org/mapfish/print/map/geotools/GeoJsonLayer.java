@@ -92,8 +92,7 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
 
         @Nonnull
         @Override
-        public MapLayer parse(final Template template, @Nonnull final GeoJsonParam param) throws IOException {
-            final Optional<GeoJsonLayer> result;
+        public GeoJsonLayer parse(final Template template, @Nonnull final GeoJsonParam param) throws IOException {
             SimpleFeatureCollection featureCollection = treatStringAsURL(template, param.geoJson);
             if (featureCollection == null) {
                 featureCollection = treatStringAsGeoJson(param.geoJson);
@@ -110,8 +109,7 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
                         .or(this.parser.loadStyle(template.getConfiguration(), styleRef))
                         .or(template.getConfiguration().getDefaultStyle(geomType));
 
-            result = Optional.of(new GeoJsonLayer(featureSource, style, this.forkJoinPool));
-            return result;
+            return new GeoJsonLayer(featureSource, style, this.forkJoinPool);
         }
 
         private SimpleFeatureCollection treatStringAsURL(final Template template, final String geoJsonString) throws IOException {
@@ -164,7 +162,7 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
     /**
      * The parameters for creating a layer that renders GeoJSON formatted data.
      */
-    private static class GeoJsonParam {
+    public static class GeoJsonParam {
         /**
          * A url to the geoJson or the raw GeoJSON data.
          * <p/>

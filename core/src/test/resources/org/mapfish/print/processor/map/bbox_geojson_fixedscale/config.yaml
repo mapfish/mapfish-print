@@ -1,3 +1,4 @@
+throwErrorOnExtraParameters: true
 templates:
   main: !template
     attributes:

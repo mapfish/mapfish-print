@@ -19,7 +19,6 @@
 
 package org.mapfish.print.map.geotools;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
 import jsr166y.ForkJoinPool;
@@ -87,16 +86,13 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
         @Nonnull
         @Override
         public MapLayer parse(final Template template, @Nonnull final GeotiffParam param) throws IOException {
-            final Optional<GeotiffLayer> result;
-
             String styleRef = param.style;
             Style style = template.getStyle(styleRef)
                     .or(this.parser.loadStyle(template.getConfiguration(), styleRef))
                     .or(template.getConfiguration().getDefaultStyle(RASTER_STYLE_NAME));
 
             GeoTiffReader geotiffReader = getGeotiffReader(template, param.url);
-            result = Optional.of(new GeotiffLayer(geotiffReader, style, this.forkJoinPool));
-            return result;
+            return new GeotiffLayer(geotiffReader, style, this.forkJoinPool);
         }
 
         private GeoTiffReader getGeotiffReader(final Template template, final String geotiffUrl) throws IOException {
