@@ -27,14 +27,12 @@ import net.sf.jasperreports.engine.JasperCompileManager;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.HasConfiguration;
 import org.mapfish.print.config.WorkingDirectories;
-import org.mapfish.print.processor.Processor;
+import org.mapfish.print.processor.AbstractProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.Map;
 
 /**
  * A processor that actually compiles a jasper report.
@@ -42,7 +40,7 @@ import java.util.Map;
  * @author Jesse
  * @author sbrunner
  */
-public class JasperReportBuilder implements Processor, HasConfiguration {
+public class JasperReportBuilder extends AbstractProcessor<Object, Void> implements HasConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
     /**
      * Extension for Jasper XML Report Template files.
@@ -60,8 +58,15 @@ public class JasperReportBuilder implements Processor, HasConfiguration {
     @Autowired
     private WorkingDirectories workingDirectories;
 
+    /**
+     * Constructor.
+     */
+    protected JasperReportBuilder() {
+        super(Void.class);
+    }
+
     @Override
-    public final Map<String, Object> execute(final Map<String, Object> values) throws JRException {
+    public final Void execute(final Object param) throws JRException {
         final String configurationAbsolutePath = this.configuration.getDirectory().getAbsolutePath();
         if (!this.directory.getAbsolutePath().startsWith(configurationAbsolutePath)) {
             throw new IllegalArgumentException("All directories and files referenced in the configuration must be in the configuration " +
@@ -93,14 +98,10 @@ public class JasperReportBuilder implements Processor, HasConfiguration {
         }
     }
 
-    @Override
-    public final Map<String, String> getInputMapper() {
-        return Collections.emptyMap();
-    }
 
     @Override
-    public final Map<String, String> getOutputMapper() {
-        return Collections.emptyMap();
+    public final Object createInputParameter() {
+        return null;
     }
 
     /**
@@ -131,4 +132,5 @@ public class JasperReportBuilder implements Processor, HasConfiguration {
     public final String toString() {
         return getClass().getSimpleName() + "(" + this.directory + ")";
     }
+
 }

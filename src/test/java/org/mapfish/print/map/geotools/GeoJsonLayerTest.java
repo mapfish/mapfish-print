@@ -51,7 +51,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
     public void testGeoJsonEmbedded() throws Exception {
         final PJsonObject requestData = CreateMapProcessorTest.loadJsonRequestData()
                 .getJSONObject("attributes")
-                .getJSONObject("map")
+                .getJSONObject("mapDef")
                 .getJSONArray("layers").getJSONObject(0);
 
         final Configuration configuration = new Configuration();

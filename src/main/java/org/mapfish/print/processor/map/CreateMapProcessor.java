@@ -28,30 +28,66 @@ import org.mapfish.print.processor.AbstractProcessor;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author jesseeichar on 3/17/14.
  * @author sbrunner
  */
-public class CreateMapProcessor extends AbstractProcessor {
-    private static final String MAP_INPUT = "map";
-    private static final String MAP_OUTPUT = "map";
+public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcessor.Input, CreateMapProcessor.Output> {
+    enum BufferedImageType {
+        TYPE_4BYTE_ABGR(BufferedImage.TYPE_4BYTE_ABGR),
+        TYPE_4BYTE_ABGR_PRE(BufferedImage.TYPE_4BYTE_ABGR_PRE),
+        TYPE_3BYTE_BGR(BufferedImage.TYPE_3BYTE_BGR),
+        TYPE_BYTE_BINARY(BufferedImage.TYPE_BYTE_BINARY),
+        TYPE_BYTE_GRAY(BufferedImage.TYPE_BYTE_GRAY),
+        TYPE_BYTE_INDEXED(BufferedImage.TYPE_BYTE_INDEXED),
+        TYPE_INT_BGR(BufferedImage.TYPE_INT_BGR),
+        TYPE_INT_RGB(BufferedImage.TYPE_INT_RGB),
+        TYPE_INT_ARGB(BufferedImage.TYPE_INT_ARGB),
+        TYPE_INT_ARGB_PRE(BufferedImage.TYPE_INT_ARGB_PRE),
+        TYPE_USHORT_555_RGB(BufferedImage.TYPE_USHORT_555_RGB),
+        TYPE_USHORT_565_RGB(BufferedImage.TYPE_USHORT_565_RGB),
+        TYPE_USHORT_GRAY(BufferedImage.TYPE_USHORT_GRAY);
+        private final int value;
 
-    private int imageType = BufferedImage.TYPE_4BYTE_ABGR;
+        private BufferedImageType(final int value) {
+            this.value = value;
+        }
+
+        static BufferedImageType lookupValue(final String name) {
+            for (BufferedImageType bufferedImageType : values()) {
+                if (bufferedImageType.name().equalsIgnoreCase(name)) {
+                    return bufferedImageType;
+                }
+            }
+
+            throw new IllegalArgumentException("'" + name + "is not a recognized " + BufferedImageType.class.getName() + " enum value");
+
+        }
+    }
+    private BufferedImageType imageType = BufferedImageType.TYPE_4BYTE_ABGR;
+
+    /**
+     * Constructor.
+     */
+    protected CreateMapProcessor() {
+        super(Output.class);
+    }
 
 
     @Override
-    public final Map<String, Object> execute(final Map<String, Object> values) throws Exception {
-        MapAttribute.MapAttributeValues mapValues = (MapAttribute.MapAttributeValues) values.get(MAP_INPUT);
+    public Input createInputParameter() {
+        return new Input();
+    }
+
+    @Override
+    public Output execute(final Input param) throws Exception {
+        MapAttribute.MapAttributeValues mapValues = param.map;
         final int mapWidth = mapValues.getWidth();
         final int mapHeight = mapValues.getHeight();
 
-        final BufferedImage bufferedImage = new BufferedImage(mapWidth, mapHeight,
-                this.imageType);
+        final BufferedImage bufferedImage = new BufferedImage(mapWidth, mapHeight, this.imageType.value);
 
         Graphics2D graphics2D = bufferedImage.createGraphics();
         try {
@@ -69,16 +105,43 @@ public class CreateMapProcessor extends AbstractProcessor {
             graphics2D.dispose();
         }
 
-        final Map<String, Object> output = new HashMap<String, Object>();
-        output.put(MAP_OUTPUT, bufferedImage);
-        return output;
+        return new Output(bufferedImage);
     }
 
     /**
-     * Set the type of buffered image rendered to.  By default the image is
-     * @param imageType one of the {@link java.awt.image.BufferedImage} constants.
+     * Set the type of buffered image rendered to.  See {@link org.mapfish.print.processor.map.CreateMapProcessor.BufferedImageType}.
+     *
+     * Default is {@link org.mapfish.print.processor.map.CreateMapProcessor.BufferedImageType#TYPE_4BYTE_ABGR}.
+     *
+     * @param imageType one of the {@link org.mapfish.print.processor.map.CreateMapProcessor.BufferedImageType} values.
      */
-    public final void setImageType(final int imageType) {
-        this.imageType = imageType;
+    public void setImageType(final String imageType) {
+        this.imageType = BufferedImageType.lookupValue(imageType);
     }
+
+    /**
+     * The Input object for processor.
+     */
+    public static final class Input {
+        /**
+         * The required parameters for the map.
+         */
+        public MapAttribute.MapAttributeValues map;
+    }
+
+    /**
+     * Output for the processor.
+     */
+    public static final class Output {
+        /**
+         * The rendered map.
+         */
+        public final BufferedImage image;
+
+        private Output(final BufferedImage bufferedImage) {
+            this.image = bufferedImage;
+        }
+
+    }
+
 }

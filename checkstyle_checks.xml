@@ -5,7 +5,7 @@
     This configuration file was written by the eclipse-cs plugin configuration editor
 -->
 <!--
-    Checkstyle-Configuration: Caltar
+    Checkstyle-Configuration: Mapfish-Print
     Description: none
 -->
 <module name="Checker">
@@ -23,7 +23,9 @@
     <module name="RequireThis">
         <property name="checkMethods" value="false"/>
     </module>
-    <module name="JavadocType"/>
+    <module name="JavadocType">
+        <property name="scope" value="protected" />
+    </module>
     <module name="JavadocVariable">
       <property name="scope" value="protected"/>
     </module>
@@ -121,8 +123,8 @@
   </module>
   <module name="SuppressionCommentFilter"/>
   <module name="SuppressionCommentFilter">
-    <property name="offCommentFormat" value="CSOFF\: ([\w\|]+)"/>
-    <property name="onCommentFormat" value="CSON\: ([\w\|]+)"/>
+    <property name="offCommentFormat" value="CSOFF\:\s*([\w\|]+)"/>
+    <property name="onCommentFormat" value="CSON\:\s*([\w\|]+)"/>
     <property name="checkFormat" value="$1"/>
   </module>
 </module>

@@ -17,18 +17,19 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.processor.map;
+package org.mapfish.print.processor;
 
-import org.mapfish.print.processor.AbstractProcessor;
-
-import java.util.Map;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 
 /**
- * @author jesseeichar on 3/4/14.
+ * Marks a Processor input parameter object setter method as being optional.  If there is no value for the property then no error
+ * will be thrown when populating the method in
+ * {@link org.mapfish.print.processor.ProcessorGraphNode#populateInputParameter(Processor, org.mapfish.print.output.Values)}
+ *
+ * @author Jesse on 3/29/14.
  */
-public class DataStoreProcessor extends AbstractProcessor {
-    @Override
-    public final Map<String, Object> execute(final Map<String, Object> values) throws Exception {
-        return null;
-    }
+@Target(value = ElementType.FIELD)
+@java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
+public @interface HasDefaultValue {
 }

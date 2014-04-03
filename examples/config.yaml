@@ -52,13 +52,13 @@ templates:
         height: 200
       legend: !legend {}
       table: !table {}
-      tablelist: !tableList {}
+      tableList: !tableList {}
     processors:
     - !reportBuilder
       directory: .
     - !createMap
       inputMapper: {map: map}
-      outputMapper: {map: map}
+      outputMapper: {image: map}
     - !prepareLegend
       inputMapper: {legend: legend}
       outputMapper: {legend: legend}
@@ -66,10 +66,10 @@ templates:
       inputMapper: {table: table}
       outputMapper: {table: table}
     - !prepareTableList
-      inputMapper: {tablelist: tablelist}
+      inputMapper: {tableList: tableList}
       dynamicReport: {}
       dynamicReportDirectory: "dynamic"
-      outputMapper: {tablelist: tablelist}
+      outputMapper: {tableList: tableList}
     - !reportBuilder
       directory: "dynamic"
-    iterValue: tablelist
+    iterValue: tableList

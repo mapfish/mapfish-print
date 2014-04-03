@@ -89,6 +89,16 @@ public class JasperReportOutputFormat implements OutputFormat {
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         if (template.getIterValue() != null) {
+            if (!values.containsKey(template.getIterValue())) {
+                throw new IllegalArgumentException(template.getIterValue() + " is missing.  It must either an attribute or a processor " +
+                                                   "output");
+            }
+
+            final Object iterator = values.getObject(template.getIterValue(), Object.class);
+            if (!(iterator instanceof Iterable)) {
+                throw new IllegalArgumentException(template.getIterValue() + " is supposed to be an iterable but was a "
+                                                   + iterator.getClass());
+            }
             final List<Map<String, ?>> dataSource = this.forkJoinPool.invoke(new ExecuteIterProcessorsTask(values, template));
 
             final JRDataSource jrDataSource = new JRMapCollectionDataSource(dataSource);

@@ -25,6 +25,8 @@ import org.mapfish.print.json.PJsonObject;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Values that go into a processor from previous processors in the processor processing graph.
@@ -141,5 +143,24 @@ public class Values {
      */
     public final boolean containsKey(final String key) {
         return this.values.containsKey(key);
+    }
+
+    /**
+     * Get a boolean value from the values or null.
+     *
+     * @param key the look up key of the value
+     */
+    @Nullable
+    public final Boolean getBoolean(@Nonnull final String key) {
+        return (Boolean) this.values.get(key);
+    }
+
+    /**
+     * Remove a value from this object.
+     *
+     * @param key key of entry to remove.
+     */
+    public final void remove(final String key) {
+        this.values.remove(key);
     }
 }

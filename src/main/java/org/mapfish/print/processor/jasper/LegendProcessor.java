@@ -29,9 +29,7 @@ import java.awt.Image;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.imageio.ImageIO;
 
 /**
@@ -40,9 +38,7 @@ import javax.imageio.ImageIO;
  * @author Jesse
  * @author sbrunner
  */
-public class LegendProcessor extends AbstractProcessor {
-    private static final String LEGEND_INPUT = "legend";
-    private static final String LEGEND_OUTPUT = "legend";
+public class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, LegendProcessor.Output> {
 
     private static final String NAME_COLUMN = "name";
     private static final String ICON_COLUMN = "icon";
@@ -52,18 +48,30 @@ public class LegendProcessor extends AbstractProcessor {
     private static final String JSON_ICONS = "icons";
     private static final String JSON_CLASSES = "classes";
 
+    /**
+     * Constructor.
+     */
+    protected LegendProcessor() {
+        super(Output.class);
+    }
+
     @Override
-    public final Map<String, Object> execute(final Map<String, Object> values) throws Exception {
-        Map<String, Object> output = new HashMap<String, Object>();
+    public final Input createInputParameter() {
+        return new Input();
+    }
+
+    @Override
+    public final Output execute(final Input values) throws Exception {
 
         final List<Object[]> legendList = new ArrayList<Object[]>();
         final String[] legendColumns = {NAME_COLUMN, ICON_COLUMN, LEVEL_COLUMN};
-        final PJsonObject jsonLegend = ((LegendAttributeValue) values.get(LEGEND_INPUT)).getJsonObject();
+        final PJsonObject jsonLegend = values.legend.getJsonObject();
         fillLegend(jsonLegend, legendList, 0);
         final Object[][] legend = new Object[legendList.size()][];
-        output.put(LEGEND_OUTPUT, new JRTableModelDataSource(new TableDataSource(legendColumns, legendList.toArray(legend))));
 
-        return output;
+        final JRTableModelDataSource dataSource = new JRTableModelDataSource(new TableDataSource(legendColumns,
+                legendList.toArray(legend)));
+        return new Output(dataSource);
     }
 
     private void fillLegend(final PJsonObject jsonLegend, final List<Object[]> legendList, final int level) throws IOException {
@@ -86,6 +94,30 @@ public class LegendProcessor extends AbstractProcessor {
             for (int i = 0; i < jsonClass.size(); i++) {
                 fillLegend(jsonClass.getJSONObject(i), legendList, level + 1);
             }
+        }
+    }
+
+    /**
+     * The Input Parameter object for {@link org.mapfish.print.processor.jasper.LegendProcessor}.
+     */
+    public static final class Input {
+        /**
+         * The data required for creating the legend.
+         */
+        public LegendAttributeValue legend;
+    }
+
+    /**
+     * The Output object of the legend processor method.
+     */
+    public static final class Output {
+        /**
+         * The datasource for the legend object in the report.
+         */
+        public final JRTableModelDataSource legend;
+
+        Output(final JRTableModelDataSource legend) {
+            this.legend = legend;
         }
     }
 }

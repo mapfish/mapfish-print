@@ -78,6 +78,7 @@ public final class MapfishPrintConstructor extends Constructor {
             this.applicationContext = context;
         }
 
+
         @Override
         protected Object constructJavaBean2ndStep(final MappingNode node, final Object object) {
             return super.constructJavaBean2ndStep(node, object);

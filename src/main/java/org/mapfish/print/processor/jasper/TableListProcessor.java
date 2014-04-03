@@ -32,7 +32,6 @@ import ar.com.fdvs.dj.domain.constants.VerticalAlign;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
-import org.mapfish.print.attribute.TableListAttribute.TableListAttributeValue;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.HasConfiguration;
 import org.mapfish.print.config.WorkingDirectories;
@@ -52,6 +51,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static org.mapfish.print.attribute.TableListAttribute.TableListAttributeValue;
 import static org.mapfish.print.processor.jasper.JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT;
 import static org.mapfish.print.processor.jasper.JasperReportBuilder.JASPER_REPORT_XML_FILE_EXT;
 
@@ -61,11 +61,9 @@ import static org.mapfish.print.processor.jasper.JasperReportBuilder.JASPER_REPO
  * @author Jesse
  * @author sbrunner
  */
-public class TableListProcessor extends AbstractProcessor implements HasConfiguration {
+public class TableListProcessor extends AbstractProcessor<TableListProcessor.Input, TableListProcessor.Output>
+        implements HasConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
-
-    private static final String TABLELIST_INPUT = "tablelist";
-    private static final String TABLELIST_OUTPUT = "tablelist";
 
     private static final String JSON_COLUMNS = "columns";
     private static final String JSON_DISPLAYNAME = "displayName";
@@ -91,10 +89,21 @@ public class TableListProcessor extends AbstractProcessor implements HasConfigur
 
     private Configuration configuration;
 
+    /**
+     * Constructor.
+     */
+    protected TableListProcessor() {
+        super(Output.class);
+    }
+
     @Override
-    public final Map<String, Object> execute(final Map<String, Object> values) throws Exception {
-        final Map<String, Object> output = new HashMap<String, Object>();
-        final PJsonObject jsonTableList = ((TableListAttributeValue) values.get(TABLELIST_INPUT)).getJsonObject();
+    public final Input createInputParameter() {
+        return new Input();
+    }
+
+    @Override
+    public final Output execute(final Input values) throws Exception {
+        final PJsonObject jsonTableList = values.tableList.getJsonObject();
         final List<Values> tableList = new ArrayList<Values>();
 
         if (jsonTableList != null) {
@@ -140,9 +149,7 @@ public class TableListProcessor extends AbstractProcessor implements HasConfigur
             }
         }
 
-        output.put(TABLELIST_OUTPUT, tableList);
-
-        return output;
+        return new Output(tableList);
     }
 
     private void generateDynamicReport(final PJsonArray jsonColumns, final Style detailStyle, final Style headerStyle,
@@ -215,5 +222,29 @@ public class TableListProcessor extends AbstractProcessor implements HasConfigur
 
     public final void setConfiguration(final Configuration configuration) {
         this.configuration = configuration;
+    }
+
+    /**
+     * Input of processor.
+     */
+    public static final class Input {
+        /**
+         * Data for constructing the table list of values.
+         */
+        public TableListAttributeValue tableList;
+    }
+
+    /**
+     * Output of processor.
+     */
+    public static final class Output {
+        /**
+         * Resulting list of values for the table in the jasper report.
+         */
+        public final List<Values> tableList;
+
+        private Output(final List<Values> tableList) {
+            this.tableList = tableList;
+        }
     }
 }

@@ -19,45 +19,39 @@
 
 package org.mapfish.print.config;
 
-import com.codahale.metrics.MetricRegistry;
-import org.mapfish.print.processor.AbstractProcessor;
-import org.mapfish.print.processor.Processor;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Map;
-import javax.annotation.Nullable;
-
-import static org.junit.Assert.assertNotNull;
-
 /**
- * Test Processor.
+ * Represents an error made in the config.yaml file.
  *
- * @author jesseeichar on 3/25/14.
+ * @author Jesse on 3/30/14.
  */
-public class ProcessorWithSpringInjection extends AbstractProcessor<Object, Void> {
-
-    @Autowired
-    private MetricRegistry registry;
+public class ConfigurationException extends RuntimeException {
+    private Configuration configuration;
 
     /**
      * Constructor.
+     * @param message the error message.
      */
-    protected ProcessorWithSpringInjection() {
-        super(Void.class);
+    public ConfigurationException(final String message) {
+        super(message);
     }
 
-    public void assertInjected() {
-        assertNotNull(registry);
+
+    /**
+     * Constructor.
+     *
+     * @param message the error message.
+     * @param cause an exception that is the true cause of the error.
+     */
+    public ConfigurationException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 
-    @Override
-    public Object createInputParameter() {
-        return null;
+
+    public final Configuration getConfiguration() {
+        return this.configuration;
     }
 
-    @Nullable
-    @Override
-    public Void execute(Object values) throws Exception {
-        return null;
+    public final void setConfiguration(final Configuration configuration) {
+        this.configuration = configuration;
     }
 }

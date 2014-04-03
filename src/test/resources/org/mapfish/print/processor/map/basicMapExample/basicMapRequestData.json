@@ -1,6 +1,6 @@
 {
   "attributes": {
-    "map": {
+    "mapDef": {
       "bbox": [95, -1, 110, 2],
       "projection": "CRS:84",
       "dpi": 90,

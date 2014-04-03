@@ -36,17 +36,25 @@ import java.util.Map;
  * @author Jesse
  * @author sbrunner
  */
-public class TableProcessor extends AbstractProcessor {
-    private static final String TABLE_INPUT = "table";
-    private static final String TABLE_OUTPUT = "table";
-
+public class TableProcessor extends AbstractProcessor<TableProcessor.Input, TableProcessor.Output> {
     private static final String JSON_COLUMNS = "columns";
     private static final String JSON_DATA = "data";
 
+    /**
+     * Constructor.
+     */
+    protected TableProcessor() {
+        super(Output.class);
+    }
+
     @Override
-    public final Map<String, Object> execute(final Map<String, Object> values) throws Exception {
-        final Map<String, Object> output = new HashMap<String, Object>();
-        final PJsonObject jsonTable = ((TableAttributeValue) values.get(TABLE_INPUT)).getJsonObject();
+    public final Input createInputParameter() {
+        return new Input();
+    }
+
+    @Override
+    public final Output execute(final Input values) throws Exception {
+        final PJsonObject jsonTable = values.table.getJsonObject();
         final Collection<Map<String, ?>> table = new ArrayList<Map<String, ?>>();
 
         final PJsonArray jsonColumns = jsonTable.getJSONArray(JSON_COLUMNS);
@@ -60,7 +68,31 @@ public class TableProcessor extends AbstractProcessor {
             table.add(row);
         }
 
-        output.put(TABLE_OUTPUT, new JRMapCollectionDataSource(table));
-        return output;
+        final JRMapCollectionDataSource dataSource = new JRMapCollectionDataSource(table);
+        return new Output(dataSource);
+    }
+
+    /**
+     * Input object for execute.
+     */
+    public static final class Input {
+        /**
+         * Data for constructing the table Datasource.
+         */
+        public TableAttributeValue table;
+    }
+
+    /**
+     * The Output of the processor.
+     */
+    public static final class Output {
+        /**
+         * The table datasource.
+         */
+        public final JRMapCollectionDataSource table;
+
+        private Output(final JRMapCollectionDataSource dataSource) {
+            this.table = dataSource;
+        }
     }
 }
