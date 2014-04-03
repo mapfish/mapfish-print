@@ -110,11 +110,15 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
                 URL url = new URL(geoJsonString);
                 final String protocol = url.getProtocol();
                 if (protocol.equalsIgnoreCase("file")) {
-                    final File file = new File(template.getConfiguration().getDirectory(), geoJsonString.substring("file://".length()));
+
+                    File file = new File(template.getConfiguration().getDirectory(), geoJsonString.substring("file://".length()));
                     if (file.exists() && file.isFile()) {
                         url = file.getAbsoluteFile().toURI().toURL();
-                    }
                     assertFileIsInConfigDir(template, file);
+                    } else {
+                        throw new IllegalArgumentException(url + " is not a relative URL file.  File urls are always interpreted as " +
+                                                           "being relative to the configuration directory.");
+                }
                 }
                 InputStream input = null;
                 try {

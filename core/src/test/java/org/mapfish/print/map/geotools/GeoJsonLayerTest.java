@@ -141,31 +141,6 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
     }
 
     @Test
-    public void testGeoJsonUrl() throws Exception {
-        final File file = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "geojson.json");
-        final PJsonObject requestData = parseJSONObjectFromString("{type:\"geojson\";style:\"polygon\";geoJson:\""
-                                                                  + file.toURI().toURL() + "\"}");
-
-        final Configuration configuration = new Configuration();
-        configuration.setConfigurationFile(file);
-
-        Template template = new Template();
-        template.setConfiguration(configuration);
-        template.setStyle("polygon", template.getConfiguration().getDefaultStyle("polygon"));
-
-        final Optional<GeoJsonLayer> layerOptional = geojsonLayerParser.parse(template, requestData);
-
-        assertTrue(layerOptional.isPresent());
-
-        final List<? extends Layer> layers = layerOptional.get().getLayers();
-
-        assertEquals(1, layers.size());
-
-        FeatureLayer layer = (FeatureLayer) layers.get(0);
-        final int count = layer.getFeatureSource().getCount(Query.ALL);
-        assertEquals(3, count);
-    }
-    @Test
     public void testRelativeUrl() throws Exception {
         final File file = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "geojson.json");
         final PJsonObject requestData = parseJSONObjectFromString("{type:\"geojson\";style:\"polygon\";geoJson:\"file://"

@@ -65,11 +65,12 @@ public abstract class MapBounds {
      * @param tolerance the tolerance to use when considering if two values are equal.  For example if 12.0 == 12.001.
      *                  The tolerance is a percentage
      * @param zoomLevelSnapStrategy the strategy to use for snapping to the nearest zoom level.
-     * @param paintArea
-     * @param dpi
+     * @param paintArea the paint area of the map.
+     * @param dpi the dpi of the map
      */
     public abstract MapBounds adjustBoundsToNearestScale(final ZoomLevels zoomLevels, final double tolerance,
-                                                         final ZoomLevelSnapStrategy zoomLevelSnapStrategy, Rectangle paintArea, double dpi);
+                                                         final ZoomLevelSnapStrategy zoomLevelSnapStrategy,
+                                                         final Rectangle paintArea, final double dpi);
 
 
     // CHECKSTYLE:OFF

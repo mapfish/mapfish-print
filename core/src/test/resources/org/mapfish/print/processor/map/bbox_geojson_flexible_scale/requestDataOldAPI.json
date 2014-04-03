@@ -1,12 +1,12 @@
 {
   "attributes": {
     "mapDef": {
-      "bbox": [97.5, -0.5, 107.5, 1.5],
+      "bbox": [95, -1, 110, 2],
       "projection": "CRS:84",
       "dpi": 90,
       "layers": [
         {
-          "type": "geojson",
+          "type": "vector",
           "style": "polygon",
           "geoJson":   @@importFile(geojson.json)@@
         }
