@@ -19,6 +19,7 @@
 
 package org.mapfish.print.attribute;
 
+import org.mapfish.print.config.Template;
 import org.mapfish.print.json.PJsonObject;
 
 /**
@@ -27,7 +28,7 @@ import org.mapfish.print.json.PJsonObject;
 public class IntegerAttribute extends AbstractAttribute<Integer> {
 
     @Override
-    public final Integer getValue(final PJsonObject values, final String name) {
+    public final Integer getValue(final Template template, final PJsonObject values, final String name) {
         return values.getInt(name);
     }
 

@@ -19,6 +19,7 @@
 
 package org.mapfish.print.attribute;
 
+import org.mapfish.print.config.Template;
 import org.mapfish.print.json.PJsonObject;
 
 /**
@@ -27,7 +28,7 @@ import org.mapfish.print.json.PJsonObject;
 public class FloatAttribute extends AbstractAttribute<Double> {
 
     @Override
-    public final Double getValue(final PJsonObject values, final String name) {
+    public final Double getValue(final Template template, final PJsonObject values, final String name) {
         return values.getDouble(name);
     }
 

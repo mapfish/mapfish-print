@@ -2,9 +2,9 @@ import org.gradle.api.plugins.jetty.JettyRun
 
 apply plugin: 'war'
 apply plugin: 'maven'
-apply from: 'gretty.plugin'
+// apply from: 'gretty.plugin'
 
-defaultTasks 'checkstyleMain', 'findbugsMain', 'test', 'jar', 'war', 'standalone', 'install'
+defaultTasks 'build'
 
 allprojects {
     group = 'org.mapfish.print'
@@ -21,8 +21,8 @@ allprojects {
 
     repositories {
         mavenLocal()
-        maven {url "http://download.osgeo.org/webdav/geotools"}
         mavenCentral()
+        maven {url "http://download.osgeo.org/webdav/geotools"}
         maven {url "http://archiva.fdvs.com.ar/repository/public1"}
     }
     checkstyle {
@@ -51,35 +51,47 @@ task wrapper(type: Wrapper) {
 
 configurations {
     compile.transitive = true
+    compile.exclude module: 'jai_core'
 }
 
 project.ext.junitVersion = "4.11"
 dependencies {
     def springVersion = "4.0.2.RELEASE"
-    def metricsVersion = "3.0.2"
     compile (
             "org.springframework:spring-context:$springVersion",
             "org.springframework:spring-web:$springVersion",
-            "com.google.guava:guava:16.0.1",
-            'org.slf4j:slf4j-api:1.7.6',
-            'org.json:json:20080701',
-            'com.vividsolutions:jts:1.13',
-            'ch.qos.logback:logback-classic:1.1.1',
-            'org.yaml:snakeyaml:1.13',
-            "com.github.spullara.cli-parser:cli-parser:1.1.1",
-	        'net.sf.jasperreports:jasperreports:5.5.0',
-	        'ar.com.fdvs:DynamicJasper:5.0.0',
+            "org.springframework:spring-webmvc:$springVersion"
+    )
+    def metricsVersion = "3.0.2"
+    compile (
             "com.codahale.metrics:metrics-core:$metricsVersion",
             "com.codahale.metrics:metrics-servlet:$metricsVersion",
             "com.codahale.metrics:metrics-httpclient:$metricsVersion",
             "com.codahale.metrics:metrics-servlets:$metricsVersion",
-            "com.codahale.metrics:metrics-logback:$metricsVersion",
-            'org.springframework:spring-webmvc:4.0.2.RELEASE')
+            "com.codahale.metrics:metrics-logback:$metricsVersion"
+    )
+    def geotoolsVersion = "11.0"
+    compile (
+            "org.geotools:gt-epsg-hsql:$geotoolsVersion",
+            "org.geotools:gt-render:$geotoolsVersion",
+            "org.geotools:gt-geojson:$geotoolsVersion"
+    )
+    compile fileTree(dir: "$rootProject.projectDir/libs", include: '*.jar')
+    compile (
+            "com.google.guava:guava:16.0.1",
+            'org.slf4j:slf4j-api:1.7.6',
+            'org.json:json:20080701',
+            'ch.qos.logback:logback-classic:1.1.1',
+            'org.yaml:snakeyaml:1.13',
+            "com.github.spullara.cli-parser:cli-parser:1.1.1",
+	        'net.sf.jasperreports:jasperreports:5.5.0',
+	        'ar.com.fdvs:DynamicJasper:5.0.0'
+    )
 
 
     // This jsr166 dependendency is here only so long as Java 6 is supported
     // it is the forkjoin code and can be removed if java 7 is a required library
-    providedCompile ('org.codehaus.jsr166-mirror:jsr166y:1.7.0')
+    compile ('org.codehaus.jsr166-mirror:jsr166y:1.7.0')
 
     compile ('org.apache.xmlgraphics:batik-transcoder:1.7'){
         exclude module: 'fop'
@@ -87,7 +99,7 @@ dependencies {
     testCompile ("org.springframework:spring-test:${springVersion}")
     providedCompile('com.google.code.findbugs:jsr305:2.0.1')
 
-    compile('javax.servlet:servlet-api:2.5')
+    providedCompile('javax.servlet:servlet-api:2.5')
 }
 
 allprojects {
@@ -133,55 +145,6 @@ war {
             'git-revision': gitRevision())
 }
 
-task standalone (type: Jar) {
-    baseName = "print-standalone"
-
-    manifest = jar.manifest
-
-    from sourceSets.main.output
-
-
-    def dependencies = configurations.compile.resolve().findAll{ file ->
-        return !file.name.contains("servlet-api")
-    }
-
-
-    def serviceDir = new File("$buildDir/META-INF/services")
-    def metaInfDir = new File("$buildDir/META-INF/")
-
-    for(file in dependencies) {
-
-        def files = zipTree(file).matching {
-            exclude 'META-INF/**'
-            exclude 'LICENSE'
-        }
-
-        from files
-    }
-
-    doFirst {
-
-        serviceDir.deleteDir()
-        serviceDir.mkdirs()
-        for(file in dependencies.findAll({it.name.matches("((gt)|(spring-)).*")})) {
-            zipTree(file).matching {
-                include 'META-INF/services/*'
-                include 'META-INF/spring.*'
-            }.each {f ->
-                def base = serviceDir
-                if (f.name.startsWith("spring")) {
-                    base = metaInfDir;
-                }
-                new File(base,f.name) << f.getText("UTF-8")
-            }
-        }
-    }
-
-    from fileTree(buildDir).matching{include 'META-INF/*'}
-
-    into ""
-
-}
 
 task libJavadocJar(type: Jar, dependsOn: javadoc) {
     baseName = 'print-lib'
@@ -195,29 +158,15 @@ task libSourcesJar(type: Jar) {
     classifier = 'sources'
 }
 
-task standaloneJavadocJar(type: Jar, dependsOn: javadoc) {
-    baseName = 'print-standalone'
-    classifier = 'javadoc'
-    from 'build/docs/javadoc'
-}
-
-task standaloneSourcesJar(type: Jar) {
-    baseName = 'print-standalone'
-    from sourceSets.main.allSource
-    classifier = 'sources'
-}
-
 task show << {
 //    sourceSets.main.classes.asFileTree.each {println it}
     println gitRevision()
 }
 artifacts {
-    archives jar, war, standalone, 
-    //imageMagickWar,  
-    libSourcesJar, libJavadocJar, standaloneSourcesJar, standaloneJavadocJar
+    archives jar, war, libSourcesJar, libJavadocJar
 }
 
-def artifactFilterMapping = ['lib':'print-lib', 'standalone':'print-standalone', 'war':'print-servlet']
+def artifactFilterMapping = ['lib':'print-lib', 'war':'print-servlet']
 configure(install.repositories.mavenInstaller) {
     artifactFilterMapping.each {entry ->
         addFilter(entry.key) { artifact, file ->
@@ -268,11 +217,7 @@ if (Boolean.parseBoolean(enablePublishing)) {
                     packaging 'war'
                     description 'Web application for generating PDFs and images from oneline webmapping services'
                 }
-                pom('standalone').project {
-                    name 'print-standalone'
-                    packaging 'jar'
-                    description 'Application for generating PDFs and images from oneline webmapping services. All dependencies are included'
-                }
+
                 artifactFilterMapping.keySet().each { filterName ->
                     pom(filterName).project {
                         url 'http://www.mapfish.org/doc/print/'
@@ -364,62 +309,10 @@ task print (dependsOn: compileJava) << {
         }
     }
 }
-run.description = 'Run mapfish print from commandline.  All commandline parameters apply. Execute task without system parameters to get help'
+print.description = 'Run mapfish print from commandline.  All commandline parameters apply. Execute task without system parameters to get help'
 
-gretty {
-    port = 8080
-    contextPath = '/print'
-    scanInterval = 5
-}
-
-/* task jettyRunImgMgk (type: JettyRun) {
-    description = 'Run mapfish-print within jetty with the imagemagick format installed'
-    httpPort = 8080
-    def imgMagickSpring = file("sample-spring/imagemagick/WEB-INF/classes/imagemagick-spring-application-context-override.xml")
-    scanTargets = (fileTree("src/main/").include("webapp/WEB-INF/**") + fileTree(compileJava.destinationDir)).files
-    reload = 'manual'
-
-    def tmpFile = file("src/main/webapp/WEB-INF/classes/imagemagick-spring-application-context-override.xml")
-    tmpFile.deleteOnExit()
-    doFirst {
-        //tmpFile.createNewFile()
-        tmpFile << imgMagickSpring.bytes
-    }
-    doLast {
-        tmpFile.delete()
-    }
-}
- */
-
-
-
-/* 
-def proguardConfig = file("$buildDir/proguardconfig.pro")
-def proguardOutput = file("$buildDir/standalone.min.jar")
-task generateProguardConfigFile << {
-    logger.info('Creating proguard configuration file for obfsucate task')
-    proguardConfig.withWriter{
-        writer ->
-
-            writer << "-injars ${standalone.archivePath}\n"
-            writer << "-outjars ${proguardOutput}\n"
-            writer << '-printseeds\n'
-            writer << '-dontskipnonpubliclibraryclasses\n'
-            writer << '-dontskipnonpubliclibraryclassmembers\n'
-            writer << '-keepclasseswithmembers public class * {\n'
-            writer << '    public static void main(java.lang.String[]);\n'
-            writer << '}\n'
-//          writer << '-optimizations !code/simplification/cast' + '\n'
-            writer << '-allowaccessmodification\n'
-    }
-}
-
-task minify(dependsOn: [generateProguardConfigFile]) << {
-    inputs.file standalone.archivePath
-    outputs.file proguardOutput
-    ant.taskdef(resource: 'proguard/ant/task.properties',
-            classpath:  configurations.proguard.asPath    )
-    ant.proguard(configuration: proguardConfig)
-}
-minify.description = 'Minify standalone jar, not yet functioning'
- */
+//gretty {
+//    port = 8080
+//    contextPath = '/print'
+//    scanInterval = 5
+//}

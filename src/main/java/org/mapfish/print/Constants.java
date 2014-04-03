@@ -36,4 +36,12 @@ public interface Constants {
      */
     String OUTPUT_FILENAME_KEY = "outputFilename";
 
+    /**
+     * The default encoding to use throughout the system.
+     */
+    String ENCODING = System.getProperty("mapfish.file.encoding", "UTF-8");
+    /**
+     * The DPI of a PDF according to the spec.
+     */
+    float PDF_DPI = 72.0f;
 }

@@ -19,6 +19,10 @@
 
 package org.mapfish.print.output;
 
+import org.mapfish.print.attribute.Attribute;
+import org.mapfish.print.config.Template;
+import org.mapfish.print.json.PJsonObject;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -44,6 +48,24 @@ public class Values {
      */
     public Values() {
         // nothing to do
+    }
+
+    /**
+     * Construct from the json request body and the associated template.
+     *
+     * @param requestData the json request data
+     * @param template the template
+     */
+    public Values(final PJsonObject requestData, final Template template) {
+
+        final PJsonObject jsonAttributes = requestData.getJSONObject("attributes");
+
+        Map<String, Attribute<?>> attributes = template.getAttributes();
+        for (String attributeName : attributes.keySet()) {
+            final Attribute<?> attribute = attributes.get(attributeName);
+            final Object value = attribute.getValue(template, jsonAttributes, attributeName);
+            put(attributeName, value);
+        }
     }
 
     /**

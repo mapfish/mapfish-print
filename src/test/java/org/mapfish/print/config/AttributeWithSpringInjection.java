@@ -22,11 +22,7 @@ package org.mapfish.print.config;
 import com.codahale.metrics.MetricRegistry;
 import org.mapfish.print.attribute.AbstractAttribute;
 import org.mapfish.print.json.PJsonObject;
-import org.mapfish.print.processor.AbstractProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Map;
-import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -50,7 +46,7 @@ public class AttributeWithSpringInjection extends AbstractAttribute<Integer> {
     }
 
     @Override
-    public Integer getValue(PJsonObject values, String name) {
+    public Integer getValue(Template template, PJsonObject values, String name) {
         return null;
     }
 }

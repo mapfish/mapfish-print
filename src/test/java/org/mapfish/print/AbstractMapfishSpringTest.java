@@ -19,13 +19,18 @@
 
 package org.mapfish.print;
 
+import com.google.common.io.Files;
 import org.junit.runner.RunWith;
-import org.mapfish.print.config.ConfigurationFactoryTest;
+import org.mapfish.print.json.PJsonObject;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Class that loads the normal spring application context from the spring config file.
@@ -39,6 +44,7 @@ import java.net.URL;
 })
 public abstract class AbstractMapfishSpringTest {
     public static final String DEFAULT_SPRING_XML = "classpath:mapfish-spring-application-context.xml";
+    static final Pattern IMPORT_PATTERN = Pattern.compile("@@importFile\\((\\S+)\\)@@");
 
     /**
      * Look on the classpath for the named file.  Will look at the root package and in the same package as testClass.
@@ -53,5 +59,38 @@ public abstract class AbstractMapfishSpringTest {
         }
 
         return new File(resource.getFile());
+    }
+
+    /**
+     * Parse the json string.
+     *
+     * @param jsonString the json string to parse.
+     */
+    public static PJsonObject parseJSONObjectFromString(String jsonString) {
+        return MapPrinter.parseSpec(jsonString);
+    }
+
+    public static PJsonObject parseJSONObjectFromFile(Class<?> testClass, String fileName) throws IOException {
+        final File file = getFile(testClass, fileName);
+        final Charset charset = Charset.forName(Constants.ENCODING);
+        String jsonString = Files.asCharSource(file, charset).read();
+        Matcher matcher = IMPORT_PATTERN.matcher(jsonString);
+        while (matcher.find()) {
+            final String importFileName = matcher.group(1);
+            File importFile = new File(file.getParentFile(), importFileName);
+            final String tagToReplace = matcher.group();
+            final String importJson = Files.asCharSource(importFile, charset).read();
+            jsonString = jsonString.replace(tagToReplace, importJson);
+            matcher = IMPORT_PATTERN.matcher(jsonString);
+        }
+        return parseJSONObjectFromString(jsonString);
+    }
+
+    /**
+     * Get a file from the classpath relative to this test class.
+     * @param fileName the name of the file to load.
+     */
+    protected File getFile(String fileName) {
+        return getFile(getClass(), fileName);
     }
 }

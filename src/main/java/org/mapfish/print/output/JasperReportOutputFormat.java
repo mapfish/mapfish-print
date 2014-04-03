@@ -27,7 +27,6 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.mapfish.print.Constants;
-import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.config.WorkingDirectories;
@@ -70,12 +69,14 @@ public class JasperReportOutputFormat implements OutputFormat {
     }
 
     @Override
-    public final void print(final PJsonObject spec, final Configuration config, final File configDir, final OutputStream outputStream)
+    public final void print(final PJsonObject requestData, final Configuration config, final File configDir,
+                            final OutputStream outputStream)
             throws Exception {
-        final String templateName = spec.getString(Constants.JSON_LAYOUT_KEY);
+        final String templateName = requestData.getString(Constants.JSON_LAYOUT_KEY);
 
         final Template template = config.getTemplate(templateName);
-        final Values values = new Values();
+        final Values values = new Values(requestData, template);
+
         final File jasperTemplateFile = new File(configDir, template.getJasperTemplate());
         final File jasperTemplateBuild = this.workingDirectories.getBuildFileFor(config, jasperTemplateFile,
                 JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT, LOGGER);
@@ -84,13 +85,6 @@ public class JasperReportOutputFormat implements OutputFormat {
 
         values.put("SUBREPORT_DIR", jasperTemplateDirectory.getAbsolutePath());
 
-        final PJsonObject jsonAttributes = spec.getJSONObject("attributes");
-
-        Map<String, Attribute<?>> attributes = template.getAttributes();
-        for (String attributeName : attributes.keySet()) {
-            values.put(attributeName, attributes.get(attributeName).
-                    getValue(jsonAttributes, attributeName));
-        }
 
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
