@@ -56,4 +56,7 @@ public final class CliDefinition {
     @Argument(description = "Spring configuration file to use in addition to the default.  This allows overriding certain values if " +
                             "desired")
     public static String springConfig = null;
+
+    @Argument(description = "Print all the commandline options.", alias = "?")
+    public static String help = null;
 }

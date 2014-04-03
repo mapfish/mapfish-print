@@ -26,6 +26,7 @@ import ch.qos.logback.core.util.StatusPrinter;
 import com.google.common.io.CharStreams;
 import com.sampullara.cli.Args;
 import org.json.JSONWriter;
+import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.json.PJsonObject;
 import org.slf4j.Logger;
@@ -87,17 +88,27 @@ public final class Main {
      * @throws Exception
      */
     public static void main(final String[] args) throws Exception {
+
+        if (args.length == 1 || args.length == 0) {
+            if (args.length == 0 ||
+                "--help".equalsIgnoreCase(args[0])
+                || "-help".equalsIgnoreCase(args[0])
+                || "-?".equals(args[0])) {
+                System.out.println("\n\n");
+                printUsage(0);
+            }
+        }
         try {
             List<String> unusedArguments = Args.parse(CliDefinition.class, args);
 
             if (!unusedArguments.isEmpty()) {
-                System.out.println("The following arguments are not recognized: " + unusedArguments);
-                printUsage();
+                System.out.println("\n\nThe following arguments are not recognized: " + unusedArguments);
+                printUsage(1);
                 return;
             }
         } catch (IllegalArgumentException invalidOption) {
-            System.out.println(invalidOption.getMessage());
-            printUsage();
+            System.out.println("\n\n" + invalidOption.getMessage());
+            printUsage(1);
             return;
         }
         AbstractXmlApplicationContext context = new ClassPathXmlApplicationContext(DEFAULT_SPRING_CONTEXT);
@@ -114,9 +125,9 @@ public final class Main {
         }
     }
 
-    private static void printUsage() {
+    private static void printUsage(final int exitCode) {
         Args.usage(CliDefinition.class);
-        System.exit(1);
+        System.exit(exitCode);
     }
 
     private void run() throws Exception {
@@ -126,7 +137,7 @@ public final class Main {
         try {
             if (clientConfig) {
                 outFile = getOutputStream("");
-                final OutputStreamWriter writer = new OutputStreamWriter(outFile, Charset.forName("UTF-8"));
+                final OutputStreamWriter writer = new OutputStreamWriter(outFile, Charset.forName(Constants.ENCODING));
 
                 JSONWriter json = new JSONWriter(writer);
                 json.object();
@@ -137,7 +148,7 @@ public final class Main {
 
             } else {
                 final InputStream inFile = getInputStream();
-                final String jsonConfiguration = CharStreams.toString(new InputStreamReader(inFile, "UTF-8"));
+                final String jsonConfiguration = CharStreams.toString(new InputStreamReader(inFile, Constants.ENCODING));
                 final PJsonObject jsonSpec = MapPrinter.parseSpec(jsonConfiguration);
                 outFile = getOutputStream(this.mapPrinter.getOutputFormat(jsonSpec).getFileSuffix());
                 Map<String, String> headers = new HashMap<String, String>();

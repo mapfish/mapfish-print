@@ -42,11 +42,17 @@ Import project into Eclipse
 Run from commandline
 --------------------
 
-The following command will run the mapfish printer.  If you do no supply any -Dxxx args then all argument options will be listed.
+The following command will run the mapfish printer.  The arguments must be supplied to the -PprintArgs="..." parameter.
+
+To list all the commandline options then execute:
 
 .. code::
 
-  > ./gradlew print -Dconfig=samples/config.yaml -Dspec=samples/spec.json -Doutput=/tmp/print-out.pdf
+ > ./gradlew run -PprintArgs="-help"
+
+.. code::
+
+  > ./gradlew run -PprintArgs="-config examples/config.yaml -spec examples/spec.json -output ./output.pdf"
 
 
 Run in Eclipse

@@ -50,7 +50,7 @@
                 {
                   "type": "geojson",
                   "style": "polygon",
-                  "geoJson":   "file://geojson.json"
+                  "geoJson":   "file://resources/geojson.json"
                 }
             /*{
                 "type": "WMS",
