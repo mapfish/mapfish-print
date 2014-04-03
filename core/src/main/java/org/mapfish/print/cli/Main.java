@@ -93,6 +93,7 @@ public final class Main {
             if (args.length == 0 ||
                 "--help".equalsIgnoreCase(args[0])
                 || "-help".equalsIgnoreCase(args[0])
+                || "-h".equalsIgnoreCase(args[0])
                 || "-?".equals(args[0])) {
                 System.out.println("\n\n");
                 printUsage(0);

@@ -181,7 +181,8 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
                 if (layerApplies) {
                     Object param = layerParser.createParameter();
 
-                    mapLayerParamParser.populateLayerParam(template.getConfiguration().isThrowErrorOnExtraParameters(), layerJson, param);
+                    MapAttribute.this.mapLayerParamParser.populateLayerParam(template.getConfiguration().isThrowErrorOnExtraParameters(),
+                            layerJson, param, TYPE);
 
                     final MapLayer newLayer = layerParser.parse(template, param);
                     if (layerList.isEmpty()) {

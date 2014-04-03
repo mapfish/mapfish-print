@@ -19,7 +19,6 @@
 
 package org.mapfish.print.map.geotools;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import jsr166y.ForkJoinPool;
 import org.geotools.data.FeatureSource;
@@ -28,7 +27,6 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.styling.Style;
 import org.mapfish.print.Constants;
-import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.map.style.StyleParser;
@@ -106,8 +104,8 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
                 styleRef = geomType;
             }
             Style style = template.getStyle(styleRef)
-                        .or(this.parser.loadStyle(template.getConfiguration(), styleRef))
-                        .or(template.getConfiguration().getDefaultStyle(geomType));
+                    .or(this.parser.loadStyle(template.getConfiguration(), styleRef))
+                    .or(template.getConfiguration().getDefaultStyle(geomType));
 
             return new GeoJsonLayer(featureSource, style, this.forkJoinPool);
         }
@@ -117,11 +115,15 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
                 URL url = new URL(geoJsonString);
                 final String protocol = url.getProtocol();
                 if (protocol.equalsIgnoreCase("file")) {
-                    final File file = new File(template.getConfiguration().getDirectory(), geoJsonString.substring("file://".length()));
+
+                    File file = new File(template.getConfiguration().getDirectory(), geoJsonString.substring("file://".length()));
                     if (file.exists() && file.isFile()) {
                         url = file.getAbsoluteFile().toURI().toURL();
+                        assertFileIsInConfigDir(template, file);
+                    } else {
+                        throw new IllegalArgumentException(url + " is not a relative URL file.  File urls are always interpreted as " +
+                                                           "being relative to the configuration directory.");
                     }
-                    assertFileIsInConfigDir(template, file);
                 }
                 InputStream input = null;
                 try {

@@ -47,12 +47,14 @@ public interface MapLayer {
     /**
      * Render the layer to the graphics2D object.
      *
-     * @param graphics2D the graphics object.
-     * @param bounds the map bounds
-     * @param paintArea the area to paint
-     * @param dpi the DPI to render at
+     * @param graphics2D   the graphics object.
+     * @param bounds       the map bounds
+     * @param paintArea    the area to paint
+     * @param dpi          the DPI to render at
+     * @param isFirstLayer true indicates this layer is the first layer in the map (the first layer drawn, ie the base layer)
      */
-    void render(Graphics2D graphics2D, MapBounds bounds, Rectangle paintArea, double dpi);
+    void render(Graphics2D graphics2D, MapBounds bounds, Rectangle paintArea, double dpi,
+                final boolean isFirstLayer);
 
 
 }

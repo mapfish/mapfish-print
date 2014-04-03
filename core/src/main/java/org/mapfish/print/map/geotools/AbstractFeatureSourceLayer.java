@@ -23,12 +23,16 @@ import org.geotools.data.FeatureSource;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
+import org.mapfish.print.attribute.map.MapBounds;
 
+import java.awt.Rectangle;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 /**
+ * A layer that wraps a Geotools Feature Source and a style object.
+ *
  * @author Jesse on 3/26/14.
  */
 public class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
@@ -38,8 +42,8 @@ public class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
     /**
      * Constructor.
      *
-     * @param featureSource the featureSource containing the feature data.
-     * @param style style to use for rendering the data.
+     * @param featureSource   the featureSource containing the feature data.
+     * @param style           style to use for rendering the data.
      * @param executorService the thread pool for doing the rendering.
      */
     public AbstractFeatureSourceLayer(final FeatureSource featureSource, final Style style, final ExecutorService executorService) {
@@ -48,7 +52,8 @@ public class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
     }
 
     @Override
-    public final List<? extends Layer> getLayers() {
+    public final List<? extends Layer> getLayers(final MapBounds bounds, final Rectangle paintArea, final double dpi,
+                                                 final boolean isFirstLayer) {
         return this.layers;
     }
 

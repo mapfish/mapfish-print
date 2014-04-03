@@ -50,7 +50,7 @@ public class MapLayerParamParserTest {
         final TestParam param = new TestParam();
         final PJsonObject json = parseJSONObjectFromFile(MapLayerParamParserTest.class, "mapAttributeTest.json");
 
-        this.mapLayerParamParser.populateLayerParam(true, json, param);
+        this.mapLayerParamParser.populateLayerParam(true, json, param, "toIgnore");
 
         assertEquals("string", param.s);
         assertEquals("newValue", param.defS);
@@ -83,6 +83,21 @@ public class MapLayerParamParserTest {
         assertEquals(2, param.oa.length);
         assertEquals(true, param.oa[0].has("f"));
         assertEquals(true, param.oa[1].has("b"));
+        assertEquals(true, param.calledByPostConstruct);
+
+        assertEquals("embeddedValue", param.e.embeddedValue);
+        assertEquals("def", param.e.embeddedDefault);
+        assertTrue(param.e.calledByPostConstruct);
+
+        assertEquals(2, param.ea.length);
+
+        assertEquals("embeddedValue2", param.ea[0].embeddedValue);
+        assertEquals("updateddef", param.ea[0].embeddedDefault);
+        assertTrue(param.ea[0].calledByPostConstruct);
+
+        assertEquals("embeddedValue3", param.ea[1].embeddedValue);
+        assertEquals("def", param.ea[1].embeddedDefault);
+        assertTrue(param.ea[1].calledByPostConstruct);
     }
 
 
@@ -101,9 +116,9 @@ public class MapLayerParamParserTest {
                 errorCount ++;
             }
             int totalAttributes = InputOutputValueUtils.getAllAttributeNames(param.getClass()).size();
-            assertEquals(16 + totalAttributes, errorCount);
+            assertEquals(18 + totalAttributes, errorCount);
 
-            assertEquals(16, e.getMissingProperties().size());
+            assertEquals(18, e.getMissingProperties().size());
             assertEquals(totalAttributes, e.getAttributeNames().size());
         }
 
@@ -115,7 +130,7 @@ public class MapLayerParamParserTest {
         json.getInternalObj().put("extraProperty", "value");
         json.getInternalObj().put("extraProperty2", "value2");
         try {
-            this.mapLayerParamParser.populateLayerParam(true, json, param);
+            this.mapLayerParamParser.populateLayerParam(true, json, param, "toIgnore");
         } catch (ExtraPropertyException e) {
             final Matcher missingParameterMatcher = Pattern.compile("\\*.+?").matcher(e.getMessage());
             int errorCount = 0;
@@ -131,8 +146,9 @@ public class MapLayerParamParserTest {
         }
     }
 
-    public static void populateLayerParam(PJsonObject requestData, Object param) throws IOException, JSONException {
-        new MapLayerParamParser().populateLayerParam(true, requestData, param);
+    public static void populateLayerParam(PJsonObject requestData, Object param, String... extraNamesToIgnore)
+            throws IOException, JSONException {
+        new MapLayerParamParser().populateLayerParam(true, requestData, param, extraNamesToIgnore);
     }
 
     static class TestParam {
@@ -156,7 +172,20 @@ public class MapLayerParamParserTest {
         public boolean[] ba;
         public PJsonObject[] oa;
         public double[] da;
+        public EmbeddedClass e;
+        public EmbeddedClass[] ea;
 
+        private boolean calledByPostConstruct = false;
+
+        public void postConstruct() {
+            calledByPostConstruct = true;
+        }
+    }
+
+    static class EmbeddedClass {
+        public String embeddedValue;
+        @HasDefaultValue
+        public String embeddedDefault = "def";
         private boolean calledByPostConstruct = false;
 
         public void postConstruct() {

@@ -38,7 +38,7 @@ import java.io.IOException;
  * Created by Jesse on 3/26/14.
  */
 public class CreateMapProcessorFixedScaleAndCenterWMTSTest extends AbstractMapfishSpringTest {
-    public static final String BASE_DIR ="center_geotiff_flexible_scale/";
+    public static final String BASE_DIR ="center_wmts_fixedscale/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;

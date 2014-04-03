@@ -60,7 +60,7 @@ public interface MapLayerFactoryPlugin<Param> {
      *     <li>array of any of the above (String[], boolean[], PJsonObject[])</li>
      * </ul>
      *
-     * If there is a public <code>postConstruct()</code> method then it will be called after the fields are all set.
+     * If there is a public <code>{@value org.mapfish.print.attribute.map.MapLayerParamParser#POST_CONSTRUCT_METHOD_NAME}()</code> method then it will be called after the fields are all set.
      */
     Param createParameter();
 

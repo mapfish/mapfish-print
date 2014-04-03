@@ -22,4 +22,5 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
     <bean id="geojsonLayerParser" class="org.mapfish.print.map.geotools.GeoJsonLayer$Plugin" />
     <bean id="geotiffLayerParser" class="org.mapfish.print.map.geotools.GeotiffLayer$Plugin" />
+    <bean id="wmtsLayerParser" class="org.mapfish.print.map.tiled.wmts.WmtsLayerParserPlugin" />
 </beans>

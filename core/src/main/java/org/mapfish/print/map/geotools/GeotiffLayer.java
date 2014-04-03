@@ -86,12 +86,13 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
         @Nonnull
         @Override
         public MapLayer parse(final Template template, @Nonnull final GeotiffParam param) throws IOException {
+            GeoTiffReader geotiffReader = getGeotiffReader(template, param.url);
+
             String styleRef = param.style;
             Style style = template.getStyle(styleRef)
                     .or(this.parser.loadStyle(template.getConfiguration(), styleRef))
                     .or(template.getConfiguration().getDefaultStyle(RASTER_STYLE_NAME));
 
-            GeoTiffReader geotiffReader = getGeotiffReader(template, param.url);
             return new GeotiffLayer(geotiffReader, style, this.forkJoinPool);
         }
 
@@ -101,6 +102,11 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
             final File geotiffFile;
             if (protocol.equalsIgnoreCase("file")) {
                 geotiffFile = new File(template.getConfiguration().getDirectory(), geotiffUrl.substring("file://".length()));
+                if (!geotiffFile.exists() || !geotiffFile.isFile()) {
+                    throw new IllegalArgumentException("The url in the geotiff layer: " + geotiffUrl + " is a file url but does not " +
+                                                       "reference a file within the configuration directory.  All file urls must be " +
+                                                       "relative urls to the configuration directory and may not contain ..");
+                }
                 assertFileIsInConfigDir(template, geotiffFile);
             } else {
                 geotiffFile = File.createTempFile("downloadedGeotiff", ".tiff");
@@ -122,7 +128,7 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
         private void assertFileIsInConfigDir(final Template template, final File file) {
             final String configurationDir = template.getConfiguration().getDirectory().getAbsolutePath();
             if (!file.getAbsolutePath().startsWith(configurationDir)) {
-                throw new IllegalArgumentException("The geoJson attribute is a file url but indicates a file that is not within the" +
+                throw new IllegalArgumentException("The url attribute is a file url but indicates a file that is not within the" +
                                                    " configurationDirectory: " + file.getAbsolutePath());
             }
         }

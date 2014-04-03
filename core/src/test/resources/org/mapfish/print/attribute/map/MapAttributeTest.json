@@ -1,4 +1,5 @@
 {
+  "toIgnore" : "ignored",
   "s" : "string",
   "defs": "newValue",
   "bigI" : 11,
@@ -17,5 +18,14 @@
   "sa": ["s1", "s2"],
   "ba": [true, false],
   "oa": [{"f":1}, {"b":2}],
-  "da": [2.1, 2.2]
+  "da": [2.1, 2.2],
+  "e": {
+    "embeddedValue" : "embeddedValue"
+  },
+  "ea" : [{
+    "embeddedValue" : "embeddedValue2",
+    "embeddedDefault" : "updateddef"
+  },{
+    "embeddedValue" : "embeddedValue3",
+  }]
 }

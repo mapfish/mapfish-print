@@ -20,6 +20,8 @@
 package org.mapfish.print.attribute.map;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.mapfish.print.map.DistanceUnit;
+import org.mapfish.print.map.Scale;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.awt.Rectangle;
@@ -52,7 +54,7 @@ public abstract class MapBounds {
     /**
      * Get the projection these bounds are calculated in.
      */
-    protected final CoordinateReferenceSystem getProjection() {
+    public final CoordinateReferenceSystem getProjection() {
         return this.projection;
     }
 
@@ -65,12 +67,43 @@ public abstract class MapBounds {
      * @param tolerance the tolerance to use when considering if two values are equal.  For example if 12.0 == 12.001.
      *                  The tolerance is a percentage
      * @param zoomLevelSnapStrategy the strategy to use for snapping to the nearest zoom level.
-     * @param paintArea
-     * @param dpi
+     * @param paintArea the paint area of the map.
+     * @param dpi the dpi of the map
      */
     public abstract MapBounds adjustBoundsToNearestScale(final ZoomLevels zoomLevels, final double tolerance,
-                                                         final ZoomLevelSnapStrategy zoomLevelSnapStrategy, Rectangle paintArea, double dpi);
+                                                         final ZoomLevelSnapStrategy zoomLevelSnapStrategy,
+                                                         final Rectangle paintArea, final double dpi);
 
+
+    /**
+     * Return the resolution of the map at these bounds.
+     *
+     * Resolution is related to Scale in that it related to the dots on the screen.
+     *
+     * @param paintArea the paint area of the map.
+     * @param dpi the dpi of the map
+     */
+    public final double getResolution(final Rectangle paintArea, final double dpi) {
+        double normScale = normalizeScale(getScaleDenominator(paintArea, dpi).getDenominator());
+        final double scaleInInches = DistanceUnit.fromProjection(getProjection()).convertTo(normScale, DistanceUnit.IN);
+        return 1.0 / (scaleInInches * dpi);
+    }
+
+    private double normalizeScale(final double scale) {
+        if (scale > 1.0) {
+            return (1.0 / scale);
+        } else {
+            return scale;
+        }
+    }
+
+    /**
+     * Calculate and return the scale of the map bounds.
+     *
+     * @param paintArea the paint area of the map.
+     * @param dpi the dpi of the map
+     */
+    protected abstract Scale getScaleDenominator(final Rectangle paintArea, final double dpi);
 
     // CHECKSTYLE:OFF
     @Override

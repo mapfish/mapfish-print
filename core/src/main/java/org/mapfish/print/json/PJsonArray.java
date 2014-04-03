@@ -133,11 +133,16 @@ public class PJsonArray extends PJsonElement {
      * Get the element as a boolean.
      * @param i the index of the element to access
      */
-    public Object getBool(final int i) {
+    public final Object getBool(final int i) {
         try {
             return this.array.getBoolean(i);
         } catch (JSONException e) {
             throw new JsonMissingException(this, "[" + i + "]");
         }
+    }
+
+    @Override
+    public final String toString() {
+        return getCurrentPath() + ":\n\t" + this.array;
     }
 }

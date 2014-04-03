@@ -2,7 +2,7 @@
   "attributes": {
     "mapDef": {
       "bbox": [97.5, -0.5, 107.5, 1.5],
-      "projection": "CRS:84",
+      "projection": "EPSG:3857",
       "dpi": 90,
       "layers": [
         {

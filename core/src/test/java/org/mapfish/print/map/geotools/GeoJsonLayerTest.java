@@ -63,12 +63,12 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
         template.setStyle("polygon", template.getConfiguration().getDefaultStyle("polygon"));
 
         GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
-        MapLayerParamParserTest.populateLayerParam(requestData, param);
+        MapLayerParamParserTest.populateLayerParam(requestData, param, "type");
         final GeoJsonLayer layer = geojsonLayerParser.parse(template, param);
 
         assertNotNull(layer);
 
-        final List<? extends Layer> layers = layer.getLayers();
+        final List<? extends Layer> layers = layer.getLayers(null, null, 1.0, true);
 
         assertEquals(1, layers.size());
 
@@ -91,9 +91,24 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
         template.setStyle("polygon", template.getConfiguration().getDefaultStyle("polygon"));
 
         GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
-        MapLayerParamParserTest.populateLayerParam(requestData, param);
+        MapLayerParamParserTest.populateLayerParam(requestData, param, "type");
         geojsonLayerParser.parse(template, param);
+    }
 
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGeoIllegalFileUrl2() throws Exception {
+        final Configuration configuration = new Configuration();
+        configuration.setConfigurationFile(File.createTempFile("xyz", ".yaml"));
+
+        Template template = new Template();
+        template.setConfiguration(configuration);
+        template.setStyle("polygon", template.getConfiguration().getDefaultStyle("polygon"));
+
+
+        GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
+        param.geoJson = "file://../" + BASE_DIR + "/geojson.json";
+        new GeoJsonLayer.Plugin().parse(template, param);
     }
 
     @Test(expected = Exception.class)
@@ -109,37 +124,8 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
         template.setStyle("polygon", template.getConfiguration().getDefaultStyle("polygon"));
 
         GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
-        MapLayerParamParserTest.populateLayerParam(requestData, param);
+        MapLayerParamParserTest.populateLayerParam(requestData, param, "type");
         geojsonLayerParser.parse(template, param);
-    }
-
-    @Test
-    public void testGeoJsonUrl() throws Exception {
-        final File file = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "geojson.json");
-        final PJsonObject requestData = parseJSONObjectFromString("{type:\"geojson\";style:\"polygon\";geoJson:\""
-                                                                  + file.toURI().toURL() + "\"}");
-
-        final Configuration configuration = new Configuration();
-        configuration.setConfigurationFile(file);
-
-        Template template = new Template();
-        template.setConfiguration(configuration);
-        template.setStyle("polygon", template.getConfiguration().getDefaultStyle("polygon"));
-
-
-        GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
-        MapLayerParamParserTest.populateLayerParam(requestData, param);
-        final GeoJsonLayer mapLayer = geojsonLayerParser.parse(template, param);
-
-        assertNotNull(mapLayer);
-
-        final List<? extends Layer> layers = mapLayer.getLayers();
-
-        assertEquals(1, layers.size());
-
-        FeatureLayer layer = (FeatureLayer) layers.get(0);
-        final int count = layer.getFeatureSource().getCount(Query.ALL);
-        assertEquals(3, count);
     }
 
     @Test
@@ -157,12 +143,12 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
 
         GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
-        MapLayerParamParserTest.populateLayerParam(requestData, param);
+        MapLayerParamParserTest.populateLayerParam(requestData, param, "type");
         final GeoJsonLayer mapLayer = geojsonLayerParser.parse(template, param);
 
         assertNotNull(mapLayer);
 
-        final List<? extends Layer> layers = mapLayer.getLayers();
+        final List<? extends Layer> layers = mapLayer.getLayers(null, null, 1.0, true);
 
         assertEquals(1, layers.size());
 
