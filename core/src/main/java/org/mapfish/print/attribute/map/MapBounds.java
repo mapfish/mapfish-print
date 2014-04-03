@@ -55,4 +55,40 @@ public abstract class MapBounds {
     protected final CoordinateReferenceSystem getProjection() {
         return this.projection;
     }
+
+    /**
+     * Adjust these bounds so that they are adjusted to the nearest scale in the provided set of scales.
+     *
+     * The center should remain the same and the scale should be adjusted
+     *
+     * @param zoomLevels the list of Zoom Levels
+     * @param tolerance the tolerance to use when considering if two values are equal.  For example if 12.0 == 12.001.
+     *                  The tolerance is a percentage
+     * @param zoomLevelSnapStrategy the strategy to use for snapping to the nearest zoom level.
+     * @param paintArea the paint area of the map.
+     * @param dpi the dpi of the map
+     */
+    public abstract MapBounds adjustBoundsToNearestScale(final ZoomLevels zoomLevels, final double tolerance,
+                                                         final ZoomLevelSnapStrategy zoomLevelSnapStrategy,
+                                                         final Rectangle paintArea, final double dpi);
+
+
+    // CHECKSTYLE:OFF
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MapBounds mapBounds = (MapBounds) o;
+
+        if (!projection.equals(mapBounds.projection)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return projection.hashCode();
+    }
+    // CHECKSTYLE:ON
 }

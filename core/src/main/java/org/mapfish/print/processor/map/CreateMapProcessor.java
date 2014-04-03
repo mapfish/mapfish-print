@@ -66,6 +66,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
 
         }
     }
+
     private BufferedImageType imageType = BufferedImageType.TYPE_4BYTE_ABGR;
 
     /**
@@ -86,6 +87,17 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         MapAttribute.MapAttributeValues mapValues = param.map;
         final int mapWidth = mapValues.getWidth();
         final int mapHeight = mapValues.getHeight();
+        final double dpi = mapValues.getDpi();
+        final Rectangle paintArea = new Rectangle(mapWidth, mapHeight);
+
+        MapBounds bounds = mapValues.getMapBounds();
+
+        if (mapValues.isUseNearestScale()) {
+                bounds = bounds.adjustBoundsToNearestScale(
+                        mapValues.getZoomLevels(),
+                        mapValues.getZoomSnapTolerance(),
+                        mapValues.getZoomLevelSnapStrategy(), paintArea, dpi);
+        }
 
         final BufferedImage bufferedImage = new BufferedImage(mapWidth, mapHeight, this.imageType.value);
 
@@ -94,9 +106,6 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             // reverse layer list to draw from bottom to top.  normally position 0 is top-most layer.
             final List<MapLayer> layers = Lists.reverse(mapValues.getLayers());
 
-            final MapBounds bounds = mapValues.getMapBounds();
-            final double dpi = mapValues.getDpi();
-            final Rectangle paintArea = new Rectangle(mapWidth, mapHeight);
 
             for (MapLayer layer : layers) {
                 layer.render(graphics2D, bounds, paintArea, dpi);
@@ -110,7 +119,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
 
     /**
      * Set the type of buffered image rendered to.  See {@link org.mapfish.print.processor.map.CreateMapProcessor.BufferedImageType}.
-     *
+     * <p/>
      * Default is {@link org.mapfish.print.processor.map.CreateMapProcessor.BufferedImageType#TYPE_4BYTE_ABGR}.
      *
      * @param imageType one of the {@link org.mapfish.print.processor.map.CreateMapProcessor.BufferedImageType} values.

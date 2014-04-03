@@ -1,0 +1,14 @@
+
+templates:
+  main: !template
+    attributes:
+      mapDef: !map
+        width: 500
+        height: 500
+        dpi: [72, 96]
+    processors:
+    - !createMap
+        inputMapper: {mapDef: map}
+        outputMapper: {image: mapOut}
+
+

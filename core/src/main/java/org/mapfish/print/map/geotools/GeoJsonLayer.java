@@ -38,7 +38,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
@@ -84,8 +83,7 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
             final Optional<GeoJsonLayer> result;
             final String type = layerJson.getString("type");
             final String geoJsonString = layerJson.optString(JSON_DATA);
-            if (TYPE.equalsIgnoreCase(type) ||
-                COMPATIBILITY_TYPE.equalsIgnoreCase(type) && geoJsonString != null) {
+            if ((TYPE.equalsIgnoreCase(type) || COMPATIBILITY_TYPE.equalsIgnoreCase(type)) && geoJsonString != null) {
 
                 SimpleFeatureCollection featureCollection = treatStringAsURL(template, geoJsonString);
                 if (featureCollection == null) {
@@ -93,9 +91,9 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
                 }
                 FeatureSource featureSource = new CollectionFeatureSource(featureCollection);
 
-                final String styleRef = layerJson.getString("style");
-
                 String geomType = featureCollection.getSchema().getGeometryDescriptor().getType().getBinding().getSimpleName();
+                final String styleRef = layerJson.optString("style", geomType);
+
                 Style style = template.getStyle(styleRef)
                         .or(this.parser.loadStyle(template.getConfiguration(), styleRef))
                         .or(template.getConfiguration().getDefaultStyle(geomType));
@@ -112,11 +110,15 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
                 URL url = new URL(geoJsonString);
                 final String protocol = url.getProtocol();
                 if (protocol.equalsIgnoreCase("file")) {
-                    final File file = new File(template.getConfiguration().getDirectory(), geoJsonString.substring("file://".length()));
+
+                    File file = new File(template.getConfiguration().getDirectory(), geoJsonString.substring("file://".length()));
                     if (file.exists() && file.isFile()) {
                         url = file.getAbsoluteFile().toURI().toURL();
-                    }
-                    assertFileIsInConfigDir(template, url);
+                    assertFileIsInConfigDir(template, file);
+                    } else {
+                        throw new IllegalArgumentException(url + " is not a relative URL file.  File urls are always interpreted as " +
+                                                           "being relative to the configuration directory.");
+                }
                 }
                 InputStream input = null;
                 try {
@@ -132,16 +134,11 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
             }
         }
 
-        private void assertFileIsInConfigDir(final Template template, final URL url) {
-            try {
-                final File file = new File(url.toURI());
-                final String configurationDir = template.getConfiguration().getDirectory().getAbsolutePath();
-                if (!file.getAbsolutePath().startsWith(configurationDir)) {
-                    throw new IllegalArgumentException("The geoJson attribute is a file url but indicates a file that is not within the" +
-                                                       " configurationDirectory: " + file.getAbsolutePath());
-                }
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
+        private void assertFileIsInConfigDir(final Template template, final File file) {
+            final String configurationDir = template.getConfiguration().getDirectory().getAbsolutePath();
+            if (!file.getAbsolutePath().startsWith(configurationDir)) {
+                throw new IllegalArgumentException("The geoJson attribute is a file url but indicates a file that is not within the" +
+                                                   " configurationDirectory: " + file.getAbsolutePath());
             }
         }
 

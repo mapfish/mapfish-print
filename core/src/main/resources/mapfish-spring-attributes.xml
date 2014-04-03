@@ -35,4 +35,7 @@
     <bean id="!legend" class="org.mapfish.print.attribute.LegendAttribute" scope="prototype" />
     <bean id="!table" class="org.mapfish.print.attribute.TableAttribute" scope="prototype" />
     <bean id="!tableList" class="org.mapfish.print.attribute.TableListAttribute" scope="prototype" />
+
+    <bean id="!zoomLevels" class="org.mapfish.print.attribute.map.ZoomLevels" scope="prototype" />
+
 </beans>

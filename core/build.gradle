@@ -34,7 +34,8 @@ dependencies {
     compile (
             "org.geotools:gt-epsg-hsql:$geotoolsVersion",
             "org.geotools:gt-render:$geotoolsVersion",
-            "org.geotools:gt-geojson:$geotoolsVersion"
+            "org.geotools:gt-geojson:$geotoolsVersion",
+            "org.geotools:gt-geotiff:$geotoolsVersion"
     )
     compile fileTree(dir: "$projectDir/libs", include: '*.jar')
     compile (

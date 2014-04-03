@@ -23,7 +23,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
-import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.Scale;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -36,9 +35,10 @@ import static org.junit.Assert.assertEquals;
  * @author Jesse on 3/26/14.
  */
 public class CenterScaleMapBoundsTest {
-    private static final double OGC_DPI = 25.4 / 0.28;
-    private static final CoordinateReferenceSystem CH1903;
-    private static final CoordinateReferenceSystem LAMBERT;
+    static final double OPENLAYERS_2_DPI = 72;
+    public static final CoordinateReferenceSystem CH1903;
+    public static final CoordinateReferenceSystem LAMBERT;
+
     static {
         try {
             CH1903 = CRS.decode("EPSG:21781");
@@ -50,10 +50,10 @@ public class CenterScaleMapBoundsTest {
 
     @Test
     public void testToReferencedEnvelopeCH1903Projection() throws Exception {
-        final Scale startScale = new Scale(18984.396150703426, DistanceUnit.M);
+        final Scale startScale = new Scale(18984.396150703426);
         final CenterScaleMapBounds bounds = new CenterScaleMapBounds(CH1903, 659596.5, 185610.5, startScale);
         final Rectangle paintArea = new Rectangle(521, 330);
-        final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea, OGC_DPI);
+        final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea, OPENLAYERS_2_DPI);
 
         // It would be nice to nail this down in the future to the exact value but the method I used for measurement was openlayers and
         // I don't know what the DPI it was using and I don't know how accurate its calculation is either.
@@ -66,10 +66,10 @@ public class CenterScaleMapBoundsTest {
 
     @Test
     public void testToReferencedEnvelopeLambertProjection() throws Exception {
-        final Scale startScale = new Scale(17983.582534790035, DistanceUnit.M);
+        final Scale startScale = new Scale(17983.582534790035);
         final CenterScaleMapBounds bounds = new CenterScaleMapBounds(LAMBERT, 445000, 6355000, startScale);
         final Rectangle paintArea = new Rectangle(418, 512);
-        final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea, 90);
+        final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea, OPENLAYERS_2_DPI);
 
         // It would be nice to nail this down in the future to the exact value but the method I used for measurement was openlayers and
         // I don't know what the DPI it was using and I don't know how accurate its calculation is either.
@@ -82,17 +82,19 @@ public class CenterScaleMapBoundsTest {
 
     @Test
     public void testToReferencedEnvelopeLatLong() throws Exception {
-        final Scale startScale = new Scale(56304.83087498591, DistanceUnit.M);
-        final CenterScaleMapBounds bounds = new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 8.2335427805083, 46.801424340241, startScale);
+        final Scale startScale = new Scale(56304.83087498591);
+        final CenterScaleMapBounds bounds = new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 8.2335427805083, 46.801424340241,
+                startScale);
         final Rectangle paintArea = new Rectangle(521, 330);
-        final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea, OGC_DPI);
+        final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea, OPENLAYERS_2_DPI);
 
         // It would be nice to nail this down in the future to the exact value but the method I used for measurement was openlayers and
         // I don't know what the DPI it was using and I don't know how accurate its calculation is either.
-        assertEquals(8.165, envelope.getMinX(), 0.001);
-        assertEquals(8.301, envelope.getMaxX(), 0.001);
-        assertEquals(46.771, envelope.getMinY(), 0.001);
-        assertEquals(46.830, envelope.getMaxY(), 0.001);
+        final double delta = 0.000001;
+        assertEquals(8.1657602, envelope.getMinX(), delta);
+        assertEquals(8.3013252, envelope.getMaxX(), delta);
+        assertEquals(46.771942, envelope.getMinY(), delta);
+        assertEquals(46.830906, envelope.getMaxY(), delta);
         assertEquals(DefaultGeographicCRS.WGS84, envelope.getCoordinateReferenceSystem());
     }
 }

@@ -41,7 +41,12 @@ public interface Constants {
      */
     String ENCODING = System.getProperty("mapfish.file.encoding", "UTF-8");
     /**
-     * The DPI of a PDF according to the spec.
+     * The DPI of a PDF according to the spec.  Also the DPI used by old Openlayers versions (2.0 and earlier).
      */
     float PDF_DPI = 72.0f;
+
+    /**
+     * The default style name for raster layers.
+     */
+    String RASTER_STYLE_NAME = "raster";
 }

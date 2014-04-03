@@ -37,25 +37,26 @@ import java.io.IOException;
  * <p/>
  * Created by Jesse on 3/26/14.
  */
-public class CreateMapProcessorTest extends AbstractMapfishSpringTest {
+public class CreateMapProcessorFixedScaleBBoxGeoJsonTest extends AbstractMapfishSpringTest {
+    private static final String BASE_DIR ="bbox_geojson_fixedscale/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
 
     @Test
     public void testExecute() throws Exception {
-        final Configuration config = configurationFactory.getConfig(getFile("basicMapExample/basicMapProcessor.yaml"));
+        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values(requestData, template);
         template.getProcessorGraph().createTask(values).invoke();
 
         BufferedImage map = values.getObject("mapOut", BufferedImage.class);
-        new ImageSimilarity(map, 2).assertSimilarity(getFile("basicMapExample/expectedSimpleImage.png"), 0);
+        new ImageSimilarity(map, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 0);
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorTest.class, "basicMapExample/basicMapRequestData.json");
+        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleBBoxGeoJsonTest.class, BASE_DIR + "requestData.json");
     }
 
 }
