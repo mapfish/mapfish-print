@@ -38,6 +38,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -196,7 +197,8 @@ public final class MapLayerParamParser {
                 }
                 Array.set(value, i, arrayValue);
             }
-
+        } else if (type.isEnum()) {
+            value = parseEnum(type, layerJson.getPath(fieldName), layerJson.getString(name));
         } else {
             try {
                 value = type.newInstance();
@@ -209,6 +211,33 @@ public final class MapLayerParamParser {
             }
         }
         return value;
+    }
+
+    private Object parseEnum(final Class<?> type, final String path, final String enumString) {
+        Object value;
+        try {
+            value = Enum.valueOf((Class<Enum>) type, enumString);
+        } catch (IllegalArgumentException e) {
+            // not the name, maybe the ordinal;
+
+            try {
+                int ordinal = Integer.parseInt(enumString);
+                final Object[] enumConstants = type.getEnumConstants();
+                if (ordinal < enumConstants.length) {
+                    value = enumConstants[ordinal];
+                } else {
+                    throw enumError(enumConstants, path, enumString);
+                }
+            } catch (NumberFormatException ne) {
+                throw enumError(type.getEnumConstants(), path, enumString);
+            }
+        }
+        return value;
+    }
+
+    private IllegalArgumentException enumError(final Object[] enumConstants, final String path, final String enumString) {
+        return new IllegalArgumentException(path + " should be an enumeration value or ordinal " +
+                                           "but was: " + enumString + "\nEnum constants are: " + Arrays.toString(enumConstants));
     }
 
     private Object parseArrayValue(final boolean errorOnExtraProperties, final String[] extraPropertyToIgnore, final Class<?> type,
@@ -235,6 +264,8 @@ public final class MapLayerParamParser {
             } catch (MalformedURLException e) {
                 throw new RuntimeException(e);
             }
+        } else if (type.isEnum()) {
+            value = parseEnum(type, jsonArray.getPath("" + i), jsonArray.getString(i));
         } else {
             try {
                 value = type.newInstance();

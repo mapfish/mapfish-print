@@ -92,7 +92,7 @@ public final class CenterScaleMapBounds extends MapBounds {
     }
 
     @Override
-    protected Scale getScaleDenominator(final Rectangle paintArea, final double dpi) {
+    public Scale getScaleDenominator(final Rectangle paintArea, final double dpi) {
         return this.scale;
     }
 

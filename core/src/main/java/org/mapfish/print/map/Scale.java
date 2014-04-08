@@ -20,6 +20,9 @@
 package org.mapfish.print.map;
 
 import org.mapfish.print.json.PJsonObject;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import javax.annotation.Nonnull;
 
 /**
  * Represent a scale denominator.  For example 1:10'000m which means 1 meter on the paper represent 10'000m on the ground.
@@ -52,6 +55,38 @@ public final class Scale {
         return this.denominator;
     }
 
+    /**
+     * Calculate the resolution for this scale.
+     *
+     * @param projection the projection to perform the calculation in
+     * @param dpi the dpi of the display device.
+     */
+    public double toResolution(@Nonnull final CoordinateReferenceSystem projection, final double dpi) {
+        double normScale = normalizeScale(this.denominator);
+        final double distancePerInch = DistanceUnit.fromProjection(projection).convertTo(normScale, DistanceUnit.IN);
+        return 1.0 / (distancePerInch * dpi);
+    }
+
+    private double normalizeScale(final double scale) {
+        if (scale > 1.0) {
+            return (1.0 / scale);
+        } else {
+            return scale;
+        }
+    }
+
+    /**
+     * Construct a scale object from a resolution.
+     *
+     * @param resolution the resolution of the map
+     * @param projection the projection of the map
+     * @param dpi the dpi of the display device.
+     */
+    public static Scale fromResolution(final double resolution, @Nonnull final CoordinateReferenceSystem projection, final double dpi) {
+        final double resolutionInInches = DistanceUnit.fromProjection(projection).convertTo(resolution, DistanceUnit.IN);
+        return new Scale(resolutionInInches * dpi);
+    }
+
     // CHECKSTYLE:OFF
 
     @Override
@@ -79,4 +114,6 @@ public final class Scale {
     public String toString() {
         return "Scale{" + denominator + '}';
     }
+    // CHECKSTYLE:ON
+
 }

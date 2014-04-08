@@ -23,8 +23,10 @@ import com.google.common.collect.Lists;
 import com.vividsolutions.jts.geom.Coordinate;
 import jsr166y.ForkJoinTask;
 import jsr166y.RecursiveTask;
+import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.GridCoverageBuilder;
+import org.geotools.coverage.grid.GridCoverageFactory;
+import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -39,7 +41,6 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.awt.image.SampleModel;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -89,79 +90,83 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
     @Override
     protected GridCoverage2D compute() {
         try {
-        final ReferencedEnvelope mapGeoBounds = this.bounds.toReferencedEnvelope(this.paintArea, this.dpi);
-        final CoordinateReferenceSystem mapProjection = mapGeoBounds.getCoordinateReferenceSystem();
-        Dimension tileSizeOnScreen = this.tiledLayer.getTileSize();
+            final ReferencedEnvelope mapGeoBounds = this.bounds.toReferencedEnvelope(this.paintArea, this.dpi);
+            final CoordinateReferenceSystem mapProjection = mapGeoBounds.getCoordinateReferenceSystem();
+            Dimension tileSizeOnScreen = this.tiledLayer.getTileSize();
 
-        final double mapResolution = this.bounds.getResolution(this.paintArea, this.dpi);
-        Coordinate tileSizeInWorld = new Coordinate(tileSizeOnScreen.width * mapResolution, tileSizeOnScreen.height * mapResolution);
+            final double layerResolution = this.tiledLayer.getScale().toResolution(mapProjection, this.tiledLayer.getLayerDpi());
+            Coordinate tileSizeInWorld = new Coordinate(tileSizeOnScreen.width * layerResolution,
+                    tileSizeOnScreen.height * layerResolution);
 
-        // The minX minY of the first (minY,minY) tile
-        Coordinate gridCoverageOrigin = this.tiledLayer.getMinGeoCoordinate(mapGeoBounds, tileSizeInWorld);
+            // The minX minY of the first (minY,minY) tile
+            Coordinate gridCoverageOrigin = this.tiledLayer.getMinGeoCoordinate(mapGeoBounds, tileSizeInWorld);
 
-        // the offset from the mapGeoBound's minx and miny
-        Coordinate coverageOffset = new Coordinate(
-                (mapGeoBounds.getMinX() - gridCoverageOrigin.x) / mapResolution,
-                (mapGeoBounds.getMinY() - gridCoverageOrigin.y) / mapResolution);
+            URI commonUri = this.tiledLayer.createCommonURI();
 
-        URI commonUri = this.tiledLayer.createCommonURI();
+            ReferencedEnvelope tileCacheBounds = this.tiledLayer.getTileCacheBounds();
+            final double resolution = this.tiledLayer.getScale().toResolution(this.bounds.getProjection(), this.tiledLayer.getLayerDpi());
+            double rowFactor = 1 / (resolution * tileSizeOnScreen.height);
+            double columnFactor = 1 / (resolution * tileSizeOnScreen.width);
 
+            int imageWidth = 0;
+            int imageHeight = 0;
+            int xIndex;
+            int yIndex = (int) Math.floor((mapGeoBounds.getMaxY() - gridCoverageOrigin.y) / tileSizeInWorld.y) + 1;
 
-        int imageWidth = 0;
-        int imageHeight = 0;
-        double gridCoverageMaxX = gridCoverageOrigin.x;
-        double gridCoverageMaxY = gridCoverageOrigin.y;
-        List<ForkJoinTask<Tile>> loaderTasks = Lists.newArrayList();
-        for (double geoY = gridCoverageOrigin.y; geoY < mapGeoBounds.getMaxY(); geoY += tileSizeInWorld.y) {
-            imageWidth = 0;
-            gridCoverageMaxX = gridCoverageOrigin.x;
-            for (double geoX = gridCoverageOrigin.x; geoX < mapGeoBounds.getMaxX(); geoX += tileSizeInWorld.x) {
-                ReferencedEnvelope tileBounds = new ReferencedEnvelope(
-                        geoX, geoX + tileSizeInWorld.x, geoY, geoY + tileSizeInWorld.y, mapProjection);
-                ClientHttpRequest tileRequest = this.tiledLayer.getTileRequest(commonUri, tileBounds, tileSizeOnScreen);
-                if (this.tiledLayer.isVisible(tileBounds)) {
-                    final SingleTileLoaderTask task = new SingleTileLoaderTask(tileRequest, this.errorImage, imageWidth, imageHeight);
-                    loaderTasks.add(task);
-                } else {
-                    if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("Tile out of bounds: " + tileRequest);
+            double gridCoverageMaxX = gridCoverageOrigin.x;
+            double gridCoverageMaxY = gridCoverageOrigin.y;
+            List<ForkJoinTask<Tile>> loaderTasks = Lists.newArrayList();
+
+            for (double geoY = gridCoverageOrigin.y; geoY < mapGeoBounds.getMaxY(); geoY += tileSizeInWorld.y) {
+                yIndex--;
+                imageHeight += tileSizeOnScreen.height;
+                imageWidth = 0;
+                xIndex = -1;
+
+                gridCoverageMaxX = gridCoverageOrigin.x;
+                gridCoverageMaxY += tileSizeInWorld.y;
+                for (double geoX = gridCoverageOrigin.x; geoX < mapGeoBounds.getMaxX(); geoX += tileSizeInWorld.x) {
+                    xIndex++;
+                    imageWidth += tileSizeOnScreen.width;
+                    gridCoverageMaxX += tileSizeInWorld.x;
+
+                    ReferencedEnvelope tileBounds = new ReferencedEnvelope(
+                            geoX, geoX + tileSizeInWorld.x, geoY, geoY + tileSizeInWorld.y, mapProjection);
+
+                    int row = (int) Math.round((tileCacheBounds.getMaxY() - tileBounds.getMaxY()) * rowFactor);
+                    int column = (int) Math.round((tileBounds.getMinX() - tileCacheBounds.getMinX()) * columnFactor);
+
+                    ClientHttpRequest tileRequest = this.tiledLayer.getTileRequest(commonUri, tileBounds, tileSizeOnScreen, column, row);
+
+                    if (isVisible(tileCacheBounds, tileBounds)) {
+                        final SingleTileLoaderTask task = new SingleTileLoaderTask(tileRequest, this.errorImage, xIndex, yIndex);
+                        loaderTasks.add(task);
+                    } else {
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug("Tile out of bounds: " + tileRequest);
+                        }
+                        loaderTasks.add(new PlaceHolderImageTask(this.tiledLayer.getMissingTileImage(), xIndex, yIndex));
                     }
-                    loaderTasks.add(new PlaceHolderImageTask(this.tiledLayer.getMissingTileImage(), imageWidth, imageHeight));
-                }
-                imageWidth += tileSizeOnScreen.width;  // important to leave this at end of the loop
-                gridCoverageMaxX += tileSizeInWorld.x;
-            }
-            imageHeight += tileSizeOnScreen.height;  // important to leave this at end of the loop
-            gridCoverageMaxY += tileSizeInWorld.y;
-        }
-
-
-        BufferedImage coverageImage = this.tiledLayer.createBufferedImage(imageWidth, imageHeight);
-        Graphics2D graphics = coverageImage.createGraphics();
-        try {
-            for (ForkJoinTask<Tile> loaderTask : loaderTasks) {
-                Tile tile = loaderTask.invoke();
-                if (tile.image != null) {
-                    graphics.drawImage(tile.image, tile.originX, tile.originY, null);
                 }
             }
-        } finally {
-            graphics.dispose();
-        }
 
-        GridCoverageBuilder coverageBuilder = new GridCoverageBuilder();
-        coverageBuilder.setBufferedImage(coverageImage);
-        coverageBuilder.setCoordinateReferenceSystem(mapProjection);
-        coverageBuilder.setEnvelope(gridCoverageOrigin.x, gridCoverageOrigin.y, gridCoverageMaxX, gridCoverageMaxY);
+            BufferedImage coverageImage = this.tiledLayer.createBufferedImage(imageWidth, imageHeight);
+            Graphics2D graphics = coverageImage.createGraphics();
+            try {
+                for (ForkJoinTask<Tile> loaderTask : loaderTasks) {
+                    Tile tile = loaderTask.invoke();
+                    if (tile.image != null) {
+                        graphics.drawImage(tile.image, tile.xIndex * tileSizeOnScreen.width, tile.yIndex * tileSizeOnScreen.height, null);
+                    }
+                }
+            } finally {
+                graphics.dispose();
+            }
 
-        // Set some metadata on the coverage regarding the sample sizes.  This can be used to style coverage.
-        // TODO should be more sophisticated in future regarding the different subclasses of SampleModels
-        final SampleModel sampleModel = coverageImage.getSampleModel();
-        for (int i = 0; i < sampleModel.getNumBands(); i++) {
-            coverageBuilder.setSampleRange(0, 2 ^ sampleModel.getSampleSize(i));
-        }
-
-        return coverageBuilder.getGridCoverage2D();
+            GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
+            GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapProjection);
+            gridEnvelope.setEnvelope(gridCoverageOrigin.x, gridCoverageOrigin.y, gridCoverageMaxX, gridCoverageMaxY);
+            return factory.create(commonUri.toString(), coverageImage, gridEnvelope, null, null, null);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         } catch (UnsupportedEncodingException e) {
@@ -171,18 +176,26 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
         }
     }
 
+    private boolean isVisible(final ReferencedEnvelope tileCacheBounds, final ReferencedEnvelope tileBounds) {
+        final double boundsMinX = tileBounds.getMinX();
+        final double boundsMinY = tileBounds.getMinY();
+        return boundsMinX >= tileCacheBounds.getMinX() && boundsMinX <= tileCacheBounds.getMaxX()
+               && boundsMinY >= tileCacheBounds.getMinY() && boundsMinY <= tileCacheBounds.getMaxY();
+        //we don't use maxX and maxY since tilecache doesn't seems to care about those...
+    }
+
     private static final class SingleTileLoaderTask extends RecursiveTask<Tile> {
 
         private final ClientHttpRequest tileRequest;
-        private final int tileOriginX;
-        private final int tileOriginY;
+        private final int tileIndexX;
+        private final int tileIndexY;
         private final BufferedImage errorImage;
 
-        public SingleTileLoaderTask(final ClientHttpRequest tileRequest, final BufferedImage errorImage, final int tileOriginX,
-                                    final int tileOriginY) {
+        public SingleTileLoaderTask(final ClientHttpRequest tileRequest, final BufferedImage errorImage, final int tileIndexX,
+                                    final int tileIndexY) {
             this.tileRequest = tileRequest;
-            this.tileOriginX = tileOriginX;
-            this.tileOriginY = tileOriginY;
+            this.tileIndexX = tileIndexX;
+            this.tileIndexY = tileIndexY;
             this.errorImage = errorImage;
         }
 
@@ -190,17 +203,18 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
         protected Tile compute() {
             ClientHttpResponse response = null;
             try {
+                LOGGER.debug("\n\t" + this.tileRequest.getMethod() + " -- " + this.tileRequest.getURI());
                 response = this.tileRequest.execute();
                 final HttpStatus statusCode = response.getStatusCode();
                 if (statusCode != HttpStatus.OK) {
                     LOGGER.error("Error making tile request: " + this.tileRequest.getURI() + "\n\tStatus: " + statusCode +
                                  "\n\tMessage: " + response.getStatusText());
-                    return new Tile(this.errorImage, this.tileOriginX, this.tileOriginY);
+                    return new Tile(this.errorImage, this.tileIndexX, this.tileIndexY);
                 }
 
                 BufferedImage image = ImageIO.read(response.getBody());
 
-                return new Tile(image, this.tileOriginX, this.tileOriginY);
+                return new Tile(image, this.tileIndexX, this.tileIndexY);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } finally {
@@ -235,18 +249,18 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
          */
         private final BufferedImage image;
         /**
-         * The x coordinate to start drawing the tile.  It should be the minx of the tile.
+         * The x index of the image.  the x coordinate to draw this tile is xIndex * tileSizeX
          */
-        private final int originX;
+        private final int xIndex;
         /**
-         * The y coordinate to start drawing the tile.  It should be the miny of the tile.
+         * The y index of the image.  the y coordinate to draw this tile is yIndex * tileSizeY
          */
-        private final int originY;
+        private final int yIndex;
 
-        private Tile(final BufferedImage image, final int originX, final int originY) {
+        private Tile(final BufferedImage image, final int xIndex, final int yIndex) {
             this.image = image;
-            this.originX = originX;
-            this.originY = originY;
+            this.xIndex = xIndex;
+            this.yIndex = yIndex;
         }
     }
 }

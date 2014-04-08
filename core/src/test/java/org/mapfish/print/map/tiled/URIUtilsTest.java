@@ -20,6 +20,7 @@
 package org.mapfish.print.map.tiled;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import org.junit.Test;
@@ -28,6 +29,7 @@ import java.net.URI;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -39,8 +41,8 @@ public class URIUtilsTest {
 
     @Test
     public void testGetParametersURI() throws Exception {
-        URI uri = new URI("http://server:port/path1/path2?"+TEST_QUERY);
-        final Multimap<String,String> parameters = URIUtils.getParameters(uri);
+        URI uri = new URI("http://server:port/path1/path2?" + TEST_QUERY);
+        final Multimap<String, String> parameters = URIUtils.getParameters(uri);
 
         assertEquals(6, parameters.size());
         assertTestParams(parameters);
@@ -49,7 +51,7 @@ public class URIUtilsTest {
 
     @Test
     public void testGetParametersString() throws Exception {
-        final Multimap<String,String> parameters = URIUtils.getParameters(TEST_QUERY);
+        final Multimap<String, String> parameters = URIUtils.getParameters(TEST_QUERY);
 
         assertEquals(6, parameters.size());
         assertTestParams(parameters);
@@ -66,7 +68,7 @@ public class URIUtilsTest {
 
     @Test
     public void testAddParamsNoOverrides() throws Exception {
-        URI uri = new URI("http://server:port/path1/path2?"+TEST_QUERY);
+        URI uri = new URI("http://server:port/path1/path2?" + TEST_QUERY);
         Multimap<String, String> newParams = HashMultimap.create();
         newParams.put("a", "n1");
         newParams.put("e", "e1");
@@ -84,7 +86,7 @@ public class URIUtilsTest {
 
     @Test
     public void testAddParamsWithOverrides() throws Exception {
-        URI uri = new URI("http://server:port/path1/path2?"+TEST_QUERY);
+        URI uri = new URI("http://server:port/path1/path2?" + TEST_QUERY);
         Multimap<String, String> newParams = HashMultimap.create();
         newParams.put("a", "n1");
         newParams.put("b", "nb1");
@@ -108,7 +110,7 @@ public class URIUtilsTest {
 
     @Test
     public void testAddParamOverride() throws Exception {
-        URI uri = new URI("http://server:port/path1/path2?"+TEST_QUERY);
+        URI uri = new URI("http://server:port/path1/path2?" + TEST_QUERY);
 
         final Multimap<String, String> parameters = URIUtils.getParameters(uri);
         URIUtils.addParamOverride(parameters, "a", "n1");
@@ -124,7 +126,7 @@ public class URIUtilsTest {
 
     @Test
     public void testSetParamDefault() throws Exception {
-        URI uri = new URI("http://server:port/path1/path2?"+TEST_QUERY);
+        URI uri = new URI("http://server:port/path1/path2?" + TEST_QUERY);
 
         final Multimap<String, String> parameters = URIUtils.getParameters(uri);
         URIUtils.setParamDefault(parameters, "a", "n1");
@@ -137,6 +139,43 @@ public class URIUtilsTest {
         assertEquals(7, parameters.size());
         assertTestParams(parameters);
         assertTrue(parameters.containsEntry("e", "n1"));
+    }
 
+    @Test
+    public void testSetQueryParams() throws Exception {
+        URI initialUri = new URI("http://un:ps@server.com:9876/p1/p2?z=3,y=4#fragment");
+        Multimap<String, String> params = LinkedListMultimap.create();
+        params.put("a", "1");
+        params.put("b", "2");
+        params.put("b", "3");
+        assertEquals("http://un:ps@server.com:9876/p1/p2?a=1&b=2&b=3#fragment", URIUtils.setQueryParams(initialUri, params).toString());
+
+        initialUri = new URI("http", "un:ps", "server.com", 9876, "/p1/p2", "z=3&y=4", "fragment");
+        assertEquals("http://un:ps@server.com:9876/p1/p2?a=1&b=2&b=3#fragment", URIUtils.setQueryParams(initialUri, params).toString());
+
+        initialUri = new URI("http://center_wmts_fixedscale.com:1234/wmts");
+        assertEquals("http://center_wmts_fixedscale.com:1234/wmts?a=1&b=2&b=3", URIUtils.setQueryParams(initialUri, params).toString());
+
+        initialUri = new URI("http","center_wmts_fixedscale.com:1234", "/wmts", "a=3", "fragment");
+        assertEquals("http://center_wmts_fixedscale.com:1234/wmts?a=1&b=2&b=3#fragment", URIUtils.setQueryParams(initialUri, params).toString());
+
+        initialUri = new URI("http","center_wmts_fixedscale.com:1234", "/wmts", null, null);
+        assertEquals("http://center_wmts_fixedscale.com:1234/wmts?a=1&b=2&b=3", URIUtils.setQueryParams(initialUri, params).toString());
+
+        params = LinkedListMultimap.create();
+        final String trickyKey = "a # param";
+        final String trickyValue = "a value &time=1#trickFrag";
+        params.put(trickyKey, trickyValue);
+        initialUri = new URI("http://un:ps@server.com:9876/p1/p2?z=3,y=4#fragment");
+        final URI updatedUri = URIUtils.setQueryParams(initialUri, params);
+        assertFalse(updatedUri.toString().contains("a #"));
+        assertFalse(updatedUri.toString().contains("1#t"));
+        assertFalse(updatedUri.toString().contains(" &time"));
+        assertFalse(updatedUri.toString().contains("#trick"));
+        assertEquals("http", updatedUri.getScheme());
+        assertEquals("fragment", updatedUri.getFragment());
+        assertEquals("server.com", updatedUri.getHost());
+        assertEquals("/p1/p2", updatedUri.getPath());
+        assertEquals(9876, updatedUri.getPort());
     }
 }

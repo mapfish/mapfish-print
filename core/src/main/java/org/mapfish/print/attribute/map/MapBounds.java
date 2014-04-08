@@ -20,7 +20,6 @@
 package org.mapfish.print.attribute.map;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.Scale;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -74,36 +73,13 @@ public abstract class MapBounds {
                                                          final ZoomLevelSnapStrategy zoomLevelSnapStrategy,
                                                          final Rectangle paintArea, final double dpi);
 
-
-    /**
-     * Return the resolution of the map at these bounds.
-     *
-     * Resolution is related to Scale in that it related to the dots on the screen.
-     *
-     * @param paintArea the paint area of the map.
-     * @param dpi the dpi of the map
-     */
-    public final double getResolution(final Rectangle paintArea, final double dpi) {
-        double normScale = normalizeScale(getScaleDenominator(paintArea, dpi).getDenominator());
-        final double scaleInInches = DistanceUnit.fromProjection(getProjection()).convertTo(normScale, DistanceUnit.IN);
-        return 1.0 / (scaleInInches * dpi);
-    }
-
-    private double normalizeScale(final double scale) {
-        if (scale > 1.0) {
-            return (1.0 / scale);
-        } else {
-            return scale;
-        }
-    }
-
     /**
      * Calculate and return the scale of the map bounds.
      *
      * @param paintArea the paint area of the map.
      * @param dpi the dpi of the map
      */
-    protected abstract Scale getScaleDenominator(final Rectangle paintArea, final double dpi);
+    public abstract Scale getScaleDenominator(final Rectangle paintArea, final double dpi);
 
     // CHECKSTYLE:OFF
     @Override

@@ -22,6 +22,7 @@ package org.mapfish.print.attribute.map;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.ExtraPropertyException;
 import org.mapfish.print.MissingPropertyException;
 import org.mapfish.print.json.PJsonArray;
@@ -36,6 +37,7 @@ import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mapfish.print.AbstractMapfishSpringTest.parseJSONObjectFromFile;
@@ -45,6 +47,38 @@ import static org.mapfish.print.AbstractMapfishSpringTest.parseJSONObjectFromFil
  */
 public class MapLayerParamParserTest {
     private final MapLayerParamParser mapLayerParamParser = new MapLayerParamParser();
+
+    @Test
+    public void testNullOptionalArray() throws Exception {
+        OptionalArrayParam p = new OptionalArrayParam();
+
+        final PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"sa\":null}");
+
+        this.mapLayerParamParser.populateLayerParam(true, json, p, "toIgnore");
+        assertNull(p.sa);
+    }
+
+    @Test
+    public void testEnum() throws Exception {
+        TestEnumParam p = new TestEnumParam();
+
+        final PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"e1\":\"VAL1\", \"e2\": [1, \"VAL2\"]}");
+
+        this.mapLayerParamParser.populateLayerParam(true, json, p, "toIgnore");
+        assertEquals(TestEnum.DEF, p.def2);
+        assertEquals(TestEnum.VAL1, p.e1);
+        assertArrayEquals(new TestEnum[] {TestEnum.VAL2, TestEnum.VAL2}, p.e2);
+    }
+
+   @Test (expected = IllegalArgumentException.class)
+    public void testEnumIllegalVal() throws Exception {
+        TestEnumParam p = new TestEnumParam();
+
+        final PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"e1\":\"foo\", \"e2\": [2, \"VAL2\"]}");
+
+        this.mapLayerParamParser.populateLayerParam(true, json, p, "toIgnore");
+    }
+
     @Test
     public void testPopulateLayerParam() throws Exception {
         final TestParam param = new TestParam();
@@ -191,5 +225,21 @@ public class MapLayerParamParserTest {
         public void postConstruct() {
             calledByPostConstruct = true;
         }
+    }
+
+    static class OptionalArrayParam {
+        @HasDefaultValue
+        public String[] sa;
+    }
+
+    enum TestEnum {
+        VAL1, VAL2, DEF
+    }
+
+    static class TestEnumParam {
+        public TestEnum e1 = TestEnum.DEF;
+        public TestEnum[] e2;
+        @HasDefaultValue
+        public TestEnum def2 = TestEnum.DEF;
     }
 }

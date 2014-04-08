@@ -20,6 +20,7 @@ package org.mapfish.print.map.tiled;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import org.mapfish.print.Constants;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -44,7 +45,7 @@ public final class URIUtils {
      *
      * @param uri uri to analyze
      */
-    public static Multimap<String, String> getParameters(final URI uri) throws URISyntaxException, UnsupportedEncodingException {
+    public static Multimap<String, String> getParameters(final URI uri) {
         return getParameters(uri.getRawQuery());
     }
 
@@ -53,7 +54,7 @@ public final class URIUtils {
      *
      * @param rawQuery query portion of the uri to analyze.
      */
-    public static Multimap<String, String> getParameters(final String rawQuery) throws URISyntaxException, UnsupportedEncodingException {
+    public static Multimap<String, String> getParameters(final String rawQuery) {
         Multimap<String, String> result = HashMultimap.create();
         if (rawQuery == null) {
             return result;
@@ -69,8 +70,13 @@ public final class URIUtils {
                 key = pair;
                 value = "";
             } else {
-                key = URLDecoder.decode(pair.substring(0, pos), "UTF-8");
-                value = URLDecoder.decode(pair.substring(pos + 1, pair.length()), "UTF-8");
+
+                try {
+                    key = URLDecoder.decode(pair.substring(0, pos), "UTF-8");
+                    value = URLDecoder.decode(pair.substring(pos + 1, pair.length()), "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
             }
 
             result.put(key, value);
@@ -86,8 +92,7 @@ public final class URIUtils {
      * @param overrideParams A set of parameter names that must be overridden and not added
      * @return The new query
      */
-    public static URI addParams(final URI uri, final Multimap<String, String> params, final Set<String> overrideParams)
-            throws URISyntaxException, UnsupportedEncodingException {
+    public static URI addParams(final URI uri, final Multimap<String, String> params, final Set<String> overrideParams) {
         if (params == null || params.size() == 0) {
             return uri;
         }
@@ -127,11 +132,15 @@ public final class URIUtils {
             result.append('#').append(uri.getRawFragment());
         }
 
-        return new URI(result.toString());
+        try {
+            return new URI(result.toString());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static boolean addParams(final StringBuilder result, final boolean isFirstParam, final String key,
-                                     final Collection<String> list) throws UnsupportedEncodingException {
+                                     final Collection<String> list) {
         boolean first = isFirstParam;
         for (String val : list) {
             if (first) {
@@ -140,9 +149,13 @@ public final class URIUtils {
             } else {
                 result.append('&');
             }
-            result.append(URLEncoder.encode(key, "UTF-8"));
-            result.append("=");
-            result.append(URLEncoder.encode(val, "UTF-8"));
+            try {
+                result.append(URLEncoder.encode(key, Constants.ENCODING));
+                result.append("=");
+                result.append(URLEncoder.encode(val, Constants.ENCODING));
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
         }
         return first;
     }
@@ -169,6 +182,34 @@ public final class URIUtils {
     public static void setParamDefault(final Multimap<String, String> params, final String key, final String value) {
         if (!params.containsKey(key)) {
             params.put(key, value);
+        }
+    }
+
+    /**
+     * Construct a new uri by replacing query parameters in initialUri with the query parameters provided.
+     *
+     * @param initialUri  the initial/template URI
+     * @param queryParams the new query parameters.
+     */
+    public static URI setQueryParams(final URI initialUri, final Multimap<String, String> queryParams) {
+        StringBuilder queryString = new StringBuilder();
+        for (Map.Entry<String, String> entry : queryParams.entries()) {
+            if (queryString.length() > 0) {
+                queryString.append("&");
+            }
+            queryString.append(entry.getKey()).append("=").append(entry.getValue());
+        }
+        try {
+            if (initialUri.getHost() == null && initialUri.getAuthority() != null) {
+                return new URI(initialUri.getScheme(), initialUri.getAuthority(), initialUri.getPath(), queryString.toString(),
+                        initialUri.getFragment());
+            } else {
+                return new URI(initialUri.getScheme(), initialUri.getUserInfo(), initialUri.getHost(), initialUri.getPort(),
+                        initialUri.getPath(),
+                        queryString.toString(), initialUri.getFragment());
+            }
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
     }
 }

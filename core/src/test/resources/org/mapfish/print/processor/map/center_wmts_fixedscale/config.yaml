@@ -2,13 +2,13 @@ templates:
   main: !template
     attributes:
       mapDef: !map
-        width: 500
-        height: 500
+        width: 630
+        height: 294
         maxDpi: 400
         zoomSnapTolerance: 0.025
         zoomLevelSnapStrategy: CLOSEST_LOWER_SCALE_ON_TIE
         zoomLevels: !zoomLevels
-          scales: [50000, 100000, 500000, 1000000]
+          scales: [5000, 10000, 50000, 110000, 500000, 1000000]
     processors:
     - !createMap
         inputMapper: {mapDef: map}

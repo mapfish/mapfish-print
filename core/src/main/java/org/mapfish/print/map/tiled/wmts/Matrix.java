@@ -34,13 +34,13 @@ public class Matrix {
      */
     public String identifier;
     /**
-     * The size of the matrix.
+     * A 2 dimensional array containing number of tiles in the matrix for the columns (0) and rows (1).
      */
     public int[] matrixSize;
     /**
-     * The resolution of the matrix.
+     * The scale of the matrix.
      */
-    public double resolution;
+    public double scaleDenominator;
     /**
      * A 2 dimensional array representing the width, height of the tile.
      */

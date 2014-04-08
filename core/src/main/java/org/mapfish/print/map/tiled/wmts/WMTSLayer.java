@@ -24,18 +24,20 @@ import jsr166y.ForkJoinPool;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.styling.Style;
 import org.mapfish.print.attribute.map.MapBounds;
+import org.mapfish.print.map.Scale;
 import org.mapfish.print.map.tiled.AbstractTiledLayer;
 import org.mapfish.print.map.tiled.TileCacheInformation;
+import org.mapfish.print.map.tiled.URIUtils;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Class for loading data from a WMTS.
@@ -73,9 +75,9 @@ public class WMTSLayer extends AbstractTiledLayer {
         public WMTSTileCacheInfo(final MapBounds bounds, final Rectangle paintArea, final double dpi) {
             super(bounds, paintArea, dpi, WMTSLayer.this.param);
             double diff = Double.POSITIVE_INFINITY;
-            double targetResolution = bounds.getResolution(paintArea, dpi);
+            final double targetScale = bounds.getScaleDenominator(paintArea, dpi).getDenominator();
             for (Matrix m : WMTSLayer.this.param.matrices) {
-                double delta = Math.abs(1 - m.resolution / targetResolution);
+                double delta = Math.abs(m.scaleDenominator - targetScale);
                 if (delta < diff) {
                     diff = delta;
                     this.matrix = m;
@@ -83,7 +85,7 @@ public class WMTSLayer extends AbstractTiledLayer {
             }
 
             if (this.matrix == null) {
-                throw new IllegalArgumentException("Unable to find a matrix that at the resolution: " + targetResolution);
+                throw new IllegalArgumentException("Unable to find a matrix that at the scale: " + targetScale);
             }
         }
 
@@ -98,10 +100,10 @@ public class WMTSLayer extends AbstractTiledLayer {
         @Nonnull
         @Override
         protected ReferencedEnvelope getTileCacheBounds() {
-            double resolution = this.matrix.resolution;
+            double scaleDenominator = new Scale(this.matrix.scaleDenominator).toResolution(this.bounds.getProjection(), getLayerDpi());
             double minX = this.matrix.topLeftCorner[0];
-            double minY = this.matrix.topLeftCorner[1] - (this.matrix.getTileHeight() * this.matrix.matrixSize[1] * resolution);
-            double maxX = this.matrix.topLeftCorner[0] + (this.matrix.getTileWidth() * this.matrix.matrixSize[0] * resolution);
+            double minY = this.matrix.topLeftCorner[1] - (this.matrix.getTileHeight() * this.matrix.matrixSize[1] * scaleDenominator);
+            double maxX = this.matrix.topLeftCorner[0] + (this.matrix.getTileWidth() * this.matrix.matrixSize[0] * scaleDenominator);
             double maxY = this.matrix.topLeftCorner[1];
             return new ReferencedEnvelope(minX, maxX, minY, maxY, bounds.getProjection());
         }
@@ -109,59 +111,75 @@ public class WMTSLayer extends AbstractTiledLayer {
         @Override
         @Nonnull
         public ClientHttpRequest getTileRequest(final URI commonURI, final ReferencedEnvelope tileBounds,
-                                                final Dimension tileSizeOnScreen) throws URISyntaxException {
-            ReferencedEnvelope tileCacheBounds = getTileCacheBounds();
-            double factor = 1 / (this.matrix.resolution * tileSizeOnScreen.width);
-            int row = (int) Math.round((tileCacheBounds.getMaxY() - tileBounds.getMaxY()) * factor);
-            int col = (int) Math.round((tileBounds.getMinY() - tileCacheBounds.getMinX()) * factor);
+                                                final Dimension tileSizeOnScreen, final int column, final int row)
+                throws URISyntaxException, IOException {
             URI uri;
             final WMTSLayerParam layerParam = WMTSLayer.this.param;
             if (RequestEncoding.REST == layerParam.requestEncoding) {
-                String path = layerParam.baseURL;
-                for (int i = 0; i < layerParam.dimensions.length; i++) {
-                    String dimension = layerParam.dimensions[i];
-                    final String value = layerParam.dimensionParams.getString(dimension.toUpperCase());
-                    path = path.replace("{" + dimension + "}", value);
-                }
-                path = path.replace("{TileMatrixSet}", layerParam.matrixSet);
-                path = path.replace("{TileMatrix}", this.matrix.identifier);
-                path = path.replace("{TileRow}", String.valueOf(row));
-                path = path.replace("{TileCol}", String.valueOf(col));
-
-                uri = new URI(commonURI.getScheme(), commonURI.getUserInfo(), commonURI.getHost(), commonURI.getPort(),
-                        path, commonURI.getQuery(), commonURI.getFragment());
+                uri = createRestURI(commonURI, row, column, layerParam);
             } else {
-                String query = "SERVICE=WMTS";
-                query += "&REQUEST=GetTile";
-                query += "&VERSION=" + layerParam.version;
-                query += "&LAYER=" + layerParam.layer;
-                query += "&STYLE=" + layerParam.style;
-                query += "&TILEMATRIXSET=" + layerParam.matrixSet;
-                query += "&TILEMATRIX=" + this.matrix.identifier;
-                query += "&TILEROW=" + row;
-                query += "&TILECOL=" + col;
-                query += "&FORMAT=" + layerParam.format;
-                if (layerParam.dimensions != null) {
-                    for (int i = 0; i < layerParam.dimensions.length; i++) {
-                        String d = layerParam.dimensions[i];
-                        query += "&" + d + "=" + layerParam.dimensionParams.getString(d.toUpperCase());
-                    }
-                }
-                uri =  new URI(commonURI.getScheme(), commonURI.getUserInfo(), commonURI.getHost(), commonURI.getPort(),
-                        commonURI.getPath(), query, commonURI.getFragment());
+                uri = createKVPUri(commonURI, row, column, layerParam);
             }
-            return null;
+            return WMTSLayer.this.requestFactory.createRequest(uri, HttpMethod.GET);
         }
 
-        @Nullable
-        @Override
-        public BufferedImage getMissingTileImage() {
-            return null;
+        private URI createKVPUri(final URI commonURI, final int row, final int col,
+                                 final WMTSLayerParam layerParam) throws URISyntaxException {
+            URI uri;
+            final Multimap<String, String> queryParams = URIUtils.getParameters(commonURI);
+            queryParams.put("SERVICE", "WMTS");
+            queryParams.put("REQUEST", "GetTile");
+            queryParams.put("VERSION", layerParam.version);
+            queryParams.put("LAYER", layerParam.layer);
+            queryParams.put("STYLE", layerParam.style);
+            queryParams.put("TILEMATRIXSET", layerParam.matrixSet);
+            queryParams.put("TILEMATRIX", this.matrix.identifier);
+            queryParams.put("TILEROW", String.valueOf(row));
+            queryParams.put("TILECOL", String.valueOf(col));
+            queryParams.put("FORMAT", "image/" + layerParam.imageFormat);
+            if (layerParam.dimensions != null) {
+                for (int i = 0; i < layerParam.dimensions.length; i++) {
+                    String d = layerParam.dimensions[i];
+                    final String dimensionValue = layerParam.dimensionParams.getString(d.toUpperCase());
+                    queryParams.put(d, dimensionValue);
+                }
+            }
+            uri = URIUtils.setQueryParams(commonURI, queryParams);
+            return uri;
+        }
+
+        private URI createRestURI(final URI commonURI, final int row, final int col,
+                                  final WMTSLayerParam layerParam) throws URISyntaxException {
+            URI uri;
+            String path = layerParam.baseURL;
+            for (int i = 0; i < layerParam.dimensions.length; i++) {
+                String dimension = layerParam.dimensions[i];
+                final String value = layerParam.dimensionParams.getString(dimension.toUpperCase());
+                path = path.replace("{" + dimension + "}", value);
+            }
+            path = path.replace("{TileMatrixSet}", layerParam.matrixSet);
+            path = path.replace("{TileMatrix}", this.matrix.identifier);
+            path = path.replace("{TileRow}", String.valueOf(row));
+            path = path.replace("{TileCol}", String.valueOf(col));
+
+            uri = new URI(commonURI.getScheme(), commonURI.getUserInfo(), commonURI.getHost(), commonURI.getPort(),
+                    path, commonURI.getQuery(), commonURI.getFragment());
+            return uri;
         }
 
         @Override
         protected void addCommonQueryParams(final Multimap<String, String> result) {
             //no common params for this protocol.
+        }
+
+        @Override
+        public Scale getScale() {
+            return new Scale(this.matrix.scaleDenominator);
+        }
+
+        @Override
+        public double getLayerDpi() {
+            return WMTSLayer.this.param.dpi;
         }
     }
 }

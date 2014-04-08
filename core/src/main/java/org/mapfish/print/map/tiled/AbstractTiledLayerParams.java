@@ -85,10 +85,12 @@ public abstract class AbstractTiledLayerParams {
     @HasDefaultValue
     public PJsonObject mergeableParams;
     /**
-     * The mime type of the format to request the image to be returned in.  For example: image/png.
+     * The format of the image.  It is not a mimetype just the part after the image.  for example png, gif, tiff, tif, bmp, etc...
+     * <p/>
+     * If a protocol needs a mimetype it can add the prefix
      */
     @HasDefaultValue
-    public String format = "image/png";
+    public String imageFormat = "png";
 
     /**
      * Get the base url for all tile requests.  For example it might be http://server.com/geoserver/gwc/service/wmts

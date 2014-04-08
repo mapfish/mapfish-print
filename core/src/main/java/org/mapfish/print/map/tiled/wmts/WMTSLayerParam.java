@@ -19,6 +19,7 @@
 
 package org.mapfish.print.map.tiled.wmts;
 
+import org.mapfish.print.Constants;
 import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.map.tiled.AbstractTiledLayerParams;
 import org.mapfish.print.processor.HasDefaultValue;
@@ -28,7 +29,6 @@ import java.net.URISyntaxException;
 
 /**
  * The parameters for configuration a WMTS layer.
- * // CSOFF:VisibilityModifier
  */
 public final class WMTSLayerParam extends AbstractTiledLayerParams {
     /**
@@ -52,7 +52,8 @@ public final class WMTSLayerParam extends AbstractTiledLayerParams {
     /**
      * The style name (for styles on the WMTS server).
      */
-    public String style;
+    @HasDefaultValue
+    public String style = "";
     /**
      * The "sample" dimensions or image color bands to retrieve.
      * <p/>
@@ -63,6 +64,14 @@ public final class WMTSLayerParam extends AbstractTiledLayerParams {
      */
     @HasDefaultValue
     public String[] dimensions;
+
+    /**
+     * The dpi of the returned images.
+     * <p/>
+     * By default this is the OGC default DPI.
+     */
+    @HasDefaultValue
+    public double dpi = Constants.OGC_DPI;
     /**
      * Dictionary of dimensions name (Must be uppercase) => value.
      */
@@ -80,7 +89,7 @@ public final class WMTSLayerParam extends AbstractTiledLayerParams {
      * [{
      *   "identifier": "0",
      *   "matrixSize": [1, 1],
-     *   "resolution": 4000,
+     *   "scaleDenominator": 4000,
      *   "tileSize": [256, 256],
      *   "topLeftCorner": [420000, 350000]
      *   }, ...]

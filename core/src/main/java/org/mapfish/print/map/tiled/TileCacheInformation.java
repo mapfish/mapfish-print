@@ -24,6 +24,7 @@ import com.google.common.collect.Multimap;
 import com.vividsolutions.jts.geom.Coordinate;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.attribute.map.MapBounds;
+import org.mapfish.print.map.Scale;
 import org.springframework.http.client.ClientHttpRequest;
 
 import java.awt.Dimension;
@@ -78,9 +79,49 @@ public abstract class TileCacheInformation {
     }
 
     /**
+     * Create the http request for loading the image at the indicated area and the indicated size.
+     * @param commonURI        the uri that is common to all tiles.  See {@link #createCommonURI()}
+     * @param tileBounds       the bounds of the image in world coordinates
+     * @param tileSizeOnScreen the size of the tile on the screen or on the image.
+     * @param column
+     * @param row
+     */
+    @Nonnull
+    public abstract ClientHttpRequest getTileRequest(URI commonURI, ReferencedEnvelope tileBounds,
+                                                     Dimension tileSizeOnScreen, int column, int row) throws IOException, URISyntaxException;
+
+    /**
+     * Adds the query parameters common to every tile.
+     *
+     * @param result the query params added because of customParams or mergeableQueryParams.
+     */
+    protected abstract void addCommonQueryParams(Multimap<String, String> result);
+
+    /**
+     * Get the scale that the layer uses for its calculations.  The map isn't always at a resolution that a tiled layer
+     * supports so a scale is chosen for the layer that is close to the map scale. This method returns the layer's scale.
+     *
+     * This is used for calculating the bounds of tiles, the size number and indices of the tiles to be returned.
+     */
+    public abstract Scale getScale();
+
+    /**
+     * Get the DPI of the layer's images.  The server renders at a certain DPI that may or may not be the same DPI that the map
+     * requires.  Depending on the server and the protocol mapfish print might be able to request a certain DPI.  But since
+     * that might not be the case, then the layer must be able to report the correct DPI.
+     */
+    public abstract double getLayerDpi();
+
+    /**
      * Obtain the image tile size of the tiles that will be loaded from the server.
      */
     public abstract Dimension getTileSize();
+
+    /**
+     * Return the full bounds of the tileCache.
+     */
+    @Nonnull
+    protected abstract ReferencedEnvelope getTileCacheBounds();
 
     /**
      * Calculate the minx and miny coordinate of the tile that is the minx and miny tile.  It is the starting point of counting
@@ -107,29 +148,6 @@ public abstract class TileCacheInformation {
     }
 
     /**
-     * Return true if there is a tile to return at these bounds.  This should check the extents of the tile cache and return true
-     * if there is a tile there.
-     *
-     * @param tileBounds the geographic bounds of the tile.
-     */
-    // CSOFF:DesignForExtension
-    public boolean isVisible(final ReferencedEnvelope tileBounds) {
-        // CSON:DesignForExtension
-        final double boundsMinX = tileBounds.getMinX();
-        final double boundsMinY = tileBounds.getMinY();
-        ReferencedEnvelope tileCacheBounds = getTileCacheBounds();
-        return boundsMinX >= tileCacheBounds.getMinX() && boundsMinX <= tileCacheBounds.getMaxX()
-               && boundsMinY >= tileCacheBounds.getMinY() && boundsMinY <= tileCacheBounds.getMaxY();
-        //we don't use maxX and maxY since tilecache doesn't seems to care about those...
-    }
-
-    /**
-     * Return the full bounds of the tileCache.
-     */
-    @Nonnull
-    protected abstract ReferencedEnvelope getTileCacheBounds();
-
-    /**
      * Create a buffered image with the correct image bands etc... for the tiles being loaded.
      *
      * @param imageWidth  width of the image to create
@@ -141,24 +159,6 @@ public abstract class TileCacheInformation {
         // CSON:DesignForExtension
         return new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_4BYTE_ABGR);
     }
-
-    /**
-     * Create the http request for loading the image at the indicated area and the indicated size.
-     *
-     * @param commonURI        the uri that is common to all tiles.  See {@link #createCommonURI()}
-     * @param tileBounds       the bounds of the image in world coordinates
-     * @param tileSizeOnScreen the size of the tile on the screen or on the image.
-     */
-    @Nonnull
-    public abstract ClientHttpRequest getTileRequest(URI commonURI, ReferencedEnvelope tileBounds, Dimension tileSizeOnScreen) throws IOException, URISyntaxException;
-
-    /**
-     * Return the image to draw in place of a tile that is missing.
-     * <p/>
-     * If this method returns null nothing will be drawn at the location of the missing image.
-     */
-    @Nullable
-    public abstract BufferedImage getMissingTileImage();
 
     /**
      * Create a URI that is common to all tiles for this layer.  It may have placeholder like ({matrixId}) if the layer desires.
@@ -179,11 +179,12 @@ public abstract class TileCacheInformation {
     }
 
     /**
-     * Adds the query parameters common to every tile.
-     *
-     * @param result       the query params added because of customParams or mergeableQueryParams.
-     * @param isFirstLayer if true then this layer is the first (bottom) layer on the map.
+     * Return the image to draw in place of a tile that is missing.
+     * <p/>
+     * If this method returns null nothing will be drawn at the location of the missing image.
      */
-    protected abstract void addCommonQueryParams(Multimap<String, String> result);
-
+    @Nullable
+    public BufferedImage getMissingTileImage() {
+        return null;
+    }
 }

@@ -204,8 +204,13 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
         }
 
         private CoordinateReferenceSystem parseProjection(final PJsonObject requestData) {
-            final String projectionString = requestData.optString(PROJECTION, DEFAULT_PROJECTION);
+            String projectionString = requestData.optString(PROJECTION, DEFAULT_PROJECTION);
             final Boolean longitudeFirst = requestData.optBool(LONGITUDE_FIRST);
+
+            if (projectionString.equalsIgnoreCase("EPSG:900913")) {
+                projectionString = "EPSG:3857";
+            }
+
             try {
                 if (longitudeFirst == null) {
                     return CRS.decode(projectionString);

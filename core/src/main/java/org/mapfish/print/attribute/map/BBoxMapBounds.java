@@ -88,7 +88,7 @@ public final class BBoxMapBounds extends MapBounds {
     }
 
     @Override
-    protected Scale getScaleDenominator(final Rectangle paintArea, final double dpi) {
+    public Scale getScaleDenominator(final Rectangle paintArea, final double dpi) {
         final ReferencedEnvelope bboxAdjustedToScreen = toReferencedEnvelope(paintArea, dpi);
 
         DistanceUnit projUnit = DistanceUnit.fromProjection(getProjection());

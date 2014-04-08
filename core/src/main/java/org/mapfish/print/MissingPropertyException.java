@@ -45,7 +45,7 @@ public final class MissingPropertyException extends RuntimeException {
 
     private static String createMessage(final String message, final Map<String, Class<?>> missingProperties,
                                         final Set<String> attributeNames) {
-        StringBuilder missingPropertyMessage = new StringBuilder(message).append("\n");
+        StringBuilder missingPropertyMessage = new StringBuilder(message).append("\n").append("Missing Properties: \n");
         for (Map.Entry<String, Class<?>> entry : missingProperties.entrySet()) {
             String type = entry.getValue().getName();
             if (entry.getValue().isArray()) {

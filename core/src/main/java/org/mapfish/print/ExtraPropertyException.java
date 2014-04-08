@@ -45,7 +45,7 @@ public final class ExtraPropertyException extends RuntimeException {
 
     private static String createMessage(final String message, final Collection<String> extraProperties,
                                         final Set<String> attributeNames) {
-        StringBuilder missingPropertyMessage = new StringBuilder(message).append("\n");
+        StringBuilder missingPropertyMessage = new StringBuilder(message).append("\n").append("Extra Properties: \n");
         for (String extraProperty : extraProperties) {
             missingPropertyMessage.append("\n\t* ").append(extraProperty);
         }

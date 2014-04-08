@@ -97,4 +97,5 @@ public class CenterScaleMapBoundsTest {
         assertEquals(46.830906, envelope.getMaxY(), delta);
         assertEquals(DefaultGeographicCRS.WGS84, envelope.getCoordinateReferenceSystem());
     }
+
 }

@@ -9,4 +9,5 @@
     <suppress files=".*ProcessorOutput\.java" checks="VisibilityModifier"/>
     <suppress files=".*Processor\.java" checks="VisibilityModifier"/>
     <suppress files=".*Layer\.java" checks="VisibilityModifier"/>
+    <suppress files=".*LayerParams?\.java" checks="VisibilityModifier"/>
 </suppressions>

@@ -24,6 +24,8 @@ package org.mapfish.print;
  * User: jeichar
  * Date: Sep 30, 2010
  * Time: 4:27:46 PM
+ *
+ * CSOFF:MagicNumber
  */
 public interface Constants {
     /**
@@ -43,10 +45,14 @@ public interface Constants {
     /**
      * The DPI of a PDF according to the spec.  Also the DPI used by old Openlayers versions (2.0 and earlier).
      */
-    float PDF_DPI = 72.0f;
+    double PDF_DPI = 72.0;
 
     /**
      * The default style name for raster layers.
      */
     String RASTER_STYLE_NAME = "raster";
+    /**
+     * The OGC standard dpi. (About 90 dpi)
+     */
+    double OGC_DPI =  25.4 / 0.28;
 }
