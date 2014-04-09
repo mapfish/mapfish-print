@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="src" path="src/test/java"/>
+	<classpathentry kind="src" path="src/test/resources"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER" exported="true"/>
+	<classpathentry kind="src" path="/core" exported="true"/>
+	<classpathentry sourcepath="C:/Users/Jesse/.m2/repository/junit/junit/4.11/junit-4.11-sources.jar" kind="lib" path="C:/Users/Jesse/.m2/repository/junit/junit/4.11/junit-4.11.jar" exported="true"/>
+	<classpathentry sourcepath="C:/Users/Jesse/.m2/repository/org/mockito/mockito-core/1.9.5/mockito-core-1.9.5-sources.jar" kind="lib" path="C:/Users/Jesse/.m2/repository/org/mockito/mockito-core/1.9.5/mockito-core-1.9.5.jar" exported="true"/>
+	<classpathentry sourcepath="C:/Users/Jesse/.gradle/caches/modules-2/files-2.1/org.springframework/spring-test/4.0.2.RELEASE/2ee11d4a39201563d6f4b1b3cb6ac91b839679ec/spring-test-4.0.2.RELEASE-sources.jar" kind="lib" path="C:/Users/Jesse/.gradle/caches/modules-2/files-2.1/org.springframework/spring-test/4.0.2.RELEASE/ad60203db8c21621c0dcbe1ebb3af58d76c1a9f1/spring-test-4.0.2.RELEASE.jar" exported="true"/>
+	<classpathentry sourcepath="C:/Users/Jesse/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3-sources.jar" kind="lib" path="C:/Users/Jesse/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar" exported="true"/>
+	<classpathentry sourcepath="C:/Users/Jesse/.m2/repository/org/objenesis/objenesis/1.0/objenesis-1.0-sources.jar" kind="lib" path="C:/Users/Jesse/.m2/repository/org/objenesis/objenesis/1.0/objenesis-1.0.jar" exported="true"/>
+	<classpathentry sourcepath="C:/Users/Jesse/.m2/repository/commons-logging/commons-logging/1.1.3/commons-logging-1.1.3-sources.jar" kind="lib" path="C:/Users/Jesse/.m2/repository/commons-logging/commons-logging/1.1.3/commons-logging-1.1.3.jar" exported="true"/>
+	<classpathentry sourcepath="C:/Users/Jesse/.gradle/caches/modules-2/files-2.1/org.springframework/spring-core/4.0.2.RELEASE/ab6bec9cba76d13f616455da792056946d2928fd/spring-core-4.0.2.RELEASE-sources.jar" kind="lib" path="C:/Users/Jesse/.gradle/caches/modules-2/files-2.1/org.springframework/spring-core/4.0.2.RELEASE/75f738808c84fe3365e8e60edf3ad713667a5be1/spring-core-4.0.2.RELEASE.jar" exported="true"/>
+</classpath>

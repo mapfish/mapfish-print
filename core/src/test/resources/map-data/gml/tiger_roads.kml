@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:ns2="http://www.google.com/kml/ext/2.2" xmlns:ns3="http://www.w3.org/2005/Atom" xmlns:ns4="urn:oasis:names:tc:ciq:xsdschema:xAL:2.0">
+    <Document>
+        <Schema name="tiger_roads_1" id="tiger_roads_1">
+            <SimpleField type="string" name="CFCC"/>
+            <SimpleField type="string" name="NAME"/>
+        </Schema>
+        <Folder>
+            <name>tiger_roads</name>
+            <Placemark id="tiger_roads.1">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Washington Sq W</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.999559,40.731579999999994 -73.99907899999998,40.73218800000001</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.2">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">W 126th St</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.950718,40.810874 -73.952101,40.811472</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.3">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Union Sq W</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.991309,40.736149999999995 -73.991199,40.73638099999999</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.4">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Union Sq W</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.991679,40.73577300000001 -73.991309,40.736149999999995</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.5">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Washington Sq E</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.996035,40.73064699999999 -73.99548999999999,40.731303999999994</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.6">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Washington Sq E</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.99644899999998,40.72998999999999 -73.996035,40.73064699999999</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.7">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Washington Sq S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.997356,40.730437 -73.99644899999998,40.72998999999999</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.8">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Washington Sq S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.99804699999999,40.730833999999994 -73.997356,40.730437</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.9">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Washington Sq S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.99876,40.73116599999999 -73.99804699999999,40.730833999999994</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.10">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Washington Sq S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.999559,40.731579999999994 -73.99876,40.73116599999999</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.11">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Washington Sq W</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.99907899999998,40.73218800000001 -73.99855700000002,40.73279499999998</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.12">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Washington Sq N</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.996937,40.73198399999999 -73.99855700000002,40.73279499999998</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.13">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Washington Sq N</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.99548999999999,40.731303999999994 -73.996937,40.73198399999999</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.14">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Park Ave S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.98386200000002,40.74423099999999 -73.983317,40.744921</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.15">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Park Ave S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.984276,40.743623 -73.98386200000002,40.74423099999999</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.16">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Park Ave S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.984799,40.74303100000001 -73.984276,40.743623</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.17">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Park Ave S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.985149,40.74237399999997 -73.984799,40.74303100000001</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.18">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Park Ave S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.98565,40.741749 -73.985149,40.74237399999997</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.19">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Park Ave S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.983317,40.744921 -73.982881,40.74547899999999</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.20">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Park Ave S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.982881,40.74547899999999 -73.98246600000002,40.74608800000001</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.21">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Park Ave S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.986108,40.74120699999999 -73.98565,40.741749</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.22">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Union Sq W</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.990785,40.73695599999999 -73.990349,40.73748199999999</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.23">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Union Sq W</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.991199,40.73638099999999 -73.990785,40.73695599999999</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.24">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Park Ave S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.98794,40.73864399999999 -73.987504,40.739202000000006</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.25">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Park Ave S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.988332,40.738068 -73.98794,40.73864399999999</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.26">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Park Ave S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.98708900000001,40.73981 -73.986588,40.74045099999998</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.27">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Park Ave S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.987504,40.739202000000006 -73.987242,40.739580000000004 -73.98708900000001,40.73981</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.28">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Park Ave S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.98918300000001,40.736967999999976 -73.98879,40.73752599999999</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.29">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Union Sq E</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.989554,40.736343 -73.98918300000001,40.736967999999976</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.30">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Union Sq E</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.98985999999998,40.73575099999999 -73.989554,40.736343</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.31">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Union Sq E</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.990159,40.73554999999999 -73.990099,40.73555399999998 -73.98990399999998,40.73556999999999</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.32">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Union Sq S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.991309,40.736149999999995 -73.99100899999999,40.73549100000002</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.33">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Park Ave S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.98879,40.73752599999999 -73.988332,40.738068</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.34">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Park Ave S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.986588,40.74045099999998 -73.986108,40.74120699999999</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.35">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Stuyvesant Loop S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.98051100000002,40.73083100000001 -73.97988000000001,40.73140599999999</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.36">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Stuyvesant Loop W</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.98037199999999,40.73259300000001 -73.981734,40.733008999999996</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.37">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Allen St</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.992388,40.71556700000001 -73.99186300000001,40.716587</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.38">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Rutgers St</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.99033400000002,40.71506699999999 -73.99037799999999,40.71485299999998</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.39">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Delancey St S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.985256,40.71770399999999 -73.984369,40.71748699999999</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.40">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Delancey St S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.984369,40.71748699999999 -73.983548,40.717203999999995</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.41">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Delancey St S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.983548,40.717203999999995 -73.98264,40.71701999999997</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.42">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Delancey St S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.98264,40.71701999999997 -73.981841,40.71675499999999</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.43">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Delancey St S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.981841,40.71675499999999 -73.980976,40.71648799999998</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.44">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Stuyvesant Loop N</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.978115,40.73350899999999 -73.978089,40.734430999999994</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.45">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Stuyvesant Loop W</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.980883,40.734192 -73.979697,40.73338199999999</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.46">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Stuyvesant Loop W</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.979697,40.73338199999999 -73.98037199999999,40.73259300000001</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.47">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Stuyvesant Loop S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.977936,40.73052700000001 -73.978156,40.729868999999994</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.48">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Stuyvesant Loop S</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.97988000000001,40.73140599999999 -73.977936,40.73052700000001</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.49">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Stuyvesant Loop N</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.975626,40.73340199999999 -73.97651699999999,40.732827999999984</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="tiger_roads.50">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#tiger_roads_1">
+                        <SimpleData name="CFCC">A41</SimpleData>
+                        <SimpleData name="NAME">Stuyvesant Loop N</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <LineString>
+                    <coordinates>-73.97651699999999,40.732827999999984 -73.978115,40.73350899999999</coordinates>
+                </LineString>
+            </Placemark>
+        </Folder>
+    </Document>
+</kml>

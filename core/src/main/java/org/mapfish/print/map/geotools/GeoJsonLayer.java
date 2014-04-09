@@ -19,27 +19,32 @@
 
 package org.mapfish.print.map.geotools;
 
-import com.google.common.collect.Sets;
-import jsr166y.ForkJoinPool;
+import com.google.common.base.Function;
+import com.google.common.base.Supplier;
+import com.google.common.io.CharSource;
+import com.google.common.io.Closer;
+import com.google.common.io.Files;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.styling.Style;
 import org.mapfish.print.Constants;
+import org.mapfish.print.FileUtils;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.map.MapLayerFactoryPlugin;
-import org.mapfish.print.map.style.StyleParser;
 import org.mapfish.print.processor.HasDefaultValue;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.client.ClientHttpResponse;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
 
@@ -53,34 +58,30 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
     /**
      * Constructor.
      *
-     * @param featureSource   the featureSource containing the feature data.
-     * @param style           style to use for rendering the data.
-     * @param executorService the thread pool for doing the rendering.
+     * @param executorService       the thread pool for doing the rendering.
+     * @param featureSourceSupplier a function that creates the feature source.  This will only be called once.
+     * @param styleSupplier         a function that creates the style for styling the features. This will only be called once.
      */
-    public GeoJsonLayer(final FeatureSource featureSource, final Style style, final ExecutorService executorService) {
-        super(featureSource, style, executorService);
+    public GeoJsonLayer(final ExecutorService executorService, final Supplier<FeatureSource> featureSourceSupplier,
+                        final Function<FeatureSource, Style> styleSupplier) {
+        super(executorService, featureSourceSupplier, styleSupplier);
     }
 
     /**
      * Parser for creating {@link org.mapfish.print.map.geotools.GeoJsonLayer} layers from request data.
      */
-    public static final class Plugin implements MapLayerFactoryPlugin<GeoJsonParam> {
+    public static final class Plugin extends AbstractFeatureSourceLayerPlugin<GeoJsonParam> {
 
         private static final String TYPE = "geojson";
         private static final String COMPATIBILITY_TYPE = "vector";
 
         private final FeatureJSON geoJsonReader = new FeatureJSON();
 
-        @Autowired
-        private StyleParser parser;
-        @Autowired
-        private ForkJoinPool forkJoinPool;
-        private Set<String> typeNames = Sets.newHashSet(TYPE, COMPATIBILITY_TYPE);
-
-
-        @Override
-        public Set<String> getTypeNames() {
-            return this.typeNames;
+        /**
+         * Constructor.
+         */
+        public Plugin() {
+            super(TYPE, COMPATIBILITY_TYPE);
         }
 
         @Override
@@ -90,65 +91,61 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
 
         @Nonnull
         @Override
-        public GeoJsonLayer parse(final Template template, @Nonnull final GeoJsonParam param) throws IOException {
-            SimpleFeatureCollection featureCollection = treatStringAsURL(template, param.geoJson);
-            if (featureCollection == null) {
-                featureCollection = treatStringAsGeoJson(param.geoJson);
-            }
-            FeatureSource featureSource = new CollectionFeatureSource(featureCollection);
+        public GeoJsonLayer parse(@Nonnull final Template template, @Nonnull final GeoJsonParam param) throws IOException {
+            return new GeoJsonLayer(
+                    this.forkJoinPool,
+                    createFeatureSourceSupplier(template, param.geoJson),
+                    createStyleFunction(template, param.style));
+        }
 
-            String geomType = featureCollection.getSchema().getGeometryDescriptor().getType().getBinding().getSimpleName();
-            String styleRef = param.style;
-
-            if (styleRef == null) {
-                styleRef = geomType;
-            }
-            Style style = template.getStyle(styleRef)
-                    .or(this.parser.loadStyle(template.getConfiguration(), styleRef))
-                    .or(template.getConfiguration().getDefaultStyle(geomType));
-
-            return new GeoJsonLayer(featureSource, style, this.forkJoinPool);
+        private Supplier<FeatureSource> createFeatureSourceSupplier(final Template template, final String geoJsonString) {
+            return new Supplier<FeatureSource>() {
+                @Override
+                public FeatureSource get() {
+                    SimpleFeatureCollection featureCollection;
+                    try {
+                        featureCollection = treatStringAsURL(template, geoJsonString);
+                        if (featureCollection == null) {
+                            featureCollection = treatStringAsGeoJson(geoJsonString);
+                        }
+                        return new CollectionFeatureSource(featureCollection);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            };
         }
 
         private SimpleFeatureCollection treatStringAsURL(final Template template, final String geoJsonString) throws IOException {
+            URL url;
             try {
-                URL url = new URL(geoJsonString);
-                final String protocol = url.getProtocol();
-                if (protocol.equalsIgnoreCase("file")) {
-
-                    File file = new File(template.getConfiguration().getDirectory(), geoJsonString.substring("file://".length()));
-                    if (file.exists() && file.isFile()) {
-                        url = file.getAbsoluteFile().toURI().toURL();
-                        assertFileIsInConfigDir(template, file);
-                    } else {
-                        throw new IllegalArgumentException(url + " is not a relative URL file.  File urls are always interpreted as " +
-                                                           "being relative to the configuration directory.");
-                    }
-                }
-                InputStream input = null;
-                try {
-                    input = url.openStream();
-                    return (SimpleFeatureCollection) this.geoJsonReader.readFeatureCollection(input);
-                } finally {
-                    if (input != null) {
-                        input.close();
-                    }
-                }
+                url = FileUtils.testForLegalFileUrl(template.getConfiguration(), new URL(geoJsonString));
             } catch (MalformedURLException e) {
                 return null;
             }
-        }
 
-        private void assertFileIsInConfigDir(final Template template, final File file) {
-            final String configurationDir = template.getConfiguration().getDirectory().getAbsolutePath();
-            if (!file.getAbsolutePath().startsWith(configurationDir)) {
-                throw new IllegalArgumentException("The geoJson attribute is a file url but indicates a file that is not within the" +
-                                                   " configurationDirectory: " + file.getAbsolutePath());
+            Closer closer = Closer.create();
+            try {
+                Reader input;
+                if (url.getProtocol().equalsIgnoreCase("file")) {
+                    final CharSource charSource = Files.asCharSource(new File(url.getFile()), Constants.DEFAULT_CHARSET);
+                    input = closer.register(charSource.openBufferedStream());
+                } else {
+                    final ClientHttpResponse response = closer.register(this.httpRequestFactory.createRequest(url.toURI(),
+                            HttpMethod.GET).execute());
+
+                    input = closer.register(new BufferedReader(new InputStreamReader(response.getBody(), Constants.DEFAULT_CHARSET)));
+                }
+                return (SimpleFeatureCollection) this.geoJsonReader.readFeatureCollection(input);
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            } finally {
+                closer.close();
             }
         }
 
         private SimpleFeatureCollection treatStringAsGeoJson(final String geoJsonString) throws IOException {
-            final byte[] bytes = geoJsonString.getBytes(Constants.ENCODING);
+            final byte[] bytes = geoJsonString.getBytes(Constants.DEFAULT_ENCODING);
             ByteArrayInputStream input = null;
             try {
                 input = new ByteArrayInputStream(bytes);

@@ -41,7 +41,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
     private FileSLDParserPlugin parser;
 
     @Test
-    public void testParseStyle_SingleStyleRelativeToConfig() throws Exception {
+    public void testParseStyle_SingleStyleRelativeToConfig() throws Throwable {
         File file = getFile(FileSLDParserPluginTest.class, "singleStyle.sld");
         Configuration config = new Configuration();
         config.setConfigurationFile(file);
@@ -56,7 +56,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
     }
 
     @Test
-    public void testParseStyle_SingleStyleRelativeToConfig_HasStyleIndex() throws Exception {
+    public void testParseStyle_SingleStyleRelativeToConfig_HasStyleIndex() throws Throwable {
         File file = getFile(FileSLDParserPluginTest.class, "singleStyle.sld");
         Configuration config = new Configuration();
         config.setConfigurationFile(file);
@@ -71,7 +71,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
     }
 
     @Test
-    public void testParseStyle_SingleStyleAbsoluteFile() throws Exception {
+    public void testParseStyle_SingleStyleAbsoluteFile() throws Throwable {
         File file = getFile(FileSLDParserPluginTest.class, "singleStyle.sld");
         Configuration config = new Configuration();
         config.setConfigurationFile(file);
@@ -86,7 +86,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
     }
 
     @Test(expected = Exception.class)
-    public void testParseStyle_MultipleStyles_NoIndex() throws Exception {
+    public void testParseStyle_MultipleStyles_NoIndex() throws Throwable {
         File file = getFile(FileSLDParserPluginTest.class, "multipleStyles.sld");
         Configuration config = new Configuration();
         config.setConfigurationFile(file);
@@ -95,7 +95,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
     }
 
     @Test
-    public void testParseStyle_MultipleStyles() throws Exception {
+    public void testParseStyle_MultipleStyles() throws Throwable {
         File file = getFile(FileSLDParserPluginTest.class, "multipleStyles.sld");
         Configuration config = new Configuration();
         config.setConfigurationFile(file);
@@ -119,7 +119,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
     }
 
     @Test(expected = Exception.class)
-    public void testIndexOutOfBounds() throws Exception {
+    public void testIndexOutOfBounds() throws Throwable {
         File file = getFile(FileSLDParserPluginTest.class, "singleStyle.sld");
         Configuration config = new Configuration();
         config.setConfigurationFile(file);
@@ -128,7 +128,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
     }
 
     @Test(expected = Exception.class)
-    public void testIndexTooLow() throws Exception {
+    public void testIndexTooLow() throws Throwable {
         File file = getFile(FileSLDParserPluginTest.class, "singleStyle.sld");
         Configuration config = new Configuration();
         config.setConfigurationFile(file);
@@ -137,7 +137,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
     }
 
     @Test(expected = Exception.class)
-    public void testFileNotInConfigDir() throws Exception {
+    public void testFileNotInConfigDir() throws Throwable {
         final File tempFile = File.createTempFile("config", ".yaml");
         File file = getFile(FileSLDParserPluginTest.class, "singleStyle.sld");
         Configuration config = new Configuration();

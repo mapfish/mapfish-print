@@ -76,7 +76,7 @@ public class ExamplesIntegrationTest {
         try {
             final File configFile = new File(example, CONFIG_FILE);
             this.mapPrinter.setConfiguration(configFile);
-            String requestData = Files.asCharSource(new File(example, REQUEST_DATA_FILE), Charset.forName(Constants.ENCODING)).read();
+            String requestData = Files.asCharSource(new File(example, REQUEST_DATA_FILE), Charset.forName(Constants.DEFAULT_ENCODING)).read();
             final PJsonObject jsonSpec = MapPrinter.parseSpec(requestData);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             Map<String, String> headers = Maps.newHashMap();

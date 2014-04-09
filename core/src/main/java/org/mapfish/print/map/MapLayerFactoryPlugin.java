@@ -34,7 +34,7 @@ import javax.annotation.Nonnull;
 public interface MapLayerFactoryPlugin<Param> {
 
     /**
-     * Return a set of all the values the json 'type' property should have for this plugin to apply (case insensitive)
+     * Return a set of all the values the json 'type' property should have for this plugin to apply (case insensitive).
      */
     Set<String> getTypeNames();
 

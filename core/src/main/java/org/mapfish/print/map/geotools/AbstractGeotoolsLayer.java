@@ -52,7 +52,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
 
     @Override
     public final Optional<MapLayer> tryAddLayer(final MapLayer newLayer) {
-        return null;
+        return Optional.absent();
     }
 
     @Override
@@ -65,7 +65,6 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
             content.addLayers(layers);
 
             StreamingRenderer renderer = new StreamingRenderer();
-
 
             RenderingHints hints = new RenderingHints(Collections.<RenderingHints.Key, Object>emptyMap());
             hints.add(new RenderingHints(RenderingHints.KEY_RENDERING,
