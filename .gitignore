@@ -1,9 +1,11 @@
-/build/
-/bin
-/.classpath
-/.gradle/
-/.project
-/.settings/
+build/
+bin
+.classpath
+.gradle/
+.project
+.settings/
 /examples/*.jasper
 examples/build/
 core/build/
+
+
