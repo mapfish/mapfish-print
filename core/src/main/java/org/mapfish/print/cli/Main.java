@@ -93,6 +93,7 @@ public final class Main {
             if (args.length == 0 ||
                 "--help".equalsIgnoreCase(args[0])
                 || "-help".equalsIgnoreCase(args[0])
+                || "-h".equalsIgnoreCase(args[0])
                 || "-?".equals(args[0])) {
                 System.out.println("\n\n");
                 printUsage(0);
@@ -137,7 +138,7 @@ public final class Main {
         try {
             if (clientConfig) {
                 outFile = getOutputStream("");
-                final OutputStreamWriter writer = new OutputStreamWriter(outFile, Charset.forName(Constants.ENCODING));
+                final OutputStreamWriter writer = new OutputStreamWriter(outFile, Charset.forName(Constants.DEFAULT_ENCODING));
 
                 JSONWriter json = new JSONWriter(writer);
                 json.object();
@@ -148,7 +149,7 @@ public final class Main {
 
             } else {
                 final InputStream inFile = getInputStream();
-                final String jsonConfiguration = CharStreams.toString(new InputStreamReader(inFile, Constants.ENCODING));
+                final String jsonConfiguration = CharStreams.toString(new InputStreamReader(inFile, Constants.DEFAULT_ENCODING));
                 final PJsonObject jsonSpec = MapPrinter.parseSpec(jsonConfiguration);
                 outFile = getOutputStream(this.mapPrinter.getOutputFormat(jsonSpec).getFileSuffix());
                 Map<String, String> headers = new HashMap<String, String>();

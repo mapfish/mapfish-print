@@ -312,4 +312,9 @@ public class PJsonObject extends PJsonElement {
         String result = this.obj.optString(key, null);
         return result != null;
     }
+
+    @Override
+    public final String toString() {
+        return getCurrentPath() + ":\n\t" + this.obj;
+    }
 }

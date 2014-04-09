@@ -9,8 +9,8 @@
           "type": "vector",
           "style": "polygon",
           "geoJson":   @@importFile(geojson.json)@@
-        }
-      ]
-    }
-  }
+}
+]
+}
+}
 }

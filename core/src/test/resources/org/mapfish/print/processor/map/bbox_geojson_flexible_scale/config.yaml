@@ -5,7 +5,7 @@ templates:
       mapDef: !map
         width: 500
         height: 100
-        dpi: [72, 96]
+        maxDpi: 400
     processors:
     - !createMap
         inputMapper: {mapDef: map}

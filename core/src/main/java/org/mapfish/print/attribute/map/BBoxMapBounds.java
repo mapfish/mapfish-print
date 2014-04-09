@@ -78,7 +78,7 @@ public final class BBoxMapBounds extends MapBounds {
     public MapBounds adjustBoundsToNearestScale(final ZoomLevels zoomLevels, final double tolerance,
                                                 final ZoomLevelSnapStrategy zoomLevelSnapStrategy, final Rectangle paintArea,
                                                 final double dpi) {
-        final Scale scale = calculateScale(paintArea, dpi);
+        final Scale scale = getScaleDenominator(paintArea, dpi);
         final ZoomLevelSnapStrategy.SearchResult result = zoomLevelSnapStrategy.search(scale, tolerance, zoomLevels);
         Coordinate center = this.bbox.centre();
 
@@ -87,7 +87,8 @@ public final class BBoxMapBounds extends MapBounds {
 
     }
 
-    private Scale calculateScale(final Rectangle paintArea, final double dpi) {
+    @Override
+    public Scale getScaleDenominator(final Rectangle paintArea, final double dpi) {
         final ReferencedEnvelope bboxAdjustedToScreen = toReferencedEnvelope(paintArea, dpi);
 
         DistanceUnit projUnit = DistanceUnit.fromProjection(getProjection());

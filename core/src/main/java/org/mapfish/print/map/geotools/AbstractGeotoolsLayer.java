@@ -52,19 +52,19 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
 
     @Override
     public final Optional<MapLayer> tryAddLayer(final MapLayer newLayer) {
-        return null;
+        return Optional.absent();
     }
 
     @Override
-    public final void render(final Graphics2D graphics2D, final MapBounds bounds, final Rectangle paintArea, final double dpi) {
-        List<? extends Layer> layers = getLayers();
+    public final void render(final Graphics2D graphics2D, final MapBounds bounds, final Rectangle paintArea, final double dpi,
+                             final boolean isFirstLayer) {
+        List<? extends Layer> layers = getLayers(bounds, paintArea, dpi, isFirstLayer);
 
         MapContent content = new MapContent();
         try {
             content.addLayers(layers);
 
             StreamingRenderer renderer = new StreamingRenderer();
-
 
             RenderingHints hints = new RenderingHints(Collections.<RenderingHints.Key, Object>emptyMap());
             hints.add(new RenderingHints(RenderingHints.KEY_RENDERING,
@@ -99,7 +99,13 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
 
     /**
      * Get the {@link org.geotools.data.DataStore} object that contains the data for this layer.
+     *
+     * @param bounds the map bounds
+     * @param paintArea the area to paint
+     * @param dpi the DPI to render at
+     * @param isFirstLayer true indicates this layer is the first layer in the map (the first layer drawn, ie the base layer)
      */
-    protected abstract List<? extends Layer> getLayers();
+    protected abstract List<? extends Layer> getLayers(MapBounds bounds, Rectangle paintArea, double dpi,
+                                                       final boolean isFirstLayer);
 
 }

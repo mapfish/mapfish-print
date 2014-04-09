@@ -1,10 +1,11 @@
+throwErrorOnExtraParameters: true
 templates:
   main: !template
     attributes:
       mapDef: !map
         width: 500
         height: 100
-        dpi: [72, 96]
+        maxDpi: 400
         zoomSnapTolerance: 0.025
         zoomLevelSnapStrategy: CLOSEST_LOWER_SCALE_ON_TIE
         zoomLevels: !zoomLevels

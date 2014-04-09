@@ -23,7 +23,9 @@ import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.map.GridReaderLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
+import org.mapfish.print.attribute.map.MapBounds;
 
+import java.awt.Rectangle;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -38,7 +40,7 @@ public class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
     /**
      * Constructor.
      *
-     * @param coverage2DReader the coverage2DReader containing the feature data.
+     * @param coverage2DReader the coverage2DReader for reading the grid coverage data.
      * @param style            style to use for rendering the data.
      * @param executorService  the thread pool for doing the rendering.
      */
@@ -49,7 +51,8 @@ public class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
     }
 
     @Override
-    public final List<? extends Layer> getLayers() {
+    public final List<? extends Layer> getLayers(final MapBounds bounds, final Rectangle paintArea, final double dpi,
+                                                 final boolean isFirstLayer) {
         return this.layers;
     }
 

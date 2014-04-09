@@ -27,6 +27,8 @@ hosts:
     host: www.geocat.ch
     port: 80
 
+throwErrorOnExtraParameters: true
+
 security:
 #  - !basicAuth
 #    matcher: !dnsMatch
@@ -47,7 +49,7 @@ templates:
           multilines: true
       length: !float {}
       map: !map
-        dpi: [72, 90, 120, 300]
+        maxDpi: 400
         width: 400
         height: 200
       legend: !legend {}

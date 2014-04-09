@@ -33,6 +33,8 @@ import org.mapfish.print.map.Scale;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
@@ -44,10 +46,11 @@ import java.util.Map;
  */
 public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeValues> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapAttribute.class);
     /**
      * The key in the config.yaml file of the set of DPIs allowed for this map.
      */
-    static final String CONFIG_DPI = "dpi";
+    static final String MAX_DPI = "maxDpi";
     /**
      * The key in the config.yaml file of the width of the map.  This is used by the client to determine the area that will be printed.
      */
@@ -60,8 +63,10 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
 
     @Autowired
     private ApplicationContext applicationContext;
+    @Autowired
+    private MapLayerParamParser mapLayerParamParser;
 
-    private double[] dpi;
+    private double maxDpi;
     private ZoomLevels zoomLevels;
     private double zoomSnapTolerance = DEFAULT_SNAP_TOLERANCE;
     private ZoomLevelSnapStrategy zoomLevelSnapStrategy;
@@ -81,17 +86,13 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
 
     @Override
     protected final void additionalPrintClientConfig(final JSONWriter json) throws JSONException {
-        final JSONWriter array = json.key(CONFIG_DPI).array();
-        for (double currentDpi : this.dpi) {
-            array.value(currentDpi);
-        }
-        array.endArray();
+        json.key(MAX_DPI).value(this.maxDpi);
         json.key(WIDTH).value(this.width);
         json.key(HEIGHT).value(this.height);
     }
 
-    public final void setDpi(final double[] dpi) {
-        this.dpi = dpi;
+    public final void setMaxDpi(final double maxDpi) {
+        this.maxDpi = maxDpi;
     }
 
     public final void setWidth(final int width) {
@@ -130,8 +131,10 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
          */
         public static final String PROJECTION = "projection";
         private static final String DEFAULT_PROJECTION = "EPSG:3857";
-        private static final String LONGITUDE_FIRST = "longitudeFirst ";
+        private static final String LONGITUDE_FIRST = "longitudeFirst";
         private static final String USE_NEAREST_SCALE = "useNearestScale";
+        private static final String TYPE = "type";
+        private static final String DPI = "dpi";
 
         private final MapBounds mapBounds;
         private final double rotation;
@@ -141,7 +144,11 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
 
         MapAttributeValues(final Template template, final PJsonObject requestData) {
             this.useNearestScale = requestData.optBool(USE_NEAREST_SCALE, true) && MapAttribute.this.zoomLevels != null;
-            this.dpi = requestData.getDouble(CONFIG_DPI);
+            this.dpi = requestData.getDouble(DPI);
+            if (this.dpi > MapAttribute.this.maxDpi) {
+                throw new IllegalArgumentException("dpi parameter was " + this.dpi + " must be limited to " + MapAttribute.this.maxDpi
+                                                   + ".  The path to the parameter is: " + requestData.getPath("dpi"));
+            }
             this.mapBounds = parseBounds(requestData);
             this.rotation = requestData.optDouble(ROTATION, 0.0);
             this.layers = parseLayers(template, requestData);
@@ -153,7 +160,8 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
 
             for (int i = 0; i < jsonLayers.size(); i++) {
                 try {
-                    parseSingleLayer(template, layerList, jsonLayers, i);
+                    PJsonObject layerJson = jsonLayers.getJSONObject(i);
+                    parseSingleLayer(template, layerList, layerJson);
                 } catch (Throwable throwable) {
                     throw new RuntimeException(throwable);
                 }
@@ -162,16 +170,21 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
             return layerList;
         }
 
+        @SuppressWarnings("unchecked")
         private void parseSingleLayer(final Template template, final List<MapLayer> layerList,
-                                      final PJsonArray jsonLayers, final int i) throws Throwable {
-            PJsonObject layerJson = jsonLayers.getJSONObject(i);
+                                      final PJsonObject layerJson) throws Throwable {
 
             final Map<String, MapLayerFactoryPlugin> layerParsers =
                     MapAttribute.this.applicationContext.getBeansOfType(MapLayerFactoryPlugin.class);
             for (MapLayerFactoryPlugin layerParser : layerParsers.values()) {
-                final Optional<? extends MapLayer> layerOption = layerParser.parse(template, layerJson);
-                if (layerOption.isPresent()) {
-                    final MapLayer newLayer = layerOption.get();
+                final boolean layerApplies = layerParser.getTypeNames().contains(layerJson.getString(TYPE).toLowerCase());
+                if (layerApplies) {
+                    Object param = layerParser.createParameter();
+
+                    MapAttribute.this.mapLayerParamParser.populateLayerParam(template.getConfiguration().isThrowErrorOnExtraParameters(),
+                            layerJson, param, TYPE);
+
+                    final MapLayer newLayer = layerParser.parse(template, param);
                     if (layerList.isEmpty()) {
                         layerList.add(newLayer);
                     } else {
@@ -191,8 +204,13 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
         }
 
         private CoordinateReferenceSystem parseProjection(final PJsonObject requestData) {
-            final String projectionString = requestData.optString(PROJECTION, DEFAULT_PROJECTION);
+            String projectionString = requestData.optString(PROJECTION, DEFAULT_PROJECTION);
             final Boolean longitudeFirst = requestData.optBool(LONGITUDE_FIRST);
+
+            if (projectionString.equalsIgnoreCase("EPSG:900913")) {
+                projectionString = "EPSG:3857";
+            }
+
             try {
                 if (longitudeFirst == null) {
                     return CRS.decode(projectionString);
@@ -274,4 +292,5 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
         }
 
     }
+
 }

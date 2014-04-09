@@ -40,10 +40,12 @@ import java.util.regex.Pattern;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-        AbstractMapfishSpringTest.DEFAULT_SPRING_XML
+        AbstractMapfishSpringTest.DEFAULT_SPRING_XML,
+        AbstractMapfishSpringTest.TEST_SPRING_XML
 })
 public abstract class AbstractMapfishSpringTest {
     public static final String DEFAULT_SPRING_XML = "classpath:mapfish-spring-application-context.xml";
+    public static final String TEST_SPRING_XML = "classpath:test-http-request-factory-application-context.xml";
     static final Pattern IMPORT_PATTERN = Pattern.compile("@@importFile\\((\\S+)\\)@@");
 
     /**
@@ -72,7 +74,7 @@ public abstract class AbstractMapfishSpringTest {
 
     public static PJsonObject parseJSONObjectFromFile(Class<?> testClass, String fileName) throws IOException {
         final File file = getFile(testClass, fileName);
-        final Charset charset = Charset.forName(Constants.ENCODING);
+        final Charset charset = Charset.forName(Constants.DEFAULT_ENCODING);
         String jsonString = Files.asCharSource(file, charset).read();
         Matcher matcher = IMPORT_PATTERN.matcher(jsonString);
         while (matcher.find()) {

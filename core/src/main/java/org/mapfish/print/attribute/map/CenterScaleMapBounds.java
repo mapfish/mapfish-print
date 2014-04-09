@@ -91,6 +91,11 @@ public final class CenterScaleMapBounds extends MapBounds {
         return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y, result.getScale());
     }
 
+    @Override
+    public Scale getScaleDenominator(final Rectangle paintArea, final double dpi) {
+        return this.scale;
+    }
+
     private ReferencedEnvelope computeGeodeticBBox(final double geoWidthInInches, final double geoHeightInInches) {
         try {
 

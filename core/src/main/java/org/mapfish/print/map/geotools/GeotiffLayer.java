@@ -19,16 +19,18 @@
 
 package org.mapfish.print.map.geotools;
 
-import com.google.common.base.Optional;
+import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
 import jsr166y.ForkJoinPool;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.styling.Style;
+import org.mapfish.print.Constants;
+import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.map.style.StyleParser;
+import org.mapfish.print.processor.HasDefaultValue;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
@@ -36,6 +38,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
 
@@ -62,37 +65,35 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
     /**
      * Parser for creating {@link org.mapfish.print.map.geotools.GeotiffLayer} layers from request data.
      */
-    public static final class Plugin implements MapLayerFactoryPlugin {
-
-        private static final String TYPE = "geotiff";
-        private static final String URL = "url";
-
+    public static final class Plugin implements MapLayerFactoryPlugin<GeotiffParam> {
         @Autowired
         private StyleParser parser;
         @Autowired
         private ForkJoinPool forkJoinPool;
 
+        private Set<String> typeNames = Sets.newHashSet("geotiff");
+
+        @Override
+        public Set<String> getTypeNames() {
+            return this.typeNames;
+        }
+
+        @Override
+        public GeotiffParam createParameter() {
+            return new GeotiffParam();
+        }
 
         @Nonnull
         @Override
-        public Optional<GeotiffLayer> parse(final Template template, @Nonnull final PJsonObject layerJson) throws IOException {
-            final Optional<GeotiffLayer> result;
-            final String type = layerJson.getString("type");
-            final String geotiffUrl = layerJson.optString(URL);
-            if (TYPE.equalsIgnoreCase(type) && geotiffUrl != null) {
+        public MapLayer parse(final Template template, @Nonnull final GeotiffParam param) throws IOException {
+            GeoTiffReader geotiffReader = getGeotiffReader(template, param.url);
 
-                final String styleRef = layerJson.optString("style", RASTER_STYLE_NAME);
+            String styleRef = param.style;
+            Style style = template.getStyle(styleRef)
+                    .or(this.parser.loadStyle(template.getConfiguration(), styleRef))
+                    .or(template.getConfiguration().getDefaultStyle(RASTER_STYLE_NAME));
 
-                Style style = template.getStyle(styleRef)
-                        .or(this.parser.loadStyle(template.getConfiguration(), styleRef))
-                        .or(template.getConfiguration().getDefaultStyle(RASTER_STYLE_NAME));
-
-                GeoTiffReader geotiffReader = getGeotiffReader(template, geotiffUrl);
-                result = Optional.of(new GeotiffLayer(geotiffReader, style, this.forkJoinPool));
-            } else {
-                result = Optional.absent();
-            }
-            return result;
+            return new GeotiffLayer(geotiffReader, style, this.forkJoinPool);
         }
 
         private GeoTiffReader getGeotiffReader(final Template template, final String geotiffUrl) throws IOException {
@@ -101,6 +102,11 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
             final File geotiffFile;
             if (protocol.equalsIgnoreCase("file")) {
                 geotiffFile = new File(template.getConfiguration().getDirectory(), geotiffUrl.substring("file://".length()));
+                if (!geotiffFile.exists() || !geotiffFile.isFile()) {
+                    throw new IllegalArgumentException("The url in the geotiff layer: " + geotiffUrl + " is a file url but does not " +
+                                                       "reference a file within the configuration directory.  All file urls must be " +
+                                                       "relative urls to the configuration directory and may not contain ..");
+                }
                 assertFileIsInConfigDir(template, geotiffFile);
             } else {
                 geotiffFile = File.createTempFile("downloadedGeotiff", ".tiff");
@@ -122,10 +128,25 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
         private void assertFileIsInConfigDir(final Template template, final File file) {
             final String configurationDir = template.getConfiguration().getDirectory().getAbsolutePath();
             if (!file.getAbsolutePath().startsWith(configurationDir)) {
-                throw new IllegalArgumentException("The geoJson attribute is a file url but indicates a file that is not within the" +
+                throw new IllegalArgumentException("The url attribute is a file url but indicates a file that is not within the" +
                                                    " configurationDirectory: " + file.getAbsolutePath());
             }
         }
 
+    }
+
+    /**
+     * The parameters for reading a Geotiff file, either from the server or from a URL.
+     */
+    public static final class GeotiffParam {
+        /**
+         * The url of the geotiff.  It can be a file but if it is the file must be contained within the config directory.
+         */
+        public String url;
+        /**
+         * A string identifying a style to use when rendering the raster.
+         */
+        @HasDefaultValue
+        public String style = Constants.RASTER_STYLE_NAME;
     }
 }

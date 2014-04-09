@@ -20,6 +20,7 @@
 package org.mapfish.print.json;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -126,5 +127,22 @@ public class PJsonArray extends PJsonElement {
      */
     public final JSONArray getInternalArray() {
         return this.array;
+    }
+
+    /**
+     * Get the element as a boolean.
+     * @param i the index of the element to access
+     */
+    public final Object getBool(final int i) {
+        try {
+            return this.array.getBoolean(i);
+        } catch (JSONException e) {
+            throw new JsonMissingException(this, "[" + i + "]");
+        }
+    }
+
+    @Override
+    public final String toString() {
+        return getCurrentPath() + ":\n\t" + this.array;
     }
 }

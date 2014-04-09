@@ -14,6 +14,13 @@ task wrapper(type: Wrapper) {
 configurations {
     compile.transitive = true
     compile.exclude module: 'jai_core'
+
+    metrics {
+        description = 'Libraries for measuring performance and load.  See http://metrics.codahale.com/'
+    }
+    geotools {
+        description = 'Geotools spatial libraries'
+    }
 }
 
 dependencies {
@@ -23,7 +30,7 @@ dependencies {
             "org.springframework:spring-webmvc:$project.springVersion"
     )
     def metricsVersion = "3.0.2"
-    compile (
+    metrics (
             "com.codahale.metrics:metrics-core:$metricsVersion",
             "com.codahale.metrics:metrics-servlet:$metricsVersion",
             "com.codahale.metrics:metrics-httpclient:$metricsVersion",
@@ -31,11 +38,12 @@ dependencies {
             "com.codahale.metrics:metrics-logback:$metricsVersion"
     )
     def geotoolsVersion = "11.0"
-    compile (
+    geotools (
             "org.geotools:gt-epsg-hsql:$geotoolsVersion",
             "org.geotools:gt-render:$geotoolsVersion",
             "org.geotools:gt-geojson:$geotoolsVersion",
-            "org.geotools:gt-geotiff:$geotoolsVersion"
+            "org.geotools:gt-geotiff:$geotoolsVersion",
+            "org.geotools.xsd:gt-xsd-gml3:$geotoolsVersion"
     )
     compile fileTree(dir: "$projectDir/libs", include: '*.jar')
     compile (
@@ -46,9 +54,16 @@ dependencies {
             'org.yaml:snakeyaml:1.13',
             "com.github.spullara.cli-parser:cli-parser:1.1.1",
 	        'net.sf.jasperreports:jasperreports:5.5.0',
-	        'ar.com.fdvs:DynamicJasper:5.0.0'
+	        'ar.com.fdvs:DynamicJasper:5.0.0',
+            'org.apache.httpcomponents:httpclient:4.3.3'
     )
 
+    compile (configurations.metrics) {
+        exclude module: 'httpclient'
+        exclude module: 'slf4j-api'
+        exclude module: 'logback-classic'
+    }
+    compile (configurations.geotools)
 
     // This jsr166 dependendency is here only so long as Java 6 is supported
     // it is the forkjoin code and can be removed if java 7 is a required library

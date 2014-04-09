@@ -106,9 +106,11 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             // reverse layer list to draw from bottom to top.  normally position 0 is top-most layer.
             final List<MapLayer> layers = Lists.reverse(mapValues.getLayers());
 
-
+            int i = 0;
             for (MapLayer layer : layers) {
-                layer.render(graphics2D, bounds, paintArea, dpi);
+                boolean isFirstLayer = i == 0;
+                layer.render(graphics2D, bounds, paintArea, dpi, isFirstLayer);
+                i++;
             }
         } finally {
             graphics2D.dispose();

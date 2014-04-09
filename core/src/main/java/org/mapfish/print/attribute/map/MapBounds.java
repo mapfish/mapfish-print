@@ -20,6 +20,7 @@
 package org.mapfish.print.attribute.map;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.mapfish.print.map.Scale;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.awt.Rectangle;
@@ -52,7 +53,7 @@ public abstract class MapBounds {
     /**
      * Get the projection these bounds are calculated in.
      */
-    protected final CoordinateReferenceSystem getProjection() {
+    public final CoordinateReferenceSystem getProjection() {
         return this.projection;
     }
 
@@ -72,6 +73,13 @@ public abstract class MapBounds {
                                                          final ZoomLevelSnapStrategy zoomLevelSnapStrategy,
                                                          final Rectangle paintArea, final double dpi);
 
+    /**
+     * Calculate and return the scale of the map bounds.
+     *
+     * @param paintArea the paint area of the map.
+     * @param dpi the dpi of the map
+     */
+    public abstract Scale getScaleDenominator(final Rectangle paintArea, final double dpi);
 
     // CHECKSTYLE:OFF
     @Override
