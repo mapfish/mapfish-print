@@ -314,6 +314,9 @@ public class MapPrinterServlet extends BaseMapServlet {
             }
         } finally {
             writer.close();
+            if(app == null && printer != null) {
+                printer.stop();
+            }
         }
     }
 
@@ -373,6 +376,9 @@ public class MapPrinterServlet extends BaseMapServlet {
         } finally {
             if (out != null)
                 out.close();
+            if(app == null && mapPrinter != null) {
+                mapPrinter.stop();
+            }
         }
     }
 
@@ -382,10 +388,11 @@ public class MapPrinterServlet extends BaseMapServlet {
     protected void sendPdfFile(HttpServletResponse httpServletResponse, TempFile tempFile, boolean inline) throws IOException, ServletException {
         FileInputStream pdf = new FileInputStream(tempFile);
         final OutputStream response = httpServletResponse.getOutputStream();
+        MapPrinter mapPrinter = getMapPrinter(app);
         try {
             httpServletResponse.setContentType(tempFile.contentType());
             if (!inline) {
-                final String fileName = tempFile.getOutputFileName(getMapPrinter(app));
+                final String fileName = tempFile.getOutputFileName(mapPrinter);
                 httpServletResponse.setHeader("Content-disposition", "attachment; filename=" + fileName);
             }
             FileUtilities.copyStream(pdf, response);
@@ -394,6 +401,9 @@ public class MapPrinterServlet extends BaseMapServlet {
                 pdf.close();
             } finally{
                 response.close();
+            }
+            if(app == null && mapPrinter != null) {
+                mapPrinter.stop();
             }
         }
     }
