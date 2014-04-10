@@ -20,42 +20,43 @@
 package org.mapfish.print.attribute;
 
 import org.mapfish.print.config.Template;
-import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.json.parser.HasDefaultValue;
+
+import java.net.URL;
 
 /**
  * Objects needed by the {@link org.mapfish.print.processor.jasper.LegendProcessor}.
  */
-public class LegendAttribute extends AbstractAttribute<LegendAttribute.LegendAttributeValue> {
+public final class LegendAttribute extends ReflectiveAttribute<LegendAttribute.LegendAttributeValue> {
 
     @Override
-    public final LegendAttributeValue getValue(final Template template, final PJsonObject values, final String name) {
-        return new LegendAttributeValue(values.getJSONObject(name));
-    }
-
-    @Override
-    protected final String getType() {
-        return "legend";
+    public LegendAttributeValue createValue(final Template template) {
+        return new LegendAttributeValue();
     }
 
     /**
-     * The value read from the json by this attribute object.
+     * The data required to render a map legend.
      *
      * @author Jesse
      */
-    public static class LegendAttributeValue {
-
-        private final PJsonObject json;
-
-        LegendAttributeValue(final PJsonObject jsonObject) {
-            this.json = jsonObject;
-        }
-
+    public static final class LegendAttributeValue {
 
         /**
-         * TODO Change this to be actual configuration in well typed data.
+         * Name of the legend class.
          */
-        public final PJsonObject getJsonObject() {
-            return this.json;
-        }
+        @HasDefaultValue
+        public String name;
+
+        /**
+         * Urls for downloading icons for each legend row.
+         */
+        @HasDefaultValue
+        public URL[] icons;
+
+        /**
+         * Other embedded classes.
+         */
+        @HasDefaultValue
+        public LegendAttributeValue[] classes;
     }
 }

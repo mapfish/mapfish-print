@@ -20,8 +20,7 @@
 package org.mapfish.print.config;
 
 import com.codahale.metrics.MetricRegistry;
-import org.mapfish.print.attribute.AbstractAttribute;
-import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.attribute.PrimitiveAttribute;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.Assert.assertNotNull;
@@ -31,7 +30,7 @@ import static org.junit.Assert.assertNotNull;
  *
  * @author jesseeichar on 3/25/14.
  */
-public class AttributeWithSpringInjection extends AbstractAttribute<Integer> {
+public class AttributeWithSpringInjection extends PrimitiveAttribute<Integer> {
 
     @Autowired
     private MetricRegistry registry;
@@ -39,14 +38,10 @@ public class AttributeWithSpringInjection extends AbstractAttribute<Integer> {
     public void assertInjected() {
         assertNotNull(registry);
     }
-
-    @Override
-    protected String getType() {
-        return "springInjection";
-    }
-
-    @Override
-    public Integer getValue(Template template, PJsonObject values, String name) {
-        return null;
+    /**
+     * Constructor.
+     */
+    public AttributeWithSpringInjection() {
+        super(Integer.class);
     }
 }

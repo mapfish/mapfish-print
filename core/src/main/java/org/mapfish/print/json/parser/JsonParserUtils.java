@@ -17,7 +17,7 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.processor;
+package org.mapfish.print.json.parser;
 
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
@@ -27,6 +27,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
@@ -37,7 +38,7 @@ import javax.annotation.Nullable;
  *
  * @author Jesse on 3/30/14.
  */
-public final class InputOutputValueUtils {
+public final class JsonParserUtils {
     /**
      * A filter (for the get attribute methods) that selects only the attributes that are required and excludes all of
      * those with defaults, and therefore are considered optional.
@@ -48,6 +49,36 @@ public final class InputOutputValueUtils {
             return input != null && input.getAnnotation(HasDefaultValue.class) == null;
         }
     };
+    /**
+     *  A filter (for the get attribute methods) that selects only the attributes that are NOT required and excludes all of
+     * those that are considered required.
+     */
+    public static final Predicate<Field> FILTER_HAS_DEFAULT_ATTRIBUTES = new Predicate<Field>() {
+        @Override
+        public boolean apply(@Nullable final Field input) {
+            return input != null && input.getAnnotation(HasDefaultValue.class) != null;
+        }
+    };
+    /**
+     * A filter (for the get attribute methods) that selects only the attributes that are non final.
+     * (Can be modified)
+     */
+    public static final Predicate<Field> FILTER_NON_FINAL_FIELDS = new Predicate<Field>() {
+        @Override
+        public boolean apply(@Nullable final Field input) {
+            return input != null && !Modifier.isFinal(input.getModifiers());
+        }
+    };
+    /**
+     * A filter (for the get attribute methods) that selects only the attributes that are final.
+     * (Can NOT be modified)
+     */
+    public static final Predicate<Field> FILTER_FINAL_FIELDS = new Predicate<Field>() {
+        @Override
+        public boolean apply(@Nullable final Field input) {
+            return input != null && Modifier.isFinal(input.getModifiers());
+        }
+    };
 
     private static final Function<Field, String> FIELD_TO_NAME = new Function<Field, String>() {
         @Nullable
@@ -56,13 +87,12 @@ public final class InputOutputValueUtils {
             return input.getName();
         }
     };
-
-    private InputOutputValueUtils() {
+    private JsonParserUtils() {
         // intentionally empty.
     }
 
     /**
-     * Inspects the object and all superclasses for public and accessible methods and returns a collection containing all the
+     * Inspects the object and all superclasses for public, non-final, accessible methods and returns a collection containing all the
      * attributes found.
      *
      * @param classToInspect the class under inspection.
@@ -99,7 +129,7 @@ public final class InputOutputValueUtils {
     }
 
     /**
-     * Converts all properties in {@link #getAllAttributes(Class)} to a set of the attribute names.
+     * Converts all non-final properties in {@link #getAllAttributes(Class)} to a set of the attribute names.
      *
      * @param classToInspect the class to inspect
      */

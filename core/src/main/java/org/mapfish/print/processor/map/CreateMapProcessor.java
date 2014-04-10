@@ -25,6 +25,7 @@ import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.processor.AbstractProcessor;
 
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -85,10 +86,9 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
     @Override
     public Output execute(final Input param) throws Exception {
         MapAttribute.MapAttributeValues mapValues = param.map;
-        final int mapWidth = mapValues.getWidth();
-        final int mapHeight = mapValues.getHeight();
+        final Dimension mapSize = mapValues.getMapSize();
         final double dpi = mapValues.getDpi();
-        final Rectangle paintArea = new Rectangle(mapWidth, mapHeight);
+        final Rectangle paintArea = new Rectangle(mapSize);
 
         MapBounds bounds = mapValues.getMapBounds();
 
@@ -99,7 +99,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                         mapValues.getZoomLevelSnapStrategy(), paintArea, dpi);
         }
 
-        final BufferedImage bufferedImage = new BufferedImage(mapWidth, mapHeight, this.imageType.value);
+        final BufferedImage bufferedImage = new BufferedImage(mapSize.width, mapSize.height, this.imageType.value);
 
         Graphics2D graphics2D = bufferedImage.createGraphics();
         try {

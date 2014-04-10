@@ -57,7 +57,7 @@ public class ConfigurationFactoryTest extends AbstractMapfishSpringTest {
         assertNotNull(template);
 
         assertEquals(1, template.getAttributes().size());
-        final Attribute<?> attribute = template.getAttributes().get("att");
+        final Attribute attribute = template.getAttributes().get("att");
         assertTrue(attribute instanceof AttributeWithSpringInjection);
         ((AttributeWithSpringInjection)attribute).assertInjected();
 
@@ -78,7 +78,7 @@ public class ConfigurationFactoryTest extends AbstractMapfishSpringTest {
         assertNotNull(template);
 
         assertEquals(1, template.getAttributes().size());
-        final Attribute<?> attribute = template.getAttributes().get("att");
+        final Attribute attribute = template.getAttributes().get("att");
         assertTrue(attribute instanceof AttributeWithConfigurationInjection);
         ((AttributeWithConfigurationInjection)attribute).assertInjected();
 

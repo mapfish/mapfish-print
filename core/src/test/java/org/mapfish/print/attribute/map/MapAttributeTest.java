@@ -22,11 +22,12 @@ package org.mapfish.print.attribute.map;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
-import org.mapfish.print.attribute.Attribute;
+import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.json.parser.MapfishJsonParser;
 import org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -42,8 +43,12 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
 
     @Autowired
     private ConfigurationFactory configurationFactory;
+    @Autowired
+    private MapfishJsonParser jsonParser;
 
-    @Test (expected = IllegalArgumentException.class)
+
+    @SuppressWarnings("unchecked")
+    @Test(expected = IllegalArgumentException.class)
     public void testMaxDpi() throws Exception {
         final File configFile = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "config.yaml");
         final Configuration config = configurationFactory.getConfig(configFile);
@@ -55,7 +60,10 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         mapDef.remove("dpi");
         mapDef.accumulate("dpi", 1000);
 
-        final Attribute<?> mapAttribute = template.getAttributes().get("mapDef");
-        mapAttribute.getValue(template, attributesJson, "mapDef");
+        final ReflectiveAttribute<MapAttribute.MapAttributeValues> mapAttribute = (ReflectiveAttribute<MapAttribute
+                .MapAttributeValues>) template.getAttributes().get("mapDef");
+
+        final MapAttribute.MapAttributeValues value = mapAttribute.createValue(template);
+        jsonParser.parse(true, attributesJson.getJSONObject("mapDef"), value);
     }
 }

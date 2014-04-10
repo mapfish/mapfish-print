@@ -22,12 +22,14 @@ package org.mapfish.print.attribute.map;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.geotools.referencing.CRS;
-import org.json.JSONException;
-import org.json.JSONWriter;
-import org.mapfish.print.attribute.AbstractAttribute;
+import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.json.parser.HasDefaultValue;
+import org.mapfish.print.json.parser.MapfishJsonParser;
+import org.mapfish.print.json.parser.OneOf;
+import org.mapfish.print.json.parser.Requires;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.map.Scale;
 import org.opengis.referencing.FactoryException;
@@ -38,80 +40,57 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
+import java.awt.Dimension;
 import java.util.List;
 import java.util.Map;
 
 /**
  * The attributes for {@link org.mapfish.print.processor.map.CreateMapProcessor}.
  */
-public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeValues> {
+public final class MapAttribute extends ReflectiveAttribute<MapAttribute.MapAttributeValues> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MapAttribute.class);
-    /**
-     * The key in the config.yaml file of the set of DPIs allowed for this map.
-     */
-    static final String MAX_DPI = "maxDpi";
-    /**
-     * The key in the config.yaml file of the width of the map.  This is used by the client to determine the area that will be printed.
-     */
-    static final String WIDTH = "width";
-    /**
-     * The key in the config.yaml file of the height of the map.  This is used by the client to determine the area that will be printed.
-     */
-    static final String HEIGHT = "height";
+
     private static final double DEFAULT_SNAP_TOLERANCE = 0.05;
 
     @Autowired
     private ApplicationContext applicationContext;
     @Autowired
-    private MapLayerParamParser mapLayerParamParser;
+    private MapfishJsonParser mapfishJsonParser;
 
     private double maxDpi;
     private ZoomLevels zoomLevels;
     private double zoomSnapTolerance = DEFAULT_SNAP_TOLERANCE;
     private ZoomLevelSnapStrategy zoomLevelSnapStrategy;
-
     private int width;
     private int height;
 
     @Override
-    public final MapAttributeValues getValue(final Template template, final PJsonObject values, final String name) {
-        return new MapAttributeValues(template, values.getJSONObject(name));
+    public MapAttributeValues createValue(final Template template) {
+        return new MapAttributeValues(template, new Dimension(this.width, this.height));
     }
 
-    @Override
-    protected final String getType() {
-        return "map";
-    }
-
-    @Override
-    protected final void additionalPrintClientConfig(final JSONWriter json) throws JSONException {
-        json.key(MAX_DPI).value(this.maxDpi);
-        json.key(WIDTH).value(this.width);
-        json.key(HEIGHT).value(this.height);
-    }
-
-    public final void setMaxDpi(final double maxDpi) {
+    public void setMaxDpi(final double maxDpi) {
         this.maxDpi = maxDpi;
     }
 
-    public final void setWidth(final int width) {
+    public void setWidth(final int width) {
         this.width = width;
     }
 
-    public final void setHeight(final int height) {
+    public void setHeight(final int height) {
         this.height = height;
     }
 
-    public final void setZoomLevels(final ZoomLevels zoomLevels) {
+    public void setZoomLevels(final ZoomLevels zoomLevels) {
         this.zoomLevels = zoomLevels;
     }
 
-    public final void setZoomSnapTolerance(final double zoomSnapTolerance) {
+    public void setZoomSnapTolerance(final double zoomSnapTolerance) {
         this.zoomSnapTolerance = zoomSnapTolerance;
     }
 
-    public final void setZoomLevelSnapStrategy(final ZoomLevelSnapStrategy zoomLevelSnapStrategy) {
+    public void setZoomLevelSnapStrategy(final ZoomLevelSnapStrategy zoomLevelSnapStrategy) {
         this.zoomLevelSnapStrategy = zoomLevelSnapStrategy;
     }
 
@@ -119,49 +98,95 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
      * The value of {@link MapAttribute}.
      */
     public final class MapAttributeValues {
-        static final String CENTER = "center";
-        /**
-         * The property name of the bbox attribute.
-         */
-        public static final String BBOX = "bbox";
-        static final String ROTATION = "rotation";
-        static final String LAYERS = "layers";
-        /**
-         * Name of the projection property.
-         */
-        public static final String PROJECTION = "projection";
-        private static final String DEFAULT_PROJECTION = "EPSG:3857";
-        private static final String LONGITUDE_FIRST = "longitudeFirst";
-        private static final String USE_NEAREST_SCALE = "useNearestScale";
         private static final String TYPE = "type";
-        private static final String DPI = "dpi";
+        private final Dimension mapSize;
+        private final Template template;
+        private MapBounds mapBounds;
+        private List<MapLayer> mapLayers;
+        /**
+         * An array of 4 doubles, minX, minY, maxX, maxY.  The bounding box of the map.
+         * <p/>
+         * Either the bbox or the center + scale must be defined
+         * <p/>
+         */
+        @OneOf("MapBounds")
+        public double[] bbox;
+        /**
+         * An array of 2 doubles, (x, y).  The center of the map.
+         */
+        @Requires("scale")
+        @OneOf("MapBounds")
+        public double[] center;
+        /**
+         * If center is defined then this is the scale of the map centered at center.
+         */
+        @HasDefaultValue
+        public double scale;
+        /**
+         * The projection of the map.
+         */
+        @HasDefaultValue
+        public String projection = "EPSG:3857";
+        /**
+         * The rotation of the map.
+         */
+        @HasDefaultValue
+        public double rotation = 0;
+        /**
+         * The json with all the layer information.  This will be parsed in postConstruct into a list of layers and
+         * therefore this field should not normally be accessed.
+         */
+        public PJsonArray layers;
+        /**
+         * Indicates if the map should adjust its scale/zoom level to be equal to one of those defined in the configuration file.
+         * <p/>
+         *
+         * @see #isUseNearestScale()
+         */
+        @HasDefaultValue
+        public boolean useNearestScale = true;
+        /**
+         * The output dpi of the printed map.
+         */
+        public double dpi;
+        /**
+         * By default the normal axis order as specified in EPSG code will be used when parsing projections.  However
+         * the requestor can override this by explicitly declaring that longitude axis is first.
+         */
+        @HasDefaultValue
+        public Boolean longitudeFirst = null;
 
-        private final MapBounds mapBounds;
-        private final double rotation;
-        private final List<MapLayer> layers;
-        private final boolean useNearestScale;
-        private double dpi;
-
-        MapAttributeValues(final Template template, final PJsonObject requestData) {
-            this.useNearestScale = requestData.optBool(USE_NEAREST_SCALE, true) && MapAttribute.this.zoomLevels != null;
-            this.dpi = requestData.getDouble(DPI);
-            if (this.dpi > MapAttribute.this.maxDpi) {
-                throw new IllegalArgumentException("dpi parameter was " + this.dpi + " must be limited to " + MapAttribute.this.maxDpi
-                                                   + ".  The path to the parameter is: " + requestData.getPath("dpi"));
-            }
-            this.mapBounds = parseBounds(requestData);
-            this.rotation = requestData.optDouble(ROTATION, 0.0);
-            this.layers = parseLayers(template, requestData);
+        /**
+         * Constructor.
+         *
+         * @param template the template this map is part of.
+         * @param mapSize  the size of the map.
+         */
+        public MapAttributeValues(final Template template, final Dimension mapSize) {
+            this.template = template;
+            this.mapSize = mapSize;
         }
 
-        private List<MapLayer> parseLayers(final Template template, final PJsonObject requestData) {
-            List<MapLayer> layerList = Lists.newArrayList();
-            final PJsonArray jsonLayers = requestData.getJSONArray(LAYERS);
+        /**
+         * Validate the values provided by the request data and construct MapBounds and parse the layers.
+         */
+        public void postConstruct() throws FactoryException {
+            if (this.dpi > MapAttribute.this.maxDpi) {
+                throw new IllegalArgumentException("dpi parameter was " + this.dpi + " must be limited to " + MapAttribute.this.maxDpi
+                                                   + ".  The path to the parameter is: " + this.dpi);
+            }
 
-            for (int i = 0; i < jsonLayers.size(); i++) {
+            this.mapBounds = parseBounds();
+            this.mapLayers = parseLayers();
+        }
+
+        private List<MapLayer> parseLayers() {
+            List<MapLayer> layerList = Lists.newArrayList();
+
+            for (int i = 0; i < this.layers.size(); i++) {
                 try {
-                    PJsonObject layerJson = jsonLayers.getJSONObject(i);
-                    parseSingleLayer(template, layerList, layerJson);
+                    PJsonObject layerJson = this.layers.getJSONObject(i);
+                    parseSingleLayer(layerList, layerJson);
                 } catch (Throwable throwable) {
                     throw new RuntimeException(throwable);
                 }
@@ -171,7 +196,7 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
         }
 
         @SuppressWarnings("unchecked")
-        private void parseSingleLayer(final Template template, final List<MapLayer> layerList,
+        private void parseSingleLayer(final List<MapLayer> layerList,
                                       final PJsonObject layerJson) throws Throwable {
 
             final Map<String, MapLayerFactoryPlugin> layerParsers =
@@ -181,10 +206,12 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
                 if (layerApplies) {
                     Object param = layerParser.createParameter();
 
-                    MapAttribute.this.mapLayerParamParser.populateLayerParam(template.getConfiguration().isThrowErrorOnExtraParameters(),
-                            layerJson, param, TYPE);
+                    MapAttribute.this.mapfishJsonParser.parse(this.template.getConfiguration()
+                                    .isThrowErrorOnExtraParameters(),
+                            layerJson, param, TYPE
+                    );
 
-                    final MapLayer newLayer = layerParser.parse(template, param);
+                    final MapLayer newLayer = layerParser.parse(this.template, param);
                     if (layerList.isEmpty()) {
                         layerList.add(newLayer);
                     } else {
@@ -203,48 +230,44 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
             }
         }
 
-        private CoordinateReferenceSystem parseProjection(final PJsonObject requestData) {
-            String projectionString = requestData.optString(PROJECTION, DEFAULT_PROJECTION);
-            final Boolean longitudeFirst = requestData.optBool(LONGITUDE_FIRST);
-
-            if (projectionString.equalsIgnoreCase("EPSG:900913")) {
-                projectionString = "EPSG:3857";
+        private CoordinateReferenceSystem parseProjection() {
+            if (this.projection.equalsIgnoreCase("EPSG:900913")) {
+                this.projection = "EPSG:3857";
             }
 
             try {
-                if (longitudeFirst == null) {
-                    return CRS.decode(projectionString);
+                if (this.longitudeFirst == null) {
+                    return CRS.decode(this.projection);
                 } else {
-                    return CRS.decode(projectionString, longitudeFirst);
+                    return CRS.decode(this.projection, this.longitudeFirst);
                 }
             } catch (NoSuchAuthorityCodeException e) {
-                throw new RuntimeException(projectionString + "was not recognized as a crs code", e);
+                throw new RuntimeException(this.projection + "was not recognized as a crs code", e);
             } catch (FactoryException e) {
-                throw new RuntimeException("Error occurred while parsing: " + projectionString, e);
+                throw new RuntimeException("Error occurred while parsing: " + this.projection, e);
             }
         }
 
-        private MapBounds parseBounds(final PJsonObject requestData) {
-            final PJsonArray center = requestData.optJSONArray(CENTER);
-            final PJsonArray bbox = requestData.optJSONArray(BBOX);
-            final CoordinateReferenceSystem projection = parseProjection(requestData);
-            if (center != null && bbox != null) {
+        //
+        private MapBounds parseBounds() throws FactoryException {
+            final CoordinateReferenceSystem crs = parseProjection();
+            if (this.center != null && this.bbox != null) {
                 throw new IllegalArgumentException("Cannot have both center and bbox defined");
             }
             MapBounds bounds;
-            if (center != null) {
-                double centerX = center.getDouble(0);
-                double centerY = center.getDouble(1);
-                Scale scale = new Scale(requestData);
+            if (this.center != null) {
+                double centerX = this.center[0];
+                double centerY = this.center[1];
+                Scale scaleObject = new Scale(this.scale);
 
-                bounds = new CenterScaleMapBounds(projection, centerX, centerY, scale);
-            } else if (bbox != null) {
+                bounds = new CenterScaleMapBounds(crs, centerX, centerY, scaleObject);
+            } else if (this.bbox != null) {
                 final int maxYIndex = 3;
-                double minX = bbox.getDouble(0);
-                double minY = bbox.getDouble(1);
-                double maxX = bbox.getDouble(2);
-                double maxY = bbox.getDouble(maxYIndex);
-                bounds = new BBoxMapBounds(projection, minX, minY, maxX, maxY);
+                double minX = this.bbox[0];
+                double minY = this.bbox[1];
+                double maxX = this.bbox[2];
+                double maxY = this.bbox[maxYIndex];
+                bounds = new BBoxMapBounds(crs, minX, minY, maxX, maxY);
             } else {
                 throw new IllegalArgumentException("Expected either center and scale or bbox for the map bounds");
             }
@@ -255,28 +278,25 @@ public class MapAttribute extends AbstractAttribute<MapAttribute.MapAttributeVal
             return this.mapBounds;
         }
 
-        public double getRotation() {
-            return this.rotation;
-        }
-
         public List<MapLayer> getLayers() {
-            return Lists.newArrayList(this.layers);
+            return Lists.newArrayList(this.mapLayers);
         }
 
-        public int getWidth() {
-            return MapAttribute.this.width;
-        }
-
-        public int getHeight() {
-            return MapAttribute.this.height;
+        public Dimension getMapSize() {
+            return this.mapSize;
         }
 
         public double getDpi() {
             return this.dpi;
         }
 
+        /**
+         * Return true if requestData has useNearestScale and configuration has some zoom levels defined.
+         *
+         * @return
+         */
         public boolean isUseNearestScale() {
-            return this.useNearestScale;
+            return this.useNearestScale && MapAttribute.this.zoomLevels != null;
         }
 
         public ZoomLevels getZoomLevels() {

@@ -23,32 +23,21 @@ import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.config.ConfigurationObject;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.json.PJsonObject;
 
 /**
  * Represents an attribute passed in from a web-client to be used to populate the report.  It reads a value from the request data
  * <p/>
- * @author jesseeichar on 2/21/14.
  *
- * @param <T> The attribute type object read from the parameters by this attribute.
+ * @author jesseeichar on 2/21/14.
  */
-public interface Attribute<T> extends ConfigurationObject {
-    /**
-     * Read the attribute object.
-     *
-     *
-     * @param template the template this attribute is part of.
-     * @param values the request data to read the attribute from.
-     * @param name the name of the property to load the attribute from
-     * @return the read attribute value
-     */
-    T getValue(Template template, PJsonObject values, String name);
+public interface Attribute extends ConfigurationObject {
 
     /**
      * Write this attribute out the the json writer so that clients can know what attributes are expected.
      *
      * @param json the json writer to write to
+     * @param template the template that this attribute is part of
      * @throws JSONException
      */
-    void printClientConfig(JSONWriter json) throws JSONException;
+    void printClientConfig(JSONWriter json, Template template) throws JSONException;
 }

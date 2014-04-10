@@ -22,7 +22,6 @@ package org.mapfish.print.processor.jasper;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.mapfish.print.attribute.TableAttribute.TableAttributeValue;
 import org.mapfish.print.json.PJsonArray;
-import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.processor.AbstractProcessor;
 
 import java.util.ArrayList;
@@ -54,16 +53,16 @@ public class TableProcessor extends AbstractProcessor<TableProcessor.Input, Tabl
 
     @Override
     public final Output execute(final Input values) throws Exception {
-        final PJsonObject jsonTable = values.table.getJsonObject();
+        final TableAttributeValue jsonTable = values.table;
         final Collection<Map<String, ?>> table = new ArrayList<Map<String, ?>>();
 
-        final PJsonArray jsonColumns = jsonTable.getJSONArray(JSON_COLUMNS);
-        final PJsonArray jsonData = jsonTable.getJSONArray(JSON_DATA);
-        for (int i = 0; i < jsonData.size(); i++) {
-            final PJsonArray jsonRow = jsonData.getJSONArray(i);
+        final String[] jsonColumns = jsonTable.columns;
+        final PJsonArray[] jsonData = jsonTable.data;
+        for (int i = 0; i < jsonData.length; i++) {
+            final PJsonArray jsonRow = jsonData[i];
             final Map<String, String> row = new HashMap<String, String>();
             for (int j = 0; j < jsonRow.size(); j++) {
-                row.put(jsonColumns.getString(j), jsonRow.getString(j));
+                row.put(jsonColumns[j], jsonRow.getString(j));
             }
             table.add(row);
         }

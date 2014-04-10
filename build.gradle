@@ -11,7 +11,7 @@ task travisBuild {
 project.ext.junitVersion = "4.11"
 project.ext.springVersion = "4.0.2.RELEASE"
 
-allprojects {
+subprojects  {
     group = 'org.mapfish.print'
     version = '3.0-SNAPSHOT'
 

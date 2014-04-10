@@ -17,19 +17,24 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.processor;
+package org.mapfish.print.json.parser;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
 /**
- * Marks a Processor input parameter object setter method as being optional.  If there is no value for the property then no error
- * will be thrown when populating the method in
- * {@link org.mapfish.print.processor.ProcessorGraphNode#populateInputParameter(Processor, org.mapfish.print.output.Values)}
+ * Indicates that if one field in a value/param object, then one or more other attributes are required.
+ * <p/>
+ * Note: If the field with the {@link org.mapfish.print.json.parser.Requires} annotation is NOT in the json
+ * then the required are not required as long as they have the {@link org.mapfish.print.json.parser.HasDefaultValue} annotation.
  *
- * @author Jesse on 3/29/14.
+ * @author Jesse on 4/9/2014.
  */
 @Target(value = ElementType.FIELD)
 @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
-public @interface HasDefaultValue {
+public @interface Requires {
+    /**
+     * The names of the required fields if this field is present.
+     */
+    String[] value();
 }

@@ -48,7 +48,7 @@ public final class CustomEPSGCodes extends FactoryUsingWKT {
      * @param hints hints to pass to the framework on construction
      */
     public CustomEPSGCodes(final Hints hints) {
-        super(hints, DEFAULT_PRIORITY - 2);
+        super(hints);
     }
 
     /**

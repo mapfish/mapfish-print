@@ -19,21 +19,15 @@
 
 package org.mapfish.print.attribute;
 
-import org.mapfish.print.config.Template;
-import org.mapfish.print.json.PJsonObject;
-
 /**
  * An integer type attribute.
  */
-public class IntegerAttribute extends AbstractAttribute<Integer> {
+public class IntegerAttribute extends PrimitiveAttribute<Integer> {
 
-    @Override
-    public final Integer getValue(final Template template, final PJsonObject values, final String name) {
-        return values.getInt(name);
-    }
-
-    @Override
-    protected final String getType() {
-        return "integer";
+    /**
+     * Constructor.
+     */
+    public IntegerAttribute() {
+        super(Integer.class);
     }
 }

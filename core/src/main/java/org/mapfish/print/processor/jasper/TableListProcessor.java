@@ -36,7 +36,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.HasConfiguration;
 import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.json.PJsonArray;
-import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.slf4j.Logger;
@@ -47,7 +46,6 @@ import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -64,10 +62,6 @@ import static org.mapfish.print.processor.jasper.JasperReportBuilder.JASPER_REPO
 public class TableListProcessor extends AbstractProcessor<TableListProcessor.Input, TableListProcessor.Output>
         implements HasConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
-
-    private static final String JSON_COLUMNS = "columns";
-    private static final String JSON_DISPLAYNAME = "displayName";
-    private static final String JSON_DATA = "data";
 
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_DISPLAYNAME = "displayName";
@@ -103,14 +97,15 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Inp
 
     @Override
     public final Output execute(final Input values) throws Exception {
-        final PJsonObject jsonTableList = values.tableList.getJsonObject();
+        final TableListAttributeValue[] jsonTableList = values.tableList;
         final List<Values> tableList = new ArrayList<Values>();
 
         if (jsonTableList != null) {
-            final Iterator<String> iterTL = jsonTableList.keys();
-            while (iterTL.hasNext()) {
-                final String key = iterTL.next();
-                final PJsonArray jsonColumns = createColumnDataSource(jsonTableList, tableList, key);
+
+            for (TableListAttributeValue tableListAttributeValue : jsonTableList) {
+                String id = tableListAttributeValue.id;
+                createColumnDataSource(tableListAttributeValue, tableList);
+                final String[] jsonColumns = tableListAttributeValue.columns;
 
                 if (this.dynamicReport != null) {
                     Style detailStyle = new Style();
@@ -131,11 +126,11 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Inp
                             dynamicReportOptString("font", DEFAULT_FONT), false));
                     oddRowStyle.setVerticalAlign(VerticalAlign.MIDDLE);
 
-                    File tableTemplate = new File(this.dynamicReportDirectory, "table_" + key + JASPER_REPORT_XML_FILE_EXT);
+                    File tableTemplate = new File(this.dynamicReportDirectory, "table_" + id + JASPER_REPORT_XML_FILE_EXT);
                     if (!tableTemplate.exists()) {
                         generateDynamicReport(jsonColumns, detailStyle, headerStyle, oddRowStyle, tableTemplate);
                     }
-                    File tableTemplateBuild = new File(this.dynamicReportDirectory, "table_" + key + JASPER_REPORT_COMPILED_FILE_EXT);
+                    File tableTemplateBuild = new File(this.dynamicReportDirectory, "table_" + id + JASPER_REPORT_COMPILED_FILE_EXT);
 
                     if (!tableTemplateBuild.exists()
                         || (tableTemplate.lastModified() > tableTemplateBuild.lastModified())) {
@@ -152,16 +147,15 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Inp
         return new Output(tableList);
     }
 
-    private void generateDynamicReport(final PJsonArray jsonColumns, final Style detailStyle, final Style headerStyle,
+    private void generateDynamicReport(final String[] jsonColumns, final Style detailStyle, final Style headerStyle,
                                        final Style oddRowStyle, final File tableTemplate) throws JRException {
         DynamicReportBuilder drb = new DynamicReportBuilder();
         drb.setMargins(0, 0, 0, 0);
         drb.setPrintBackgroundOnOddRows(true);
         drb.setOddRowBackgroundStyle(oddRowStyle);
         int width = dynamicReportOptInt("tableWidth", DEFAULT_TABLE_WIDTH)
-                    / jsonColumns.size();
-        for (int i = 0; i < jsonColumns.size(); i++) {
-            String column = jsonColumns.getString(i);
+                    / jsonColumns.length;
+        for (String column : jsonColumns) {
             drb.addColumn(ColumnBuilder.getNew()
                     .setColumnProperty(column, String.class.getName())
                     .setStyle(detailStyle).setHeaderStyle(headerStyle)
@@ -172,28 +166,25 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Inp
                 "UTF-8", tableTemplate.getAbsolutePath());
     }
 
-    private PJsonArray createColumnDataSource(final PJsonObject jsonTableList, final List<Values> tableList, final String key) {
-        final PJsonObject jsonTable = jsonTableList.getJSONObject(key);
-        final PJsonArray jsonColumns = jsonTable.getJSONArray(JSON_COLUMNS);
-        final PJsonArray jsonData = jsonTable.getJSONArray(JSON_DATA);
+    private void createColumnDataSource(final TableListAttributeValue jsonTable, final List<Values> tableList) {
+        final String[] jsonColumns = jsonTable.columns;
+        final PJsonArray[] jsonData = jsonTable.data;
         final List<Map<String, ?>> table = new ArrayList<Map<String, ?>>();
 
         Map<String, Object> tableValues = new HashMap<String, Object>();
-        tableValues.put(COLUMN_NAME, key);
-        tableValues.put(COLUMN_DISPLAYNAME, jsonTable.optString(JSON_DISPLAYNAME, key));
+        tableValues.put(COLUMN_NAME, jsonTable.id);
+        tableValues.put(COLUMN_DISPLAYNAME, jsonTable.getDisplayName());
 
-        for (int i = 0; i < jsonData.size(); i++) {
-            final PJsonArray jsonRow = jsonData.getJSONArray(i);
+        for (PJsonArray jsonRow : jsonData) {
             final Map<String, String> row = new HashMap<String, String>();
             for (int j = 0; j < jsonRow.size(); j++) {
-                row.put(jsonColumns.getString(j), jsonRow.getString(j));
+                row.put(jsonColumns[j], jsonRow.getString(j));
             }
             table.add(row);
         }
 
         tableValues.put(COLUMN_DATASOURCE, new JRMapCollectionDataSource(table));
         tableList.add(new Values(tableValues));
-        return jsonColumns;
     }
 
     private String dynamicReportOptString(final String key, final String defaultValue) {
@@ -231,7 +222,7 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Inp
         /**
          * Data for constructing the table list of values.
          */
-        public TableListAttributeValue tableList;
+        public TableListAttributeValue[] tableList;
     }
 
     /**

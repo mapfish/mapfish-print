@@ -27,10 +27,10 @@ import org.geotools.map.Layer;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
-import org.mapfish.print.attribute.map.MapLayerParamParserTest;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.json.parser.MapfishJsonParserTest;
 import org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -72,7 +72,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
         template.setStyle("polygon", template.getConfiguration().getDefaultStyle("polygon"));
 
         GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
-        MapLayerParamParserTest.populateLayerParam(requestData, param, "type");
+        MapfishJsonParserTest.populateLayerParam(requestData, param, "type");
         final GeoJsonLayer layer = geojsonLayerParser.parse(template, param);
 
         assertNotNull(layer);
@@ -100,7 +100,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
         template.setStyle("polygon", template.getConfiguration().getDefaultStyle("polygon"));
 
         GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
-        MapLayerParamParserTest.populateLayerParam(requestData, param, "type");
+        MapfishJsonParserTest.populateLayerParam(requestData, param, "type");
         geojsonLayerParser.parse(template, param).getLayers(null, null, 1.0, true);
 
     }
@@ -119,7 +119,6 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
         GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
         param.geoJson = "file://../" + BASE_DIR + "/geojson.json";
         geojsonLayerParser.parse(template, param).getLayers(null, null, 1.0, true);
-        ;
     }
 
     @Test(expected = Exception.class)
@@ -135,7 +134,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
         template.setStyle("polygon", template.getConfiguration().getDefaultStyle("polygon"));
 
         GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
-        MapLayerParamParserTest.populateLayerParam(requestData, param, "type");
+        MapfishJsonParserTest.populateLayerParam(requestData, param, "type");
         geojsonLayerParser.parse(template, param).getLayers(null, null, 1.0, true);
     }
 
@@ -174,7 +173,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
 
         GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
-        MapLayerParamParserTest.populateLayerParam(requestData, param, "type");
+        MapfishJsonParserTest.populateLayerParam(requestData, param, "type");
         final GeoJsonLayer mapLayer = geojsonLayerParser.parse(template, param);
 
         assertNotNull(mapLayer);
@@ -203,7 +202,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
 
         GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
-        MapLayerParamParserTest.populateLayerParam(requestData, param, "type");
+        MapfishJsonParserTest.populateLayerParam(requestData, param, "type");
         final GeoJsonLayer mapLayer = geojsonLayerParser.parse(template, param);
 
         assertNotNull(mapLayer);

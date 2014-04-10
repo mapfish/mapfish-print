@@ -25,6 +25,7 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.json.parser.MapfishJsonParser;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.util.ImageSimilarity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,13 +43,15 @@ public class CreateMapProcessorFixedScaleBBoxGeoJsonTest extends AbstractMapfish
 
     @Autowired
     private ConfigurationFactory configurationFactory;
+    @Autowired
+    private MapfishJsonParser jsonParser;
 
     @Test
     public void testExecute() throws Exception {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template);
+        Values values = new Values(requestData, template, this.jsonParser);
         template.getProcessorGraph().createTask(values).invoke();
 
         BufferedImage map = values.getObject("mapOut", BufferedImage.class);
