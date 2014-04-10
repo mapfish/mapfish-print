@@ -31,6 +31,7 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.json.parser.MapfishJsonParser;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +58,9 @@ public class JasperReportOutputFormat implements OutputFormat {
 
     @Autowired
     private WorkingDirectories workingDirectories;
+    @Autowired
+    private MapfishJsonParser jsonParser;
+
 
     @Override
     public final String getContentType() {
@@ -75,7 +79,7 @@ public class JasperReportOutputFormat implements OutputFormat {
         final String templateName = requestData.getString(Constants.JSON_LAYOUT_KEY);
 
         final Template template = config.getTemplate(templateName);
-        final Values values = new Values(requestData, template);
+        final Values values = new Values(requestData, template, this.jsonParser);
 
         final File jasperTemplateFile = new File(configDir, template.getJasperTemplate());
         final File jasperTemplateBuild = this.workingDirectories.getBuildFileFor(config, jasperTemplateFile,

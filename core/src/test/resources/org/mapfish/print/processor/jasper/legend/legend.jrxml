@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version last-->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="legend" columnCount="3" pageWidth="555" pageHeight="802" columnWidth="185" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="6b65086b-74e0-4bec-834b-1b74d5ae2d31">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="icon" class="java.awt.Image"/>
+	<field name="level" class="java.lang.Integer"/>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<printWhenExpression><![CDATA[!$F{name}.equals("")]]></printWhenExpression>
+			<textField>
+				<reportElement x="0" y="0" width="185" height="13" uuid="804c03e8-4edc-4888-8dba-0c683717bfeb"/>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="14">
+			<printWhenExpression><![CDATA[$F{icon} != null]]></printWhenExpression>
+			<image scaleImage="RealHeight">
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="185" height="13" uuid="067c1436-8c32-4bd6-9fd2-db394dc7366a"/>
+				<imageExpression><![CDATA[$F{icon}]]></imageExpression>
+			</image>
+		</band>
+	</detail>
+</jasperReport>

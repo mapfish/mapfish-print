@@ -19,10 +19,16 @@
 
 package org.mapfish.print.output;
 
+import org.mapfish.print.attribute.ArrayReflectiveAttribute;
 import org.mapfish.print.attribute.Attribute;
+import org.mapfish.print.attribute.PrimitiveAttribute;
+import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.json.parser.MapfishJsonParser;
 
+import java.lang.reflect.Array;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
@@ -57,15 +63,38 @@ public class Values {
      *
      * @param requestData the json request data
      * @param template the template
+     * @param parser the parser to use for parsing the request data.
      */
-    public Values(final PJsonObject requestData, final Template template) {
+    public Values(final PJsonObject requestData, final Template template, final MapfishJsonParser parser) {
 
         final PJsonObject jsonAttributes = requestData.getJSONObject("attributes");
 
-        Map<String, Attribute<?>> attributes = template.getAttributes();
+        Map<String, Attribute> attributes = template.getAttributes();
         for (String attributeName : attributes.keySet()) {
-            final Attribute<?> attribute = attributes.get(attributeName);
-            final Object value = attribute.getValue(template, jsonAttributes, attributeName);
+            final Attribute attribute = attributes.get(attributeName);
+            final Object value;
+            if (attribute instanceof PrimitiveAttribute) {
+                PrimitiveAttribute pAtt = (PrimitiveAttribute) attribute;
+                value = parser.parsePrimitive(attributeName, pAtt.getValueClass(), jsonAttributes);
+            } else if (attribute instanceof ReflectiveAttribute) {
+                boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
+                ReflectiveAttribute rAtt = (ReflectiveAttribute) attribute;
+                value = rAtt.createValue(template);
+                parser.parse(errorOnExtraParameters, jsonAttributes.getJSONObject(attributeName), value);
+            } else if (attribute instanceof ArrayReflectiveAttribute) {
+                boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
+                ArrayReflectiveAttribute rAtt = (ArrayReflectiveAttribute) attribute;
+                final PJsonArray jsonArray = jsonAttributes.getJSONArray(attributeName);
+                value = Array.newInstance(rAtt.createValue(template).getClass(), jsonArray.size());
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    Object elem = rAtt.createValue(template);
+                    Array.set(value, i, elem);
+                    parser.parse(errorOnExtraParameters, jsonArray.getJSONObject(i), elem);
+                }
+            } else {
+                throw new IllegalArgumentException("Unsupported attribute type: " + attribute);
+            }
+
             put(attributeName, value);
         }
     }
@@ -132,7 +161,7 @@ public class Values {
      * @param key the key
      */
     @SuppressWarnings("unchecked")
-    protected final Iterable<Values> getIterator(final String key) {
+    public final Iterable<Values> getIterator(final String key) {
         return (Iterable<Values>) this.values.get(key);
     }
 

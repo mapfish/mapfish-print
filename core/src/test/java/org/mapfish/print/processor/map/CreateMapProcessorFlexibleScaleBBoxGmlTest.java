@@ -29,6 +29,7 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.json.parser.MapfishJsonParser;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.util.ImageSimilarity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,26 +52,30 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
     private ConfigurationFactory configurationFactory;
     @Autowired
     private TestHttpClientFactory requestFactory;
+    @Autowired
+    private MapfishJsonParser jsonParser;
+
 
     @Test
     public void testExecute() throws Exception {
         final String host = "center_gml_flexible_scale.com";
-        requestFactory.registerHandler(new Predicate<URI>() {
-                                           @Override
-                                           public boolean apply(URI input) {
-                                               return (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host);
-                                           }
-                                       }, new TestHttpClientFactory.Handler() {
-                                           @Override
-                                           public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
-                                               try {
-                                                   byte[] bytes = Files.toByteArray(getFile("/map-data" + uri.getPath()));
-                                                   return ok(uri, bytes, httpMethod);
-                                               } catch (AssertionError e) {
-                                                   return error404(uri, httpMethod);
-                                               }
-                                           }
-                                       }
+        requestFactory.registerHandler(
+                new Predicate<URI>() {
+                    @Override
+                    public boolean apply(URI input) {
+                        return (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host);
+                    }
+                }, new TestHttpClientFactory.Handler() {
+                    @Override
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                        try {
+                            byte[] bytes = Files.toByteArray(getFile("/map-data" + uri.getPath()));
+                            return ok(uri, bytes, httpMethod);
+                        } catch (AssertionError e) {
+                            return error404(uri, httpMethod);
+                        }
+                    }
+                }
         );
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
@@ -85,11 +90,10 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
             jsonLayer.remove("url");
             jsonLayer.accumulate("url", "http://" + host + ":23432" + "/gml/" + gmlDataName);
 
-            Values values = new Values(requestData, template);
+            Values values = new Values(requestData, template, jsonParser);
             template.getProcessorGraph().createTask(values).invoke();
 
             BufferedImage map = values.getObject("mapOut", BufferedImage.class);
-//            ImageIO.write(map, "png", new File("e:/tmp/" + gmlDataName + ".png"));
             new ImageSimilarity(map, 2).assertSimilarity(getFile(BASE_DIR + gmlDataName + ".png"), 0);
         }
 

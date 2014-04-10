@@ -20,43 +20,44 @@
 package org.mapfish.print.attribute;
 
 import org.mapfish.print.config.Template;
-import org.mapfish.print.json.PJsonObject;
-
-import java.util.Iterator;
+import org.mapfish.print.json.PJsonArray;
+import org.mapfish.print.json.parser.HasDefaultValue;
 
 
 /**
  * The attributes for {@link org.mapfish.print.processor.jasper.TableListProcessor}.
  */
-public class TableListAttribute extends AbstractAttribute<TableListAttribute.TableListAttributeValue> {
+public final class TableListAttribute extends ArrayReflectiveAttribute<TableListAttribute.TableListAttributeValue> {
 
     @Override
-    public final TableListAttributeValue getValue(final Template template, final PJsonObject values, final String name) {
-        return new TableListAttributeValue(values.getJSONObject(name));
+    public TableListAttributeValue createValue(final Template template) {
+        return new TableListAttributeValue();
     }
 
-    @Override
-    protected final String getType() {
-        return "tableList";
-    }
     /**
      * The value of {@link org.mapfish.print.attribute.TableAttribute}.
      */
-    public static class TableListAttributeValue implements Iterable<Object> {
+    public static final class TableListAttributeValue {
+        /**
+         * The id of the table.
+         */
+        public String id;
+        /**
+         * A more human-friendly name for the table.
+         */
+        @HasDefaultValue
+        public String displayName;
+        /**
+         * The column names.
+         */
+        public String[] columns;
+        /**
+         * The row data for each table.
+         */
+        public PJsonArray[] data;
 
-        private final PJsonObject jsonObject;
-
-        TableListAttributeValue(final PJsonObject jsonObject) {
-            this.jsonObject = jsonObject;
-        }
-
-        public final PJsonObject getJsonObject() {
-            return this.jsonObject;
-        }
-
-        @Override
-        public final Iterator<Object> iterator() {
-            return null;
+        public String getDisplayName() {
+            return this.displayName == null ? this.id : this.displayName;
         }
     }
 }

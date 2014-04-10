@@ -35,8 +35,8 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
 
-import static org.mapfish.print.processor.InputOutputValueUtils.FILTER_ONLY_REQUIRED_ATTRIBUTES;
-import static org.mapfish.print.processor.InputOutputValueUtils.getAttributeNames;
+import static org.mapfish.print.json.parser.JsonParserUtils.FILTER_ONLY_REQUIRED_ATTRIBUTES;
+import static org.mapfish.print.json.parser.JsonParserUtils.getAttributeNames;
 
 /**
  * Represents a graph of the processors dependencies.  The root nodes can execute in parallel but processors with

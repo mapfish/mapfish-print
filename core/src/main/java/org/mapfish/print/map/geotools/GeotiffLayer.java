@@ -28,9 +28,9 @@ import org.geotools.styling.Style;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.json.parser.HasDefaultValue;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.map.style.StyleParser;
-import org.mapfish.print.processor.HasDefaultValue;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;

@@ -24,7 +24,7 @@ import com.google.common.collect.Multimap;
 import org.json.JSONArray;
 import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
-import org.mapfish.print.processor.HasDefaultValue;
+import org.mapfish.print.json.parser.HasDefaultValue;
 
 import java.net.URI;
 import java.net.URISyntaxException;

@@ -30,7 +30,7 @@ import org.geotools.xml.Parser;
 import org.mapfish.print.FileUtils;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.processor.HasDefaultValue;
+import org.mapfish.print.json.parser.HasDefaultValue;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;

@@ -32,7 +32,7 @@ import org.geotools.styling.Style;
 import org.mapfish.print.Constants;
 import org.mapfish.print.FileUtils;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.processor.HasDefaultValue;
+import org.mapfish.print.json.parser.HasDefaultValue;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
 

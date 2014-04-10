@@ -20,36 +20,31 @@
 package org.mapfish.print.attribute;
 
 import org.mapfish.print.config.Template;
-import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.json.PJsonArray;
 
 /**
  * The attributes for {@link org.mapfish.print.processor.jasper.TableProcessor}.
  */
-public class TableAttribute extends AbstractAttribute<TableAttribute.TableAttributeValue> {
+public final class TableAttribute extends ReflectiveAttribute<TableAttribute.TableAttributeValue> {
 
     @Override
-    public final TableAttributeValue getValue(final Template template, final PJsonObject values, final String name) {
-        return new TableAttributeValue(values.getJSONObject(name));
-    }
-
-    @Override
-    protected final String getType() {
-        return "table";
+    public TableAttributeValue createValue(final Template template) {
+        return new TableAttributeValue();
     }
 
     /**
      * The value of {@link org.mapfish.print.attribute.TableAttribute}.
      */
-    public static class TableAttributeValue {
+    public static final class TableAttributeValue {
 
-        private final PJsonObject jsonObject;
-
-        TableAttributeValue(final PJsonObject jsonObject) {
-            this.jsonObject = jsonObject;
-        }
-
-        public final PJsonObject getJsonObject() {
-            return this.jsonObject;
-        }
+        /**
+         * The column configuration names for the table.
+         */
+        public String[] columns;
+        /**
+         * An array for each table row.
+         */
+        public PJsonArray[] data;
     }
+
 }

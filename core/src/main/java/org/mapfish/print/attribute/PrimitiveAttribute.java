@@ -21,42 +21,63 @@ package org.mapfish.print.attribute;
 
 import org.json.JSONException;
 import org.json.JSONWriter;
+import org.mapfish.print.config.Template;
+import org.mapfish.print.json.parser.MapfishJsonParser;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
 /**
- * An attribute containing useful methods for other attribute implementation as well as some basic functionality.
- *
- * @param <T> The attribute type object read from the parameters by this attribute.
+ * A type of attribute whose value is a primitive type.
+ * <ul>
+ *     <li>{@link java.lang.String}</li>
+ *     <li>{@link java.lang.Integer}</li>
+ *     <li>{@link java.lang.Float}</li>
+ *     <li>{@link java.lang.Double}</li>
+ *     <li>{@link java.lang.Short}</li>
+ *     <li>{@link java.lang.Boolean}</li>
+ *     <li>{@link java.lang.Character}</li>
+ *     <li>{@link java.lang.Byte}</li>
+ *     <li>{@link java.lang.Enum}</li>
+ * </ul>
+ * @author Jesse on 4/9/2014.
+ * @param <Value> The value type of the attribute
  */
-public abstract class AbstractAttribute<T> implements Attribute<T> {
+public abstract class PrimitiveAttribute<Value> implements Attribute {
+    private Class<Value> valueClass;
     private LinkedHashMap<String, ?> clientOptions;
 
     /**
-     * Return a string describing the attribute's type. The string is used in the {@link #printClientConfig(org.json.JSONWriter)}.
+     * Constructor.
      *
-     * @return a string describing the attribute's type.
+     * @param valueClass the type of the value of this attribute
      */
-    protected abstract String getType();
+    public PrimitiveAttribute(final Class<Value> valueClass) {
+        this.valueClass = valueClass;
+    }
+
+    public final Class<Value> getValueClass() {
+        return this.valueClass;
+    }
 
     @Override
-    public final void printClientConfig(final JSONWriter json) throws JSONException {
-        json.key("name").value(getType());
-        additionalPrintClientConfig(json);
+    public final void printClientConfig(final JSONWriter json, final Template template) throws JSONException {
+        json.key("name").value(MapfishJsonParser.stringRepresentation(this.valueClass));
         json.key("clientOptions");
         addMapToJSON(this.clientOptions, json);
         json.endObject();
     }
 
     /**
-     * Hook to add extra custom information to the normal printClientConfig method.
+     * Setter called by the yaml parser.   Client options provides extra, non-standard information for the client.  These
+     * should be kept to a minimum.
      *
-     * @param json the json writer to write to.
-     * @throws JSONException
+     * @param clientOptions the options.
      */
-    protected void additionalPrintClientConfig(final JSONWriter json) throws JSONException {
+    public final void setClientOptions(final LinkedHashMap<String, ?> clientOptions) {
+        this.clientOptions = clientOptions;
     }
+
 
     /**
      * Utility method for adding a map of data to the json.
@@ -91,12 +112,4 @@ public abstract class AbstractAttribute<T> implements Attribute<T> {
         json.endObject();
     }
 
-    /**
-     * Setter called by the yaml parser.
-     *
-     * @param clientOptions the options.
-     */
-    public final void setClientOptions(final LinkedHashMap<String, ?> clientOptions) {
-        this.clientOptions = clientOptions;
-    }
 }

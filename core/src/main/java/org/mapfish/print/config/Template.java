@@ -49,7 +49,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
 
 
     private String jasperTemplate;
-    private Map<String, Attribute<?>> attributes;
+    private Map<String, Attribute> attributes;
     private List<Processor> processors;
     private String iterValue;
     private List<Processor> iterProcessors = new ArrayList<Processor>();
@@ -75,13 +75,13 @@ public class Template implements ConfigurationObject, HasConfiguration {
         for (String name : this.attributes.keySet()) {
             json.object();
             json.key("name").value(name);
-            this.attributes.get(name).printClientConfig(json);
+            this.attributes.get(name).printClientConfig(json, this);
             json.endObject();
         }
         json.endArray();
     }
 
-    public final Map<String, Attribute<?>> getAttributes() {
+    public final Map<String, Attribute> getAttributes() {
         return this.attributes;
     }
 
@@ -90,8 +90,8 @@ public class Template implements ConfigurationObject, HasConfiguration {
      *
      * @param attributes the attribute map
      */
-    public final void setAttributes(final Map<String, Attribute<?>> attributes) {
-        for (Map.Entry<String, Attribute<?>> entry : attributes.entrySet()) {
+    public final void setAttributes(final Map<String, Attribute> attributes) {
+        for (Map.Entry<String, Attribute> entry : attributes.entrySet()) {
             Object attribute = entry.getValue();
             if (!(attribute instanceof Attribute)) {
                 final String msg = "Attribute: '" + entry.getKey() + "' is not an attribute. It is a: " + attribute;

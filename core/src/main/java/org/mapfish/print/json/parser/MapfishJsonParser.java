@@ -17,7 +17,7 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.attribute.map;
+package org.mapfish.print.json.parser;
 
 import com.google.common.base.Predicates;
 import com.google.common.collect.Maps;
@@ -27,8 +27,6 @@ import org.mapfish.print.MissingPropertyException;
 import org.mapfish.print.json.JsonMissingException;
 import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
-import org.mapfish.print.processor.HasDefaultValue;
-import org.mapfish.print.processor.InputOutputValueUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,52 +41,66 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-import static org.mapfish.print.processor.InputOutputValueUtils.getAllAttributeNames;
-import static org.mapfish.print.processor.InputOutputValueUtils.getAttributeNames;
+import static org.mapfish.print.json.parser.JsonParserUtils.FILTER_NON_FINAL_FIELDS;
+import static org.mapfish.print.json.parser.JsonParserUtils.getAllAttributeNames;
+import static org.mapfish.print.json.parser.JsonParserUtils.getAttributeNames;
 
 /**
  * This class parses json parameter objects into the parameter object taken by {@link org.mapfish.print.map.MapLayerFactoryPlugin}
- * instances.
+ * instances and into {@link org.mapfish.print.attribute.ReflectiveAttribute} value objects
  * <p/>
  * Essentially it maps the keys in the json object to public fields in the object obtained from the
  * {@link org.mapfish.print.map.MapLayerFactoryPlugin#createParameter()} method.
+ * <p/>
+ * There is a more explicit explanation in
+ * {@link org.mapfish.print.attribute.ReflectiveAttribute#createValue(org.mapfish.print.config.Template)}
  *
  * @author Jesse on 4/3/14.
+ * @see org.mapfish.print.attribute.ReflectiveAttribute
+ * @see org.mapfish.print.map.MapLayerFactoryPlugin
  */
-public final class MapLayerParamParser {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MapLayerParamParser.class);
+public final class MapfishJsonParser {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapfishJsonParser.class);
     private static final String POST_CONSTRUCT_METHOD_NAME = "postConstruct";
 
     /**
-     * Populate the param object by obtaining the values from the like names values in the LayerJson object.
+     * Populate the param object by obtaining the values from the like names values in the request data object.
      *
-     * @param errorOnExtraProperties if true then throw an error when there are properties in the layerJson that are not in the
+     * @param errorOnExtraProperties if true then throw an error when there are properties in the request data that are not in the
      *                               param.  Otherwise log them as a warning.
-     * @param layerJson              the layer configuration json.
-     * @param param                  the parameter object that will be passed to the layer factory.
-     * @param extraPropertyToIgnore  An array of properties to ignore in layerJson.  For example Layers do not need "type" but
+     * @param requestData            the layer configuration json.
+     * @param objectToPopulate       the parameter object that will be passed to the layer factory or is the attribute value.
+     * @param extraPropertyToIgnore  An array of properties to ignore in request data.  For example Layers do not need "type" but
      *                               the property has to be there for {@link org.mapfish.print.attribute.map.MapAttribute} to
      *                               be able to choose the correct plugin.
      */
-    public void populateLayerParam(final boolean errorOnExtraProperties, final PJsonObject layerJson, final Object param,
-                                   final String... extraPropertyToIgnore) {
-        checkForExtraProperties(errorOnExtraProperties, param.getClass(), layerJson, extraPropertyToIgnore);
+    public void parse(final boolean errorOnExtraProperties, final PJsonObject requestData, final Object objectToPopulate,
+                      final String... extraPropertyToIgnore) {
+        checkForExtraProperties(errorOnExtraProperties, objectToPopulate.getClass(), requestData, extraPropertyToIgnore);
 
-        final Collection<Field> allAttributes = InputOutputValueUtils.getAllAttributes(param.getClass());
+        final Collection<Field> allAttributes = JsonParserUtils.getAttributes(objectToPopulate.getClass(), FILTER_NON_FINAL_FIELDS);
         Map<String, Class<?>> missingProperties = Maps.newHashMap();
+
+        final OneOfTracker oneOfTracker = new OneOfTracker();
+        final RequiresTracker requiresTracker = new RequiresTracker();
+        for (Field attribute : allAttributes) {
+            oneOfTracker.register(attribute);
+            requiresTracker.register(attribute);
+        }
 
         for (Field property : allAttributes) {
             try {
                 Object value;
                 try {
-                    value = parseValue(errorOnExtraProperties, extraPropertyToIgnore, property.getType(), property.getName(), layerJson);
+                    value = parseValue(errorOnExtraProperties, extraPropertyToIgnore, property.getType(), property.getName(),
+                            requestData);
                 } catch (UnsupportedTypeException e) {
-                    final String paramClassName = param.getClass().getName();
+                    final String paramClassName = objectToPopulate.getClass().getName();
                     String type = e.type.getName();
                     if (e.type.isArray()) {
                         type = e.type.getComponentType().getName() + "[]";
                     }
-                    throw new RuntimeException("The type '" + type + "' is not a supported type for MapLayer param objects.  " +
+                    throw new RuntimeException("The type '" + type + "' is not a supported type when parsing json.  " +
                                                "See documentation for supported types.\n\nUnsupported type found in " + paramClassName
                                                + " " +
                                                "under the property: " + property.getName() + "\n\nTo support more types add the type to" +
@@ -96,29 +108,42 @@ public final class MapLayerParamParser {
                                                "parseValue and parseArrayValue in this class and add a test to the test class", e);
                 }
                 try {
-                    property.set(param, value);
+                    oneOfTracker.markAsVisited(property);
+                    requiresTracker.markAsVisited(property);
+                    property.set(objectToPopulate, value);
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
             } catch (JsonMissingException e) {
-                if (property.getAnnotation(HasDefaultValue.class) == null) {
+                final HasDefaultValue hasDefaultValue = property.getAnnotation(HasDefaultValue.class);
+                final OneOf oneOf = property.getAnnotation(OneOf.class);
+                if (hasDefaultValue == null && oneOf == null) {
                     missingProperties.put(property.getName(), property.getType());
                 }
             }
         }
 
+        oneOfTracker.checkAllGroupsSatisfied();
+        requiresTracker.checkAllRequirementsSatisfied();
+
         if (!missingProperties.isEmpty()) {
-            String message = "Request Json is missing some required attributes at: '" + layerJson.getCurrentPath() + "': ";
-            throw new MissingPropertyException(message, missingProperties, getAllAttributeNames(param.getClass()));
+            String message = "Request Json is missing some required attributes at: '" + requestData.getCurrentPath() + "': ";
+            throw new MissingPropertyException(message, missingProperties, getAllAttributeNames(objectToPopulate.getClass()));
         }
 
         try {
-            final Method method = param.getClass().getMethod(POST_CONSTRUCT_METHOD_NAME);
+            final Method method = objectToPopulate.getClass().getMethod(POST_CONSTRUCT_METHOD_NAME);
             LOGGER.debug("Executing " + POST_CONSTRUCT_METHOD_NAME + " method on parameter object.");
-            method.invoke(param);
+            method.invoke(objectToPopulate);
         } catch (NoSuchMethodException e) {
             LOGGER.debug("No " + POST_CONSTRUCT_METHOD_NAME + " method on parameter object.");
         } catch (InvocationTargetException e) {
+            final Throwable targetException = e.getTargetException();
+            if (targetException instanceof RuntimeException) {
+                throw (RuntimeException) targetException;
+            } else if (targetException instanceof Error) {
+                throw (Error) targetException;
+            }
             throw new RuntimeException(e);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
@@ -128,12 +153,15 @@ public final class MapLayerParamParser {
     private void checkForExtraProperties(final boolean errorOnExtraProperties, final Class<?> paramClass,
                                          final PJsonObject layerJson, final String[] extraPropertyToIgnore) {
         final Collection<String> acceptableKeyValues = Sets.newHashSet();
-        for (String name : getAllAttributeNames(paramClass)) {
+        for (String name : getAttributeNames(paramClass, FILTER_NON_FINAL_FIELDS)) {
             acceptableKeyValues.add(name.toLowerCase());
         }
-        for (String propName : extraPropertyToIgnore) {
-            acceptableKeyValues.add(propName.toLowerCase());
+        if (extraPropertyToIgnore != null) {
+            for (String propName : extraPropertyToIgnore) {
+                acceptableKeyValues.add(propName.toLowerCase());
+            }
         }
+
         Collection<String> extraProperties = Sets.newHashSet();
         @SuppressWarnings("unchecked")
         final Iterator<String> keys = layerJson.getInternalObj().keys();
@@ -203,7 +231,7 @@ public final class MapLayerParamParser {
             try {
                 value = type.newInstance();
                 PJsonObject jsonObject = layerJson.getJSONObject(name);
-                populateLayerParam(errorOnExtraProperties, jsonObject, value, extraPropertyToIgnore);
+                parse(errorOnExtraProperties, jsonObject, value, extraPropertyToIgnore);
             } catch (InstantiationException e) {
                 throw new UnsupportedTypeException(type);
             } catch (IllegalAccessException e) {
@@ -213,6 +241,7 @@ public final class MapLayerParamParser {
         return value;
     }
 
+    @SuppressWarnings("unchecked")
     private Object parseEnum(final Class<?> type, final String path, final String enumString) {
         Object value;
         try {
@@ -237,7 +266,7 @@ public final class MapLayerParamParser {
 
     private IllegalArgumentException enumError(final Object[] enumConstants, final String path, final String enumString) {
         return new IllegalArgumentException(path + " should be an enumeration value or ordinal " +
-                                           "but was: " + enumString + "\nEnum constants are: " + Arrays.toString(enumConstants));
+                                            "but was: " + enumString + "\nEnum constants are: " + Arrays.toString(enumConstants));
     }
 
     private Object parseArrayValue(final boolean errorOnExtraProperties, final String[] extraPropertyToIgnore, final Class<?> type,
@@ -270,7 +299,7 @@ public final class MapLayerParamParser {
             try {
                 value = type.newInstance();
                 PJsonObject jsonObject = jsonArray.getJSONObject(i);
-                populateLayerParam(errorOnExtraProperties, jsonObject, value, extraPropertyToIgnore);
+                parse(errorOnExtraProperties, jsonObject, value, extraPropertyToIgnore);
             } catch (InstantiationException e) {
                 throw new UnsupportedTypeException(type);
             } catch (IllegalAccessException e) {
@@ -279,6 +308,37 @@ public final class MapLayerParamParser {
         }
 
         return value;
+    }
+
+    /**
+     * Get the value of a primitive type from the request data.
+     *
+     * @param fieldName   the name of th attribute to get from the request data.
+     * @param valueClass  the type to get
+     * @param requestData the data to retrieve the value from
+     */
+    public Object parsePrimitive(final String fieldName, final Class valueClass, final PJsonObject requestData) {
+        try {
+            return parseValue(false, new String[0], valueClass, fieldName, requestData);
+        } catch (UnsupportedTypeException e) {
+            String type = e.type.getName();
+            if (e.type.isArray()) {
+                type = e.type.getComponentType().getName() + "[]";
+            }
+            throw new RuntimeException("The type '" + type + "' is not a supported type when parsing json.  " +
+                                       "See documentation for supported types.\n\nUnsupported type found in attribute " + fieldName
+                                       + "\n\nTo support more types add the type to " +
+                                       "parseValue and parseArrayValue in this class and add a test to the test class", e);
+        }
+    }
+
+    /**
+     * Return a friendly representation of the class for printing the configuration options to a client.
+     *
+     * @param aClass the class to inspect
+     */
+    public static String stringRepresentation(final Class<? extends Object> aClass) {
+        return aClass.getSimpleName();
     }
 
     private static final class UnsupportedTypeException extends Exception {

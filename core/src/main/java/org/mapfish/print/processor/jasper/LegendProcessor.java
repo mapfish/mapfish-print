@@ -21,8 +21,6 @@ package org.mapfish.print.processor.jasper;
 
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 import org.mapfish.print.attribute.LegendAttribute.LegendAttributeValue;
-import org.mapfish.print.json.PJsonArray;
-import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.processor.AbstractProcessor;
 
 import java.awt.Image;
@@ -44,10 +42,6 @@ public class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, Le
     private static final String ICON_COLUMN = "icon";
     private static final String LEVEL_COLUMN = "level";
 
-    private static final String JSON_NAME = "name";
-    private static final String JSON_ICONS = "icons";
-    private static final String JSON_CLASSES = "classes";
-
     /**
      * Constructor.
      */
@@ -65,8 +59,8 @@ public class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, Le
 
         final List<Object[]> legendList = new ArrayList<Object[]>();
         final String[] legendColumns = {NAME_COLUMN, ICON_COLUMN, LEVEL_COLUMN};
-        final PJsonObject jsonLegend = values.legend.getJsonObject();
-        fillLegend(jsonLegend, legendList, 0);
+        final LegendAttributeValue legendAttributes = values.legend;
+        fillLegend(legendAttributes, legendList, 0);
         final Object[][] legend = new Object[legendList.size()][];
 
         final JRTableModelDataSource dataSource = new JRTableModelDataSource(new TableDataSource(legendColumns,
@@ -74,25 +68,23 @@ public class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, Le
         return new Output(dataSource);
     }
 
-    private void fillLegend(final PJsonObject jsonLegend, final List<Object[]> legendList, final int level) throws IOException {
-        final Object[] row = {jsonLegend.optString(JSON_NAME), null, level};
+    private void fillLegend(final LegendAttributeValue legendAttributes, final List<Object[]> legendList,
+                            final int level) throws IOException {
+        final Object[] row = {legendAttributes.name, null, level};
         legendList.add(row);
 
-        final PJsonArray icons = jsonLegend.optJSONArray(JSON_ICONS);
+        final URL[] icons = legendAttributes.icons;
         if (icons != null) {
-            for (int i = 0; i < icons.size(); i++) {
-                final URL url = new URL(icons.getString(i));
-                final Image image = ImageIO.read(url);
+            for (URL icon : icons) {
+                final Image image = ImageIO.read(icon);
                 final Object[] iconRow = {null, image, level};
                 legendList.add(iconRow);
             }
         }
 
-        PJsonArray jsonClass = jsonLegend.optJSONArray(JSON_CLASSES);
-
-        if (jsonClass != null) {
-            for (int i = 0; i < jsonClass.size(); i++) {
-                fillLegend(jsonClass.getJSONObject(i), legendList, level + 1);
+        if (legendAttributes.classes != null) {
+            for (LegendAttributeValue value : legendAttributes.classes) {
+                fillLegend(value, legendList, level + 1);
             }
         }
     }

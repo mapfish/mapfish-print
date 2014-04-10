@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.mapfish.print.processor.InputOutputValueUtils.getAllAttributes;
+import static org.mapfish.print.json.parser.JsonParserUtils.getAllAttributes;
 
 /**
  * Class for constructing {@link org.mapfish.print.processor.ProcessorDependencyGraph} instances.

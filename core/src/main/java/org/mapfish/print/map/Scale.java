@@ -19,7 +19,6 @@
 
 package org.mapfish.print.map;
 
-import org.mapfish.print.json.PJsonObject;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import javax.annotation.Nonnull;
@@ -40,15 +39,6 @@ public final class Scale {
      */
     public Scale(final double denominator) {
         this.denominator = denominator;
-    }
-
-    /**
-     * Construct by reading from request data.
-     *
-     * @param requestData the request data.
-     */
-    public Scale(final PJsonObject requestData) {
-        this.denominator = requestData.getDouble(SCALE);
     }
 
     public double getDenominator() {

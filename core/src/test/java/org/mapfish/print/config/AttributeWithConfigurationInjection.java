@@ -19,8 +19,7 @@
 
 package org.mapfish.print.config;
 
-import org.mapfish.print.attribute.AbstractAttribute;
-import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.attribute.PrimitiveAttribute;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -29,9 +28,16 @@ import static org.junit.Assert.assertNotNull;
  *
  * @author jesseeichar on 3/25/14.
  */
-public class AttributeWithConfigurationInjection extends AbstractAttribute<Integer> implements HasConfiguration {
+public class AttributeWithConfigurationInjection extends PrimitiveAttribute<Integer> implements HasConfiguration {
 
     private Configuration configuration;
+
+    /**
+     * Constructor.
+     */
+    public AttributeWithConfigurationInjection() {
+        super(Integer.class);
+    }
 
     public void assertInjected() {
         assertNotNull(configuration);
@@ -42,13 +48,4 @@ public class AttributeWithConfigurationInjection extends AbstractAttribute<Integ
         this.configuration = configuration;
     }
 
-    @Override
-    protected String getType() {
-        return "attWithConfigInjection";
-    }
-
-    @Override
-    public Integer getValue(Template template, PJsonObject values, String name) {
-        return null;
-    }
 }

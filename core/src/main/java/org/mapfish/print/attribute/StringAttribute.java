@@ -19,21 +19,15 @@
 
 package org.mapfish.print.attribute;
 
-import org.mapfish.print.config.Template;
-import org.mapfish.print.json.PJsonObject;
-
 /**
  * Attribute that reads a string from the request data.
  */
-public class StringAttribute extends AbstractAttribute<String> {
+public class StringAttribute extends PrimitiveAttribute<String> {
 
-    @Override
-    public final String getValue(final Template template, final PJsonObject values, final String name) {
-        return values.getString(name);
-    }
-
-    @Override
-    protected final String getType() {
-        return "string";
+    /**
+     * Constructor.
+     */
+    public StringAttribute() {
+        super(String.class);
     }
 }

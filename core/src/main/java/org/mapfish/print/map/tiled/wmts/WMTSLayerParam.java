@@ -21,8 +21,8 @@ package org.mapfish.print.map.tiled.wmts;
 
 import org.mapfish.print.Constants;
 import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.json.parser.HasDefaultValue;
 import org.mapfish.print.map.tiled.AbstractTiledLayerParams;
-import org.mapfish.print.processor.HasDefaultValue;
 
 import java.net.URI;
 import java.net.URISyntaxException;
