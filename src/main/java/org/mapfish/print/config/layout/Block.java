@@ -50,7 +50,7 @@ public abstract class Block {
      */
     public abstract void render(PJsonObject params, PdfElement target, RenderingContext context) throws DocumentException;
 
-    public MapBlock getMap() {
+    public MapBlock getMap(String name) {
         return null;
     }
 
@@ -79,7 +79,7 @@ public abstract class Block {
     }
 
     public Color getBackgroundColorVal(RenderingContext context, PJsonObject params) {
-        return ColorWrapper.convertColor(PDFUtils.evalString(context, params, backgroundColor));
+        return ColorWrapper.convertColor(PDFUtils.evalString(context, params, backgroundColor, null));
     }
 
     public void setBackgroundColor(String backgroundColor) {

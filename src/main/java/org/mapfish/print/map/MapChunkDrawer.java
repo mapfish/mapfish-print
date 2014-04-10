@@ -29,6 +29,7 @@ import org.mapfish.print.PDFCustomBlocks;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.Transformer;
 import org.mapfish.print.map.readers.MapReader;
+import org.mapfish.print.utils.Maps;
 import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
 
@@ -68,7 +69,7 @@ public class MapChunkDrawer extends ChunkDrawer {
     }
 
     public void renderImpl(Rectangle rectangle, PdfContentByte dc) {
-        final PJsonObject parent = context.getGlobalParams();
+        final PJsonObject parent = Maps.getMapRoot(context.getGlobalParams(), name);
         PJsonArray layers = parent.getJSONArray("layers");
         String srs = parent.getString("srs");
 
@@ -79,7 +80,7 @@ public class MapChunkDrawer extends ChunkDrawer {
         Transformer mainTransformer = null;
         if (!Double.isNaN(overviewMap)) {
             //manage the overview map
-            mainTransformer = context.getLayout().getMainPage().getMap().createTransformer(context, params);
+            mainTransformer = context.getLayout().getMainPage().getMap(name).createTransformer(context, params);
             transformer.zoom(mainTransformer, (float) (1.0 / overviewMap));
             transformer.setRotation(0);   //overview always north up!
             context.setStyleFactor((float) (transformer.getPaperW() / mainTransformer.getPaperW() / overviewMap));

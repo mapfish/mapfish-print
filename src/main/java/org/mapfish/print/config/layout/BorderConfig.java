@@ -91,19 +91,19 @@ public class BorderConfig {
     }
 
     public Color getBorderColorLeftVal(RenderingContext context, PJsonObject params) {
-        return ColorWrapper.convertColor(PDFUtils.evalString(context, params, borderColorLeft));
+        return ColorWrapper.convertColor(PDFUtils.evalString(context, params, borderColorLeft, null));
     }
 
     public Color getBorderColorTopVal(RenderingContext context, PJsonObject params) {
-        return ColorWrapper.convertColor(PDFUtils.evalString(context, params, borderColorTop));
+        return ColorWrapper.convertColor(PDFUtils.evalString(context, params, borderColorTop, null));
     }
 
     public Color getBorderColorRightVal(RenderingContext context, PJsonObject params) {
-        return ColorWrapper.convertColor(PDFUtils.evalString(context, params, borderColorRight));
+        return ColorWrapper.convertColor(PDFUtils.evalString(context, params, borderColorRight, null));
     }
 
     public Color getBorderColorBottomVal(RenderingContext context, PJsonObject params) {
-        return ColorWrapper.convertColor(PDFUtils.evalString(context, params, borderColorBottom));
+        return ColorWrapper.convertColor(PDFUtils.evalString(context, params, borderColorBottom, null));
     }
 
     public void validate() {

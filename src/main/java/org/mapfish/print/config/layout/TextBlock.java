@@ -43,7 +43,7 @@ public class TextBlock extends FontBlock {
         final Font pdfFont = getPdfFont();
         paragraph.setFont(pdfFont);
 
-        final Phrase text = PDFUtils.renderString(context, params, this.text, pdfFont);
+        final Phrase text = PDFUtils.renderString(context, params, this.text, pdfFont, null);
         paragraph.add(text);
 
         if (getAlign() != null) paragraph.setAlignment(getAlign().getCode());

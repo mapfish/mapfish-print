@@ -19,8 +19,15 @@
 
 package org.mapfish.print;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Font;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -30,14 +37,9 @@ import org.mapfish.print.config.ConfigFactory;
 import org.mapfish.print.config.ConfigTest;
 import org.mapfish.print.utils.PJsonObject;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collections;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Font;
+import com.lowagie.text.Phrase;
 
 public class PDFUtilsTest extends PdfTestCase {
     private static final String FIVE_HUNDRED_ROUTE = "/500";
@@ -115,9 +117,52 @@ public class PDFUtilsTest extends PdfTestCase {
         internal.append("bbox", "10");
         PJsonObject params = new PJsonObject(internal, "params");
         Font font = new Font();
-        context.getLayout().getMainPage().getMap().setWidth("300");
-        context.getLayout().getMainPage().getMap().setHeight("600");
-        PDFUtils.renderString(context, params, "${scaleLbl}1:${format %,d scale}", font);
+        context.getLayout().getMainPage().getMap(null).setWidth("300");
+        context.getLayout().getMainPage().getMap(null).setHeight("600");
+        PDFUtils.renderString(context, params, "${scaleLbl}1:${format %,d scale}", font, null);
 
+    }
+    
+    @Test
+    public void testRenderString_ScaleForMultipleMaps() throws Exception {
+        final File file = ConfigTest.getSampleConfigFiles().get("configMultipleMaps.yaml");
+        Config config = new ConfigFactory().fromYaml(file);
+        context = new RenderingContext(doc, context.getWriter(), config, context.getGlobalParams(), file.getParent(),
+                config.getLayout("A4 portrait"), context.getHeaders());
+        JSONObject internal = new JSONObject();
+        
+        
+        
+        internal.accumulate("scaleLbl", "Scale Label");
+        
+        JSONObject mainMap = new JSONObject();
+        mainMap.append("bbox", "-10");
+        mainMap.append("bbox", "-10");
+        mainMap.append("bbox", "10");
+        mainMap.append("bbox", "10");
+        
+        JSONObject otherMap = new JSONObject();
+        otherMap.append("bbox", "-10000");
+        otherMap.append("bbox", "-10000");
+        otherMap.append("bbox", "10000");
+        otherMap.append("bbox", "10000");
+        
+        JSONObject maps = new JSONObject();
+        maps.accumulate("main", mainMap);
+        maps.accumulate("other", otherMap);
+        
+        internal.accumulate("maps", maps);
+        
+        
+        PJsonObject params = new PJsonObject(internal, "params");
+        Font font = new Font();
+        
+        context.getLayout().getMainPage().getMap("main").setWidth("300");
+        context.getLayout().getMainPage().getMap("main").setHeight("600");
+        context.getLayout().getMainPage().getMap("other").setWidth("300");
+        context.getLayout().getMainPage().getMap("other").setHeight("600");
+        
+        assertTrue(PDFUtils.renderString(context, params, "${scaleLbl}1:${format %,d scale.main}", font, null).getContent().contains("1:25"));
+        assertTrue(PDFUtils.renderString(context, params, "${scaleLbl}1:${format %,d scale.other}", font, null).getContent().contains("1:200"));
     }
 }

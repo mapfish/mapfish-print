@@ -105,7 +105,7 @@ public class CellConfig extends BorderConfig {
     }
 
     public Color getBackgroundColorVal(RenderingContext context, PJsonObject params) {
-        return ColorWrapper.convertColor(PDFUtils.evalString(context, params, backgroundColor));
+        return ColorWrapper.convertColor(PDFUtils.evalString(context, params, backgroundColor, null));
     }
 
     public void setAlign(HorizontalAlign align) {
