@@ -19,11 +19,10 @@
 
 package org.mapfish.print.map.tiled;
 
-import com.google.common.collect.HashMultimap;
+import com.google.common.base.Function;
 import com.google.common.collect.Multimap;
 import com.vividsolutions.jts.geom.Coordinate;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.mapfish.print.URIUtils;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.map.Scale;
 import org.springframework.http.client.ClientHttpRequest;
@@ -90,15 +89,15 @@ public abstract class TileCacheInformation {
      */
     @Nonnull
     public abstract ClientHttpRequest getTileRequest(URI commonURI, ReferencedEnvelope tileBounds,
-                                                     Dimension tileSizeOnScreen, int column, int row) throws IOException,
-            URISyntaxException;
+                                                     Dimension tileSizeOnScreen, int column, int row)
+            throws IOException, URISyntaxException;
 
     /**
      * Adds the query parameters common to every tile.
      *
      * @param result the query params added because of customParams or mergeableQueryParams.
      */
-    protected abstract void addCommonQueryParams(Multimap<String, String> result);
+    protected abstract void customizeQueryParams(Multimap<String, String> result);
 
     /**
      * Get the scale that the layer uses for its calculations.  The map isn't always at a resolution that a tiled layer
@@ -171,14 +170,14 @@ public abstract class TileCacheInformation {
     // CSOFF:DesignForExtension
     protected URI createCommonURI() throws URISyntaxException, UnsupportedEncodingException {
         // CSOFF:DesignForExtension
-        Multimap<String, String> queryParams = HashMultimap.create();
-
-        queryParams.putAll(this.params.getCustomParams());
-        queryParams.putAll(this.params.getMergeableParams());
-
-        addCommonQueryParams(queryParams);
-        final URI baseUri = this.params.getBaseUri();
-        return URIUtils.addParams(baseUri, queryParams, URIUtils.getParameters(baseUri).keySet());
+        return this.params.createCommonURI(new Function<Multimap<String, String>, Multimap<String, String>>() {
+            @Nullable
+            @Override
+            public Multimap<String, String> apply(@Nullable final Multimap<String, String> input) {
+                customizeQueryParams(input);
+                return input;
+            }
+        });
     }
 
     /**

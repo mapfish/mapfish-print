@@ -9,3 +9,5 @@ examples/build/
 core/build/
 
 
+core/gradle/
+core/gradlew

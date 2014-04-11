@@ -168,7 +168,7 @@ public class WMTSLayer extends AbstractTiledLayer {
         }
 
         @Override
-        protected void addCommonQueryParams(final Multimap<String, String> result) {
+        protected void customizeQueryParams(final Multimap<String, String> result) {
             //no common params for this protocol.
         }
 

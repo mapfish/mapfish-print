@@ -19,16 +19,20 @@
 
 package org.mapfish.print.map.tiled;
 
+import com.google.common.base.Function;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.json.JSONArray;
+import org.mapfish.print.URIUtils;
 import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.json.parser.HasDefaultValue;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
+import javax.annotation.Nullable;
 
 /**
  * Contains the standard parameters for tiled layers.
@@ -134,4 +138,29 @@ public abstract class AbstractTiledLayerParams {
 
         return params;
     }
+    /**
+     * Create a URI that is common to all image requests for this layer.  It will take the base url and append all mergeable and
+     * custom params to the base url.
+     *
+     * @param queryParamCustomization a function that can optionally modify the Multimap passed into the function and returns the
+     *                                Multimap that will contain all the query params that will be part of the URI.  If the function
+     *                                returns null then the original map will be used as the params.
+     */
+    public final URI createCommonURI(@Nullable final Function<Multimap<String, String>, Multimap<String, String>> queryParamCustomization)
+            throws URISyntaxException, UnsupportedEncodingException {
+        Multimap<String, String> queryParams = HashMultimap.create();
+
+        queryParams.putAll(this.getCustomParams());
+        queryParams.putAll(this.getMergeableParams());
+
+        if (queryParamCustomization != null) {
+            Multimap<String, String> result = queryParamCustomization.apply(queryParams);
+            if (result != null) {
+                queryParams = result;
+            }
+        }
+        final URI baseUri = this.getBaseUri();
+        return URIUtils.addParams(baseUri, queryParams, URIUtils.getParameters(baseUri).keySet());
+    }
+
 }

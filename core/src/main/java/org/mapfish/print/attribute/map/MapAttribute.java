@@ -225,9 +225,20 @@ public final class MapAttribute extends ReflectiveAttribute<MapAttribute.MapAttr
                             layerList.add(newLayer);
                         }
                     }
-                    break;
+                    return;
                 }
             }
+
+            StringBuilder message = new StringBuilder("\nLayer with type: '" + layerJson.getString(TYPE) + "' is not currently " +
+                                                      "supported.  Options include: ");
+            for (MapLayerFactoryPlugin mapLayerFactoryPlugin : layerParsers.values()) {
+                for (Object name : mapLayerFactoryPlugin.getTypeNames()) {
+                    message.append("\n");
+                    message.append("\t* ").append(name);
+                }
+            }
+
+            throw new IllegalArgumentException(message.toString());
         }
 
         private CoordinateReferenceSystem parseProjection() {
