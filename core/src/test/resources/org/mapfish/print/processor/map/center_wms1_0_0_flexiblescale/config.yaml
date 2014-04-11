@@ -1,0 +1,17 @@
+templates:
+  main: !template
+    attributes:
+      mapDef: !map
+        width: 630
+        height: 294
+        maxDpi: 400
+        zoomSnapTolerance: 0.025
+        zoomLevelSnapStrategy: CLOSEST_LOWER_SCALE_ON_TIE
+        zoomLevels: !zoomLevels
+          scales: [5000, 10000, 50000, 110000, 500000, 1000000]
+    processors:
+    - !createMap
+        inputMapper: {mapDef: map}
+        outputMapper: {image: mapOut}
+
+

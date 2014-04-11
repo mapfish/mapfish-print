@@ -24,4 +24,5 @@
     <bean id="gmlLayerParser" class="org.mapfish.print.map.geotools.GmlLayer$Plugin" />
     <bean id="geotiffLayerParser" class="org.mapfish.print.map.geotools.GeotiffLayer$Plugin" />
     <bean id="wmtsLayerParser" class="org.mapfish.print.map.tiled.wmts.WmtsLayerParserPlugin" />
+    <bean id="wmsLayerParser" class="org.mapfish.print.map.image.wms.WmsLayerFactoryPlugin" />
 </beans>

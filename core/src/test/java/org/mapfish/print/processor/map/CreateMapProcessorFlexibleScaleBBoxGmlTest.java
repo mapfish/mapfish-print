@@ -84,8 +84,6 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
         final JSONObject jsonLayer = requestData.getJSONObject("attributes").getJSONObject("mapDef").getJSONArray("layers")
                 .getJSONObject(0).getInternalObj();
 
-        //"ny-roads-3857-v32.gml",
-//        for (String gmlDataName : new String[]{"ny-roads-3857-v32.gml"}) {
         for (String gmlDataName : new String[]{"ny-roads-3857-v311.gml", "ny-roads-3857-v2.gml"}) {
             jsonLayer.remove("url");
             jsonLayer.accumulate("url", "http://" + host + ":23432" + "/gml/" + gmlDataName);

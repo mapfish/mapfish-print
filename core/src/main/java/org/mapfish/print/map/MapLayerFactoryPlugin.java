@@ -34,7 +34,8 @@ import javax.annotation.Nonnull;
 public interface MapLayerFactoryPlugin<Param> {
 
     /**
-     * Return a set of all the values the json 'type' property should have for this plugin to apply (case insensitive).
+     * Return a set of all the values the json 'type' property should have for this plugin to apply typenames <em>MUST</em> be
+     * lowercase.
      */
     Set<String> getTypeNames();
 
@@ -44,7 +45,8 @@ public interface MapLayerFactoryPlugin<Param> {
      * The object will be populated from the json.  Each public field will be populated by looking up the value in the json.
      * <p/>
      * The same mechanism used for reading from the JSON into the param object is also used for parsing the JSON into
-     * {@link org.mapfish.print.attribute.Attribute} value objects.  See {@link org.mapfish.print.attribute.Attribute#createValue()}
+     * {@link org.mapfish.print.attribute.Attribute} value objects.
+     * See {@link org.mapfish.print.attribute.ReflectiveAttribute#createValue(org.mapfish.print.config.Template)}()}
      * for details on how the parsing mechanism works.
      */
     Param createParameter();
