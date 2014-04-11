@@ -20,7 +20,7 @@
 package org.mapfish.print.attribute;
 
 import org.mapfish.print.config.Template;
-import org.mapfish.print.json.PJsonArray;
+import org.mapfish.print.wrapper.json.PJsonArray;
 
 /**
  * The attributes for {@link org.mapfish.print.processor.jasper.TableProcessor}.

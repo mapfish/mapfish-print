@@ -22,8 +22,10 @@ package org.mapfish.print.processor.jasper;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.io.Files;
+
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
+
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.HasConfiguration;
 import org.mapfish.print.config.WorkingDirectories;
@@ -124,6 +126,7 @@ public class JasperReportBuilder extends AbstractProcessor<Object, Void> impleme
         }
     }
 
+    @Override
     public final void setConfiguration(final Configuration configuration) {
         this.configuration = configuration;
     }

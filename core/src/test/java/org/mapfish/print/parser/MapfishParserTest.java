@@ -17,9 +17,10 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.json.parser;
+package org.mapfish.print.parser;
 
 import com.vividsolutions.jts.util.AssertionFailedException;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -27,8 +28,9 @@ import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.ExtraPropertyException;
 import org.mapfish.print.MissingPropertyException;
-import org.mapfish.print.json.PJsonArray;
-import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.wrapper.PObject;
+import org.mapfish.print.wrapper.json.PJsonArray;
+import org.mapfish.print.wrapper.json.PJsonObject;
 
 import java.io.IOException;
 import java.net.URL;
@@ -44,8 +46,8 @@ import static org.mapfish.print.AbstractMapfishSpringTest.parseJSONObjectFromFil
 /**
  * @author Jesse on 4/3/14.
  */
-public class MapfishJsonParserTest {
-    private final MapfishJsonParser mapfishJsonParser = new MapfishJsonParser();
+public class MapfishParserTest {
+    private final MapfishParser mapfishJsonParser = new MapfishParser();
 
     @Test
     public void testNullOptionalArray() throws Exception {
@@ -56,7 +58,6 @@ public class MapfishJsonParserTest {
         this.mapfishJsonParser.parse(true, json, p, "toIgnore");
         Assert.assertNull(p.sa);
     }
-
 
     @Test
     public void testEnum() throws Exception {
@@ -69,6 +70,7 @@ public class MapfishJsonParserTest {
         Assert.assertEquals(TestEnum.VAL1, p.e1);
         Assert.assertArrayEquals(new TestEnum[]{TestEnum.VAL2, TestEnum.VAL2}, p.e2);
     }
+
     @Test
     public void testChoice() throws Exception {
         TestChoiceClass p = new TestChoiceClass();
@@ -172,7 +174,7 @@ public class MapfishJsonParserTest {
     @Test
     public void testPopulateLayerParam() throws Exception {
         final TestParam param = new TestParam();
-        final PJsonObject json = parseJSONObjectFromFile(MapfishJsonParserTest.class, "mapAttributeTest.json");
+        final PJsonObject json = parseJSONObjectFromFile(MapfishParserTest.class, "mapAttributeTest.json");
 
         this.mapfishJsonParser.parse(true, json, param, "toIgnore");
 
@@ -239,7 +241,7 @@ public class MapfishJsonParserTest {
             while (missingParameterMatcher.find()) {
                 errorCount ++;
             }
-            int totalAttributes = JsonParserUtils.getAllAttributeNames(param.getClass()).size();
+            int totalAttributes = ParserUtils.getAllAttributeNames(param.getClass()).size();
             Assert.assertEquals(18 + totalAttributes, errorCount);
 
             Assert.assertEquals(18, e.getMissingProperties().size());
@@ -250,7 +252,7 @@ public class MapfishJsonParserTest {
     @Test
     public void testPopulateLayerParam_TooManyParams() throws Exception {
         final TestParam param = new TestParam();
-        final PJsonObject json = parseJSONObjectFromFile(MapfishJsonParserTest.class, "mapAttributeTest.json");
+        final PJsonObject json = parseJSONObjectFromFile(MapfishParserTest.class, "mapAttributeTest.json");
         json.getInternalObj().put("extraProperty", "value");
         json.getInternalObj().put("extraProperty2", "value2");
         try {
@@ -261,7 +263,7 @@ public class MapfishJsonParserTest {
             while (missingParameterMatcher.find()) {
                 errorCount ++;
             }
-            int totalAttributes = JsonParserUtils.getAllAttributeNames(param.getClass()).size();
+            int totalAttributes = ParserUtils.getAllAttributeNames(param.getClass()).size();
             Assert.assertEquals(2 + totalAttributes, errorCount);
 
             Assert.assertEquals(2, e.getExtraProperties().size());
@@ -270,9 +272,9 @@ public class MapfishJsonParserTest {
         }
     }
 
-    public static void populateLayerParam(PJsonObject requestData, Object param, String... extraNamesToIgnore)
+    public static void populateLayerParam(PObject requestData, Object param, String... extraNamesToIgnore)
             throws IOException, JSONException {
-        new MapfishJsonParser().parse(true, requestData, param, extraNamesToIgnore);
+        new MapfishParser().parse(true, requestData, param, extraNamesToIgnore);
     }
 
     static class TestParam {
@@ -289,7 +291,7 @@ public class MapfishJsonParserTest {
         public float littleF;
         public Boolean bigB;
         public boolean littleB;
-        public PJsonObject po;
+        public PObject po;
         public URL url;
         public PJsonArray pa;
         public String[] sa;

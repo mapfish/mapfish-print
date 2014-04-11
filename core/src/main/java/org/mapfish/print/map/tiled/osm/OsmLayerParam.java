@@ -22,9 +22,10 @@ package org.mapfish.print.map.tiled.osm;
 import com.google.common.collect.Ordering;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.util.Assert;
+
 import org.mapfish.print.Constants;
-import org.mapfish.print.json.parser.HasDefaultValue;
 import org.mapfish.print.map.tiled.AbstractTiledLayerParams;
+import org.mapfish.print.parser.HasDefaultValue;
 
 import java.awt.Dimension;
 import java.net.URI;

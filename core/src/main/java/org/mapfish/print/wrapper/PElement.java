@@ -17,29 +17,33 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.json;
+package org.mapfish.print.wrapper;
+
+import org.mapfish.print.wrapper.json.PJsonArray;
 
 /**
- * Common parent class for the JSON wrappers.
+ * Common parent class for the Json and Yaml wrappers.
+ *
+ * @author Stéphane Brunner on 11/04/14.
  */
-public abstract class PJsonElement {
-    private final PJsonElement parent;
+public abstract class PElement {
+    private final PElement parent;
     private final String contextName;
 
     /**
      * Constructor.
-     * 
+     *
      * @param parent the parent element
      * @param contextName the field name of this element in the parent.
      */
-    protected PJsonElement(final PJsonElement parent, final String contextName) {
+    protected PElement(final PElement parent, final String contextName) {
         this.parent = parent;
         this.contextName = contextName;
     }
 
     /**
      * Gets the string representation of the path to the current JSON element.
-     * 
+     *
      * @param key the leaf key
      */
     public final String getPath(final String key) {
@@ -49,6 +53,7 @@ public abstract class PJsonElement {
         result.append(getPathElement(key));
         return result.toString();
     }
+
     /**
      * Gets the string representation of the path to the current JSON element.
      */
@@ -81,7 +86,7 @@ public abstract class PJsonElement {
     }
 
 
-    public final PJsonElement getParent() {
+    public final PElement getParent() {
         return this.parent;
     }
 }

@@ -17,24 +17,8 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.json;
-
-import org.mapfish.print.PrintException;
-
 /**
- * Thrown when an attribute is missing in the spec.
+ * Wrappers from different sources, errors and utilities.
  */
-public class JsonMissingException extends PrintException {
+package org.mapfish.print.wrapper.multi;
 
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * Constructor.
-     *
-     * @param pJsonObject the json object queried
-     * @param key the key that was expected to exist.
-     */
-    public JsonMissingException(final PJsonElement pJsonObject, final String key) {
-        super("attribute [" + pJsonObject.getPath(key) + "] missing");
-    }
-}

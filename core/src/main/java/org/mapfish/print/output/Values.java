@@ -21,16 +21,20 @@ package org.mapfish.print.output;
 
 import org.mapfish.print.attribute.ArrayReflectiveAttribute;
 import org.mapfish.print.attribute.Attribute;
+import org.mapfish.print.attribute.AttributeWithDefaultConfig;
 import org.mapfish.print.attribute.PrimitiveAttribute;
 import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.json.PJsonArray;
-import org.mapfish.print.json.PJsonObject;
-import org.mapfish.print.json.parser.MapfishJsonParser;
+import org.mapfish.print.parser.MapfishParser;
+import org.mapfish.print.wrapper.PObject;
+import org.mapfish.print.wrapper.json.PJsonArray;
+import org.mapfish.print.wrapper.json.PJsonObject;
+import org.mapfish.print.wrapper.multi.PMultiObject;
 
 import java.lang.reflect.Array;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -65,7 +69,7 @@ public class Values {
      * @param template the template
      * @param parser the parser to use for parsing the request data.
      */
-    public Values(final PJsonObject requestData, final Template template, final MapfishJsonParser parser) {
+    public Values(final PJsonObject requestData, final Template template, final MapfishParser parser) {
 
         final PJsonObject jsonAttributes = requestData.getJSONObject("attributes");
 
@@ -80,7 +84,15 @@ public class Values {
                 boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
                 ReflectiveAttribute rAtt = (ReflectiveAttribute) attribute;
                 value = rAtt.createValue(template);
-                parser.parse(errorOnExtraParameters, jsonAttributes.getJSONObject(attributeName), value);
+                PObject pValue = jsonAttributes.getJSONObject(attributeName);
+                if (rAtt instanceof AttributeWithDefaultConfig<?>) {
+                    PObject[] pValues = {
+                            jsonAttributes.getJSONObject(attributeName),
+                            ((AttributeWithDefaultConfig<?>) rAtt).getDefaultValues()
+                    };
+                    pValue = new PMultiObject(pValues);
+                }
+                parser.parse(errorOnExtraParameters, pValue, value);
             } else if (attribute instanceof ArrayReflectiveAttribute) {
                 boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
                 ArrayReflectiveAttribute rAtt = (ArrayReflectiveAttribute) attribute;

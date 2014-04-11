@@ -24,8 +24,8 @@ import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
-import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.output.OutputFormat;
+import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Closeable;

@@ -22,6 +22,7 @@ package org.mapfish.print.processor;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Sets;
 import com.vividsolutions.jts.util.Assert;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.Field;
@@ -32,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.mapfish.print.json.parser.JsonParserUtils.getAllAttributes;
+import static org.mapfish.print.parser.ParserUtils.getAllAttributes;
 
 /**
  * Class for constructing {@link org.mapfish.print.processor.ProcessorDependencyGraph} instances.

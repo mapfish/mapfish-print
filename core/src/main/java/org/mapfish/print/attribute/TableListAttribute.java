@@ -20,8 +20,8 @@
 package org.mapfish.print.attribute;
 
 import org.mapfish.print.config.Template;
-import org.mapfish.print.json.PJsonArray;
-import org.mapfish.print.json.parser.HasDefaultValue;
+import org.mapfish.print.parser.HasDefaultValue;
+import org.mapfish.print.wrapper.json.PJsonArray;
 
 
 /**

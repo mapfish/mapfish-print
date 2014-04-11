@@ -19,6 +19,7 @@
 
 package org.mapfish.print.attribute;
 
+
 /**
  * Attribute that reads a string from the request data.
  */

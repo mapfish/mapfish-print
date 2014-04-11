@@ -22,16 +22,18 @@ package org.mapfish.print.map.tiled;
 import com.google.common.base.Function;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+
 import org.json.JSONArray;
 import org.mapfish.print.URIUtils;
-import org.mapfish.print.json.PJsonArray;
-import org.mapfish.print.json.PJsonObject;
-import org.mapfish.print.json.parser.HasDefaultValue;
+import org.mapfish.print.parser.HasDefaultValue;
+import org.mapfish.print.wrapper.json.PJsonArray;
+import org.mapfish.print.wrapper.json.PJsonObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
+
 import javax.annotation.Nullable;
 
 /**
@@ -150,8 +152,8 @@ public abstract class AbstractTiledLayerParams {
             throws URISyntaxException, UnsupportedEncodingException {
         Multimap<String, String> queryParams = HashMultimap.create();
 
-        queryParams.putAll(this.getCustomParams());
-        queryParams.putAll(this.getMergeableParams());
+        queryParams.putAll(getCustomParams());
+        queryParams.putAll(getMergeableParams());
 
         if (queryParamCustomization != null) {
             Multimap<String, String> result = queryParamCustomization.apply(queryParams);
@@ -159,7 +161,7 @@ public abstract class AbstractTiledLayerParams {
                 queryParams = result;
             }
         }
-        final URI baseUri = this.getBaseUri();
+        final URI baseUri = getBaseUri();
         return URIUtils.addParams(baseUri, queryParams, URIUtils.getParameters(baseUri).keySet());
     }
 

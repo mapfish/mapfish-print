@@ -17,7 +17,7 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.json.parser;
+package org.mapfish.print.parser;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
@@ -40,7 +40,7 @@ class RequiresTracker {
     private Map<String, Field> requirementToDependantMap = Maps.newHashMap();
     private Collection<Field> dependantsInJson = Lists.newArrayList();
     /**
-     * Check if field has the {@link org.mapfish.print.json.parser.Requires} annotation and registers it and its requirement.
+     * Check if field has the {@link org.mapfish.print.parser.Requires} annotation and registers it and its requirement.
      * @param field the field to inspect
      */
     public void register(final Field field) {
@@ -57,7 +57,7 @@ class RequiresTracker {
 
 
     /**
-     * Check if a field is part of a {@link org.mapfish.print.json.parser.Requires} relationship and mark the requirement as satisfied
+     * Check if a field is part of a {@link org.mapfish.print.parser.Requires} relationship and mark the requirement as satisfied
      * for the given field.
      *
      * @param field the field that is done.

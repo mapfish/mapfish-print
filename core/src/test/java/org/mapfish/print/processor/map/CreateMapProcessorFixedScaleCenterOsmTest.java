@@ -21,16 +21,17 @@ package org.mapfish.print.processor.map;
 
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
+
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.json.PJsonObject;
-import org.mapfish.print.json.parser.MapfishJsonParser;
 import org.mapfish.print.output.Values;
+import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.util.ImageSimilarity;
+import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
@@ -52,7 +53,7 @@ public class CreateMapProcessorFixedScaleCenterOsmTest extends AbstractMapfishSp
     @Autowired
     private TestHttpClientFactory requestFactory;
     @Autowired
-    private MapfishJsonParser jsonParser;
+    private MapfishParser parser;
 
     @Test
     public void testExecute() throws Exception {
@@ -96,7 +97,7 @@ public class CreateMapProcessorFixedScaleCenterOsmTest extends AbstractMapfishSp
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.jsonParser);
+        Values values = new Values(requestData, template, this.parser);
         template.getProcessorGraph().createTask(values).invoke();
 
         BufferedImage map = values.getObject("mapOut", BufferedImage.class);

@@ -20,6 +20,7 @@
 package org.mapfish.print.config;
 
 import com.codahale.metrics.MetricRegistry;
+
 import org.mapfish.print.attribute.PrimitiveAttribute;
 import org.springframework.beans.factory.annotation.Autowired;
 

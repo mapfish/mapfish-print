@@ -24,6 +24,7 @@ import com.google.common.base.Supplier;
 import com.google.common.io.CharSource;
 import com.google.common.io.Closer;
 import com.google.common.io.Files;
+
 import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -32,7 +33,7 @@ import org.geotools.styling.Style;
 import org.mapfish.print.Constants;
 import org.mapfish.print.FileUtils;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.json.parser.HasDefaultValue;
+import org.mapfish.print.parser.HasDefaultValue;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
 
@@ -46,6 +47,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
+
 import javax.annotation.Nonnull;
 
 /**

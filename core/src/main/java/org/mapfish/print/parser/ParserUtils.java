@@ -17,7 +17,7 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.json.parser;
+package org.mapfish.print.parser;
 
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
@@ -38,7 +38,7 @@ import javax.annotation.Nullable;
  *
  * @author Jesse on 3/30/14.
  */
-public final class JsonParserUtils {
+public final class ParserUtils {
     /**
      * A filter (for the get attribute methods) that selects only the attributes that are required and excludes all of
      * those with defaults, and therefore are considered optional.
@@ -87,7 +87,7 @@ public final class JsonParserUtils {
             return input.getName();
         }
     };
-    private JsonParserUtils() {
+    private ParserUtils() {
         // intentionally empty.
     }
 

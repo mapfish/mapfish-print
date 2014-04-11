@@ -23,8 +23,8 @@
 
 package org.mapfish.print.processor.jasper;
 
-import org.mapfish.print.json.PJsonArray;
-import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.wrapper.json.PJsonArray;
+import org.mapfish.print.wrapper.json.PJsonObject;
 
 import javax.swing.table.AbstractTableModel;
 
