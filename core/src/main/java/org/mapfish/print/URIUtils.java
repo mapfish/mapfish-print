@@ -259,5 +259,29 @@ public final class URIUtils {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * Set the replace of the uri and return the new URI.
+     *
+     * @param initialUri the starting URI, the URI to update
+     * @param path    the path to set on the baeURI
+     */
+    public static URI setPath(final URI initialUri, final String path) {
+        String finalPath = path;
+        if (!finalPath.startsWith("/")) {
+            finalPath = '/' + path;
+        }
+        try {
+            if (initialUri.getHost() == null && initialUri.getAuthority() != null) {
+                return new URI(initialUri.getScheme(), initialUri.getAuthority(), finalPath, initialUri.getQuery(),
+                        initialUri.getFragment());
+            } else {
+                return new URI(initialUri.getScheme(), initialUri.getUserInfo(), initialUri.getHost(), initialUri.getPort(),
+                        finalPath, initialUri.getQuery(), initialUri.getFragment());
+            }
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 
