@@ -178,4 +178,25 @@ public class URIUtilsTest {
         assertEquals("/p1/p2", updatedUri.getPath());
         assertEquals(9876, updatedUri.getPort());
     }
+
+    @Test
+    public void testSetPath() throws Exception {
+        URI initialUri = new URI("http://un:ps@server.com:9876/p1/p2?z=3,y=4#fragment");
+
+        assertEquals("http://un:ps@server.com:9876/np1/np2?z=3,y=4#fragment", URIUtils.setPath(initialUri, "/np1/np2").toString());
+        assertEquals("http://un:ps@server.com:9876/np1/np2?z=3,y=4#fragment", URIUtils.setPath(initialUri, "np1/np2").toString());
+        URI forceHostURI = new URI("http", "un:ps", "server.com", 9876, "/p1/p2", "z=3,y=4", "fragment");
+        assertEquals("http://un:ps@server.com:9876/np1/np2?z=3,y=4#fragment", URIUtils.setPath(forceHostURI, "np1/np2").toString());
+        URI forceAuthorityURI = new URI("http", "un:ps@server.com:9876", "/p1/p2", "z=3,y=4", "fragment");
+        assertEquals("http://un:ps@server.com:9876/np1/np2?z=3,y=4#fragment", URIUtils.setPath(forceAuthorityURI, "np1/np2").toString());
+
+        assertEquals("z=3,y=4", URIUtils.setPath(initialUri, "/p?y=2").getQuery());
+        assertTrue(URIUtils.setPath(initialUri, "/p?y=2").getPath().contains("p"));
+        assertTrue(URIUtils.setPath(initialUri, "/p?y=2").getPath().contains("y=2"));
+        assertEquals("fragment", URIUtils.setPath(initialUri, "/p#badFragment").getFragment());
+        assertTrue(URIUtils.setPath(initialUri, "/p#badFragment").getPath().contains("badFragment"));
+        assertTrue(URIUtils.setPath(initialUri, "/p#badFragment").getPath().contains("p"));
+
+
+    }
 }

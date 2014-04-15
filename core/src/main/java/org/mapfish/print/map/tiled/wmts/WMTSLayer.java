@@ -162,8 +162,7 @@ public class WMTSLayer extends AbstractTiledLayer {
             path = path.replace("{TileRow}", String.valueOf(row));
             path = path.replace("{TileCol}", String.valueOf(col));
 
-            uri = new URI(commonURI.getScheme(), commonURI.getUserInfo(), commonURI.getHost(), commonURI.getPort(),
-                    path, commonURI.getQuery(), commonURI.getFragment());
+            uri = URIUtils.setPath(commonURI, path);
             return uri;
         }
 
