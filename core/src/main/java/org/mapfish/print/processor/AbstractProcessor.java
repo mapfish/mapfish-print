@@ -21,13 +21,15 @@ package org.mapfish.print.processor;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+
 import org.mapfish.print.config.ConfigurationException;
-import org.mapfish.print.json.parser.JsonParserUtils;
+import org.mapfish.print.parser.ParserUtils;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -94,7 +96,7 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
         final In inputParameter = createInputParameter();
         final Set<String> allInputAttributeNames;
         if (inputParameter != null) {
-            allInputAttributeNames = JsonParserUtils.getAllAttributeNames(inputParameter.getClass());
+            allInputAttributeNames = ParserUtils.getAllAttributeNames(inputParameter.getClass());
         } else {
             allInputAttributeNames = Collections.emptySet();
         }
@@ -105,7 +107,7 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
             }
         }
 
-        Set<String> allOutputAttributeNames = JsonParserUtils.getAllAttributeNames(getOutputType());
+        Set<String> allOutputAttributeNames = ParserUtils.getAllAttributeNames(getOutputType());
         for (String outputAttributeName : this.outputMapper.keySet()) {
             if (!allOutputAttributeNames.contains(outputAttributeName)) {
                 errors.add(new ConfigurationException(outputAttributeName + " is not defined in processor '" + this + "' as an output " +

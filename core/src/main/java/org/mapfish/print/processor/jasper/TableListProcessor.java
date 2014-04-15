@@ -29,15 +29,18 @@ import ar.com.fdvs.dj.domain.constants.Border;
 import ar.com.fdvs.dj.domain.constants.Font;
 import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
 import ar.com.fdvs.dj.domain.constants.VerticalAlign;
+
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+
+import org.mapfish.print.attribute.TableListAttribute.TableListAttributeValue;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.HasConfiguration;
 import org.mapfish.print.config.WorkingDirectories;
-import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.wrapper.json.PJsonArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +52,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.mapfish.print.attribute.TableListAttribute.TableListAttributeValue;
 import static org.mapfish.print.processor.jasper.JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT;
 import static org.mapfish.print.processor.jasper.JasperReportBuilder.JASPER_REPORT_XML_FILE_EXT;
 
@@ -211,6 +213,7 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Inp
         this.dynamicReportDirectory = new File(this.workingDirectories.getWorking(this.configuration), dynamicReportDirectory);
     }
 
+    @Override
     public final void setConfiguration(final Configuration configuration) {
         this.configuration = configuration;
     }

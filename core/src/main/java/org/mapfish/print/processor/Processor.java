@@ -72,7 +72,7 @@ public interface Processor<In, Out> extends ConfigurationObject {
      * </li>
      * <li>
      * set the value on the instance created by this method.  If the value is null an exception will be thrown <em>UNLESS</em>
-     * the {@link org.mapfish.print.json.parser.HasDefaultValue} annotation is on the field for the property.
+     * the {@link org.mapfish.print.parser.HasDefaultValue} annotation is on the field for the property.
      * </li>
      * </ol>
      * <p/>

@@ -17,20 +17,20 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.json.parser;
+package org.mapfish.print.parser;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
 /**
- * Marks a Processor input parameter object setter method as being optional.  If there is no value for the property then no error
- * will be thrown when populating the method in
- * {@link org.mapfish.print.processor.ProcessorGraphNode#populateInputParameter(org.mapfish.print.processor.Processor,
- * org.mapfish.print.output.Values)}
- *
- * @author Jesse on 3/29/14.
+ * Represent the annotated field or one of the others in the same choice group is required.
+ * @author Jesse on 4/9/2014.
  */
 @Target(value = ElementType.FIELD)
 @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
-public @interface HasDefaultValue {
+public @interface OneOf {
+    /**
+     * The choice group id.  One of the options in the choice group must be present in the parsed JSON.
+     */
+    String value();
 }

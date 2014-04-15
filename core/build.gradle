@@ -11,6 +11,13 @@ task wrapper(type: Wrapper) {
     gradleVersion = '1.10'
 }
 
+tasks.withType(Compile) {
+    options.encoding = "utf-8"
+}
+tasks.withType(Javadoc) {
+    options.encoding = "utf-8"
+}
+
 configurations {
     compile.transitive = true
     compile.exclude module: 'jai_core'

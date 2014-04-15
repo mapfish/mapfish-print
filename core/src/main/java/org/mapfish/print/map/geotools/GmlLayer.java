@@ -21,6 +21,7 @@ package org.mapfish.print.map.geotools;
 
 import com.google.common.base.Function;
 import com.google.common.base.Supplier;
+
 import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -30,7 +31,7 @@ import org.geotools.xml.Parser;
 import org.mapfish.print.FileUtils;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.json.parser.HasDefaultValue;
+import org.mapfish.print.parser.HasDefaultValue;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -39,6 +40,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
+
 import javax.annotation.Nonnull;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;

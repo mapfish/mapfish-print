@@ -17,11 +17,15 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.json;
+package org.mapfish.print.wrapper.json;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
+import org.mapfish.print.wrapper.ObjectMissingException;
+import org.mapfish.print.wrapper.PAbstractObject;
+import org.mapfish.print.wrapper.PArray;
+import org.mapfish.print.wrapper.PElement;
+import org.mapfish.print.wrapper.PObject;
 
 import java.util.Iterator;
 
@@ -29,7 +33,7 @@ import java.util.Iterator;
  * Wrapper around the {@link org.json.JSONObject} class to have a better
  * error management.
  */
-public class PJsonObject extends PJsonElement {
+public class PJsonObject extends PAbstractObject {
     private final JSONObject obj;
     /**
      * Constructor.
@@ -40,6 +44,7 @@ public class PJsonObject extends PJsonElement {
     public PJsonObject(final JSONObject obj, final String contextName) {
         this(null, obj, contextName);
     }
+
     /**
      * Constructor.
      *
@@ -47,7 +52,7 @@ public class PJsonObject extends PJsonElement {
      * @param obj the internal json element
      * @param contextName the field name of this element in the parent.
      */
-    public PJsonObject(final PJsonElement parent, final JSONObject obj, final String contextName) {
+    public PJsonObject(final PElement parent, final JSONObject obj, final String contextName) {
         super(parent, contextName);
         this.obj = obj;
     }
@@ -56,93 +61,39 @@ public class PJsonObject extends PJsonElement {
      * Get a property as a string or null.
      * @param key the property name
      */
+    @Override
     public final String optString(final String key) {
-        return optString(key, null);
+        return this.obj.optString(key, null);
     }
 
     /**
-     * Get a property as a string or defaultValue.
-     * @param key the property name
-     * @param defaultValue the default value
-     */
-    public final String optString(final String key, final String defaultValue) {
-        return this.obj.optString(key, defaultValue);
-    }
-
-    /**
-     * Get a property as a string or throw an exception.
+     * Get a property as a int or null.
      * @param key the property name
      */
-    public final String getString(final String key) {
-        String result = this.obj.optString(key, null);
-        if (result == null) {
-            throw new JsonMissingException(this, key);
-        }
-        return result;
-    }
-
-    /**
-     * Get a property as a int or throw an exception.
-     * @param key the property name
-     */
-    public final int getInt(final String key) {
-        Integer result = this.obj.optInt(key, Integer.MIN_VALUE);
-        if (result == Integer.MIN_VALUE) {
-            throw new JsonMissingException(this, key);
-        }
-        return result;
-    }
-
-    /**
-     * Get a property as a int or MIN_VALUE.
-     * @param key the property name
-     */
+    @Override
     public final Integer optInt(final String key) {
         final int result = this.obj.optInt(key, Integer.MIN_VALUE);
         return result == Integer.MIN_VALUE ? null : result;
     }
-    /**
-     * Get a property as a int or default value.
-     * @param key the property name
-     * @param defaultValue the default value
-     */
-    public final int optInt(final String key, final int defaultValue) {
-        return this.obj.optInt(key, defaultValue);
-    }
 
     /**
-     * Get a property as a double or throw an exception.
+     * Get a property as a double or null.
      * @param key the property name
      */
-    public final double getDouble(final String key) {
+    @Override
+    public final Double optDouble(final String key) {
         double result = this.obj.optDouble(key, Double.NaN);
         if (Double.isNaN(result)) {
-            throw new JsonMissingException(this, key);
+            return null;
         }
         return result;
-    }
-
-    /**
-     * Get a property as a double or defaultValue.
-     * @param key the property name
-     * @param defaultValue the default value
-     */
-    public final double optDouble(final String key, final double defaultValue) {
-        return this.obj.optDouble(key, defaultValue);
-    }
-
-    /**
-     * Get a property as a float or throw an exception.
-     * @param key the property name
-     */
-    public final float getFloat(final String key) {
-        return (float) getDouble(key);
     }
 
     /**
      * Get a property as a float or null.
      * @param key the property name
      */
+    @Override
     public final Float optFloat(final String key) {
         double result = this.obj.optDouble(key, Double.NaN);
         if (Double.isNaN(result)) {
@@ -152,32 +103,12 @@ public class PJsonObject extends PJsonElement {
     }
 
     /**
-     * Get a property as a float or Default vaule.
-     * @param key the property name
-     * @param defaultValue default value
-     */
-    public final Float optFloat(final String key, final float defaultValue) {
-        return (float) this.obj.optDouble(key, defaultValue);
-    }
-
-    /**
-     * Get a property as a boolean or throw exception.
-     * @param key the property name
-     */
-    public final boolean getBool(final String key) {
-        try {
-            return this.obj.getBoolean(key);
-        } catch (JSONException e) {
-            throw new JsonMissingException(this, key);
-        }
-    }
-
-    /**
      * Get a property as a boolean or null.
      * @param key the property name
      */
+    @Override
     public final Boolean optBool(final String key) {
-        if (this.obj.optString(key) == null) {
+        if (this.obj.optString(key, null) == null) {
             return null;
         } else {
             return this.obj.optBoolean(key);
@@ -185,12 +116,21 @@ public class PJsonObject extends PJsonElement {
     }
 
     /**
-     * Get a property as a boolean or default value.
+     * Get a property as a object or null.
      * @param key the property name
-     * @param defaultValue the default
      */
-    public final boolean optBool(final String key, final boolean defaultValue) {
-        return this.obj.optBoolean(key, defaultValue);
+    @Override
+    public final PObject optObject(final String key) {
+        return optJSONObject(key);
+    }
+
+    /**
+     * Get a property as a array or null.
+     * @param key the property name
+     */
+    @Override
+    public final PArray optArray(final String key) {
+        return optJSONArray(key);
     }
 
     /**
@@ -209,7 +149,7 @@ public class PJsonObject extends PJsonElement {
     public final PJsonObject getJSONObject(final String key) {
         final JSONObject val = this.obj.optJSONObject(key);
         if (val == null) {
-            throw new JsonMissingException(this, key);
+            throw new ObjectMissingException(this, key);
         }
         return new PJsonObject(this, val, key);
     }
@@ -221,7 +161,7 @@ public class PJsonObject extends PJsonElement {
     public final PJsonArray getJSONArray(final String key) {
         final JSONArray val = this.obj.optJSONArray(key);
         if (val == null) {
-            throw new JsonMissingException(this, key);
+            throw new ObjectMissingException(this, key);
         }
         return new PJsonArray(this, val, key);
     }
@@ -252,6 +192,7 @@ public class PJsonObject extends PJsonElement {
      * Get an iterator of all keys in this objects.
      * @return The keys iterator
      */
+    @Override
     @SuppressWarnings("unchecked")
     public final Iterator<String> keys() {
         return this.obj.keys();
@@ -260,6 +201,7 @@ public class PJsonObject extends PJsonElement {
     /**
      * Get the number of properties in this object.
      */
+    @Override
     public final int size() {
         return this.obj.length();
     }
@@ -308,6 +250,7 @@ public class PJsonObject extends PJsonElement {
      * Check if the object has a property with the key.
      * @param key key to check for.
      */
+    @Override
     public final boolean has(final String key) {
         String result = this.obj.optString(key, null);
         return result != null;

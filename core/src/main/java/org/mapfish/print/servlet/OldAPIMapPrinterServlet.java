@@ -20,13 +20,14 @@
 package org.mapfish.print.servlet;
 
 import com.google.common.io.ByteStreams;
+
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
-import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.output.OutputFormat;
+import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

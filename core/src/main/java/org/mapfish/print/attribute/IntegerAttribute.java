@@ -19,6 +19,7 @@
 
 package org.mapfish.print.attribute;
 
+
 /**
  * An integer type attribute.
  */

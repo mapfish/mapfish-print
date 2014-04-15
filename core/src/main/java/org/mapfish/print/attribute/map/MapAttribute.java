@@ -21,17 +21,19 @@ package org.mapfish.print.attribute.map;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+
 import org.geotools.referencing.CRS;
-import org.mapfish.print.attribute.ReflectiveAttribute;
+import org.mapfish.print.attribute.AttributeWithDefaultConfig;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.json.PJsonArray;
-import org.mapfish.print.json.PJsonObject;
-import org.mapfish.print.json.parser.HasDefaultValue;
-import org.mapfish.print.json.parser.MapfishJsonParser;
-import org.mapfish.print.json.parser.OneOf;
-import org.mapfish.print.json.parser.Requires;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.map.Scale;
+import org.mapfish.print.parser.HasDefaultValue;
+import org.mapfish.print.parser.MapfishParser;
+import org.mapfish.print.parser.OneOf;
+import org.mapfish.print.parser.Requires;
+import org.mapfish.print.wrapper.PArray;
+import org.mapfish.print.wrapper.PObject;
+import org.mapfish.print.wrapper.yaml.PYamlObject;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -41,33 +43,42 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import java.awt.Dimension;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 /**
  * The attributes for {@link org.mapfish.print.processor.map.CreateMapProcessor}.
  */
-public final class MapAttribute extends ReflectiveAttribute<MapAttribute.MapAttributeValues> {
+public final class MapAttribute extends AttributeWithDefaultConfig<MapAttribute.MapAttributeValues> {
 
+    @SuppressWarnings("unused")
     private static final Logger LOGGER = LoggerFactory.getLogger(MapAttribute.class);
-
+    /**
+     * The key in the config.yaml file of the set of defaults values for this map.
+     */
+    static final String DEFAULTS = "defaults";
     private static final double DEFAULT_SNAP_TOLERANCE = 0.05;
 
     @Autowired
     private ApplicationContext applicationContext;
     @Autowired
-    private MapfishJsonParser mapfishJsonParser;
+    private MapfishParser mapfishJsonParser;
 
     private double maxDpi;
     private ZoomLevels zoomLevels;
     private double zoomSnapTolerance = DEFAULT_SNAP_TOLERANCE;
     private ZoomLevelSnapStrategy zoomLevelSnapStrategy;
+
+    private PYamlObject defaults = new PYamlObject(Collections.EMPTY_MAP, "mapAttribute");
+
     private int width;
     private int height;
 
     @Override
     public MapAttributeValues createValue(final Template template) {
-        return new MapAttributeValues(template, new Dimension(this.width, this.height));
+        MapAttributeValues result = new MapAttributeValues(template, new Dimension(this.width, this.height));
+        return result;
     }
 
     public void setMaxDpi(final double maxDpi) {
@@ -92,6 +103,14 @@ public final class MapAttribute extends ReflectiveAttribute<MapAttribute.MapAttr
 
     public void setZoomLevelSnapStrategy(final ZoomLevelSnapStrategy zoomLevelSnapStrategy) {
         this.zoomLevelSnapStrategy = zoomLevelSnapStrategy;
+    }
+
+    public void setDefaults(final Map<String, Object> defaults) {
+        this.defaults = new PYamlObject(defaults, "mapAttribute");
+    }
+    @Override
+    public PObject getDefaultValues() {
+        return this.defaults;
     }
 
     /**
@@ -136,7 +155,7 @@ public final class MapAttribute extends ReflectiveAttribute<MapAttribute.MapAttr
          * The json with all the layer information.  This will be parsed in postConstruct into a list of layers and
          * therefore this field should not normally be accessed.
          */
-        public PJsonArray layers;
+        public PArray layers;
         /**
          * Indicates if the map should adjust its scale/zoom level to be equal to one of those defined in the configuration file.
          * <p/>
@@ -185,8 +204,8 @@ public final class MapAttribute extends ReflectiveAttribute<MapAttribute.MapAttr
 
             for (int i = 0; i < this.layers.size(); i++) {
                 try {
-                    PJsonObject layerJson = this.layers.getJSONObject(i);
-                    parseSingleLayer(layerList, layerJson);
+                    PObject layer = this.layers.getObject(i);
+                    parseSingleLayer(layerList, layer);
                 } catch (Throwable throwable) {
                     throw new RuntimeException(throwable);
                 }
@@ -197,18 +216,18 @@ public final class MapAttribute extends ReflectiveAttribute<MapAttribute.MapAttr
 
         @SuppressWarnings("unchecked")
         private void parseSingleLayer(final List<MapLayer> layerList,
-                                      final PJsonObject layerJson) throws Throwable {
+                                      final PObject layer) throws Throwable {
 
             final Map<String, MapLayerFactoryPlugin> layerParsers =
                     MapAttribute.this.applicationContext.getBeansOfType(MapLayerFactoryPlugin.class);
             for (MapLayerFactoryPlugin layerParser : layerParsers.values()) {
-                final boolean layerApplies = layerParser.getTypeNames().contains(layerJson.getString(TYPE).toLowerCase());
+                final boolean layerApplies = layerParser.getTypeNames().contains(layer.getString(TYPE).toLowerCase());
                 if (layerApplies) {
                     Object param = layerParser.createParameter();
 
                     MapAttribute.this.mapfishJsonParser.parse(this.template.getConfiguration()
                                     .isThrowErrorOnExtraParameters(),
-                            layerJson, param, TYPE
+                            layer, param, TYPE
                     );
 
                     final MapLayer newLayer = layerParser.parse(this.template, param);
@@ -229,7 +248,7 @@ public final class MapAttribute extends ReflectiveAttribute<MapAttribute.MapAttr
                 }
             }
 
-            StringBuilder message = new StringBuilder("\nLayer with type: '" + layerJson.getString(TYPE) + "' is not currently " +
+            StringBuilder message = new StringBuilder("\nLayer with type: '" + layer.getString(TYPE) + "' is not currently " +
                                                       "supported.  Options include: ");
             for (MapLayerFactoryPlugin mapLayerFactoryPlugin : layerParsers.values()) {
                 for (Object name : mapLayerFactoryPlugin.getTypeNames()) {
@@ -321,7 +340,5 @@ public final class MapAttribute extends ReflectiveAttribute<MapAttribute.MapAttr
         public ZoomLevelSnapStrategy getZoomLevelSnapStrategy() {
             return MapAttribute.this.zoomLevelSnapStrategy;
         }
-
     }
-
 }

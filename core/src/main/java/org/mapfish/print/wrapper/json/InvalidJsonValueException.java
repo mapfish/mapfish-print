@@ -17,9 +17,10 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.json;
+package org.mapfish.print.wrapper.json;
 
 import org.mapfish.print.PrintException;
+import org.mapfish.print.wrapper.PElement;
 
 /**
  * Thrown when an attribute has an invalid value in the spec.
@@ -35,7 +36,7 @@ public class InvalidJsonValueException extends PrintException {
      * @param key key that was desired
      * @param value the illegal value obtained.
      */
-    public InvalidJsonValueException(final PJsonElement element, final String key, final Object value) {
+    public InvalidJsonValueException(final PElement element, final String key, final Object value) {
         this(element, key, value, null);
     }
 
@@ -47,7 +48,7 @@ public class InvalidJsonValueException extends PrintException {
      * @param value the illegal value obtained.
      * @param e the exception to wrap by this exception
      */
-    public InvalidJsonValueException(final PJsonElement element, final String key, final Object value, final Throwable e) {
+    public InvalidJsonValueException(final PElement element, final String key, final Object value, final Throwable e) {
         super(element.getPath(key) + " has an invalid value: " + value.toString(), e);
     }
 

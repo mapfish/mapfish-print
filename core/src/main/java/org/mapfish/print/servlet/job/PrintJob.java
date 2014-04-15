@@ -21,12 +21,13 @@ package org.mapfish.print.servlet.job;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+
 import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
-import org.mapfish.print.json.PJsonObject;
 import org.mapfish.print.servlet.BaseMapServlet;
 import org.mapfish.print.servlet.MapPrinterServlet;
+import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

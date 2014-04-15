@@ -20,8 +20,9 @@
 package org.mapfish.print.map.image.wms;
 
 import com.vividsolutions.jts.util.Assert;
-import org.mapfish.print.json.parser.HasDefaultValue;
+
 import org.mapfish.print.map.tiled.AbstractTiledLayerParams;
+import org.mapfish.print.parser.HasDefaultValue;
 
 import java.net.URI;
 import java.net.URISyntaxException;

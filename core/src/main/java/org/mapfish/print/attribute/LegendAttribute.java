@@ -20,7 +20,7 @@
 package org.mapfish.print.attribute;
 
 import org.mapfish.print.config.Template;
-import org.mapfish.print.json.parser.HasDefaultValue;
+import org.mapfish.print.parser.HasDefaultValue;
 
 import java.net.URL;
 

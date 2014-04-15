@@ -17,7 +17,7 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.json.parser;
+package org.mapfish.print.parser;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -38,7 +38,7 @@ final class OneOfTracker {
     private Map<String, OneOfGroup> mapping = Maps.newHashMap();
 
     /**
-     * Check if a field is part of a  {@link org.mapfish.print.json.parser.OneOf} relationship and add if necessary.
+     * Check if a field is part of a  {@link org.mapfish.print.parser.OneOf} relationship and add if necessary.
      *
      * @param field the field to register.
      */
@@ -55,7 +55,7 @@ final class OneOfTracker {
     }
 
     /**
-     * Check if a field is part of a {@link org.mapfish.print.json.parser.OneOf} relationship and mark the group as satisfied.
+     * Check if a field is part of a {@link org.mapfish.print.parser.OneOf} relationship and mark the group as satisfied.
      *
      * @param field the field that is done.
      */

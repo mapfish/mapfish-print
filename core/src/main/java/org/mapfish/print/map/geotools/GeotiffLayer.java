@@ -21,16 +21,18 @@ package org.mapfish.print.map.geotools;
 
 import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
+
 import jsr166y.ForkJoinPool;
+
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.styling.Style;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.json.parser.HasDefaultValue;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.map.style.StyleParser;
+import org.mapfish.print.parser.HasDefaultValue;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
@@ -40,6 +42,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+
 import javax.annotation.Nonnull;
 
 import static org.mapfish.print.Constants.RASTER_STYLE_NAME;

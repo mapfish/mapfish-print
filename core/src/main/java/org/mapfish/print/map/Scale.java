@@ -30,7 +30,7 @@ import javax.annotation.Nonnull;
  */
 public final class Scale {
     private static final String SCALE = "scale";
-    private double denominator;
+    private final double denominator;
 
     /**
      * Constructor.
@@ -81,12 +81,18 @@ public final class Scale {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Scale scale = (Scale) o;
 
-        if (Double.compare(scale.denominator, denominator) != 0) return false;
+        if (Double.compare(scale.denominator, denominator) != 0) {
+            return false;
+        }
 
         return true;
     }

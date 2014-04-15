@@ -26,13 +26,17 @@ import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.json.PJsonObject;
-import org.mapfish.print.json.parser.MapfishJsonParser;
+import org.mapfish.print.output.Values;
+import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest;
+import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.BASE_DIR;
 import static org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.loadJsonRequestData;
 
@@ -44,7 +48,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
     @Autowired
     private ConfigurationFactory configurationFactory;
     @Autowired
-    private MapfishJsonParser jsonParser;
+    private MapfishParser parser;
 
 
     @SuppressWarnings("unchecked")
@@ -64,6 +68,81 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
                 .MapAttributeValues>) template.getAttributes().get("mapDef");
 
         final MapAttribute.MapAttributeValues value = mapAttribute.createValue(template);
-        jsonParser.parse(true, attributesJson.getJSONObject("mapDef"), value);
+        parser.parse(true, attributesJson.getJSONObject("mapDef"), value);
+    }
+
+    @Test
+    public void testAttributesFromJson() throws Exception {
+        final File configFile = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, "map_attributes/config-json.yaml");
+        final Configuration config = configurationFactory.getConfig(configFile);
+        final Template template = config.getTemplate("main");
+        final PJsonObject pJsonObject = parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, "map_attributes/requestData-json.json");
+        final Values values = new Values(pJsonObject, template, new MapfishParser());
+        final MapAttribute.MapAttributeValues value = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
+
+        assertEquals(90.0, value.getDpi(), 0.1);
+        assertNotNull(value.getLayers());
+        String proj = value.getMapBounds().getProjection().toWKT();
+        String[] expected = {
+                "GEOGCS[\"WGS84\", ",
+                "  DATUM[\"WGS84\", ",
+                "    SPHEROID[\"WGS84\", 6378137.0, 298.257223563]], ",
+                "  PRIMEM[\"Greenwich\", 0.0], ",
+                "  UNIT[\"degree\", 0.017453292519943295], ",
+                "  AXIS[\"Geodetic longitude\", EAST], ",
+                "  AXIS[\"Geodetic latitude\", NORTH], ",
+                "  AUTHORITY[\"Web Map Service CRS\",\"84\"]]"};
+        assertArrayEquals(expected, proj.split("\\n"));
+        assertEquals(0.0, value.rotation, 0.1);
+    }
+
+    @Test
+    public void testAttributesFromYaml() throws Exception {
+        final File configFile = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, "map_attributes/config-yaml.yaml");
+        final Configuration config = configurationFactory.getConfig(configFile);
+        final Template template = config.getTemplate("main");
+        final PJsonObject pJsonObject = parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, "map_attributes/requestData-yaml.json");
+        final Values values = new Values(pJsonObject, template, new MapfishParser());
+        final MapAttribute.MapAttributeValues value = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
+
+        assertEquals(80.0, value.getDpi(), 0.1);
+        assertNotNull(value.getLayers());
+        String proj = value.getMapBounds().getProjection().toWKT();
+        String[] expected = {
+                "GEOGCS[\"WGS84\", ",
+                "  DATUM[\"WGS84\", ",
+                "    SPHEROID[\"WGS84\", 6378137.0, 298.257223563]], ",
+                "  PRIMEM[\"Greenwich\", 0.0], ",
+                "  UNIT[\"degree\", 0.017453292519943295], ",
+                "  AXIS[\"Geodetic longitude\", EAST], ",
+                "  AXIS[\"Geodetic latitude\", NORTH], ",
+                "  AUTHORITY[\"Web Map Service CRS\",\"84\"]]"};
+        assertArrayEquals(expected, proj.split("\\n"));
+        assertEquals(10.0, value.rotation, 0.1);
+    }
+
+    @Test
+    public void testAttributesFromBooth() throws Exception {
+        final File configFile = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, "map_attributes/config-yaml.yaml");
+        final Configuration config = configurationFactory.getConfig(configFile);
+        final Template template = config.getTemplate("main");
+        final PJsonObject pJsonObject = parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, "map_attributes/requestData-json.json");
+        final Values values = new Values(pJsonObject, template, new MapfishParser());
+        final MapAttribute.MapAttributeValues value = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
+
+        assertEquals(90.0, value.getDpi(), 0.1);
+        assertNotNull(value.getLayers());
+        String proj = value.getMapBounds().getProjection().toWKT();
+        String[] expected = {
+                "GEOGCS[\"WGS84\", ",
+                "  DATUM[\"WGS84\", ",
+                "    SPHEROID[\"WGS84\", 6378137.0, 298.257223563]], ",
+                "  PRIMEM[\"Greenwich\", 0.0], ",
+                "  UNIT[\"degree\", 0.017453292519943295], ",
+                "  AXIS[\"Geodetic longitude\", EAST], ",
+                "  AXIS[\"Geodetic latitude\", NORTH], ",
+                "  AUTHORITY[\"Web Map Service CRS\",\"84\"]]"};
+        assertArrayEquals(expected, proj.split("\\n"));
+        assertEquals(0.0, value.rotation, 0.1);
     }
 }

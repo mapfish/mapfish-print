@@ -23,6 +23,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.io.Closer;
 import com.vividsolutions.jts.util.Assert;
+
 import org.geotools.data.wms.request.GetMapRequest;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -40,6 +41,7 @@ import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.util.Collections;
 import java.util.concurrent.ExecutorService;
+
 import javax.imageio.ImageIO;
 
 /**

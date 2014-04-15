@@ -24,10 +24,10 @@ import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.json.PJsonObject;
-import org.mapfish.print.json.parser.MapfishJsonParser;
 import org.mapfish.print.output.Values;
+import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.util.ImageSimilarity;
+import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.image.BufferedImage;
@@ -44,14 +44,14 @@ public class CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest extends Abstrac
     @Autowired
     private ConfigurationFactory configurationFactory;
     @Autowired
-    private MapfishJsonParser jsonParser;
+    private MapfishParser parser;
 
     @Test
     public void testExecute() throws Exception {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.jsonParser);
+        Values values = new Values(requestData, template, this.parser);
         template.getProcessorGraph().createTask(values).invoke();
 
         BufferedImage map = values.getObject("mapOut", BufferedImage.class);

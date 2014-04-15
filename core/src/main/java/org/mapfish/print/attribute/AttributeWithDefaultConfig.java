@@ -17,24 +17,21 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.json.parser;
+package org.mapfish.print.attribute;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
+import org.mapfish.print.wrapper.PObject;
 
 /**
- * Indicates that if one field in a value/param object, then one or more other attributes are required.
- * <p/>
- * Note: If the field with the {@link org.mapfish.print.json.parser.Requires} annotation is NOT in the json
- * then the required are not required as long as they have the {@link org.mapfish.print.json.parser.HasDefaultValue} annotation.
+ * Used for attribute that can have defaults specified in the YAML config file.
+ * @author sbrunner
  *
- * @author Jesse on 4/9/2014.
+ * @param <Value>
  */
-@Target(value = ElementType.FIELD)
-@java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
-public @interface Requires {
+public abstract class AttributeWithDefaultConfig<Value> extends ReflectiveAttribute<Value> {
+
     /**
-     * The names of the required fields if this field is present.
+     * The YAML config default values.
+     * @return the default values
      */
-    String[] value();
+    public abstract PObject getDefaultValues();
 }

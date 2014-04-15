@@ -22,4 +22,4 @@
  *
  * @author Jesse on 4/9/2014.
  */
-package org.mapfish.print.json.parser;
+package org.mapfish.print.parser;

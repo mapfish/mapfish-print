@@ -20,19 +20,21 @@
 package org.mapfish.print.output;
 
 import jsr166y.ForkJoinPool;
+
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+
 import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.config.WorkingDirectories;
-import org.mapfish.print.json.PJsonObject;
-import org.mapfish.print.json.parser.MapfishJsonParser;
+import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
+import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +61,7 @@ public class JasperReportOutputFormat implements OutputFormat {
     @Autowired
     private WorkingDirectories workingDirectories;
     @Autowired
-    private MapfishJsonParser jsonParser;
+    private MapfishParser parser;
 
 
     @Override
@@ -79,7 +81,7 @@ public class JasperReportOutputFormat implements OutputFormat {
         final String templateName = requestData.getString(Constants.JSON_LAYOUT_KEY);
 
         final Template template = config.getTemplate(templateName);
-        final Values values = new Values(requestData, template, this.jsonParser);
+        final Values values = new Values(requestData, template, this.parser);
 
         final File jasperTemplateFile = new File(configDir, template.getJasperTemplate());
         final File jasperTemplateBuild = this.workingDirectories.getBuildFileFor(config, jasperTemplateFile,

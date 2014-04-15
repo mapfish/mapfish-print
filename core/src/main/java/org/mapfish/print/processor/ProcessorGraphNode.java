@@ -25,9 +25,11 @@ import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
+
 import jsr166y.RecursiveTask;
-import org.mapfish.print.json.parser.HasDefaultValue;
+
 import org.mapfish.print.output.Values;
+import org.mapfish.print.parser.HasDefaultValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,9 +42,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+
 import javax.annotation.Nonnull;
 
-import static org.mapfish.print.json.parser.JsonParserUtils.getAllAttributes;
+import static org.mapfish.print.parser.ParserUtils.getAllAttributes;
 
 /**
  * Represents one node in the Processor dependency graph ({@link ProcessorDependencyGraph}).

@@ -17,20 +17,24 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.json.parser;
+package org.mapfish.print.parser;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
 /**
- * Represent the annotated field or one of the others in the same choice group is required.
+ * Indicates that if one field in a value/param object, then one or more other attributes are required.
+ * <p/>
+ * Note: If the field with the {@link org.mapfish.print.parser.Requires} annotation is NOT in the json
+ * then the required are not required as long as they have the {@link org.mapfish.print.parser.HasDefaultValue} annotation.
+ *
  * @author Jesse on 4/9/2014.
  */
 @Target(value = ElementType.FIELD)
 @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
-public @interface OneOf {
+public @interface Requires {
     /**
-     * The choice group id.  One of the options in the choice group must be present in the parsed JSON.
+     * The names of the required fields if this field is present.
      */
-    String value();
+    String[] value();
 }

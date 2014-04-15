@@ -17,16 +17,17 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.json.parser;
+package org.mapfish.print.parser;
 
 import com.google.common.base.Predicates;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
 import org.mapfish.print.ExtraPropertyException;
 import org.mapfish.print.MissingPropertyException;
-import org.mapfish.print.json.JsonMissingException;
-import org.mapfish.print.json.PJsonArray;
-import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.wrapper.ObjectMissingException;
+import org.mapfish.print.wrapper.PArray;
+import org.mapfish.print.wrapper.PObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +42,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-import static org.mapfish.print.json.parser.JsonParserUtils.FILTER_NON_FINAL_FIELDS;
-import static org.mapfish.print.json.parser.JsonParserUtils.getAllAttributeNames;
-import static org.mapfish.print.json.parser.JsonParserUtils.getAttributeNames;
+import static org.mapfish.print.parser.ParserUtils.FILTER_NON_FINAL_FIELDS;
+import static org.mapfish.print.parser.ParserUtils.getAllAttributeNames;
+import static org.mapfish.print.parser.ParserUtils.getAttributeNames;
 
 /**
  * This class parses json parameter objects into the parameter object taken by {@link org.mapfish.print.map.MapLayerFactoryPlugin}
@@ -59,8 +60,8 @@ import static org.mapfish.print.json.parser.JsonParserUtils.getAttributeNames;
  * @see org.mapfish.print.attribute.ReflectiveAttribute
  * @see org.mapfish.print.map.MapLayerFactoryPlugin
  */
-public final class MapfishJsonParser {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MapfishJsonParser.class);
+public final class MapfishParser {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapfishParser.class);
     private static final String POST_CONSTRUCT_METHOD_NAME = "postConstruct";
 
     /**
@@ -74,11 +75,11 @@ public final class MapfishJsonParser {
      *                               the property has to be there for {@link org.mapfish.print.attribute.map.MapAttribute} to
      *                               be able to choose the correct plugin.
      */
-    public void parse(final boolean errorOnExtraProperties, final PJsonObject requestData, final Object objectToPopulate,
+    public void parse(final boolean errorOnExtraProperties, final PObject requestData, final Object objectToPopulate,
                       final String... extraPropertyToIgnore) {
         checkForExtraProperties(errorOnExtraProperties, objectToPopulate.getClass(), requestData, extraPropertyToIgnore);
 
-        final Collection<Field> allAttributes = JsonParserUtils.getAttributes(objectToPopulate.getClass(), FILTER_NON_FINAL_FIELDS);
+        final Collection<Field> allAttributes = ParserUtils.getAttributes(objectToPopulate.getClass(), FILTER_NON_FINAL_FIELDS);
         Map<String, Class<?>> missingProperties = Maps.newHashMap();
 
         final OneOfTracker oneOfTracker = new OneOfTracker();
@@ -114,7 +115,7 @@ public final class MapfishJsonParser {
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
-            } catch (JsonMissingException e) {
+            } catch (ObjectMissingException e) {
                 final HasDefaultValue hasDefaultValue = property.getAnnotation(HasDefaultValue.class);
                 final OneOf oneOf = property.getAnnotation(OneOf.class);
                 if (hasDefaultValue == null && oneOf == null) {
@@ -151,7 +152,7 @@ public final class MapfishJsonParser {
     }
 
     private void checkForExtraProperties(final boolean errorOnExtraProperties, final Class<?> paramClass,
-                                         final PJsonObject layerJson, final String[] extraPropertyToIgnore) {
+                                         final PObject layer, final String[] extraPropertyToIgnore) {
         final Collection<String> acceptableKeyValues = Sets.newHashSet();
         for (String name : getAttributeNames(paramClass, FILTER_NON_FINAL_FIELDS)) {
             acceptableKeyValues.add(name.toLowerCase());
@@ -164,7 +165,7 @@ public final class MapfishJsonParser {
 
         Collection<String> extraProperties = Sets.newHashSet();
         @SuppressWarnings("unchecked")
-        final Iterator<String> keys = layerJson.getInternalObj().keys();
+        final Iterator<String> keys = layer.keys();
         while (keys.hasNext()) {
             String next = keys.next();
             if (!acceptableKeyValues.contains(next.toLowerCase())) {
@@ -172,7 +173,7 @@ public final class MapfishJsonParser {
             }
         }
         if (!extraProperties.isEmpty()) {
-            String msg = "Extra properties were found in the request data at: " + layerJson.getCurrentPath() + ": ";
+            String msg = "Extra properties were found in the request data at: " + layer.getCurrentPath() + ": ";
             ExtraPropertyException exception = new ExtraPropertyException(msg, extraProperties, getAttributeNames(paramClass,
                     Predicates.<Field>alwaysTrue()));
             if (errorOnExtraProperties) {
@@ -185,55 +186,55 @@ public final class MapfishJsonParser {
 
 
     private Object parseValue(final boolean errorOnExtraProperties, final String[] extraPropertyToIgnore, final Class<?> type,
-                              final String fieldName, final PJsonObject layerJson) throws
+                              final String fieldName, final PObject layer) throws
             UnsupportedTypeException {
         String name = fieldName;
-        if (!layerJson.has(name) && layerJson.has(name.toLowerCase())) {
+        if (!layer.has(name) && layer.has(name.toLowerCase())) {
             name = name.toLowerCase();
         }
 
         Object value;
         if (type == String.class) {
-            value = layerJson.getString(name);
+            value = layer.getString(name);
         } else if (type == Integer.class || type == int.class) {
-            value = layerJson.getInt(name);
+            value = layer.getInt(name);
         } else if (type == Double.class || type == double.class) {
-            value = layerJson.getDouble(name);
+            value = layer.getDouble(name);
         } else if (type == Float.class || type == float.class) {
-            value = layerJson.getFloat(name);
+            value = layer.getFloat(name);
         } else if (type == Boolean.class || type == boolean.class) {
-            value = layerJson.getBool(name);
-        } else if (type == PJsonObject.class) {
-            value = layerJson.getJSONObject(name);
-        } else if (type == PJsonArray.class) {
-            value = layerJson.getJSONArray(name);
+            value = layer.getBool(name);
+        } else if (PObject.class.isAssignableFrom(type)) {
+            value = layer.getObject(name);
+        } else if (PArray.class.isAssignableFrom(type)) {
+            value = layer.getArray(name);
         } else if (type == URL.class) {
             try {
-                value = new URL(layerJson.getString(name));
+                value = new URL(layer.getString(name));
             } catch (MalformedURLException e) {
                 throw new RuntimeException(e);
             }
         } else if (type.isArray()) {
-            final PJsonArray jsonArray = layerJson.getJSONArray(name);
-            value = Array.newInstance(type.getComponentType(), jsonArray.size());
+            final PArray array = layer.getArray(name);
+            value = Array.newInstance(type.getComponentType(), array.size());
 
-            for (int i = 0; i < jsonArray.size(); i++) {
-                Object arrayValue = parseArrayValue(errorOnExtraProperties, extraPropertyToIgnore, type.getComponentType(), i, jsonArray);
+            for (int i = 0; i < array.size(); i++) {
+                Object arrayValue = parseArrayValue(errorOnExtraProperties, extraPropertyToIgnore, type.getComponentType(), i, array);
                 if (arrayValue == null) {
-                    throw new IllegalArgumentException("Arrays cannot have null values in them.  Error found with: " + jsonArray +
+                    throw new IllegalArgumentException("Arrays cannot have null values in them.  Error found with: " + array +
                                                        " when being converted to a " + type.getComponentType());
                 }
                 Array.set(value, i, arrayValue);
             }
         } else if (type.isEnum()) {
-            value = parseEnum(type, layerJson.getPath(fieldName), layerJson.getString(name));
+            value = parseEnum(type, layer.getPath(fieldName), layer.getString(name));
         } else {
             try {
                 value = type.newInstance();
-                PJsonObject jsonObject = layerJson.getJSONObject(name);
-                parse(errorOnExtraProperties, jsonObject, value, extraPropertyToIgnore);
+                PObject object = layer.getObject(name);
+                parse(errorOnExtraProperties, object, value, extraPropertyToIgnore);
             } catch (InstantiationException e) {
-                throw new UnsupportedTypeException(type);
+                throw new UnsupportedTypeException(type, e);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
@@ -270,38 +271,38 @@ public final class MapfishJsonParser {
     }
 
     private Object parseArrayValue(final boolean errorOnExtraProperties, final String[] extraPropertyToIgnore, final Class<?> type,
-                                   final int i, final PJsonArray jsonArray) throws UnsupportedTypeException {
+                                   final int i, final PArray array) throws UnsupportedTypeException {
 
         Object value;
         if (type == String.class) {
-            value = jsonArray.getString(i);
+            value = array.getString(i);
         } else if (type == Integer.class || type == int.class) {
-            value = jsonArray.getInt(i);
+            value = array.getInt(i);
         } else if (type == Double.class || type == double.class) {
-            value = jsonArray.getDouble(i);
+            value = array.getDouble(i);
         } else if (type == Float.class || type == float.class) {
-            value = jsonArray.getFloat(i);
+            value = array.getFloat(i);
         } else if (type == Boolean.class || type == boolean.class) {
-            value = jsonArray.getBool(i);
-        } else if (type == PJsonObject.class) {
-            value = jsonArray.getJSONObject(i);
-        } else if (type == PJsonArray.class) {
-            value = jsonArray.getJSONArray(i);
+            value = array.getBool(i);
+        } else if (PObject.class.isAssignableFrom(type)) {
+            value = array.getObject(i);
+        } else if (PArray.class.isAssignableFrom(type)) {
+            value = array.getArray(i);
         } else if (type == URL.class) {
             try {
-                value = new URL(jsonArray.getString(i));
+                value = new URL(array.getString(i));
             } catch (MalformedURLException e) {
                 throw new RuntimeException(e);
             }
         } else if (type.isEnum()) {
-            value = parseEnum(type, jsonArray.getPath("" + i), jsonArray.getString(i));
+            value = parseEnum(type, array.getPath("" + i), array.getString(i));
         } else {
             try {
                 value = type.newInstance();
-                PJsonObject jsonObject = jsonArray.getJSONObject(i);
-                parse(errorOnExtraProperties, jsonObject, value, extraPropertyToIgnore);
+                PObject object = array.getObject(i);
+                parse(errorOnExtraProperties, object, value, extraPropertyToIgnore);
             } catch (InstantiationException e) {
-                throw new UnsupportedTypeException(type);
+                throw new UnsupportedTypeException(type, e);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
@@ -317,7 +318,7 @@ public final class MapfishJsonParser {
      * @param valueClass  the type to get
      * @param requestData the data to retrieve the value from
      */
-    public Object parsePrimitive(final String fieldName, final Class valueClass, final PJsonObject requestData) {
+    public Object parsePrimitive(final String fieldName, final Class valueClass, final PObject requestData) {
         try {
             return parseValue(false, new String[0], valueClass, fieldName, requestData);
         } catch (UnsupportedTypeException e) {
@@ -344,7 +345,8 @@ public final class MapfishJsonParser {
     private static final class UnsupportedTypeException extends Exception {
         private final Class<?> type;
 
-        private UnsupportedTypeException(final Class<?> type) {
+        private UnsupportedTypeException(final Class<?> type, final Exception cause) {
+            super(cause);
             this.type = type;
         }
     }

@@ -69,5 +69,5 @@
     <bean id="configuration" class="org.mapfish.print.config.Configuration" scope="prototype"/>
 
     <bean id="styleParser" class="org.mapfish.print.map.style.StyleParser" />
-    <bean id="jsonParser" class="org.mapfish.print.json.parser.MapfishJsonParser" />
+    <bean id="parser" class="org.mapfish.print.parser.MapfishParser" />
 </beans>

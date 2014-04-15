@@ -20,9 +20,10 @@
 package org.mapfish.print.processor.jasper;
 
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+
 import org.mapfish.print.attribute.TableAttribute.TableAttributeValue;
-import org.mapfish.print.json.PJsonArray;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.wrapper.json.PJsonArray;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,8 +59,7 @@ public class TableProcessor extends AbstractProcessor<TableProcessor.Input, Tabl
 
         final String[] jsonColumns = jsonTable.columns;
         final PJsonArray[] jsonData = jsonTable.data;
-        for (int i = 0; i < jsonData.length; i++) {
-            final PJsonArray jsonRow = jsonData[i];
+        for (final PJsonArray jsonRow : jsonData) {
             final Map<String, String> row = new HashMap<String, String>();
             for (int j = 0; j < jsonRow.size(); j++) {
                 row.put(jsonColumns[j], jsonRow.getString(j));

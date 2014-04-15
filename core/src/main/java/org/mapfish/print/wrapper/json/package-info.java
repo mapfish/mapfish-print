@@ -20,5 +20,5 @@
 /**
  * Json wrappers, errors and utilities.
  */
-package org.mapfish.print.json;
+package org.mapfish.print.wrapper.json;
 

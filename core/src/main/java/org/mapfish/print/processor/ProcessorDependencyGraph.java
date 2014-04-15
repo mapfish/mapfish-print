@@ -22,7 +22,9 @@ package org.mapfish.print.processor;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
 import jsr166y.RecursiveTask;
+
 import org.mapfish.print.output.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,10 +35,11 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.Nonnull;
 
-import static org.mapfish.print.json.parser.JsonParserUtils.FILTER_ONLY_REQUIRED_ATTRIBUTES;
-import static org.mapfish.print.json.parser.JsonParserUtils.getAttributeNames;
+import static org.mapfish.print.parser.ParserUtils.FILTER_ONLY_REQUIRED_ATTRIBUTES;
+import static org.mapfish.print.parser.ParserUtils.getAttributeNames;
 
 /**
  * Represents a graph of the processors dependencies.  The root nodes can execute in parallel but processors with

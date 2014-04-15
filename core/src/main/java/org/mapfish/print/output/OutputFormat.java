@@ -20,7 +20,7 @@
 package org.mapfish.print.output;
 
 import org.mapfish.print.config.Configuration;
-import org.mapfish.print.json.PJsonObject;
+import org.mapfish.print.wrapper.json.PJsonObject;
 
 import java.io.File;
 import java.io.OutputStream;

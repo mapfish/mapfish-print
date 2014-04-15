@@ -22,12 +22,12 @@ package org.mapfish.print.attribute;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.json.parser.JsonParserUtils;
+import org.mapfish.print.parser.ParserUtils;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
 
-import static org.mapfish.print.json.parser.MapfishJsonParser.stringRepresentation;
+import static org.mapfish.print.parser.MapfishParser.stringRepresentation;
 
 /**
  * An attribute whose type is an object that will be auto-populated from the json based on the public fields of the value object.
@@ -48,10 +48,10 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
      * <p/>
      * The object will be populated from the json.  Each public field will be populated by looking up the value in the json.
      * <p/>
-     * If a field in the object has the {@link org.mapfish.print.json.parser.HasDefaultValue} annotation then no exception
+     * If a field in the object has the {@link org.mapfish.print.parser.HasDefaultValue} annotation then no exception
      * will be thrown if the json does not contain a value.
      * <p/>
-     * Fields in the object with the {@link org.mapfish.print.json.parser.OneOf} annotation must have one of the fields in the
+     * Fields in the object with the {@link org.mapfish.print.parser.OneOf} annotation must have one of the fields in the
      * request data.
      * <p/>
      * <ul>
@@ -72,7 +72,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
      * <li>array of any of the above (String[], boolean[], PJsonObject[], ...)</li>
      * </ul>
      * <p/>
-     * If there is a public <code>{@value org.mapfish.print.json.parser.MapfishJsonParser#POST_CONSTRUCT_METHOD_NAME}()</code>
+     * If there is a public <code>{@value org.mapfish.print.json.parser.MapfishParser#POST_CONSTRUCT_METHOD_NAME}()</code>
      * method then it will be called after the fields are all set.
      * <p/>
      * In the case where the a parameter type is a normal POJO (not a special case like PJsonObject, URL, enum, double, etc...)
@@ -95,7 +95,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
      * The public (non-final) mandatory fields are written as part of clientParams and are written with the field name as the key and
      * the field type as the value.
      * <p/>
-     * The public (non-final) {@link org.mapfish.print.json.parser.HasDefaultValue} fields are written as part of clientOptions and are
+     * The public (non-final) {@link org.mapfish.print.parser.HasDefaultValue} fields are written as part of clientOptions and are
      * written with the field name as the key and an object as a value with a type property with the type and a default property
      * containing the default value.
      *
@@ -108,8 +108,8 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
         try {
             final Value exampleValue = createValue(template);
             json.key("name").value(stringRepresentation(exampleValue.getClass()));
-            final Collection<Field> finalFields = JsonParserUtils.getAttributes(exampleValue.getClass(),
-                    JsonParserUtils.FILTER_FINAL_FIELDS);
+            final Collection<Field> finalFields = ParserUtils.getAttributes(exampleValue.getClass(),
+                    ParserUtils.FILTER_FINAL_FIELDS);
             if (!finalFields.isEmpty()) {
                 json.object();
                 for (Field attribute : finalFields) {
@@ -119,8 +119,8 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
             }
 
             json.key("clientParams");
-            final Collection<Field> mutableFields = JsonParserUtils.getAttributes(exampleValue.getClass(),
-                    JsonParserUtils.FILTER_ONLY_REQUIRED_ATTRIBUTES);
+            final Collection<Field> mutableFields = ParserUtils.getAttributes(exampleValue.getClass(),
+                    ParserUtils.FILTER_ONLY_REQUIRED_ATTRIBUTES);
             if (!mutableFields.isEmpty()) {
                 json.object();
                 for (Field attribute : mutableFields) {
@@ -130,8 +130,8 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
             }
 
             json.key("clientOptions");
-            final Collection<Field> hasDefaultFields = JsonParserUtils.getAttributes(exampleValue.getClass(),
-                    JsonParserUtils.FILTER_HAS_DEFAULT_ATTRIBUTES);
+            final Collection<Field> hasDefaultFields = ParserUtils.getAttributes(exampleValue.getClass(),
+                    ParserUtils.FILTER_HAS_DEFAULT_ATTRIBUTES);
             if (!hasDefaultFields.isEmpty()) {
                 json.object();
                 for (Field attribute : hasDefaultFields) {
