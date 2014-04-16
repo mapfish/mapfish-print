@@ -21,31 +21,15 @@ package org.mapfish.print.map.geotools;
 
 import com.google.common.base.Function;
 import com.google.common.base.Supplier;
-import com.google.common.io.CharSource;
-import com.google.common.io.Closer;
-import com.google.common.io.Files;
 
 import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.styling.Style;
-import org.mapfish.print.Constants;
-import org.mapfish.print.FileUtils;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.HasDefaultValue;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.client.ClientHttpResponse;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.concurrent.ExecutorService;
 
 import javax.annotation.Nonnull;
@@ -77,8 +61,6 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
         private static final String TYPE = "geojson";
         private static final String COMPATIBILITY_TYPE = "vector";
 
-        private final FeatureJSON geoJsonReader = new FeatureJSON();
-
         /**
          * Constructor.
          */
@@ -101,62 +83,19 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
         }
 
         private Supplier<FeatureSource> createFeatureSourceSupplier(final Template template, final String geoJsonString) {
+            final FeaturesParser parser = new FeaturesParser(Plugin.this.httpRequestFactory);
             return new Supplier<FeatureSource>() {
                 @Override
                 public FeatureSource get() {
                     SimpleFeatureCollection featureCollection;
                     try {
-                        featureCollection = treatStringAsURL(template, geoJsonString);
-                        if (featureCollection == null) {
-                            featureCollection = treatStringAsGeoJson(geoJsonString);
-                        }
+                        featureCollection = parser.autoTreat(template, geoJsonString);
                         return new CollectionFeatureSource(featureCollection);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                 }
             };
-        }
-
-        private SimpleFeatureCollection treatStringAsURL(final Template template, final String geoJsonString) throws IOException {
-            URL url;
-            try {
-                url = FileUtils.testForLegalFileUrl(template.getConfiguration(), new URL(geoJsonString));
-            } catch (MalformedURLException e) {
-                return null;
-            }
-
-            Closer closer = Closer.create();
-            try {
-                Reader input;
-                if (url.getProtocol().equalsIgnoreCase("file")) {
-                    final CharSource charSource = Files.asCharSource(new File(url.getFile()), Constants.DEFAULT_CHARSET);
-                    input = closer.register(charSource.openBufferedStream());
-                } else {
-                    final ClientHttpResponse response = closer.register(this.httpRequestFactory.createRequest(url.toURI(),
-                            HttpMethod.GET).execute());
-
-                    input = closer.register(new BufferedReader(new InputStreamReader(response.getBody(), Constants.DEFAULT_CHARSET)));
-                }
-                return (SimpleFeatureCollection) this.geoJsonReader.readFeatureCollection(input);
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
-            } finally {
-                closer.close();
-            }
-        }
-
-        private SimpleFeatureCollection treatStringAsGeoJson(final String geoJsonString) throws IOException {
-            final byte[] bytes = geoJsonString.getBytes(Constants.DEFAULT_ENCODING);
-            ByteArrayInputStream input = null;
-            try {
-                input = new ByteArrayInputStream(bytes);
-                return (SimpleFeatureCollection) this.geoJsonReader.readFeatureCollection(input);
-            } finally {
-                if (input != null) {
-                    input.close();
-                }
-            }
         }
     }
 

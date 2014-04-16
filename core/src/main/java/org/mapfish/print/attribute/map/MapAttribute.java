@@ -108,6 +108,7 @@ public final class MapAttribute extends AttributeWithDefaultConfig<MapAttribute.
     public void setDefaults(final Map<String, Object> defaults) {
         this.defaults = new PYamlObject(defaults, "mapAttribute");
     }
+    
     @Override
     public PObject getDefaultValues() {
         return this.defaults;

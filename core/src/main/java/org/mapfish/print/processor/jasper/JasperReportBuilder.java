@@ -118,7 +118,7 @@ public class JasperReportBuilder extends AbstractProcessor<Object, Void> impleme
                                                + this.directory + ".\nConfiguration contained value "
                                                + directory + " which is supposed to be relative to configuration directory");
         }
-
+        
         if (!this.directory.getAbsolutePath().startsWith(this.configuration.getDirectory().getAbsolutePath())) {
             throw new IllegalArgumentException("All files and directories must be contained in the configuration directory" +
                                                " the directory provided in the configuration breaks that contract: " + directory

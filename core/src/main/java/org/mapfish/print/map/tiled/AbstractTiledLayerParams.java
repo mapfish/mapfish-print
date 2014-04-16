@@ -70,6 +70,8 @@ public abstract class AbstractTiledLayerParams {
      */
     @HasDefaultValue
     public PJsonObject customParams;
+    private final Multimap<String, String> additionalCustomParam = HashMultimap.create();
+
     /**
      * Custom query parameters that can be merged if multiple layers are merged together into a single request.
      * <p/>
@@ -107,7 +109,9 @@ public abstract class AbstractTiledLayerParams {
      * Read the {@link #customParams} into a Multimap.
      */
     public final Multimap<String, String> getCustomParams() {
-        return convertToMultiMap(this.customParams);
+        Multimap<String, String> result = convertToMultiMap(this.customParams);
+        result.putAll(this.additionalCustomParam);
+        return result;
     }
 
     /**
@@ -140,6 +144,7 @@ public abstract class AbstractTiledLayerParams {
 
         return params;
     }
+
     /**
      * Create a URI that is common to all image requests for this layer.  It will take the base url and append all mergeable and
      * custom params to the base url.
@@ -165,4 +170,12 @@ public abstract class AbstractTiledLayerParams {
         return URIUtils.addParams(baseUri, queryParams, URIUtils.getParameters(baseUri).keySet());
     }
 
+    /**
+     * Set a custom parameter.
+     * @param name the parameter name
+     * @param value the parameter value
+     */
+    public final void setCustomParam(final String name, final String value) {
+        this.additionalCustomParam.put(name, value);
+    }
 }
