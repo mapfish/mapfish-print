@@ -63,7 +63,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
      * @param requestFactory  a factory for making http requests.
      */
     protected WmsLayer(final ExecutorService executorService, final Style rasterStyle, final WmsLayerParam params,
-                       final ClientHttpRequestFactory requestFactory) {
+            final ClientHttpRequestFactory requestFactory) {
         super(executorService, rasterStyle);
         this.params = params;
         this.requestFactory = requestFactory;
@@ -71,7 +71,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
 
     @Override
     protected BufferedImage loadImage(final MapBounds bounds, final Rectangle imageSize, final double dpi,
-                                      final boolean isFirstLayer) throws Throwable {
+            final boolean isFirstLayer) throws Throwable {
         final URI commonURI = this.params.getBaseUri();
 
 
@@ -107,5 +107,13 @@ public final class WmsLayer extends AbstractSingleImageLayer {
         } finally {
             closer.close();
         }
+    }
+
+    /**
+     * Get the HTTP params.
+     * @return the HTTP params
+     */
+    public WmsLayerParam getParams() {
+        return this.params;
     }
 }

@@ -22,7 +22,10 @@ package org.mapfish.print.map.geotools;
 import com.google.common.base.Function;
 import com.google.common.base.Supplier;
 import com.google.common.collect.Lists;
+
 import org.geotools.data.FeatureSource;
+import org.geotools.data.collection.CollectionFeatureSource;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
@@ -39,7 +42,7 @@ import java.util.concurrent.ExecutorService;
  */
 public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
 
-    private final Supplier<FeatureSource> featureSourceSupplier;
+    private Supplier<FeatureSource> featureSourceSupplier;
     private final Function<FeatureSource, Style> styleSupplier;
     private volatile List<? extends Layer> layers;
 
@@ -51,7 +54,7 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
      * @param styleSupplier         a function that creates the style for styling the features. This will only be called once.
      */
     public AbstractFeatureSourceLayer(final ExecutorService executorService, final Supplier<FeatureSource> featureSourceSupplier,
-                                      final Function<FeatureSource, Style> styleSupplier) {
+            final Function<FeatureSource, Style> styleSupplier) {
         super(executorService);
         this.featureSourceSupplier = featureSourceSupplier;
         this.styleSupplier = styleSupplier;
@@ -61,14 +64,23 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
     public final List<? extends Layer> getLayers(final MapBounds bounds, final Rectangle paintArea, final double dpi,
                                                  final boolean isFirstLayer) {
         if (this.layers == null) {
-                synchronized (this) {
-                    if (this.layers == null) {
-                        FeatureSource source = this.featureSourceSupplier.get();
-                        Style style = this.styleSupplier.apply(source);
-                        this.layers = Lists.newArrayList(new FeatureLayer(source, style));
-                    }
+            synchronized (this) {
+                if (this.layers == null) {
+                    FeatureSource source = this.featureSourceSupplier.get();
+                    Style style = this.styleSupplier.apply(source);
+                    this.layers = Lists.newArrayList(new FeatureLayer(source, style));
                 }
             }
-            return this.layers;
         }
+        return this.layers;
+    }
+
+    public final void setFeatursCollection(final SimpleFeatureCollection featureCollection) {
+        this.featureSourceSupplier = new Supplier<FeatureSource>() {
+            @Override
+            public FeatureSource get() {
+                return new CollectionFeatureSource(featureCollection);
+            }
+        };
+    };
 }

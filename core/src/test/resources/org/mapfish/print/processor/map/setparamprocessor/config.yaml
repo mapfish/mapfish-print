@@ -1,0 +1,25 @@
+templates:
+  main: !template
+    attributes:
+      customP1: !string {}
+      customP2: !string {}
+      map1: !map
+        width: 630
+        height: 294
+        maxDpi: 400
+    processors:
+    - !setParam
+        paramName: customP1
+        inputMapper: 
+          map1: map
+          customP1: value
+        outputMapper: {image: map2}
+    - !setParam
+        paramName: customP2
+        inputMapper: 
+          map2: map
+          customP2: value
+        outputMapper: {image: map3}
+    - !createMap
+        inputMapper: {map3: map}
+        outputMapper: {image: map}
