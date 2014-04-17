@@ -19,6 +19,7 @@
 
 package org.mapfish.print.attribute.map;
 
+import org.geotools.referencing.CRS;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -30,13 +31,14 @@ import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest;
 import org.mapfish.print.wrapper.json.PJsonObject;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.BASE_DIR;
 import static org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.loadJsonRequestData;
 
@@ -73,76 +75,55 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
 
     @Test
     public void testAttributesFromJson() throws Exception {
-        final File configFile = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, "map_attributes/config-json.yaml");
+        final File configFile = getFile(MapAttributeTest.class, "map_attributes/config-json.yaml");
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
-        final PJsonObject pJsonObject = parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, "map_attributes/requestData-json.json");
+        final PJsonObject pJsonObject = parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-json.json");
         final Values values = new Values(pJsonObject, template, new MapfishParser());
         final MapAttribute.MapAttributeValues value = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
 
         assertEquals(90.0, value.getDpi(), 0.1);
         assertNotNull(value.getLayers());
-        String proj = value.getMapBounds().getProjection().toWKT();
-        String[] expected = {
-                "GEOGCS[\"WGS84\", ",
-                "  DATUM[\"WGS84\", ",
-                "    SPHEROID[\"WGS84\", 6378137.0, 298.257223563]], ",
-                "  PRIMEM[\"Greenwich\", 0.0], ",
-                "  UNIT[\"degree\", 0.017453292519943295], ",
-                "  AXIS[\"Geodetic longitude\", EAST], ",
-                "  AXIS[\"Geodetic latitude\", NORTH], ",
-                "  AUTHORITY[\"Web Map Service CRS\",\"84\"]]"};
-        assertArrayEquals(expected, proj.split("\\n"));
+        Object proj = value.getMapBounds().getProjection();
+        CoordinateReferenceSystem expected = CRS.decode("CRS:84");
+        assertTrue(CRS.equalsIgnoreMetadata(expected, proj));
         assertEquals(0.0, value.rotation, 0.1);
     }
 
+
     @Test
     public void testAttributesFromYaml() throws Exception {
-        final File configFile = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, "map_attributes/config-yaml.yaml");
+        final File configFile = getFile(MapAttributeTest.class, "map_attributes/config-yaml.yaml");
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
-        final PJsonObject pJsonObject = parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, "map_attributes/requestData-yaml.json");
+        final PJsonObject pJsonObject = parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-yaml.json");
         final Values values = new Values(pJsonObject, template, new MapfishParser());
         final MapAttribute.MapAttributeValues value = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
 
         assertEquals(80.0, value.getDpi(), 0.1);
         assertNotNull(value.getLayers());
-        String proj = value.getMapBounds().getProjection().toWKT();
-        String[] expected = {
-                "GEOGCS[\"WGS84\", ",
-                "  DATUM[\"WGS84\", ",
-                "    SPHEROID[\"WGS84\", 6378137.0, 298.257223563]], ",
-                "  PRIMEM[\"Greenwich\", 0.0], ",
-                "  UNIT[\"degree\", 0.017453292519943295], ",
-                "  AXIS[\"Geodetic longitude\", EAST], ",
-                "  AXIS[\"Geodetic latitude\", NORTH], ",
-                "  AUTHORITY[\"Web Map Service CRS\",\"84\"]]"};
-        assertArrayEquals(expected, proj.split("\\n"));
+
+        Object proj = value.getMapBounds().getProjection();
+        CoordinateReferenceSystem expected = CRS.decode("CRS:84");
+        assertTrue(CRS.equalsIgnoreMetadata(expected, proj));
         assertEquals(10.0, value.rotation, 0.1);
     }
 
     @Test
-    public void testAttributesFromBooth() throws Exception {
-        final File configFile = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, "map_attributes/config-yaml.yaml");
+    public void testAttributesFromBoth() throws Exception {
+        final File configFile = getFile(MapAttributeTest.class, "map_attributes/config-yaml.yaml");
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
-        final PJsonObject pJsonObject = parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, "map_attributes/requestData-json.json");
+        final PJsonObject pJsonObject = parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-json.json");
         final Values values = new Values(pJsonObject, template, new MapfishParser());
         final MapAttribute.MapAttributeValues value = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
 
         assertEquals(90.0, value.getDpi(), 0.1);
         assertNotNull(value.getLayers());
-        String proj = value.getMapBounds().getProjection().toWKT();
-        String[] expected = {
-                "GEOGCS[\"WGS84\", ",
-                "  DATUM[\"WGS84\", ",
-                "    SPHEROID[\"WGS84\", 6378137.0, 298.257223563]], ",
-                "  PRIMEM[\"Greenwich\", 0.0], ",
-                "  UNIT[\"degree\", 0.017453292519943295], ",
-                "  AXIS[\"Geodetic longitude\", EAST], ",
-                "  AXIS[\"Geodetic latitude\", NORTH], ",
-                "  AUTHORITY[\"Web Map Service CRS\",\"84\"]]"};
-        assertArrayEquals(expected, proj.split("\\n"));
+
+        Object proj = value.getMapBounds().getProjection();
+        CoordinateReferenceSystem expected = CRS.decode("CRS:84");
+        assertTrue(CRS.equalsIgnoreMetadata(expected, proj));
         assertEquals(0.0, value.rotation, 0.1);
     }
 }

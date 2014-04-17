@@ -1,0 +1,19 @@
+{
+  "attributes": {
+    "features": {
+      "features": @@importFile(geojson.json)@@
+    },
+    "map1": {
+      "bbox": [95, -1, 110, 2],
+      "projection": "CRS:84",
+      "dpi": 90,
+      "layers": [
+        {
+          "type": "geojson",
+          "style": "polygon",
+          "geoJson": {}
+        }
+      ]
+    }
+  }
+}

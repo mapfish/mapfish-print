@@ -101,8 +101,7 @@ public class CreateMapProcessorFixedScaleCenterOsmTest extends AbstractMapfishSp
         template.getProcessorGraph().createTask(values).invoke();
 
         BufferedImage map = values.getObject("mapOut", BufferedImage.class);
-//        ImageIO.write(map, "png", new File("e:/tmp/osm.png"));
-        new ImageSimilarity(map, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 40);
+        new ImageSimilarity(map, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 30);
 
     }
 

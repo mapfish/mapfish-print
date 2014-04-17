@@ -80,8 +80,8 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0Test extends AbstractM
                         }
 
                         assertTrue("SERVICE != WMS: " + uppercaseParams.get("WMS"), uppercaseParams.containsEntry("SERVICE", "WMS"));
-                        assertTrue("FORMAT != IMAGE/PNG: " + uppercaseParams.get("FORMAT"), uppercaseParams.containsEntry("FORMAT",
-                                "IMAGE/PNG"));
+                        assertTrue("FORMAT != IMAGE/TIFF: " + uppercaseParams.get("FORMAT"), uppercaseParams.containsEntry("FORMAT",
+                                "IMAGE/TIFF"));
                         assertTrue("REQUEST != MAP: " + uppercaseParams.get("REQUEST"), uppercaseParams.containsEntry("REQUEST", "MAP"));
                         assertTrue("VERSION != 1.0.0: " + uppercaseParams.get("VERSION"), uppercaseParams.containsEntry("VERSION",
                                 "1.0.0"));
@@ -95,7 +95,7 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0Test extends AbstractM
                         assertTrue("EXCEPTIONS is missing", uppercaseParams.containsKey("EXCEPTIONS"));
 
                         try {
-                            byte[] bytes = Files.toByteArray(getFile("/map-data/tiger-ny.png"));
+                            byte[] bytes = Files.toByteArray(getFile("/map-data/tiger-ny.tiff"));
                             return ok(uri, bytes, httpMethod);
                         } catch (AssertionError e) {
                             return error404(uri, httpMethod);
@@ -128,7 +128,8 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0Test extends AbstractM
         template.getProcessorGraph().createTask(values).invoke();
 
         BufferedImage map = values.getObject("mapOut", BufferedImage.class);
-        new ImageSimilarity(map, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 20);
+//        ImageSimilarity.writeUncompressedImage(map, "e:/tmp/"+getClass().getSimpleName()+".tiff");
+        new ImageSimilarity(map, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 10);
 
     }
 

@@ -172,7 +172,7 @@ public class Configuration {
     }
 
     public final File getDirectory() {
-        return this.configurationFile.getParentFile();
+        return this.configurationFile.getAbsoluteFile().getParentFile();
     }
 
     public final void setConfigurationFile(final File configurationFile) {

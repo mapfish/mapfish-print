@@ -23,7 +23,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.io.Closer;
 import com.vividsolutions.jts.util.Assert;
-
 import org.geotools.data.wms.request.GetMapRequest;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -41,7 +40,6 @@ import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.util.Collections;
 import java.util.concurrent.ExecutorService;
-
 import javax.imageio.ImageIO;
 
 /**
@@ -101,11 +99,21 @@ public final class WmsLayer extends AbstractSingleImageLayer {
         try {
             final ClientHttpResponse response = closer.register(this.requestFactory.createRequest(uri, HttpMethod.GET).execute());
 
-            Assert.equals(HttpStatus.OK, response.getStatusCode(), "Http status code for " + uri + " was not OK");
+            Assert.equals(HttpStatus.OK, response.getStatusCode(), "Http status code for " + uri + " was not OK.  It was: " + response
+                    .getStatusCode() + ".  The response message was: '" + response.getStatusText() + "'");
 
             return ImageIO.read(response.getBody());
         } finally {
             closer.close();
         }
+    }
+
+    /**
+     * Get the HTTP params.
+     *
+     * @return the HTTP params
+     */
+    public WmsLayerParam getParams() {
+        return this.params;
     }
 }

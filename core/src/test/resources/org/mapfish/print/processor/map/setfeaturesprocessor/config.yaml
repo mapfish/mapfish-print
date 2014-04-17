@@ -1,0 +1,18 @@
+throwErrorOnExtraParameters: true
+templates:
+  main: !template
+    attributes:
+      features: !features {}
+      map1: !map
+        width: 500
+        height: 100
+        maxDpi: 400
+    processors:
+    - !setGeoJsonLayerFeatures
+        inputMapper: 
+          map1: map
+          features: features
+        outputMapper: {map: map2}
+    - !createMap
+        inputMapper: {map2: map}
+        outputMapper: {image: map}

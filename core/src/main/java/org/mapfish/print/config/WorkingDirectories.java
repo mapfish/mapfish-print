@@ -81,9 +81,9 @@ public class WorkingDirectories {
      */
     public final File getBuildFileFor(final Configuration configuration, final File jasperFileXml,
                                       final String extension, final Logger logger) {
-        final String configurationAbsolutePath = configuration.getDirectory().getAbsolutePath();
+        final String configurationAbsolutePath = configuration.getDirectory().getPath();
         final int prefixToConfiguration = configurationAbsolutePath.length() + 1;
-        final String parentDir = jasperFileXml.getParentFile().getAbsolutePath();
+        final String parentDir = jasperFileXml.getAbsoluteFile().getParent();
         final String relativePathToFile;
         if (configurationAbsolutePath.equals(parentDir)) {
             relativePathToFile = getNameWithoutExtension(jasperFileXml.getName());

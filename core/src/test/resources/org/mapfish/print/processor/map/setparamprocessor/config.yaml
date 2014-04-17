@@ -1,0 +1,29 @@
+templates:
+  main: !template
+    attributes:
+      customP1: !string {}
+      customP2: !string {}
+      map1: !map
+        width: 630
+        height: 294
+        maxDpi: 400
+        zoomSnapTolerance: 0.025
+        zoomLevelSnapStrategy: CLOSEST_LOWER_SCALE_ON_TIE
+        zoomLevels: !zoomLevels
+          scales: [5000, 10000, 50000, 110000, 500000, 1000000]
+    processors:
+    - !setWmsCustomParam
+        paramName: customP1
+        inputMapper: 
+          map1: map
+          customP1: value
+        outputMapper: {map: map2}
+    - !setWmsCustomParam
+        paramName: customP2
+        inputMapper: 
+          map2: map
+          customP2: value
+        outputMapper: {map: map3}
+    - !createMap
+        inputMapper: {map3: map}
+        outputMapper: {image: map}
