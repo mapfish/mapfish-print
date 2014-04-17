@@ -93,7 +93,8 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
             template.getProcessorGraph().createTask(values).invoke();
 
             BufferedImage map = values.getObject("mapOut", BufferedImage.class);
-            new ImageSimilarity(map, 2).assertSimilarity(getFile(BASE_DIR + gmlDataName + ".png"), 0);
+//            ImageSimilarity.writeUncompressedImage(map, "e:/tmp/"+(gmlDataName + ".tiff"));
+            new ImageSimilarity(map, 2).assertSimilarity(getFile(BASE_DIR + gmlDataName + ".tiff"), 0);
         }
 
     }
