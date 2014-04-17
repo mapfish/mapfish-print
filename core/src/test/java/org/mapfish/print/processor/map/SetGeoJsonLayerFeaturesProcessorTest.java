@@ -40,7 +40,7 @@ import java.io.IOException;
  * <p/>
  * Created by Stéphane Brunner on 16/4/14.
  */
-public class SetFeaturesProcessorTest extends AbstractMapfishSpringTest {
+public class SetGeoJsonLayerFeaturesProcessorTest extends AbstractMapfishSpringTest {
     private static final String BASE_DIR = "setfeaturesprocessor/";
 
     @Autowired
@@ -59,8 +59,8 @@ public class SetFeaturesProcessorTest extends AbstractMapfishSpringTest {
 
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
-        BufferedImage map = values.getObject("mapOut", BufferedImage.class);
-        new ImageSimilarity(map, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 0);
+        BufferedImage map = values.getObject("map", BufferedImage.class);
+        new ImageSimilarity(map, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 0);
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {

@@ -20,9 +20,10 @@
 package org.mapfish.print.processor;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.collect.BiMap;
 import com.google.common.collect.Sets;
 import com.vividsolutions.jts.util.Assert;
-
+import org.mapfish.print.parser.ParserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.Field;
@@ -96,20 +97,26 @@ public final class ProcessorDependencyGraphFactory {
             }
         }
 
-        Assert.isTrue(graph.getAllProcessors().containsAll(processors), graph + "does not contain all the processors: " + processors);
+        Assert.isTrue(graph.getAllProcessors().containsAll(processors), "'" + graph + "' does not contain all the processors: " +
+                                                                        processors);
 
         return graph;
     }
 
     private static Set<String> getInputs(final ProcessorGraphNode<Object, Object> node) {
-        final Map<String, String> inputMapper = node.getInputMapper();
+        final BiMap<String, String> inputMapper = node.getInputMapper();
         final Set<String> inputs = Sets.newHashSet(inputMapper.keySet());
 
         final Object inputParameter = node.getProcessor().createInputParameter();
         if (inputParameter != null) {
+            verifyAllMappingsMatchParameter(inputMapper.values(), inputParameter.getClass(),
+                    "One or more of the input mapping values of '" + node + "'  do not match an input parameter.  The bad mappings are");
+
             final Collection<Field> allProperties = getAllAttributes(inputParameter.getClass());
             for (Field descriptor : allProperties) {
-                inputs.add(descriptor.getName());
+                if (!inputMapper.containsValue(descriptor.getName())) {
+                    inputs.add(descriptor.getName());
+                }
             }
         }
 
@@ -120,12 +127,40 @@ public final class ProcessorDependencyGraphFactory {
         final Map<String, String> outputMapper = node.getOutputMapper();
         final Set<String> values = Sets.newHashSet(outputMapper.values());
 
-        final Collection<Field> allProperties = getAllAttributes(node.getProcessor().getOutputType());
+        final Set<String> mappings = outputMapper.keySet();
+        final Class<?> paramType = node.getProcessor().getOutputType();
+        verifyAllMappingsMatchParameter(mappings, paramType, "One or more of the output mapping keys of '" + node + "' do not match an " +
+                                                             "output parameter.  The bad mappings are: ");
+        final Collection<Field> allProperties = getAllAttributes(paramType);
         for (Field field : allProperties) {
-            values.add(field.getName());
+            if (!outputMapper.containsKey(field.getName())) {
+                values.add(field.getName());
+            }
         }
 
         return values;
+    }
+
+    private static void verifyAllMappingsMatchParameter(final Set<String> mappings, final Class<?> paramType,
+                                                        final String errorMessagePrefix) {
+        final Set<String> attributeNames = ParserUtils.getAllAttributeNames(paramType);
+        StringBuilder errors = new StringBuilder();
+        for (String mapping : mappings) {
+            if (!attributeNames.contains(mapping)) {
+                errors.append("\n  * ").append(mapping);
+
+            }
+        }
+
+        Assert.isTrue(0 == errors.length(), errorMessagePrefix + errors + listOptions(attributeNames) + "\n");
+    }
+
+    private static String listOptions(final Set<String> attributeNames) {
+        StringBuilder msg = new StringBuilder("\n\nThe possible parameter names are:");
+        for (String attributeName : attributeNames) {
+            msg.append("\n  * ").append(attributeName);
+        }
+        return msg.toString();
     }
 
 }

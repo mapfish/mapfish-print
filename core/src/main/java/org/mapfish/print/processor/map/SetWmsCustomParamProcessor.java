@@ -19,23 +19,28 @@
 
 package org.mapfish.print.processor.map;
 
-import org.mapfish.print.attribute.FeaturesAttribute.FeaturesAttributeValues;
 import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.attribute.map.MapLayer;
-import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
+import org.mapfish.print.map.image.wms.WmsLayer;
 import org.mapfish.print.processor.AbstractProcessor;
 
 /**
- * Processor to set features to the vector layers.
+ * Processor to set a param to the WMS layers.
  * <p/>
  * Created by Stéphane Brunner on 16/4/14.
  */
-public class SetFeaturesProcessor extends AbstractProcessor<SetFeaturesProcessor.Input, SetFeaturesProcessor.Output> {
+public class SetWmsCustomParamProcessor extends AbstractProcessor<SetWmsCustomParamProcessor.Input, SetWmsCustomParamProcessor.Output> {
+
+    /**
+     * The parameter name.
+     */
+    private String paramName;
+
 
     /**
      * Constructor.
      */
-    protected SetFeaturesProcessor() {
+    protected SetWmsCustomParamProcessor() {
         super(Output.class);
     }
 
@@ -47,16 +52,15 @@ public class SetFeaturesProcessor extends AbstractProcessor<SetFeaturesProcessor
     @Override
     public final Output execute(final Input values) throws Exception {
         for (MapLayer layer : values.map.getLayers()) {
-            if (layer instanceof AbstractFeatureSourceLayer) {
-                ((AbstractFeatureSourceLayer) layer).setFeatursCollection(values.features.getFeatures());
+            if (layer instanceof WmsLayer) {
+                ((WmsLayer) layer).getParams().setCustomParam(this.paramName, values.value);
             }
         }
-
         return new Output(values.map);
     }
 
     /**
-     * The input parameter object for {@link org.mapfish.print.processor.map.SetFeaturesProcessor}.
+     * The input parameter object for {@link SetGeoJsonLayerFeaturesProcessor}.
      */
     public static final class Input {
 
@@ -66,9 +70,9 @@ public class SetFeaturesProcessor extends AbstractProcessor<SetFeaturesProcessor
         public MapAttributeValues map;
 
         /**
-         * The features.
+         * The value.
          */
-        public FeaturesAttributeValues features;
+        public String value;
     }
 
     /**
@@ -87,5 +91,13 @@ public class SetFeaturesProcessor extends AbstractProcessor<SetFeaturesProcessor
         private Output(final MapAttributeValues map) {
             this.map = map;
         }
+    }
+
+    /**
+     * Set the parameter name.
+     * @param paramName the parameter name
+     */
+    public final void setParamName(final String paramName) {
+        this.paramName = paramName;
     }
 }

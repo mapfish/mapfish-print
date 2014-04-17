@@ -8,7 +8,7 @@ templates:
         height: 100
         maxDpi: 400
     processors:
-    - !setFeatures
+    - !setGeoJsonLayerFeatures
         inputMapper: 
           map1: map
           features: features

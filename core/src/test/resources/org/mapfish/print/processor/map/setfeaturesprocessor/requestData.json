@@ -4,7 +4,7 @@
       "features": @@importFile(geojson.json)@@
     },
     "map1": {
-      "bbox": [97.5, -0.5, 107.5, 1.5],
+      "bbox": [95, -1, 110, 2],
       "projection": "CRS:84",
       "dpi": 90,
       "layers": [

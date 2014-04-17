@@ -19,13 +19,10 @@
 
 package org.mapfish.print.processor.map;
 
-import static org.junit.Assert.assertTrue;
-
 import com.google.common.base.Predicate;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.io.Files;
-
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -46,12 +43,14 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
 
+import static org.junit.Assert.assertTrue;
+
 /**
  * Basic test of the set param to WMS layers processor.
  * <p/>
  * Created by Jesse on 3/26/14.
  */
-public class SetParamProcessorTest extends AbstractMapfishSpringTest {
+public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
     public static final String BASE_DIR = "setparamprocessor/";
 
     @Autowired
@@ -80,8 +79,8 @@ public class SetParamProcessorTest extends AbstractMapfishSpringTest {
                         }
 
                         assertTrue("SERVICE != WMS: " + uppercaseParams.get("WMS"), uppercaseParams.containsEntry("SERVICE", "WMS"));
-                        assertTrue("FORMAT != IMAGE/PNG: " + uppercaseParams.get("FORMAT"), uppercaseParams.containsEntry("FORMAT",
-                                "IMAGE/PNG"));
+                        assertTrue("FORMAT != IMAGE/TIFF: " + uppercaseParams.get("FORMAT"), uppercaseParams.containsEntry("FORMAT",
+                                "IMAGE/TIFF"));
                         assertTrue("REQUEST != MAP: " + uppercaseParams.get("REQUEST"), uppercaseParams.containsEntry("REQUEST", "MAP"));
                         assertTrue("VERSION != 1.0.0: " + uppercaseParams.get("VERSION"), uppercaseParams.containsEntry("VERSION",
                                 "1.0.0"));
@@ -90,12 +89,11 @@ public class SetParamProcessorTest extends AbstractMapfishSpringTest {
                         assertTrue("STYLES != LINE: " + uppercaseParams.get("STYLES"), uppercaseParams.containsEntry("STYLES", "LINE"));
                         assertTrue("CUSTOMP1 != 1", uppercaseParams.containsEntry("CUSTOMP1", "1"));
                         assertTrue("CUSTOMP2 != 2", uppercaseParams.containsEntry("CUSTOMP2", "2"));
-                        assertTrue("MERGEABLEP1 != 3", uppercaseParams.containsEntry("MERGEABLEP1", "3"));
                         assertTrue("BBOX is missing", uppercaseParams.containsKey("BBOX"));
                         assertTrue("EXCEPTIONS is missing", uppercaseParams.containsKey("EXCEPTIONS"));
 
                         try {
-                            byte[] bytes = Files.toByteArray(getFile("/map-data/tiger-ny.png"));
+                            byte[] bytes = Files.toByteArray(getFile("/map-data/tiger-ny.tiff"));
                             return ok(uri, bytes, httpMethod);
                         } catch (AssertionError e) {
                             return error404(uri, httpMethod);
@@ -127,8 +125,9 @@ public class SetParamProcessorTest extends AbstractMapfishSpringTest {
         Values values = new Values(requestData, template, this.parser);
         template.getProcessorGraph().createTask(values).invoke();
 
-        BufferedImage map = values.getObject("mapOut", BufferedImage.class);
-        new ImageSimilarity(map, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 20);
+        BufferedImage map = values.getObject("map", BufferedImage.class);
+        ImageSimilarity.writeUncompressedImage(map, "e:/tmp/"+getClass().getSimpleName()+".tiff");
+        new ImageSimilarity(map, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 20);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
