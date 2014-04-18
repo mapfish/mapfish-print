@@ -82,5 +82,5 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
                 return new CollectionFeatureSource(featureCollection);
             }
         };
-    };
+    }
 }

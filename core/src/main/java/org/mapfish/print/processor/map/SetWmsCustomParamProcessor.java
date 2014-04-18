@@ -60,7 +60,7 @@ public class SetWmsCustomParamProcessor extends AbstractProcessor<SetWmsCustomPa
     }
 
     /**
-     * The input parameter object for {@link SetGeoJsonLayerFeaturesProcessor}.
+     * The input parameter object for {@link SetFeaturesProcessor}.
      */
     public static final class Input {
 

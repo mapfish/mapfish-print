@@ -40,7 +40,7 @@ import java.io.IOException;
  * <p/>
  * Created by Stéphane Brunner on 16/4/14.
  */
-public class SetGeoJsonLayerFeaturesProcessorTest extends AbstractMapfishSpringTest {
+public class SetFeaturesProcessorTest extends AbstractMapfishSpringTest {
     private static final String BASE_DIR = "setfeaturesprocessor/";
 
     @Autowired

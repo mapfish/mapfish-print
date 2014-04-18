@@ -30,13 +30,13 @@ import org.mapfish.print.processor.AbstractProcessor;
  * <p/>
  * Created by Stéphane Brunner on 16/4/14.
  */
-public class SetGeoJsonLayerFeaturesProcessor extends
-        AbstractProcessor<SetGeoJsonLayerFeaturesProcessor.Input, SetGeoJsonLayerFeaturesProcessor.Output> {
+public class SetFeaturesProcessor extends
+        AbstractProcessor<SetFeaturesProcessor.Input, SetFeaturesProcessor.Output> {
 
     /**
      * Constructor.
      */
-    protected SetGeoJsonLayerFeaturesProcessor() {
+    protected SetFeaturesProcessor() {
         super(Output.class);
     }
 
@@ -57,7 +57,7 @@ public class SetGeoJsonLayerFeaturesProcessor extends
     }
 
     /**
-     * The input parameter object for {@link SetGeoJsonLayerFeaturesProcessor}.
+     * The input parameter object for {@link SetFeaturesProcessor}.
      */
     public static final class Input {
 
