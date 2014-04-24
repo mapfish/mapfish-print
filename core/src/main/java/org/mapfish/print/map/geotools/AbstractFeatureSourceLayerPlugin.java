@@ -59,8 +59,7 @@ public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFac
     @Autowired
     protected ClientHttpRequestFactory httpRequestFactory;
 
-
-    private Set<String> typeNames;
+    private final Set<String> typeNames;
 
     /**
      * Constructor.
