@@ -30,6 +30,7 @@ import org.mapfish.print.Transformer;
 import org.mapfish.print.map.MapChunkDrawer;
 import org.mapfish.print.map.readers.MapReader;
 import org.mapfish.print.utils.DistanceUnit;
+import org.mapfish.print.utils.Maps;
 import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
 
@@ -64,9 +65,11 @@ public class MapBlock extends Block {
 
         final MapChunkDrawer drawer = new MapChunkDrawer(context.getCustomBlocks(), transformer, overviewMap, params, context, getBackgroundColorVal(context, params), name);
 
+        PJsonObject mapParams = Maps.getMapRoot(params, this.name);
+        
         if (isAbsolute()) {
-            final float absX = getAbsoluteX(context, params);
-            final float absY = getAbsoluteY(context, params);
+            final float absX = getAbsoluteX(context, mapParams);
+            final float absY = getAbsoluteY(context, mapParams);
             context.getCustomBlocks().addAbsoluteDrawer(new PDFCustomBlocks.AbsoluteDrawer() {
                 public void render(PdfContentByte dc) {
                     final Rectangle rectangle = new Rectangle(absX, absY - transformer.getPaperH(),
@@ -79,10 +82,14 @@ public class MapBlock extends Block {
         }
     }
 
+    
+    
     /**
      * Creates the transformer in function of the JSON parameters and the block's config
      */
     public Transformer createTransformer(RenderingContext context, PJsonObject params) {
+        params = Maps.getMapRoot(params, this.name);
+        
         boolean strictEpsg4326 = params.optBool("strictEpsg4326", false);
         Integer dpi = params.optInt("dpi");
         if (dpi == null) {
@@ -92,7 +99,10 @@ public class MapBlock extends Block {
             throw new InvalidJsonValueException(params, "dpi", dpi);
         }
 
-        String units = context.getGlobalParams().getString("units");
+        String units = params.optString("units"); 
+        if(units == null) {
+            units = context.getGlobalParams().getString("units");
+        }
         final DistanceUnit unitEnum = DistanceUnit.fromString(units);
         if (unitEnum == null) {
             throw new RuntimeException("Unknown unit: '" + units + "'");
@@ -170,7 +180,7 @@ public class MapBlock extends Block {
     }
 
     public float getHeight(RenderingContext context, PJsonObject params) {
-        return Float.parseFloat(PDFUtils.evalString(context, params, height));
+        return Float.parseFloat(PDFUtils.evalString(context, params, height, name));
     }
 
     public void setWidth(String width) {
@@ -179,7 +189,7 @@ public class MapBlock extends Block {
     }
 
     public float getWidth(RenderingContext context, PJsonObject params) {
-        return Float.parseFloat(PDFUtils.evalString(context, params, width));
+        return Float.parseFloat(PDFUtils.evalString(context, params, width, name));
     }
 
     public boolean isAbsolute() {
@@ -193,7 +203,7 @@ public class MapBlock extends Block {
 
     public float getAbsoluteX(RenderingContext context, PJsonObject params) {
         //return Integer.parseInt(PDFUtils.evalString(context, params, absoluteX));
-      return Float.parseFloat(PDFUtils.evalString(context, params, absoluteX));
+      return Float.parseFloat(PDFUtils.evalString(context, params, absoluteX, name));
     }
 
     public void setAbsoluteY(String absoluteY) {
@@ -201,11 +211,11 @@ public class MapBlock extends Block {
     }
 
     public float getAbsoluteY(RenderingContext context, PJsonObject params) {
-        return Float.parseFloat(PDFUtils.evalString(context, params, absoluteY));
+        return Float.parseFloat(PDFUtils.evalString(context, params, absoluteY, name));
     }
 
-    public MapBlock getMap() {
-        return Double.isNaN(overviewMap) ? this : null;
+    public MapBlock getMap(String name) {
+        return ((name == null || name.equals(this.name)) && Double.isNaN(overviewMap)) ? this : null;
     }
 
     public void printClientConfig(JSONWriter json) throws JSONException {

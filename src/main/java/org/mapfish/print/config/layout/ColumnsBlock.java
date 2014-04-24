@@ -111,9 +111,9 @@ public class ColumnsBlock extends Block {
                 width != Double.MIN_VALUE;
     }
 
-    public MapBlock getMap() {
+    public MapBlock getMap(String name) {
         for (Block item : items) {
-            MapBlock result = item.getMap();
+            MapBlock result = item.getMap(name);
             if (result != null) {
                 return result;
             }

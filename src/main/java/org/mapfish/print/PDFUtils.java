@@ -398,7 +398,7 @@ public class PDFUtils {
 
     private static final Pattern VAR_REGEXP = Pattern.compile("\\$\\{([^}]+)\\}");
 
-    public static Phrase renderString(RenderingContext context, PJsonObject params, String val, com.lowagie.text.Font font) throws BadElementException {
+    public static Phrase renderString(RenderingContext context, PJsonObject params, String val, com.lowagie.text.Font font, String mapName) throws BadElementException {
         Phrase result = new Phrase();
         while (true) {
             Matcher matcher = VAR_REGEXP.matcher(val);
@@ -409,7 +409,7 @@ public class PDFUtils {
                 if (varName.equals("pageTot")) {
                     result.add(context.getCustomBlocks().getOrCreateTotalPagesBlock(font));
                 } else {
-                    value = getContextValue(context, params, varName);
+                    value = getContextValue(context, params, varName, mapName);
                     result.add(value);
                 }
                 val = val.substring(matcher.end());
@@ -424,7 +424,7 @@ public class PDFUtils {
     /**
      * Evaluates stuff like "toto ${titi}"
      */
-    public static String evalString(RenderingContext context, PJsonObject params, String val) {
+    public static String evalString(RenderingContext context, PJsonObject params, String val, String mapName) {
         if (val == null) {
             return null;
         }
@@ -433,7 +433,7 @@ public class PDFUtils {
             Matcher matcher = VAR_REGEXP.matcher(val);
             if (matcher.find()) {
                 result.append(val.substring(0, matcher.start()));
-                result.append(getContextValue(context, params, matcher.group(1)));
+                result.append(getContextValue(context, params, matcher.group(1), mapName));
                 val = val.substring(matcher.end());
             } else {
                 break;
@@ -480,7 +480,7 @@ public class PDFUtils {
         return val;
     }
 
-    private static String getContextValue(RenderingContext context, PJsonObject params, String key) {
+    private static String getContextValue(RenderingContext context, PJsonObject params, String key, String mapName) {
         String result = null;
         if (context != null) {
             Matcher matcher;
@@ -491,11 +491,14 @@ public class PDFUtils {
             } else if (key.startsWith("now ")) {
                 return formatTime(context, key);
             } else if ((matcher = FORMAT_PATTERN.matcher(key)) != null && matcher.matches()) {
-                return format(context, params, matcher);
+                return format(context, params, matcher, mapName);
             } else if (key.equals("configDir")) {
                 return context.getConfigDir().replace('\\', '/');
-            } else if (key.equals("scale")) {
-                return Double.toString(context.getLayout().getMainPage().getMap().createTransformer(context, params).getScale());
+            } else if (key.equals("scale") || key.startsWith("scale.")) {
+                if(key.startsWith("scale.")) {
+                    mapName = key.substring(6);
+                }
+                return Double.toString(context.getLayout().getMainPage().getMap(mapName).createTransformer(context, params).getScale());
             }
             result = context.getGlobalParams().optString(key);
         }
@@ -505,8 +508,8 @@ public class PDFUtils {
         return result;
     }
 
-    private static String format(RenderingContext context, PJsonObject params, Matcher matcher) {
-        final String valueTxt = getContextValue(context, params, matcher.group(4));
+    private static String format(RenderingContext context, PJsonObject params, Matcher matcher, String mapName) {
+        final String valueTxt = getContextValue(context, params, matcher.group(4), mapName);
         final Object value;
         try {
             switch (matcher.group(3).charAt(0)) {

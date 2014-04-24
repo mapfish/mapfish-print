@@ -54,7 +54,7 @@ public class ImageBlock extends Block {
     public void render(PJsonObject params, PdfElement target, RenderingContext context) throws DocumentException {
         final URI url;
         try {
-            final String urlTxt = PDFUtils.evalString(context, params, this.url);
+            final String urlTxt = PDFUtils.evalString(context, params, this.url, null);
             url = new URI(urlTxt);
         } catch (URISyntaxException e) {
             throw new InvalidValueException("url", this.url, e);
@@ -67,7 +67,7 @@ public class ImageBlock extends Block {
     }
 
     private float getRotationRadian(RenderingContext context, PJsonObject params) {
-        return (float) (Float.parseFloat(PDFUtils.evalString(context, params, this.rotation)) * Math.PI / 180.0F);
+        return (float) (Float.parseFloat(PDFUtils.evalString(context, params, this.rotation, null)) * Math.PI / 180.0F);
     }
 
     private void drawSVG(RenderingContext context, PJsonObject params, PdfElement paragraph, URI url) throws DocumentException {

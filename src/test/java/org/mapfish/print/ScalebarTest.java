@@ -50,8 +50,8 @@ public class ScalebarTest extends PdfTestCase {
             dc.lineTo(MARGIN + 100 * i, height);
         }
         dc.stroke();*/
-        context.getLayout().getMainPage().getMap().setWidth("100");
-        context.getLayout().getMainPage().getMap().setHeight("100");
+        context.getLayout().getMainPage().getMap(null).setWidth("100");
+        context.getLayout().getMainPage().getMap(null).setHeight("100");
         ScalebarBlock block = createBaseBlock();
         draw(page1, doc, context, block);
 
