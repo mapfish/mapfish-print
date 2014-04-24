@@ -42,6 +42,7 @@ templates:
   A4 portrait: !template
     jasperTemplate: simpleReport.jrxml
     attributes:
+      dependence: !integer {}
       number: !integer {}
       name: !string {}
       description: !string
@@ -57,6 +58,7 @@ templates:
       tableList: !tableList {}
     processors:
     - !reportBuilder # compile all reports in current directory
+      inputMapper: {dependence: dependence}
       directory: '.'
     - !createMap
       inputMapper: {map: map}
@@ -71,7 +73,8 @@ templates:
       inputMapper: {tableList: tableList}
       dynamicReport: {}
       dynamicReportDirectory: "subreports"
-      outputMapper: {tableList: tableList}
+      outputMapper: {tableList: tableList, dependence: subreports_created}
     - !reportBuilder  # compile all jasper report templates in subreports directory
       directory: "subreports"
+      inputMapper: {subreports_created: dependence}
     iterValue: tableList
