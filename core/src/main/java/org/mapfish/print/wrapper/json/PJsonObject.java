@@ -133,6 +133,11 @@ public class PJsonObject extends PAbstractObject {
         return optJSONArray(key);
     }
 
+    @Override
+    public final boolean isArray(final String key) {
+        return getInternalObj().opt(key) instanceof JSONArray;
+    }
+
     /**
      * Get a property as a json object or null.
      * @param key the property name
