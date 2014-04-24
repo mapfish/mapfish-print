@@ -23,6 +23,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.io.Files;
+
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -126,7 +127,6 @@ public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
         template.getProcessorGraph().createTask(values).invoke();
 
         BufferedImage map = values.getObject("map", BufferedImage.class);
-        ImageSimilarity.writeUncompressedImage(map, "e:/tmp/"+getClass().getSimpleName()+".tiff");
         new ImageSimilarity(map, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 20);
     }
 

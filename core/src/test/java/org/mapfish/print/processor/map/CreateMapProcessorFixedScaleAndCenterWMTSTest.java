@@ -111,7 +111,6 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSTest extends AbstractMapfi
         template.getProcessorGraph().createTask(values).invoke();
 
         BufferedImage map = values.getObject("mapOut", BufferedImage.class);
-//        ImageSimilarity.writeUncompressedImage(map, "e:/tmp/"+getClass().getSimpleName()+".tiff");
         new ImageSimilarity(map, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 10);
     }
 

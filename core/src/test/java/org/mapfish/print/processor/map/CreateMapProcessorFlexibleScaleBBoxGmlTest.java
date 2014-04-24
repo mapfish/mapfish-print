@@ -93,7 +93,6 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
             template.getProcessorGraph().createTask(values).invoke();
 
             BufferedImage map = values.getObject("mapOut", BufferedImage.class);
-//            ImageSimilarity.writeUncompressedImage(map, "e:/tmp/"+(gmlDataName + ".tiff"));
             new ImageSimilarity(map, 2).assertSimilarity(getFile(BASE_DIR + gmlDataName + ".tiff"), 0);
         }
 
@@ -102,5 +101,4 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
     private static PJsonObject loadJsonRequestData() throws IOException {
         return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleBBoxGmlTest.class, BASE_DIR + "requestData.json");
     }
-
 }
