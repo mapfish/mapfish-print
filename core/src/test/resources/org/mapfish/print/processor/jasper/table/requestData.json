@@ -1,5 +1,6 @@
 {
     "attributes": {
+        "dependence": 1,
         "table": {
             "columns": ["id", "name", "icon"],
             "data": [

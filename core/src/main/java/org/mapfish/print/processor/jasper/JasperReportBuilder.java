@@ -93,8 +93,7 @@ public class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.I
                         final long compileTime = compileJasperReport.stop();
                         LOGGER.info("Report built in " + compileTime + "ms.");
                     }
-                }
-                else {
+                } else {
                     LOGGER.debug("Destination file is already up to date: " + buildFile.getAbsolutePath());
                 }
             }
@@ -141,12 +140,12 @@ public class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.I
     }
 
     /**
-     * Input of processor.
+     * The input parameter object for {@link JasperReportBuilder}.
      */
     public static final class Input {
         /**
          * Just to create a dependency with a dynamic report creator.
          */
-        public int dependence = 1;
+        public int dependence;
     }
 }
