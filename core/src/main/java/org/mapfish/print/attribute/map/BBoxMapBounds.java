@@ -21,6 +21,7 @@ package org.mapfish.print.attribute.map;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.GeodeticCalculator;
 import org.mapfish.print.map.DistanceUnit;

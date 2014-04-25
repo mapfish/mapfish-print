@@ -19,7 +19,7 @@
 
 package org.mapfish.print.processor.map;
 
-import org.geotools.styling.Style;
+import org.mapfish.print.attribute.StyleAttribute;
 import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
@@ -49,7 +49,7 @@ public class SetStyleProcessor extends
     public final Output execute(final Input values) throws Exception {
         for (MapLayer layer : values.map.getLayers()) {
             if (layer instanceof AbstractFeatureSourceLayer) {
-                ((AbstractFeatureSourceLayer) layer).setStyle(values.style);
+                ((AbstractFeatureSourceLayer) layer).setStyle(values.style.getStyle());
             }
         }
 
@@ -68,7 +68,7 @@ public class SetStyleProcessor extends
         /**
          * The features.
          */
-        public Style style;
+        public StyleAttribute.StylesAttributeValues style;
     }
 
     /**

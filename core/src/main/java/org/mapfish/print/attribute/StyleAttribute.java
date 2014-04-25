@@ -50,12 +50,12 @@ public class StyleAttribute extends ReflectiveAttribute<StylesAttributeValues> {
         /**
          * The SDL string.
          */
-        public String stringStyle;
+        public String style;
 
         /**
          * The Style.
          */
-        public Style style;
+        private Style styleObject;
 
         /**
          * Constructor.
@@ -69,7 +69,7 @@ public class StyleAttribute extends ReflectiveAttribute<StylesAttributeValues> {
         public void postConstruct() throws FactoryException {
             final StyleParserPlugin parser = new StringSLDParserPlugin();
             try {
-                this.style = parser.parseStyle(null, this.stringStyle).get();
+                this.styleObject = parser.parseStyle(null, this.style).get();
             } catch (Throwable e) {
                 throw new RuntimeException("Unable to parce the SDL style", e);
             }
@@ -79,7 +79,7 @@ public class StyleAttribute extends ReflectiveAttribute<StylesAttributeValues> {
          * Validate the values provided by the request data and construct MapBounds and parse the layers.
          */
         public Style getStyle() throws FactoryException {
-            return this.style;
+            return this.styleObject;
 
         }
     }
