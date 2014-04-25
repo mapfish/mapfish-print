@@ -31,6 +31,7 @@ import org.mapfish.print.servlet.job.FailedPrintJob;
 import org.mapfish.print.servlet.job.JobManager;
 import org.mapfish.print.servlet.job.PrintJob;
 import org.mapfish.print.servlet.job.PrintJobFactory;
+import org.mapfish.print.servlet.job.SuccessfulPrintJob;
 import org.mapfish.print.servlet.job.loader.ReportLoader;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
@@ -263,9 +264,13 @@ public class MapPrinterServlet extends BaseMapServlet {
 
         if (loader == null) {
             error(httpServletResponse, "Print with ref=" + referenceId + " unknown", HttpStatus.NOT_FOUND);
-            return;
+        } else if (metadata.get() instanceof SuccessfulPrintJob) {
+            SuccessfulPrintJob succ = (SuccessfulPrintJob) metadata.get();
+            sendPdfFile(succ, httpServletResponse, loader, pdfURI, inline);
+        } else if (metadata.get() instanceof FailedPrintJob) {
+            FailedPrintJob failedPrintJob = (FailedPrintJob) metadata.get();
+            error(httpServletResponse, failedPrintJob.getError(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        sendPdfFile(metadata.get(), httpServletResponse, loader, pdfURI, inline);
     }
 
     /**
@@ -321,7 +326,7 @@ public class MapPrinterServlet extends BaseMapServlet {
      * @param reportURI           the uri of the report
      * @param inline              whether or not to inline the content
      */
-    protected final void sendPdfFile(final CompletedPrintJob metadata, final HttpServletResponse httpServletResponse,
+    protected final void sendPdfFile(final SuccessfulPrintJob metadata, final HttpServletResponse httpServletResponse,
                                      final ReportLoader reportLoader, final URI reportURI, final boolean inline)
             throws IOException, ServletException {
 
