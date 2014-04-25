@@ -76,6 +76,28 @@ public final class BBoxMapBounds extends MapBounds {
     }
 
     @Override
+    public MapBounds adjustedEnvelope(final Rectangle paintArea, final double dpi) {
+        final double paintAreaAspectRatio = paintArea.getWidth() / paintArea.getHeight();
+        final double bboxAspectRatio = this.bbox.getWidth() / this.bbox.getHeight();
+        if (paintAreaAspectRatio > bboxAspectRatio) {
+            double centerX = (this.bbox.getMinY() + this.bbox.getMaxY()) / 2;
+            double facter = paintAreaAspectRatio / bboxAspectRatio;
+            double finalDiff =  (this.bbox.getMaxX() - centerX) * facter;
+
+            return new BBoxMapBounds(getProjection(),
+                    centerX - finalDiff, this.bbox.getMinY(),
+                    centerX + finalDiff, this.bbox.getMaxY());
+        } else {
+            double centerY = (this.bbox.getMinY() + this.bbox.getMaxY()) / 2;
+            double facter = bboxAspectRatio / paintAreaAspectRatio;
+            double finalDiff =  (this.bbox.getMaxY() - centerY) * facter;
+            return new BBoxMapBounds(getProjection(),
+                    this.bbox.getMinX(), centerY - finalDiff,
+                    this.bbox.getMaxX(), centerY + finalDiff);
+        }
+    }
+
+    @Override
     public MapBounds adjustBoundsToNearestScale(final ZoomLevels zoomLevels, final double tolerance,
                                                 final ZoomLevelSnapStrategy zoomLevelSnapStrategy, final Rectangle paintArea,
                                                 final double dpi) {
@@ -117,13 +139,21 @@ public final class BBoxMapBounds extends MapBounds {
     // CHECKSTYLE:OFF
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
 
         BBoxMapBounds that = (BBoxMapBounds) o;
 
-        if (!bbox.equals(that.bbox)) return false;
+        if (!bbox.equals(that.bbox)) {
+            return false;
+        }
 
         return true;
     }

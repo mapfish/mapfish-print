@@ -20,6 +20,7 @@
 package org.mapfish.print.attribute.map;
 
 import com.vividsolutions.jts.geom.Coordinate;
+
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.GeodeticCalculator;
@@ -81,6 +82,11 @@ public final class CenterScaleMapBounds extends MapBounds {
         }
 
         return bbox;
+    }
+
+    @Override
+    public MapBounds adjustedEnvelope(final Rectangle paintArea, final double dpi) {
+        return this;
     }
 
     @Override
@@ -149,14 +155,24 @@ public final class CenterScaleMapBounds extends MapBounds {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
 
         CenterScaleMapBounds that = (CenterScaleMapBounds) o;
 
-        if (!center.equals(that.center)) return false;
-        if (!scale.equals(that.scale)) return false;
+        if (!center.equals(that.center)) {
+            return false;
+        }
+        if (!scale.equals(that.scale)) {
+            return false;
+        }
 
         return true;
     }

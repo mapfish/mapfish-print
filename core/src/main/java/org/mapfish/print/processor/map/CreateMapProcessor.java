@@ -20,6 +20,7 @@
 package org.mapfish.print.processor.map;
 
 import com.google.common.collect.Lists;
+
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
@@ -97,6 +98,9 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                         mapValues.getZoomLevels(),
                         mapValues.getZoomSnapTolerance(),
                         mapValues.getZoomLevelSnapStrategy(), paintArea, dpi);
+        }
+        if (mapValues.isUseAjustBounds()) {
+            bounds = bounds.adjustedEnvelope(paintArea, dpi);
         }
 
         final BufferedImage bufferedImage = new BufferedImage(mapSize.width, mapSize.height, this.imageType.value);
