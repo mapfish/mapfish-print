@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -69,9 +70,9 @@ public class MapPrinterServlet extends BaseMapServlet {
 
     // can be /app/capabilities.json
     private static final String CAPABILITIES_URL = "/capabilities.json";
-    private static final String CREATE_URL = "/create";
+    private static final String CREATE_AND_GET_URL = "/buildreport";
     private static final String STATUS_URL = "/status";
-    private static final String RESULT_URL = "/get";
+    private static final String REPORT_URL = "/report";
 
     /* Registry keys */
 
@@ -101,7 +102,16 @@ public class MapPrinterServlet extends BaseMapServlet {
     private PrintJobFactory printJobFactory;
     @Autowired
     private ServletInfo servletInfo;
+    private long maxCreateAndGetWaitTimeInSeconds;
 
+    /**
+     * Maximum time to wait for a createAndGet request to complete before returning an error.
+     *
+     * @param maxCreateAndGetWaitTimeInSeconds the maximum time in seconds to wait for a report to be generated.
+     */
+    public final void setMaxCreateAndGetWaitTimeInSeconds(final long maxCreateAndGetWaitTimeInSeconds) {
+        this.maxCreateAndGetWaitTimeInSeconds = maxCreateAndGetWaitTimeInSeconds;
+    }
 
     @RequestMapping(value = STATUS_URL + "/{referenceId}", method = RequestMethod.GET)
     private void getStatus(final String referenceId, final HttpServletResponse httpServletResponse) {
@@ -136,11 +146,6 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
     }
 
-    private String readReportReference(final String additionalPath) {
-        int index = additionalPath.lastIndexOf("/");
-        return additionalPath.substring(index + 1);
-    }
-
     /**
      * Read the headers from the request.
      *
@@ -166,36 +171,21 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * add the print job to the job queue.
      *
-     * @param requestData a json formatted string with the request data required to perform the report generation.
+     * @param requestData         a json formatted string with the request data required to perform the report generation.
      * @param httpServletRequest  the request object
      * @param httpServletResponse the response object
      */
-    @RequestMapping(value = CREATE_URL, method = RequestMethod.POST)
+    @RequestMapping(value = REPORT_URL, method = RequestMethod.POST)
     public final void createReport(@RequestBody final String requestData, final HttpServletRequest httpServletRequest,
                                    final HttpServletResponse httpServletResponse) {
 
-        if (requestData == null) {
-            error(httpServletResponse, "Missing 'spec' parameter", HttpStatus.INTERNAL_SERVER_ERROR);
-            return;
+        String ref = createAndSubmitPrintJob(requestData, httpServletRequest, httpServletResponse);
+        if (ref == null) {
+            error(httpServletResponse, "Failed to create a print job", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Report request data=" + requestData);
-        }
-
-        PJsonObject specJson = MapPrinter.parseSpec(requestData);
-
-        String ref = UUID.randomUUID().toString() + "@" + this.servletInfo.getServletId();
         PrintWriter writer = null;
         try {
-            PrintJob job = this.printJobFactory.create();
-
-            job.setReferenceId(ref);
-            job.setRequestData(specJson);
-            job.setHeaders(getHeaders(httpServletRequest));
-
-            this.jobManager.submit(job);
-
             httpServletResponse.setContentType("application/json; charset=utf-8");
 
             writer = httpServletResponse.getWriter();
@@ -217,17 +207,130 @@ public class MapPrinterServlet extends BaseMapServlet {
     }
 
     /**
+     * add the print job to the job queue.
+     *
+     * @param requestData         a json formatted string with the request data required to perform the report generation.
+     * @param inline whether or not to inline the content
+     * @param httpServletRequest  the request object
+     * @param httpServletResponse the response object
+     */
+    @RequestMapping(value = CREATE_AND_GET_URL, method = RequestMethod.POST)
+    public final void createReportAndGet(@RequestBody final String requestData,
+                                         @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
+                                         final HttpServletRequest httpServletRequest,
+                                         final HttpServletResponse httpServletResponse) throws IOException, ServletException,
+            InterruptedException {
+
+        String ref = createAndSubmitPrintJob(requestData, httpServletRequest, httpServletResponse);
+        if (ref == null) {
+            error(httpServletResponse, "Failed to create a print job", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        final HandleReportLoadResult<Boolean> handler = new HandleReportLoadResult<Boolean>() {
+
+            @Override
+            public Boolean unsupportedLoader(final HttpServletResponse httpServletResponse, final String referenceId) {
+                error(httpServletResponse, "Print with ref=" + referenceId + " unknown", HttpStatus.NOT_FOUND);
+                return true;
+            }
+
+            @Override
+            public Boolean successfulPrint(final SuccessfulPrintJob successfulPrintResult,
+                                           final HttpServletResponse httpServletResponse,
+                                           final URI reportURI, final ReportLoader loader) throws IOException, ServletException {
+                sendPdfFile(successfulPrintResult, httpServletResponse, loader, reportURI, inline);
+                return true;
+            }
+
+            @Override
+            public Boolean failedPrint(final FailedPrintJob failedPrintJob, final HttpServletResponse httpServletResponse) {
+                error(httpServletResponse, failedPrintJob.getError(), HttpStatus.INTERNAL_SERVER_ERROR);
+                return true;
+            }
+
+            @Override
+            public Boolean printJobPending(final HttpServletResponse httpServletResponse, final String referenceId) {
+                return false;
+            }
+        };
+
+
+        final boolean[] isDone = new boolean[]{false};
+        long startWaitTime = System.currentTimeMillis();
+        final long maxWaitTimeInMillis = TimeUnit.SECONDS.toMillis(this.maxCreateAndGetWaitTimeInSeconds);
+        while (!isDone[0] && System.currentTimeMillis() - startWaitTime < maxWaitTimeInMillis) {
+            Thread.sleep(TimeUnit.SECONDS.toMillis(1));
+            isDone[0] = loadReport(ref, httpServletResponse, handler);
+        }
+    }
+
+    private String createAndSubmitPrintJob(final String requestData, final HttpServletRequest httpServletRequest,
+                                           final HttpServletResponse httpServletResponse) {
+        if (requestData == null) {
+            error(httpServletResponse, "Missing 'spec' parameter", HttpStatus.INTERNAL_SERVER_ERROR);
+            return null;
+        }
+
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Report request data=" + requestData);
+        }
+
+        PJsonObject specJson = MapPrinter.parseSpec(requestData);
+
+        String ref = UUID.randomUUID().toString() + "@" + this.servletInfo.getServletId();
+
+        PrintJob job = this.printJobFactory.create();
+
+        job.setReferenceId(ref);
+        job.setRequestData(specJson);
+        job.setHeaders(getHeaders(httpServletRequest));
+
+        this.jobManager.submit(job);
+        return ref;
+    }
+
+    /**
      * To get the PDF created previously.
      *
      * @param referenceId         the path to the file.
      * @param inline              whether or not to inline the
      * @param httpServletResponse the response object
      */
-    @RequestMapping(value = RESULT_URL + "/{referenceId}", method = RequestMethod.GET)
+    @RequestMapping(value = REPORT_URL + "/{referenceId}", method = RequestMethod.GET)
     public final void getReport(@PathVariable final String referenceId,
                                 @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
                                 final HttpServletResponse httpServletResponse)
             throws IOException, ServletException {
+        loadReport(referenceId, httpServletResponse, new HandleReportLoadResult<Void>() {
+
+            @Override
+            public Void unsupportedLoader(final HttpServletResponse httpServletResponse, final String referenceId) {
+                error(httpServletResponse, "Print with ref=" + referenceId + " unknown", HttpStatus.NOT_FOUND);
+                return null;
+            }
+
+            @Override
+            public Void successfulPrint(final SuccessfulPrintJob successfulPrintResult, final HttpServletResponse httpServletResponse,
+                                        final URI reportURI, final ReportLoader loader) throws IOException, ServletException {
+                sendPdfFile(successfulPrintResult, httpServletResponse, loader, reportURI, inline);
+                return null;
+            }
+
+            @Override
+            public Void failedPrint(final FailedPrintJob failedPrintJob, final HttpServletResponse httpServletResponse) {
+                error(httpServletResponse, failedPrintJob.getError(), HttpStatus.INTERNAL_SERVER_ERROR);
+                return null;
+            }
+
+            @Override
+            public Void printJobPending(final HttpServletResponse httpServletResponse, final String referenceId) {
+                return null;
+            }
+        });
+    }
+
+    private <R> R loadReport(final String referenceId, final HttpServletResponse httpServletResponse,
+                             final HandleReportLoadResult<R> handler) throws IOException, ServletException {
         URI pdfURI = this.jobManager.getURI(referenceId);
         ReportLoader loader = null;
         for (ReportLoader reportLoader : this.reportLoaders) {
@@ -239,14 +342,19 @@ public class MapPrinterServlet extends BaseMapServlet {
         Optional<? extends CompletedPrintJob> metadata = this.jobManager.getCompletedPrintJob(referenceId);
 
         if (loader == null) {
-            error(httpServletResponse, "Print with ref=" + referenceId + " unknown", HttpStatus.NOT_FOUND);
+            return handler.unsupportedLoader(httpServletResponse, referenceId);
+        } else if (!metadata.isPresent()) {
+            return handler.printJobPending(httpServletResponse, referenceId);
         } else if (metadata.get() instanceof SuccessfulPrintJob) {
             SuccessfulPrintJob succ = (SuccessfulPrintJob) metadata.get();
-            sendPdfFile(succ, httpServletResponse, loader, pdfURI, inline);
+            return handler.successfulPrint(succ, httpServletResponse, pdfURI, loader);
         } else if (metadata.get() instanceof FailedPrintJob) {
             FailedPrintJob failedPrintJob = (FailedPrintJob) metadata.get();
-            error(httpServletResponse, failedPrintJob.getError(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return handler.failedPrint(failedPrintJob, httpServletResponse);
+        } else {
+            throw new ServletException("Unexpected state");
         }
+
     }
 
     /**
