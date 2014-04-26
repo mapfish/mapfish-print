@@ -142,7 +142,8 @@ public class ThreadPoolJobManager implements JobManager {
                 return ThreadPoolJobManager.this.jobPriorityComparator.compare((PrintJob) o1, (PrintJob) o2);
             }
         });
-        this.executor = new ThreadPoolExecutor(0, this.maxNumberOfRunningPrintJobs, this.maxIdleTime, TimeUnit.SECONDS, queue, threadFactory);
+        this.executor = new ThreadPoolExecutor(0, this.maxNumberOfRunningPrintJobs, this.maxIdleTime, TimeUnit.SECONDS, queue,
+                threadFactory);
         this.executor.submit(new PostResultToRegistryTask());
     }
 
