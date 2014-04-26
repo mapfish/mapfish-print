@@ -32,7 +32,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -112,6 +111,7 @@ public class ThreadPoolJobManager implements JobManager {
     private final Collection<SubmittedPrintJob> runningTasksFutures = new ArrayList<SubmittedPrintJob>();
     @Autowired
     private Registry registry;
+    private PriorityBlockingQueue<Runnable> queue;
 
     public final void setMaxNumberOfRunningPrintJobs(final int maxNumberOfRunningPrintJobs) {
         this.maxNumberOfRunningPrintJobs = maxNumberOfRunningPrintJobs;
@@ -134,7 +134,7 @@ public class ThreadPoolJobManager implements JobManager {
         threadFactory.setDaemon(true);
         threadFactory.setThreadNamePrefix("PrintJobManager-");
 
-        BlockingQueue<Runnable> queue = new PriorityBlockingQueue<Runnable>(this.maxNumberOfWaitingJobs, new Comparator<Runnable>() {
+        this.queue = new PriorityBlockingQueue<Runnable>(this.maxNumberOfWaitingJobs, new Comparator<Runnable>() {
             @Override
             public int compare(final Runnable o1, final Runnable o2) {
                 Assert.isTrue(o1 instanceof PrintJob, o1 + " should be a " + PrintJob.class.getName());
@@ -157,6 +157,12 @@ public class ThreadPoolJobManager implements JobManager {
 
     @Override
     public final void submit(final PrintJob job) {
+        final int numberOfWaitingRequests = this.queue.size();
+        if (numberOfWaitingRequests >= this.maxNumberOfWaitingJobs) {
+            throw new RuntimeException("Max number of waiting print job requests exceeded.  Number of waiting requests are: " +
+                                       numberOfWaitingRequests);
+        }
+
         this.registry.incrementInt(NEW_PRINT_COUNT, 1);
         final Future<CompletedPrintJob> future = this.executor.submit(job);
         this.runningTasksFutures.add(new SubmittedPrintJob(future, job.getReferenceId()));
