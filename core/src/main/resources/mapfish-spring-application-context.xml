@@ -30,6 +30,10 @@
     <context:property-placeholder system-properties-mode="FALLBACK" file-encoding="UTF-8" location="mapfish-spring.properties"/>
 
 
+    <bean id="servletInfo" class="org.mapfish.print.servlet.ConfigBasedServletInfo">
+        <!-- If servlet id is not set then a random uuid will be used -->
+        <!--<property name="servletId" value="print-server-1" />-->
+    </bean>
     <bean id="main" class="org.mapfish.print.cli.Main"/>
     <bean id="workingDirectories" class="org.mapfish.print.config.WorkingDirectories">
         <property name="working" value="${workingDir}" />
@@ -40,7 +44,10 @@
 
     <bean id="registry" class="org.mapfish.print.servlet.registry.BasicRegistry"/>
     <bean id="mapPrinterFactory" class="org.mapfish.print.servlet.ServletMapPrinterFactory"/>
-    <bean id="jobManager" class="org.mapfish.print.servlet.job.ThreadPoolJobManager"/>
+    <bean id="jobManager" class="org.mapfish.print.servlet.job.ThreadPoolJobManager">
+        <property name="maxNumberOfRunningPrintJobs" value="10" />
+        <property name="maxNumberOfWaitingJobs" value="5000" />
+    </bean>
     <bean id="printJobFactory" class="org.mapfish.print.servlet.job.FilePrintJob"/>
     <bean id="fileReportLoader" class="org.mapfish.print.servlet.job.loader.FileReportLoader"/>
 

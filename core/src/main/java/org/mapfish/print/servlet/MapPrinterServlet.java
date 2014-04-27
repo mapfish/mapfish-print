@@ -21,7 +21,6 @@ package org.mapfish.print.servlet;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.MapPrinter;
@@ -46,7 +45,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -55,7 +53,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.UUID;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -102,6 +99,9 @@ public class MapPrinterServlet extends BaseMapServlet {
     private MapPrinterFactory printerFactory;
     @Autowired
     private PrintJobFactory printJobFactory;
+    @Autowired
+    private ServletInfo servletInfo;
+
 
     @RequestMapping(value = STATUS_URL + "/{referenceId}", method = RequestMethod.GET)
     private void getStatus(final String referenceId, final HttpServletResponse httpServletResponse) {
@@ -185,7 +185,7 @@ public class MapPrinterServlet extends BaseMapServlet {
 
         PJsonObject specJson = MapPrinter.parseSpec(requestData);
 
-        String ref = UUID.randomUUID().toString();
+        String ref = UUID.randomUUID().toString() + "@" + this.servletInfo.getServletId();
         PrintWriter writer = null;
         try {
             PrintJob job = this.printJobFactory.create();
@@ -212,30 +212,6 @@ public class MapPrinterServlet extends BaseMapServlet {
         } finally {
             if (writer != null) {
                 writer.close();
-            }
-        }
-    }
-
-    /**
-     * Get the json request data from the request object.
-     *
-     * @param httpServletRequest the request object.
-     */
-    protected final String getSpecFromPostBody(final HttpServletRequest httpServletRequest) throws IOException {
-        if (httpServletRequest.getParameter("spec") != null) {
-            return httpServletRequest.getParameter("spec");
-        }
-        BufferedReader data = httpServletRequest.getReader();
-        try {
-            StringBuilder spec = new StringBuilder();
-            String cur;
-            while ((cur = data.readLine()) != null) {
-                spec.append(cur).append("\n");
-            }
-            return spec.toString();
-        } finally {
-            if (data != null) {
-                data.close();
             }
         }
     }

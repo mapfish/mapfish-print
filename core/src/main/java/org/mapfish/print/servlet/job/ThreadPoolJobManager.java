@@ -20,6 +20,7 @@
 package org.mapfish.print.servlet.job;
 
 import com.google.common.base.Optional;
+import com.vividsolutions.jts.util.Assert;
 import org.json.JSONException;
 import org.mapfish.print.servlet.registry.Registry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +29,16 @@ import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
@@ -57,15 +61,6 @@ public class ThreadPoolJobManager implements JobManager {
      */
     private static final String LAST_PRINT_COUNT = "lastPrintCount";
 
-    @Override
-    public final Optional<? extends CompletedPrintJob> getCompletedPrintJob(final String referenceId) {
-        try {
-            return CompletedPrintJob.load(referenceId, this.registry);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     /**
      * Total time spent printing.
      */
@@ -78,12 +73,57 @@ public class ThreadPoolJobManager implements JobManager {
      * A registry tracking when the last time a metadata was check to see if it is done.
      */
     private static final String LAST_POLL = "lastPoll_";
+    private static final int DEFAULT_MAX_WAITING_JOBS = 5000;
+    private static final long DEFAULT_THREAD_IDLE_TIME = 60L;
+
+    /**
+     * The maximum number of threads that will be used for print jobs, this is not the number of threads
+     * used by the system because there can be more used by the {@link org.mapfish.print.processor.ProcessorDependencyGraph}
+     * when actually doing the printing.
+     */
+    private int maxNumberOfRunningPrintJobs = Runtime.getRuntime().availableProcessors();
+    /**
+     * The maximum number of print job requests that are waiting to be executed.
+     * <p/>
+     * This prevents spikes in requests from completely destroying the server.
+     */
+    private int maxNumberOfWaitingJobs = DEFAULT_MAX_WAITING_JOBS;
+    /**
+     * The amount of time to let a thread wait before being shutdown.
+     */
+    private long maxIdleTime = DEFAULT_THREAD_IDLE_TIME;
+    /**
+     * A comparator for comparing {@link org.mapfish.print.servlet.job.SubmittedPrintJob}s and
+     * prioritizing them.
+     * <p/>
+     * For example it could be that requests from certain users (like executive officers) are prioritized over requests from
+     * other users.
+     */
+    private Comparator<PrintJob> jobPriorityComparator = new Comparator<PrintJob>() {
+        @Override
+        public int compare(final PrintJob o1, final PrintJob o2) {
+            return 0;
+        }
+    };
 
     private ExecutorService executor;
-    private final Collection<SubmittedPrintJob> runningTasksFutures = new ArrayList<SubmittedPrintJob>();
 
+    private final Collection<SubmittedPrintJob> runningTasksFutures = new ArrayList<SubmittedPrintJob>();
     @Autowired
     private Registry registry;
+    private PriorityBlockingQueue<Runnable> queue;
+
+    public final void setMaxNumberOfRunningPrintJobs(final int maxNumberOfRunningPrintJobs) {
+        this.maxNumberOfRunningPrintJobs = maxNumberOfRunningPrintJobs;
+    }
+
+    public final void setMaxNumberOfWaitingJobs(final int maxNumberOfWaitingJobs) {
+        this.maxNumberOfWaitingJobs = maxNumberOfWaitingJobs;
+    }
+
+    public final void setJobPriorityComparator(final Comparator<PrintJob> jobPriorityComparator) {
+        this.jobPriorityComparator = jobPriorityComparator;
+    }
 
     /**
      * Called by spring after constructing the java bean.
@@ -93,7 +133,17 @@ public class ThreadPoolJobManager implements JobManager {
         CustomizableThreadFactory threadFactory = new CustomizableThreadFactory();
         threadFactory.setDaemon(true);
         threadFactory.setThreadNamePrefix("PrintJobManager-");
-        this.executor = Executors.newCachedThreadPool(threadFactory);
+
+        this.queue = new PriorityBlockingQueue<Runnable>(this.maxNumberOfWaitingJobs, new Comparator<Runnable>() {
+            @Override
+            public int compare(final Runnable o1, final Runnable o2) {
+                Assert.isTrue(o1 instanceof PrintJob, o1 + " should be a " + PrintJob.class.getName());
+                Assert.isTrue(o2 instanceof PrintJob, o2 + " should be a " + PrintJob.class.getName());
+                return ThreadPoolJobManager.this.jobPriorityComparator.compare((PrintJob) o1, (PrintJob) o2);
+            }
+        });
+        this.executor = new ThreadPoolExecutor(0, this.maxNumberOfRunningPrintJobs, this.maxIdleTime, TimeUnit.SECONDS, this.queue,
+                threadFactory);
         this.executor.submit(new PostResultToRegistryTask());
     }
 
@@ -107,6 +157,12 @@ public class ThreadPoolJobManager implements JobManager {
 
     @Override
     public final void submit(final PrintJob job) {
+        final int numberOfWaitingRequests = this.queue.size();
+        if (numberOfWaitingRequests >= this.maxNumberOfWaitingJobs) {
+            throw new RuntimeException("Max number of waiting print job requests exceeded.  Number of waiting requests are: " +
+                                       numberOfWaitingRequests);
+        }
+
         this.registry.incrementInt(NEW_PRINT_COUNT, 1);
         final Future<CompletedPrintJob> future = this.executor.submit(job);
         this.runningTasksFutures.add(new SubmittedPrintJob(future, job.getReferenceId()));
@@ -146,9 +202,15 @@ public class ThreadPoolJobManager implements JobManager {
         return this.registry.getNumber(LAST_PRINT_COUNT).intValue();
     }
 
-    /**
-     *
-     */
+    @Override
+    public final Optional<? extends CompletedPrintJob> getCompletedPrintJob(final String referenceId) {
+        try {
+            return CompletedPrintJob.load(referenceId, this.registry);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private class PostResultToRegistryTask implements Callable<Void> {
 
         private static final int CHECK_INTERVAL = 500;
