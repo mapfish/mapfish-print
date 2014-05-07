@@ -20,6 +20,7 @@
 package org.mapfish.print.config;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
@@ -103,14 +104,6 @@ public class Configuration {
             json.endObject();
         }
         json.endArray();
-    }
-
-    public final boolean isReloadConfig() {
-        return this.reloadConfig;
-    }
-
-    public final void setReloadConfig(final boolean reloadConfig) {
-        this.reloadConfig = reloadConfig;
     }
 
     public final String getProxyBaseUrl() {
@@ -263,5 +256,25 @@ public class Configuration {
 
     public final void setThrowErrorOnExtraParameters(final boolean throwErrorOnExtraParameters) {
         this.throwErrorOnExtraParameters = throwErrorOnExtraParameters;
+    }
+
+    /**
+     * Validate that the configuration is valid.
+     *
+     * @return any validation errors.
+     */
+    public final List<Throwable> validate() {
+        List<Throwable> validationErrors = Lists.newArrayList();
+        if (this.configurationFile == null) {
+            validationErrors.add(new ConfigurationException("Configuration file is field on configuration object is null"));
+        }
+        if (this.templates.isEmpty()) {
+            validationErrors.add(new ConfigurationException("There are not templates defined."));
+        }
+        for (Template template : this.templates.values()) {
+            template.validate(validationErrors);
+        }
+
+        return validationErrors;
     }
 }

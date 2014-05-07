@@ -21,10 +21,9 @@ package org.mapfish.print.config;
 
 import com.codahale.metrics.MetricRegistry;
 import org.mapfish.print.processor.AbstractProcessor;
-import org.mapfish.print.processor.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Map;
+import java.util.List;
 import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertNotNull;
@@ -59,5 +58,10 @@ public class ProcessorWithSpringInjection extends AbstractProcessor<Object, Void
     @Override
     public Void execute(Object values) throws Exception {
         return null;
+    }
+
+    @Override
+    protected void extraValidation(List<Throwable> validationErrors) {
+        // no checks
     }
 }

@@ -25,4 +25,11 @@
     <bean id="servlet" class="org.mapfish.print.servlet.MapPrinterServlet">
         <property name="maxCreateAndGetWaitTimeInSeconds" value="30" />
     </bean>
+    <bean id="mapPrinterFactory" class="org.mapfish.print.servlet.ServletMapPrinterFactory">
+        <property name="configurationFiles">
+            <map>
+                <entry key="default" value="servlet:///config.yaml" />
+            </map>
+        </property>
+    </bean>
 </beans>

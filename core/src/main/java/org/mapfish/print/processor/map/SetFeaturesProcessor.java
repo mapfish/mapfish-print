@@ -25,6 +25,8 @@ import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.processor.AbstractProcessor;
 
+import java.util.List;
+
 /**
  * Processor to set features to the vector layers.
  * <p/>
@@ -54,6 +56,11 @@ public class SetFeaturesProcessor extends
         }
 
         return new Output(values.map);
+    }
+
+    @Override
+    protected void extraValidation(final List<Throwable> validationErrors) {
+        // no checks needed
     }
 
     /**

@@ -22,6 +22,8 @@ package org.mapfish.print.servlet.job;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Date;
+
 /**
  * Represents a failed print job.
  *
@@ -34,13 +36,15 @@ public class FailedPrintJob extends CompletedPrintJob {
     /**
      * Constructor.
      *
-     * @param referenceId reference of the report.
-     * @param appId the appId used for loading the configuration.
-     * @param fileName the fileName to send to the client.
-     * @param error the error that occurred during running.
+     * @param referenceId    reference of the report.
+     * @param appId          the appId used for loading the configuration.
+     * @param completionDate the date when the print job completed
+     * @param fileName       the fileName to send to the client.
+     * @param error          the error that occurred during running.
      */
-    public FailedPrintJob(final String referenceId, final String appId, final String fileName, final String error) {
-        super(referenceId, appId, fileName);
+    public FailedPrintJob(final String referenceId, final String appId, final Date completionDate, final String fileName,
+                          final String error) {
+        super(referenceId, appId, completionDate, fileName);
         this.error = error;
     }
 
@@ -52,17 +56,18 @@ public class FailedPrintJob extends CompletedPrintJob {
     /**
      * Construct a new instance from the values provided.
      *
-     * @param metadata the metadata retrieved from the registry.  Only need it to get the extra information that is not stored by
-     *                 parent class.
-     * @param referenceId reference of the report.
-     * @param appId the appId used for loading the configuration.
-     * @param fileName the fileName to send to the client.
+     * @param metadata       the metadata retrieved from the registry.  Only need it to get the extra information that is not stored by
+     *                       parent class.
+     * @param referenceId    reference of the report.
+     * @param appId          the appId used for loading the configuration.
+     * @param completionDate the date when the print job completed
+     * @param fileName       the fileName to send to the client.
      */
     public static FailedPrintJob load(final JSONObject metadata, final String referenceId, final String appId,
-                                      final String fileName) throws JSONException {
+                                      final Date completionDate, final String fileName) throws JSONException {
         String error = metadata.getString(JSON_ERROR);
 
-        return new FailedPrintJob(referenceId, appId, fileName, error);
+        return new FailedPrintJob(referenceId, appId, completionDate, fileName, error);
     }
 
 

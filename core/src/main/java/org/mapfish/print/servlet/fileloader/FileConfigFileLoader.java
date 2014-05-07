@@ -17,16 +17,32 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.servlet.job;
+package org.mapfish.print.servlet.fileloader;
+
+import com.google.common.collect.Iterators;
+
+import java.io.File;
+import java.net.URI;
+import java.util.Iterator;
 
 /**
- * Create PrintJob instance.
+ * A plugin that loads the config resources from urls starting with prefix:
+ * {@value org.mapfish.print.servlet.fileloader.FileConfigFileLoader#PREFIX}://.
  *
- * @author jesseeichar on 3/18/14.
+ * @author Jesse on 4/28/2014.
  */
-public interface PrintJobFactory {
-    /**
-     * Create a print job.
-     */
-    PrintJob create();
+public final class FileConfigFileLoader extends AbstractFileConfigFileLoader {
+    static final String PREFIX = "file";
+
+    @Override
+    protected Iterator<File> resolveFiles(final URI fileURI) {
+        final File file = new File(fileURI);
+
+        return Iterators.singletonIterator(file);
+    }
+
+    @Override
+    public String getUriScheme() {
+        return PREFIX;
+    }
 }

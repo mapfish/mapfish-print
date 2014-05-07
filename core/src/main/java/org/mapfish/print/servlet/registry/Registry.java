@@ -50,6 +50,7 @@ public interface Registry {
      * @param key the key to use for lookup.
      */
     URI getURI(String key);
+
     /**
      * Put a string in the registry.
      * @param key the key of the entry
@@ -76,6 +77,15 @@ public interface Registry {
      * @param key the number
      */
     Number getNumber(String key);
+
+    /**
+     * Get a value from the registry or return the default if the value is not in the registry.
+     *
+     * @param key the key of the element to the key to use for lookup.
+     * @param defaultValue the value to return if a value with the key is not in the registry
+     * @param <T> the type of the returned object
+     */
+    <T> T opt(String key, T defaultValue);
 
     /**
      * Put a json object in the registry.

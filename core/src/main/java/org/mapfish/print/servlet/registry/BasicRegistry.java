@@ -45,10 +45,7 @@ public class BasicRegistry implements Registry {
 
     @Override
     public final long incrementLong(final String key, final long amount) {
-        long newValue = amount;
-        if (containsKey(key)) {
-            newValue = getNumber(key).longValue() + amount;
-        }
+        long newValue = opt(key, amount);
         put(key, newValue);
         return newValue;
 
@@ -56,10 +53,7 @@ public class BasicRegistry implements Registry {
 
     @Override
     public final synchronized int incrementInt(final String key, final int amount) {
-        int newValue = amount;
-        if (containsKey(key)) {
-            newValue = getNumber(key).intValue() + amount;
-        }
+        int newValue = opt(key, amount);
         put(key, newValue);
         return newValue;
     }
@@ -87,6 +81,15 @@ public class BasicRegistry implements Registry {
     @Override
     public final synchronized Number getNumber(final String key) {
         return (Number) this.registry.get(key);
+    }
+
+    @Override
+    public final <T> T opt(final String key, final T defaultValue) {
+        @SuppressWarnings("unchecked") T value = (T) this.registry.get(key);
+        if (value == null) {
+            return defaultValue;
+        }
+        return value;
     }
 
     @Override

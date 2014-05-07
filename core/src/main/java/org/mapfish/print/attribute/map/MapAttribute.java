@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 
 import org.geotools.referencing.CRS;
 import org.mapfish.print.attribute.AttributeWithDefaultConfig;
+import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.map.Scale;
@@ -112,6 +113,21 @@ public final class MapAttribute extends AttributeWithDefaultConfig<MapAttribute.
     @Override
     public PObject getDefaultValues() {
         return this.defaults;
+    }
+
+    @Override
+    public void validate(final List<Throwable> validationErrors) {
+        if (this.width < 1) {
+            validationErrors.add(new ConfigurationException("width field is not legal: " + this.width + " in " + getClass().getName()));
+        }
+
+        if (this.height < 1) {
+            validationErrors.add(new ConfigurationException("height field is not legal: " + this.height + " in " + getClass().getName()));
+        }
+
+        if (this.maxDpi < 1) {
+            validationErrors.add(new ConfigurationException("maxDpi field is not legal: " + this.maxDpi + " in " + getClass().getName()));
+        }
     }
 
     /**

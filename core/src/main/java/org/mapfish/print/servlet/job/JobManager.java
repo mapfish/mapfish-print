@@ -21,8 +21,6 @@ package org.mapfish.print.servlet.job;
 
 import com.google.common.base.Optional;
 
-import java.net.URI;
-
 /**
  * Manages and Executes Print Jobs.
  *
@@ -50,13 +48,6 @@ public interface JobManager {
      * Get the total number of print requests made.
      */
     int getNumberOfRequestsMade();
-
-    /**
-     * get the URI for loading the report data.
-     *
-     * @param referenceId the reference string of the report.
-     */
-    URI getURI(String referenceId);
 
     /**
      * Get the time since a client has last requested the print job.

@@ -23,6 +23,8 @@ import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.config.Template;
 
+import java.util.List;
+
 /**
  * An attribute which is essentially a ReflectiveAttribute but rather than representing a single object it represents
  * an array of objects.
@@ -57,6 +59,11 @@ public abstract class ArrayReflectiveAttribute<Value> implements Attribute {
                         @Override
                         public Value createValue(final Template template) {
                             return ArrayReflectiveAttribute.this.createValue(template);
+                        }
+
+                        @Override
+                        public void validate(final List<Throwable> validationErrors) {
+                            ArrayReflectiveAttribute.this.validate(validationErrors);
                         }
                     };
                 }

@@ -91,6 +91,11 @@ public class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, Le
         }
     }
 
+    @Override
+    protected void extraValidation(final List<Throwable> validationErrors) {
+        // no checks needed
+    }
+
     /**
      * The Input Parameter object for {@link org.mapfish.print.processor.jasper.LegendProcessor}.
      */

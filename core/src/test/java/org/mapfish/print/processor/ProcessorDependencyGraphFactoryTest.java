@@ -198,6 +198,11 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         }
 
         @Override
+        protected void extraValidation(List<Throwable> validationErrors) {
+            // no checks
+        }
+
+        @Override
         public final Out execute(In values) throws Exception {
             TestOrderExecution tracker = values.executionOrder;
             if (tracker != null) {
@@ -312,6 +317,11 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
             final TrackerContainer trackerContainer = new TrackerContainer();
             trackerContainer.executionOrder = new TestOrderExecution();
             return trackerContainer;
+        }
+
+        @Override
+        protected void extraValidation(List<Throwable> validationErrors) {
+            // no checks
         }
 
         @Override

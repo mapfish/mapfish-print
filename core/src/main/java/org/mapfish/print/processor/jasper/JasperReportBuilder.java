@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * A processor that actually compiles a jasper report.
@@ -136,4 +137,10 @@ public class JasperReportBuilder extends AbstractProcessor<Object, Void> impleme
         return getClass().getSimpleName() + "(" + this.directory + ")";
     }
 
+    @Override
+    protected final void extraValidation(final List<Throwable> validationErrors) {
+        if (this.directory == null) {
+            validationErrors.add(new IllegalStateException("No jasper template output directory defined in " + getClass().getName()));
+        }
+    }
 }

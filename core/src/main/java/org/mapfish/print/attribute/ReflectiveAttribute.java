@@ -139,12 +139,14 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
                     json.object();
                     json.key("type").value(stringRepresentation(attribute.getType()));
                     json.key("default").value(attribute.get(exampleValue));
+                    json.endObject();
                 }
                 json.endObject();
             }
-            json.endObject();
         } catch (IllegalAccessException e) {
             throw new Error(e);
         }
     }
+
+
 }

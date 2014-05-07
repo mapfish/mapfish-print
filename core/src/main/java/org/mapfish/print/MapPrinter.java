@@ -28,10 +28,11 @@ import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.Closeable;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.Map;
 
 /**
@@ -41,7 +42,7 @@ import java.util.Map;
  * This class should not be directly created but rather obtained from an application
  * context object so that all plugins and dependencies are correctly injected into it
  */
-public class MapPrinter implements Closeable {
+public class MapPrinter {
 
     private Configuration configuration;
     @Autowired
@@ -58,6 +59,17 @@ public class MapPrinter implements Closeable {
     public final void setConfiguration(final File newConfigFile) throws IOException {
         this.configFile = newConfigFile;
         this.configuration = this.configurationFactory.getConfig(newConfigFile);
+    }
+
+    /**
+     * Set the configuration file and update the configuration for this printer.
+     *
+     * @param newConfigFile the file containing the new configuration.
+     * @param configFileData the config file data.
+     */
+    public final void setConfiguration(final URI newConfigFile, final byte[] configFileData) throws IOException {
+        this.configFile = new File(newConfigFile);
+        this.configuration = this.configurationFactory.getConfig(this.configFile, new ByteArrayInputStream(configFileData));
     }
 
     public final Configuration getConfiguration() {
@@ -86,15 +98,6 @@ public class MapPrinter implements Closeable {
             throw new RuntimeException("Cannot parse the spec file", e);
         }
         return new PJsonObject(jsonSpec, "spec");
-    }
-
-    /**
-     * Shut down any resources that the mapprinter might have started like HTTP connections or open files, database connections, etc...
-     */
-    @Override
-    public final void close() {
-        // TODO implement
-        throw new UnsupportedOperationException();
     }
 
     /**

@@ -23,6 +23,7 @@ import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.HasDefaultValue;
 
 import java.net.URL;
+import java.util.List;
 
 /**
  * Objects needed by the {@link org.mapfish.print.processor.jasper.LegendProcessor}.
@@ -32,6 +33,11 @@ public final class LegendAttribute extends ReflectiveAttribute<LegendAttribute.L
     @Override
     public LegendAttributeValue createValue(final Template template) {
         return new LegendAttributeValue();
+    }
+
+    @Override
+    public void validate(final List<Throwable> validationErrors) {
+        // no checks required
     }
 
     /**

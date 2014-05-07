@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version last-->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MapOnly_A4_Landscape" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a7a9883c-4f9f-4a4a-b97b-16b15015bf20">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<parameter name="geojsonMap" class="java.awt.Image">
+		<parameterDescription><![CDATA[Geo Json map]]></parameterDescription>
+	</parameter>
+	<parameter name="imageMap" class="java.awt.Image">
+		<parameterDescription><![CDATA[Geo referenced image map]]></parameterDescription>
+	</parameter>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="500" splitType="Stretch">
+			<image>
+				<reportElement x="0" y="0" width="802" height="500" uuid="4fa1a65f-10f4-4518-b4f0-3989744e32d0"/>
+				<box>
+					<topPen lineWidth="1.6" lineStyle="Solid" lineColor="#101EE6"/>
+					<leftPen lineWidth="1.6" lineStyle="Solid" lineColor="#101EE6"/>
+					<bottomPen lineWidth="1.6" lineStyle="Solid" lineColor="#101EE6"/>
+					<rightPen lineWidth="1.6" lineStyle="Solid" lineColor="#101EE6"/>
+				</box>
+				<imageExpression><![CDATA[$P{geojsonMap}]]></imageExpression>
+			</image>
+		</band>
+		<band height="500">
+			<break>
+				<reportElement x="0" y="0" width="100" height="1" uuid="192d3794-8a62-4c98-a5e6-841a56d6a1a7"/>
+			</break>
+			<image>
+				<reportElement x="0" y="0" width="802" height="500" uuid="dbc772f0-6bd9-456a-8bdf-43c132a1d9f1"/>
+				<box>
+					<topPen lineWidth="2.0" lineStyle="Dashed" lineColor="#E30000"/>
+					<leftPen lineWidth="2.0" lineStyle="Dashed" lineColor="#E30000"/>
+					<bottomPen lineWidth="2.0" lineStyle="Dashed" lineColor="#E30000"/>
+					<rightPen lineWidth="2.0" lineStyle="Dashed" lineColor="#E30000"/>
+				</box>
+				<imageExpression><![CDATA[$P{imageMap}]]></imageExpression>
+			</image>
+		</band>
+	</detail>
+</jasperReport>

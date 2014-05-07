@@ -19,131 +19,112 @@
 
 package org.mapfish.print.servlet;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
+import com.vividsolutions.jts.util.Assert;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
+import org.mapfish.print.config.ConfigurationFactory;
+import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nullable;
-import javax.servlet.Servlet;
-import javax.servlet.ServletConfig;
+import javax.annotation.PostConstruct;
 
 /**
  * A {@link org.mapfish.print.MapPrinterFactory} that reads configuration from files and uses servlet's methods for resolving
  * the paths to the files.
  * <p/>
+ *
  * @author jesseeichar on 3/18/14.
  */
 public class ServletMapPrinterFactory implements MapPrinterFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServletMapPrinterFactory.class);
+    /**
+     * The name of the default app.  This is always required to be one of the apps that are registered.
+     */
+    public static final String DEFAULT_CONFIGURATION_FILE_KEY = "default";
 
     @Autowired
     private ApplicationContext applicationContext;
-    private final HashMap<String, Long> lastModifiedTimes = new HashMap<String, Long>();
-    private Map<String, MapPrinter> printers = new HashMap<String, MapPrinter>();
-    private long lastModified = 0L;
-    private long defaultLastModified = 0L;
+    @Autowired
+    private ConfigurationFactory configurationFactory;
+
+    @Autowired
+    private ConfigFileLoaderManager configFileLoader;
+
+    private Map<String, URI> configurationFiles = new HashMap<String, URI>();
+
+    private final Map<String, MapPrinter> printers = Maps.newConcurrentMap();
+
+    private final HashMap<String, Long> configurationFileLastModifiedTimes = new HashMap<String, Long>();
+
+    @PostConstruct
+    private void validateConfigurationFiles() {
+        if (!this.configurationFiles.containsKey(DEFAULT_CONFIGURATION_FILE_KEY)) {
+            throw new BeanCreationException(getClass().getName() + " requires that one of the configurationFiles is called '" +
+                                            DEFAULT_CONFIGURATION_FILE_KEY + "'");
+        }
+
+        for (URI file : this.configurationFiles.values()) {
+            Assert.isTrue(this.configFileLoader.isAccessible(file), file + " does not exist or is not accessible.");
+        }
+    }
 
     @Override
-    public final synchronized MapPrinter create(@Nullable final String app) {
-        final ServletConfig servlet = this.applicationContext.getBean(Servlet.class).getServletConfig();
-        String configPath = servlet.getInitParameter("config");
-        if (configPath == null) {
-            throw new RuntimeException(
-                    "Missing configuration in web.xml 'web-app/servlet/init-param[param-name=config]' or " +
-                    "'web-app/context-param[param-name=config]'");
+    public final synchronized MapPrinter create(@Nullable final String app) throws NoSuchAppException {
+        String finalApp = app;
+        if (app == null) {
+            finalApp = DEFAULT_CONFIGURATION_FILE_KEY;
+        }
+        URI configFile = this.configurationFiles.get(finalApp);
+
+        if (configFile == null) {
+            throw new NoSuchAppException("There is no configurationFile registered in the " + getClass().getName() + " bean with the id: " +
+                                       "'" + configFile + "'");
         }
 
-        MapPrinter printer = null;
-        File configFile;
-        if (app != null) {
-            if (this.printers instanceof HashMap && this.printers.containsKey(app)) {
-                printer = this.printers.get(app);
-            } else {
-                printer = null;
-            }
-            configFile = new File(app);
+        final long lastModified;
+        if (this.configurationFileLastModifiedTimes.containsKey(finalApp)) {
+            lastModified = this.configurationFileLastModifiedTimes.get(finalApp);
         } else {
-            configFile = new File(configPath);
-        }
-        if (!configFile.isAbsolute()) {
-            if (app != null) {
-                if (app.toLowerCase().endsWith(".yaml")) {
-                    configFile = new File(servlet.getServletContext().getRealPath(app));
-                } else {
-                    configFile = new File(servlet.getServletContext().getRealPath(app + ".yaml"));
-                }
-            } else {
-                if (configPath.toLowerCase().endsWith(".yaml")) {
-                    configFile = new File(servlet.getServletContext().getRealPath(configPath));
-                } else {
-                    configFile = new File(servlet.getServletContext().getRealPath(configPath + ".yaml"));
-                }
-                // debugPath += "config is absolute app DEFAULT\n";
-            }
-        }
-        if (app != null) {
-            if (this.lastModifiedTimes.containsKey(app)) {
-                this.lastModified = this.lastModifiedTimes.get(app);
-            } else {
-                this.lastModified = 0L;
-            }
-        } else {
-            this.lastModified = this.defaultLastModified;
+            lastModified = 0L;
         }
 
-        boolean forceReload = false;
-        if (printer != null && printer.getConfiguration().isReloadConfig()) {
-            forceReload = true;
-        }
+        MapPrinter printer = this.printers.get(finalApp);
 
-        if (forceReload || (printer != null && configFile.lastModified() != this.lastModified)) {
+        Optional<Long> configFileLastModified = this.configFileLoader.lastModified(configFile);
+        if (configFileLastModified.isPresent() && configFileLastModified.get() > lastModified) {
             // file modified, reload it
-            if (!forceReload) {
-                LOGGER.info("Configuration file modified. Reloading...");
-            }
-            try {
-                printer.close();
+            LOGGER.info("Configuration file modified. Reloading...");
 
-                // debugPath += "printer stopped, setting NULL\n";
-            } catch (NullPointerException npe) {
-                LOGGER.info("BaseMapServlet.java: printer was not stopped. This happens when a switch between applications happens.\n"
-                            + npe);
-            }
-
+            this.printers.remove(finalApp);
             printer = null;
-            if (app != null) {
-                LOGGER.info("Printer for " + app + " stopped");
-                this.printers.put(app, null);
-            }
         }
 
         if (printer == null) {
-            this.lastModified = configFile.lastModified();
-            try {
-                LOGGER.info("Loading configuration file: " + configFile.getAbsolutePath());
-                printer = this.applicationContext.getBean(MapPrinter.class);
-                printer.setConfiguration(configFile);
+            if (configFileLastModified.isPresent()) {
+                this.configurationFileLastModifiedTimes.put(finalApp, configFileLastModified.get());
+            }
 
-                if (app != null) {
-                    if (this.printers == null) {
-                        this.printers = new HashMap<String, MapPrinter>();
-                    }
-                    this.printers.put(app, printer);
-                    this.lastModifiedTimes.put(app, this.lastModified);
-                } else {
-                    this.defaultLastModified = this.lastModified; // need this for default
-                    // application
-                }
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException("Cannot read configuration file: " + configPath, e);
+            try {
+                LOGGER.info("Loading configuration file: " + configFile);
+                printer = this.applicationContext.getBean(MapPrinter.class);
+                byte[] bytes = this.configFileLoader.loadFile(configFile);
+                printer.setConfiguration(configFile, bytes);
+
+                this.printers.put(finalApp, printer);
             } catch (Throwable e) {
                 LOGGER.error("Error occurred while reading configuration file", e);
                 throw new RuntimeException("Error occurred while reading configuration file '"
@@ -152,5 +133,31 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
         }
 
         return printer;
+    }
+
+    @Override
+    public final Set<String> getAppIds() {
+        return this.configurationFiles.keySet();
+    }
+
+    /**
+     * The setter for setting configuration file.  It will convert the value to a URI.
+     *
+     * @param configurationFiles the configuration file map.
+     */
+    public final void setConfigurationFiles(final Map<String, String> configurationFiles) throws URISyntaxException {
+        this.configurationFiles.clear();
+        for (Map.Entry<String, String> entry : configurationFiles.entrySet()) {
+            if (!entry.getValue().contains(":/")) {
+                // assume is a file
+                this.configurationFiles.put(entry.getKey(), new File(entry.getValue()).toURI());
+            } else {
+                this.configurationFiles.put(entry.getKey(), new URI(entry.getValue()));
+            }
+        }
+
+        if (this.configFileLoader != null) {
+            this.validateConfigurationFiles();
+        }
     }
 }

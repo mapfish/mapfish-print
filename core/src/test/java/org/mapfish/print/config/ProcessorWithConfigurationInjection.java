@@ -21,6 +21,7 @@ package org.mapfish.print.config;
 
 import org.mapfish.print.processor.AbstractProcessor;
 
+import java.util.List;
 import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertNotNull;
@@ -62,4 +63,8 @@ public class ProcessorWithConfigurationInjection extends AbstractProcessor<Objec
         return null;
     }
 
+    @Override
+    protected void extraValidation(List<Throwable> validationErrors) {
+        // no checks
+    }
 }

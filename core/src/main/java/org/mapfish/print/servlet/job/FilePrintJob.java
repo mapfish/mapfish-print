@@ -32,7 +32,7 @@ import java.net.URI;
  * <p/>
  * @author jesseeichar on 3/18/14.
  */
-public class FilePrintJob extends PrintJob implements PrintJobFactory {
+public class FilePrintJob extends PrintJob {
 
 
     @Autowired
@@ -59,11 +59,6 @@ public class FilePrintJob extends PrintJob implements PrintJobFactory {
                 }
             }
         }
-        return null;
-    }
-
-    @Override
-    public final PrintJob create() {
-        return new FilePrintJob();
+        return reportFile.toURI();
     }
 }

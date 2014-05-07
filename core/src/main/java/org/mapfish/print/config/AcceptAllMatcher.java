@@ -22,6 +22,7 @@ package org.mapfish.print.config;
 import com.google.common.base.Optional;
 
 import java.net.URI;
+import java.util.List;
 
 /**
  * A matcher that always returns true.
@@ -32,6 +33,10 @@ public class AcceptAllMatcher extends HostMatcher {
     @Override
     public final Optional<Boolean> tryOverrideValidation(final URI uri) {
         return Optional.of(true);
+    }
+    @Override
+    public void validate(final List<Throwable> validationErrors) {
+        // no checks required
     }
 
     @Override

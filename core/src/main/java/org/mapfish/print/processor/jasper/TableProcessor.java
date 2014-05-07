@@ -28,6 +28,7 @@ import org.mapfish.print.wrapper.json.PJsonArray;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,9 +38,6 @@ import java.util.Map;
  * @author sbrunner
  */
 public class TableProcessor extends AbstractProcessor<TableProcessor.Input, TableProcessor.Output> {
-    private static final String JSON_COLUMNS = "columns";
-    private static final String JSON_DATA = "data";
-
     /**
      * Constructor.
      */
@@ -69,6 +67,11 @@ public class TableProcessor extends AbstractProcessor<TableProcessor.Input, Tabl
 
         final JRMapCollectionDataSource dataSource = new JRMapCollectionDataSource(table);
         return new Output(dataSource);
+    }
+
+    @Override
+    protected final void extraValidation(final List<Throwable> validationErrors) {
+        // no checks needed
     }
 
     /**

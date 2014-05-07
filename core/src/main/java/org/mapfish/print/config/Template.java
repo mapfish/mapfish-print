@@ -31,6 +31,9 @@ import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +51,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
     private ProcessorDependencyGraphFactory processorGraphFactory;
 
 
-    private String jasperTemplate;
+    private String reportTemplate;
     private Map<String, Attribute> attributes;
     private List<Processor> processors;
     private String iterValue;
@@ -102,12 +105,12 @@ public class Template implements ConfigurationObject, HasConfiguration {
         this.attributes = attributes;
     }
 
-    public final String getJasperTemplate() {
-        return this.jasperTemplate;
+    public final String getReportTemplate() {
+        return this.reportTemplate;
     }
 
-    public final void setJasperTemplate(final String jasperTemplate) {
-        this.jasperTemplate = jasperTemplate;
+    public final void setReportTemplate(final String reportTemplate) {
+        this.reportTemplate = reportTemplate;
     }
 
     /**
@@ -247,5 +250,50 @@ public class Template implements ConfigurationObject, HasConfiguration {
      */
     public final void setStyle(final String styleName, final Style style) {
         this.styles.put(styleName, style);
+    }
+
+    @Override
+    public final void validate(final List<Throwable> validationErrors) {
+
+        if (getReportTemplate() == null) {
+            validationErrors.add(new ConfigurationException("No reportTemplate is defined in template"));
+        }
+
+
+        for (Processor processor : this.processors) {
+            processor.validate(validationErrors);
+        }
+
+        for (Attribute attribute : this.attributes.values()) {
+            attribute.validate(validationErrors);
+        }
+
+        try {
+            getProcessorGraph();
+        } catch (Throwable t) {
+            validationErrors.add(t);
+        }
+
+        if (getJdbcUrl() != null) {
+
+            Connection connection = null;
+            try {
+                if (getJdbcUser() != null) {
+                    connection = DriverManager.getConnection(getJdbcUrl(), getJdbcUser(), getJdbcPassword());
+                } else {
+                    connection = DriverManager.getConnection(getJdbcUrl());
+                }
+            } catch (SQLException e) {
+                validationErrors.add(e);
+            } finally {
+                if (connection != null) {
+                    try {
+                        connection.close();
+                    } catch (SQLException e) {
+                        validationErrors.add(e);
+                    }
+                }
+            }
+        }
     }
 }

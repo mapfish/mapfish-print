@@ -26,6 +26,7 @@ import org.mapfish.print.parser.MapfishParser;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * A type of attribute whose value is a primitive type.
@@ -58,6 +59,11 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
 
     public final Class<Value> getValueClass() {
         return this.valueClass;
+    }
+
+    @Override
+    public void validate(final List<Throwable> validationErrors) {
+        // no checks required
     }
 
     @Override

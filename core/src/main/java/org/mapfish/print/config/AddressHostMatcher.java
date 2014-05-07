@@ -22,6 +22,7 @@ package org.mapfish.print.config;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.List;
 
 /**
  * Compares ip address string and mask string by using {@link java.net.InetAddress} comparison.
@@ -48,6 +49,14 @@ public class AddressHostMatcher extends InetHostMatcher {
         }
         return this.maskAddress;
     }
+
+    @Override
+    public final void validate(final List<Throwable> validationErrors) {
+        if (this.ip == null) {
+            validationErrors.add(new ConfigurationException("No IP address defined " + getClass().getName()));
+        }
+    }
+
 
     public final void setIp(final String ip) {
         this.ip = ip;

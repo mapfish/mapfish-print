@@ -1,6 +1,7 @@
 
 templates:
   main: !template
+    reportTemplate: "dummy.jxml"
     attributes:
       mapDef: !map
         width: 630

@@ -36,6 +36,7 @@ import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 
 import org.mapfish.print.attribute.TableListAttribute.TableListAttributeValue;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.HasConfiguration;
 import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.output.Values;
@@ -216,6 +217,13 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Inp
     @Override
     public final void setConfiguration(final Configuration configuration) {
         this.configuration = configuration;
+    }
+
+    @Override
+    protected final void extraValidation(final List<Throwable> validationErrors) {
+        if (this.dynamicReportDirectory == null) {
+            validationErrors.add(new ConfigurationException("No dynamicReportDirectory defined in " + getClass().getName()));
+        }
     }
 
     /**

@@ -24,6 +24,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.servlet.registry.Registry;
 
+import java.util.Date;
+
 /**
  * Represent a print job that has completed.  Contains the information about the print job.
  * @author jesseeichar on 3/18/14.
@@ -37,9 +39,11 @@ public abstract class CompletedPrintJob {
     private static final String JSON_APP = "appId";
     private static final String JSON_FILENAME = "fileName";
     private static final String JSON_SUCCESS = "success";
+    private static final String JSON_COMPLETION_DATE = "completionDate";
     private final String referenceId;
     private final String appId;
     private final String fileName;
+    private Date completionDate;
 
     /**
      * Constructor.
@@ -47,10 +51,12 @@ public abstract class CompletedPrintJob {
      * @param referenceId reference of the report.
      * @param appId       the appId used for loading the configuration.
      * @param fileName    the fileName to send to the client.
+     * @param completionDate the time when the print job ended.
      */
-    public CompletedPrintJob(final String referenceId, final String appId, final String fileName) {
+    public CompletedPrintJob(final String referenceId, final String appId, final Date completionDate, final String fileName) {
         this.referenceId = referenceId;
         this.appId = appId;
+        this.completionDate = completionDate;
         this.fileName = fileName;
     }
 
@@ -64,6 +70,7 @@ public abstract class CompletedPrintJob {
         metadata.put(JSON_APP, this.appId);
         metadata.put(JSON_FILENAME, this.fileName);
         metadata.put(JSON_SUCCESS, this instanceof SuccessfulPrintJob);
+        metadata.put(JSON_COMPLETION_DATE, this.completionDate.getTime());
         addExtraParameters(metadata);
         registry.put(RESULT_METADATA + this.referenceId, metadata);
     }
@@ -85,13 +92,14 @@ public abstract class CompletedPrintJob {
         if (registry.containsKey(RESULT_METADATA + referenceId)) {
             JSONObject metadata = registry.getJSON(RESULT_METADATA + referenceId);
 
-            String appId = metadata.getString(JSON_APP);
+            String appId = metadata.optString(JSON_APP, null);
             String fileName = metadata.getString(JSON_FILENAME);
+            Date completionDate = new Date(metadata.getLong(JSON_COMPLETION_DATE));
             CompletedPrintJob report;
             if (metadata.getBoolean(JSON_SUCCESS)) {
-                report = SuccessfulPrintJob.load(metadata, referenceId, appId, fileName);
+                report = SuccessfulPrintJob.load(metadata, referenceId, appId, completionDate, fileName);
             } else {
-                report = FailedPrintJob.load(metadata, referenceId, appId, fileName);
+                report = FailedPrintJob.load(metadata, referenceId, appId, completionDate, fileName);
             }
             return Optional.of(report);
         } else {
@@ -103,4 +111,7 @@ public abstract class CompletedPrintJob {
         return this.fileName;
     }
 
+    public final Date getCompletionDate() {
+        return this.completionDate;
+    }
 }

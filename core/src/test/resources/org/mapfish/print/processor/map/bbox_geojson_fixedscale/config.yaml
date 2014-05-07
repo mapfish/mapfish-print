@@ -1,6 +1,7 @@
 throwErrorOnExtraParameters: true
 templates:
   main: !template
+    reportTemplate: "dummy.jxml"
     attributes:
       mapDef: !map
         width: 500

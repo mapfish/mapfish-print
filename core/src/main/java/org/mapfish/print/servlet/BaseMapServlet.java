@@ -28,33 +28,13 @@ import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
  * Base class for MapPrinter servlets (deals with the configuration loading).
  */
-public abstract class BaseMapServlet extends HttpServlet {
-    private static final long serialVersionUID = -6342262849725708850L;
-
+public abstract class BaseMapServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseMapServlet.class);
-
-    /**
-     * Get the base url of the webapp.
-     *
-     * @param httpServletRequest the http request object.
-     */
-    protected final String getBaseUrl(final HttpServletRequest httpServletRequest) {
-        final String additionalPath = httpServletRequest.getPathInfo();
-        String fullUrl = httpServletRequest.getParameter("url");
-        if (fullUrl != null) {
-            return fullUrl.replaceFirst(additionalPath + "$", "");
-        } else {
-            return httpServletRequest.getRequestURL().toString()
-                    .replaceFirst(additionalPath + "$", "");
-        }
-    }
 
     /**
      * Remove commas and whitespace from a string.
@@ -89,31 +69,6 @@ public abstract class BaseMapServlet extends HttpServlet {
     }
 
     /**
-     * Send an error to the client with an exception.
-     *
-     * @param httpServletResponse the http response to send the rror to
-     * @param e the error that occurred
-     */
-    protected final void error(final HttpServletResponse httpServletResponse, final Throwable e) {
-        PrintWriter out = null;
-        try {
-            httpServletResponse.setContentType("text/plain");
-            httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            out = httpServletResponse.getWriter();
-            out.println("Error while generating PDF:");
-            e.printStackTrace(out);
-
-            LOGGER.error("Error while generating PDF", e);
-        } catch (IOException ex) {
-            throw new RuntimeException(e);
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-        }
-    }
-
-    /**
      * Send an error to the client with a message.
      *
      * @param httpServletResponse the response to send the error to.
@@ -132,6 +87,31 @@ public abstract class BaseMapServlet extends HttpServlet {
             LOGGER.error("Error while generating PDF: " + message);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+        }
+    }
+
+    /**
+     * Send an error to the client with an exception.
+     *
+     * @param httpServletResponse the http response to send the rror to
+     * @param e the error that occurred
+     */
+    protected final void error(final HttpServletResponse httpServletResponse, final Throwable e) {
+        PrintWriter out = null;
+        try {
+            httpServletResponse.setContentType("text/plain");
+            httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            out = httpServletResponse.getWriter();
+            out.println("Error while generating PDF:");
+            e.printStackTrace(out);
+
+            BaseMapServlet.LOGGER.error("Error while generating PDF", e);
+        } catch (IOException ex) {
+            throw new RuntimeException(e);
         } finally {
             if (out != null) {
                 out.close();

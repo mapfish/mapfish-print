@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
+import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.processor.AbstractProcessor;
 
 import java.awt.Dimension;
@@ -117,6 +118,13 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         }
 
         return new Output(bufferedImage);
+    }
+
+    @Override
+    protected void extraValidation(final List<Throwable> validationErrors) {
+        if (this.imageType == null) {
+            validationErrors.add(new ConfigurationException("No imageType defined in " + getClass().getName()));
+        }
     }
 
     /**

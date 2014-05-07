@@ -25,6 +25,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 /**
  * Allows to check that a given URL is served by one of the local network
@@ -51,6 +52,12 @@ public class LocalHostMatcher extends InetHostMatcher {
         }
         return authorizedIPs;
     }
+
+    @Override
+    public final void validate(final List<Throwable> validationErrors) {
+        // no checks required
+    }
+
 
     @Override
     public final String toString() {
