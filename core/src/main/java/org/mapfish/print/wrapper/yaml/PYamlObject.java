@@ -88,12 +88,14 @@ public class PYamlObject extends PAbstractObject {
 
     @Override
     public final PObject optObject(final String key) {
+        @SuppressWarnings("unchecked")
         final Map<String, Object> val = (Map<String, Object>) this.obj.get(key);
         return val == null ? null : new PYamlObject(this, val, key);
     }
 
     @Override
     public final PArray optArray(final String key) {
+        @SuppressWarnings("unchecked")
         final List<Object> val = (List<Object>) this.obj.get(key);
         return val == null ? null : new PYamlArray(this, val, key);
     }

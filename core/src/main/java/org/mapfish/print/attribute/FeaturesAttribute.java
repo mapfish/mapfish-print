@@ -49,7 +49,7 @@ public class FeaturesAttribute extends AttributeWithDefaultConfig<FeaturesAttrib
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LoggerFactory.getLogger(FeaturesAttribute.class);
 
-    private PYamlObject defaults = new PYamlObject(Collections.EMPTY_MAP, "featuresAttribute");
+    private PYamlObject defaults = new PYamlObject(Collections.<String, Object>emptyMap(), "featuresAttribute");
 
     /**
      * A http request factory for making http requests.

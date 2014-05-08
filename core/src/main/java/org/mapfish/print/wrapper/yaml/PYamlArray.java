@@ -55,6 +55,7 @@ public class PYamlArray extends PElement implements PArray {
 
     @Override
     public final PObject getObject(final int i) {
+        @SuppressWarnings("unchecked")
         Map<String, Object> val = (Map<String, Object>) this.array.get(i);
         final String context = "[" + i + "]";
         if (val == null) {
@@ -65,6 +66,7 @@ public class PYamlArray extends PElement implements PArray {
 
     @Override
     public final PArray getArray(final int i) {
+        @SuppressWarnings("unchecked")
         List<Object> val = (List<Object>) this.array.get(i);
         final String context = "[" + i + "]";
         if (val == null) {

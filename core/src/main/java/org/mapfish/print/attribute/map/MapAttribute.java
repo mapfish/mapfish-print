@@ -71,7 +71,7 @@ public final class MapAttribute extends AttributeWithDefaultConfig<MapAttribute.
     private double zoomSnapTolerance = DEFAULT_SNAP_TOLERANCE;
     private ZoomLevelSnapStrategy zoomLevelSnapStrategy;
 
-    private PYamlObject defaults = new PYamlObject(Collections.EMPTY_MAP, "mapAttribute");
+    private PYamlObject defaults = new PYamlObject(Collections.<String, Object>emptyMap(), "mapAttribute");
 
     private int width;
     private int height;
