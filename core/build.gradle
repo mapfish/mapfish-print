@@ -1,10 +1,8 @@
-import org.gradle.api.plugins.jetty.JettyRun
-
 apply plugin: 'war'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
 apply plugin: 'application'
-// apply from: 'gretty.plugin'
+apply plugin: 'jetty'
 
 defaultTasks 'build'
 task wrapper(type: Wrapper) {
@@ -144,6 +142,12 @@ task libSourcesJar(type: Jar) {
     baseName = 'print-lib'
     from sourceSets.main.allSource
     classifier = 'sources'
+}
+
+jettyRun {
+    httpPort = 8080
+    scanTargets = (fileTree("src/main/").include("webapp/WEB-INF/**") + fileTree(compileJava.destinationDir)).files
+    reload = 'manual'
 }
 
 task show << {

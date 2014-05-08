@@ -28,7 +28,7 @@
     <bean id="mapPrinterFactory" class="org.mapfish.print.servlet.ServletMapPrinterFactory">
         <property name="configurationFiles">
             <map>
-                <entry key="default" value="servlet:///config.yaml" />
+                <entry key="default" value="servlet:///WEB-INF/print-config/default/config.yaml" />
             </map>
         </property>
     </bean>
