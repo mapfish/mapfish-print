@@ -27,6 +27,10 @@
             var format = $('#selectFormat').val();
             $('#spec').attr('action', 'print/' + appId + "/buildreport." + format);
         }
+        function openCapabilities() {
+            var url = $('#capabilities').attr('url');
+            window.open(url, '_capabilities')
+        }
         function copyRequestToTextArea() {
             var appId = $('#selectSpec').val();
 
@@ -47,6 +51,8 @@
 
                     formatSelect.val(select);
                     $('#spec').attr('action', 'print/' + appId + "/buildreport." + data.formats[0]);
+                    var caps = $('#capabilities');
+                    caps.attr("url", 'print/' + appId + '/capabilities.json?pretty=true');
                 }
             });
             $.ajax({
@@ -155,25 +161,29 @@
     </script>
 </head>
 <body onload="init()">
-<h1>Test page</h1>
-<h2><span id="messages"></span></h2>
-<h3><span id="validation" style="color:red"></span></h3>
+    <h1>Test page</h1>
+    <h2><span id="messages"></span></h2>
+    <h3><span id="validation" style="color:red"></span></h3>
 
-<form id="spec" action="print/buildreport.pdf" method="post">
-    <textarea id="specText" name="spec" style="width: 100%" rows="30" oninput="validateJSON()">
+    <form id="spec" action="print/buildreport.pdf" method="post">
+        <textarea id="specText" name="spec" style="width: 100%" rows="30" oninput="validateJSON()">
 
-    </textarea>
-    <br>
-    <select id="selectSpec" onchange="copyRequestToTextArea()">
-    </select>
-    <select id="selectFormat" onchange="changeFormat()">
-    </select>
-    <br>
-    <button id="CreateAndGetPrint" name="Create And Get Print" type="submit" >Create And Get Print</button>
-    <button id = "PostAndPollPrint" name="Post and Poll Print" type="button" onclick="javascript:post()">Post and Poll Print</button>
-</form>
-<p>
-    To get informations: <a href="print/capabilities.json">printInfo</a>
-</p>
+        </textarea>
+        <p>
+        <table>
+            <tr><td><label for="selectSpec">Print App/Example:</label></td><td><select id="selectSpec" onchange="copyRequestToTextArea()"></select></td></tr>
+            <tr><td><label for="selectFormat">Output Format:</label></td><td><select id="selectFormat" onchange="changeFormat()"></select></td></tr>
+        </table>
+        </p>
+        <p>
+            <button id="CreateAndGetPrint" name="Create And Get Print" type="submit" >Create And Get Print</button>
+            <button id = "PostAndPollPrint" name="Post and Poll Print" type="button" onclick="javascript:post()">Post and Poll Print</button>
+
+            <button id="capabilities"
+                    type="button"
+                    url="print/capabilities.json?pretty=true"
+                    onclick="openCapabilities()">Capabilities</button>
+        </p>
+    </form>
 </body>
 </html>

@@ -50,6 +50,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGURATION_FILE_KEY;
@@ -318,13 +319,43 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     }
 
     @Test
-    public void testGetInfo() throws Exception {
+    public void testGetCapabilities_NotPretty() throws Exception {
         setUpConfigFiles();
         final MockHttpServletResponse servletResponse = new MockHttpServletResponse();
-        this.servlet.getCapabilities(servletResponse);
+        this.servlet.getCapabilities(false, servletResponse);
         assertEquals(HttpStatus.OK.value(), servletResponse.getStatus());
 
-        final PJsonObject getInfoJson = parseJSONObjectFromString(servletResponse.getContentAsString());
+        final String contentAsString = servletResponse.getContentAsString();
+        assertFalse(contentAsString.contains("\n"));
+        final PJsonObject getInfoJson = parseJSONObjectFromString(contentAsString);
+
+        assertTrue(getInfoJson.has("layouts"));
+        final PJsonArray layouts = getInfoJson.getJSONArray("layouts");
+        assertEquals(1, layouts.size());
+        final PObject mainLayout = layouts.getObject(0);
+        assertEquals("A4 Landscape", mainLayout.getString("name"));
+        assertTrue(mainLayout.has("attributes"));
+        assertEquals(2, mainLayout.getArray("attributes").size());
+        assertEquals("MapAttributeValues", mainLayout.getArray("attributes").getObject(0).getString("name"));
+        assertTrue(getInfoJson.has("formats"));
+        final PJsonArray formats = getInfoJson.getJSONArray("formats");
+        assertTrue(formats.size() > 0);
+        assertArrayContains(formats, "png");
+        assertArrayContains(formats, "pdf");
+        assertArrayContains(formats, "xsl");
+
+    }
+
+    @Test
+    public void testGetCapabilities_Pretty() throws Exception {
+        setUpConfigFiles();
+        final MockHttpServletResponse servletResponse = new MockHttpServletResponse();
+        this.servlet.getCapabilities(true, servletResponse);
+        assertEquals(HttpStatus.OK.value(), servletResponse.getStatus());
+
+        final String contentAsString = servletResponse.getContentAsString();
+        assertTrue(contentAsString.contains("\n"));
+        final PJsonObject getInfoJson = parseJSONObjectFromString(contentAsString);
 
         assertTrue(getInfoJson.has("layouts"));
         final PJsonArray layouts = getInfoJson.getJSONArray("layouts");
@@ -354,7 +385,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     }
 
     @Test
-    public void testGetInfoWithAppId() throws Exception {
+    public void testGetCapabilitiesWithAppId_NotPretty() throws Exception {
         final HashMap<String, String> configFiles = Maps.newHashMap();
         configFiles.put("default", getFile(MapPrinterServletTest.class, "config.yaml").getAbsolutePath());
         configFiles.put("app2", getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class,
@@ -362,16 +393,18 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         printerFactory.setConfigurationFiles(configFiles);
 
         final MockHttpServletResponse defaultGetInfoResponse = new MockHttpServletResponse();
-        this.servlet.getCapabilities("default", defaultGetInfoResponse);
+        this.servlet.getCapabilities("default", false, defaultGetInfoResponse);
         assertEquals(HttpStatus.OK.value(), defaultGetInfoResponse.getStatus());
 
-        final PJsonObject defaultGetInfoJson = parseJSONObjectFromString(defaultGetInfoResponse.getContentAsString());
+        final String contentAsString = defaultGetInfoResponse.getContentAsString();
+        assertFalse(contentAsString.contains("\n"));
+        final PJsonObject defaultGetInfoJson = parseJSONObjectFromString(contentAsString);
         final PJsonArray defaultLayouts = defaultGetInfoJson.getJSONArray("layouts");
         final PObject a4LandscapeLayout = defaultLayouts.getObject(0);
         assertEquals("A4 Landscape", a4LandscapeLayout.getString("name"));
 
         final MockHttpServletResponse app2GetInfoResponse = new MockHttpServletResponse();
-        this.servlet.getCapabilities("app2", app2GetInfoResponse);
+        this.servlet.getCapabilities("app2", false, app2GetInfoResponse);
         assertEquals(HttpStatus.OK.value(), app2GetInfoResponse.getStatus());
 
         final PJsonObject app2GetInfoJson = parseJSONObjectFromString(app2GetInfoResponse.getContentAsString());
@@ -380,7 +413,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals("main", mainLayout.getString("name"));
 
         final MockHttpServletResponse noSuchGetInfoResponse = new MockHttpServletResponse();
-        this.servlet.getCapabilities("NoSuch", noSuchGetInfoResponse);
+        this.servlet.getCapabilities("NoSuch", false, noSuchGetInfoResponse);
         assertEquals(HttpStatus.NOT_FOUND.value(), noSuchGetInfoResponse.getStatus());
     }
 
