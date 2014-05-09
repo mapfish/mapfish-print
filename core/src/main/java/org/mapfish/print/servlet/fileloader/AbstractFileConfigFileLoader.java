@@ -48,6 +48,22 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
     protected abstract Iterator<File> resolveFiles(URI fileURI);
 
     @Override
+    public final Optional<File> toFile(final URI fileUri) {
+        try {
+            final Iterator<File> fileIterator = resolveFiles(fileUri);
+            while (fileIterator.hasNext()) {
+                File next = fileIterator.next();
+                if (next.exists()) {
+                    return Optional.of(next);
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            // ignore because it just means that this can't handle the uri
+        }
+        return Optional.absent();
+    }
+
+    @Override
     public final Optional<Long> lastModified(final URI fileURI) {
         Optional<File> file = findFile(resolveFiles(fileURI));
 

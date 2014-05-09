@@ -27,6 +27,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
@@ -77,6 +78,17 @@ public final class ConfigFileLoaderManager implements ConfigFileLoaderPlugin {
         if (violations.length() > 0) {
             throw new IllegalStateException(violations.toString());
         }
+    }
+
+    @Override
+    public Optional<File> toFile(final URI fileUri) {
+        for (ConfigFileLoaderPlugin configFileLoaderPlugin : getLoaderPlugins()) {
+            final Optional<File> fileOptional = configFileLoaderPlugin.toFile(fileUri);
+            if (fileOptional.isPresent()) {
+                return fileOptional;
+            }
+        }
+        return Optional.absent();
     }
 
     @Override

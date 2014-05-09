@@ -1,6 +1,6 @@
 @echo off
 
-set GRADLE_OPTS=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005
+set GRADLE_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=23111
 
 set CMD_LINE_ARGS=
 

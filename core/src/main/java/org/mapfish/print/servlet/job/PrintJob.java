@@ -119,7 +119,7 @@ public abstract class PrintJob implements Callable<CompletedPrintJob> {
             }
 
 
-            spec = PrintJob.this.requestData.getJSONObject(MapPrinterServlet.JSON_SPEC);
+            spec = PrintJob.this.requestData;
             final MapPrinter mapPrinter = PrintJob.this.mapPrinterFactory.create(getAppId());
             URI reportURI = withOpenOutputStream(new PrintAction() {
                 @Override
@@ -146,7 +146,7 @@ public abstract class PrintJob implements Callable<CompletedPrintJob> {
             return new FailedPrintJob(this.referenceId, getAppId(), new Date(), fileName, e.getMessage());
         } finally {
             final long stop = timer.stop();
-            LOGGER.debug("Print Job completed in " + stop + "ms");
+            LOGGER.debug("Print Job " + PrintJob.this.referenceId + " completed in " + stop + "ms");
         }
     }
 
@@ -188,8 +188,7 @@ public abstract class PrintJob implements Callable<CompletedPrintJob> {
             }
         }
 
-        final PJsonObject spec = job.getJSONObject(MapPrinterServlet.JSON_SPEC);
-        mapPrinter.print(spec, out, headerMap);
+        mapPrinter.print(job, out, headerMap);
     }
 
 

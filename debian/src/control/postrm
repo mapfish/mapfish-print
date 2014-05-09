@@ -1,0 +1,3 @@
+#!/bin/sh
+
+# This script is ran after removal of the debian package.  This should include any extra clean up that is required.

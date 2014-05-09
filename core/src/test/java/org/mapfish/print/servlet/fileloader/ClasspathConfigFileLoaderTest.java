@@ -43,6 +43,14 @@ public class ClasspathConfigFileLoaderTest extends AbstractMapfishSpringTest {
             '/') + "/config.yaml";
 
     @Test
+    public void testToFile() throws Exception {
+        assertFalse(loader.toFile(new URI("file://blahblahblah")).isPresent());
+        assertTrue(loader.toFile(new URI(configFileUriString)).isPresent());
+        final URI fileUri = new URI("classpath://" + FileConfigFileLoaderTest.class.getPackage().getName().replace('.', '/'));
+        assertTrue(loader.toFile(fileUri).isPresent());
+    }
+
+    @Test
     public void testLastModified() throws Exception {
         final File file = getFile(FileConfigFileLoaderTest.class, "config.yaml");
 
