@@ -1,0 +1,35 @@
+package org.mapfish.print.attribute;
+
+import org.junit.Test;
+import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.ConfigurationFactory;
+import org.mapfish.print.config.Template;
+import org.mapfish.print.output.Values;
+import org.mapfish.print.parser.MapfishParser;
+import org.mapfish.print.wrapper.json.PJsonObject;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.File;
+
+import static org.junit.Assert.assertNotNull;
+
+public class StyleAttributeTest extends AbstractMapfishSpringTest {
+
+    @Autowired
+    private ConfigurationFactory configurationFactory;
+    @Autowired
+    private MapfishParser parser;
+
+    @Test
+    public void testAttributesFromJson() throws Exception {
+        final File configFile = getFile(StyleAttributeTest.class, "style_attributes/config.yaml");
+        final Configuration config = configurationFactory.getConfig(configFile);
+        final Template template = config.getTemplate("main");
+        final PJsonObject pJsonObject = parseJSONObjectFromFile(StyleAttributeTest.class, "style_attributes/request.json");
+        final Values values = new Values(pJsonObject, template, new MapfishParser());
+        final StyleAttribute.StylesAttributeValues value = values.getObject("styleDef", StyleAttribute.StylesAttributeValues.class);
+
+        assertNotNull(value.getStyle());
+    }
+}
