@@ -76,7 +76,7 @@ public final class BBoxMapBounds extends MapBounds {
     }
 
     @Override
-    public MapBounds adjustedEnvelope(final Rectangle paintArea, final double dpi) {
+    public MapBounds adjustedEnvelope(final Rectangle paintArea) {
         final double paintAreaAspectRatio = paintArea.getWidth() / paintArea.getHeight();
         final double bboxAspectRatio = this.bbox.getWidth() / this.bbox.getHeight();
         if (paintAreaAspectRatio > bboxAspectRatio) {

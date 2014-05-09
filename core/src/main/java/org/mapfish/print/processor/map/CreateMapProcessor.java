@@ -100,7 +100,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                         mapValues.getZoomLevelSnapStrategy(), paintArea, dpi);
         }
         if (mapValues.isUseAjustBounds()) {
-            bounds = bounds.adjustedEnvelope(paintArea, dpi);
+            bounds = bounds.adjustedEnvelope(paintArea);
         }
 
         final BufferedImage bufferedImage = new BufferedImage(mapSize.width, mapSize.height, this.imageType.value);

@@ -55,9 +55,8 @@ public abstract class MapBounds {
      * <p/>
      *
      * @param paintArea the size of the map that will be drawn.
-     * @param dpi the dpi of the map
      */
-    public abstract MapBounds adjustedEnvelope(Rectangle paintArea, double dpi);
+    public abstract MapBounds adjustedEnvelope(Rectangle paintArea);
 
     /**
      * Get the projection these bounds are calculated in.

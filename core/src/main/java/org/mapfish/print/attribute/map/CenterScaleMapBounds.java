@@ -85,7 +85,7 @@ public final class CenterScaleMapBounds extends MapBounds {
     }
 
     @Override
-    public MapBounds adjustedEnvelope(final Rectangle paintArea, final double dpi) {
+    public MapBounds adjustedEnvelope(final Rectangle paintArea) {
         return this;
     }
 
