@@ -40,6 +40,7 @@ dependencies {
             "com.codahale.metrics:metrics-servlet:$metricsVersion",
             "com.codahale.metrics:metrics-httpclient:$metricsVersion",
             "com.codahale.metrics:metrics-servlets:$metricsVersion",
+            "com.codahale.metrics:metrics-jvm:$metricsVersion",
             "com.codahale.metrics:metrics-logback:$metricsVersion"
     )
     def geotoolsVersion = "11.0"
