@@ -1,0 +1,64 @@
+<html>
+    <head>
+    <title>GeoExt Popup Example</title>
+
+    <!-- ExtJS -->
+    <script type="text/javascript" src="http://cdn.sencha.com/ext/gpl/4.2.1/examples/shared/include-ext.js"></script>
+    <script type="text/javascript" src="http://cdn.sencha.com/ext/gpl/4.2.1/examples/shared/options-toolbar.js"></script>
+
+    <!-- Shared -->
+    <link rel="stylesheet" type="text/css" href="http://cdn.sencha.com/ext/gpl/4.2.1/examples/shared/example.css" />
+
+    <link rel="stylesheet" type="text/css" href="../../resources/css/popup.css">
+
+    <!-- You should definitely consider using a custom single-file version of OpenLayers -->
+    <script src="http://openlayers.org/api/2.13.1/OpenLayers.js"></script>
+
+    <script type="text/javascript" src="../loader.js"></script>
+    <script type="text/javascript" src="popup.js"></script>
+
+    <style type="text/css">
+        div#map {
+           width: 650px;
+           height: 400px;
+           position: relative;
+        }
+    </style>
+    </head>
+    <body>
+        <h1>Popup Example</h1>
+        <p>Click on the point in the map panel to open a popup.</p>
+
+        <p>
+            When unanchored, the next popup to be created ...
+            <ul>
+                <li>
+                    <label>
+                        <input type='radio' name='constrainOpt' value="no-constrain" checked>
+                        ... can be dragged outside of the
+                        <code>&lt;body&gt;</code>
+                    </label>
+                </li>
+                <li>
+                    <label>
+                        <input type='radio' name='constrainOpt' value="constrain-header">
+                        ... can be dragged outside of the
+                        <code>&lt;body&gt;</code>, its header not
+                    </label>
+                </li>
+                <li>
+                    <label>
+                        <input type='radio' name='constrainOpt' value="constrain-full">
+                        ... cannot be dragged outside of the
+                        <code>&lt;body&gt;</code>
+                    </label>
+                </li>
+            </ul>
+        </p>
+
+        <p>The js is not minified so it is readable.
+        See <a href="popup.js">popup.js</a>.</p>
+
+        <div id="container"></div>
+    </body>
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all.css">
+    <script type="text/javascript" src="http://openlayers.org/api/2.13.1/OpenLayers.js"></script>
+    <script type="text/javascript" src="http://cdn.sencha.io/ext/gpl/4.2.1/ext-all-debug.js"></script>
+
+    <script type="text/javascript">
+
+        Ext.Loader.setConfig({
+            enabled:true,
+            disableCaching: false,
+            paths: {
+                "GeoExt": "../../src/GeoExt"
+            }
+        });
+        
+        Ext.Loader.syncRequire([
+            'GeoExt.tree.Panel',
+            'Ext.data.TreeStore',
+            'GeoExt.data.LayerTreeModel',
+            'GeoExt.data.LayerStore',
+            'GeoExt.tree.LayerLoader',
+            'GeoExt.tree.LayerContainer'
+        ]);
+        
+    </script>
+
+    <script type="text/javascript">
+
+        function test_constructor(t) {
+        
+            t.plan(2);
+        
+            var store = Ext.create('GeoExt.data.LayerStore');
+            var defaults = {foo: "bar"};
+                
+            var treeStore = Ext.create('Ext.data.TreeStore', {
+                model: 'GeoExt.data.LayerTreeModel',
+                root: {
+                    plugins: [{
+                        ptype: 'gx_layercontainer',
+                        loader: {
+                            store: store,
+                            baseAttrs: defaults
+                        }
+                    }]
+                }
+            });
+            treeStore.load();
+            
+            t.delay_call(.1, function() {
+                var node = treeStore.tree.root;
+                t.ok(node.get('container').loader.store === store, "layerStore set");
+                t.eq(node.get('container').loader.baseAttrs.foo, "bar", "baseAttrs set");
+
+                store.destroy();
+                treeStore.destroy();
+            });
+        }
+    
+        function test_render(t) {
+        
+            t.plan(3);
+        
+            var map = new OpenLayers.Map({
+                div: "map",
+                allOverlays: true
+            });
+            var layer = new OpenLayers.Layer();
+            map.addLayer(layer);
+        
+            var store = Ext.create('GeoExt.data.LayerStore', {
+                map: map
+            });
+        
+            var treeStore = Ext.create('Ext.data.TreeStore', {
+                model: 'GeoExt.data.LayerTreeModel',
+                root: {
+                    plugins: [{
+                        ptype: 'gx_layercontainer',
+                        loader: {store: store}
+                    }],
+                    expanded: true
+                }
+            });
+            treeStore.load();
+        
+            t.delay_call(.1, function() {
+                var node = treeStore.tree.root;
+                t.eq(node.childNodes && node.childNodes.length, 1, "container has one child");
+                t.ok(node.firstChild.get('layer') === layer, "child layer is correct");
+                t.eq(node.firstChild.get('iconCls'), "gx-tree-layer-icon", "iconClass for child set correctly");
+
+                store.destroy();
+                treeStore.destroy();
+                map.destroy();
+            });
+        
+        }
+    
+        function test_order(t) {
+        
+            t.plan(16);
+        
+            var map = new OpenLayers.Map({
+                div: "map",
+                allOverlays: true
+            });
+        
+            var store = Ext.create('GeoExt.data.LayerStore', {
+                map: map
+            });
+        
+            var treeStore = Ext.create('Ext.data.TreeStore', {
+                model: 'GeoExt.data.LayerTreeModel',
+                root: {
+                    plugins: [{
+                        ptype: 'gx_layercontainer',
+                        loader: {store: store}
+                    }],
+                    expanded: true
+                }
+            });
+            var root = treeStore.tree.root;
+        
+            var a = new OpenLayers.Layer("a");
+            var b = new OpenLayers.Layer("b");
+            var c = new OpenLayers.Layer("c");
+            var d = new OpenLayers.Layer("d");
+        
+            // add two records to empty root
+            store.add(store.proxy.reader.read([a, b]).records);
+            t.delay_call(.1, function() {
+                t.eq(root.childNodes.length, 2, "[a, b] two records added");
+                t.eq(root.childNodes[0].get('layer').name, "b", "[a, b] last layer drawn at top of root");
+                t.eq(root.childNodes[1].get('layer').name, "a", "[a, b] first layer drawn at bottom of root");
+
+                // add two records to root with two existing child nodes
+                store.add(store.proxy.reader.read([c, d]).records);
+            });
+            t.delay_call(.2, function() {
+                t.eq(root.childNodes.length, 4, "[a, b, c, d] four records total");
+                t.eq(root.childNodes[0].get('layer').name, "d", "[a, b, c, d] last layer drawn at top of root");
+                t.eq(root.childNodes[1].get('layer').name, "c", "[a, b, c, d] third layer drawn at correct index");
+                t.eq(root.childNodes[2].get('layer').name, "b", "[a, b, c, d] second layer drawn at correct index");
+                t.eq(root.childNodes[3].get('layer').name, "a", "[a, b, c, d] first layer drawn at bottom of root");
+
+                // remove the first two layers in draw order
+                store.remove(store.getAt(0));
+                store.remove(store.getAt(0));
+            });
+            t.delay_call(.3, function() {
+                t.eq(root.childNodes.length, 2, "[c, d] two records total");
+                t.eq(root.childNodes[0].get('layer').name, "d", "[c, d] last layer drawn at top of root");
+                t.eq(root.childNodes[1].get('layer').name, "c", "[c, d] first layer drawn at bottom of root");
+
+                // insert two records in the middle
+                store.insert(1, store.proxy.reader.read([a, b]).records);
+            });
+            t.delay_call(.4, function() {
+                t.eq(root.childNodes.length, 4, "[c, a, b, d] four records total");
+                t.eq(root.childNodes[0].get('layer').name, "d", "[c, a, b, d] last layer drawn at top of root");
+                t.eq(root.childNodes[1].get('layer').name, "b", "[c, a, b, d] third layer drawn at correct index");
+                t.eq(root.childNodes[2].get('layer').name, "a", "[c, a, b, d] second layer drawn at correct index");
+                t.eq(root.childNodes[3].get('layer').name, "c", "[c, a, b, d] first layer drawn at bottom of root");
+
+                store.destroy();
+                treeStore.destroy();
+                map.destroy();
+            });        
+        }
+    
+        function test_group_move(t) {
+            t.plan(8);
+        
+            var map = new OpenLayers.Map({
+                div: "map",
+                allOverlays: true
+            });
+        
+            map.addLayers([
+                new OpenLayers.Layer("a"),
+                new OpenLayers.Layer("b"),
+                new OpenLayers.Layer("c", {displayInLayerSwitcher: false}),
+                new OpenLayers.Layer("d", {displayInLayerSwitcher: false})
+            ]);
+
+            var store = Ext.create('GeoExt.data.LayerStore', {
+                map: map
+            });
+
+            var treeStore = Ext.create('Ext.data.TreeStore', {
+                model: 'GeoExt.data.LayerTreeModel',
+                root: {
+                    expanded: true
+                },
+                listeners: {
+                    beforemove: function(node, oldParent, newParent, index){
+                        // change the group when moving to a new container
+                        if (oldParent !== newParent) {
+                            var index = store.findBy(function(r){
+                                return r.getLayer() === node.get('layer');
+                            });
+                            var layer = store.getAt(index).getLayer();
+                            layer.displayInLayerSwitcher = !layer.displayInLayerSwitcher;
+                        }
+                    },
+                    scope: this
+                }
+            });
+            var root = treeStore.tree.root;
+
+            root.appendChild({
+                plugins: [{
+                    ptype: 'gx_layercontainer',
+                    loader: {
+                        store: store,
+                        filter: function(record) {
+                            return !record.getLayer().displayInLayerSwitcher
+                        }
+                    },
+                    expanded: true                    
+                }]
+            });
+            root.appendChild({
+                plugins: [{
+                    ptype: 'gx_layercontainer',
+                    loader: {
+                        store: store,
+                        filter: function(record) {
+                            return record.getLayer().displayInLayerSwitcher
+                        }
+                    },
+                    expanded: true
+                }]
+            });
+            
+            t.delay_call(.1, function() {
+                var container1 = root.childNodes[0];
+                var container2 = root.childNodes[1];
+                
+                // testing if layers get grouped by filter properly
+                t.eq(container1.childNodes[0].get('text'), "d", "d is 1st node on container1");
+                t.eq(container1.childNodes[1].get('text'), "c", "c is 2nd node on container1");
+                t.eq(container2.childNodes[0].get('text'), "b", "b is 1st node on container2");
+                t.eq(container2.childNodes[1].get('text'), "a", "a is 2nd node on container2");
+
+                // testing if indices are determined correctly from previous node in container
+                container2.appendChild(container1.childNodes[0]);
+                t.eq(map.getLayerIndex(container2.childNodes[2].get('layer')), 0, "[c, b, a, d] d moved to the bottom");
+
+                // testing if indices are determined correctly from next layer in container
+                container2.insertBefore(container1.childNodes[0], container2.childNodes[1]);
+                t.eq(map.getLayerIndex(container2.childNodes[0].get('layer')), 3, "[b, a, d, c] c is now the 4th layer on the map");
+
+                // testing if indices are determined correctly from container below
+                container1.appendChild(container2.childNodes[0]);
+                t.eq(map.getLayerIndex(container1.childNodes[0].get('layer')), 3, "[b, a, d, c] c is still the 4th layer on the map");
+
+                for(var i=0; i<3; ++i) {
+                    container1.appendChild(container2.childNodes[0]);
+                }
+
+                // testing if indices are determined correctly from container above
+                container2.appendChild(container1.childNodes[0]);
+                t.eq(map.getLayerIndex(container2.childNodes[0].get('layer')), 0, "[a,d,c,b] b moved to the bottom");
+            });
+        }
+
+    </script>
+  <body>
+    <div id="map" style="width:500px; height:300px"></div>
+  </body>
+</html>

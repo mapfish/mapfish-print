@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all.css" />
+    <script type="text/javascript" charset="utf-8" src="http://cdn.sencha.io/ext/gpl/4.2.1/ext-all-debug.js" ></script>
+    <script src="http://openlayers.org/api/2.13.1/OpenLayers.js"></script>
+
+    <script type="text/javascript">
+
+    Ext.Loader.setConfig({
+        disableCaching: false,
+        enabled: true,
+        paths: {
+            GeoExt: '../../../src/GeoExt'
+        }
+    });
+
+    Ext.Loader.syncRequire([
+        'GeoExt.panel.Map',
+        'GeoExt.form.field.GeocoderComboBox'
+    ]);
+
+    function test_constructor(t) {
+        t.plan(3);
+
+        var mapPanel = Ext.create("GeoExt.panel.Map", {
+            renderTo: "mappanel", 
+            width: 300, 
+            height: 300,
+            layers: [new OpenLayers.Layer()]
+        });
+        var combo = Ext.create("GeoExt.form.field.GeocoderComboBox", {map: mapPanel});
+        t.ok(combo.store instanceof Ext.data.JsonStore, "default store created");
+        t.ok(combo.map === mapPanel.map, "map set");
+        combo.destroy();
+        t.ok(!combo.map, "reference to map removed");
+        mapPanel.destroy();
+    }
+    
+    function test_handleAdded(t) {
+        t.plan(1);
+        
+        var mapPanel = Ext.create("GeoExt.panel.Map", {
+            renderTo: "mappanel",
+            width: 300,
+            layers: [new OpenLayers.Layer()],
+            height: 300,
+            items: [{
+                xtype: "gx_geocodercombo",
+                id: "combo"
+            }]
+        });
+        t.ok(Ext.getCmp("combo").map === mapPanel.map, "map set when combo added to MapPanel");
+        mapPanel.destroy();
+    }
+    
+    function test_handleSelect(t) {
+        t.plan(3);
+        var log = [];
+        var map = {
+            events: {on: Ext.emptyFn, un: Ext.emptyFn},
+            getCenter: function() { return new OpenLayers.LonLat(3, 4)},
+            getZoom: function() { return 11; },
+            getProjectionObject: function() { return new OpenLayers.Projection("EPSG:4326"); },
+            zoomToExtent: function(extent) {
+                log.push({fn: "zoomToExtent", extent: extent.toString()});
+            },
+            setCenter: function(center, zoom) {
+                log.push({fn: "setCenter", center: center.toShortString(), zoom: zoom})
+            }
+        };
+        var layer = {
+            addFeatures: function(features) {
+                log.push({
+                    fn: "addFeatures",
+                    geom: features[0].geometry.toString(),
+                    attributes: features[0].attributes
+                });
+            },
+            destroyFeatures: Ext.emptyFn
+        }
+        var combo = Ext.create("GeoExt.form.field.GeocoderComboBox", {
+            map: map,
+            layer: layer
+        });
+        var rec = [{
+            get: function(property) {
+                return rec[0].data[property];
+            },
+            data: {
+                lonlat: [5, 6],
+                bounds: [4, 5, 6, 7]
+            }
+        }];
+        combo.getValue = function() {
+            return rec[0].get(combo.valueField);
+        };
+        combo.handleSelect(combo, rec);
+        t.eq(log[0], {fn: "zoomToExtent", extent: "4,5,6,7"}, "zoomed to correct bounds");
+        t.eq(log[1], {fn: "addFeatures", geom: "POINT(5 6)", attributes: rec[0].data}, "correct feature drawn on map");
+
+        combo.valueField = "lonlat",
+        combo.handleSelect(combo, rec);
+        t.eq(log[2], {fn: "setCenter", center: "5, 6", zoom: 11}, "correctly centered on location");
+
+        combo.destroy();
+    }
+    </script>
+  <body>
+    <div id="mappanel"></div>
+  </body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all.css">
+    <script type="text/javascript" src="http://openlayers.org/api/2.13.1/OpenLayers.js"></script>
+    <script type="text/javascript" src="http://cdn.sencha.io/ext/gpl/4.2.1/ext-all-debug.js"></script>
+    <script type="text/javascript" src="WmsDescribeLayer.js"></script>
+    <script type="text/javascript">
+
+        Ext.Loader.setConfig({
+            enabled:true,
+            disableCaching: false,
+            paths: {
+                "GeoExt": "../../../src/GeoExt"
+            }
+        });
+
+        Ext.Loader.syncRequire([
+            'GeoExt.data.WmsDescribeLayerModel',
+            'GeoExt.data.reader.WmsDescribeLayer'
+        ]);
+
+        function test_constructor(t) {
+            t.plan(1);
+            var reader = Ext.create("GeoExt.data.reader.WmsDescribeLayer");
+            t.ok(reader.format instanceof OpenLayers.Format.WMSDescribeLayer, "default format gets created");
+            reader.destroy();
+        }
+
+        function test_read(t) {
+            t.plan(4);
+
+            var reader = Ext.create("GeoExt.data.reader.WmsDescribeLayer");
+
+            var records = reader.read({responseXML : doc, responseText: true});
+
+            //1 test
+            t.eq(records.totalRecords, 2, 'readRecords returns correct number of records');
+            
+            var record = records.records[0];
+
+            //3 tests -- testing the fields of a record
+            t.eq(record.get("owsType"), "WFS", "[0] correct owsType");
+            t.eq(record.get("owsURL"), "http://demo.opengeo.org/geoserver/wfs/WfsDispatcher?", "[0] correct owsURL");
+            t.eq(record.get("typeName"),"topp:states", "[0] correct typeName");
+            reader.destroy();
+        }
+
+    </script>
+  <body>
+    <div id="map"></div>
+  </body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <title>MVC simple application example called CF (Cartography Framework)</title>
+
+        <link rel="stylesheet" type="text/css" href="http://cdn.sencha.com/ext/gpl/4.2.1/resources/css/ext-all.css">
+        <link rel="stylesheet" type="text/css" href="http://openlayers.org/api/2.13/theme/default/style.css" />
+        <link rel="stylesheet" type="text/css" href="resources/css/cf.css" />
+
+        <!-- Include OpenLayers.  Isn't managed by Ext.Loader -->
+        <script src="http://openlayers.org/api/2.13.1/OpenLayers.js"></script>
+
+        <!-- Ext and GeoExt files are fetched by the loader.  See in app.js -->
+        <script type="text/javascript" charset="utf-8" src="http://cdn.sencha.com/ext/gpl/4.2.1/ext-debug.js"></script>
+
+        <!-- In order to be able to build app-all.js, you need to have a local
+             extjs copy.  If you want to try it, comment the above script tag
+             and uncomment the one below.  You'll also need to edit app.js -->
+        <!-- <script type="text/javascript" charset="utf-8" src="ext-4.2.1.883/ext-dev.js"></script> -->
+
+        <script type="text/javascript" src="app.js"></script>
+    </head>
+
+    <body>
+      <div id="help">
+        <p>
+          This example demonstrates how the Ext MVC application structure
+          can be used with GeoExt and OpenLayers components.
+        </p>
+
+        <div class="cascade">
+          <h2>GeoExt.data.FeatureGrid</h2>
+          <p>
+            A single GeoExt.data.FeatureGrid object is used by three
+            components: a vector layer in the map, a Ext.grid.Panel and a
+            Ext.chart.Chart.
+          </p>
+        </div>
+
+        <div class="cascade">
+          <h2>Move features around</h2>
+          <p>
+            You can drag the summit features around in the map and see the
+            properties in the grid update.
+          </p>
+        </div>
+
+        <div class="cascade">
+          <h2>Sort grid by columns</h2>
+          <p>
+            When you sort the grid by any columns, the chart gets updated.
+          </p>
+        </div>
+
+        <div class="cascade">
+          <h2>Feature attribute editing</h2>
+          <p>
+            The 'Elevation' column is editable.  Double-click on a record cell
+            and input a new value.  You'll see the chart change accordingly.
+            The vector feature on the map may also change color if the new
+            elevation changed range.
+            (e < 2000 = "green", 2000 >= e < 2300 = "orange", >= 2300 = "red")
+          </p>
+        </div>
+
+        <div class="cascade">
+          <h2>Select from Chart</h2>
+          <p>
+            When mouse hovering a node, a small tooltip appears.  Clicking on
+            the node also select the according row in the grid.
+          </p>
+        </div>
+
+        <div class="cascade">
+          <h2>On store load</h2>
+          <p>
+            When the store is loaded, the map is recentered on the data extent.
+          </p>
+        </div>
+
+        <div class="cascade">
+          <h2>Customized model</h2>
+          <p>
+            The summit model defines several customized fields that use
+            the OpenLayers.Feature.Vector properties such as 'fid' and
+            'geometry'.  See
+            <a href="app/model/Summit.js">app/model/Summit.js</a>.
+          </p>
+        </div>
+
+        <div class="cascade">
+          <h2>Dev and built versions</h2>
+          <p>
+            <a href="simple-dev.html">simple-dev.html</a> is the 'dev' version
+            of the application where the Ext.Loader is used to fetch both
+            Ext and GeoExt required files.
+            <a href="simple.html">simple.html</a> is a 'built' version ready
+            for production that was built using Sencha tools. See the
+            <a href="http://docs.sencha.com/ext-js/4-0/#!/guide/getting_started">Getting Started Guide - Deployment section</a>
+            in Sencha documentation.
+          </p>
+        </div>
+
+        <br />
+
+        <p>
+          The js files used by the 'dev' version are not minified so they are
+          readable.  See <a href="app.js">app.js</a> and
+          <a href="app/">app directory</a>.
+        </p>
+
+      </div>
+
+    </body>
+</html>

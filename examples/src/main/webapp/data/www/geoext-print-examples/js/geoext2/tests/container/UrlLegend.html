@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all.css" />
+    <script type="text/javascript" charset="utf-8" src="http://cdn.sencha.io/ext/gpl/4.2.1/ext-all-debug.js" ></script>
+
+    <script src="http://openlayers.org/api/2.13.1/OpenLayers.js"></script>
+
+    <script type="text/javascript">
+        Ext.Loader.setConfig({
+            disableCaching: false,
+            enabled: true,
+            paths: {
+                GeoExt: '../../src/GeoExt'
+            }
+        });
+
+        Ext.Loader.syncRequire([
+            'GeoExt.data.LayerStore',
+            'GeoExt.container.UrlLegend'
+        ]);
+
+        function test_initialize(t) {
+            t.plan(1);
+
+            var store = Ext.create('GeoExt.data.LayerStore', {
+                data : [
+                    new OpenLayers.Layer("foo")
+                ]
+            });
+            var legend = Ext.create("GeoExt.container.UrlLegend", {
+                layerRecord: store.getAt(0),
+                renderTo: "legend"
+            });
+            t.ok(legend instanceof GeoExt.LayerLegend, "Instance created correctly.");
+            legend.destroy();
+        }
+        
+        function test_render(t) {
+            t.plan(2);
+            var store = Ext.create('GeoExt.data.LayerStore', {
+                data : [
+                    new OpenLayers.Layer("foo", {metadata: {legendURL: Ext.BLANK_IMAGE_URL+"?foo"}})
+                ]
+            });
+            var legend = Ext.create("GeoExt.UrlLegend", {
+                layerRecord: store.getAt(0),
+                renderTo: "legend"
+            });
+            t.ok(legend.items.get(1) instanceof GeoExt.LegendImage, "Legend has a LegendImage.");
+            t.eq(legend.items.get(1).url, Ext.BLANK_IMAGE_URL+"?foo", "Legend image rendered correctly.");
+            legend.destroy();
+        }
+
+        function test_update(t) {
+            t.plan(1);
+            var store = Ext.create('GeoExt.data.LayerStore', {
+                data : [
+                    new OpenLayers.Layer("foo", {metadata: {legendURL: "http://path/to/foo"}})
+                ]
+            });
+            var rec = store.getAt(0);
+            var legend = Ext.create("GeoExt.UrlLegend", {
+                layerRecord: rec,
+                renderTo: "legend"
+            });
+            rec.set("legendURL", Ext.BLANK_IMAGE_URL+"?foo");
+            t.eq(legend.items.get(1).url, Ext.BLANK_IMAGE_URL+"?foo", "Legend content updated correctly");
+            legend.destroy();
+        }
+
+        function test_supports(t) {
+            t.plan(2);
+
+            var store = Ext.create('GeoExt.data.LayerStore', {
+                data : [
+                    new OpenLayers.Layer(null, {metadata: {legendURL: "foo"}}),
+                    new OpenLayers.Layer()
+                ]
+            });
+
+            t.ok(GeoExt.container.UrlLegend.supports(store.getAt(0)) > 0, "layer record with a legendURL property is supported.");
+            t.eq(GeoExt.container.UrlLegend.supports(store.getAt(1)), 0, "layer record without a legendURL property is not supported.");
+        }
+
+    </script>
+  </head>
+  <body>
+    <div id="legend"></div>
+  </body>
+</html>

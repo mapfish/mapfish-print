@@ -1,32 +1,122 @@
-/*
- * Copyright (C) 2014  Camptocamp
- *
- * This file is part of MapFish Print
- *
- * MapFish Print is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * MapFish Print is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
- */
+apply plugin: 'war'
+apply plugin: 'jetty'
+
+repositories {
+    maven {url "http://repo.opengeo.org/"}
+    maven {url "http://maven.restlet.org"}
+}
 
 configurations {
-    compile.transitive = true
-    testCompile.transitive = true
+    geoserver
 }
+
 dependencies {
-    testCompile project(path: ":core")
+    geoserver ('org.geoserver.web:web-app:2.4.3') {
+        transitive = false;
+    }
+    testCompile (project(':core'))
 }
 
-task show << {
-   rootProject.properties.each {println it}
+def geoserverDir = "$buildDir/geoserver"
+def geoserverDataDir = geoserverDir+"/data"
+task extractGeoserver (type: Copy) {
+    description "Extract the Geoserver web app jar and files in src/main/webapp into a directory to use for the jettyRun task"
+    from zipTree(configurations.geoserver.singleFile)
+
+    into geoserverDir
 }
 
-test.dependsOn
+extractGeoserver.doLast {
+    def offLoggingConfig = new File(geoserverDataDir, "logs/OFF_LOGGING.properties")
+    logger.info("Writing an updated Geoserver log configuration to suppress geoserver output")
+    new File(geoserverDataDir, "logging.xml").withWriter "UTF-8", { writer ->
+        def builder = new groovy.xml.MarkupBuilder(writer)
+        builder.logging {
+            level "OFF_LOGGING.properties"
+            location "${geoserverDir}/geoserver.log"
+            stdOutLogging "false"
+        }
+    }
+    offLoggingConfig.parentFile.mkdirs()
+    offLoggingConfig.setText("log4j.debug=FALSE\nlog4j.rootLogger=OFF", "UTF-8")
+
+    new File(geoserverDir, "index.html").withWriter "UTF-8",{writer ->
+        def builder = new groovy.xml.MarkupBuilder(writer)
+        builder.html {
+            head {
+                title 'Mapfish Print Examples'
+            }
+            body {
+                h1 'Mapfish Print Examples'
+                h2 'GeoExt Examples'
+
+                ul {
+                    def relativePath = "www/geoext-print-examples"
+                    new File(geoserverDataDir, relativePath).listFiles().each { dir ->
+                        if (dir.name != "css" && dir.name != "js") {
+                            li {
+                                def title = dir.name.split("-").collect{word -> word.capitalize()}.join(" ")
+                                a (href:relativePath + "/${dir.name}/index.html", title)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+task copyTestServerSpecificFiles (type: Copy) {
+    description "Copy files from src/main/webapp into the geoserer directory to customize the testServer"
+    from fileTree("src/main/webapp") {include '**'}
+
+    into geoserverDir
+}
+
+jettyRun {
+    dependsOn ':core:jettyRunWarBackground'
+
+    description 'Start the Geoserver Test Server in foreground mode for running local tests'
+    httpPort = 9876
+    daemon = Boolean.parseBoolean(System.getProperty("jettyDaemon", "false"))
+    contextPath = 'e2egeoserver'
+    webAppSourceDirectory = file(geoserverDir)
+    stopKey = "e2e-tests-geoserver"
+    stopPort = 9877
+    reload = 'manual'
+}
+
+task jettyRunBackground (dependsOn: jettyRun) << {
+    description 'Start Geoserver Test Server in background mode for running integration tests'
+    logger.info("Finished test server in daemon (background) mode")
+}
+
+gradle.taskGraph.whenReady {taskGraph ->
+    if (taskGraph.hasTask(':core:jettyRun')) {
+        jettyRun.disabled = true
+    }
+    if (taskGraph.hasTask(jettyRunBackground)) {
+        jettyRun.doFirst{
+            logger.info("Running test server in daemon (background) mode")
+        }
+
+        jettyRun.daemon = true;
+    } else {
+        jettyRun.doFirst{
+            logger.info("Running test server in non-daemon (foreground) mode")
+        }
+    }
+}
+
+String interactiveExpression = '**/*InteractiveTest.class'
+test {
+    dependsOn ':core:compileJava', 'testClasses'//, 'jettyRunBackground'
+    description 'Runs all automated e2e (integration) tests.'
+    maxParallelForks = Runtime.getRuntime().availableProcessors();
+    exclude interactiveExpression
+}
+
+task interactiveTest (dependsOn: test, type: Test) {
+    description 'Runs all automated e2e (integration) tests as well as the tests that require user input for tests verification.'
+    maxParallelForks = 1;
+    include interactiveExpression
+}

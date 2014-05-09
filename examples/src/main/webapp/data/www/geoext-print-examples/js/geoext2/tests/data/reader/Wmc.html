@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all.css">
+    <script type="text/javascript" src="http://openlayers.org/api/2.13.1/OpenLayers.js"></script>
+    <script type="text/javascript" src="http://cdn.sencha.io/ext/gpl/4.2.1/ext-all-debug.js"></script>
+    <script type="text/javascript" src="Wmc.js"></script>
+    <script type="text/javascript">
+
+        Ext.Loader.setConfig({
+            enabled:true,
+            disableCaching: false,
+            paths: {
+                "GeoExt": "../../../src/GeoExt"
+            }
+        });
+
+        Ext.Loader.syncRequire([
+            'GeoExt.data.WmcLayerModel',
+            'GeoExt.data.reader.Wmc'
+        ]);
+
+        function test_constructor(t) {
+            t.plan(1);
+            var reader = Ext.create("GeoExt.data.reader.Wmc");
+            t.ok(reader.format instanceof OpenLayers.Format.WMC, "Default format created");
+            reader.destroy();
+        }
+
+        function test_read(t) {
+            t.plan(18);
+
+            // test a reader with the only two default LayerRecord fields
+
+            var reader = Ext.create("GeoExt.data.reader.Wmc");
+            var records = reader.read({responseXML: doc, responseText: true});
+
+            //1 test
+            t.eq(records.totalRecords, 3, 'readRecords returns correct number of records');
+
+            var record = records.records[1];
+            t.eq(record.get("name"), "geob:communes_geofla", "correct name record field");
+            reader.destroy();
+
+            // test a reader with all default fields
+
+            reader = Ext.create("GeoExt.data.reader.Wmc");
+            records = reader.read({responseXML: doc, responseText: true});
+
+            //1 test
+            t.eq(records.totalRecords, 3, 'readRecords returns correct number of records');
+
+            var record = records.records[1];
+            //10 tests -- testing the fields of a record
+            t.eq(record.get("name"), "geob:communes_geofla", "correct name record field");
+            t.eq(record.get("abstract"), "Communes abstract", "correct abstract record field");
+            t.eq(record.get("metadataURL"), "", "correct metadataURL record field");
+            t.eq(record.get("queryable"), true, "correct queryable record field");
+            t.eq(record.get("formats").length, 28, "correct length for formats record field");
+            t.eq(record.get("formats")[0].value, "image/png", "correct value for formats record field");
+            t.eq(record.get("styles").length, 2, "correct length for styles record field");
+            t.eq(record.get("styles")[0].abstract, "Default line style, 1 pixel wide blue", "correct abstract for styles record field");
+            t.eq(record.get("styles")[0].name, "line", "correct name for styles record field");
+            t.eq(record.get("styles")[0].title, "1 px blue line", "correct title for styles record field");
+
+            //4 tests -- Testing the layer field
+            var layer = record.getLayer();
+            t.eq(layer.CLASS_NAME, "OpenLayers.Layer.WMS", "layer record field is of type OpenLayers.Layer.WMS");
+            t.eq(layer.url, "../geoserver/wms?SERVICE=WMS&", "layer record field has correct URL");
+            t.eq(layer.params.LAYERS, "geob:communes_geofla","layer record field has correct LAYERS parameter");
+            t.eq(layer.name, "Communes","layer record field has correct name");
+
+            //1 test
+            t.eq(record.get("id"), layer.id, 'record id is the same as layer id');
+            reader.destroy();
+        }
+    </script>
+  <body>
+    <div id="map"></div>
+  </body>
+</html>

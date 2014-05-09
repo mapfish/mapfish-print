@@ -1,0 +1,77 @@
+{
+    "success": true,
+    "summits": [
+        {
+            "id": 472,
+            "name": "Col d'Arclusaz",
+            "elevation": 1770,
+            "lat": 45.5949,
+            "lon": 6.18218
+        },
+        {
+            "id": 458,
+            "name": "Pointe de C\u00f4te Favre",
+            "elevation": 1831,
+            "lat": 45.6769,
+            "lon": 6.27827
+        },
+        {
+            "id": 487,
+            "name": "Pointe du Midi",
+            "elevation": 2364,
+            "lat": 46.0062,
+            "lon": 6.47122
+        },
+        {
+            "id": 5700,
+            "name": "Col d'Outanne",
+            "elevation": 1856,
+            "lat": 46.3129835428,
+            "lon": 6.82156068193
+        },
+        {
+            "id": 5644,
+            "name": "Col de Comba Mornay",
+            "elevation": 2375,
+            "lat": 46.136626095,
+            "lon": 6.84989241629
+        },
+        {
+            "id": 5710,
+            "name": "La Pointe",
+            "elevation": 2000,
+            "lat": 46.187778,
+            "lon": 6.62
+        },
+        {
+            "id": 496,
+            "name": "Le Coiro",
+            "elevation": 2607,
+            "lat": 44.93331,
+            "lon": 5.9134
+        },
+        {
+            "id": 322,
+            "name": "D\u00f4me de la Cochette",    
+            "elevation": 1451,
+            "lat": 45.7204,
+            "lon": 6.03219
+        },
+        {
+            "id": 515,
+            "name": "Mont P\u00e9cloz",
+            "elevation": 2197,
+            "lat": 45.6324,
+            "lon": 6.23048
+        },
+        {
+            "id": 601,
+            "name": "Tr\u00e9lod",
+            "elevation": 2181,
+            "lat": 45.6927,
+            "lon": 6.1962
+        }
+    ]
+}
+
+

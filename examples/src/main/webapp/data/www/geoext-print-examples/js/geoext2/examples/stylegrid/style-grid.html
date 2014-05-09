@@ -1,0 +1,37 @@
+<html>
+<head>
+    <title>GeoExt StyleReader</title>
+
+        <!-- ExtJS -->
+        <script type="text/javascript" src="http://cdn.sencha.com/ext/gpl/4.2.1/examples/shared/include-ext.js"></script>
+        <script type="text/javascript" src="http://cdn.sencha.com/ext/gpl/4.2.1/examples/shared/options-toolbar.js"></script>
+
+        <!-- Shared -->
+        <link rel="stylesheet" type="text/css" href="http://cdn.sencha.com/ext/gpl/4.2.1/examples/shared/example.css" />
+
+        <!-- You should definitely consider using a custom single-file version of OpenLayers -->
+        <script src="http://openlayers.org/api/2.13.1/OpenLayers.js"></script>
+
+        <script type="text/javascript" src="../loader.js"></script>
+        <script type="text/javascript" src="style-grid.js"></script>
+
+</head>
+<body>
+    <h1>GeoExt.data.StyleReader</h1>
+    <p>The StyleReader populates a store with records representing the rules
+    of a Style or the entries of a ColorMap, so they can easily be shown in a
+    grid.</p>
+
+    <p>The js is not minified so it is readable. See <a href="style-grid.js">style-grid.js</a>.</p>
+    <p>This grid shows the rules of a Style for a vector layer. Drag&amp;Drop is
+    enabled, labels are editable and filters can be edited inline using CQL
+    syntax:</p>
+    <div id="vectorgrid"></div>
+    <br>
+    <p>This grid shows the entries of the ColorMap of a RasterSymbolizer.
+    The column configuration is the same as for the vector grid above. Label and
+    filter (quantity) are editable, and the quantities will always be sorted in
+    ascending order:</p>
+    <div id="rastergrid"></div>
+</body>
+</html>

@@ -43,9 +43,9 @@ import static org.junit.Assert.fail;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-        ExamplesIntegrationTest.DEFAULT_SPRING_XML
+        ExamplesTest.DEFAULT_SPRING_XML
 })
-public class ExamplesIntegrationTest {
+public class ExamplesTest {
     public static final String DEFAULT_SPRING_XML = "classpath:mapfish-spring-application-context.xml";
 
     private static final String REQUEST_DATA_FILE = "requestData.json";
@@ -57,7 +57,7 @@ public class ExamplesIntegrationTest {
     public void testAllExamples() throws Exception {
         Map<String, Throwable> errors = Maps.newHashMap();
 
-        final File examplesDir = getFile(ExamplesIntegrationTest.class, "/examples");
+        final File examplesDir = getFile(ExamplesTest.class, "/examples");
 
         for (File example : Files.fileTreeTraverser().children(examplesDir)) {
             if (example.isDirectory()) {

@@ -1,0 +1,95 @@
+<html>
+    <head>
+        <title>GeoExt WMS PrintPage Example</title>
+
+        <!-- ExtJS -->
+        <link rel="stylesheet" type="text/css" href="../css/ext-all-neptune-debug.css">
+        <script type="text/javascript" src="../js/ext-all.js"></script>
+        <script type="text/javascript" src="../js/ext-theme-neptune.js" defer=""></script>
+
+        <script type="text/javascript" src="../js/options-toolbar.js"></script>
+
+        <!-- Shared -->
+        <link rel="stylesheet" type="text/css" href="../css/example.css" />
+
+        <!-- You should definitely consider using a custom single-file version of OpenLayers -->
+        <script src="../js/OpenLayers.js"></script>
+
+        <script type="text/javascript" src="../js/loader.js"></script>
+        <script type="text/javascript" src="../js/common-properties.js"></script>
+
+        <script type="text/javascript" src="print-page.js"></script>
+        
+        <!-- The script below will load the capabilities of the print service
+             and save them into the global printCapabilities variable. Instead
+             of this, the PrintProvider can be configured with a url and take
+             care of fetching the capabilities. -->
+        <script type="text/javascript" src="http://localhost:9876/e2egeoserver/pdf/info.json?var=printCapabilities"></script>
+
+    </head>
+    <body>
+        <h1>Printing a WMS Layer</h1>
+        <p>This example prints two wms layer using GetMap Version 1.1.1.
+            <ul>
+            <li>One Layer is USA-Population which is in EPSG:4326</li>
+            <li>The other layer is Spearfish Roads with is in EPSG:26713</li>
+            </ul>
+        </p>
+        <div id="content"></div>
+        <p><a href="../../config.yaml">Click here to see the config.yaml</a></p>
+        <p>The js is not minified so it is readable. See <a href="print-page.js">print-page.js</a>.</p>
+        <p>The json that will be posted will look something like:
+            <code><pre>
+                {
+   "units":"degrees",
+   "srs":"EPSG:4326",
+   "layout":"A4 portrait",
+   "dpi":56,
+   "mapTitle":"Printing Demo",
+   "comment":"This is a simple map printed from GeoExt.",
+   "layers":[
+      {
+         "baseURL":"http://localhost:9876/e2egeoserver/wms",
+         "opacity":0.5,
+         "singleTile":true,
+         "type":"WMS",
+         "layers":[
+            "topp:states"
+         ],
+         "format":"image/png",
+         "styles":[
+            ""
+         ],
+         "customParams":{
+            "TRANSPARENT":"true"
+         }
+      },
+      {
+         "baseURL":"http://localhost:9876/e2egeoserver/wms",
+         "opacity":1,
+         "singleTile":true,
+         "type":"WMS",
+         "layers":[
+            "sf:roads"
+         ],
+         "format":"image/png",
+         "styles":[
+            ""
+         ]
+      }
+   ],
+   "pages":[
+      {
+         "center":[
+            -104.00000000001,
+            44.7
+         ],
+         "scale":4000000,
+         "rotation":0
+      }
+   ]
+}
+                </pre></code>
+        </p>
+    </body>
+</html>
