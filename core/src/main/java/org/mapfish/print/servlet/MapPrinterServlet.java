@@ -52,8 +52,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -507,10 +509,10 @@ public class MapPrinterServlet extends BaseMapServlet {
             return;
         }
         capabilitiesResponse.setContentType("application/json; charset=utf-8");
-        final PrintWriter writer;
+        final Writer writer;
         final ByteArrayOutputStream prettyPrintBuffer = new ByteArrayOutputStream();
         if (pretty) {
-            writer = new PrintWriter(prettyPrintBuffer);
+            writer = new OutputStreamWriter(prettyPrintBuffer, Constants.DEFAULT_CHARSET);
         } else {
             writer = capabilitiesResponse.getWriter();
         }
