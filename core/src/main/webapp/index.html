@@ -161,7 +161,7 @@
     </script>
 </head>
 <body onload="init()">
-    <h1>Test page</h1>
+    <h1>Test Print</h1>
     <h2><span id="messages"></span></h2>
     <h3><span id="validation" style="color:red"></span></h3>
 
@@ -185,5 +185,12 @@
                     onclick="openCapabilities()">Capabilities</button>
         </p>
     </form>
+    <h2>Performance and Health Metrics:</h2>
+    <p>
+        <button id="metrics" type="button" onclick="window.open('metrics/metrics?pretty=true', '_metrics')">Metrics</button>
+        <button id="healthcheck" type="button" onclick="window.open('metrics/healthcheck', '_metrics')">Health Check</button>
+        <button id="ping" type="button" onclick="window.open('metrics/ping', '_metrics')">Ping</button>
+        <button id="threads" type="button" onclick="window.open('metrics/threads', '_metrics')">Threads</button>
+    </p>
 </body>
 </html>

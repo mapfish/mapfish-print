@@ -66,6 +66,10 @@
         <servlet-name>metrics-servlet</servlet-name>
         <url-pattern>/metrics</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>metrics-servlet</servlet-name>
+        <url-pattern>/metrics/*</url-pattern>
+    </servlet-mapping>
 
     <servlet>
         <servlet-name>mapfish-print</servlet-name>
