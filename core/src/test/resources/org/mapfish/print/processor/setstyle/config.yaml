@@ -1,0 +1,23 @@
+
+templates:
+  main: !template
+    attributes:
+      styleDef: !style {}
+      mapDef: !map
+        maxDpi: 300
+        width: 555
+        height: 400
+        defaults:
+          dpi: 300
+          rotation: 0
+          useAjustBounds: true
+          layers:
+          - type: "geojson"
+            style: "point"
+            geoJson: "{}"
+    processors:
+    - !setStyle
+      inputMapper:
+        mapDef: map
+        styleDef: style
+      outputMapper: {map: map}
