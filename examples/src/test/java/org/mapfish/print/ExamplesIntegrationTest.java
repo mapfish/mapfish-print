@@ -82,7 +82,7 @@ public class ExamplesIntegrationTest {
             final PJsonObject jsonSpec = MapPrinter.parseSpec(requestData);
             //ByteArrayOutputStream out = new ByteArrayOutputStream();
             
-            File file = new File("/tmp/test.pdf");
+            File file = new File("/tmp/test-" + example.getName() + ".pdf");
             FileOutputStream fs = new FileOutputStream(file);
             
             Map<String, String> headers = Maps.newHashMap();
