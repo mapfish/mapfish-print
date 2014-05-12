@@ -22,6 +22,7 @@ package org.mapfish.print.config;
 import com.google.common.io.Closer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.yaml.snakeyaml.Yaml;
@@ -32,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+
 import javax.annotation.PostConstruct;
 
 /**
@@ -41,8 +43,8 @@ import javax.annotation.PostConstruct;
  */
 public class ConfigurationFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationFactory.class);
-    @Autowired
-    private ConfigurableApplicationContext context;
+ @Autowired
+ private ConfigurableApplicationContext context;
     private Yaml yaml;
     private boolean doValidation = true;
 

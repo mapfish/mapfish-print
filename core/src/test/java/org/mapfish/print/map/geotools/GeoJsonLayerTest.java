@@ -31,6 +31,7 @@ import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.MapfishParserTest;
+import org.mapfish.print.processor.map.CreateMapProcessorFixedScaleBBoxGeoJsonTest;
 import org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +61,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
     @Test
     public void testGeoJsonEmbedded() throws Exception {
-        final PJsonObject requestData = CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.loadJsonRequestData()
+        final PJsonObject requestData = CreateMapProcessorFixedScaleBBoxGeoJsonTest.loadJsonRequestData()
                 .getJSONObject("attributes")
                 .getJSONObject("mapDef")
                 .getJSONArray("layers").getJSONObject(0);
@@ -85,6 +86,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
         FeatureLayer featureLayer = (FeatureLayer) layers.get(0);
         final int count = featureLayer.getFeatureSource().getCount(Query.ALL);
         assertEquals(3, count);
+        assertEquals(true, layer.shouldRenderAsSvg());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -215,5 +217,6 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
         FeatureLayer layer = (FeatureLayer) layers.get(0);
         final int count = layer.getFeatureSource().getCount(Query.ALL);
         assertEquals(3, count);
+        assertEquals(false, mapLayer.shouldRenderAsSvg());
     }
 }

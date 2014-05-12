@@ -19,6 +19,13 @@
 
 package org.mapfish.print.processor.map;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+
 import jsr166y.ForkJoinPool;
 
 import org.junit.Test;
@@ -31,9 +38,6 @@ import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 /**
  * Basic test of the set features to vector layers processor.
@@ -55,12 +59,16 @@ public class SetFeaturesProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser);
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory());
 
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
-        BufferedImage map = values.getObject("map", BufferedImage.class);
-        new ImageSimilarity(map, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 0);
+        @SuppressWarnings("unchecked")
+        List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
+        assertEquals(1, layerGraphics.size());
+
+//        Files.copy(new File(layerGraphics.get(0)), new File("/tmp/"+getClass().getSimpleName()+".tiff"));
+        new ImageSimilarity(new File(layerGraphics.get(0)), 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 0);
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {

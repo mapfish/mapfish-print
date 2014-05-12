@@ -43,7 +43,7 @@ import java.util.List;
  * @author Jesse
  * @author sbrunner
  */
-public class JasperReportBuilder extends AbstractProcessor<Object, Void> implements HasConfiguration {
+public class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.Input, Void> implements HasConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
     /**
      * Extension for Jasper XML Report Template files.
@@ -69,7 +69,7 @@ public class JasperReportBuilder extends AbstractProcessor<Object, Void> impleme
     }
 
     @Override
-    public final Void execute(final Object param) throws JRException {
+    public final Void execute(final JasperReportBuilder.Input param) throws JRException {
         final String configurationAbsolutePath = this.configuration.getDirectory().getAbsolutePath();
         if (!this.directory.getAbsolutePath().startsWith(configurationAbsolutePath)) {
             throw new IllegalArgumentException("All directories and files referenced in the configuration must be in the configuration " +
@@ -86,6 +86,7 @@ public class JasperReportBuilder extends AbstractProcessor<Object, Void> impleme
 
                 if (!buildFile.exists() || jasperFile.lastModified() > buildFile.lastModified()) {
                     LOGGER.info("Building Jasper report: " + jasperFile.getAbsolutePath());
+                    LOGGER.debug("To: " + buildFile.getAbsolutePath());
                     final Timer.Context compileJasperReport = this.metricRegistry.timer("compile_" + jasperFile).time();
                     try {
                         JasperCompileManager.compileReportToFile(jasperFile.getAbsolutePath(), buildFile.getAbsolutePath());
@@ -93,6 +94,8 @@ public class JasperReportBuilder extends AbstractProcessor<Object, Void> impleme
                         final long compileTime = compileJasperReport.stop();
                         LOGGER.info("Report built in " + compileTime + "ms.");
                     }
+                } else {
+                    LOGGER.debug("Destination file is already up to date: " + buildFile.getAbsolutePath());
                 }
             }
             return null;
@@ -103,8 +106,8 @@ public class JasperReportBuilder extends AbstractProcessor<Object, Void> impleme
 
 
     @Override
-    public final Object createInputParameter() {
-        return null;
+    public final JasperReportBuilder.Input createInputParameter() {
+        return new JasperReportBuilder.Input();
     }
 
     /**
@@ -119,7 +122,7 @@ public class JasperReportBuilder extends AbstractProcessor<Object, Void> impleme
                                                + this.directory + ".\nConfiguration contained value "
                                                + directory + " which is supposed to be relative to configuration directory");
         }
-        
+
         if (!this.directory.getAbsolutePath().startsWith(this.configuration.getDirectory().getAbsolutePath())) {
             throw new IllegalArgumentException("All files and directories must be contained in the configuration directory" +
                                                " the directory provided in the configuration breaks that contract: " + directory
@@ -135,6 +138,16 @@ public class JasperReportBuilder extends AbstractProcessor<Object, Void> impleme
     @Override
     public final String toString() {
         return getClass().getSimpleName() + "(" + this.directory + ")";
+    }
+
+    /**
+     * The input parameter object for {@link JasperReportBuilder}.
+     */
+    public static final class Input {
+        /**
+         * Just to create a dependency with a dynamic report creator.
+         */
+        public int dependence;
     }
 
     @Override

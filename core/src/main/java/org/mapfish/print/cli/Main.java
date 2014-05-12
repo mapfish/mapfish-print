@@ -174,7 +174,7 @@ public final class Main {
     private static void configureLogs() {
         final ClassLoader classLoader = Main.class.getClassLoader();
         URL logfile;
-        switch (verbose) {
+        switch (Integer.parseInt(verbose)) {
             case LOGLEVEL_QUIET:
                 logfile = classLoader.getResource("shell-quiet-log.xml");
                 break;

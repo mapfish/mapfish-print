@@ -8,6 +8,7 @@
         {
           "type": "geojson",
           "style": "polygon",
+          "renderAsSvg": true,
           "geoJson":   @@importFile(geojson.json)@@
         }
       ]

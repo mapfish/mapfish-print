@@ -20,6 +20,7 @@
 package org.mapfish.print.servlet;
 
 import com.google.common.base.Function;
+
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.json.JSONArray;
@@ -59,7 +60,6 @@ import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGU
         MapPrinterServletTest.SERVLET_CONTEXT_CONTEXT
 })
 public class MapPrinterServletTest extends AbstractMapfishSpringTest {
-
 
     public static final String PRINT_CONTEXT = "classpath:org/mapfish/print/servlet/mapfish-print-servlet.xml";
     public static final String SERVLET_CONTEXT_CONTEXT = "classpath:org/mapfish/print/servlet/mapfish-spring-servlet-context-config.xml";
@@ -283,21 +283,6 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertCorrectResponse(servletCreateResponse);
     }
 
-    @Test(timeout = 60000)
-    public void testCreateReportAndGet_FormPost() throws Exception {
-        setUpConfigFiles();
-
-        final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
-        final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
-
-        String requestData = getFormEncodedRequestData();
-
-        this.servlet.createReportAndGetNoAppId("png", requestData, false, servletCreateRequest, servletCreateResponse);
-        assertEquals(HttpStatus.OK.value(), servletCreateResponse.getStatus());
-
-        assertCorrectResponse(servletCreateResponse);
-    }
-
     private String getFormEncodedRequestData() throws IOException {
         return "spec=" + URLEncoder.encode(loadRequestDataAsString(), Constants.DEFAULT_ENCODING);
     }
@@ -317,6 +302,31 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), servletCreateResponse.getStatus());
     }
 
+    @Test(timeout = 60000)
+    public void testCreateReportAndGet_FormPost() throws Exception {
+        setUpConfigFiles();
+
+        final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
+        final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+
+        String requestData = getFormEncodedRequestData();
+
+        this.servlet.createReportAndGetNoAppId("png", requestData, false, servletCreateRequest, servletCreateResponse);
+        assertEquals(HttpStatus.OK.value(), servletCreateResponse.getStatus());
+
+        assertCorrectResponse(servletCreateResponse);
+    }
+
+    private void assertArrayContains(PJsonArray formats, String format) {
+        for (int i = 0; i < formats.size(); i++) {
+            if (format.equals(formats.getString(i))) {
+                return;
+            }
+        }
+
+        throw new AssertionError(format + " does is not one of the elements in: " + formats);
+    }
+
     @Test
     public void testGetInfo() throws Exception {
         setUpConfigFiles();
@@ -332,8 +342,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         final PObject mainLayout = layouts.getObject(0);
         assertEquals("A4 Landscape", mainLayout.getString("name"));
         assertTrue(mainLayout.has("attributes"));
-        assertEquals(2, mainLayout.getArray("attributes").size());
-        assertEquals("MapAttributeValues", mainLayout.getArray("attributes").getObject(0).getString("name"));
+        assertEquals(3, mainLayout.getArray("attributes").size());
+        assertEquals("MapAttributeValues", mainLayout.getArray("attributes").getObject(1).getString("name"));
         assertTrue(getInfoJson.has("formats"));
         final PJsonArray formats = getInfoJson.getJSONArray("formats");
         assertTrue(formats.size() > 0);
@@ -341,16 +351,6 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertArrayContains(formats, "pdf");
         assertArrayContains(formats, "xsl");
 
-    }
-
-    private void assertArrayContains(PJsonArray formats, String format) {
-        for (int i = 0; i < formats.size(); i++) {
-            if (format.equals(formats.getString(i))) {
-                return;
-            }
-        }
-
-        throw new AssertionError(format + " does is not one of the elements in: " + formats);
     }
 
     @Test

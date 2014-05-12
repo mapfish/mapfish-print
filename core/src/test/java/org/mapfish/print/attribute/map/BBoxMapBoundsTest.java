@@ -55,6 +55,19 @@ public class BBoxMapBoundsTest {
     }
 
     @Test
+    public void testAdjustedEnvelope() throws Exception {
+        final BBoxMapBounds bboxMapBounds = new BBoxMapBounds(WGS84, -10, -90, 10, 90);
+        final MapBounds mapBounds = bboxMapBounds.adjustedEnvelope(new Rectangle(5, 5));
+        final ReferencedEnvelope envelope = mapBounds.toReferencedEnvelope(new Rectangle(5, 5), 90);
+
+        assertEquals(-90, envelope.getMinX(), 0.001);
+        assertEquals(90, envelope.getMaxX(), 0.001);
+        assertEquals(-90, envelope.getMinY(), 0.001);
+        assertEquals(90, envelope.getMaxY(), 0.001);
+        assertEquals(WGS84, envelope.getCoordinateReferenceSystem());
+    }
+
+    @Test
     public void testAdjustToScale() throws Exception {
         int scale = 24000;
         double dpi = 100;

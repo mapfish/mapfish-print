@@ -73,6 +73,7 @@ import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGU
  * The default servlet.
  *
  * @author Jesse
+ * CSOFF: RedundantThrowsCheck
  */
 @Controller
 public class MapPrinterServlet extends BaseMapServlet {
@@ -147,16 +148,8 @@ public class MapPrinterServlet extends BaseMapServlet {
     private ApplicationContext context;
     @Autowired
     private ServletInfo servletInfo;
-    private long maxCreateAndGetWaitTimeInSeconds;
 
-    /**
-     * Maximum time to wait for a createAndGet request to complete before returning an error.
-     *
-     * @param maxCreateAndGetWaitTimeInSeconds the maximum time in seconds to wait for a report to be generated.
-     */
-    public final void setMaxCreateAndGetWaitTimeInSeconds(final long maxCreateAndGetWaitTimeInSeconds) {
-        this.maxCreateAndGetWaitTimeInSeconds = maxCreateAndGetWaitTimeInSeconds;
-    }
+    private long maxCreateAndGetWaitTimeInSeconds;
 
     /**
      * Get a status report on a job.  Returns the following json:
@@ -206,25 +199,6 @@ public class MapPrinterServlet extends BaseMapServlet {
     }
 
     /**
-     * Add the print job to the job queue.
-     *
-     * @param format               the format of the returned report
-     * @param requestData          a json formatted string with the request data required to perform the report generation.
-     * @param createReportRequest  the request object
-     * @param createReportResponse the response object
-     */
-    @RequestMapping(value = REPORT_URL + ".{format:\\w+}", method = RequestMethod.POST)
-    public final void createReport(@PathVariable final String format,
-                                   @RequestBody final String requestData,
-                                   final HttpServletRequest createReportRequest,
-                                   final HttpServletResponse createReportResponse) throws JSONException {
-        PJsonObject spec = parseJson(requestData, createReportResponse);
-
-        String appId = spec.optString(JSON_APP, DEFAULT_CONFIGURATION_FILE_KEY);
-        createReport(appId, format, requestData, createReportRequest, createReportResponse);
-    }
-
-    /**
      * add the print job to the job queue.
      *
      * @param appId                the id of the app to get the request for.
@@ -270,35 +244,72 @@ public class MapPrinterServlet extends BaseMapServlet {
     }
 
     /**
-     * add the print job to the job queue.
+     * To get the PDF created previously.
      *
-     * @param format              the format of the returned report
-     * @param requestData         a json formatted string with the request data required to perform the report generation.
-     * @param inline              whether or not to inline the content
+     * @param referenceId       the path to the file.
+     * @param inline            whether or not to inline the
+     * @param getReportResponse the response object
+     */
+    @RequestMapping(value = REPORT_URL + "/{referenceId:\\S+}", method = RequestMethod.GET)
+    public final void getReport(@PathVariable final String referenceId,
+                                @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
+                                final HttpServletResponse getReportResponse)
+            throws IOException, ServletException {
+        loadReport(referenceId, getReportResponse, new HandleReportLoadResult<Void>() {
+
+            @Override
+            public Void unsupportedLoader(final HttpServletResponse httpServletResponse, final String referenceId) {
+                error(httpServletResponse, "Print with ref=" + referenceId + " unknown", HttpStatus.NOT_FOUND);
+                return null;
+            }
+
+            @Override
+            public Void successfulPrint(final SuccessfulPrintJob successfulPrintResult, final HttpServletResponse httpServletResponse,
+                                        final URI reportURI, final ReportLoader loader) throws IOException, ServletException {
+                sendReportFile(successfulPrintResult, httpServletResponse, loader, reportURI, inline);
+                return null;
+            }
+
+            @Override
+            public Void failedPrint(final FailedPrintJob failedPrintJob, final HttpServletResponse httpServletResponse) {
+                error(httpServletResponse, failedPrintJob.getError(), HttpStatus.INTERNAL_SERVER_ERROR);
+                return null;
+            }
+
+            @Override
+            public Void printJobPending(final HttpServletResponse httpServletResponse, final String referenceId) {
+                error(httpServletResponse, "Report has not yet completed processing", HttpStatus.ACCEPTED);
+                return null;
+            }
+        });
+    }
+
+    /**
+     * Add the print job to the job queue.
+     *
+     * @param format               the format of the returned report
+     * @param requestData          a json formatted string with the request data required to perform the report generation.
      * @param createReportRequest  the request object
      * @param createReportResponse the response object
-     * CSOFF: RedundantThrowsCheck
      */
-    @RequestMapping(value = CREATE_AND_GET_URL + ".{format:\\w+}", method = RequestMethod.POST)
-    public final void createReportAndGetNoAppId(@PathVariable final String format,
-                                                @RequestBody final String requestData,
-                                                @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
-                                                final HttpServletRequest createReportRequest,
-                                                final HttpServletResponse createReportResponse)
-            throws IOException, ServletException, InterruptedException, JSONException {
+    @RequestMapping(value = REPORT_URL + ".{format:\\w+}", method = RequestMethod.POST)
+    public final void createReport(@PathVariable final String format,
+                                   @RequestBody final String requestData,
+                                   final HttpServletRequest createReportRequest,
+                                   final HttpServletResponse createReportResponse) throws JSONException {
         PJsonObject spec = parseJson(requestData, createReportResponse);
 
         String appId = spec.optString(JSON_APP, DEFAULT_CONFIGURATION_FILE_KEY);
-        createReportAndGet(appId, format, requestData, inline, createReportRequest, createReportResponse);
+        createReport(appId, format, requestData, createReportRequest, createReportResponse);
     }
 
     /**
      * add the print job to the job queue.
      *
-     * @param appId               the id of the app to get the request for.
-     * @param format              the format of the returned report
-     * @param requestData         a json formatted string with the request data required to perform the report generation.
-     * @param inline              whether or not to inline the content
+     * @param appId                the id of the app to get the request for.
+     * @param format               the format of the returned report
+     * @param requestData          a json formatted string with the request data required to perform the report generation.
+     * @param inline               whether or not to inline the content
      * @param createReportRequest  the request object
      * @param createReportResponse the response object
      */
@@ -355,44 +366,25 @@ public class MapPrinterServlet extends BaseMapServlet {
     }
 
     /**
-     * To get the PDF created previously.
+     * add the print job to the job queue.
      *
-     * @param referenceId         the path to the file.
-     * @param inline              whether or not to inline the
-     * @param getReportResponse the response object
+     * @param format               the format of the returned report
+     * @param requestData          a json formatted string with the request data required to perform the report generation.
+     * @param inline               whether or not to inline the content
+     * @param createReportRequest  the request object
+     * @param createReportResponse the response object
      */
-    @RequestMapping(value = REPORT_URL + "/{referenceId:\\S+}", method = RequestMethod.GET)
-    public final void getReport(@PathVariable final String referenceId,
-                                @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
-                                final HttpServletResponse getReportResponse)
-            throws IOException, ServletException {
-        loadReport(referenceId, getReportResponse, new HandleReportLoadResult<Void>() {
+    @RequestMapping(value = CREATE_AND_GET_URL + ".{format:\\w+}", method = RequestMethod.POST)
+    public final void createReportAndGetNoAppId(@PathVariable final String format,
+                                                @RequestBody final String requestData,
+                                                @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
+                                                final HttpServletRequest createReportRequest,
+                                                final HttpServletResponse createReportResponse)
+            throws IOException, ServletException, InterruptedException, JSONException {
+        PJsonObject spec = parseJson(requestData, createReportResponse);
 
-            @Override
-            public Void unsupportedLoader(final HttpServletResponse httpServletResponse, final String referenceId) {
-                error(httpServletResponse, "Print with ref=" + referenceId + " unknown", HttpStatus.NOT_FOUND);
-                return null;
-            }
-
-            @Override
-            public Void successfulPrint(final SuccessfulPrintJob successfulPrintResult, final HttpServletResponse httpServletResponse,
-                                        final URI reportURI, final ReportLoader loader) throws IOException, ServletException {
-                sendReportFile(successfulPrintResult, httpServletResponse, loader, reportURI, inline);
-                return null;
-            }
-
-            @Override
-            public Void failedPrint(final FailedPrintJob failedPrintJob, final HttpServletResponse httpServletResponse) {
-                error(httpServletResponse, failedPrintJob.getError(), HttpStatus.INTERNAL_SERVER_ERROR);
-                return null;
-            }
-
-            @Override
-            public Void printJobPending(final HttpServletResponse httpServletResponse, final String referenceId) {
-                error(httpServletResponse, "Report has not yet completed processing", HttpStatus.ACCEPTED);
-                return null;
-            }
-        });
+        String appId = spec.optString(JSON_APP, DEFAULT_CONFIGURATION_FILE_KEY);
+        createReportAndGet(appId, format, requestData, inline, createReportRequest, createReportResponse);
     }
 
     /**
@@ -423,54 +415,6 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
     }
 
-
-    /**
-     * Get a sample request for the app.  An empty response may be returned if there is not example request.
-     *
-     * @param getExampleResponse the response object
-     */
-    @RequestMapping(value = EXAMPLE_REQUEST_URL, method = RequestMethod.GET)
-    public final void getExampleRequest(final HttpServletResponse getExampleResponse) throws ServletException, IOException {
-        getExampleRequest(DEFAULT_CONFIGURATION_FILE_KEY, getExampleResponse);
-    }
-
-
-    /**
-     * Get a sample request for the app.  An empty response may be returned if there is not example request.
-     *
-     * @param appId the id of the app to get the request for.
-     * @param getExampleResponse  the response object
-     */
-    @RequestMapping(value = "{appId}" + EXAMPLE_REQUEST_URL, method = RequestMethod.GET)
-    public final void getExampleRequest(
-            @PathVariable final String appId,
-            final HttpServletResponse getExampleResponse) throws ServletException,
-            IOException {
-
-        try {
-            final MapPrinter mapPrinter = this.printerFactory.create(appId);
-            getExampleResponse.setContentType("text/plain; charset=utf-8");
-            final File requestDataFile = new File(mapPrinter.getConfiguration().getDirectory(), "requestData.json");
-            if (requestDataFile.exists()) {
-                String requestData = Files.toString(requestDataFile, Constants.DEFAULT_CHARSET);
-                try {
-                    final JSONObject jsonObject = new JSONObject(requestData);
-                    jsonObject.remove(JSON_OUTPUT_FORMAT);
-                    jsonObject.remove(JSON_APP);
-                    requestData = jsonObject.toString(JSON_INDENT_FACTOR);
-                } catch (JSONException e) {
-                    // ignore, return raw text;
-                }
-                getExampleResponse.getOutputStream().write(requestData.getBytes(Constants.DEFAULT_CHARSET));
-            } else {
-                getExampleResponse.getOutputStream().write(new byte[0]);
-            }
-        } catch (NoSuchAppException e) {
-            error(getExampleResponse, "No print app identified by: " + appId, HttpStatus.NOT_FOUND);
-        }
-    }
-
-
     /**
      * To get (in JSON) the information about the available formats and CO.
      *
@@ -485,7 +429,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * To get (in JSON) the information about the available formats and CO.
      *
-     * @param app  the name of the "app" or in other words, a mapping to the configuration file for this request.
+     * @param app                  the name of the "app" or in other words, a mapping to the configuration file for this request.
      * @param capabilitiesResponse the response object
      */
     @RequestMapping(value = "/{appId}" + CAPABILITIES_URL, method = RequestMethod.GET)
@@ -527,6 +471,62 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
     }
 
+
+    /**
+     * Get a sample request for the app.  An empty response may be returned if there is not example request.
+     *
+     * @param getExampleResponse the response object
+     */
+    @RequestMapping(value = EXAMPLE_REQUEST_URL, method = RequestMethod.GET)
+    public final void getExampleRequest(final HttpServletResponse getExampleResponse) throws ServletException, IOException {
+        getExampleRequest(DEFAULT_CONFIGURATION_FILE_KEY, getExampleResponse);
+    }
+
+
+    /**
+     * Get a sample request for the app.  An empty response may be returned if there is not example request.
+     *
+     * @param appId              the id of the app to get the request for.
+     * @param getExampleResponse the response object
+     */
+    @RequestMapping(value = "{appId}" + EXAMPLE_REQUEST_URL, method = RequestMethod.GET)
+    public final void getExampleRequest(
+            @PathVariable final String appId,
+            final HttpServletResponse getExampleResponse) throws ServletException,
+            IOException {
+
+        try {
+            final MapPrinter mapPrinter = this.printerFactory.create(appId);
+            getExampleResponse.setContentType("text/plain; charset=utf-8");
+            final File requestDataFile = new File(mapPrinter.getConfiguration().getDirectory(), "requestData.json");
+            if (requestDataFile.exists()) {
+                String requestData = Files.toString(requestDataFile, Constants.DEFAULT_CHARSET);
+                try {
+                    final JSONObject jsonObject = new JSONObject(requestData);
+                    jsonObject.remove(JSON_OUTPUT_FORMAT);
+                    jsonObject.remove(JSON_APP);
+                    requestData = jsonObject.toString(JSON_INDENT_FACTOR);
+                } catch (JSONException e) {
+                    // ignore, return raw text;
+                }
+                getExampleResponse.getOutputStream().write(requestData.getBytes(Constants.DEFAULT_CHARSET));
+            } else {
+                getExampleResponse.getOutputStream().write(new byte[0]);
+            }
+        } catch (NoSuchAppException e) {
+            error(getExampleResponse, "No print app identified by: " + appId, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    /**
+     * Maximum time to wait for a createAndGet request to complete before returning an error.
+     *
+     * @param maxCreateAndGetWaitTimeInSeconds the maximum time in seconds to wait for a report to be generated.
+     */
+    public final void setMaxCreateAndGetWaitTimeInSeconds(final long maxCreateAndGetWaitTimeInSeconds) {
+        this.maxCreateAndGetWaitTimeInSeconds = maxCreateAndGetWaitTimeInSeconds;
+    }
+
     /**
      * Copy the PDF into the output stream.
      *
@@ -562,6 +562,12 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
     }
 
+    private void addDownloadLinkToJson(final HttpServletRequest httpServletRequest, final String ref,
+                                       final JSONWriter json) throws JSONException {
+        String downloadURL = getBaseUrl(httpServletRequest) + REPORT_URL + "/" + ref;
+        json.key(JSON_DOWNLOAD_LINK).value(downloadURL);
+    }
+
     /**
      * Read the headers from the request.
      *
@@ -584,12 +590,6 @@ public class MapPrinterServlet extends BaseMapServlet {
         return headers;
     }
 
-    private void addDownloadLinkToJson(final HttpServletRequest httpServletRequest, final String ref,
-                                       final JSONWriter json) throws JSONException {
-        String downloadURL = getBaseUrl(httpServletRequest) + REPORT_URL + "/" + ref;
-        json.key(JSON_DOWNLOAD_LINK).value(downloadURL);
-    }
-
     private StringBuilder getBaseUrl(final HttpServletRequest httpServletRequest) {
         StringBuilder baseURL = new StringBuilder();
         if (httpServletRequest.getContextPath() != null && !httpServletRequest.getContextPath().isEmpty()) {
@@ -599,6 +599,37 @@ public class MapPrinterServlet extends BaseMapServlet {
             baseURL.append(httpServletRequest.getServletPath());
         }
         return baseURL;
+    }
+
+    private PJsonObject parseJson(final String requestDataRaw, final HttpServletResponse httpServletResponse) {
+
+        try {
+            if (requestDataRaw == null) {
+                error(httpServletResponse, "Missing post data.  The post payload must either be a form post with a spec parameter or " +
+                                           "must " +
+
+                                           "be a raw json post with the request.", HttpStatus.INTERNAL_SERVER_ERROR);
+                return null;
+            }
+
+            String requestData = requestDataRaw;
+            if (requestData.startsWith("spec=")) {
+                requestData = requestData.substring("spec=".length());
+            }
+
+            try {
+                return MapPrinter.parseSpec(requestData);
+            } catch (RuntimeException e) {
+                try {
+                    return MapPrinter.parseSpec(URLDecoder.decode(requestData, Constants.DEFAULT_ENCODING));
+                } catch (UnsupportedEncodingException uee) {
+                    throw new RuntimeException(e);
+                }
+            }
+        } catch (RuntimeException e) {
+            LOGGER.warn("Error parsing request data: " + requestDataRaw);
+            throw e;
+        }
     }
 
 
@@ -626,37 +657,6 @@ public class MapPrinterServlet extends BaseMapServlet {
 
         this.jobManager.submit(job);
         return ref;
-    }
-
-    private PJsonObject parseJson(final String requestDataRaw, final HttpServletResponse httpServletResponse) {
-
-        try {
-            if (requestDataRaw == null) {
-                error(httpServletResponse, "Missing post data.  The post payload must either be a form post with a spec parameter or " +
-                                           "must " +
-
-                                           "be a raw json post with the request.", HttpStatus.INTERNAL_SERVER_ERROR);
-                return null;
-            }
-
-            String requestData = requestDataRaw;
-            if (requestData.startsWith("spec=")) {
-                    requestData = requestData.substring("spec=".length());
-            }
-
-            try {
-                return MapPrinter.parseSpec(requestData);
-            } catch (RuntimeException e) {
-                try {
-                    return MapPrinter.parseSpec(URLDecoder.decode(requestData, Constants.DEFAULT_ENCODING));
-                } catch (UnsupportedEncodingException uee) {
-                    throw new RuntimeException(e);
-                }
-            }
-        } catch (RuntimeException e) {
-            LOGGER.warn("Error parsing request data: " + requestDataRaw);
-            throw e;
-        }
     }
 
     private <R> R loadReport(final String referenceId, final HttpServletResponse httpServletResponse,

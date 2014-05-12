@@ -8,9 +8,9 @@
     <suppress files=".*ProcessorInput\.java" checks="VisibilityModifier"/>
     <suppress files=".*ProcessorOutput\.java" checks="VisibilityModifier"/>
     <suppress files=".*Processor\.java" checks="VisibilityModifier"/>
+    <suppress files=".*JasperReportBuilder\.java" checks="VisibilityModifier"/>
     <suppress files=".*Layer\.java" checks="VisibilityModifier"/>
     <suppress files=".*LayerParams?\.java" checks="VisibilityModifier"/>
     <suppress files=".*AttributeValue?\.java" checks="VisibilityModifier"/>
     <suppress files=".*Attribute?\.java" checks="VisibilityModifier"/>
-    <suppress files=".*URIUtils\.java" checks="NewlineAtEndOfFile"/>
 </suppressions>

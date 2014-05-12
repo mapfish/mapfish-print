@@ -10,6 +10,6 @@ templates:
     processors:
     - !createMap
         inputMapper: {mapDef: map}
-        outputMapper: {image: mapOut}
+        outputMapper: {mapSubReport: mapOut}
         imageType: TYPE_4BYTE_ABGR
 

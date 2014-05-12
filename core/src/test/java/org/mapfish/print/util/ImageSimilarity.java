@@ -19,14 +19,17 @@
 
 package org.mapfish.print.util;
 
-import com.google.common.collect.FluentIterable;
-import com.google.common.io.Files;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Iterator;
+import java.util.List;
+
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
@@ -34,7 +37,19 @@ import javax.imageio.stream.FileImageOutputStream;
 import javax.media.jai.iterator.RandomIter;
 import javax.media.jai.iterator.RandomIterFactory;
 
-import static org.junit.Assert.assertTrue;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.export.JRGraphics2DExporter;
+import net.sf.jasperreports.engine.export.JRGraphics2DExporterParameter;
+
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.ImageTranscoder;
+import org.apache.batik.transcoder.image.TIFFTranscoder;
+
+import com.google.common.collect.FluentIterable;
+import com.google.common.io.Files;
 
 
 /**
@@ -50,8 +65,16 @@ public class ImageSimilarity {
     private Color[][] signature;
     // The size of the sampling area.
     private int sampleSize = 15;
-    float[] prop = new float[]
+    // values that are used to generate the position of the sample pixels
+    private float[] prop = new float[]
             {1f / 10f, 3f / 10f, 5f / 10f, 7f / 10f, 9f / 10f};
+
+    /*
+     * The constructor, which creates the GUI and start the image processing task.
+     */
+    public ImageSimilarity(File referenceImage, int sampleSize) throws IOException {
+        this(ImageIO.read(referenceImage), sampleSize);
+    }
 
     /*
      * The constructor, which creates the GUI and start the image processing task.
@@ -181,6 +204,91 @@ public class ImageSimilarity {
                 out.close();
             }
         }
+    }
+
+    /**
+     * Merges a list of graphic files into a single graphic.
+     * 
+     * @param graphicFiles a list of graphic files
+     * @return a single graphic
+     */
+    public static BufferedImage mergeImages(List<URI> graphicFiles)
+            throws IOException {
+        if (graphicFiles.size() == 0) {
+            throw new IllegalArgumentException("no graphics given");
+        }
+        
+        BufferedImage mergedImage = ImageIO.read(new File(graphicFiles.get(0)));
+        Graphics g = mergedImage.getGraphics();
+        for (int i = 1; i < graphicFiles.size(); i++) {
+            BufferedImage image = ImageIO.read(new File(graphicFiles.get(i)));
+            g.drawImage(image, 0, 0, null);
+        }
+        g.dispose();
+        
+        return mergedImage;
+    }
+    
+    /**
+     * Renders an SVG image into a {@link BufferedImage}.
+     */
+    public static BufferedImage convertFromSvg(URI svgFile, int width, int height) throws TranscoderException {
+        BufferedImageTranscoder imageTranscoder = new BufferedImageTranscoder();
+        
+        imageTranscoder.addTranscodingHint(TIFFTranscoder.KEY_WIDTH, (float) width);
+        imageTranscoder.addTranscodingHint(TIFFTranscoder.KEY_HEIGHT, (float) height);
+     
+        TranscoderInput input = new TranscoderInput(svgFile.toString());
+        imageTranscoder.transcode(input, null);
+     
+        return imageTranscoder.getBufferedImage();
+    }
+    
+    /**
+     * An image transcoder which allows to retrieve an {@link BufferedImage}.
+     */
+    private static class BufferedImageTranscoder extends ImageTranscoder {
+
+        private BufferedImage img = null;
+
+        @Override
+        public BufferedImage createImage(int w, int h) {
+            BufferedImage bi = new BufferedImage(w, h,
+                    BufferedImage.TYPE_INT_ARGB);
+            return bi;
+        }
+
+        @Override
+        public void writeImage(BufferedImage img, TranscoderOutput output) {
+            this.img = img;
+        }
+
+        public BufferedImage getBufferedImage() {
+            return img;
+        }
+    }   
+
+    /**
+     * Exports a rendered {@link JasperPrint} to a {@link BufferedImage}.
+     */
+    public static BufferedImage exportReportToImage(JasperPrint jasperPrint, Integer page) throws Exception {
+        BufferedImage pageImage = new BufferedImage(jasperPrint.getPageWidth(), jasperPrint.getPageHeight(), BufferedImage.TYPE_INT_RGB);
+        
+        JRGraphics2DExporter exporter = new JRGraphics2DExporter();
+        exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+        exporter.setParameter(JRGraphics2DExporterParameter.GRAPHICS_2D, pageImage.getGraphics());
+        exporter.setParameter(JRExporterParameter.PAGE_INDEX, page);
+        exporter.exportReport();
+        
+        return pageImage;
+    } 
+
+    /**
+     * Exports a rendered {@link JasperPrint} to a graphics file.
+     */
+    public static void exportReportToFile(JasperPrint jasperPrint, String fileName, Integer page) throws Exception {
+        BufferedImage pageImage = exportReportToImage(jasperPrint, page);
+        ImageIO.write(pageImage, Files.getFileExtension(fileName), new File(fileName));
     }
 
     public static void main(String args[]) throws IOException {

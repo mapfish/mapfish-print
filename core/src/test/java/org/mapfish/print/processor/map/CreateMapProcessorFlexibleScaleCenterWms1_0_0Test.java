@@ -23,7 +23,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.io.Files;
-
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -39,11 +38,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -124,17 +124,22 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0Test extends AbstractM
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser);
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory());
         template.getProcessorGraph().createTask(values).invoke();
 
-        BufferedImage map = values.getObject("mapOut", BufferedImage.class);
-//        ImageSimilarity.writeUncompressedImage(map, "e:/tmp/"+getClass().getSimpleName()+".tiff");
-        new ImageSimilarity(map, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 10);
+        @SuppressWarnings("unchecked")
+        List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
+        assertEquals(2, layerGraphics.size());
+
+//        Files.copy(new File(layerGraphics.get(0)), new File("/tmp/0_"+getClass().getSimpleName()+".tiff"));
+//        Files.copy(new File(layerGraphics.get(1)), new File("/tmp/1_"+getClass().getSimpleName()+".tiff"));
+
+        new ImageSimilarity(ImageSimilarity.mergeImages(layerGraphics), 2)
+                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 10);
 
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
         return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleCenterWms1_0_0Test.class, BASE_DIR + "requestData.json");
     }
-
 }

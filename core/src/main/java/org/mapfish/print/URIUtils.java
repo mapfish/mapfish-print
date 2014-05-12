@@ -23,6 +23,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Closer;
+
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
@@ -284,4 +285,3 @@ public final class URIUtils {
         }
     }
 }
-

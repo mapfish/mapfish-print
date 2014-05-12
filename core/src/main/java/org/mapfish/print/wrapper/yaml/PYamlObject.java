@@ -101,6 +101,11 @@ public class PYamlObject extends PAbstractObject {
     }
 
     @Override
+    public final boolean isArray(final String key) {
+        return this.obj.get(key) instanceof List<?>;
+    }
+
+    @Override
     public final Iterator<String> keys() {
         return this.obj.keySet().iterator();
     }
