@@ -5,7 +5,7 @@ task wrapper(type: Wrapper) {
 }
 
 task travisBuild {
-    dependsOn (':core:build', ':debian:build')
+    dependsOn (':core:build')
 }
 
 allprojects {
