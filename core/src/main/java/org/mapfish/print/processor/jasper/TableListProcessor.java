@@ -35,10 +35,14 @@ import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 
 import org.mapfish.print.attribute.TableListAttribute.TableListAttributeValue;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.HasConfiguration;
 import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.wrapper.json.PJsonArray;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.Color;
@@ -57,7 +61,9 @@ import static org.mapfish.print.processor.jasper.JasperReportBuilder.JASPER_REPO
  * @author Jesse
  * @author sbrunner
  */
-public class TableListProcessor extends AbstractProcessor<TableListProcessor.Input, TableListProcessor.Output> {
+public class TableListProcessor extends AbstractProcessor<TableListProcessor.Input, TableListProcessor.Output>
+        implements HasConfiguration {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TableListProcessor.class);
 
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_DISPLAYNAME = "displayName";
@@ -76,6 +82,10 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Inp
     @Autowired
     private WorkingDirectories workingDirectories;
 
+    private File dynamicReportDirectory;
+    
+    private Configuration configuration;
+    
     /**
      * Constructor.
      */
@@ -119,12 +129,27 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Inp
                             dynamicReportOptString("font", DEFAULT_FONT), false));
                     oddRowStyle.setVerticalAlign(VerticalAlign.MIDDLE);
 
-                    File tableTemplate = new File(values.tempTaskDirectory, "table_" + id + JASPER_REPORT_XML_FILE_EXT);
-                    File tableTemplateBuild = new File(values.tempTaskDirectory, "table_" + id + JASPER_REPORT_COMPILED_FILE_EXT);
+                    File customTableTemplate = new File(this.dynamicReportDirectory, "table_" + id + JASPER_REPORT_XML_FILE_EXT);
+                    if (customTableTemplate.exists()) {
+                        // in case a custom template is provided, simply compile this file (if necessary)
+                        File customTableTemplateBuild = this.workingDirectories.getBuildFileFor(this.configuration, customTableTemplate,
+                                JASPER_REPORT_COMPILED_FILE_EXT, LOGGER);
+                        
+                        if (!customTableTemplateBuild.exists()
+                                || (customTableTemplate.lastModified() > customTableTemplateBuild.lastModified())) {
+                            JasperCompileManager.compileReportToFile(customTableTemplate.getAbsolutePath(),
+                                    customTableTemplateBuild.getAbsolutePath());
+                            
+                        }
+                    } else {
+                        // if no template is provided, build a report on-the-fly
+                        File tableTemplate = new File(values.tempTaskDirectory, "table_" + id + JASPER_REPORT_XML_FILE_EXT);
+                        File tableTemplateBuild = new File(values.tempTaskDirectory, "table_" + id + JASPER_REPORT_COMPILED_FILE_EXT);
 
-                    generateDynamicReport(jsonColumns, detailStyle, headerStyle, oddRowStyle, tableTemplate);
-                    JasperCompileManager.compileReportToFile(tableTemplate.getAbsolutePath(),
-                            tableTemplateBuild.getAbsolutePath());
+                        generateDynamicReport(jsonColumns, detailStyle, headerStyle, oddRowStyle, tableTemplate);
+                        JasperCompileManager.compileReportToFile(tableTemplate.getAbsolutePath(),
+                                tableTemplateBuild.getAbsolutePath());
+                    }
                 }
             }
         }
@@ -190,6 +215,15 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Inp
 
     public final void setDynamicReport(final Map<String, Object> dynamicReport) {
         this.dynamicReport = dynamicReport;
+    }
+
+    public final void setDynamicReportDirectory(final String dynamicReportDirectory) {
+        this.dynamicReportDirectory = new File(this.configuration.getDirectory(), dynamicReportDirectory);
+    }
+    
+    @Override
+    public final void setConfiguration(final Configuration configuration) {
+        this.configuration = configuration;
     }
 
     /**
