@@ -31,6 +31,7 @@ import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.mapfish.print.wrapper.multi.PMultiObject;
 
+import java.io.File;
 import java.lang.reflect.Array;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,6 +45,11 @@ import javax.annotation.Nullable;
  *
  */
 public class Values {
+    /**
+     * The key that is used to store the task directory in the values map.
+     */
+    public static final String TASK_DIRECTORY_KEY = "tempTaskDirectory";
+    
     private final Map<String, Object> values = new ConcurrentHashMap<String, Object>();
 
     /**
@@ -68,8 +74,12 @@ public class Values {
      * @param requestData the json request data
      * @param template the template
      * @param parser the parser to use for parsing the request data.
+     * @param taskDirectory the temporary directory for this printing task.
      */
-    public Values(final PJsonObject requestData, final Template template, final MapfishParser parser) {
+    public Values(final PJsonObject requestData, final Template template, final MapfishParser parser,
+            final File taskDirectory) {
+        // add task dir. to values so that all processors can access it
+        this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
 
         final PJsonObject jsonAttributes = requestData.getJSONObject("attributes");
 
@@ -118,6 +128,11 @@ public class Values {
      * @param value the value.
      */
     public final void put(final String key, final Object value) {
+        if (TASK_DIRECTORY_KEY.equals(key)) {
+            // ensure that no one overwrites the task directory 
+            throw new IllegalArgumentException("Invalid key: " + key);
+        }
+        
         this.values.put(key, value);
     }
 

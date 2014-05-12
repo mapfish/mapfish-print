@@ -50,7 +50,8 @@ dependencies {
             "org.geotools:gt-geojson:$geotoolsVersion",
             "org.geotools:gt-geotiff:$geotoolsVersion",
             "org.geotools:gt-wms:$geotoolsVersion",
-            "org.geotools.xsd:gt-xsd-gml3:$geotoolsVersion"
+            "org.geotools.xsd:gt-xsd-gml3:$geotoolsVersion",
+            "org.geotools:gt-svg:$geotoolsVersion"
     )
     compile fileTree(dir: "$projectDir/libs", include: '*.jar')
     compile (
@@ -61,6 +62,7 @@ dependencies {
             'org.yaml:snakeyaml:1.13',
             "com.github.spullara.cli-parser:cli-parser:1.1.1",
 	        'net.sf.jasperreports:jasperreports:5.5.0',
+	        'org.codehaus.groovy:groovy-all:2.2.2',
 	        'ar.com.fdvs:DynamicJasper:5.0.0',
             'org.apache.httpcomponents:httpclient:4.3.3'
     )

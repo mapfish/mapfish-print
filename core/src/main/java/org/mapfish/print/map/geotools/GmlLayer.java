@@ -58,10 +58,11 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
      * @param executorService       the thread pool for doing the rendering.
      * @param featureSourceSupplier a function that creates the feature source.  This will only be called once.
      * @param styleSupplier         a function that creates the style for styling the features. This will only be called once.
+     * @param renderAsSvg is the layer rendered as SVG?
      */
     public GmlLayer(final ExecutorService executorService, final Supplier<FeatureSource> featureSourceSupplier,
-                    final Function<FeatureSource, Style> styleSupplier) {
-        super(executorService, featureSourceSupplier, styleSupplier);
+                    final Function<FeatureSource, Style> styleSupplier, final boolean renderAsSvg) {
+        super(executorService, featureSourceSupplier, styleSupplier, renderAsSvg);
     }
 
     /**
@@ -94,7 +95,8 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
             return new GmlLayer(
                     this.forkJoinPool,
                     createFeatureSourceSupplier(template, param.url),
-                    createStyleFunction(template, param.style));
+                    createStyleFunction(template, param.style),
+                    param.renderAsSvg);
         }
 
         private Supplier<FeatureSource> createFeatureSourceSupplier(final Template template, final String url) {
@@ -209,5 +211,12 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
          */
         @HasDefaultValue
         public String style;
+        /**
+         * Indicates if the layer is rendered as SVG. 
+         * <p/>
+         * Default is <code>false</code>.
+         */
+        @HasDefaultValue
+        public boolean renderAsSvg = false;
     }
 }

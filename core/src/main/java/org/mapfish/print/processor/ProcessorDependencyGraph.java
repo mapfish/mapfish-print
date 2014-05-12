@@ -20,22 +20,18 @@
 package org.mapfish.print.processor;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import jsr166y.RecursiveTask;
-
 import org.mapfish.print.output.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.Nonnull;
 
 import static org.mapfish.print.parser.ParserUtils.FILTER_ONLY_REQUIRED_ATTRIBUTES;
@@ -63,15 +59,19 @@ public final class ProcessorDependencyGraph {
      * @return a task ready to be submitted to a fork join pool.
      */
     public ProcessorGraphForkJoinTask createTask(@Nonnull final Values values) {
-        List<String> missingAttributes = Lists.newArrayList();
-        for (String attribute : getAllRequiredAttributes()) {
+        StringBuilder missingAttributes = new StringBuilder();
+        final Multimap<String, Processor> requiredAttributes = getAllRequiredAttributes();
+        for (String attribute : requiredAttributes.keySet()) {
             if (!values.containsKey(attribute)) {
-                missingAttributes.add(attribute);
+                missingAttributes.append("\n\t* ").append(attribute).append(" <- ").append(requiredAttributes.get(attribute));
             }
         }
 
-        if (!missingAttributes.isEmpty()) {
-            throw new IllegalArgumentException("The following attributes are not in the values object. " + missingAttributes);
+        if (missingAttributes.length() > 0) {
+            final StringBuilder msg = new StringBuilder("It has been found that one or more required attributes are missing from the " +
+                                                        "values object:");
+            msg.append(missingAttributes).append("\n");
+            throw new IllegalArgumentException(msg.toString());
         }
 
         return new ProcessorGraphForkJoinTask(values);
@@ -90,11 +90,13 @@ public final class ProcessorDependencyGraph {
      * Get all the names of inputs that are required to be in the Values object when this graph is executed.
      */
     @SuppressWarnings("unchecked")
-    public Collection<String> getAllRequiredAttributes() {
-        Set<String> requiredInputs = Sets.newHashSet();
+    public Multimap<String, Processor> getAllRequiredAttributes() {
+        Multimap<String, Processor> requiredInputs = HashMultimap.create();
         for (ProcessorGraphNode root : this.roots) {
             final Map<String, String> inputMapper = root.getInputMapper().inverse();
-            requiredInputs.addAll(inputMapper.values());
+            for (String value : inputMapper.values()) {
+                requiredInputs.put(value, root.getProcessor());
+            }
             final Object inputParameter = root.getProcessor().createInputParameter();
             if (inputParameter != null) {
                 final Class<?> inputParameterClass = inputParameter.getClass();
@@ -103,9 +105,9 @@ public final class ProcessorDependencyGraph {
                 for (String attName : requiredAttributesDefinedInInputParameter) {
                     String mappedName = inputMapper.get(attName);
                     if (mappedName != null) {
-                        requiredInputs.add(mappedName);
+                        requiredInputs.put(mappedName, root.getProcessor());
                     } else {
-                        requiredInputs.add(attName);
+                        requiredInputs.put(attName, root.getProcessor());
                     }
                 }
             }

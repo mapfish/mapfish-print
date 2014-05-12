@@ -51,6 +51,14 @@ public abstract class MapBounds {
     public abstract ReferencedEnvelope toReferencedEnvelope(Rectangle paintArea, double dpi);
 
     /**
+     * Create a {@link org.geotools.geometry.jts.ReferencedEnvelope} representing the bounds.
+     * <p/>
+     *
+     * @param paintArea the size of the map that will be drawn.
+     */
+    public abstract MapBounds adjustedEnvelope(Rectangle paintArea);
+
+    /**
      * Get the projection these bounds are calculated in.
      */
     public final CoordinateReferenceSystem getProjection() {
@@ -84,12 +92,18 @@ public abstract class MapBounds {
     // CHECKSTYLE:OFF
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         MapBounds mapBounds = (MapBounds) o;
 
-        if (!projection.equals(mapBounds.projection)) return false;
+        if (!projection.equals(mapBounds.projection)) {
+            return false;
+        }
 
         return true;
     }

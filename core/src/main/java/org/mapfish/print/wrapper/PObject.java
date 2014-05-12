@@ -156,6 +156,12 @@ public interface PObject {
     PArray optArray(final String key);
 
     /**
+     * Is the property an array.
+     * @param key the property name
+     */
+    boolean isArray(final String key);
+
+    /**
      * Get a property as a array or default.
      * @param key the property name
      * @param defaultValue default

@@ -19,19 +19,21 @@
 
 package org.mapfish.print;
 
-import com.google.common.io.Files;
-
-import org.junit.runner.RunWith;
-import org.mapfish.print.wrapper.json.PJsonObject;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.mapfish.print.wrapper.json.PJsonObject;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.google.common.io.Files;
 
 /**
  * Class that loads the normal spring application context from the spring config file.
@@ -49,6 +51,9 @@ public abstract class AbstractMapfishSpringTest {
     public static final String TEST_SPRING_XML = "classpath:test-http-request-factory-application-context.xml";
     static final Pattern IMPORT_PATTERN = Pattern.compile("@@importFile\\((\\S+)\\)@@");
 
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
+    
     /**
      * Look on the classpath for the named file.  Will look at the root package and in the same package as testClass.
      *
@@ -95,5 +100,9 @@ public abstract class AbstractMapfishSpringTest {
      */
     protected File getFile(String fileName) {
         return getFile(getClass(), fileName);
+    }
+    
+    protected File getTaskDirectory() {
+        return this.folder.getRoot();
     }
 }

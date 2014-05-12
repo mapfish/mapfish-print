@@ -85,7 +85,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
         final PJsonObject pJsonObject = parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-json.json");
-        final Values values = new Values(pJsonObject, template, new MapfishParser());
+        final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory());
         final MapAttribute.MapAttributeValues value = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
 
         assertEquals(90.0, value.getDpi(), 0.1);
@@ -103,7 +103,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
         final PJsonObject pJsonObject = parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-yaml.json");
-        final Values values = new Values(pJsonObject, template, new MapfishParser());
+        final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory());
         final MapAttribute.MapAttributeValues value = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
 
         assertEquals(80.0, value.getDpi(), 0.1);
@@ -121,7 +121,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
         final PJsonObject pJsonObject = parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-json.json");
-        final Values values = new Values(pJsonObject, template, new MapfishParser());
+        final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory());
         final MapAttribute.MapAttributeValues value = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
 
         assertEquals(90.0, value.getDpi(), 0.1);

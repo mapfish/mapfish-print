@@ -109,7 +109,7 @@ public final class MapAttribute extends AttributeWithDefaultConfig<MapAttribute.
     public void setDefaults(final Map<String, Object> defaults) {
         this.defaults = new PYamlObject(defaults, "mapAttribute");
     }
-    
+
     @Override
     public PObject getDefaultValues() {
         return this.defaults;
@@ -181,6 +181,16 @@ public final class MapAttribute extends AttributeWithDefaultConfig<MapAttribute.
          */
         @HasDefaultValue
         public boolean useNearestScale = true;
+
+        /**
+         * Indicates if the map should adjust its bounds.
+         * <p/>
+         *
+         * @see #isUseAdjustBounds()
+         */
+        @HasDefaultValue
+        public boolean useAdjustBounds = false;
+
         /**
          * The output dpi of the printed map.
          */
@@ -344,6 +354,15 @@ public final class MapAttribute extends AttributeWithDefaultConfig<MapAttribute.
          */
         public boolean isUseNearestScale() {
             return this.useNearestScale && MapAttribute.this.zoomLevels != null;
+        }
+
+        /**
+         * Return true if requestData has useNearestScale and configuration has some zoom levels defined.
+         *
+         * @return
+         */
+        public boolean isUseAdjustBounds() {
+            return this.useAdjustBounds;
         }
 
         public ZoomLevels getZoomLevels() {

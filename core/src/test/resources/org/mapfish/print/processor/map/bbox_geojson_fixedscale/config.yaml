@@ -14,6 +14,6 @@ templates:
     processors:
     - !createMap
         inputMapper: {mapDef: map}
-        outputMapper: {image: mapOut}
+        outputMapper: {mapSubReport: mapOut}
 
 

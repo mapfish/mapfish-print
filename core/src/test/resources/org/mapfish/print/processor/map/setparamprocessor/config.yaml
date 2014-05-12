@@ -27,4 +27,4 @@ templates:
         outputMapper: {map: map3}
     - !createMap
         inputMapper: {map3: map}
-        outputMapper: {image: map}
+        outputMapper: {mapSubReport: map}

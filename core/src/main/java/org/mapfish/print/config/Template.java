@@ -20,6 +20,7 @@
 package org.mapfish.print.config;
 
 import com.google.common.base.Optional;
+
 import org.geotools.styling.Style;
 import org.json.JSONException;
 import org.json.JSONWriter;
@@ -38,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.Nonnull;
 
 /**
