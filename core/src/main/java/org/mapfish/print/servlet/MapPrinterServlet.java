@@ -21,6 +21,7 @@ package org.mapfish.print.servlet;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.MapPrinter;
@@ -57,6 +58,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -111,16 +113,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     private ApplicationContext context;
     @Autowired
     private ServletInfo servletInfo;
-    private long maxCreateAndGetWaitTimeInSeconds;
 
-    /**
-     * Maximum time to wait for a createAndGet request to complete before returning an error.
-     *
-     * @param maxCreateAndGetWaitTimeInSeconds the maximum time in seconds to wait for a report to be generated.
-     */
-    public final void setMaxCreateAndGetWaitTimeInSeconds(final long maxCreateAndGetWaitTimeInSeconds) {
-        this.maxCreateAndGetWaitTimeInSeconds = maxCreateAndGetWaitTimeInSeconds;
-    }
 
     @RequestMapping(value = STATUS_URL + "/{referenceId}", method = RequestMethod.GET)
     private void getStatus(final String referenceId, final HttpServletResponse httpServletResponse) {
@@ -153,6 +146,16 @@ public class MapPrinterServlet extends BaseMapServlet {
                 writer.close();
             }
         }
+    }
+    private long maxCreateAndGetWaitTimeInSeconds;
+
+    /**
+     * Maximum time to wait for a createAndGet request to complete before returning an error.
+     *
+     * @param maxCreateAndGetWaitTimeInSeconds the maximum time in seconds to wait for a report to be generated.
+     */
+    public final void setMaxCreateAndGetWaitTimeInSeconds(final long maxCreateAndGetWaitTimeInSeconds) {
+        this.maxCreateAndGetWaitTimeInSeconds = maxCreateAndGetWaitTimeInSeconds;
     }
 
     /**
@@ -213,6 +216,47 @@ public class MapPrinterServlet extends BaseMapServlet {
                 writer.close();
             }
         }
+    }
+
+    /**
+     * To get the PDF created previously.
+     *
+     * @param referenceId         the path to the file.
+     * @param inline              whether or not to inline the
+     * @param httpServletResponse the response object
+     */
+    @RequestMapping(value = REPORT_URL + "/{referenceId}", method = RequestMethod.GET)
+    public final void getReport(@PathVariable final String referenceId,
+                                @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
+                                final HttpServletResponse httpServletResponse)
+            throws IOException, ServletException {
+        loadReport(referenceId, httpServletResponse, new HandleReportLoadResult<Void>() {
+
+            @Override
+            public Void unsupportedLoader(final HttpServletResponse httpServletResponse, final String referenceId) {
+                error(httpServletResponse, "Print with ref=" + referenceId + " unknown", HttpStatus.NOT_FOUND);
+                return null;
+            }
+
+            @Override
+            public Void successfulPrint(final SuccessfulPrintJob successfulPrintResult, final HttpServletResponse httpServletResponse,
+                                        final URI reportURI, final ReportLoader loader) throws IOException, ServletException {
+                sendReportFile(successfulPrintResult, httpServletResponse, loader, reportURI, inline);
+                return null;
+            }
+
+            @Override
+            public Void failedPrint(final FailedPrintJob failedPrintJob, final HttpServletResponse httpServletResponse) {
+                error(httpServletResponse, failedPrintJob.getError(), HttpStatus.INTERNAL_SERVER_ERROR);
+                return null;
+            }
+
+            @Override
+            public Void printJobPending(final HttpServletResponse httpServletResponse, final String referenceId) {
+                error(httpServletResponse, "Report has not yet completed processing", HttpStatus.ACCEPTED);
+                return null;
+            }
+        });
     }
 
     /**
@@ -299,44 +343,14 @@ public class MapPrinterServlet extends BaseMapServlet {
     }
 
     /**
-     * To get the PDF created previously.
+     * To get (in JSON) the information about the available formats and CO.
      *
-     * @param referenceId         the path to the file.
-     * @param inline              whether or not to inline the
-     * @param httpServletResponse the response object
+     * @param resp the response object
      */
-    @RequestMapping(value = REPORT_URL + "/{referenceId}", method = RequestMethod.GET)
-    public final void getReport(@PathVariable final String referenceId,
-                                @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
-                                final HttpServletResponse httpServletResponse)
-            throws IOException, ServletException {
-        loadReport(referenceId, httpServletResponse, new HandleReportLoadResult<Void>() {
-
-            @Override
-            public Void unsupportedLoader(final HttpServletResponse httpServletResponse, final String referenceId) {
-                error(httpServletResponse, "Print with ref=" + referenceId + " unknown", HttpStatus.NOT_FOUND);
-                return null;
-            }
-
-            @Override
-            public Void successfulPrint(final SuccessfulPrintJob successfulPrintResult, final HttpServletResponse httpServletResponse,
-                                        final URI reportURI, final ReportLoader loader) throws IOException, ServletException {
-                sendReportFile(successfulPrintResult, httpServletResponse, loader, reportURI, inline);
-                return null;
-            }
-
-            @Override
-            public Void failedPrint(final FailedPrintJob failedPrintJob, final HttpServletResponse httpServletResponse) {
-                error(httpServletResponse, failedPrintJob.getError(), HttpStatus.INTERNAL_SERVER_ERROR);
-                return null;
-            }
-
-            @Override
-            public Void printJobPending(final HttpServletResponse httpServletResponse, final String referenceId) {
-                error(httpServletResponse, "Report has not yet completed processing", HttpStatus.ACCEPTED);
-                return null;
-            }
-        });
+    @RequestMapping(value = CAPABILITIES_URL, method = RequestMethod.GET)
+    public final void getInfo(final HttpServletResponse resp) throws ServletException,
+            IOException {
+        getInfo(ServletMapPrinterFactory.DEFAULT_CONFIGURATION_FILE_KEY, resp);
     }
 
     private <R> R loadReport(final String referenceId, final HttpServletResponse httpServletResponse,
@@ -398,17 +412,6 @@ public class MapPrinterServlet extends BaseMapServlet {
             writer.close();
         }
 
-    }
-
-    /**
-     * To get (in JSON) the information about the available formats and CO.
-     *
-     * @param resp the response object
-     */
-    @RequestMapping(value = CAPABILITIES_URL, method = RequestMethod.GET)
-    public final void getInfo(final HttpServletResponse resp) throws ServletException,
-            IOException {
-        getInfo(ServletMapPrinterFactory.DEFAULT_CONFIGURATION_FILE_KEY, resp);
     }
 
     /**

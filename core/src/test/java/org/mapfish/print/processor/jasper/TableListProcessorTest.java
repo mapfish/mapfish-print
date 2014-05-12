@@ -55,7 +55,7 @@ public class TableListProcessorTest  extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, parser);
+        Values values = new Values(requestData, template, parser, getTaskDirectory());
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final Iterator<Values> tablelist = values.getIterator("tableList").iterator();

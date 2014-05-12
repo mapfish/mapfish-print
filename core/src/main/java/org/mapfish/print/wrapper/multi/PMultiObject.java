@@ -151,6 +151,16 @@ public class PMultiObject extends PAbstractObject {
         return null;
     }
 
+    @Override
+    public final boolean isArray(final String key) {
+        for (PObject obj : this.objs) {
+            if (obj.has(key)) {
+                return obj.isArray(key);
+            }
+        }
+        return false;
+    }
+
     private Set<String> allKeys() {
         Set<String> keys = new HashSet<String>();
         for (PObject obj : this.objs) {

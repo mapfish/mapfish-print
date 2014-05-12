@@ -23,10 +23,10 @@ import com.google.common.base.Function;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
-import org.json.JSONArray;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.parser.HasDefaultValue;
-import org.mapfish.print.wrapper.json.PJsonArray;
+import org.mapfish.print.wrapper.PArray;
+import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
 
 import java.io.UnsupportedEncodingException;
@@ -69,7 +69,7 @@ public abstract class AbstractTiledLayerParams {
      * </code></pre>
      */
     @HasDefaultValue
-    public PJsonObject customParams;
+    public PObject customParams;
     private final Multimap<String, String> additionalCustomParam = HashMultimap.create();
 
     /**
@@ -121,23 +121,19 @@ public abstract class AbstractTiledLayerParams {
         return convertToMultiMap(this.mergeableParams);
     }
 
-    private Multimap<String, String> convertToMultiMap(final PJsonObject jsonParams) {
+    private Multimap<String, String> convertToMultiMap(final PObject objectParams) {
         Multimap<String, String> params = HashMultimap.create();
-        if (jsonParams != null) {
-            Iterator<String> customParamsIter = jsonParams.keys();
+        if (objectParams != null) {
+            Iterator<String> customParamsIter = objectParams.keys();
             while (customParamsIter.hasNext()) {
                 String key = customParamsIter.next();
-                final Object opt = jsonParams.getInternalObj().opt(key);
-                if (opt instanceof JSONArray) {
-                    PJsonArray array = new PJsonArray(jsonParams, (JSONArray) opt, key);
-
+                if (objectParams.isArray(key)) {
+                    final PArray array = objectParams.optArray(key);
                     for (int i = 0; i < array.size(); i++) {
                         params.put(key, array.getString(i));
                     }
-                } else if (opt != null) {
-                    params.put(key, opt.toString());
                 } else {
-                    params.put(key, "");
+                    params.put(key, objectParams.optString(key, ""));
                 }
             }
         }

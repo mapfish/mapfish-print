@@ -111,7 +111,7 @@ public abstract class BaseMapServlet {
 
             BaseMapServlet.LOGGER.error("Error while generating PDF", e);
         } catch (IOException ex) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(ex);
         } finally {
             if (out != null) {
                 out.close();

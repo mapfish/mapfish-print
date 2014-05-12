@@ -41,13 +41,14 @@ public final class SuccessfulPrintJob extends CompletedPrintJob {
 
     /**
      * Constructor.
-     *  @param referenceId reference of the report.
-     * @param reportURI the uri for fetching the report.
-     * @param appId the appId used for loading the configuration.
+     *
+     * @param referenceId    reference of the report.
+     * @param reportURI      the uri for fetching the report.
+     * @param appId          the appId used for loading the configuration.
      * @param completionDate the date when the print job completed
-     * @param fileName the fileName to send to the client.
-     * @param mimeType the mimetype of the printed file
-     * @param fileExtension the file extension (to be added to the filename)
+     * @param fileName       the fileName to send to the client.
+     * @param mimeType       the mimetype of the printed file
+     * @param fileExtension  the file extension (to be added to the filename)
      */
     public SuccessfulPrintJob(final String referenceId, final URI reportURI, final String appId, final Date completionDate,
                               final String fileName, final String mimeType, final String fileExtension) {
@@ -71,21 +72,22 @@ public final class SuccessfulPrintJob extends CompletedPrintJob {
 
     /**
      * Construct a new instance from the values provided.
-     *  @param metadata the metadata retrieved from the registry.  Only need it to get the extra information that is not stored by
-     *                 parent class.
-     * @param referenceId reference of the report.
-     * @param appId the appId used for loading the configuration.
+     *
+     * @param metadata       the metadata retrieved from the registry.  Only need it to get the extra information that is not stored by
+     *                       parent class.
+     * @param referenceId    reference of the report.
+     * @param appId          the appId used for loading the configuration.
      * @param completionDate the date when the print job completed
-     * @param fileName the fileName to send to the client.
+     * @param fileName       the fileName to send to the client.
      */
     public static SuccessfulPrintJob load(final JSONObject metadata, final String referenceId, final String appId,
                                           final Date completionDate, final String fileName)
             throws JSONException {
         try {
-        URI reportURI = new URI(metadata.getString(JSON_REPORT_URI));
-        String fileExt = metadata.getString(JSON_FILE_EXT);
-        String mimeType = metadata.getString(JSON_MIME_TYPE);
-        return new SuccessfulPrintJob(referenceId, reportURI, appId, completionDate, fileName, mimeType, fileExt);
+            URI reportURI = new URI(metadata.getString(JSON_REPORT_URI));
+            String fileExt = metadata.getString(JSON_FILE_EXT);
+            String mimeType = metadata.getString(JSON_MIME_TYPE);
+            return new SuccessfulPrintJob(referenceId, reportURI, appId, completionDate, fileName, mimeType, fileExt);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }

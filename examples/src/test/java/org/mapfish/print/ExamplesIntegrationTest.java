@@ -31,6 +31,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -79,9 +80,15 @@ public class ExamplesIntegrationTest {
             this.mapPrinter.setConfiguration(configFile);
             String requestData = Files.asCharSource(new File(example, REQUEST_DATA_FILE), Charset.forName(Constants.DEFAULT_ENCODING)).read();
             final PJsonObject jsonSpec = MapPrinter.parseSpec(requestData);
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            //ByteArrayOutputStream out = new ByteArrayOutputStream();
+            
+            File file = new File("/tmp/test.pdf");
+            FileOutputStream fs = new FileOutputStream(file);
+            
             Map<String, String> headers = Maps.newHashMap();
-            this.mapPrinter.print(jsonSpec, out, headers);
+            this.mapPrinter.print(jsonSpec, fs, headers);
+            
+            fs.close();
         } catch (Throwable e) {
             errors.put(example.getName(), e);
         }

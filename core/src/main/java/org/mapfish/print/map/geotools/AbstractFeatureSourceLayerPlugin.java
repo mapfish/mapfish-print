@@ -21,7 +21,9 @@ package org.mapfish.print.map.geotools;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Sets;
+
 import jsr166y.ForkJoinPool;
+
 import org.geotools.data.FeatureSource;
 import org.geotools.styling.Style;
 import org.mapfish.print.config.Template;
@@ -31,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.Set;
+
 import javax.annotation.Nullable;
 
 /**
@@ -56,8 +59,7 @@ public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFac
     @Autowired
     protected ClientHttpRequestFactory httpRequestFactory;
 
-
-    private Set<String> typeNames;
+    private final Set<String> typeNames;
 
     /**
      * Constructor.

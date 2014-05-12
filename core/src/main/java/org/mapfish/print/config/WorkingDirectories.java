@@ -19,12 +19,17 @@
 
 package org.mapfish.print.config;
 
+import static com.google.common.io.Files.getNameWithoutExtension;
+
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.nio.file.Files;
 
-import static com.google.common.io.Files.getNameWithoutExtension;
+import javax.annotation.PostConstruct;
 
 /**
  * Class for configuring the working directories and ensuring they exist correctly.
@@ -32,6 +37,8 @@ import static com.google.common.io.Files.getNameWithoutExtension;
  * @author jesseeichar on 3/25/14.
  */
 public class WorkingDirectories {
+    private static final Logger LOGGER = LoggerFactory.getLogger(WorkingDirectories.class);
+    
     private File working;
     private File reports;
 
@@ -63,6 +70,30 @@ public class WorkingDirectories {
     public final File getReports() {
         createIfMissing(this.reports, "Reports");
         return this.reports;
+    }
+    
+    /**
+     * Creates and returns a temporary directory for a printing task.
+     */
+    public final File getTaskDirectory() {
+        try {
+            return Files.createTempDirectory(this.working.toPath(), "task-").toFile();
+        } catch (IOException e) {
+            throw new AssertionError("Unable to create temporary directory in '" + this.working + "'");
+        }
+    }
+
+    /**
+     * Deletes the given directory.
+     * 
+     * @param directory The directory to delete.
+     */
+    public final void removeDirectory(final File directory) {
+        try {
+            FileUtils.deleteDirectory(directory);
+        } catch (IOException e) {
+            LOGGER.error("Unable to delete directory '" + directory + "'");
+        }
     }
 
     private void createIfMissing(final File directory, final String name) {
