@@ -47,6 +47,7 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
     private Supplier<FeatureSource> featureSourceSupplier;
     private Function<FeatureSource, Style> styleSupplier;
     private volatile List<? extends Layer> layers;
+    private final Boolean renderAsSvg;
 
     /**
      * Constructor.
@@ -54,12 +55,15 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
      * @param executorService the thread pool for doing the rendering.
      * @param featureSourceSupplier a function that creates the feature source.  This will only be called once.
      * @param styleSupplier         a function that creates the style for styling the features. This will only be called once.
+     * @param renderAsSvg is the layer rendered as SVG?
      */
     public AbstractFeatureSourceLayer(final ExecutorService executorService, final Supplier<FeatureSource> featureSourceSupplier,
-            final Function<FeatureSource, Style> styleSupplier) {
+            final Function<FeatureSource, Style> styleSupplier, final boolean renderAsSvg) {
         super(executorService);
         this.featureSourceSupplier = featureSourceSupplier;
         this.styleSupplier = styleSupplier;
+
+        this.renderAsSvg = renderAsSvg;
     }
 
     public final void setStyle(final Style style) {
@@ -94,5 +98,13 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
                 return new CollectionFeatureSource(featureCollection);
             }
         };
+    }
+    
+    /**
+     * Is the layer rendered as SVG?
+     * @return
+     */
+    public final Boolean shouldRenderAsSvg() {
+        return this.renderAsSvg;
     }
 }

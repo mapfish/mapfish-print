@@ -2,7 +2,9 @@ package org.mapfish.print.processor;
 
 import jsr166y.ForkJoinPool;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.config.Configuration;
@@ -17,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
     public static final String BASE_DIR = "setstyle/";
 
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
     @Autowired
     private ConfigurationFactory configurationFactory;
     @Autowired
@@ -30,7 +34,7 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = parseJSONObjectFromFile(SetStyleProcessorTest.class, BASE_DIR + "request.json");
-        Values values = new Values(requestData, template, parser);
+        Values values = new Values(requestData, template, parser, this.folder.getRoot());
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final MapAttribute.MapAttributeValues map = values.getObject("map", MapAttribute.MapAttributeValues.class);

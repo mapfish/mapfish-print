@@ -1,8 +1,10 @@
 throwErrorOnExtraParameters: true
 templates:
   main: !template
+    jasperTemplate: simple-map.jrxml
     attributes:
-      mapDef: !map
+      dependence: !integer {}
+      map: !map
         width: 500
         height: 100
         maxDpi: 400
@@ -11,8 +13,10 @@ templates:
         zoomLevels: !zoomLevels
           scales: [50000, 100000, 500000, 1000000]
     processors:
+    - !reportBuilder
+        directory: "."
     - !createMap
-        inputMapper: {mapDef: map}
-        outputMapper: {mapSubReport: mapOut}
+        inputMapper: {map: map}
+        outputMapper: {mapSubReport: map}
 
 

@@ -51,7 +51,8 @@ dependencies {
             "org.geotools:gt-geojson:$geotoolsVersion",
             "org.geotools:gt-geotiff:$geotoolsVersion",
             "org.geotools:gt-wms:$geotoolsVersion",
-            "org.geotools.xsd:gt-xsd-gml3:$geotoolsVersion"
+            "org.geotools.xsd:gt-xsd-gml3:$geotoolsVersion",
+            "org.geotools:gt-svg:$geotoolsVersion"
     )
     compile fileTree(dir: "$projectDir/libs", include: '*.jar')
     compile (

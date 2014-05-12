@@ -62,7 +62,7 @@ templates:
       directory: '.'
     - !createMap
       inputMapper: {map: map}
-      outputMapper: {image: map}
+      outputMapper: {mapSubReport: map}
     - !prepareLegend # create a datasource for the report with the 'legend' attribute
       inputMapper: {legend: legend}
       outputMapper: {legend: legend}
@@ -72,7 +72,6 @@ templates:
     - !prepareTableList
       inputMapper: {tableList: tableList}
       dynamicReport: {}
-      dynamicReportDirectory: "subreports"
       outputMapper: {tableList: tableList, dependence: subreports_created}
     - !reportBuilder  # compile all jasper report templates in subreports directory
       directory: "subreports"

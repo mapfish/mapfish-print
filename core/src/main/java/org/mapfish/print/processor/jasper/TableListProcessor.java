@@ -35,14 +35,10 @@ import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 
 import org.mapfish.print.attribute.TableListAttribute.TableListAttributeValue;
-import org.mapfish.print.config.Configuration;
-import org.mapfish.print.config.HasConfiguration;
 import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.wrapper.json.PJsonArray;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.Color;
@@ -61,9 +57,7 @@ import static org.mapfish.print.processor.jasper.JasperReportBuilder.JASPER_REPO
  * @author Jesse
  * @author sbrunner
  */
-public class TableListProcessor extends AbstractProcessor<TableListProcessor.Input, TableListProcessor.Output>
-        implements HasConfiguration {
-    private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
+public class TableListProcessor extends AbstractProcessor<TableListProcessor.Input, TableListProcessor.Output> {
 
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_DISPLAYNAME = "displayName";
@@ -78,12 +72,9 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Inp
     private static final int DEFAULT_FONT_SIZE = 12;
 
 
-    private File dynamicReportDirectory;
     private Map<String, Object> dynamicReport = null;
     @Autowired
     private WorkingDirectories workingDirectories;
-
-    private Configuration configuration;
 
     /**
      * Constructor.
@@ -128,20 +119,12 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Inp
                             dynamicReportOptString("font", DEFAULT_FONT), false));
                     oddRowStyle.setVerticalAlign(VerticalAlign.MIDDLE);
 
-                    File tableTemplate = new File(this.dynamicReportDirectory, "table_" + id + JASPER_REPORT_XML_FILE_EXT);
-                    if (!tableTemplate.exists()) {
-                        generateDynamicReport(jsonColumns, detailStyle, headerStyle, oddRowStyle, tableTemplate);
-                    }
-                    File tableTemplateBuild = new File(this.dynamicReportDirectory, "table_" + id + JASPER_REPORT_COMPILED_FILE_EXT);
+                    File tableTemplate = new File(values.tempTaskDirectory, "table_" + id + JASPER_REPORT_XML_FILE_EXT);
+                    File tableTemplateBuild = new File(values.tempTaskDirectory, "table_" + id + JASPER_REPORT_COMPILED_FILE_EXT);
 
-                    if (!tableTemplateBuild.exists()
-                        || (tableTemplate.lastModified() > tableTemplateBuild.lastModified())) {
-                        LOGGER.debug("Building Jasper sub report: " + tableTemplate.getAbsolutePath());
-                        long start = System.currentTimeMillis();
-                        JasperCompileManager.compileReportToFile(tableTemplate.getAbsolutePath(),
-                                tableTemplateBuild.getAbsolutePath());
-                        LOGGER.debug("Report built in " + (System.currentTimeMillis() - start) + "ms.");
-                    }
+                    generateDynamicReport(jsonColumns, detailStyle, headerStyle, oddRowStyle, tableTemplate);
+                    JasperCompileManager.compileReportToFile(tableTemplate.getAbsolutePath(),
+                            tableTemplateBuild.getAbsolutePath());
                 }
             }
         }
@@ -209,15 +192,6 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Inp
         this.dynamicReport = dynamicReport;
     }
 
-    public final void setDynamicReportDirectory(final String dynamicReportDirectory) {
-        this.dynamicReportDirectory = new File(this.configuration.getDirectory(), dynamicReportDirectory);
-    }
-
-    @Override
-    public final void setConfiguration(final Configuration configuration) {
-        this.configuration = configuration;
-    }
-
     /**
      * Input of processor.
      */
@@ -226,6 +200,11 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Inp
          * Data for constructing the table list of values.
          */
         public TableListAttributeValue[] tableList;
+        
+        /**
+         * The path to the temporary directory for the print task.
+         */
+        public File tempTaskDirectory;
     }
 
     /**

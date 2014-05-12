@@ -10,7 +10,7 @@ templates:
         defaults:
           dpi: 300
           rotation: 0
-          useAjustBounds: true
+          useAdjustBounds: true
           layers:
           - type: "geojson"
             style: "point"

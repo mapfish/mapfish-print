@@ -1,6 +1,8 @@
 package org.mapfish.print.attribute;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
@@ -15,7 +17,8 @@ import java.io.File;
 import static org.junit.Assert.assertNotNull;
 
 public class StyleAttributeTest extends AbstractMapfishSpringTest {
-
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
     @Autowired
     private ConfigurationFactory configurationFactory;
     @Autowired
@@ -27,7 +30,7 @@ public class StyleAttributeTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
         final PJsonObject pJsonObject = parseJSONObjectFromFile(StyleAttributeTest.class, "style_attributes/request.json");
-        final Values values = new Values(pJsonObject, template, new MapfishParser());
+        final Values values = new Values(pJsonObject, template, new MapfishParser(), this.folder.getRoot());
         final StyleAttribute.StylesAttributeValues value = values.getObject("styleDef", StyleAttribute.StylesAttributeValues.class);
 
         assertNotNull(value.getStyle());

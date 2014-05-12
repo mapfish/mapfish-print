@@ -170,10 +170,10 @@ public final class MapAttribute extends AttributeWithDefaultConfig<MapAttribute.
          * Indicates if the map should adjust its bounds.
          * <p/>
          *
-         * @see #isuseAjustBounds()
+         * @see #isUseAdjustBounds()
          */
         @HasDefaultValue
-        public boolean useAjustBounds = false;
+        public boolean useAdjustBounds = false;
 
         /**
          * The output dpi of the printed map.
@@ -345,8 +345,8 @@ public final class MapAttribute extends AttributeWithDefaultConfig<MapAttribute.
          *
          * @return
          */
-        public boolean isUseAjustBounds() {
-            return this.useAjustBounds;
+        public boolean isUseAdjustBounds() {
+            return this.useAdjustBounds;
         }
 
         public ZoomLevels getZoomLevels() {

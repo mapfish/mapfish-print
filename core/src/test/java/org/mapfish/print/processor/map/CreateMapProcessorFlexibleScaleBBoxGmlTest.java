@@ -19,8 +19,12 @@
 
 package org.mapfish.print.processor.map;
 
-import com.google.common.base.Predicate;
-import com.google.common.io.Files;
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
 
 import org.json.JSONObject;
 import org.junit.Test;
@@ -37,9 +41,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URI;
+import com.google.common.base.Predicate;
+import com.google.common.io.Files;
 
 /**
  * Basic test of the Map processor.
@@ -89,11 +92,15 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
             jsonLayer.remove("url");
             jsonLayer.accumulate("url", "http://" + host + ":23432" + "/gml/" + gmlDataName);
 
-            Values values = new Values(requestData, template, parser);
+            Values values = new Values(requestData, template, parser, getTaskDirectory());
             template.getProcessorGraph().createTask(values).invoke();
 
-            BufferedImage map = values.getObject("mapOut", BufferedImage.class);
-            new ImageSimilarity(map, 2).assertSimilarity(getFile(BASE_DIR + gmlDataName + ".tiff"), 0);
+            @SuppressWarnings("unchecked")
+            List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
+            assertEquals(1, layerGraphics.size());
+
+//            Files.copy(new File(layerGraphics.get(0)), new File("/tmp/"+getClass().getSimpleName()+".tiff"));
+            new ImageSimilarity(new File(layerGraphics.get(0)), 2).assertSimilarity(getFile(BASE_DIR + gmlDataName + ".tiff"), 0);
         }
 
     }

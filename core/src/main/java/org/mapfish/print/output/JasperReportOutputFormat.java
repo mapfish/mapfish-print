@@ -19,10 +19,14 @@
 
 package org.mapfish.print.output;
 
+
+import com.google.common.annotations.VisibleForTesting;
+
 import jsr166y.ForkJoinPool;
 
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -43,9 +47,9 @@ import java.io.File;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-
 /**
  * An PDF output format that uses Jasper reports to generate the result.
  *
@@ -53,16 +57,19 @@ import java.util.Map;
  * @author sbrunner
  */
 public class JasperReportOutputFormat implements OutputFormat {
-    @SuppressWarnings("unused")
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportOutputFormat.class);
+
+    private static final String SUBREPORT_DIR = "SUBREPORT_DIR";
+    private static final String SUBREPORT_TABLE_DIR = "SUBREPORT_TABLE_DIR";
+
     @Autowired
     private ForkJoinPool forkJoinPool;
 
     @Autowired
     private WorkingDirectories workingDirectories;
+    
     @Autowired
     private MapfishParser parser;
-
 
     @Override
     public final String getContentType() {
@@ -76,12 +83,29 @@ public class JasperReportOutputFormat implements OutputFormat {
 
     @Override
     public final void print(final PJsonObject requestData, final Configuration config, final File configDir,
-                            final OutputStream outputStream)
+                final File taskDirectory, final OutputStream outputStream)
             throws Exception {
+        final JasperPrint print = getJasperPrint(requestData, config, configDir, taskDirectory);
+        JasperExportManager.exportReportToPdfStream(print, outputStream);
+    }
+
+    /**
+     * Renders the jasper report.
+     * 
+     * @param requestData the data from the client, required for writing.
+     * @param config the configuration object representing the server side configuration.
+     * @param configDir the directory that contains the configuration, used for resolving resources like images etc...
+     * @param taskDirectory the temporary directory for this printing task.
+     * @return a jasper print object which can be used to generate a PDF or other outputs.
+     */
+    @VisibleForTesting
+    protected final JasperPrint getJasperPrint(final PJsonObject requestData, final Configuration config, 
+            final File configDir, final File taskDirectory)
+            throws JRException, SQLException {
         final String templateName = requestData.getString(Constants.JSON_LAYOUT_KEY);
 
         final Template template = config.getTemplate(templateName);
-        final Values values = new Values(requestData, template, this.parser);
+        final Values values = new Values(requestData, template, this.parser, taskDirectory);
 
         final File jasperTemplateFile = new File(configDir, template.getJasperTemplate());
         final File jasperTemplateBuild = this.workingDirectories.getBuildFileFor(config, jasperTemplateFile,
@@ -89,11 +113,12 @@ public class JasperReportOutputFormat implements OutputFormat {
 
         final File jasperTemplateDirectory = jasperTemplateBuild.getParentFile();
 
-        values.put("SUBREPORT_DIR", jasperTemplateDirectory.getAbsolutePath());
-
+        values.put(SUBREPORT_DIR, jasperTemplateDirectory.getAbsolutePath());
+        values.put(SUBREPORT_TABLE_DIR, taskDirectory.getAbsolutePath());
 
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
+        final JasperPrint print;
         if (template.getIterValue() != null) {
             if (!values.containsKey(template.getIterValue())) {
                 throw new IllegalArgumentException(template.getIterValue() + " is missing.  It must either an attribute or a processor " +
@@ -108,32 +133,33 @@ public class JasperReportOutputFormat implements OutputFormat {
             final List<Map<String, ?>> dataSource = this.forkJoinPool.invoke(new ExecuteIterProcessorsTask(values, template));
 
             final JRDataSource jrDataSource = new JRMapCollectionDataSource(dataSource);
-            final JasperPrint print = JasperFillManager.fillReport(
+
+            print = JasperFillManager.fillReport(
                     jasperTemplateBuild.getAbsolutePath(),
                     values.getParameters(),
                     jrDataSource);
-            JasperExportManager.exportReportToPdfStream(print, outputStream);
         } else if (template.getJdbcUrl() != null && template.getJdbcUser() != null && template.getJdbcPassword() != null) {
             Connection connection = DriverManager.getConnection(
                     template.getJdbcUrl(), template.getJdbcUser(), template.getJdbcPassword());
-            final JasperPrint print = JasperFillManager.fillReport(
+
+            print = JasperFillManager.fillReport(
                     jasperTemplateBuild.getAbsolutePath(),
                     values.getParameters(),
                     connection);
-            JasperExportManager.exportReportToPdfStream(print, outputStream);
         } else if (template.getJdbcUrl() != null) {
             Connection connection = DriverManager.getConnection(template.getJdbcUrl());
-            final JasperPrint print = JasperFillManager.fillReport(
+
+            print = JasperFillManager.fillReport(
                     jasperTemplateBuild.getAbsolutePath(),
                     values.getParameters(),
                     connection);
-            JasperExportManager.exportReportToPdfStream(print, outputStream);
         } else {
-            final JasperPrint print = JasperFillManager.fillReport(
+            print = JasperFillManager.fillReport(
                     jasperTemplateBuild.getAbsolutePath(),
                     values.getParameters(),
                     new JREmptyDataSource());
-            JasperExportManager.exportReportToPdfStream(print, outputStream);
         }
+
+        return print;
     }
 }

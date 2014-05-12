@@ -20,17 +20,37 @@
 package org.mapfish.print.processor.map;
 
 import com.google.common.collect.Lists;
-
+import net.sf.jasperreports.engine.JRException;
+import org.apache.batik.svggen.SVGGeneratorContext;
+import org.apache.batik.svggen.SVGGraphics2D;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
+import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.jasper.JasperReportBuilder;
+import org.mapfish.print.processor.jasper.MapSubReport;
+import org.w3c.dom.Document;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import javax.imageio.ImageIO;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 
 /**
  * @author jesseeichar on 3/17/14.
@@ -87,6 +107,28 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
     @Override
     public Output execute(final Input param) throws Exception {
         MapAttribute.MapAttributeValues mapValues = param.map;
+        final List<URI> graphics = createLayerGraphics(param.tempTaskDirectory,
+                mapValues);
+        final URI mapSubReport = createMapSubReport(param.tempTaskDirectory,
+                mapValues.getMapSize(), graphics);
+
+        return new Output(graphics, mapSubReport.toString());
+    }
+
+    private URI createMapSubReport(final File printDirectory, final Dimension mapSize,
+            final List<URI> graphics) throws IOException, JRException {
+        final MapSubReport subReport = new MapSubReport(graphics, mapSize);
+        
+        final File compiledReport = File.createTempFile("map-",
+                JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT, printDirectory);
+        subReport.compile(compiledReport);
+        
+        return compiledReport.toURI();
+    }
+
+    private List<URI> createLayerGraphics(final File printDirectory,
+            final MapAttribute.MapAttributeValues mapValues)
+            throws Exception {
         final Dimension mapSize = mapValues.getMapSize();
         final double dpi = mapValues.getDpi();
         final Rectangle paintArea = new Rectangle(mapSize);
@@ -99,28 +141,89 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                         mapValues.getZoomSnapTolerance(),
                         mapValues.getZoomLevelSnapStrategy(), paintArea, dpi);
         }
-        if (mapValues.isUseAjustBounds()) {
+        
+        if (mapValues.isUseAdjustBounds()) {
             bounds = bounds.adjustedEnvelope(paintArea);
         }
 
-        final BufferedImage bufferedImage = new BufferedImage(mapSize.width, mapSize.height, this.imageType.value);
+        // reverse layer list to draw from bottom to top.  normally position 0 is top-most layer.
+        final List<MapLayer> layers = Lists.reverse(mapValues.getLayers());
 
-        Graphics2D graphics2D = bufferedImage.createGraphics();
-        try {
-            // reverse layer list to draw from bottom to top.  normally position 0 is top-most layer.
-            final List<MapLayer> layers = Lists.reverse(mapValues.getLayers());
+        final String mapKey = UUID.randomUUID().toString();
+        final List<URI> graphics = new ArrayList<URI>(layers.size());
+        int i = 0;
+        for (MapLayer layer : layers) {
+            boolean isFirstLayer = i == 0;
+            
+            File path = null;
+            if (renderAsSvg(layer)) {
+                // render layer as SVG
+                final SVGGraphics2D graphics2D = getSvgGraphics(paintArea);
 
-            int i = 0;
-            for (MapLayer layer : layers) {
-                boolean isFirstLayer = i == 0;
-                layer.render(graphics2D, bounds, paintArea, dpi, isFirstLayer);
-                i++;
+                try {
+                    layer.render(graphics2D, bounds, paintArea, dpi, isFirstLayer);
+                    
+                    path = new File(printDirectory, mapKey + "_layer_" + i + ".svg");
+                    saveSvgFile(graphics2D, path);
+                } finally {
+                    graphics2D.dispose();
+                }
+            } else {
+                // render layer as raster graphic
+                final BufferedImage bufferedImage = new BufferedImage(mapSize.width, mapSize.height, this.imageType.value);
+                final Graphics2D graphics2D = bufferedImage.createGraphics();
+                
+                try {
+                    layer.render(graphics2D, bounds, paintArea, dpi, isFirstLayer);
+                    
+                    path = new File(printDirectory, mapKey + "_layer_" + i + ".tiff");
+                    ImageIO.write(bufferedImage, "tiff", path);
+                } finally {
+                    graphics2D.dispose();
+                }
             }
-        } finally {
-            graphics2D.dispose();
+            graphics.add(path.toURI());
+            i++;
         }
+        
+        return graphics;
+    }
+    
+    private boolean renderAsSvg(final MapLayer layer) {
+        if (layer instanceof AbstractFeatureSourceLayer) {
+            AbstractFeatureSourceLayer featureLayer = (AbstractFeatureSourceLayer) layer;
+            return featureLayer.shouldRenderAsSvg();
+        }
+        return false;
+     }
 
-        return new Output(bufferedImage);
+    private SVGGraphics2D getSvgGraphics(final Rectangle paintArea)
+            throws ParserConfigurationException {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document document = db.getDOMImplementation().createDocument(null, "svg", null);
+        
+        SVGGeneratorContext ctx = SVGGeneratorContext.createDefault(document);
+        ctx.setComment("Generated by GeoTools2 with Batik SVG Generator");
+        
+        SVGGraphics2D g2d = new SVGGraphics2D(ctx, true);
+        g2d.setSVGCanvasSize(paintArea.getSize());
+        
+        return g2d;
+    }
+
+    private void saveSvgFile(final SVGGraphics2D graphics2d, final File path) throws IOException {
+        final FileOutputStream fs = new FileOutputStream(path);
+
+        Writer osw = null;
+        try {
+            osw = new BufferedWriter(new OutputStreamWriter(fs, "UTF-8"));
+            graphics2d.stream(osw);
+        } finally {
+            if (osw != null) {
+                osw.close();
+            }
+        }
     }
 
     /**
@@ -142,21 +245,32 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
          * The required parameters for the map.
          */
         public MapAttribute.MapAttributeValues map;
+        
+        /**
+         * The path to the temporary directory for the print task.
+         */
+        public File tempTaskDirectory;
     }
 
     /**
      * Output for the processor.
      */
     public static final class Output {
+
         /**
-         * The rendered map.
+         * The paths to a graphic for each layer.
          */
-        public final BufferedImage image;
+        public final List<URI> layerGraphics;
+        
+        /**
+         * The path to the compiled sub-report for the map.
+         */
+        public final String mapSubReport;
 
-        private Output(final BufferedImage bufferedImage) {
-            this.image = bufferedImage;
+        private Output(final List<URI> layerGraphics, final String mapSubReport) {
+            this.layerGraphics = layerGraphics;
+            this.mapSubReport = mapSubReport;
         }
-
     }
 
 }

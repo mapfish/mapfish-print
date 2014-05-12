@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
+import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,8 @@ public class MapPrinter implements Closeable {
     @Autowired
     private ConfigurationFactory configurationFactory;
     private File configFile;
+    @Autowired
+    private WorkingDirectories workingDirectories;
 
     /**
      * Set the configuration file and update the configuration for this printer.
@@ -118,7 +121,13 @@ public class MapPrinter implements Closeable {
             throws Exception {
         // TODO use queue etc..
         final OutputFormat format = getOutputFormat(specJson);
-        format.print(specJson, getConfiguration(), this.configFile.getParentFile(), out);
+        final File taskDirectory = this.workingDirectories.getTaskDirectory();
+        
+        try {
+            format.print(specJson, getConfiguration(), this.configFile.getParentFile(), taskDirectory, out);
+        } finally {
+            this.workingDirectories.removeDirectory(taskDirectory);
+        }
     }
 
     /**
