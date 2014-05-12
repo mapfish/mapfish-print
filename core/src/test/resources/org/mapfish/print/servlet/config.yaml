@@ -4,6 +4,7 @@ templates:
   A4 Landscape: !template
     reportTemplate: MapOnly_A4.jrxml
     attributes:
+      dependence: !integer {}
       geojsonMap: !map
         width: 802
         height: 500
@@ -17,8 +18,8 @@ templates:
         directory: '.'
     - !createMap
         inputMapper: {geojsonMap: map}
-        outputMapper: {image: geojsonMap}
+        outputMapper: {mapSubReport: geojsonMap, layerGraphics: geojsonGraphics}
     - !createMap
         inputMapper: {imageMap: map}
-        outputMapper: {image: imageMap}
+        outputMapper: {mapSubReport: imageMap, layerGraphics: imageGraphics}
 

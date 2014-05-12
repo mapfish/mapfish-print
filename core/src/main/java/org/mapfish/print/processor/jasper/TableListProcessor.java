@@ -29,18 +29,13 @@ import ar.com.fdvs.dj.domain.constants.Border;
 import ar.com.fdvs.dj.domain.constants.Font;
 import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
 import ar.com.fdvs.dj.domain.constants.VerticalAlign;
-
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
-
 import org.mapfish.print.attribute.TableListAttribute.TableListAttributeValue;
-import org.mapfish.print.config.ConfigurationException;
-import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.wrapper.json.PJsonArray;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.Color;
 import java.io.File;
@@ -74,9 +69,6 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Inp
 
 
     private Map<String, Object> dynamicReport = null;
-    @Autowired
-    private WorkingDirectories workingDirectories;
-
     /**
      * Constructor.
      */
@@ -195,9 +187,7 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Inp
 
     @Override
     protected final void extraValidation(final List<Throwable> validationErrors) {
-        if (this.dynamicReportDirectory == null) {
-            validationErrors.add(new ConfigurationException("No dynamicReportDirectory defined in " + getClass().getName()));
-        }
+        // no validation needed
     }
 
     /**

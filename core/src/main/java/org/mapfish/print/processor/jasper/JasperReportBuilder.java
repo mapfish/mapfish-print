@@ -140,13 +140,6 @@ public class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.I
         return getClass().getSimpleName() + "(" + this.directory + ")";
     }
 
-    @Override
-    protected final void extraValidation(final List<Throwable> validationErrors) {
-        if (this.directory == null) {
-            validationErrors.add(new IllegalStateException("No jasper template output directory defined in " + getClass().getName()));
-        }
-    }
-
     /**
      * The input parameter object for {@link JasperReportBuilder}.
      */
@@ -155,5 +148,12 @@ public class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.I
          * Just to create a dependency with a dynamic report creator.
          */
         public int dependence;
+    }
+
+    @Override
+    protected final void extraValidation(final List<Throwable> validationErrors) {
+        if (this.directory == null) {
+            validationErrors.add(new IllegalStateException("No jasper template output directory defined in " + getClass().getName()));
+        }
     }
 }

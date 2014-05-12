@@ -19,17 +19,15 @@
 
 package org.mapfish.print.config;
 
-import static com.google.common.io.Files.getNameWithoutExtension;
-
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-
 import javax.annotation.PostConstruct;
+
+import static com.google.common.io.Files.getNameWithoutExtension;
 
 /**
  * Class for configuring the working directories and ensuring they exist correctly.
@@ -77,7 +75,11 @@ public class WorkingDirectories {
      */
     public final File getTaskDirectory() {
         try {
-            return Files.createTempDirectory(this.working.toPath(), "task-").toFile();
+            File file = File.createTempFile("task-", "tmp", this.working);
+            if (!file.delete() || !file.mkdirs()) {
+                throw new IOException("Unable to make temporary directory: " + file);
+            }
+            return file;
         } catch (IOException e) {
             throw new AssertionError("Unable to create temporary directory in '" + this.working + "'");
         }

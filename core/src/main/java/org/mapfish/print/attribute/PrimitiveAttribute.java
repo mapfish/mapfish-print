@@ -69,9 +69,9 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
     @Override
     public final void printClientConfig(final JSONWriter json, final Template template) throws JSONException {
         json.key("name").value(MapfishParser.stringRepresentation(this.valueClass));
-        json.key("clientOptions");
-        addMapToJSON(this.clientOptions, json);
-        json.endObject();
+//        json.key("clientOptions");
+//        addMapToJSON(this.clientOptions, json);
+//        json.endObject();
     }
 
     /**

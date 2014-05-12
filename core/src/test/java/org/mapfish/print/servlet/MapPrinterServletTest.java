@@ -54,7 +54,6 @@ import static org.junit.Assert.fail;
 })
 public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
-
     public static final String PRINT_CONTEXT = "classpath:org/mapfish/print/servlet/mapfish-print-servlet.xml";
     public static final String SERVLET_CONTEXT_CONTEXT = "classpath:org/mapfish/print/servlet/mapfish-spring-servlet-context-config.xml";
 
@@ -175,8 +174,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         final PObject mainLayout = layouts.getObject(0);
         assertEquals("A4 Landscape", mainLayout.getString("name"));
         assertTrue(mainLayout.has("attributes"));
-        assertEquals(2, mainLayout.getArray("attributes").size());
-        assertEquals("MapAttributeValues", mainLayout.getArray("attributes").getObject(0).getString("name"));
+        assertEquals(3, mainLayout.getArray("attributes").size());
+        assertEquals("MapAttributeValues", mainLayout.getArray("attributes").getObject(1).getString("name"));
     }
 
     @Test
