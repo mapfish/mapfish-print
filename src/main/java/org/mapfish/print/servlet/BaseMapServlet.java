@@ -19,14 +19,6 @@
 
 package org.mapfish.print.servlet;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-
 import org.apache.log4j.Logger;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.ShellMapPrinter;
@@ -34,6 +26,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 
 /**
  * Base class for MapPrinter servlets (deals with the configuration loading)
@@ -59,17 +58,16 @@ public abstract class BaseMapServlet extends HttpServlet {
      * </ul>
      * <p/>
      * If the location is a relative path, it's taken from the servlet's root directory.
-     * @param servletContext
      */
     protected synchronized MapPrinter getMapPrinter(String app) throws ServletException {
-        String configPath = getInitParameter("config");
+        String configPath = System.getProperty("mapfish-print-config", getInitParameter("config"));
         if (configPath == null) {
             throw new ServletException("Missing configuration in web.xml 'web-app/servlet/init-param[param-name=config]' or 'web-app/context-param[param-name=config]'");
         }
         //String debugPath = "";
 
         MapPrinter printer = null;
-        File configFile = null;
+        File configFile;
         if (app != null) {
             if (lastModifieds == null) {
                 lastModifieds = new HashMap<String, Long>();
@@ -118,11 +116,11 @@ public abstract class BaseMapServlet extends HttpServlet {
         }
 
         boolean forceReload = false;
-        if (printer != null && printer.getConfig().getReloadConfig()) {
+        if (printer != null && (!printer.isRunning() || printer.getConfig().getReloadConfig())) {
             forceReload = true;
         }
 
-        if (forceReload || (printer != null && configFile.lastModified() != lastModified)) {
+        if (forceReload || (printer != null && (configFile.lastModified() != lastModified || !printer.isRunning()))) {
             //file modified, reload it
             if (!forceReload) {
                 LOGGER.info("Configuration file modified. Reloading...");

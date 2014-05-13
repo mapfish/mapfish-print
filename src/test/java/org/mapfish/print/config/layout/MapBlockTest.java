@@ -1,32 +1,23 @@
 package org.mapfish.print.config.layout;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.TreeSet;
-
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfWriter;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.PDFCustomBlocks;
 import org.mapfish.print.RenderingContext;
+import org.mapfish.print.ThreadResources;
 import org.mapfish.print.Transformer;
 import org.mapfish.print.config.Config;
-import org.mapfish.print.map.readers.MapReaderFactory;
 import org.mapfish.print.map.readers.MapReaderFactoryFinder;
 import org.mapfish.print.map.readers.VectorMapReader;
 import org.mapfish.print.utils.DistanceUnit;
@@ -37,12 +28,14 @@ import org.mockito.stubbing.Answer;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.pvalsecc.misc.FileUtilities;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfTemplate;
-import com.lowagie.text.pdf.PdfWriter;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.TreeSet;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test MapBlock's createTransformer method.
@@ -63,8 +56,12 @@ public class MapBlockTest {
     private static String tempDir = System.getProperty("java.io.tmpdir");
     private static String fileSeparator = System.getProperty("file.separator");
 
+    private ThreadResources threadResources;
     @Before
     public void init(){
+
+        this.threadResources = new ThreadResources();
+        this.threadResources.init();
         minx = -139.84870868359;
         miny = 18.549281576172;
         maxx = -51.852562316406;
@@ -84,6 +81,7 @@ public class MapBlockTest {
 
 
         this.config = new Config();
+        this.config.setThreadResources(this.threadResources);
         config.setDpis(dpis);
         config.setScales(scales);
         config.setDisableScaleLocking(true);
@@ -91,6 +89,11 @@ public class MapBlockTest {
         centerY = miny + (maxy - miny) / 2;
         centerX = maxx - (maxx - minx) / 2;
 
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        this.threadResources.destroy();
     }
 
     @Test @Ignore

@@ -19,14 +19,10 @@
 
 package org.mapfish.print;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.TreeSet;
-import java.util.Collections;
-
+import com.lowagie.text.Document;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.PdfWriter;
 import org.junit.Before;
 import org.mapfish.print.config.Config;
 import org.mapfish.print.config.layout.Block;
@@ -36,10 +32,13 @@ import org.mapfish.print.config.layout.MapBlock;
 import org.mapfish.print.utils.PJsonObject;
 import org.pvalsecc.misc.FileUtilities;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.pdf.PdfWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.TreeSet;
 
 public abstract class PdfTestCase extends PrintTestCase {
     private static final int MARGIN = 40;
@@ -48,12 +47,17 @@ public abstract class PdfTestCase extends PrintTestCase {
     protected RenderingContext context;
     private PdfWriter writer;
     private OutputStream outFile;
+    protected ThreadResources threadResources;
 
     @SuppressWarnings("deprecation")
     @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
+
+        this.threadResources = new ThreadResources();
+        this.threadResources.init();
+
         PJsonObject spec = MapPrinter.parseSpec(FileUtilities.readWholeTextFile(new File("samples/spec.json")));
         spec.getInternalObj().put("units", "meters");
 
@@ -89,6 +93,7 @@ public abstract class PdfTestCase extends PrintTestCase {
         doc.close();
         writer.close();
         outFile.close();
+        this.threadResources.destroy();
 
         super.tearDown();
     }
@@ -100,6 +105,7 @@ public abstract class PdfTestCase extends PrintTestCase {
         mainPage.setItems(new ArrayList<Block>(Arrays.asList(mapBlock)));
         layout.setMainPage(mainPage);
         Config config = new Config();
+        config.setThreadResources(this.threadResources);
         try {
         config.setDpis(new TreeSet<Integer>(Arrays.asList(96, 190, 254)));
         config.setScales(new TreeSet<Number>(Arrays.asList(20000.0, 25000.0, 100000.0, 500000.0, 4000000.0)));

@@ -19,15 +19,8 @@
 
 package org.mapfish.print;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Font;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -37,14 +30,20 @@ import org.mapfish.print.config.ConfigFactory;
 import org.mapfish.print.config.ConfigTest;
 import org.mapfish.print.utils.PJsonObject;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Font;
-import com.lowagie.text.Phrase;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class PDFUtilsTest extends PdfTestCase {
     private static final String FIVE_HUNDRED_ROUTE = "/500";
     private static final String NOT_IMAGE_ROUTE = "/notImage";
     private FakeHttpd httpd;
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -56,6 +55,7 @@ public class PDFUtilsTest extends PdfTestCase {
                 FakeHttpd.Route.textResponse(NOT_IMAGE_ROUTE, "Blahblah")
                 );
         httpd.start();
+
     }
 
     @Override
@@ -106,7 +106,7 @@ public class PDFUtilsTest extends PdfTestCase {
     @Test
     public void testRenderString_Scale() throws Exception {
         final File file = ConfigTest.getSampleConfigFiles().get(ConfigTest.GEORCHESTRA_YAML);
-        Config config = new ConfigFactory().fromYaml(file);
+        Config config = new ConfigFactory(this.threadResources).fromYaml(file);
         context = new RenderingContext(doc, context.getWriter(), config, context.getGlobalParams(), file.getParent(),
                 context.getLayout(), context.getHeaders());
         JSONObject internal = new JSONObject();
@@ -126,7 +126,7 @@ public class PDFUtilsTest extends PdfTestCase {
     @Test
     public void testRenderString_ScaleForMultipleMaps() throws Exception {
         final File file = ConfigTest.getSampleConfigFiles().get("configMultipleMaps.yaml");
-        Config config = new ConfigFactory().fromYaml(file);
+        Config config = new ConfigFactory(this.threadResources).fromYaml(file);
         context = new RenderingContext(doc, context.getWriter(), config, context.getGlobalParams(), file.getParent(),
                 config.getLayout("A4 portrait"), context.getHeaders());
         JSONObject internal = new JSONObject();

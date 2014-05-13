@@ -19,6 +19,15 @@
 
 package org.mapfish.print.servlet;
 
+import com.lowagie.text.DocumentException;
+import org.json.JSONException;
+import org.json.JSONWriter;
+import org.mapfish.print.Constants;
+import org.mapfish.print.MapPrinter;
+import org.mapfish.print.output.OutputFormat;
+import org.mapfish.print.utils.PJsonObject;
+import org.pvalsecc.misc.FileUtilities;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,20 +47,9 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.json.JSONException;
-import org.json.JSONWriter;
-import org.mapfish.print.Constants;
-import org.mapfish.print.MapPrinter;
-import org.mapfish.print.output.OutputFormat;
-import org.mapfish.print.utils.PJsonObject;
-import org.pvalsecc.misc.FileUtilities;
-
-import com.lowagie.text.DocumentException;
 
 /**
  * Main print servlet.
@@ -374,10 +372,8 @@ public class MapPrinterServlet extends BaseMapServlet {
             deleteFile(tempFile);
             throw e;
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if(app == null && mapPrinter != null) {
-                mapPrinter.stop();
             }
         }
     }

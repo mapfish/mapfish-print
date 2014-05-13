@@ -72,12 +72,14 @@ public class MapPrinter {
      *
      * Injected by Spring
      */
+    @Autowired
     private OutputFactory outputFactory;
     /**
      * Factory for creating config objects
      *
      * Injected by Spring
      */
+    @Autowired
     private ConfigFactory configFactory;
 
     private volatile boolean fontsInitialized = false;
@@ -85,26 +87,6 @@ public class MapPrinter {
     static {
         //configure iText to use a higher precision for floats
         ByteBuffer.HIGH_PRECISION = true;
-    }
-    /**
-     * OutputFactory for the final output
-     *
-     * Injected by Spring
-     */
-    @Autowired
-    @Required
-    public void setOutputFactory(OutputFactory outputFactory) {
-        this.outputFactory = outputFactory;
-    }
-    /**
-     * Factory for creating config objects
-     *
-     * Injected by Spring
-     */
-    @Autowired
-    @Required
-    public void setConfigFactory(ConfigFactory configFactory) {
-        this.configFactory = configFactory;
     }
     /**
      * Sets both the configuration by parsing the configFile and the configDir relative to the configFile
@@ -208,7 +190,10 @@ public class MapPrinter {
      */
     @PreDestroy
     public void stop() {
-        config.close();
+        if (config != null) {
+            config.close();
+            config = null;
+        }
     }
 
     public String getOutputFilename(String layout, String defaultName) {
@@ -221,5 +206,9 @@ public class MapPrinter {
     }
     public OutputFormat getOutputFormat(PJsonObject jsonSpec) {
         return outputFactory.create(config, jsonSpec);
+    }
+
+    public boolean isRunning() {
+        return this.config != null;
     }
 }

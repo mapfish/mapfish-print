@@ -1,8 +1,5 @@
 package org.mapfish.print.config.layout;
 
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
-
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.pdf.PdfContentByte;
@@ -17,12 +14,16 @@ import org.junit.Test;
 import org.mapfish.print.Constants;
 import org.mapfish.print.FakeHttpd;
 import org.mapfish.print.RenderingContext;
+import org.mapfish.print.ThreadResources;
 import org.mapfish.print.config.Config;
 import org.mapfish.print.utils.PJsonObject;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.anyFloat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test for Legends Block class
@@ -33,6 +34,7 @@ import java.util.Map;
  */
 public class LegendsBlockTest {
     private FakeHttpd httpd;
+    private ThreadResources threadResources;
 
     @Before
     public void setUp() throws Exception {
@@ -44,10 +46,13 @@ public class LegendsBlockTest {
                 FakeHttpd.Route.textResponse("/notImage", "Blahblah")
                 );
         httpd.start();
+        this.threadResources = new ThreadResources();
+        this.threadResources.init();
     }
     @After
     public void tearDown() throws Exception {
         httpd.shutdown();
+        this.threadResources.destroy();
     }
 
     @Test
@@ -103,6 +108,7 @@ public class LegendsBlockTest {
             }
         };
         Config config = new Config();
+        config.setThreadResources(this.threadResources);
         config.setBrokenUrlPlaceholder(Constants.ImagePlaceHolderConstants.DEFAULT);
 
         RenderingContext context = mock(RenderingContext.class);

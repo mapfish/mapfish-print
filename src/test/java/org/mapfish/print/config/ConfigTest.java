@@ -19,18 +19,25 @@
 
 package org.mapfish.print.config;
 
-import static org.junit.Assert.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.*;
-
 import org.json.JSONWriter;
 import org.junit.Test;
 import org.mapfish.print.PrintTestCase;
 import org.mapfish.print.ShellMapPrinter;
+import org.mapfish.print.ThreadResources;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeSet;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 public class ConfigTest extends PrintTestCase {
 
@@ -64,31 +71,37 @@ public class ConfigTest extends PrintTestCase {
         Map<String, File> filesInSamplesDir = getSampleConfigFiles();
         StringBuilder errorString = new StringBuilder("The following errors occurred while parsing yaml config files: \n");
         boolean error = false;
-        final ConfigFactory configFactory = new ConfigFactory();
-        for (File file : filesInSamplesDir.values()) {
-            if (file.getName().endsWith(".yaml")) {
-                try {
-                    final Config config = configFactory.fromYaml(file);
-                    config.getBestScale(1000);
-                    JSONWriter json = new JSONWriter(new StringWriter());
-                    json.object();
-                    config.printClientConfig(json);
+        ThreadResources threadResources = new ThreadResources();
+        threadResources.init();
+        try {
+            final ConfigFactory configFactory = new ConfigFactory(threadResources);
+            for (File file : filesInSamplesDir.values()) {
+                if (file.getName().endsWith(".yaml")) {
+                    try {
+                        final Config config = configFactory.fromYaml(file);
+                        config.getBestScale(1000);
+                        JSONWriter json = new JSONWriter(new StringWriter());
+                        json.object();
+                        config.printClientConfig(json);
 
-                    if (!config.getDpis().isEmpty()) {
-                        final Integer next = config.getDpis().iterator().next();
-                        assertNotNull(next);
+                        if (!config.getDpis().isEmpty()) {
+                            final Integer next = config.getDpis().iterator().next();
+                            assertNotNull(next);
+                        }
+                    } catch (Throwable e) {
+                        error = true;
+                        StringWriter trace = new StringWriter();
+                        e.printStackTrace(new PrintWriter(trace));
+                        errorString.append("\t" + file.getPath() + ": " + e.getMessage() + "\n");
+                        errorString.append(trace.toString().replace("\n", "\n\t\t") + "\n\n");
                     }
-                } catch (Throwable e) {
-                    error = true;
-                    StringWriter trace = new StringWriter();
-                    e.printStackTrace(new PrintWriter(trace));
-                    errorString.append("\t" + file.getPath() + ": " + e.getMessage() + "\n");
-                    errorString.append(trace.toString().replace("\n", "\n\t\t") + "\n\n");
                 }
             }
-        }
 
-        assertFalse(errorString.toString(), error);
+            assertFalse(errorString.toString(), error);
+        } finally {
+            threadResources.destroy();
+        }
 
     }
 

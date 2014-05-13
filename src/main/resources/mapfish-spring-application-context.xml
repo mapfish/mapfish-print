@@ -7,6 +7,12 @@
 	<context:annotation-config></context:annotation-config>
 	<bean id="mapPrinter" class="org.mapfish.print.MapPrinter" scope="prototype"></bean>
 	<bean id="configFactory" class="org.mapfish.print.config.ConfigFactory"></bean>
+	<bean id="threadResources" class="org.mapfish.print.ThreadResources">
+        <property name="connectionTimeout" value="30000"/>
+        <property name="socketTimeout" value="30000" />
+        <property name="globalParallelFetches" value="30"/>
+        <property name="perHostParallelFetches" value="10" />
+	</bean>
 
 	<!-- Define MapReaderFactories -->
 	<bean id="mapReaderFactoryFinder" class="org.mapfish.print.map.readers.MapReaderFactoryFinder"/>

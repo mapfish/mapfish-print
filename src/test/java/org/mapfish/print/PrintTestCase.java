@@ -19,8 +19,6 @@
 
 package org.mapfish.print;
 
-import junit.framework.TestCase;
-
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
@@ -35,6 +33,7 @@ public abstract class PrintTestCase {
 
     @Rule
     public TestName name = new TestName();
+
     @Before
     public void setUp() throws Exception {
         BasicConfigurator.configure(new ConsoleAppender(
