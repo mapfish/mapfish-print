@@ -1,0 +1,35 @@
+
+throwErrorOnExtraParameters: true
+
+templates:
+  A4 portrait: !template
+    reportTemplate: simpleReport.jrxml
+    attributes:
+      dependence: !integer {}
+      number: !integer {}
+      name: !string {}
+      description: !string
+        clientOptions:
+          multilines: true
+      length: !float {}
+      map: !map
+        maxDpi: 400
+        width: 400
+        height: 200
+      tableList: !tableList {}
+    processors:
+    - !reportBuilder # compile all reports in current directory
+      inputMapper: {dependence: dependence}
+      directory: '.'
+    - !createMap
+      inputMapper: {map: map}
+      outputMapper: {mapSubReport: map}
+    - !prepareTableList
+      inputMapper: {tableList: tableList}
+      dynamicReport: {}
+      dynamicReportDirectory: "subreports"
+      outputMapper: {tableList: tableList, dependence: subreports_created}
+    - !reportBuilder  # compile all jasper report templates in subreports directory
+      directory: "subreports"
+      inputMapper: {subreports_created: dependence}
+    iterValue: tableList
