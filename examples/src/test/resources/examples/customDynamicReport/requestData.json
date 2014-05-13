@@ -1,0 +1,51 @@
+{
+    "layout": "A4 portrait",
+    "outputFormat": "pdf",
+    "attributes": {
+        "number": 45,
+        "dependence": 1,
+        "name": "Hello",
+        "description": "Hello every body !",
+        "length": 45.123,
+        "table": {
+            "columns": ["id", "name", "icon"],
+            "data": [
+                [1, "blah", "icon_pan"],
+                [2, "blip", "icon_zoomin"]
+            ]
+        },
+      "tableList": [
+        {
+          "id": "f1",
+          "displayName": "Feature 1",
+          "columns": ["id", "name", "icon"],
+          "data": [
+            [1, "blah", "icon_pan"],
+            [2, "blip", "icon_zoomin"]
+          ]
+        },
+        {
+          "id": "f2",
+          "displayName": "Feature 2",
+          "columns": ["id", "name", "icon"],
+          "data": [
+            [10, "blah2", "icon_pan2"],
+            [20, "blip2", "icon_zoomin2"]
+          ]
+        }
+      ],
+        "map": {
+            "bbox": [100, -1, 106, 2],
+            "projection": "CRS:84",
+            "dpi": 90,
+            "rotation": 0,
+            "layers": [
+                {
+                  "type": "geojson",
+                  "style": "polygon",
+                  "geoJson":   "file://../verboseExample/resources/geojson.json"
+                }
+            ]
+        }
+    }
+}
