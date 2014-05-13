@@ -140,6 +140,6 @@ public class WorkingDirectories {
      * @param configuration the configuration for the current app.
      */
     public final File getWorking(final Configuration configuration) {
-        return this.working;
+        return new File(this.working, configuration.getDirectory().getName());
     }
 }
