@@ -74,6 +74,7 @@ public class WorkingDirectories {
      * Creates and returns a temporary directory for a printing task.
      */
     public final File getTaskDirectory() {
+        createIfMissing(this.working, "Working");
         try {
             File file = File.createTempFile("task-", "tmp", this.working);
             if (!file.delete() || !file.mkdirs()) {
