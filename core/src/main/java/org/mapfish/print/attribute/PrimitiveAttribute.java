@@ -26,6 +26,7 @@ import org.mapfish.print.parser.MapfishParser;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * A type of attribute whose value is a primitive type.
@@ -61,11 +62,16 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
     }
 
     @Override
+    public void validate(final List<Throwable> validationErrors) {
+        // no checks required
+    }
+
+    @Override
     public final void printClientConfig(final JSONWriter json, final Template template) throws JSONException {
         json.key("name").value(MapfishParser.stringRepresentation(this.valueClass));
-        json.key("clientOptions");
-        addMapToJSON(this.clientOptions, json);
-        json.endObject();
+//        json.key("clientOptions");
+//        addMapToJSON(this.clientOptions, json);
+//        json.endObject();
     }
 
     /**

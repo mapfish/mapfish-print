@@ -22,6 +22,7 @@ package org.mapfish.print.config;
 import com.google.common.base.Optional;
 
 import java.net.URI;
+import java.util.List;
 
 /**
  * Allows to check that a given URL matches a DNS address (textual format).
@@ -42,6 +43,12 @@ public class DnsHostMatcher extends HostMatcher {
             return Optional.of(false);
         }
         return Optional.absent();
+    }
+    @Override
+    public final void validate(final List<Throwable> validationErrors) {
+        if (this.host == null) {
+            validationErrors.add(new ConfigurationException("No host defined: " + getClass().getName()));
+        }
     }
 
     public final void setHost(final String host) {

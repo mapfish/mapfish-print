@@ -22,6 +22,7 @@ package org.mapfish.print.processor;
 import org.junit.Test;
 import org.mapfish.print.output.Values;
 
+import java.util.List;
 import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
@@ -92,6 +93,11 @@ public class ProcessorDependencyGraphTest {
         protected TestProcessor(String name) {
             super(Void.class);
             this.name = name;
+        }
+
+        @Override
+        protected void extraValidation(List<Throwable> validationErrors) {
+            // no checks
         }
 
         @Override

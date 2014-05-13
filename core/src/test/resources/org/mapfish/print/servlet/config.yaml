@@ -1,0 +1,25 @@
+throwErrorOnExtraParameters: true
+
+templates:
+  A4 Landscape: !template
+    reportTemplate: MapOnly_A4.jrxml
+    attributes:
+      dependence: !integer {}
+      geojsonMap: !map
+        width: 802
+        height: 500
+        maxDpi: 400
+      imageMap: !map
+        width: 802
+        height: 500
+        maxDpi: 400
+    processors:
+    - !reportBuilder # compile all reports in current directory
+        directory: '.'
+    - !createMap
+        inputMapper: {geojsonMap: map}
+        outputMapper: {mapSubReport: geojsonMap, layerGraphics: geojsonGraphics}
+    - !createMap
+        inputMapper: {imageMap: map}
+        outputMapper: {mapSubReport: imageMap, layerGraphics: imageGraphics}
+

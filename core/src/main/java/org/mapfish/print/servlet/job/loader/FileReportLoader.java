@@ -19,6 +19,8 @@
 
 package org.mapfish.print.servlet.job.loader;
 
+import com.google.common.io.Closer;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -34,27 +36,18 @@ import java.nio.channels.FileChannel;
 public class FileReportLoader implements ReportLoader {
     @Override
     public final boolean accepts(final URI reportURI) {
-        return reportURI.getAuthority().equals("file://");
+        return reportURI.getScheme().equals("file");
     }
 
     @Override
     public final void loadReport(final URI reportURI, final OutputStream out) throws IOException {
-        FileInputStream in = null;
-        FileChannel channel = null;
+        Closer closer = Closer.create();
         try {
-            in = new FileInputStream(reportURI.getPath());
-            channel = in.getChannel();
+            FileInputStream in = closer.register(new FileInputStream(reportURI.getPath()));
+            FileChannel channel = closer.register(in.getChannel());
             channel.transferTo(0, Long.MAX_VALUE, Channels.newChannel(out));
         } finally {
-            try {
-                if (channel != null) {
-                    channel.close();
-                }
-            } finally {
-                if (in != null) {
-                    in.close();
-                }
-            }
+            closer.close();
         }
     }
 }

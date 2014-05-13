@@ -21,11 +21,10 @@ public class StyleAttributeTest extends AbstractMapfishSpringTest {
     public TemporaryFolder folder = new TemporaryFolder();
     @Autowired
     private ConfigurationFactory configurationFactory;
-    @Autowired
-    private MapfishParser parser;
 
     @Test
     public void testAttributesFromJson() throws Exception {
+        configurationFactory.setDoValidation(false);
         final File configFile = getFile(StyleAttributeTest.class, "style_attributes/config.yaml");
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");

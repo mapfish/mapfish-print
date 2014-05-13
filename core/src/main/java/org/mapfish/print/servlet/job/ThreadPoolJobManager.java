@@ -26,13 +26,13 @@ import org.mapfish.print.servlet.registry.Registry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.concurrent.Callable;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -112,6 +112,7 @@ public class ThreadPoolJobManager implements JobManager {
     @Autowired
     private Registry registry;
     private PriorityBlockingQueue<Runnable> queue;
+    private Timer timer;
 
     public final void setMaxNumberOfRunningPrintJobs(final int maxNumberOfRunningPrintJobs) {
         this.maxNumberOfRunningPrintJobs = maxNumberOfRunningPrintJobs;
@@ -144,7 +145,11 @@ public class ThreadPoolJobManager implements JobManager {
         });
         this.executor = new ThreadPoolExecutor(0, this.maxNumberOfRunningPrintJobs, this.maxIdleTime, TimeUnit.SECONDS, this.queue,
                 threadFactory);
-        this.executor.submit(new PostResultToRegistryTask());
+
+
+        this.timer = new Timer("Post result to registry", true);
+        this.timer.schedule(new PostResultToRegistryTask(), PostResultToRegistryTask.CHECK_INTERVAL,
+                PostResultToRegistryTask.CHECK_INTERVAL);
     }
 
     /**
@@ -152,6 +157,7 @@ public class ThreadPoolJobManager implements JobManager {
      */
     @PreDestroy
     public final void shutdown() {
+        this.timer.cancel();
         this.executor.shutdownNow();
     }
 
@@ -170,12 +176,7 @@ public class ThreadPoolJobManager implements JobManager {
 
     @Override
     public final int getNumberOfRequestsMade() {
-        return this.registry.getNumber(NEW_PRINT_COUNT).intValue();
-    }
-
-    @Override
-    public final URI getURI(final String ref) {
-        return this.registry.getURI(REPORT_URI_PREFIX + ref);
+        return this.registry.opt(NEW_PRINT_COUNT, 0);
     }
 
     @Override
@@ -189,17 +190,17 @@ public class ThreadPoolJobManager implements JobManager {
 
     @Override
     public final long timeSinceLastStatusCheck(final String referenceId) {
-        return this.registry.getNumber(LAST_POLL + referenceId).longValue();
+        return this.registry.opt(LAST_POLL + referenceId, System.currentTimeMillis());
     }
 
     @Override
     public final long getAverageTimeSpentPrinting() {
-        return this.registry.getNumber(TOTAL_PRINT_TIME).longValue() / this.registry.getNumber(NB_PRINT_DONE).longValue();
+        return this.registry.opt(TOTAL_PRINT_TIME, 0L) / this.registry.opt(NB_PRINT_DONE, 1L);
     }
 
     @Override
     public final int getLastPrintCount() {
-        return this.registry.getNumber(LAST_PRINT_COUNT).intValue();
+        return this.registry.opt(LAST_PRINT_COUNT, 0);
     }
 
     @Override
@@ -211,39 +212,32 @@ public class ThreadPoolJobManager implements JobManager {
         }
     }
 
-    private class PostResultToRegistryTask implements Callable<Void> {
+    private class PostResultToRegistryTask extends TimerTask {
 
         private static final int CHECK_INTERVAL = 500;
 
         @Override
-        public Void call() throws Exception {
-            while (true) {
-                if (ThreadPoolJobManager.this.executor.isShutdown()) {
-                    return null;
-                }
-                Iterator<SubmittedPrintJob> iterator = ThreadPoolJobManager.this.runningTasksFutures.iterator();
-                while (iterator.hasNext()) {
-                    SubmittedPrintJob next = iterator.next();
-                    if (next.getReportFuture().isDone()) {
-                        iterator.remove();
-                        final Registry registryRef = ThreadPoolJobManager.this.registry;
-                        try {
-                            next.getReportFuture().get().store(registryRef);
-                            registryRef.incrementInt(NB_PRINT_DONE, 1);
-                            registryRef.incrementLong(TOTAL_PRINT_TIME, next.getTimeSinceStart());
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } catch (ExecutionException e) {
-                            registryRef.incrementInt(LAST_PRINT_COUNT, 1);
-                        }
+        public void run() {
+            if (ThreadPoolJobManager.this.executor.isShutdown()) {
+                return;
+            }
+            Iterator<SubmittedPrintJob> iterator = ThreadPoolJobManager.this.runningTasksFutures.iterator();
+            while (iterator.hasNext()) {
+                SubmittedPrintJob next = iterator.next();
+                if (next.getReportFuture().isDone()) {
+                    iterator.remove();
+                    final Registry registryRef = ThreadPoolJobManager.this.registry;
+                    try {
+                        next.getReportFuture().get().store(registryRef);
+                        registryRef.incrementInt(NB_PRINT_DONE, 1);
+                        registryRef.incrementLong(TOTAL_PRINT_TIME, next.getTimeSinceStart());
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        registryRef.incrementInt(LAST_PRINT_COUNT, 1);
+                    } catch (JSONException e) {
+                        registryRef.incrementInt(LAST_PRINT_COUNT, 1);
                     }
-                }
-
-                try {
-                    Thread.sleep(CHECK_INTERVAL);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    return null;
                 }
             }
         }

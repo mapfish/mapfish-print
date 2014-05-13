@@ -92,7 +92,7 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
     }
 
     @Override
-    public final void validate(final List<ConfigurationException> errors) {
+    public final void validate(final List<Throwable> errors) {
         final In inputParameter = createInputParameter();
         final Set<String> allInputAttributeNames;
         if (inputParameter != null) {
@@ -118,15 +118,11 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
         extraValidation(errors);
     }
 
-    //CSOFF: DesignForExtension
     /**
      * Perform any extra validation a subclass may need to perform.
-     * @param errors a list to add errors to so that all validation errors are reported as one.
+     * @param validationErrors a list to add errors to so that all validation errors are reported as one.
      */
-    protected void extraValidation(final List<ConfigurationException> errors) {
-        // only subclasses need to do anything.
-    }
-    //CSON: DesignForExtension
+    protected abstract void extraValidation(final List<Throwable> validationErrors);
 
     // CHECKSTYLE:OFF
     @Override

@@ -3,7 +3,7 @@ throwErrorOnExtraParameters: true
 
 templates:
   A4 portrait: !template
-    jasperTemplate: simpleReport.jrxml
+    reportTemplate: simpleReport.jrxml
     attributes:
       dependence: !integer {}
       number: !integer {}

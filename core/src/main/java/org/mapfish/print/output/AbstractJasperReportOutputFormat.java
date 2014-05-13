@@ -21,17 +21,13 @@ package org.mapfish.print.output;
 
 
 import com.google.common.annotations.VisibleForTesting;
-
 import jsr166y.ForkJoinPool;
-
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
-
 import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
@@ -44,20 +40,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+
 /**
- * An PDF output format that uses Jasper reports to generate the result.
- *
- * @author Jesse
- * @author sbrunner
+ * @author Jesse on 5/7/2014.
  */
-public class JasperReportOutputFormat implements OutputFormat {
-    private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportOutputFormat.class);
+public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
+    private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportPDFOutputFormat.class);
 
     private static final String SUBREPORT_DIR = "SUBREPORT_DIR";
     private static final String SUBREPORT_TABLE_DIR = "SUBREPORT_TABLE_DIR";
@@ -67,47 +62,45 @@ public class JasperReportOutputFormat implements OutputFormat {
 
     @Autowired
     private WorkingDirectories workingDirectories;
-    
+
+    /**
+     * Export the report to the output stream.
+     *
+     * @param outputStream the output stream to export to
+     * @param print        the report
+     */
+    protected abstract void doExport(final OutputStream outputStream, final JasperPrint print) throws JRException, IOException;
+
     @Autowired
     private MapfishParser parser;
 
     @Override
-    public final String getContentType() {
-        return "application/pdf";
-    }
-
-    @Override
-    public final String getFileSuffix() {
-        return "pdf";
-    }
-
-    @Override
     public final void print(final PJsonObject requestData, final Configuration config, final File configDir,
-                final File taskDirectory, final OutputStream outputStream)
+                            final File taskDirectory, final OutputStream outputStream)
             throws Exception {
         final JasperPrint print = getJasperPrint(requestData, config, configDir, taskDirectory);
-        JasperExportManager.exportReportToPdfStream(print, outputStream);
+        doExport(outputStream, print);
     }
 
     /**
      * Renders the jasper report.
-     * 
-     * @param requestData the data from the client, required for writing.
-     * @param config the configuration object representing the server side configuration.
-     * @param configDir the directory that contains the configuration, used for resolving resources like images etc...
+     *
+     * @param requestData   the data from the client, required for writing.
+     * @param config        the configuration object representing the server side configuration.
+     * @param configDir     the directory that contains the configuration, used for resolving resources like images etc...
      * @param taskDirectory the temporary directory for this printing task.
      * @return a jasper print object which can be used to generate a PDF or other outputs.
      */
     @VisibleForTesting
-    protected final JasperPrint getJasperPrint(final PJsonObject requestData, final Configuration config, 
-            final File configDir, final File taskDirectory)
+    protected final JasperPrint getJasperPrint(final PJsonObject requestData, final Configuration config,
+                                               final File configDir, final File taskDirectory)
             throws JRException, SQLException {
         final String templateName = requestData.getString(Constants.JSON_LAYOUT_KEY);
 
         final Template template = config.getTemplate(templateName);
         final Values values = new Values(requestData, template, this.parser, taskDirectory);
 
-        final File jasperTemplateFile = new File(configDir, template.getJasperTemplate());
+        final File jasperTemplateFile = new File(configDir, template.getReportTemplate());
         final File jasperTemplateBuild = this.workingDirectories.getBuildFileFor(config, jasperTemplateFile,
                 JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT, LOGGER);
 
@@ -133,22 +126,17 @@ public class JasperReportOutputFormat implements OutputFormat {
             final List<Map<String, ?>> dataSource = this.forkJoinPool.invoke(new ExecuteIterProcessorsTask(values, template));
 
             final JRDataSource jrDataSource = new JRMapCollectionDataSource(dataSource);
-
             print = JasperFillManager.fillReport(
                     jasperTemplateBuild.getAbsolutePath(),
                     values.getParameters(),
                     jrDataSource);
-        } else if (template.getJdbcUrl() != null && template.getJdbcUser() != null && template.getJdbcPassword() != null) {
-            Connection connection = DriverManager.getConnection(
-                    template.getJdbcUrl(), template.getJdbcUser(), template.getJdbcPassword());
-
-            print = JasperFillManager.fillReport(
-                    jasperTemplateBuild.getAbsolutePath(),
-                    values.getParameters(),
-                    connection);
         } else if (template.getJdbcUrl() != null) {
-            Connection connection = DriverManager.getConnection(template.getJdbcUrl());
-
+            Connection connection;
+            if (template.getJdbcUser() != null) {
+                connection = DriverManager.getConnection(template.getJdbcUrl(), template.getJdbcUser(), template.getJdbcPassword());
+            } else {
+                connection = DriverManager.getConnection(template.getJdbcUrl());
+            }
             print = JasperFillManager.fillReport(
                     jasperTemplateBuild.getAbsolutePath(),
                     values.getParameters(),
@@ -159,7 +147,6 @@ public class JasperReportOutputFormat implements OutputFormat {
                     values.getParameters(),
                     new JREmptyDataSource());
         }
-
         return print;
     }
 }

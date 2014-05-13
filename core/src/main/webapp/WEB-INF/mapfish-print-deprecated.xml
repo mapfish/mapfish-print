@@ -22,4 +22,12 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
     <import resource="classpath:mapfish-spring-application-context.xml"/>
     <bean id="servlet" class="org.mapfish.print.servlet.OldAPIMapPrinterServlet"/>
+    <bean id="mapPrinterFactory" class="org.mapfish.print.servlet.ServletMapPrinterFactory">
+        <property name="configurationFiles">
+            <map>
+                <entry key="default" value="servlet:///config.yaml" />
+            </map>
+        </property>
+    </bean>
+
 </beans>

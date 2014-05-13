@@ -21,8 +21,11 @@ package org.mapfish.print.processor.map;
 
 import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.attribute.map.MapLayer;
+import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.map.image.wms.WmsLayer;
 import org.mapfish.print.processor.AbstractProcessor;
+
+import java.util.List;
 
 /**
  * Processor to set a param to the WMS layers.
@@ -57,6 +60,13 @@ public class SetWmsCustomParamProcessor extends AbstractProcessor<SetWmsCustomPa
             }
         }
         return new Output(values.map);
+    }
+
+    @Override
+    protected final void extraValidation(final List<Throwable> validationErrors) {
+        if (this.paramName == null) {
+            validationErrors.add(new ConfigurationException("No paramName defined in " + getClass().getName()));
+        }
     }
 
     /**

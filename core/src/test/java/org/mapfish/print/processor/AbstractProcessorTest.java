@@ -21,7 +21,6 @@ package org.mapfish.print.processor;
 
 import com.google.common.collect.Lists;
 import org.junit.Test;
-import org.mapfish.print.config.ConfigurationException;
 
 import java.util.List;
 import javax.annotation.Nullable;
@@ -45,7 +44,7 @@ public class AbstractProcessorTest {
         testProcessor.getInputMapperBiMap().put("pqr", "prop");
 
 
-        List<ConfigurationException> errors = Lists.newArrayList();
+        List<Throwable> errors = Lists.newArrayList();
         testProcessor.validate(errors);
 
 
@@ -68,7 +67,7 @@ public class AbstractProcessorTest {
         testProcessor.getOutputMapperBiMap().put("prop", "oq");
 
 
-        List<ConfigurationException> errors = Lists.newArrayList();
+        List<Throwable> errors = Lists.newArrayList();
         testProcessor.validate(errors);
 
 
@@ -99,6 +98,11 @@ public class AbstractProcessorTest {
         @Override
         public TestOut execute(TestIn values) throws Exception {
             return new TestOut();
+        }
+
+        @Override
+        protected void extraValidation(List<Throwable> validationErrors) {
+            // no checks
         }
     }
 }

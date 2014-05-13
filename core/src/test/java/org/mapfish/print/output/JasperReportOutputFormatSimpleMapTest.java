@@ -19,7 +19,7 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
     private ConfigurationFactory configurationFactory;
     
     @Autowired
-    private JasperReportOutputFormat outputFormat;
+    private JasperReportPNGOutputFormat outputFormat;
 
     @Test
     public void testPrint() throws Exception {

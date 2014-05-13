@@ -79,13 +79,13 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Inp
 
 
     private Map<String, Object> dynamicReport = null;
-    @Autowired
-    private WorkingDirectories workingDirectories;
 
     private File dynamicReportDirectory;
     
     private Configuration configuration;
-    
+    @Autowired
+    private WorkingDirectories workingDirectories;
+
     /**
      * Constructor.
      */
@@ -215,6 +215,11 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Inp
 
     public final void setDynamicReport(final Map<String, Object> dynamicReport) {
         this.dynamicReport = dynamicReport;
+    }
+
+    @Override
+    protected final void extraValidation(final List<Throwable> validationErrors) {
+        // no validation needed
     }
 
     public final void setDynamicReportDirectory(final String dynamicReportDirectory) {

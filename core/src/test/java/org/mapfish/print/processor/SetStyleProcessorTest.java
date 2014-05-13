@@ -31,6 +31,7 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
 
     @Test
     public void testBasicTableProperties() throws Exception {
+        this.configurationFactory.setDoValidation(false);
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = parseJSONObjectFromFile(SetStyleProcessorTest.class, BASE_DIR + "request.json");

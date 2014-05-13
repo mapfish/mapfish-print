@@ -24,50 +24,79 @@ import org.json.JSONObject;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 
 /**
  * Represents a successfully completed job.
  *
  * @author jesseeichar on 3/18/14.
  */
-public class SuccessfulPrintJob extends CompletedPrintJob {
+public final class SuccessfulPrintJob extends CompletedPrintJob {
     private static final String JSON_REPORT_URI = "reportURI";
+    private static final String JSON_MIME_TYPE = "mimeType";
+    private static final String JSON_FILE_EXT = "fileExtension";
     private final URI reportURI;
+    private final String mimeType;
+    private final String fileExtension;
 
     /**
      * Constructor.
      *
-     * @param referenceId reference of the report.
-     * @param reportURI the uri for fetching the report.
-     * @param appId the appId used for loading the configuration.
-     * @param fileName the fileName to send to the client.
+     * @param referenceId    reference of the report.
+     * @param reportURI      the uri for fetching the report.
+     * @param appId          the appId used for loading the configuration.
+     * @param completionDate the date when the print job completed
+     * @param fileName       the fileName to send to the client.
+     * @param mimeType       the mimetype of the printed file
+     * @param fileExtension  the file extension (to be added to the filename)
      */
-    public SuccessfulPrintJob(final String referenceId, final URI reportURI, final String appId, final String fileName) {
-        super(referenceId, appId, fileName);
+    public SuccessfulPrintJob(final String referenceId, final URI reportURI, final String appId, final Date completionDate,
+                              final String fileName, final String mimeType, final String fileExtension) {
+        super(referenceId, appId, completionDate, fileName);
         this.reportURI = reportURI;
+        this.mimeType = mimeType;
+        this.fileExtension = fileExtension;
+    }
+
+    public URI getURI() {
+        return this.reportURI;
+    }
+
+    public String getMimeType() {
+        return this.mimeType;
+    }
+
+    public String getFileExtension() {
+        return this.fileExtension;
     }
 
     /**
      * Construct a new instance from the values provided.
      *
-     * @param metadata the metadata retrieved from the registry.  Only need it to get the extra information that is not stored by
-     *                 parent class.
-     * @param referenceId reference of the report.
-     * @param appId the appId used for loading the configuration.
-     * @param fileName the fileName to send to the client.
+     * @param metadata       the metadata retrieved from the registry.  Only need it to get the extra information that is not stored by
+     *                       parent class.
+     * @param referenceId    reference of the report.
+     * @param appId          the appId used for loading the configuration.
+     * @param completionDate the date when the print job completed
+     * @param fileName       the fileName to send to the client.
      */
-    public static SuccessfulPrintJob load(final JSONObject metadata, final String referenceId, final String appId, final String fileName)
+    public static SuccessfulPrintJob load(final JSONObject metadata, final String referenceId, final String appId,
+                                          final Date completionDate, final String fileName)
             throws JSONException {
         try {
-        URI reportURI = new URI(metadata.getString(JSON_REPORT_URI));
-        return new SuccessfulPrintJob(referenceId, reportURI, appId, fileName);
+            URI reportURI = new URI(metadata.getString(JSON_REPORT_URI));
+            String fileExt = metadata.getString(JSON_FILE_EXT);
+            String mimeType = metadata.getString(JSON_MIME_TYPE);
+            return new SuccessfulPrintJob(referenceId, reportURI, appId, completionDate, fileName, mimeType, fileExt);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    protected final void addExtraParameters(final JSONObject metadata) throws JSONException {
+    protected void addExtraParameters(final JSONObject metadata) throws JSONException {
         metadata.put(JSON_REPORT_URI, this.reportURI);
+        metadata.put(JSON_FILE_EXT, this.fileExtension);
+        metadata.put(JSON_MIME_TYPE, this.mimeType);
     }
 }

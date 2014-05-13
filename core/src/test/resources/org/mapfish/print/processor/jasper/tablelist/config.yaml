@@ -1,7 +1,7 @@
 throwErrorOnExtraParameters: true
 templates:
   main: !template
-    jasperTemplate: simpleReport.jrxml
+    reportTemplate: simpleReport.jrxml
     attributes:
       dependence: !integer {}
       tableList: !tableList {}

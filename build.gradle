@@ -9,7 +9,10 @@ task travisBuild {
 }
 
 project.ext.junitVersion = "4.11"
-project.ext.springVersion = "4.0.2.RELEASE"
+//project.ext.springVersion = "4.0.2.RELEASE"
+// It seems 4.0 has servlet 3 dependencies so we can't use it until
+// we plan on requiring servlet 3.0 containers. (tomcat 7+ and jetty 8+)
+project.ext.springVersion = "3.2.8.RELEASE"
 
 subprojects {
     group = 'org.mapfish.print'

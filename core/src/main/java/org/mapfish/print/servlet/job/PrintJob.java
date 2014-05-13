@@ -21,12 +21,12 @@ package org.mapfish.print.servlet.job;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-
 import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
-import org.mapfish.print.servlet.BaseMapServlet;
+import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.servlet.MapPrinterServlet;
+import org.mapfish.print.servlet.ServletMapPrinterFactory;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +42,6 @@ import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * The information for printing a report.
@@ -109,64 +107,68 @@ public abstract class PrintJob implements Callable<CompletedPrintJob> {
 
     @Override
     public final CompletedPrintJob call() throws Exception {
-        long duration = new Date().getTime() - this.jobManager.timeSinceLastStatusCheck(this.referenceId);
-
-        if (duration > TimeUnit.MINUTES.toMillis(1)) {
-            throw new TimeoutException("Request is cancelled because the client has not requested the status within the last 1 minute");
-        }
-
-        final String appId = PrintJob.this.requestData.getString(MapPrinterServlet.JSON_APP);
-
-        final PJsonObject spec = PrintJob.this.requestData.getJSONObject(MapPrinterServlet.JSON_SPEC);
-        final String fileName = getFileName(spec.optString(Constants.OUTPUT_FILENAME_KEY), new Date());
 
         Timer.Context timer = this.metricRegistry.timer(getClass().getName() + " call()").time();
+        PJsonObject spec = null;
         try {
+            long duration = new Date().getTime() - this.jobManager.timeSinceLastStatusCheck(this.referenceId);
+
+            if (duration > TimeUnit.MINUTES.toMillis(1)) {
+                throw new TimeoutException("Request is cancelled because the client has not requested the status within the last 1 " +
+                                           "minute");
+            }
+
+
+            spec = PrintJob.this.requestData.getJSONObject(MapPrinterServlet.JSON_SPEC);
+            final MapPrinter mapPrinter = PrintJob.this.mapPrinterFactory.create(getAppId());
             URI reportURI = withOpenOutputStream(new PrintAction() {
                 @Override
                 public void run(final OutputStream outputStream) throws Throwable {
-                    final MapPrinter mapPrinter = PrintJob.this.mapPrinterFactory.create(appId);
-                    doCreatePDFFile(PrintJob.this.requestData, mapPrinter, outputStream);
+                    doCreateReport(PrintJob.this.requestData, mapPrinter, outputStream);
                 }
             });
 
             this.metricRegistry.counter(getClass().getName() + "success").inc();
-            return new SuccessfulPrintJob(this.referenceId, reportURI, appId, fileName);
+            LOGGER.debug("Successfully completed print job" + this.referenceId + "\n" + this.requestData);
+            String fileName = getFileName(spec);
+
+            final OutputFormat outputFormat = mapPrinter.getOutputFormat(spec);
+            String mimeType = outputFormat.getContentType();
+            String fileExtension = outputFormat.getFileSuffix();
+            return new SuccessfulPrintJob(this.referenceId, reportURI, getAppId(), new Date(), fileName, mimeType, fileExtension);
         } catch (Throwable e) {
+            LOGGER.info("Error executing print job" + this.referenceId + "\n" + this.requestData, e);
             this.metricRegistry.counter(getClass().getName() + "failure").inc();
-            return new FailedPrintJob(this.referenceId, appId, fileName, e.getMessage());
+            String fileName = "unknownFileName";
+            if (spec != null) {
+                fileName = getFileName(spec);
+            }
+            return new FailedPrintJob(this.referenceId, getAppId(), new Date(), fileName, e.getMessage());
         } finally {
             final long stop = timer.stop();
             LOGGER.debug("Print Job completed in " + stop + "ms");
         }
     }
 
-    /**
-     * Create the file name of the resulting PDF file (the name the client wants).
-     * Will replace the ${date}, ${datetime}, ${time}, ${simple-date-format-string} with
-     * the correctly formatted date string.
-     *
-     * @param fileName the filename.
-     * @param date     the date of the print job request.
-     */
-    private static String getFileName(final String fileName, final Date date) {
-        Matcher matcher = Pattern.compile("\\$\\{(.+?)\\}").matcher(fileName);
-        Map<String, String> replacements = new HashMap<String, String>();
-        while (matcher.find()) {
-            String pattern = matcher.group(1);
-            String key = "${" + pattern + "}";
-            replacements.put(key, BaseMapServlet.findReplacement(pattern, date));
-        }
-        String result = fileName;
-        for (Map.Entry<String, String> entry : replacements.entrySet()) {
-            result = result.replace(entry.getKey(), entry.getValue());
-        }
+    private String getAppId() {
+        String appId;
+        appId = PrintJob.this.requestData.optString(MapPrinterServlet.JSON_APP, ServletMapPrinterFactory.DEFAULT_CONFIGURATION_FILE_KEY);
+        return appId;
+    }
 
-        return result;
+    /**
+     * Read filename from spec.
+     */
+    private static String getFileName(final PJsonObject spec) {
+        String fileName = spec.optString(Constants.OUTPUT_FILENAME_KEY);
+        if (fileName == null) {
+            return "mapfish-print-report";
+        }
+        return fileName;
     }
 
 
-    private void doCreatePDFFile(final PJsonObject job, final MapPrinter mapPrinter, final OutputStream out)
+    private void doCreateReport(final PJsonObject job, final MapPrinter mapPrinter, final OutputStream out)
             throws Exception {
 
         Map<String, String> headerMap = new HashMap<String, String>();
@@ -176,11 +178,13 @@ public abstract class PrintJob implements Callable<CompletedPrintJob> {
             configHeaders.add("Referrer");
             configHeaders.add("Cookie");
         }
-        PJsonObject jobHeaders = job.getJSONObject(JSON_HEADERS);
-        for (String header : configHeaders) {
-            String headerValue = jobHeaders.optString(header);
-            if (headerValue != null) {
-                headerMap.put(header, headerValue);
+        PJsonObject jobHeaders = job.optJSONObject(JSON_HEADERS);
+        if (jobHeaders != null) {
+            for (String header : configHeaders) {
+                String headerValue = jobHeaders.optString(header);
+                if (headerValue != null) {
+                    headerMap.put(header, headerValue);
+                }
             }
         }
 

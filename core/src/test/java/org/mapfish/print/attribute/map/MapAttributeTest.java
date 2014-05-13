@@ -21,6 +21,7 @@ package org.mapfish.print.attribute.map;
 
 import org.geotools.referencing.CRS;
 import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.attribute.ReflectiveAttribute;
@@ -52,6 +53,11 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
     @Autowired
     private MapfishParser parser;
 
+    @Before
+    public void setUp() throws Exception {
+        this.configurationFactory.setDoValidation(false);
+
+    }
 
     @SuppressWarnings("unchecked")
     @Test(expected = IllegalArgumentException.class)

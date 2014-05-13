@@ -23,6 +23,8 @@ import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.wrapper.json.PJsonArray;
 
+import java.util.List;
+
 
 /**
  * The attributes for {@link org.mapfish.print.processor.jasper.TableListProcessor}.
@@ -32,6 +34,10 @@ public final class TableListAttribute extends ArrayReflectiveAttribute<TableList
     @Override
     public TableListAttributeValue createValue(final Template template) {
         return new TableListAttributeValue();
+    }
+    @Override
+    public void validate(final List<Throwable> validationErrors) {
+        // no checks required
     }
 
     /**

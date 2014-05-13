@@ -19,6 +19,7 @@
 
 package org.mapfish.print.config;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.attribute.Attribute;
@@ -45,6 +46,11 @@ public class ConfigurationFactoryTest extends AbstractMapfishSpringTest {
     public static final String TEST_SPRING_XML = "classpath:org/mapfish/print/config/config-test-application-context.xml";
     @Autowired
     private ConfigurationFactory configurationFactory;
+
+    @Before
+    public void setUp() throws Exception {
+        this.configurationFactory.setDoValidation(false);
+    }
 
     @Test
     public void testSpringInjection() throws Exception {

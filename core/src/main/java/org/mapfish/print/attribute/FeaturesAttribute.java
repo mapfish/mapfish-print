@@ -36,6 +36,7 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,7 +49,7 @@ public class FeaturesAttribute extends AttributeWithDefaultConfig<FeaturesAttrib
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LoggerFactory.getLogger(FeaturesAttribute.class);
 
-    private PYamlObject defaults = new PYamlObject(Collections.EMPTY_MAP, "featuresAttribute");
+    private PYamlObject defaults = new PYamlObject(Collections.<String, Object>emptyMap(), "featuresAttribute");
 
     /**
      * A http request factory for making http requests.
@@ -70,6 +71,13 @@ public class FeaturesAttribute extends AttributeWithDefaultConfig<FeaturesAttrib
         FeaturesAttributeValues result = new FeaturesAttributeValues(template);
         return result;
     }
+
+
+    @Override
+    public void validate(final List<Throwable> validationErrors) {
+        // no checks required
+    }
+
     /**
      * The value of {@link FeaturesAttribute}.
      */

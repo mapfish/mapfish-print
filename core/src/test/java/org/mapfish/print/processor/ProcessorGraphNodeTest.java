@@ -139,5 +139,10 @@ public class ProcessorGraphNodeTest {
         public DataTransferObject execute(DataTransferObject values) throws Exception {
             return null;
         }
+
+        @Override
+        protected void extraValidation(List<Throwable> validationErrors) {
+            // no checks
+        }
     }
 }

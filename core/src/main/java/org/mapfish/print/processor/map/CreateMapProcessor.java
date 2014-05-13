@@ -26,6 +26,7 @@ import org.apache.batik.svggen.SVGGraphics2D;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
+import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
@@ -113,6 +114,13 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 mapValues.getMapSize(), graphics);
 
         return new Output(graphics, mapSubReport.toString());
+    }
+
+    @Override
+    protected void extraValidation(final List<Throwable> validationErrors) {
+        if (this.imageType == null) {
+            validationErrors.add(new ConfigurationException("No imageType defined in " + getClass().getName()));
+        }
     }
 
     private URI createMapSubReport(final File printDirectory, final Dimension mapSize,

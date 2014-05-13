@@ -21,7 +21,6 @@ package org.mapfish.print;
 
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -29,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;

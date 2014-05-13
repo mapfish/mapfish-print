@@ -20,9 +20,11 @@
 package org.mapfish.print.attribute.map;
 
 import com.google.common.collect.Ordering;
+import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.ConfigurationObject;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.TreeSet;
 
 /**
@@ -99,6 +101,14 @@ public final class ZoomLevels implements ConfigurationObject {
     @Override
     public int hashCode() {
         return Arrays.hashCode(scales);
+    }
+
+
+    @Override
+    public void validate(final List<Throwable> validationErrors) {
+        if (scales == null || scales.length == 0) {
+            validationErrors.add(new ConfigurationException("There are no scales defined in " + getClass().getName()));
+        }
     }
 
     // CHECKSTYLE:ON

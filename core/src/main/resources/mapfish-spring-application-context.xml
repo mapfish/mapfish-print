@@ -25,6 +25,7 @@
     <import resource="mapfish-spring-processors.xml" />
     <import resource="mapfish-spring-layer-parser.xml" />
     <import resource="mapfish-spring-style-parsers.xml" />
+    <import resource="mapfish-spring-config-file-loaders.xml" />
 
     <context:annotation-config/>
     <context:property-placeholder system-properties-mode="FALLBACK" file-encoding="UTF-8" location="mapfish-spring.properties"/>
@@ -43,12 +44,11 @@
     <bean id="processorDependencyGraphFactory" class="org.mapfish.print.processor.ProcessorDependencyGraphFactory" />
 
     <bean id="registry" class="org.mapfish.print.servlet.registry.BasicRegistry"/>
-    <bean id="mapPrinterFactory" class="org.mapfish.print.servlet.ServletMapPrinterFactory"/>
     <bean id="jobManager" class="org.mapfish.print.servlet.job.ThreadPoolJobManager">
         <property name="maxNumberOfRunningPrintJobs" value="10" />
         <property name="maxNumberOfWaitingJobs" value="5000" />
     </bean>
-    <bean id="printJobFactory" class="org.mapfish.print.servlet.job.FilePrintJob"/>
+    <bean id="printJobPrototype" class="org.mapfish.print.servlet.job.FilePrintJob" scope="prototype"/>
     <bean id="fileReportLoader" class="org.mapfish.print.servlet.job.loader.FileReportLoader"/>
 
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>
@@ -71,7 +71,9 @@
         <constructor-arg index="0" value="100" />
     </bean>
 
-    <bean id="pdfOutputFormat" class="org.mapfish.print.output.JasperReportOutputFormat" scope="prototype" />
+    <bean id="pdfOutputFormat" class="org.mapfish.print.output.JasperReportPDFOutputFormat" scope="prototype" />
+    <bean id="pngOutputFormat" class="org.mapfish.print.output.JasperReportPNGOutputFormat" scope="prototype" />
+    <bean id="xslOutputFormat" class="org.mapfish.print.output.JasperReportExcelOutputFormat" scope="prototype" />
     <bean id="mapPrinter" class="org.mapfish.print.MapPrinter" scope="prototype"/>
     <bean id="configuration" class="org.mapfish.print.config.Configuration" scope="prototype"/>
 

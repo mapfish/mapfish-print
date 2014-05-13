@@ -1,7 +1,7 @@
 throwErrorOnExtraParameters: true
 templates:
   main: !template
-    jasperTemplate: simple-map.jrxml
+    reportTemplate: simple-map.jrxml
     attributes:
       dependence: !integer {}
       map: !map

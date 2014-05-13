@@ -1,0 +1,1 @@
+some resource file for the configuration

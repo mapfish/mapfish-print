@@ -28,6 +28,8 @@ import org.opengis.referencing.FactoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 /**
  * Attribute for GeoJson Styles collection.
  * <p/>
@@ -43,6 +45,12 @@ public class StyleAttribute extends ReflectiveAttribute<StylesAttributeValues> {
         StylesAttributeValues result = new StylesAttributeValues();
         return result;
     }
+
+    @Override
+    public void validate(final List<Throwable> validationErrors) {
+        // no validation needed.
+    }
+
     /**
      * The value of {@link StyleAttribute}.
      */

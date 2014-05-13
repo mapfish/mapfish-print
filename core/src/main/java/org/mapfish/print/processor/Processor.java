@@ -20,10 +20,8 @@
 package org.mapfish.print.processor;
 
 import com.google.common.collect.BiMap;
-import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.ConfigurationObject;
 
-import java.util.List;
 import javax.annotation.Nullable;
 
 /**
@@ -102,13 +100,5 @@ public interface Processor<In, Out> extends ConfigurationObject {
      */
     @Nullable
     BiMap<String, String> getOutputMapperBiMap();
-
-    /**
-     * Validates that the processor's configuration is valid.  This is called after the processor is full populated by the configuration
-     * file.
-     *
-     * @param errors a list to add errors to so that all validation errors are reported as one.
-     */
-    void validate(final List<ConfigurationException> errors);
 
 }
