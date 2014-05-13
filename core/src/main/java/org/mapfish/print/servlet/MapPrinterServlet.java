@@ -20,8 +20,10 @@
 package org.mapfish.print.servlet;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
@@ -49,7 +51,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.ByteArrayOutputStream;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -67,6 +68,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -424,14 +426,16 @@ public class MapPrinterServlet extends BaseMapServlet {
      * To get (in JSON) the information about the available formats and CO.
      *
      * @param pretty if true then pretty print the capabilities
+     * @param var an optional variable to which the result will be assigned
      * @param capabilitiesResponse the response object
      */
     @RequestMapping(value = CAPABILITIES_URL, method = RequestMethod.GET)
     public final void getCapabilities(
             @RequestParam(value = "pretty", defaultValue = "false") final boolean pretty,
+            @RequestParam(value = "var", defaultValue = "") final String var,
             final HttpServletResponse capabilitiesResponse) throws ServletException,
             IOException, JSONException {
-        getCapabilities(DEFAULT_CONFIGURATION_FILE_KEY, pretty, capabilitiesResponse);
+        getCapabilities(DEFAULT_CONFIGURATION_FILE_KEY, pretty, var, capabilitiesResponse);
     }
 
     /**
@@ -439,12 +443,14 @@ public class MapPrinterServlet extends BaseMapServlet {
      *
      * @param appId  the name of the "app" or in other words, a mapping to the configuration file for this request.
      * @param pretty if true then pretty print the capabilities
+     * @param var an optional variable to which the result will be assigned
      * @param capabilitiesResponse the response object
      */
     @RequestMapping(value = "/{appId:\\w+}" + CAPABILITIES_URL, method = RequestMethod.GET)
     public final void getCapabilities(
             @PathVariable final String appId,
             @RequestParam(value = "pretty", defaultValue = "false") final boolean pretty,
+            @RequestParam(value = "var", defaultValue = "") final String var,
             final HttpServletResponse capabilitiesResponse) throws ServletException,
             IOException, JSONException {
         MapPrinter printer;
@@ -464,6 +470,10 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
 
         try {
+            if (!pretty && !Strings.isNullOrEmpty(var)) {
+                writer.append(var + " = ");
+            }
+            
             JSONWriter json = new JSONWriter(writer);
             try {
                 json.object();
@@ -484,14 +494,25 @@ public class MapPrinterServlet extends BaseMapServlet {
             } catch (JSONException e) {
                 throw new ServletException(e);
             }
+            
+            if (!pretty && !Strings.isNullOrEmpty(var)) {
+                writer.append(";");
+            }
         } finally {
             writer.close();
         }
 
         if (pretty) {
             final JSONObject jsonObject = new JSONObject(new String(prettyPrintBuffer.toByteArray(), Constants.DEFAULT_CHARSET));
+            
+            if (!Strings.isNullOrEmpty(var)) {
+                capabilitiesResponse.getOutputStream().print(var + " = ");
+            }
             capabilitiesResponse.getOutputStream().print(jsonObject.toString(JSON_INDENT_FACTOR));
-    }
+            if (!Strings.isNullOrEmpty(var)) {
+                capabilitiesResponse.getOutputStream().print(";");
+            }
+        }
     }
 
 

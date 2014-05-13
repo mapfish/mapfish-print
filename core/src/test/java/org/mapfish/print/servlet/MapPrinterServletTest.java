@@ -332,7 +332,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     public void testGetCapabilities_NotPretty() throws Exception {
         setUpConfigFiles();
         final MockHttpServletResponse servletResponse = new MockHttpServletResponse();
-        this.servlet.getCapabilities(false, servletResponse);
+        this.servlet.getCapabilities(false, "", servletResponse);
         assertEquals(HttpStatus.OK.value(), servletResponse.getStatus());
 
         final String contentAsString = servletResponse.getContentAsString();
@@ -360,7 +360,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     public void testGetCapabilities_Pretty() throws Exception {
         setUpConfigFiles();
         final MockHttpServletResponse servletResponse = new MockHttpServletResponse();
-        this.servlet.getCapabilities(true, servletResponse);
+        this.servlet.getCapabilities(true, "", servletResponse);
         assertEquals(HttpStatus.OK.value(), servletResponse.getStatus());
 
         final String contentAsString = servletResponse.getContentAsString();
@@ -393,7 +393,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         printerFactory.setConfigurationFiles(configFiles);
 
         final MockHttpServletResponse defaultGetInfoResponse = new MockHttpServletResponse();
-        this.servlet.getCapabilities("default", false, defaultGetInfoResponse);
+        this.servlet.getCapabilities("default", false, "", defaultGetInfoResponse);
         assertEquals(HttpStatus.OK.value(), defaultGetInfoResponse.getStatus());
 
         final String contentAsString = defaultGetInfoResponse.getContentAsString();
@@ -404,7 +404,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals("A4 Landscape", a4LandscapeLayout.getString("name"));
 
         final MockHttpServletResponse app2GetInfoResponse = new MockHttpServletResponse();
-        this.servlet.getCapabilities("app2", false, app2GetInfoResponse);
+        this.servlet.getCapabilities("app2", false, "", app2GetInfoResponse);
         assertEquals(HttpStatus.OK.value(), app2GetInfoResponse.getStatus());
 
         final PJsonObject app2GetInfoJson = parseJSONObjectFromString(app2GetInfoResponse.getContentAsString());
@@ -413,8 +413,44 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals("main", mainLayout.getString("name"));
 
         final MockHttpServletResponse noSuchGetInfoResponse = new MockHttpServletResponse();
-        this.servlet.getCapabilities("NoSuch", false, noSuchGetInfoResponse);
+        this.servlet.getCapabilities("NoSuch", false, "", noSuchGetInfoResponse);
         assertEquals(HttpStatus.NOT_FOUND.value(), noSuchGetInfoResponse.getStatus());
+    }
+
+    @Test
+    public void testGetCapabilitiesWithAppId_NotPrettyAndVar() throws Exception {
+        final HashMap<String, String> configFiles = Maps.newHashMap();
+        configFiles.put("default", getFile(MapPrinterServletTest.class, "config.yaml").getAbsolutePath());
+        configFiles.put("app2", getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class,
+                CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.BASE_DIR + "config.yaml").getAbsolutePath());
+        printerFactory.setConfigurationFiles(configFiles);
+
+        final MockHttpServletResponse defaultGetInfoResponse = new MockHttpServletResponse();
+        this.servlet.getCapabilities("default", false, "printConfig", defaultGetInfoResponse);
+        assertEquals(HttpStatus.OK.value(), defaultGetInfoResponse.getStatus());
+
+        final String contentAsString = defaultGetInfoResponse.getContentAsString();
+        assertTrue(contentAsString.startsWith("printConfig = "));
+        assertTrue(contentAsString.endsWith(";"));
+        System.out.println(contentAsString);
+    }
+
+    @Test
+    public void testGetCapabilitiesWithAppId_PrettyAndVar() throws Exception {
+        final HashMap<String, String> configFiles = Maps.newHashMap();
+        configFiles.put("default", getFile(MapPrinterServletTest.class, "config.yaml").getAbsolutePath());
+        configFiles.put("app2", getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class,
+                CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.BASE_DIR + "config.yaml").getAbsolutePath());
+        printerFactory.setConfigurationFiles(configFiles);
+
+        final MockHttpServletResponse defaultGetInfoResponse = new MockHttpServletResponse();
+        this.servlet.getCapabilities("default", true, "printConfig", defaultGetInfoResponse);
+        assertEquals(HttpStatus.OK.value(), defaultGetInfoResponse.getStatus());
+
+        final String contentAsString = defaultGetInfoResponse.getContentAsString();
+        assertTrue(contentAsString.startsWith("printConfig = "));
+        assertTrue(contentAsString.endsWith(";"));
+        System.out.println(contentAsString);
     }
 
     @Test
