@@ -19,8 +19,18 @@ dependencies {
 
 def geoserverDir = "$buildDir/geoserver"
 def geoserverDataDir = geoserverDir+"/data"
+
+task copyTestServerSpecificFiles (type: Copy) {
+    description "Copy files from src/main/webapp into the GeoServer directory to customize the testServer"
+    from fileTree("src/main/webapp") {include '**'}
+
+    into geoserverDir
+}
+
 task extractGeoserver (type: Copy) {
     description "Extract the Geoserver web app jar and files in src/main/webapp into a directory to use for the jettyRun task"
+    dependsOn tasks['copyTestServerSpecificFiles']
+    
     from zipTree(configurations.geoserver.singleFile)
 
     into geoserverDir
@@ -65,15 +75,9 @@ extractGeoserver.doLast {
         }
     }
 }
-task copyTestServerSpecificFiles (type: Copy) {
-    description "Copy files from src/main/webapp into the geoserer directory to customize the testServer"
-    from fileTree("src/main/webapp") {include '**'}
-
-    into geoserverDir
-}
 
 jettyRun {
-    dependsOn ':core:jettyRunWarBackground'
+    dependsOn ':core:jettyRunWarBackground', tasks['extractGeoserver']
 
     description 'Start the Geoserver Test Server in foreground mode for running local tests'
     httpPort = 9876
