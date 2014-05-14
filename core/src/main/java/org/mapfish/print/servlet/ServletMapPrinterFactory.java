@@ -94,7 +94,7 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
         if (configFile == null) {
             throw new NoSuchAppException("There is no configurationFile registered in the " + getClass().getName() + " bean with the " +
                                          "id: " +
-                                         "'" + configFile + "'");
+                                         "'" + finalApp + "'");
         }
 
         final long lastModified;
