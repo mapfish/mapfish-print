@@ -113,7 +113,7 @@ gradle.taskGraph.whenReady {taskGraph ->
 
 String interactiveExpression = '**/*InteractiveTest.class'
 test {
-    dependsOn ':core:compileJava', 'testClasses'//, 'jettyRunBackground'
+    dependsOn ':core:compileJava', 'testClasses', 'jettyRunBackground'
     description 'Runs all automated e2e (integration) tests.'
     maxParallelForks = Runtime.getRuntime().availableProcessors();
     exclude interactiveExpression

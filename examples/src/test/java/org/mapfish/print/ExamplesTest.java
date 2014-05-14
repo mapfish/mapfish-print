@@ -37,6 +37,14 @@ import java.util.Map;
 import static org.junit.Assert.fail;
 
 /**
+ * To run this test make sure that the test GeoServer is running:
+ * 
+ *      ./gradlew examples:jettyRun
+ *      
+ * Or run the tests with the following task (which automatically starts the server):
+ * 
+ *      ./gradlew examples:test
+ * 
  * @author Jesse on 3/31/14.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
