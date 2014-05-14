@@ -369,8 +369,8 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     protected final TempFile doCreatePDFFile(final String spec, final HttpServletRequest httpServletRequest)
             throws IOException, ServletException,
             InterruptedException, NoSuchAppException {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Generating PDF for spec=" + spec);
+        if (SPEC_LOGGER.isInfoEnabled()) {
+            SPEC_LOGGER.info(spec.toString());
         }
 
         PJsonObject specJson = MapPrinter.parseSpec(spec);

@@ -81,7 +81,7 @@ import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGU
  */
 @Controller
 public class MapPrinterServlet extends BaseMapServlet {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseMapServlet.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapPrinterServlet.class);
 
     private static final String CAPABILITIES_URL = "/capabilities.json";
     private static final String LIST_APPS_URL = "/apps.json";
@@ -661,10 +661,9 @@ public class MapPrinterServlet extends BaseMapServlet {
                                            final HttpServletResponse httpServletResponse) throws JSONException {
 
         PJsonObject specJson = parseJson(requestDataRaw, httpServletResponse);
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.trace("Report request data=" + specJson);
+        if (SPEC_LOGGER.isInfoEnabled()) {
+            SPEC_LOGGER.info(specJson.toString());
         }
-
         specJson.getInternalObj().remove(JSON_OUTPUT_FORMAT);
         specJson.getInternalObj().put(JSON_OUTPUT_FORMAT, format);
         specJson.getInternalObj().remove(JSON_APP);
