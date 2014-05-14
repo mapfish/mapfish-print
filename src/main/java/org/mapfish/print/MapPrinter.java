@@ -19,31 +19,33 @@
 
 package org.mapfish.print;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.TreeSet;
-import java.util.Map;
-
-import javax.annotation.PreDestroy;
-
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.pdf.ByteBuffer;
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.mapfish.print.config.Config;
 import org.mapfish.print.config.ConfigFactory;
+import org.mapfish.print.output.NativeProcessOutputFactory;
 import org.mapfish.print.output.OutputFactory;
 import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.output.PrintParams;
 import org.mapfish.print.utils.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.FontFactory;
-import com.lowagie.text.pdf.ByteBuffer;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Map;
+import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.PreDestroy;
 
 /**
  * The main class for printing maps. Will parse the spec, create the PDF
@@ -53,6 +55,7 @@ import com.lowagie.text.pdf.ByteBuffer;
  * context object so that all plugins and dependencies are correctly injected into it
  */
 public class MapPrinter {
+    private static final Logger LOGGER = Logger.getLogger(MapPrinter.class);
     /**
      * The parsed configuration file.
      *
@@ -81,6 +84,9 @@ public class MapPrinter {
      */
     @Autowired
     private ConfigFactory configFactory;
+
+    @Autowired
+    private MetricRegistry metricRegistry;
 
     private volatile boolean fontsInitialized = false;
 
@@ -159,12 +165,19 @@ public class MapPrinter {
      * @throws InterruptedException
      */
     public RenderingContext print(PJsonObject jsonSpec, OutputStream outputStream, Map<String, String> headers) throws DocumentException, InterruptedException {
-        initFonts();
-        OutputFormat output = this.outputFactory.create(config, jsonSpec);
+        final Timer.Context timer = metricRegistry.timer(getClass().getName()).time();
+        try {
+            initFonts();
+            OutputFormat output = this.outputFactory.create(config, jsonSpec);
 
-        PrintParams params = new PrintParams(config, configDir, jsonSpec, outputStream, headers);
-        return output.print(params );
-
+            PrintParams params = new PrintParams(config, configDir, jsonSpec, outputStream, headers);
+            return output.print(params);
+        } finally {
+            final long printTime = timer.stop();
+            if (TimeUnit.SECONDS.toNanos(getConfig().getMaxPrintTimeBeforeWarningInSeconds()) < printTime) {
+                LOGGER.warn("[Overtime Print] "+jsonSpec);
+            }
+        }
     }
 
     public static PJsonObject parseSpec(String spec) {
