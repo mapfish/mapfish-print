@@ -20,6 +20,7 @@
 package org.mapfish.print.servlet;
 
 import com.lowagie.text.DocumentException;
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
@@ -55,6 +56,7 @@ import javax.servlet.http.HttpServletResponse;
  * Main print servlet.
  */
 public class MapPrinterServlet extends BaseMapServlet {
+    public static final Logger SPEC_LOGGER = Logger.getLogger(BaseMapServlet.class.getPackage().toString() + ".spec");
     private static final long serialVersionUID = -4706371598927161642L;
     private static final String CONTEXT_TEMPDIR = "javax.servlet.context.tempdir";
 
@@ -326,6 +328,10 @@ public class MapPrinterServlet extends BaseMapServlet {
     protected TempFile doCreatePDFFile(String spec, HttpServletRequest httpServletRequest) throws IOException, DocumentException, ServletException, InterruptedException {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Generating PDF for spec=" + spec);
+        }
+
+        if (SPEC_LOGGER.isInfoEnabled()) {
+            SPEC_LOGGER.info(spec);
         }
 
         PJsonObject specJson = MapPrinter.parseSpec(spec);
