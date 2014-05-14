@@ -72,6 +72,8 @@ public class Config implements Closeable {
     private Float tmsDefaultOriginY = null;
     private boolean reloadConfig = false;
 
+    private boolean ignoreCapabilities = false;
+
     private ThreadResources threadResources;
 
     private boolean integerSvg = true;
@@ -571,5 +573,13 @@ public class Config implements Closeable {
 
     public void setThreadResources(ThreadResources threadResources) {
         this.threadResources = threadResources;
+    }
+
+    public boolean isIgnoreCapabilities() {
+        return ignoreCapabilities;
+    }
+
+    public void setIgnoreCapabilities(boolean ignoreCapabilities) {
+        this.ignoreCapabilities = ignoreCapabilities;
     }
 }

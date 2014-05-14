@@ -19,6 +19,13 @@
 
 package org.mapfish.print.map.readers;
 
+import org.mapfish.print.RenderingContext;
+import org.mapfish.print.Transformer;
+import org.mapfish.print.map.ParallelMapTileLoader;
+import org.mapfish.print.map.renderers.TileRenderer;
+import org.mapfish.print.utils.PJsonArray;
+import org.mapfish.print.utils.PJsonObject;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -26,13 +33,6 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import org.mapfish.print.RenderingContext;
-import org.mapfish.print.Transformer;
-import org.mapfish.print.map.ParallelMapTileLoader;
-import org.mapfish.print.map.renderers.TileRenderer;
-import org.mapfish.print.utils.PJsonArray;
-import org.mapfish.print.utils.PJsonObject;
 
 /**
  * Support for the protocol using directly the content of a WMTS tiled layer, support REST or KVP.
@@ -89,7 +89,11 @@ public class WMTSMapReader extends TileableMapReader {
     private WMTSMapReader(String layer, RenderingContext context, PJsonObject params) {
         super(context, params);
         this.layer = layer;
-        this.capabilitiesInfo = WMTSServiceInfo.getLayerInfo(baseUrl, layer, context);
+        if (!context.getConfig().isIgnoreCapabilities()) {
+            this.capabilitiesInfo = WMTSServiceInfo.getLayerInfo(baseUrl, layer, context);
+        } else {
+            this.capabilitiesInfo = null;
+        }
         // Optional (but mandatory if matrixIds is not provided)
         PJsonArray maxExtent = params.optJSONArray(TILE_FULL_EXTENT, params.optJSONArray(MAX_EXTENT));
         // Optional (but mandatory if matrixIds is not provided)
