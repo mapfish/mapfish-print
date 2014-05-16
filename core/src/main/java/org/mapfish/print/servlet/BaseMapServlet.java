@@ -35,6 +35,10 @@ import javax.servlet.http.HttpServletResponse;
  */
 public abstract class BaseMapServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseMapServlet.class);
+    /**
+     * A logger for logging the print specifications.
+     */
+    protected static final Logger SPEC_LOGGER = LoggerFactory.getLogger(BaseMapServlet.class.getPackage().toString() + ".spec");
 
     /**
      * Remove commas and whitespace from a string.
