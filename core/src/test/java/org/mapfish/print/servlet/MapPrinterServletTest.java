@@ -432,7 +432,6 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         final String contentAsString = defaultGetInfoResponse.getContentAsString();
         assertTrue(contentAsString.startsWith("printConfig = "));
         assertTrue(contentAsString.endsWith(";"));
-        System.out.println(contentAsString);
     }
 
     @Test
@@ -450,7 +449,6 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         final String contentAsString = defaultGetInfoResponse.getContentAsString();
         assertTrue(contentAsString.startsWith("printConfig = "));
         assertTrue(contentAsString.endsWith(";"));
-        System.out.println(contentAsString);
     }
 
     @Test
