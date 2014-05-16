@@ -520,7 +520,6 @@ public class MapPrinterServlet extends BaseMapServlet {
 
         try {
             final MapPrinter mapPrinter = this.printerFactory.create(appId);
-            getExampleResponse.setContentType("text/plain; charset=utf-8");
             final File requestDataFile = new File(mapPrinter.getConfiguration().getDirectory(), "requestData.json");
             if (requestDataFile.exists()) {
                 String requestData = Files.toString(requestDataFile, Constants.DEFAULT_CHARSET);
@@ -529,8 +528,12 @@ public class MapPrinterServlet extends BaseMapServlet {
                     jsonObject.remove(JSON_OUTPUT_FORMAT);
                     jsonObject.remove(JSON_APP);
                     requestData = jsonObject.toString(JSON_INDENT_FACTOR);
+
+                    getExampleResponse.setContentType("application/json; charset=utf-8");
                 } catch (JSONException e) {
                     // ignore, return raw text;
+
+                    getExampleResponse.setContentType("text/plain; charset=utf-8");
                 }
                 getExampleResponse.getOutputStream().write(requestData.getBytes(Constants.DEFAULT_CHARSET));
             } else {
