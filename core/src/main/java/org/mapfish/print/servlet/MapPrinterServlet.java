@@ -85,19 +85,37 @@ import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGU
 public class MapPrinterServlet extends BaseMapServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseMapServlet.class);
 
-    private static final String CAPABILITIES_URL = "/capabilities.json";
-    private static final String LIST_APPS_URL = "/apps.json";
-    private static final String EXAMPLE_REQUEST_URL = "/exampleRequest.json";
-    private static final String CREATE_AND_GET_URL = "/buildreport";
-    private static final String STATUS_URL = "/status";
-    private static final String REPORT_URL = "/report";
+    /**
+     * The url path for capabilities requests.
+     */
+    public static final String CAPABILITIES_URL = "/capabilities.json";
+    /**
+     * The url path to list all registered configurations.
+     */
+    public static final String LIST_APPS_URL = "/apps.json";
+    /**
+     * The url path to get a sample print request.
+     */
+    public static final String EXAMPLE_REQUEST_URL = "/exampleRequest.json";
+    /**
+     * The url path to create and get a report.
+     */
+    public static final String CREATE_AND_GET_URL = "/buildreport";
+    /**
+     * The url path to get the status for a print task.
+     */
+    public static final String STATUS_URL = "/status";
+    /**
+     * The url path to create a print task and to get a finished print.
+     */
+    public static final String REPORT_URL = "/report";
 
     /* Registry keys */
 
     /**
-     * The layout tag in the json job, status and metadata.
+     * The key containing an error message for failed jobs.
      */
-    private static final String JSON_ERROR = "error";
+    public static final String JSON_ERROR = "error";
     /**
      * The application ID which indicates the configuration file to load.
      */

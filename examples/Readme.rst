@@ -7,8 +7,7 @@ Due to the difficulty of verification there are two modes of execute.
 
 An interactive mode and a automated mode.  The interactive mode contains steps where a developer has to validate the responses.
 
-To use module:
-.. code::
+To use module::
 
     git clone --recurse-submodules https://github.com/mapfish/mapfish-print.git
     cd mapfish-print
@@ -44,8 +43,7 @@ There are two types of tests.  All classes that end in _InteractiveTest_ will be
 tests will be ran during the normal test task.
 
 By default the test server is in daemon mode, which mean that the servers will be run in a background thread and be shutdown when
-the build completes.  In order to be able to run the tests in a IDE there is a one can run:
-.. code::
+the build completes.  In order to be able to run the tests in a IDE there is a one can run::
 
      ./gradlew jettyRunForeground
 
