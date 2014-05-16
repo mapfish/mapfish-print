@@ -90,10 +90,4 @@ public abstract class AbstractApiTest {
         params.put("charset", "utf-8");
         return new MediaType("application", "json", params);
     }
-
-    protected MediaType getTextMediaType() {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("charset", "utf-8");
-        return new MediaType("text", "plain", params);
-    }
 }

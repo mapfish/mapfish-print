@@ -122,7 +122,7 @@ public class PrintApiTest extends AbstractApiTest {
         ClientHttpRequest request = getPrintRequest(MapPrinterServlet.EXAMPLE_REQUEST_URL, HttpMethod.GET);
         response = request.execute();
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(getTextMediaType(), response.getHeaders().getContentType());
+        assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
         JSONObject sampleRequest = new JSONObject(getBodyAsText(response));
         assertTrue(sampleRequest.has("attributes"));
     }
@@ -132,7 +132,7 @@ public class PrintApiTest extends AbstractApiTest {
         ClientHttpRequest request = getPrintRequest("geoext" + MapPrinterServlet.EXAMPLE_REQUEST_URL, HttpMethod.GET);
         response = request.execute();
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(getTextMediaType(), response.getHeaders().getContentType());
+        assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
         JSONObject sampleRequest = new JSONObject(getBodyAsText(response));
         assertTrue(sampleRequest.has("attributes"));
     }
