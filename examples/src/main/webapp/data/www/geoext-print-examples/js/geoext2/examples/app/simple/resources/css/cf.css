@@ -1,0 +1,24 @@
+.cf-header {
+    background-color: #252F49;
+    border-bottom: 1px solid #16191D;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+    text-shadow: 0 1px 0 #16191D;
+    
+}
+
+.cf-helpwindow {
+    background-color: #FFFFFF;
+    padding: 5px;
+}
+
+.cf-helpwindow div.cascade {
+    padding: 0 0 0 5px;
+}
+
+.cf-helpwindow h2 {
+    margin: 2px 0 0 0;
+}

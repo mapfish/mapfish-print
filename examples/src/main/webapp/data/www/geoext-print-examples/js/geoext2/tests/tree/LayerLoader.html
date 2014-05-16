@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all.css">
+    <script type="text/javascript" src="http://openlayers.org/api/2.13.1/OpenLayers.js"></script>
+    <script type="text/javascript" src="http://cdn.sencha.io/ext/gpl/4.2.1/ext-all-debug.js"></script>
+
+    <script type="text/javascript">
+
+        Ext.Loader.setConfig({
+            enabled:true,
+            disableCaching: false,
+            paths: {
+                "GeoExt": "../../src/GeoExt"
+            }
+        });
+        
+        Ext.Loader.syncRequire([
+            'GeoExt.tree.Panel',
+            'Ext.data.TreeStore',
+            'GeoExt.data.LayerTreeModel',
+            'GeoExt.data.LayerStore',
+            'GeoExt.tree.LayerLoader',
+            'GeoExt.tree.LayerContainer'
+        ]);
+        
+    </script>
+
+    <script type="text/javascript">
+
+        function test_constructor(t) {
+            t.plan(2);
+        
+            var loader = Ext.create('GeoExt.tree.LayerLoader', {
+                store: "foo",
+                filter: "bar"
+            });
+        
+            t.eq(loader.store, "foo", "store set");
+            t.eq(loader.filter, "bar", "filter set");
+        }
+    
+        function test_load(t) {
+            t.plan(3);
+        
+            var args, load;
+        
+            var loader = Ext.create('GeoExt.tree.LayerLoader', {
+                store: Ext.create('GeoExt.data.LayerStore'),
+                listeners: {
+                    beforeload: function(loader, node) {
+                        return load;
+                    },
+                    load: function(loader, node) {
+                        args = {
+                            loader: loader,
+                            node: node
+                        };
+                    }
+                }
+            });
+        
+            var node = {
+                plugins: [{
+                    ptype: "gx_layercontainer",
+                    loader: loader
+                }],
+                expanded: true
+            };
+            load = false;
+            var store = Ext.create('Ext.data.TreeStore', {
+                model: 'GeoExt.data.LayerTreeModel',
+                root: node
+            });
+            var tree = Ext.create('GeoExt.tree.Panel', {
+                width: 100,
+                height: 100,
+                store: store
+            });
+            tree.render("tree");
+
+            t.delay_call(.1, function() {
+                t.ok(!args, "loading aborted by beforeload event");
+
+                tree.destroy();
+                store.destroy();
+
+                node = {
+                    plugins: [{
+                        ptype: "gx_layercontainer",
+                        loader: loader
+                    }],
+                    expanded: true
+                };
+                load = true;
+                store = Ext.create('Ext.data.TreeStore', {
+                    model: 'GeoExt.data.LayerTreeModel',
+                    root: node
+                });
+                tree = Ext.create('GeoExt.tree.Panel', {
+                    width: 100,
+                    height: 100,
+                    store: store
+                });
+                tree.render("tree");
+            });
+
+            t.delay_call(.2, function() {
+                t.ok(args.loader === loader, "loader passed correctly to 'load' handler");
+                t.ok(args.node.get("container").loader === node.plugins[0].loader, "correct node passed to 'node' handler");
+                tree.destroy();
+                store.destroy();
+                loader.destroy();
+            });
+        }
+
+    </script>
+  <body>
+    <div id="tree"></div>
+  </body>
+</html>

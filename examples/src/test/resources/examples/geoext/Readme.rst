@@ -1,0 +1,1 @@
+This is a very simple configuration, which is used for the GeoExt examples.

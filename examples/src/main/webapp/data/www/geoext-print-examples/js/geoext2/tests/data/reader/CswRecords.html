@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all.css">
+    <script type="text/javascript" src="http://openlayers.org/api/2.13.1/OpenLayers.js"></script>
+    <script type="text/javascript" src="http://cdn.sencha.io/ext/gpl/4.2.1/ext-all-debug.js"></script>
+    <script type="text/javascript" src="CswRecords.js"></script>
+    <script type="text/javascript">
+
+        Ext.Loader.setConfig({
+            enabled:true,
+            disableCaching: false,
+            paths: {
+                "GeoExt": "../../../src/GeoExt"
+            }
+        });
+
+        Ext.Loader.syncRequire([
+            'GeoExt.data.CswRecordsModel',
+            'GeoExt.data.reader.CswRecords'
+        ]);
+
+    function test_constructor(t) {
+        t.plan(1);
+
+        var reader, recordType;
+
+        reader = new GeoExt.data.CSWRecordsReader();
+        t.eq(reader.format.CLASS_NAME, 'OpenLayers.Format.CSWGetRecords.v2_0_2',
+             "ctor creates a format of the correct type if none is given");
+        reader.destroy();
+    }
+
+    function test_readRecords(t) {
+        t.plan(7);
+        var reader = Ext.create("GeoExt.data.reader.CswRecords");
+        var records = reader.read({responseXML: doc, responseText: true});
+        t.eq(records.total, 11, "totalRecords taken from the CSW response");
+        var record = records.records[0];
+        t.eq(records.records.length, 3, "3 records parsed");
+        t.eq(record.get("title"), ["College Universities of New York"], "title correctly parsed");
+        t.eq(record.get("subject"), [], "subject correctly parsed");
+        t.eq(record.get("projection"), "urn:ogc:def:crs:::WGS 1984", "projection correctly parsed");
+        t.eq(record.get("URI").length, 12, "12 URI elements parsed");
+        t.eq(record.get("URI")[0], "http://demo.geonode.org/data/geonode:College_University", "First URI correct");
+        reader.destroy();
+    }
+
+    </script>
+  <body>
+  </body>
+</html>

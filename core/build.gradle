@@ -141,13 +141,36 @@ war {
 }
 
 jettyRun {
-    contextPath = 'context'
+    contextPath = ''
     httpPort = 8080
     scanTargets = (fileTree("src/main/").include("webapp/WEB-INF/**") + fileTree(compileJava.destinationDir)).files
     reload = 'manual'
     jettyRun.classpath.add(files("jettyRunExtraFiles"))
     System.properties.setProperty("path_to_examples", examplesDir)
 }
+
+
+task jettyRunWarBackground (dependsOn: jettyRunWar) {
+    description 'Start Mapfish-print in background mode for running integration tests'
+    doLast {
+        logger.info("Finished running test server in daemon (foreground) mode")
+    }
+}
+
+gradle.taskGraph.whenReady {taskGraph ->
+    if (taskGraph.hasTask(jettyRunWarBackground)) {
+        jettyRunWar.doFirst{
+            logger.info("Running test server in daemon (background) mode")
+        }
+
+        jettyRunWar.daemon = true;
+    } else {
+        jettyRunWar.doFirst{
+            logger.info("Running test server in non-daemon (foreground) mode")
+        }
+    }
+}
+
 
 task show << {
     println jettyRun.classpath.files

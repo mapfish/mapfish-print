@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all.css" />
+    <script type="text/javascript" src="http://openlayers.org/api/2.13.1/OpenLayers.js"></script>
+    <script type="text/javascript" src="http://cdn.sencha.io/ext/gpl/4.2.1/ext-all-debug.js"></script>
+
+    <script type="text/javascript">
+
+        Ext.Loader.setConfig({
+            enabled:true,
+            disableCaching: false,
+            paths: {
+                "GeoExt": "../../src/GeoExt"
+            }
+        });
+
+        Ext.Loader.syncRequire([
+            'GeoExt.data.ScaleStore'
+        ]);
+       
+        function createMap() {
+            var map = new OpenLayers.Map();
+            map.addLayer(new OpenLayers.Layer('dummy layer', {
+                maxExtent: new OpenLayers.Bounds(-180, -90, 180, 90),
+                isBaseLayer: true
+            }));
+            map.zoomToMaxExtent();
+            return map;
+        }
+
+        function loadMapPanel() {
+            var map = createMap();
+
+            var mapPanel = Ext.create("GeoExt.panel.Map", {
+                // panel options
+                id: "map-panel",
+                title: "GeoExt MapPanel",
+                renderTo: "mappanel",
+                height: 400,
+                width: 600,
+                // map panel-specific options
+                map: map,
+                center: new OpenLayers.LonLat(5, 45),
+                zoom: 4
+            });
+
+            return mapPanel;
+        }
+
+        /**
+         * Since we add listeners to the array of listeners of a particular
+         * type, we can use the current count of the different types of
+         * listeners as the next index. So if there is 4 listeners of a 'foo'
+         * event registered, the index of the registered foo-event handler will
+         * be 4.
+         */
+        function getNextListenersIdx(evtObj, evtName) {
+            var nextIdx = 0;
+            if (evtObj &&
+                evtObj.events &&
+                evtObj.events.listeners &&
+                evtObj.events.listeners[evtName] &&
+                Ext.isArray(evtObj.events.listeners[evtName])) {
+                nextIdx = evtObj.events.listeners[evtName].length;
+            }
+            return nextIdx;
+        }
+
+        /**
+         * A helper method to compare actual and expected listeners in the
+         * tests.
+         */
+        function listenerEq(evtObj, evtName, expectedIdx, expectedListener) {
+            // catch the case where expectedListener is undefined
+            if(expectedListener === undefined){
+                return evtObj.events.listeners[evtName][expectedIdx] === undefined;
+            } else {
+                return evtObj.events.listeners[evtName][expectedIdx].func === expectedListener;
+            }
+        }
+
+        /**
+         * A shortcut when testing of a particular listener isn't at the
+         * specified index.
+         */
+        function listenerUndefined(evtObj, evtName, expectedIdx) {
+            return listenerEq(evtObj, evtName, expectedIdx, undefined);
+        }
+
+        function test_constructor(t) {
+            t.plan(1);
+
+            var store, map;
+
+            map = createMap();
+            store = Ext.create("GeoExt.data.ScaleStore", {map: map});
+            t.ok(store.map == map, "ctor sets the passed map in the instance");
+            store.destroy();
+            map.destroy();
+        }
+
+        function test_bind_unbind(t) {
+            t.plan(7);
+
+            var map, store;
+
+            map = new OpenLayers.Map({controls: []});
+            store = Ext.create("GeoExt.data.ScaleStore");
+
+            // map has no base layer
+            // 4 tests
+
+            // first we need to determine the indices of the listeners, which
+            // should be added, so that we can afterwards compare them.
+            //
+            var idxChangeBaseLayer = getNextListenersIdx(map, "changebaselayer"),
+                idxAddLayer = getNextListenersIdx(map, "addlayer");
+            store.bind(map);
+
+            t.ok(listenerEq(map, "changebaselayer", idxChangeBaseLayer, store.populateFromMap),
+                 "bind registers a changebaselayer listener (map has no base layer)");
+            t.ok(listenerEq(map, "addlayer", idxAddLayer, store.populateOnAdd),
+                 "bind registers a addlayer listener (map has no base layer)");
+
+            store.unbind();
+            t.ok(listenerUndefined(map, "changebaselayer", idxChangeBaseLayer),
+                 "unbind unregisters changebaselayer listener (map has no base layer)");
+            t.ok(listenerUndefined(map, "addlayer", idxAddLayer),
+                 "unbind unregisters addlayer listener (map has no base layer)");
+
+            // map has a base layer
+            // 3 tests
+
+            map.addLayer(new OpenLayers.Layer("name", {isBaseLayer: true}));
+
+            // Again, determine the indices of the soon to be bound listners
+            // just like above
+            idxChangeBaseLayer = getNextListenersIdx(map, "changebaselayer"),
+            idxAddLayer = getNextListenersIdx(map, "addlayer")
+
+            store.bind(map);
+            t.ok(listenerEq(map, "changebaselayer", idxChangeBaseLayer, store.populateFromMap),
+                 "bind registers a changebaselayer listener (map has a base layer)");
+            t.ok(listenerUndefined(map, "addlayer", idxAddLayer),
+                 "bind does not register a addlayer listener (map has a base layer)");
+
+            store.unbind();
+            t.ok(listenerUndefined(map, "changebaselayer", idxChangeBaseLayer),
+                 "unbind unregisters changebaselayer listener (map has a base layer)");
+
+            store.destroy();
+            map.destroy();
+        }
+
+        function test_scalestore(t) {
+            t.plan(3);
+
+            var mapPanel = loadMapPanel();
+            var map = mapPanel.map;
+            var store = Ext.create("GeoExt.data.ScaleStore", {map: map});
+            var levels = map.baseLayer.resolutions.length;
+            t.eq(store.getCount(), levels,
+                 'Found expected number of zoomlevels: ' + levels);
+            
+            var low = store.getAt(0).get("resolution");
+            t.eq(low, map.baseLayer.resolutions[levels-1],
+                 'First record has lowest res value: ' + low);
+
+            var high = store.getAt(levels-1).get("resolution");
+            t.eq(high, map.baseLayer.resolutions[0],
+                 'Last record has highest res value: ' + high);
+            
+            map.destroy();
+            mapPanel.destroy();
+            store.destroy();
+        }
+        
+    </script>
+  </head>  
+  <body>
+    <div id="mappanel" style="width:400px; height:300px"></div>
+  </body>
+</html>

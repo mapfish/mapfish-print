@@ -37,16 +37,24 @@ import java.util.Map;
 import static org.junit.Assert.fail;
 
 /**
+ * To run this test make sure that the test GeoServer is running:
+ * 
+ *      ./gradlew examples:jettyRun
+ *      
+ * Or run the tests with the following task (which automatically starts the server):
+ * 
+ *      ./gradlew examples:test
+ * 
  * @author Jesse on 3/31/14.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-        ExamplesIntegrationTest.DEFAULT_SPRING_XML
+        ExamplesTest.DEFAULT_SPRING_XML
 })
-public class ExamplesIntegrationTest {
+public class ExamplesTest {
     public static final String DEFAULT_SPRING_XML = "classpath:mapfish-spring-application-context.xml";
 
-    private static final String REQUEST_DATA_FILE = "requestData.json";
+    private static final String REQUEST_DATA_FILE = "requestData(-.*)?.json";
     private static final String CONFIG_FILE = "config.yaml";
     @Autowired
     MapPrinter mapPrinter;
@@ -55,7 +63,7 @@ public class ExamplesIntegrationTest {
     public void testAllExamples() throws Exception {
         Map<String, Throwable> errors = Maps.newHashMap();
 
-        final File examplesDir = getFile(ExamplesIntegrationTest.class, "/examples");
+        final File examplesDir = getFile(ExamplesTest.class, "/examples");
 
         for (File example : Files.fileTreeTraverser().children(examplesDir)) {
             if (example.isDirectory()) {
@@ -76,17 +84,24 @@ public class ExamplesIntegrationTest {
         try {
             final File configFile = new File(example, CONFIG_FILE);
             this.mapPrinter.setConfiguration(configFile);
-            String requestData = Files.asCharSource(new File(example, REQUEST_DATA_FILE), Charset.forName(Constants.DEFAULT_ENCODING)).read();
-            final PJsonObject jsonSpec = MapPrinter.parseSpec(requestData);
-            //ByteArrayOutputStream out = new ByteArrayOutputStream();
             
-            File file = new File("/tmp/test-" + example.getName() + ".pdf");
-            FileOutputStream fs = new FileOutputStream(file);
-            
-            Map<String, String> headers = Maps.newHashMap();
-            this.mapPrinter.print(jsonSpec, fs, headers);
-            
-            fs.close();
+            for (File requestFile : Files.fileTreeTraverser().children(example)) {
+                if (requestFile.isFile() && requestFile.getName().matches(REQUEST_DATA_FILE)) {
+                    String requestData = Files.asCharSource(requestFile, Charset.forName(Constants.DEFAULT_ENCODING)).read();
+                    final PJsonObject jsonSpec = MapPrinter.parseSpec(requestData);
+                    //ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    
+                    File file = new File("/tmp/test-" + example.getName()
+                            + requestFile.getName().replace("requestData", "").replace(".json", "")
+                            + ".pdf");
+                    FileOutputStream fs = new FileOutputStream(file);
+                    
+                    Map<String, String> headers = Maps.newHashMap();
+                    this.mapPrinter.print(jsonSpec, fs, headers);
+                    
+                    fs.close();
+                }
+            }
         } catch (Throwable e) {
             errors.put(example.getName(), e);
         }

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all.css">
+    <script type="text/javascript" src="http://openlayers.org/api/2.13.1/OpenLayers.js"></script>
+    <script type="text/javascript" src="http://cdn.sencha.io/ext/gpl/4.2.1/ext-all-debug.js"></script>
+
+    <script type="text/javascript">
+
+        Ext.Loader.setConfig({
+            enabled: true,
+            disableCaching: false,
+            paths: {
+                "GeoExt": "../../../src/GeoExt"
+            }
+        });
+
+        Ext.Loader.syncRequire([
+            'GeoExt.grid.column.Symbolizer'
+        ]);
+
+        function test_renderer(t) {
+            t.plan(4);
+
+            var meta = {},
+                value = {fillColor: "red", stroke: false},
+                column = Ext.create('GeoExt.grid.column.Symbolizer'),
+                markup = column.renderer(value, meta),
+                el = document.createElement("div");
+            document.body.appendChild(el);
+            el.innerHTML = markup;
+
+            t.eq(meta.css, "gx-grid-symbolizercol", "css class set correctly");
+
+            t.delay_call(1, function() {
+                var renderers = Ext.ComponentQuery.query('gx_symbolizercolumn');
+
+                t.eq(renderers.length, 1, "Exactly one instance created");
+                var renderer = renderers[0];
+
+                t.ok(renderer instanceof GeoExt.grid.column.Symbolizer, "FeatureRenderer created");
+                t.ok(el.childNodes.length > 0, "component added to markup");
+                renderer.destroy();
+                document.body.removeChild(el);
+            });
+        }
+
+        function test_shape(t) {
+            t.plan(8);
+
+            var meta = {},
+                value = {fillColor: "red", stroke: false},
+                column = Ext.create('GeoExt.grid.column.Symbolizer'),
+                markup1 = column.renderer(value, meta, {raw: {geometry: new OpenLayers.Geometry.Curve()}}),
+                el1 = document.createElement("div"),
+                markup2 = column.renderer(value, meta, {raw: {geometry: new OpenLayers.Geometry.LinearRing()}}),
+                el2 = document.createElement("div"),
+                markup3 = column.renderer(value, meta, {raw: {geometry: new OpenLayers.Geometry.LineString()}}),
+                el3 = document.createElement("div"),
+                markup4 = column.renderer(value, meta, {raw: {geometry: new OpenLayers.Geometry.MultiLineString()}}),
+                el4 = document.createElement("div"),
+                markup5 = column.renderer(value, meta, {raw: {geometry: new OpenLayers.Geometry.MultiPoint()}}),
+                el5 = document.createElement("div"),
+                markup6 = column.renderer(value, meta, {raw: {geometry: new OpenLayers.Geometry.MultiPolygon()}}),
+                el6 = document.createElement("div"),
+                markup7 = column.renderer(value, meta, {raw: {geometry: new OpenLayers.Geometry.Point()}}),
+                el7 = document.createElement("div"),
+                markup8 = column.renderer(value, meta, {raw: {geometry: new OpenLayers.Geometry.Polygon()}}),
+                el8 = document.createElement("div");
+
+            document.body.appendChild(el1);
+            el1.innerHTML = markup1;
+            document.body.appendChild(el2);
+            el2.innerHTML = markup2;
+            document.body.appendChild(el3);
+            el3.innerHTML = markup3;
+            document.body.appendChild(el4);
+            el4.innerHTML = markup4;
+            document.body.appendChild(el5);
+            el5.innerHTML = markup5;
+            document.body.appendChild(el6);
+            el6.innerHTML = markup6;
+            document.body.appendChild(el7);
+            el7.innerHTML = markup7;
+            document.body.appendChild(el8);
+            el8.innerHTML = markup8;
+
+            t.delay_call(1, function() {
+                t.ok(el1.outerHTML.indexOf("OpenLayers_Geometry_Line") >= 0, "test for Curve");
+                t.ok(el2.outerHTML.indexOf("OpenLayers_Geometry_Line") >= 0, "test for LinearRing");
+                t.ok(el3.outerHTML.indexOf("OpenLayers_Geometry_Line") >= 0, "test for LineString");
+                t.ok(el4.outerHTML.indexOf("OpenLayers_Geometry_Line") >= 0, "test for MultiLineString");
+                t.ok(el5.outerHTML.indexOf("OpenLayers_Geometry_Point") >= 0, "test for MultiPoint");
+                t.ok(el6.outerHTML.indexOf("OpenLayers_Geometry_Polygon") >= 0, "test for MultiPolygon");
+                t.ok(el7.outerHTML.indexOf("OpenLayers_Geometry_Point") >= 0, "test for Point");
+                t.ok(el8.outerHTML.indexOf("OpenLayers_Geometry_Polygon") >= 0, "test for Polygon");
+
+                // Teardown
+                Ext.each(Ext.ComponentQuery.query('gx_symbolizercolumn'),
+                    function (renderer) {
+                        renderer.destroy();
+                    }
+                );
+                document.body.removeChild(el1);
+                document.body.removeChild(el2);
+                document.body.removeChild(el3);
+                document.body.removeChild(el4);
+                document.body.removeChild(el5);
+                document.body.removeChild(el6);
+                document.body.removeChild(el7);
+                document.body.removeChild(el8);
+            });
+        }
+    </script>
+
+  <body>
+  </body>
+</html>

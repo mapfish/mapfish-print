@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all.css" />
+    <script type="text/javascript" charset="utf-8" src="http://cdn.sencha.io/ext/gpl/4.2.1/ext-all-debug.js" ></script>
+    <script src="http://openlayers.org/api/2.13.1/OpenLayers.js"></script>
+
+    <script type="text/javascript">
+
+    Ext.Loader.setConfig({
+        disableCaching: false,
+        enabled: true,
+        paths: {
+            //Ext: "<PATH_TO_EXT_JS>/src",
+            GeoExt: '../../src/GeoExt'
+        }
+    });
+
+    Ext.Loader.syncRequire([
+        'GeoExt.form.Basic'
+    ]);
+
+    function test_constructor(t) {
+        t.plan(1);
+
+        /*
+         * Set up
+         */
+        
+        var protocol, form;
+
+        protocol = new OpenLayers.Protocol();
+
+        form = Ext.create('GeoExt.form.Basic', Ext.get("form"), {
+            protocol: protocol
+        });
+
+        /*
+         * Test
+         */
+
+        t.ok(form.protocol == protocol,
+             "BasicForm constructor properly sets protocol in the instance");
+    }
+
+    function test_doAction(t) {
+        t.plan(3);
+
+        /*
+         * Set up
+         */
+        
+        var protocol, form;
+
+        protocol = new OpenLayers.Protocol({
+            read: function(options) {
+                t.ok(options.filter instanceof OpenLayers.Filter.Logical,
+                     ["doAction calls read on the form's protocol, read",
+                      "is passed a logical filter"].join(" "));
+            }
+        });
+
+        form = Ext.create('GeoExt.form.Basic', Ext.get("form"), {
+            protocol: protocol,
+            getValues: function() {
+                return {"foo0__eq": "bar0", "foo1__like": "bar1"};
+            }
+        });
+
+        /*
+         * Test
+         */
+
+        // 1 test
+        var tmp = form.doAction("search");
+        t.ok(tmp == form,
+             "doAction returns the form instance");
+        t.wait_result(1);
+
+        // 1 test
+        protocol = new OpenLayers.Protocol({
+            read: function(options) {
+                t.ok(options.filter instanceof OpenLayers.Filter.Logical,
+                     ["doAction calls read on the protocol it is given,",
+                      "read is passed a logical filter"].join(" "));
+            }
+        });
+        form.doAction("search", {protocol: protocol});
+        t.wait_result(1);
+    }
+    </script>
+  <body>
+    <div id="form"></div>
+  </body>
+</html>

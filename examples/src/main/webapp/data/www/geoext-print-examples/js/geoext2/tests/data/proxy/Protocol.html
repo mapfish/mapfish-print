@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+   <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all.css" />
+    <script type="text/javascript" src="http://openlayers.org/api/2.13.1/OpenLayers.js"></script>
+    <script type="text/javascript" src="http://cdn.sencha.io/ext/gpl/4.2.1/ext-all-debug.js"></script>
+
+    <script type="text/javascript">
+
+        Ext.Loader.setConfig({
+            enabled:true,
+            disableCaching: false,
+            paths: {
+                "GeoExt": "../../../src/GeoExt"
+            }
+        });
+
+        Ext.Loader.syncRequire([
+            'GeoExt.data.proxy.Protocol'
+        ]);
+
+        function test_constructor(t) {
+            t.plan(1);
+            // setup
+            var protocol, proxy;
+            protocol = new OpenLayers.Protocol();
+            // test
+            proxy = Ext.create("GeoExt.data.proxy.Protocol", {
+                protocol: protocol        
+            });
+            t.ok(proxy.protocol == protocol,
+                 "ctor sets protocol in protocol property");
+        }
+
+        function test_load(t) {
+            t.plan(8);
+            // setup
+            var response, params, filter, protocol, reader, callback;
+            var scope, arg, proxy, result;
+            response = new OpenLayers.Protocol.Response({
+                code: OpenLayers.Protocol.Response.SUCCESS
+            });
+            params = {fake: "params"};
+            filter = {fake: "filter"};
+            protocol = new OpenLayers.Protocol({
+                read: function(o) {
+                    t.eq(o.params, params,
+                         "protocol read is passed expected params");
+                    t.eq(o.filter, filter,
+                         "protocol read is passed expected filter");
+                    t.ok(o.scope == proxy,
+                         "protocol read is passed expected scope");
+                    o.callback.call(o.scope, response);
+                }
+            });
+            result = "fake result";
+            reader = {
+                read: function(r) {
+                    t.ok(r == response,
+                         "reader is passed expected response obj");
+                    return result;
+                }
+            };
+            proxy = Ext.create("GeoExt.data.proxy.Protocol", {
+                protocol: protocol,
+                reader: reader
+            });
+            scope = {fake: "scope"};
+            arg = {fake: "arg", filter: filter};
+            callback = function(o) {
+                t.ok(this == scope,
+                     "callback called with expected scope");
+                t.eq(o.resultSet, result,
+                     "callback called with expected result");
+                t.eq(o.arg, arg,
+                     "callback called with expected arg");
+                t.eq(o.success, true,
+                     "callback called with expected success boolean");
+            };
+            // 8 tests
+            proxy.doRequest(Ext.create("Ext.data.Operation", {params: params, arg: arg}), callback, scope);
+        }
+        
+        function test_abort(t) {
+            t.plan(1);
+
+            var protocol = new OpenLayers.Protocol({
+                read: function(o) {
+                    return new OpenLayers.Protocol.Response();
+                },
+                abort: function(response) {
+                    t.ok("protocol.abort called");
+                }
+            });
+            var proxy = Ext.create("GeoExt.data.proxy.Protocol", {
+                protocol: protocol
+            });
+
+            proxy.doRequest(Ext.create("Ext.data.Operation")); // abort not called because proxy.response is null
+            proxy.doRequest(Ext.create("Ext.data.Operation")); // abort called
+            proxy.abortPrevious = false;
+            proxy.doRequest(Ext.create("Ext.data.Operation")); // abort not called because proxy.abortPrevious is false
+        }
+
+        function test_setParamsAsOptions(t) {
+            t.plan(2);
+            var params = {fake: "params"};
+            protocol = new OpenLayers.Protocol({
+                read: function(o) {
+                    t.eq(o.fake, params.fake,
+                         "protocol read is passed expected params directly");
+                    t.eq(o.params, undefined, "Params is cleared");
+                }
+            });
+            var proxy = Ext.create("GeoExt.data.proxy.Protocol", {
+                setParamsAsOptions: true,
+                protocol: protocol
+            });
+            proxy.doRequest({params: params});
+        }
+
+    </script>
+
+  <body>
+    <div id="map"></div>
+  </body>
+</html>

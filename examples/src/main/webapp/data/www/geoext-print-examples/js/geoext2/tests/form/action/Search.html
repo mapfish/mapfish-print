@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all.css" />
+    <script type="text/javascript" charset="utf-8" src="http://cdn.sencha.io/ext/gpl/4.2.1/ext-all-debug.js" ></script>
+    <script src="http://openlayers.org/api/2.13.1/OpenLayers.js"></script>
+
+    <script type="text/javascript">
+
+    Ext.Loader.setConfig({
+        disableCaching: false,
+        enabled: true,
+        paths: {
+            //Ext: "<PATH_TO_EXT_JS>/src",
+            GeoExt: '../../../src/GeoExt'
+        }
+    });
+
+    Ext.Loader.syncRequire([
+        'Ext.form.Basic',
+        'Ext.form.TextField',
+        'GeoExt.form.action.Search',
+    ]);
+
+    function test_constructor(t) {
+        t.plan(1);
+
+        /*
+         * Set up
+         */
+
+        var form, action, protocol;
+
+        form = Ext.create('Ext.form.Basic', Ext.get("form"));
+        protocol = new OpenLayers.Protocol();
+        action = Ext.create('GeoExt.form.action.Search',
+                            {form: form, protocol: protocol});
+
+        /*
+         * Test
+         */
+
+        t.ok(action.protocol == protocol,
+             "Search Action constructor properly sets protocol in instance");
+    }
+
+    function test_run(t) {
+        t.plan(2);
+
+        /*
+         * Set up
+         */
+
+        var field, form, action, protocol;
+
+        field = Ext.create('Ext.form.TextField', {
+            name: "foo__eq",
+            value: "bar"
+        });
+
+        form = Ext.create('Ext.form.Panel', {
+            renderTo: "form",
+            items: [field]
+        });
+
+        protocol = new OpenLayers.Protocol({
+            read: function(options) {
+                t.ok(options.filter instanceof OpenLayers.Filter.Comparison,
+                     "run calls protocol.read with a comparison filter");
+                t.eq(options.some, 'option',
+                     "run calls protocol.read with extra options");
+            }
+        });
+
+        action = Ext.create('GeoExt.form.action.Search', {
+            form: form.getForm(),
+            protocol: protocol,
+            clientValidation: false,
+            readOptions: {'some': 'option'}
+        });
+
+        /*
+         * Test
+         */
+
+        action.run();
+
+        /*
+         * Tear down
+         */
+
+        form.destroy();
+    }
+
+    function test_abort(t) {
+        t.plan(2);
+
+        /*
+         * Set up
+         */
+
+        var field, form, action, protocol, log = {};
+
+        field = Ext.create('Ext.form.TextField', {
+            name: "foo__eq",
+            value: "bar"
+        });
+
+        form = Ext.create('Ext.form.FormPanel', {
+            renderTo: "form",
+            items: [field]
+        });
+
+        protocol = new OpenLayers.Protocol({
+            read: function(options) {
+                return "something";
+            },
+            abort: function() {
+                log.abort++;
+            }
+        });
+
+        action = Ext.create('GeoExt.form.SearchAction', {
+            form: form.getForm(),
+            protocol: protocol,
+            clientValidation: false,
+            abortPrevious: true
+        });
+
+        /*
+         * Test
+         */
+
+        log.abort = 0;
+        action.run();
+        action.run();
+        t.ok(log.abort == 1, "protocol abort called once");
+
+        log.abort = 0;
+        action.abortPrevious = false;
+        action.run();
+        t.ok(log.abort == 0, "protocol abort not called");
+
+        /*
+         * Tear down
+         */
+        form.destroy();
+    }
+
+    function test_handleResponse(t) {
+        t.plan(3);
+
+        /*
+         * Set up
+         */
+
+        var log, field, form, action, response;
+
+        field = Ext.create('Ext.form.TextField', {
+            name: "foo__eq",
+            value: "bar"
+        });
+
+        form = Ext.create('Ext.form.FormPanel', {
+            renderTo: "form",
+            items: [field]
+        });
+
+        action = Ext.create('GeoExt.form.SearchAction', {
+            form: form.getForm(),
+            callback: function(response) {
+                log.response = response;
+                log.scope = this;
+            },
+            scope: {'some': 'scope'}
+        });
+
+        response = new OpenLayers.Protocol.Response({
+            code: OpenLayers.Protocol.Response.SUCCESS
+        });
+
+        /*
+         * Test
+         */
+
+        log = {};
+        action.handleResponse(response);
+
+        t.ok(action.response === response,
+             'handleResponse sets the response in the instance');
+        t.ok(log.response === response,
+             'handleResponse calls callback with expected response');
+        t.eq(log.scope, {'some': 'scope'},
+             'handleResponse calls callback with expected scope');
+
+        /*
+         * Tear down
+         */
+        form.destroy();
+    }
+
+    </script>
+  <body>
+    <div id="form"></div>
+  </body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+
+    <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all.css">
+    <script type="text/javascript" src="http://openlayers.org/api/2.13.1/OpenLayers.js"></script>
+    <script type="text/javascript" src="http://cdn.sencha.io/ext/gpl/4.2.1/ext-all-debug.js"></script>
+
+    <script type="text/javascript">
+    Ext.Loader.setConfig({
+        enabled:true,
+        disableCaching: false,
+        paths: {
+            Ext: "../../../ext/extjs-4.1.0/src",
+            GeoExt: "../../src/GeoExt"
+        }
+    });
+
+    Ext.Loader.syncRequire([
+        'GeoExt.data.StyleStore'
+    ]);
+    
+    var vectorSld = '<?xml version="1.0" encoding="ISO-8859-1"?><StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd"><NamedLayer><Name>USA states population</Name><UserStyle><Name>population</Name><Title>Population in the United States</Title><Abstract>A sample filter that filters the United States into threecategories of population, drawn in different colors</Abstract><FeatureTypeStyle><Rule><Title>&lt; 2M</Title><ogc:Filter><ogc:PropertyIsLessThan> <ogc:PropertyName>PERSONS</ogc:PropertyName> <ogc:Literal>2000000</ogc:Literal></ogc:PropertyIsLessThan></ogc:Filter><PolygonSymbolizer> <Fill><!-- CssParameters allowed are fill (the color) and fill-opacity --><CssParameter name="fill">#4DFF4D</CssParameter><CssParameter name="fill-opacity">0.7</CssParameter> </Fill> </PolygonSymbolizer></Rule><Rule><Title>2M - 4M</Title><ogc:Filter><ogc:PropertyIsBetween><ogc:PropertyName>PERSONS</ogc:PropertyName><ogc:LowerBoundary><ogc:Literal>2000000</ogc:Literal></ogc:LowerBoundary><ogc:UpperBoundary><ogc:Literal>4000000</ogc:Literal></ogc:UpperBoundary></ogc:PropertyIsBetween></ogc:Filter><PolygonSymbolizer> <Fill><!-- CssParameters allowed are fill (the color) and fill-opacity --><CssParameter name="fill">#FF4D4D</CssParameter><CssParameter name="fill-opacity">0.7</CssParameter> </Fill> </PolygonSymbolizer></Rule><Rule><Title>&gt; 4M</Title><!-- like a linesymbolizer but with a fill too --><ogc:Filter><ogc:PropertyIsGreaterThan> <ogc:PropertyName>PERSONS</ogc:PropertyName> <ogc:Literal>4000000</ogc:Literal></ogc:PropertyIsGreaterThan></ogc:Filter><PolygonSymbolizer> <Fill><!-- CssParameters allowed are fill (the color) and fill-opacity --><CssParameter name="fill">#4D4DFF</CssParameter><CssParameter name="fill-opacity">0.7</CssParameter> </Fill> </PolygonSymbolizer></Rule><Rule><Title>Boundary</Title><LineSymbolizer><Stroke><CssParameter name="stroke-width">0.2</CssParameter></Stroke></LineSymbolizer><TextSymbolizer><Label><ogc:PropertyName>STATE_ABBR</ogc:PropertyName></Label><Font><CssParameter name="font-family">Times New Roman</CssParameter><CssParameter name="font-style">Normal</CssParameter><CssParameter name="font-size">14</CssParameter></Font><LabelPlacement><PointPlacement><AnchorPoint><AnchorPointX>0.5</AnchorPointX><AnchorPointY>0.5</AnchorPointY></AnchorPoint></PointPlacement></LabelPlacement></TextSymbolizer></Rule> </FeatureTypeStyle></UserStyle></NamedLayer></StyledLayerDescriptor>';
+    var rasterSld = '<?xml version="1.0" encoding="ISO-8859-1"?><StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd"><NamedLayer><Name>rain</Name><UserStyle><Name>rain</Name><Title>Rain distribution</Title><FeatureTypeStyle><Rule><RasterSymbolizer><Opacity>1.0</Opacity><ColorMap><ColorMapEntry color="#FF0000" quantity="0" /><ColorMapEntry color="#FFFFFF" quantity="100"/><ColorMapEntry color="#00FF00" quantity="2000"/><ColorMapEntry color="#0000FF" quantity="5000"/></ColorMap></RasterSymbolizer></Rule></FeatureTypeStyle></UserStyle></NamedLayer></StyledLayerDescriptor>';
+
+    var format = new OpenLayers.Format.SLD({multipleSymbolizers: true});
+
+    var vectorStyle = format.read(vectorSld).namedLayers["USA states population"].userStyles[0];
+    var rasterStyle = format.read(rasterSld).namedLayers["rain"].userStyles[0];
+
+    function test_constructor(t) {
+        t.plan(4);
+
+        var store1 = Ext.create('GeoExt.data.StyleStore', {
+            storeId: 'test1',
+            model: 'GeoExt.data.RasterStyleModel'
+        });
+        
+        var store2 = Ext.create('GeoExt.data.StyleStore', {
+            storeId: 'test2',
+            model: 'GeoExt.data.VectorStyleModel'
+        });
+
+        t.ok(store1 instanceof GeoExt.data.StyleStore,
+             "ctor creates a GeoExt.data.StyleStore instance");
+
+        t.ok(store2 instanceof GeoExt.data.StyleStore,
+             "ctor creates a GeoExt.data.StyleStore instance");
+
+        t.eq(store1.model.$className, "GeoExt.data.RasterStyleModel",
+            "ctor associates the correct model type");
+
+        t.eq(store2.model.$className, "GeoExt.data.VectorStyleModel",
+            "ctor associates the correct model type");
+        
+        store1.destroyStore();
+        store2.destroyStore();        
+    }
+
+
+    function test_readRecords(t) {
+        t.plan(7);
+       
+        var vecStore = Ext.create('GeoExt.data.StyleStore',{
+            storeId: 'test3',
+            data: vectorStyle
+        });
+        
+        var rasStore = Ext.create('GeoExt.data.StyleStore',{
+            storeId: 'test4',
+            data: rasterStyle.rules[0].symbolizers[0]
+        });
+        
+        t.eq(vecStore.model.$className,"GeoExt.data.VectorStyleModel",
+            'Correct model inferred from data');
+
+        t.eq(rasStore.model.$className,"GeoExt.data.RasterStyleModel",
+            'Correct model inferred from data');
+        
+        t.eq(vecStore.getTotalCount(), 4,
+             "readRecords returns expected number of records");
+
+        t.eq(rasStore.getTotalCount(), 4,
+             "readRecords returns expected number of records");
+        
+        t.ok(vecStore.getAt(0) instanceof GeoExt.data.VectorStyleModel,
+            "correct record instance type created");
+        
+        t.ok(rasStore.getAt(0) instanceof GeoExt.data.RasterStyleModel,
+            "correct record instance type created");
+            
+        t.ok(vecStore.getAt(0).get('symbolizers')[0] instanceof OpenLayers.Symbolizer,
+            "symbolizer has been reinitialized as needed");
+        
+        vecStore.destroyStore();
+        rasStore.destroyStore();
+    }
+    
+    function test_storeToData(t) {
+        t.plan(4);
+                
+        var vecStore = Ext.create('GeoExt.data.StyleStore',{
+            storeId: 'test5',
+            data: vectorStyle,
+            autoSync: true
+        });
+        
+        var rasStore = Ext.create('GeoExt.data.StyleStore',{
+            storeId: 'test6',
+            data: rasterStyle.rules[0].symbolizers[0]
+        });
+        
+        var filter = "PERSONS < 2000";
+        var rec = vecStore.getAt(0); 
+        rec.set("filter", filter); // mapped to object with a converter
+        t.ok(rec.get('filter') instanceof OpenLayers.Filter, "CQL filter turned into a Filter instance");
+        t.eq(rec.get('filter').toString(), filter, "Filter updated correctly");
+              
+        rasStore.getAt(1).set("filter", "50000");
+        rasStore.commitChanges();
+        rec = rasStore.getAt(3);
+        t.eq(rec.get("filter"), 50000, "ColorMap entries sorted in ascending order");
+        t.eq(typeof rec.get("filter"), "number", "quantity stored as number");
+       
+        vecStore.destroyStore();
+        rasStore.destroyStore();
+    }
+    </script>
+  <body>
+  </body>
+</html>

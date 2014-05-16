@@ -1,0 +1,3 @@
+language: python
+# command to run tests
+script: ./tests/headless/casperjs-1.1-beta.1/bin/casperjs test tests/headless/run-testsuite.js

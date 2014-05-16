@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all.css" />
+    <script type="text/javascript" charset="utf-8" src="http://cdn.sencha.io/ext/gpl/4.2.1/ext-all-debug.js" ></script>
+    <script src="http://openlayers.org/api/2.13.1/OpenLayers.js"></script>
+
+    <script type="text/javascript">
+
+    Ext.Loader.setConfig({
+        disableCaching: false,
+        enabled: true,
+        paths: {
+            //Ext: "<PATH_TO_EXT_JS>/src",
+            GeoExt: '../../src/GeoExt'
+        }
+    });
+
+    Ext.Loader.syncRequire([
+        'GeoExt.form.Panel',
+        'Ext.form.TextField'
+    ]);
+
+    function test_constructor(t) {
+        t.plan(3);
+
+        /*
+         * Set up
+         */
+
+        var protocol, form;
+
+        protocol = new OpenLayers.Protocol();
+
+        form = Ext.create('GeoExt.form.Panel', {
+           renderTo: "form",
+           width: 200,
+           protocol: protocol
+        });
+
+        /*
+         * Test
+         */
+
+        t.ok(form.protocol == protocol,
+             "FormPanel constructor sets protocol in the instance");
+        t.ok(form.getForm() instanceof GeoExt.form.Basic,
+             ["FormPanel constructor creates a GeoExt.form.BasicForm as",
+              "its internal form"].join(" "));
+        t.ok(form.getForm().protocol == protocol,
+             "FormPanel constructor sets protocol in internal form");
+    }
+
+    function test_actioncomplete(t) {
+        t.plan(2);
+
+        /*
+         * Set up
+         */
+
+        var response, protocol, field, form;
+        var success = 0;
+
+        response = new OpenLayers.Protocol.Response({
+            code: OpenLayers.Protocol.Response.SUCCESS
+        });
+
+        protocol = new OpenLayers.Protocol({
+            read: function(o) {
+                o.callback.call(o.scope, response);
+                return response;
+            }
+        });
+
+        field = Ext.create('Ext.form.TextField', {
+            name: "foo0",
+            value: "bar0"
+        });
+
+        form = Ext.create('GeoExt.form.Panel', {
+           renderTo: "form",
+           width: 200,
+           protocol: protocol,
+           items: [field],
+           listeners: {
+               actioncomplete: function(form, action) {
+                   t.ok(action.response == response,
+                        "actioncomplete passed expected response");
+                   success++;
+               }
+           }
+        });
+
+        /*
+         * Test
+         */
+
+        form.search();
+        t.delay_call(1, function() {
+            t.eq(success, 1,
+                 "actioncomplete called when search request succeeds");
+        });
+    }
+
+    function test_actionfailed(t) {
+        t.plan(2);
+
+        /*
+         * Set up
+         */
+
+        var response, protocol, field, form;
+        var failure = 0;
+
+        response = new OpenLayers.Protocol.Response({
+            code: OpenLayers.Protocol.Response.FAILURE
+        });
+
+        protocol = new OpenLayers.Protocol({
+            read: function(o) {
+                o.callback.call(o.scope, response);
+                return response;
+            }
+        });
+
+        field = Ext.create('Ext.form.TextField', {
+            name: "foo0",
+            value: "bar0"
+        });
+
+        form = Ext.create('GeoExt.form.Panel', {
+           renderTo: "form",
+           width: 200,
+           protocol: protocol,
+           items: [field],
+           listeners: {
+               actionfailed: function(form, action) {
+                   t.ok(action.response == response,
+                        "actionfailed passed expected response");
+                   failure++;
+               }
+           }
+        });
+
+        /*
+         * Test
+         */
+
+        form.search();
+        t.delay_call(1, function() {
+            t.eq(failure, 1,
+                 "actionfailed called when search request fails");
+        });
+    }
+    </script>
+  <body>
+    <div id="form"></div>
+  </body>
+</html>

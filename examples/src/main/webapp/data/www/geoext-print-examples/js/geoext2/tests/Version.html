@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all.css" />
+    <script type="text/javascript" charset="utf-8" src="http://cdn.sencha.io/ext/gpl/4.2.1/ext-all-debug.js" ></script>
+    <script src="http://openlayers.org/api/2.13.1/OpenLayers.js"></script>
+    <script type="text/javascript">
+    Ext.Loader.setConfig({
+        disableCaching: false,
+        enabled: true,
+        paths: {
+            GeoExt: '../src/GeoExt'
+        }
+    });
+    // We require one random class of GeoExt, to see if it lists GeoExt.version
+    // as its dependency.
+    Ext.Loader.syncRequire(['GeoExt.panel.Map']);
+    </script>
+    <script type="text/javascript">
+    function test_geoext_Version_version(t) {
+        t.plan(2);
+
+        t.ok(GeoExt.Version.version,
+                "GeoExt.Version.version is defined.");
+        t.ok(/^v2/.test(GeoExt.Version.version),
+                "GeoExt.Version.version returns a string starting with 'v2'.");
+    }
+
+    function test_geoext_Version_environment(t) {
+        t.plan(4);
+
+        var environment = GeoExt.Version.environment;
+        t.ok(environment,
+                "GeoExt.Version.environment is defined.")
+        t.ok((/GeoExt/g).test(environment),
+                "GeoExt.Version.environment contains info about GeoExt.");
+        t.ok((/OpenLayers/g).test(environment),
+                "GeoExt.Version.environment contains info about OpenLayers.");
+        t.ok((/ExtJS/g).test(environment),
+                "GeoExt.Version.environment contains info about ExtJS.");
+    }
+
+    function test_geoext_version(t) {
+        t.plan(2);
+
+        t.ok(GeoExt.version,
+                "GeoExt.version is defined.");
+        t.eq(GeoExt.version, GeoExt.Version.version,
+                "GeoExt.version equals GeoExt.Version.version.");
+    }
+    </script>
+  <body>
+  </body>
+</html>

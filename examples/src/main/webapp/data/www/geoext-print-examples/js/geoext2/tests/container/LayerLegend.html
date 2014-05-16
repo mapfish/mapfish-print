@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all.css" />
+    <script type="text/javascript" charset="utf-8" src="http://cdn.sencha.io/ext/gpl/4.2.1/ext-all-debug.js" ></script>
+
+    <script src="http://openlayers.org/api/2.13.1/OpenLayers.js"></script>
+
+    <script type="text/javascript">
+        Ext.Loader.setConfig({
+            disableCaching: false,
+            enabled: true,
+            paths: {
+                GeoExt: '../../src/GeoExt'
+            }
+        });
+
+        Ext.Loader.syncRequire([
+            'GeoExt.data.LayerStore',
+            'GeoExt.container.LayerLegend',
+            'GeoExt.LegendImage',
+            'GeoExt.container.UrlLegend',
+            'GeoExt.container.WmsLegend',
+            'GeoExt.FeatureRenderer',
+            'GeoExt.container.VectorLegend'
+        ]);
+
+        function test_initialize(t) {
+            t.plan(3);
+            var store = Ext.create('GeoExt.data.LayerStore', {
+                data : [
+                    new OpenLayers.Layer("foo")
+                ]
+            });
+
+            var rec = store.getAt(0);
+            var legend = Ext.create("GeoExt.LayerLegend", {
+                layerRecord: rec,
+                renderTo: "legend"
+            });
+            t.ok(legend instanceof GeoExt.LayerLegend, "Instance created correctly");
+            t.eq(legend.getLabel(), "foo", "Layer text set correctly");
+            legend.destroy();
+            store.destroy();
+            store = Ext.create('GeoExt.data.LayerStore', {
+                data : [
+                    new OpenLayers.Layer("foo", {metadata: {hideTitle: true}})
+                ]
+            });
+            
+            rec = store.getAt(0);
+            legend = Ext.create("GeoExt.LayerLegend", {
+                layerRecord: rec,
+                renderTo: "legend"
+            });
+            t.eq(legend.getLabel(), "", "Layer text for records with hideTitle set to true is empty.");
+            legend.destroy();
+        }
+        
+        function test_update(t) {
+            t.plan(3);
+
+            var store = Ext.create('GeoExt.data.LayerStore', {
+                data : [
+                    new OpenLayers.Layer("foo")
+                ]
+            });
+            var rec = store.getAt(0);
+            var legend = Ext.create("GeoExt.LayerLegend", {
+                layerRecord: rec,
+                renderTo: "legend"
+            });
+            rec.set("title", "foo <i>bar</i>");
+            t.eq(legend.getLabel().toLowerCase(), "foo <i>bar</i>", "Layer text updated correctly");
+            legend.destroy();
+            store.destroy();
+
+            store = Ext.create('GeoExt.data.LayerStore', {
+                data : [
+                    new OpenLayers.Layer("foo", {metadata: {hideTitle: true}})
+                ]
+            });
+
+            rec = store.getAt(0);
+            legend = Ext.create("GeoExt.LayerLegend", {
+                layerRecord: rec,
+                renderTo: "legend"
+            });
+            rec.set("title", "bar");
+            t.eq(legend.getLabel(), "", "Layer text for record with hideTitle set to true still empty after update.")
+            legend.destroy();
+            store.destroy();
+
+            store = Ext.create('GeoExt.data.LayerStore', {
+                data : [
+                    new OpenLayers.Layer("foo")
+                ]
+            });
+            rec = store.getAt(0);
+            legend = Ext.create("GeoExt.LayerLegend", {
+                layerRecord: rec,
+                legendTitle: "bar",
+                renderTo: "legend"
+            });
+            t.eq(legend.getLabel(), "bar", "legendTitle can be used to override layer name")
+            legend.destroy();
+
+        }
+
+        function test_getTypes(t) {
+            t.plan(5);
+            var store = Ext.create('GeoExt.data.LayerStore', {
+                data : [
+                    new OpenLayers.Layer(null, {metadata: {legendURL: "foo"}})
+                ]
+            });
+            var rec = store.getAt(0);
+            t.eq(GeoExt.LayerLegend.getTypes(rec), ["gx_urllegend"], "a layer record with plain layer and legendURL is supported by gx_urllegend only.");
+
+            store.destroy();
+            store = Ext.create('GeoExt.data.LayerStore', {
+                data : [
+                    new OpenLayers.Layer.WMS(null, null, null, {metadata: {legendURL: "foo"}})
+                ]
+            });
+            rec = store.getAt(0);
+            t.eq(GeoExt.LayerLegend.getTypes(rec), ["gx_urllegend","gx_wmslegend"], "a layer record with WMS layer and legendURL is supported by gx_urllegend and gx_wmslegend, with a higher priority of gx_urllegend.");
+            t.eq(GeoExt.LayerLegend.getTypes(rec, ["gx_wmslegend"]), ["gx_wmslegend","gx_urllegend"], "a layer record with WMS layer and legendURL and gx_wmslegend as preferred type lists  gx_wmslegend first, then gx_urllegend.");
+            store.destroy();
+            store = Ext.create('GeoExt.data.LayerStore', {
+                data : [
+                    new OpenLayers.Layer.WMS()
+                ]
+            });
+            rec = store.getAt(0);
+
+            t.eq(GeoExt.LayerLegend.getTypes(rec), ["gx_wmslegend"], "a layer record with wms layer is supported by gx_wmslegend only.");
+            store.destroy();
+            store = Ext.create('GeoExt.data.LayerStore', {
+                data : [
+                    new OpenLayers.Layer.Vector()
+                ]
+            });
+            rec = store.getAt(0);
+            t.eq(GeoExt.LayerLegend.getTypes(rec), ["gx_vectorlegend"], "a layer record with vector layer is supported by gx_vectorlegend only.");
+            store.destroy();
+        }
+
+    </script>
+  </head>
+  <body>
+    <div id="legend"></div>
+  </body>
+</html>
