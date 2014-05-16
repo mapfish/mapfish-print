@@ -19,7 +19,13 @@
   -->
 
 <web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_5.xsd">
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath*:mapfish-spring-application-context.xml,/WEB-INF/mapfish-print-printer-factory.xml,classpath*:mapfish-spring-application-context-override.xml</param-value>
+    </context-param>
+
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
@@ -36,12 +42,6 @@
         <listener-class>org.mapfish.print.metrics.MapfishPrintInstrumentedFilterContextListener</listener-class>
     </listener>
 
-    <context-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>classpath*:mapfish-spring-application-context.xml
-        </param-value>
-    </context-param>
-
     <filter>
         <filter-name>characterEncodingFilter</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
@@ -55,6 +55,15 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+    <filter>
+        <filter-name>instrumentedFilter</filter-name>
+        <filter-class>com.codahale.metrics.servlet.InstrumentedFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>instrumentedFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <servlet>
         <servlet-name>metrics-servlet</servlet-name>
         <servlet-class>com.codahale.metrics.servlets.AdminServlet</servlet-class>
@@ -65,6 +74,10 @@
     <servlet-mapping>
         <servlet-name>metrics-servlet</servlet-name>
         <url-pattern>/metrics</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>metrics-servlet</servlet-name>
+        <url-pattern>/metrics/*</url-pattern>
     </servlet-mapping>
 
     <servlet>

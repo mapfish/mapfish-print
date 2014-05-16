@@ -201,7 +201,7 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
         // ensure there is a "default" app
         if (!this.configurationFiles.containsKey(DEFAULT_CONFIGURATION_FILE_KEY)) {
             final String next = this.configurationFiles.keySet().iterator().next();
-            final URI uri = this.configurationFiles.remove(next);
+            final URI uri = this.configurationFiles.get(next);
             this.configurationFiles.put(DEFAULT_CONFIGURATION_FILE_KEY, uri);
         }
     }

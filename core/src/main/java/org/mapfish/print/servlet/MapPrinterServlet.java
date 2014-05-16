@@ -48,11 +48,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.ByteArrayOutputStream;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -415,42 +419,56 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
     }
 
+
     /**
      * To get (in JSON) the information about the available formats and CO.
      *
+     * @param pretty if true then pretty print the capabilities
      * @param capabilitiesResponse the response object
      */
     @RequestMapping(value = CAPABILITIES_URL, method = RequestMethod.GET)
-    public final void getCapabilities(final HttpServletResponse capabilitiesResponse) throws ServletException,
-            IOException {
-        getCapabilities(DEFAULT_CONFIGURATION_FILE_KEY, capabilitiesResponse);
+    public final void getCapabilities(
+            @RequestParam(value = "pretty", defaultValue = "false") final boolean pretty,
+            final HttpServletResponse capabilitiesResponse) throws ServletException,
+            IOException, JSONException {
+        getCapabilities(DEFAULT_CONFIGURATION_FILE_KEY, pretty, capabilitiesResponse);
     }
 
     /**
      * To get (in JSON) the information about the available formats and CO.
      *
-     * @param app                  the name of the "app" or in other words, a mapping to the configuration file for this request.
+     * @param appId  the name of the "app" or in other words, a mapping to the configuration file for this request.
+     * @param pretty if true then pretty print the capabilities
      * @param capabilitiesResponse the response object
      */
-    @RequestMapping(value = "/{appId}" + CAPABILITIES_URL, method = RequestMethod.GET)
-    public final void getCapabilities(final String app, final HttpServletResponse capabilitiesResponse) throws ServletException,
-            IOException {
-        MapPrinter printer = null;
+    @RequestMapping(value = "/{appId:\\w+}" + CAPABILITIES_URL, method = RequestMethod.GET)
+    public final void getCapabilities(
+            @PathVariable final String appId,
+            @RequestParam(value = "pretty", defaultValue = "false") final boolean pretty,
+            final HttpServletResponse capabilitiesResponse) throws ServletException,
+            IOException, JSONException {
+        MapPrinter printer;
         try {
-            printer = this.printerFactory.create(app);
+            printer = this.printerFactory.create(appId);
         } catch (NoSuchAppException e) {
             error(capabilitiesResponse, e.getMessage(), HttpStatus.NOT_FOUND);
             return;
         }
         capabilitiesResponse.setContentType("application/json; charset=utf-8");
-        final PrintWriter writer = capabilitiesResponse.getWriter();
+        final Writer writer;
+        final ByteArrayOutputStream prettyPrintBuffer = new ByteArrayOutputStream();
+        if (pretty) {
+            writer = new OutputStreamWriter(prettyPrintBuffer, Constants.DEFAULT_CHARSET);
+        } else {
+            writer = capabilitiesResponse.getWriter();
+        }
 
         try {
             JSONWriter json = new JSONWriter(writer);
             try {
                 json.object();
                 {
-                    json.key(JSON_APP).value(app);
+                    json.key(JSON_APP).value(appId);
                     printer.printClientConfig(json);
                 }
                 {
@@ -469,6 +487,11 @@ public class MapPrinterServlet extends BaseMapServlet {
         } finally {
             writer.close();
         }
+
+        if (pretty) {
+            final JSONObject jsonObject = new JSONObject(new String(prettyPrintBuffer.toByteArray(), Constants.DEFAULT_CHARSET));
+            capabilitiesResponse.getOutputStream().print(jsonObject.toString(JSON_INDENT_FACTOR));
+    }
     }
 
 
@@ -497,7 +520,6 @@ public class MapPrinterServlet extends BaseMapServlet {
 
         try {
             final MapPrinter mapPrinter = this.printerFactory.create(appId);
-            getExampleResponse.setContentType("text/plain; charset=utf-8");
             final File requestDataFile = new File(mapPrinter.getConfiguration().getDirectory(), "requestData.json");
             if (requestDataFile.exists()) {
                 String requestData = Files.toString(requestDataFile, Constants.DEFAULT_CHARSET);
@@ -506,8 +528,12 @@ public class MapPrinterServlet extends BaseMapServlet {
                     jsonObject.remove(JSON_OUTPUT_FORMAT);
                     jsonObject.remove(JSON_APP);
                     requestData = jsonObject.toString(JSON_INDENT_FACTOR);
+
+                    getExampleResponse.setContentType("application/json; charset=utf-8");
                 } catch (JSONException e) {
                     // ignore, return raw text;
+
+                    getExampleResponse.setContentType("text/plain; charset=utf-8");
                 }
                 getExampleResponse.getOutputStream().write(requestData.getBytes(Constants.DEFAULT_CHARSET));
             } else {
