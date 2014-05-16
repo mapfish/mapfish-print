@@ -1,0 +1,13 @@
+Source: mapfish-print-core
+Section: web
+Priority: optional
+Version: 42
+Maintainer: Jesse Eichar <jesse.eichar@camptocamp.com>
+Homepage: http://www.mapfish.org/doc/print/index.html
+Vcs-Git: https://github.com/mapfish/mapfish-print.git
+Vcs-Browser: https://github.com/mapfish/mapfish-print
+Package: org.mapfish.print
+Architecture: all
+Depends:
+Description: Web application allowing the printing of maps in reports.
+  A component of http://www.mapfish.org for printing templated cartographic maps. This module is the java serverside module. It works well with the mapfish print javascript module. http://www.mapfish.org/doc/print/

@@ -75,7 +75,7 @@
 
     <servlet-mapping>
         <servlet-name>mapfish-print</servlet-name>
-        <url-pattern>/pdf/*</url-pattern>
+        <url-pattern>/print/*</url-pattern>
     </servlet-mapping>
 
     <servlet>

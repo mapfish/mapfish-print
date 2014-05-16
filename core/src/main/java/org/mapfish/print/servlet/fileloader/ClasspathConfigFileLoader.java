@@ -45,6 +45,19 @@ public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
     private static final int PREFIX_LENGTH = (PREFIX + "://").length();
 
     @Override
+    public Optional<File> toFile(final URI fileUri) {
+        final Optional<URL> urlOptional = loadResources(fileUri);
+        if (urlOptional.isPresent() && urlOptional.get().getProtocol().equalsIgnoreCase(FileConfigFileLoader.PREFIX)) {
+            try {
+                return Optional.of(new File(urlOptional.get().toURI()));
+            } catch (URISyntaxException e) {
+                return Optional.absent();
+            }
+        }
+        return Optional.absent();
+    }
+
+    @Override
     public String getUriScheme() {
         return PREFIX;
     }
@@ -160,10 +173,6 @@ public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
             final Enumeration<URL> resources = FileConfigFileLoader.class.getClassLoader().getResources(path);
             if (resources.hasMoreElements()) {
                 URL resource = resources.nextElement();
-                if (resources.hasMoreElements()) {
-                    throw new IllegalArgumentException(fileURI + " identifies multiple files, likely there is a file with the same name" +
-                                                       " in multiple jars.  Please rename the file.");
-                }
                 return Optional.of(resource);
             }
         } catch (IOException e) {

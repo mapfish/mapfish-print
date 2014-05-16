@@ -1,5 +1,4 @@
 {
-  "outputFormat": "png",
   "layout" : "A4 Landscape",
   "outputFilename": "test\nreport-${yyyy}",
   "attributes": {

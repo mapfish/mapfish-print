@@ -31,18 +31,19 @@ import java.util.List;
 /**
  * A type of attribute whose value is a primitive type.
  * <ul>
- *     <li>{@link java.lang.String}</li>
- *     <li>{@link java.lang.Integer}</li>
- *     <li>{@link java.lang.Float}</li>
- *     <li>{@link java.lang.Double}</li>
- *     <li>{@link java.lang.Short}</li>
- *     <li>{@link java.lang.Boolean}</li>
- *     <li>{@link java.lang.Character}</li>
- *     <li>{@link java.lang.Byte}</li>
- *     <li>{@link java.lang.Enum}</li>
+ * <li>{@link java.lang.String}</li>
+ * <li>{@link java.lang.Integer}</li>
+ * <li>{@link java.lang.Float}</li>
+ * <li>{@link java.lang.Double}</li>
+ * <li>{@link java.lang.Short}</li>
+ * <li>{@link java.lang.Boolean}</li>
+ * <li>{@link java.lang.Character}</li>
+ * <li>{@link java.lang.Byte}</li>
+ * <li>{@link java.lang.Enum}</li>
  * </ul>
- * @author Jesse on 4/9/2014.
+ *
  * @param <Value> The value type of the attribute
+ * @author Jesse on 4/9/2014.
  */
 public abstract class PrimitiveAttribute<Value> implements Attribute {
     private Class<Value> valueClass;
@@ -69,9 +70,9 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
     @Override
     public final void printClientConfig(final JSONWriter json, final Template template) throws JSONException {
         json.key("name").value(MapfishParser.stringRepresentation(this.valueClass));
-//        json.key("clientOptions");
-//        addMapToJSON(this.clientOptions, json);
-//        json.endObject();
+        if (this.clientOptions != null) {
+            addMapToJSON("clientOptions", this.clientOptions, json);
+        }
     }
 
     /**
@@ -88,31 +89,35 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
     /**
      * Utility method for adding a map of data to the json.
      *
-     * @param map  the map of data to add to the json writer.
-     * @param json writer to write to.
+     * @param jsonKey the json key of the object to be added
+     * @param map     the map of data to add to the json writer.
+     * @param json    writer to write to.
      * @throws JSONException
      */
     @SuppressWarnings("unchecked")
-    protected final void addMapToJSON(final LinkedHashMap<String, ?> map, final JSONWriter json) throws JSONException {
+    protected final void addMapToJSON(final String jsonKey, final LinkedHashMap<String, ?> map, final JSONWriter json)
+            throws JSONException {
+        json.key(jsonKey);
         json.object();
-        for (String key : map.keySet()) {
-            Object value = map.get(key);
-            if (value instanceof LinkedHashMap) {
-                json.key(key);
-                addMapToJSON((LinkedHashMap<String, ?>) value, json);
-            } else if (value instanceof Collection<?>) {
-                json.key(key);
-                json.array();
-                for (Object av : (Collection<?>) value) {
-                    json.value(av);
+        if (map != null) {
+            for (String key : map.keySet()) {
+                Object value = map.get(key);
+                if (value instanceof LinkedHashMap) {
+                    addMapToJSON(key, (LinkedHashMap<String, ?>) value, json);
+                } else if (value instanceof Collection<?>) {
+                    json.key(key);
+                    json.array();
+                    for (Object av : (Collection<?>) value) {
+                        json.value(av);
+                    }
+                    json.endArray();
+                } else if (value instanceof Integer) {
+                    json.key(key).value(((Integer) value).intValue());
+                } else if (value instanceof Double) {
+                    json.key(key).value(((Double) value).doubleValue());
+                } else {
+                    json.key(key).value(value);
                 }
-                json.endArray();
-            } else if (value instanceof Integer) {
-                json.key(key).value(((Integer) value).intValue());
-            } else if (value instanceof Double) {
-                json.key(key).value(((Double) value).doubleValue());
-            } else {
-                json.key(key).value(value);
             }
         }
         json.endObject();

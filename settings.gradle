@@ -1,2 +1,1 @@
-include 'examples', 'core'
-// include 'e2e-tests'
+include 'examples', 'core', 'debian'

@@ -119,21 +119,21 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
             }
 
             json.key("clientParams");
+            json.object();
             final Collection<Field> mutableFields = ParserUtils.getAttributes(exampleValue.getClass(),
                     ParserUtils.FILTER_ONLY_REQUIRED_ATTRIBUTES);
             if (!mutableFields.isEmpty()) {
-                json.object();
                 for (Field attribute : mutableFields) {
                     json.key(attribute.getName()).value(stringRepresentation(attribute.getType()));
                 }
-                json.endObject();
             }
+            json.endObject();
 
             json.key("clientOptions");
+            json.object();
             final Collection<Field> hasDefaultFields = ParserUtils.getAttributes(exampleValue.getClass(),
                     ParserUtils.FILTER_HAS_DEFAULT_ATTRIBUTES);
             if (!hasDefaultFields.isEmpty()) {
-                json.object();
                 for (Field attribute : hasDefaultFields) {
                     json.key(attribute.getName());
                     json.object();
@@ -141,8 +141,8 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
                     json.key("default").value(attribute.get(exampleValue));
                     json.endObject();
                 }
-                json.endObject();
             }
+            json.endObject();
         } catch (IllegalAccessException e) {
             throw new Error(e);
         }

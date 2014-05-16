@@ -21,73 +21,159 @@
 <head>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
     <script type="text/javascript">
+        function changeFormat() {
+
+            var appId = $('#selectSpec').val();
+            var format = $('#selectFormat').val();
+            $('#spec').attr('action', 'print/' + appId + "/buildreport." + format);
+        }
+        function copyRequestToTextArea() {
+            var appId = $('#selectSpec').val();
+
+            $.ajax({
+                type: 'GET',
+                url: 'print/' + appId + '/capabilities.json',
+                success: function (data) {
+                    var i = 0;
+                    var formatSelect = $('#selectFormat');
+                    formatSelect.empty();
+                    var select = data.formats[0];
+                    for(i = 0; i < data.formats.length; i++) {
+                        if (data.formats[i] === 'pdf') {
+                            select = data.formats[i];
+                        }
+                        formatSelect.append(new Option(data.formats[i], data.formats[i]));
+                    }
+
+                    formatSelect.val(select);
+                    $('#spec').attr('action', 'print/' + appId + "/buildreport." + data.formats[0]);
+                }
+            });
+            $.ajax({
+                type: 'GET',
+                url: 'print/' + appId + '/exampleRequest.json',
+                success: function (data) {
+                    $('#specText').val(data);
+                    validateJSON()
+                }
+            });
+
+        }
+        function disableUI(disabled) {
+            $('#specText').attr('disabled', disabled);
+            $('#selectSpec').attr('disabled', disabled);
+            $('#selectFormat').attr('disabled', disabled);
+            $('#CreateAndGetPrint').attr('disabled', disabled);
+            $('#PostAndPollPrint').attr('disabled', disabled);
+        }
+
+        function validateJSON() {
+            $('#messages').text("");
+            var data = $('#specText').val();
+            try {
+                $.parseJSON(data)
+                $('#validation').text("");
+
+                $('#CreateAndGetPrint').attr('disabled', false);
+                $('#PostAndPollPrint').attr('disabled', false);
+            } catch (e) {
+                $('#validation').text("JSON in text area is invalid, It must be fixed before posting request");
+
+                $('#CreateAndGetPrint').attr('disabled', true);
+                $('#PostAndPollPrint').attr('disabled', true);
+            }
+        }
         function post() {
-            var data = $('#spec').serialize(true);
+            var data = encodeURIComponent($('#specText').val());
+            var appId = $('#selectSpec').val();
+            var format = $('#selectFormat').val();
+            disableUI(true)
+
+            var startTime = new Date().getTime();
+            $('#messages').text('Waiting for report...');
+
             $.ajax({
                 type: 'POST',
-                url: 'pdf/create.json',
+                url: 'print/' + appId + '/report.' + format,
                 data: data,
                 success: function (data) {
-                    var result = jQuery.parseJSON(data)
-                    location.href = result.getURL;
+                    downloadWhenReady(startTime, $.parseJSON(data));
+                },
+                error: function (data) {
+                    $('#messages').text('Error creating report: ' + data.statusText);
+                    disableUI(false);
                 },
                 dataType: 'application/json'
             });
 
         }
+        function updateWaitingMsg(startTime, data) {
+            var elapsed = Math.floor((new Date().getTime() - startTime) / 100);
+            var time = ''
+            if (elapsed > 5) {
+                time = (elapsed / 10) +" sec";
+            }
+            $('#messages').text('Waiting for report '+ time + ": " + data.ref );
+        }
+        function downloadWhenReady(startTime, data) {
+            if ((new Date().getTime() - startTime) > 30000) {
+                $('#messages').text('Gave up waiting after 30 seconds')
+                disableUI(false);
+            } else {
+                updateWaitingMsg(startTime, data);
+                setTimeout(function () {
+                    $.getJSON(data.statusURL, function (statusData) {
+                        if (!statusData.done) {
+                            downloadWhenReady(startTime, data);
+                        } else {
+                            window.location = statusData.downloadURL;
+                            $('#messages').text('Downloading: '+data.ref);
+                            disableUI(false);
+
+                        }
+                    }, function error(data) {$('#messages').text('Error occurred requesting status');});
+                }, 500);
+            }
+        }
+        function init() {
+            $.ajax({
+                type: 'GET',
+                url: 'print/apps.json',
+                success: function (data) {
+                    var specSelect = $('#selectSpec');
+                    var i = 0;
+                    for (i = 0; i < data.length; i++) {
+                        specSelect.append(new Option(data[i], data[i]));
+                    }
+
+                    specSelect.val(data[0]);
+
+                    copyRequestToTextArea();
+                }
+            });
+        }
     </script>
 </head>
-<body>
+<body onload="init()">
 <h1>Test page</h1>
+<h2><span id="messages"></span></h2>
+<h3><span id="validation" style="color:red"></span></h3>
 
-<form id="spec" action="pdf/print.pdf">
-    <textarea name="spec" cols="80" rows="30">
-        {
-        layout: 'A4 portrait',
-        title: 'A simple example',
-        srs: 'EPSG:4326',
-        units: 'dd',
-        outputFilename: 'mapfish-print',
-        outputFormat: 'pdf',
-        layers: [
-        {
-        type: 'WMS',
-        format: 'image/png',
-        layers: ['basic'],
-        baseURL: 'http://labs.metacarta.com/wms/vmap0'
-        }
-        ],
-        pages: [
-        {
-        center: [6, 45.5],
-        scale: 4000000,
-        dpi: 190,
-        mapTitle: "First map",
-        comment: "The \"routes\" layer is not shown (the scale is too small)",
-        data: [
-        {id:1, name: 'blah', icon: 'icon_pan'},
-        {id:2, name: 'blip', icon: 'icon_zoomin'}
-        ]
-        },
-        {
-        center: [6.9, 46.2],
-        scale: 500000,
-        dpi: 190,
-        mapTitle: "Second map",
-        comment: "This is a zoomed in version of the first map. Since the scale is more appropriate, we show the \"routes\" layer.",
-        data: [
-        {id:1, name: 'blah', icon: 'icon_pan'},
-        {id:2, name: 'blip', icon: 'icon_zoomin'}
-        ]
-        }
-        ]
-        }
-    </textarea><br>
-    <button name="Print">Get Print</button>
-    <button name="Post Print" type="button" onclick="javascript:post()">Post Print</button>
+<form id="spec" action="print/buildreport.pdf" method="post">
+    <textarea id="specText" name="spec" style="width: 100%" rows="30" oninput="validateJSON()">
+
+    </textarea>
+    <br>
+    <select id="selectSpec" onchange="copyRequestToTextArea()">
+    </select>
+    <select id="selectFormat" onchange="changeFormat()">
+    </select>
+    <br>
+    <button id="CreateAndGetPrint" name="Create And Get Print" type="submit" >Create And Get Print</button>
+    <button id = "PostAndPollPrint" name="Post and Poll Print" type="button" onclick="javascript:post()">Post and Poll Print</button>
 </form>
 <p>
-    To get informations: <a href="pdf/info.json">printInfo</a>
+    To get informations: <a href="print/capabilities.json">printInfo</a>
 </p>
 </body>
 </html>

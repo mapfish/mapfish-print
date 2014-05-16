@@ -46,6 +46,12 @@ public class ServletConfigFileLoaderTest extends AbstractMapfishSpringTest {
     private ServletConfigFileLoader loader;
 
     private String configFileUriString = "servlet:///org/mapfish/print/servlet/fileloader/config.yaml";
+    @Test
+    public void testToFile() throws Exception {
+        assertFalse(loader.toFile(new URI("file://blahblahblah")).isPresent());
+        assertTrue(loader.toFile(new URI(configFileUriString)).isPresent());
+        assertTrue(loader.toFile(new URI("servlet:///org/mapfish/print/servlet/fileloader/")).isPresent());
+    }
 
     @Test
     public void testLastModified() throws Exception {

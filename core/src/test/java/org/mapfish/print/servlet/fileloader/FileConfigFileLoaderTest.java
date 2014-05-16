@@ -39,6 +39,12 @@ public class FileConfigFileLoaderTest extends AbstractMapfishSpringTest {
 
     @Autowired
     private FileConfigFileLoader loader;
+    @Test
+    public void testToFile() throws Exception {
+        assertFalse(loader.toFile(new URI("servlet:///blahblahblah")).isPresent());
+        assertTrue(loader.toFile(CONFIG_FILE.toURI()).isPresent());
+        assertTrue(loader.toFile(CONFIG_FILE.getParentFile().toURI()).isPresent());
+    }
 
     @Test
     public void testLastModified() throws Exception {

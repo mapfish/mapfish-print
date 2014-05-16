@@ -21,6 +21,7 @@ package org.mapfish.print.servlet;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import com.google.common.io.Files;
 import com.vividsolutions.jts.util.Assert;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
@@ -91,8 +92,9 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
         URI configFile = this.configurationFiles.get(finalApp);
 
         if (configFile == null) {
-            throw new NoSuchAppException("There is no configurationFile registered in the " + getClass().getName() + " bean with the id: " +
-                                       "'" + configFile + "'");
+            throw new NoSuchAppException("There is no configurationFile registered in the " + getClass().getName() + " bean with the " +
+                                         "id: " +
+                                         "'" + configFile + "'");
         }
 
         final long lastModified;
@@ -158,6 +160,49 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
 
         if (this.configFileLoader != null) {
             this.validateConfigurationFiles();
+        }
+    }
+
+    /**
+     * Set a single directory that contains one or more subdirectories, each one that contains a config.yaml file will
+     * be considered a print app.
+     *
+     * This can be called multiple times and each directory will add to the apps found in the other directories.  However
+     * the appId is based on the directory names so if there are 2 directories with the same name the second will overwrite the
+     * first encounter.
+     *
+     * @param directory the root directory containing the sub-app-directories.  This must resolve to a file with the
+     */
+    public final void setAppsRootDirectory(final String directory) throws URISyntaxException {
+
+        final Iterable<File> children;
+
+        if (!directory.contains(":/")) {
+            children = Files.fileTreeTraverser().children(new File(directory));
+        } else {
+            final Optional<File> fileOptional = this.configFileLoader.toFile(new URI(directory));
+            if (fileOptional.isPresent()) {
+                children = Files.fileTreeTraverser().children(fileOptional.get());
+            } else {
+                throw new IllegalArgumentException(directory + " does not refer to a file on the current system.");
+            }
+        }
+        for (File child : children) {
+            final File configFile = new File(child, "config.yaml");
+            if (configFile.exists()) {
+                this.configurationFiles.put(child.getName(), configFile.toURI());
+            }
+        }
+        if (this.configurationFiles.isEmpty()) {
+            throw new IllegalArgumentException(directory + " is an emptry directory.  There must be at least one subdirectory " +
+                                               "containing a config.yaml file");
+        }
+
+        // ensure there is a "default" app
+        if (!this.configurationFiles.containsKey(DEFAULT_CONFIGURATION_FILE_KEY)) {
+            final String next = this.configurationFiles.keySet().iterator().next();
+            final URI uri = this.configurationFiles.remove(next);
+            this.configurationFiles.put(DEFAULT_CONFIGURATION_FILE_KEY, uri);
         }
     }
 }

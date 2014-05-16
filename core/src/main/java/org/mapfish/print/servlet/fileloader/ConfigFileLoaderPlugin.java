@@ -21,6 +21,7 @@ package org.mapfish.print.servlet.fileloader;
 
 import com.google.common.base.Optional;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 
@@ -34,6 +35,13 @@ import java.net.URI;
  * @author Jesse on 4/27/2014.
  */
 public interface ConfigFileLoaderPlugin {
+
+    /**
+     * Return the file object the uri refers to if it refers to a file.  Otherwise Optional.absent().
+     *
+     * @param fileUri the uri to use to resolve to a file (or not).
+     */
+    Optional<File> toFile(URI fileUri);
 
     /**
      * Returns the URI scheme that this loader supports.

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+# Any actions that need to be taken after the debian package has been ran can be put here

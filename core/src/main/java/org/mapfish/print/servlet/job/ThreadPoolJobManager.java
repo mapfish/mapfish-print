@@ -181,7 +181,7 @@ public class ThreadPoolJobManager implements JobManager {
 
     @Override
     public final boolean isDone(final String referenceId) {
-        boolean done = this.registry.containsKey(REPORT_URI_PREFIX + referenceId);
+        boolean done = getCompletedPrintJob(referenceId).isPresent();
         if (!done) {
             this.registry.put(LAST_POLL + referenceId, new Date().getTime());
         }
@@ -195,7 +195,7 @@ public class ThreadPoolJobManager implements JobManager {
 
     @Override
     public final long getAverageTimeSpentPrinting() {
-        return this.registry.opt(TOTAL_PRINT_TIME, 0L) / this.registry.opt(NB_PRINT_DONE, 1L);
+        return this.registry.opt(TOTAL_PRINT_TIME, 0L) / this.registry.opt(NB_PRINT_DONE, 1).longValue();
     }
 
     @Override

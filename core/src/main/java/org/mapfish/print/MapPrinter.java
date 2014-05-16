@@ -26,6 +26,7 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.output.OutputFormat;
+import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -35,6 +36,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * The main class for printing maps. Will parse the spec, create the PDF
@@ -45,6 +49,7 @@ import java.util.Map;
  */
 public class MapPrinter {
 
+    private static final String OUTPUT_FORMAT_BEAN_NAME_ENDING = "OutputFormat";
     private Configuration configuration;
     @Autowired
     private Map<String, OutputFormat> outputFormat;
@@ -109,8 +114,8 @@ public class MapPrinter {
      * @param specJson the request json from the client
      */
     public final OutputFormat getOutputFormat(final PJsonObject specJson) {
-        String format = specJson.getString("outputFormat");
-        return this.outputFormat.get(format + "OutputFormat");
+        String format = specJson.getString(MapPrinterServlet.JSON_OUTPUT_FORMAT);
+        return this.outputFormat.get(format + OUTPUT_FORMAT_BEAN_NAME_ENDING);
     }
 
     /**
@@ -142,5 +147,16 @@ public class MapPrinter {
     public final String getOutputFilename(final String layout, final String defaultName) {
         final String name = this.configuration.getOutputFilename(layout);
         return name == null ? defaultName : name;
+    }
+
+    /**
+     * Return the available format ids.
+     */
+    public final Set<String> getOutputFormatsNames() {
+        SortedSet<String> formats = new TreeSet<String>();
+        for (String formatBeanName : this.outputFormat.keySet()) {
+            formats.add(formatBeanName.substring(0, formatBeanName.indexOf(OUTPUT_FORMAT_BEAN_NAME_ENDING)));
+        }
+        return formats;
     }
 }
