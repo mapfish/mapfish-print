@@ -3,7 +3,6 @@ templates:
   main: !template
     reportTemplate: simpleReport.jrxml
     attributes:
-      dependence: !integer {}
       tableList: !tableList {}
     processors:
     - !prepareTableList

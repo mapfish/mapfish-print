@@ -2,7 +2,6 @@
   "layout": "main",
   "outputFormat": "pdf",
   "attributes": {
-    "dependence": 1,
     "map": {
       "bbox": [97.5, -0.5, 107.5, 1.5],
       "projection": "CRS:84",

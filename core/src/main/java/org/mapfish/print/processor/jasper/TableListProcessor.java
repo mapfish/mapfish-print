@@ -254,14 +254,9 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Inp
          * Resulting list of values for the table in the jasper report.
          */
         public final List<Values> tableList;
-        /**
-         * Just to create a dependency with a report builder.
-         */
-        public final int dependence;
 
         private Output(final List<Values> tableList) {
             this.tableList = tableList;
-            this.dependence = 1;
         }
     }
 }

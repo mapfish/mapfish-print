@@ -6,10 +6,8 @@ templates:
     reportTemplate: "dummy.jxml"
     attributes:
       legend: !legend {}
-      dependence: !integer {}
     processors:
     - !reportBuilder # compile all reports in current directory
-      inputMapper: {dependence: dependence}
       directory: '.'
     - !prepareLegend # create a datasource for the report with the 'legend' attribute
       inputMapper: {legend: legend}

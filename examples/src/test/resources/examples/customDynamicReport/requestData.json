@@ -3,7 +3,6 @@
     "outputFormat": "pdf",
     "attributes": {
         "number": 45,
-        "dependence": 1,
         "name": "Hello",
         "description": "Hello every body !",
         "length": 45.123,

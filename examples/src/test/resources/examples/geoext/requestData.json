@@ -2,7 +2,6 @@
     "layout": "A4 portrait",
     "outputFormat": "pdf",
     "attributes": {
-        "dependence": 1,
         "map": {
             "bbox": [100, -1, 106, 1.538],
             "projection": "CRS:84",
