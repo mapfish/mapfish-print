@@ -20,9 +20,9 @@
 package org.mapfish.print.servlet;
 
 import com.google.common.base.Function;
-
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
 import org.json.JSONArray;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -41,11 +41,13 @@ import org.springframework.test.context.ContextConfiguration;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Set;
+
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
@@ -254,6 +256,34 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         final String atHostRefSegment = "@" + this.servletInfo.getServletId();
         assertTrue(ref.endsWith(atHostRefSegment));
         assertTrue(ref.indexOf(atHostRefSegment) > 0);
+        waitForFailure(ref);
+    }
+
+    @Test(timeout = 60000)
+    public void testCreateReport_Failure_InvalidFormat() throws Exception {
+        setUpConfigFiles();
+
+        final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
+        final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+
+        final PJsonObject requestJson = parseJSONObjectFromFile(MapPrinterServletTest.class, "requestData.json");
+        String requestData = "{" + requestJson.toString() + "}";
+        servlet.createReport("docx", requestData, servletCreateRequest, servletCreateResponse);
+        final PJsonObject createResponseJson = parseJSONObjectFromString(servletCreateResponse.getContentAsString());
+        assertTrue(createResponseJson.has(MapPrinterServlet.JSON_PRINT_JOB_REF));
+        assertEquals(HttpStatus.OK.value(), servletCreateResponse.getStatus());
+
+        String ref = createResponseJson.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
+
+        final String atHostRefSegment = "@" + this.servletInfo.getServletId();
+        assertTrue(ref.endsWith(atHostRefSegment));
+        assertTrue(ref.indexOf(atHostRefSegment) > 0);
+        waitForFailure(ref);
+    }
+
+    private void waitForFailure(String ref) throws IOException,
+            ServletException, InterruptedException,
+            UnsupportedEncodingException {
         while (true) {
             MockHttpServletResponse servletGetReportResponse = new MockHttpServletResponse();
             servlet.getReport(ref, false, servletGetReportResponse);

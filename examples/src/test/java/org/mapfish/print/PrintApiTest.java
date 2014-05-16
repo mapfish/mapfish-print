@@ -229,14 +229,13 @@ public class PrintApiTest extends AbstractApiTest {
         // check status
         request = getPrintRequest(MapPrinterServlet.STATUS_URL + "/" + ref + ".json", HttpMethod.GET);
         response = request.execute();
-        // TODO currently the errorMessage is not set, which causes an exception
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//        assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
-//        
-//        responseAsText = getBodyAsText(response);
-//        JSONObject statusResult = new JSONObject(responseAsText);
-//        
-//        assertTrue(statusResult.has(MapPrinterServlet.JSON_ERROR));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
+        
+        responseAsText = getBodyAsText(response);
+        JSONObject statusResult = new JSONObject(responseAsText);
+        
+        assertTrue(statusResult.has(MapPrinterServlet.JSON_ERROR));
     }
 
     @Test(timeout = 60000)

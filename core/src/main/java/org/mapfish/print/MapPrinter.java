@@ -115,6 +115,11 @@ public class MapPrinter {
      */
     public final OutputFormat getOutputFormat(final PJsonObject specJson) {
         String format = specJson.getString(MapPrinterServlet.JSON_OUTPUT_FORMAT);
+        
+        if (!this.outputFormat.containsKey(format + OUTPUT_FORMAT_BEAN_NAME_ENDING)) {
+            throw new RuntimeException("Format '" + format + "' is not supported.");
+        }
+        
         return this.outputFormat.get(format + OUTPUT_FORMAT_BEAN_NAME_ENDING);
     }
 
