@@ -35,14 +35,12 @@ templates:
   #===========================================================================
     reportTemplate: simpleReport.jrxml
     attributes:
-      dependence: !integer {}
       map: !map
         maxDpi: 400
         width: 470
         height: 330
     processors:
     - !reportBuilder # compile all reports in current directory
-      inputMapper: {dependence: dependence}
       directory: '.'
     - !createMap
       inputMapper: {map: map}

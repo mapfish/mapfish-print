@@ -345,7 +345,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         final PObject mainLayout = layouts.getObject(0);
         assertEquals("A4 Landscape", mainLayout.getString("name"));
         assertTrue(mainLayout.has("attributes"));
-        assertEquals(3, mainLayout.getArray("attributes").size());
+        assertEquals(2, mainLayout.getArray("attributes").size());
         assertEquals("MapAttributeValues", mainLayout.getArray("attributes").getObject(1).getString("name"));
         assertTrue(getInfoJson.has("formats"));
         final PJsonArray formats = getInfoJson.getJSONArray("formats");
@@ -373,7 +373,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         final PObject mainLayout = layouts.getObject(0);
         assertEquals("A4 Landscape", mainLayout.getString("name"));
         assertTrue(mainLayout.has("attributes"));
-        assertEquals(3, mainLayout.getArray("attributes").size());
+        assertEquals(2, mainLayout.getArray("attributes").size());
         assertEquals("MapAttributeValues", mainLayout.getArray("attributes").getObject(1).getString("name"));
         assertTrue(getInfoJson.has("formats"));
         final PJsonArray formats = getInfoJson.getJSONArray("formats");

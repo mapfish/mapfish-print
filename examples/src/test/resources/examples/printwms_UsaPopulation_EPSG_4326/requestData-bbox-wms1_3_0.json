@@ -3,7 +3,6 @@
 	"outputFormat": "pdf",
 	"attributes": 
 	{
-		"dependence": 1,
 		"map": 
 		{
 			"projection": "EPSG:4326",

@@ -144,10 +144,6 @@ public class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.I
      * The input parameter object for {@link JasperReportBuilder}.
      */
     public static final class Input {
-        /**
-         * Just to create a dependency with a dynamic report creator.
-         */
-        public int dependence;
     }
 
     @Override

@@ -4,7 +4,6 @@ templates:
   A4 Landscape: !template
     reportTemplate: MapOnly_A4.jrxml
     attributes:
-      dependence: !integer {}
       geojsonMap: !map
         width: 802
         height: 500

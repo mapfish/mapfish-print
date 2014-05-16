@@ -23,14 +23,12 @@ templates:
   A4 portrait: !template
     reportTemplate: simpleReport.jrxml
     attributes:
-      dependence: !integer {}
       map: !map
         maxDpi: 400
         width: 780
         height: 330
     processors:
     - !reportBuilder # compile all reports in current directory
-      inputMapper: {dependence: dependence}
       directory: '.'
     - !createMap
       inputMapper: {map: map}

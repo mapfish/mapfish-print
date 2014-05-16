@@ -3,7 +3,6 @@ templates:
   main: !template
     reportTemplate: simple-map.jrxml
     attributes:
-      dependence: !integer {}
       map: !map
         width: 500
         height: 100
