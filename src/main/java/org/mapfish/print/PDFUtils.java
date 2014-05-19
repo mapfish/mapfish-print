@@ -19,6 +19,8 @@
 
 package org.mapfish.print;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.DocumentException;
@@ -254,6 +256,8 @@ public class PDFUtils {
                     }
                 } else {
                     GetMethod getMethod = null;
+                    MetricRegistry registry = context.getConfig().getMetricRegistry();
+                    final Timer.Context timer = registry.timer("http_" + uri.getAuthority()).time();
                     try {
                         getMethod = new GetMethod(uri.toString());
                         for (Map.Entry<String, String> entry : context.getHeaders().entrySet()) {
@@ -272,6 +276,7 @@ public class PDFUtils {
                         }
                         data = getMethod.getResponseBody();
                     } finally {
+                        timer.close();
                         if (getMethod != null) {
                             getMethod.releaseConnection();
                         }

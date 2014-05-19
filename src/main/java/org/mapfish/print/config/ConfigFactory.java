@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import com.codahale.metrics.MetricRegistry;
 import org.ho.yaml.CustomYamlConfig;
 import org.ho.yaml.YamlConfig;
 import org.mapfish.print.ThreadResources;
@@ -23,6 +24,9 @@ public class ConfigFactory {
     private MapReaderFactoryFinder mapReaderFactoryFinder;
     @Autowired
     private ThreadResources threadResources;
+    @Autowired
+    private MetricRegistry metricRegistry;
+
 
     public ConfigFactory() {
     }
@@ -43,6 +47,7 @@ public class ConfigFactory {
         result.setOutputFactory(outputFactoryFinder);
         result.setMapReaderFactoryFinder(mapReaderFactoryFinder);
         result.setThreadResources(this.threadResources);
+        result.setMetricRegistry(this.metricRegistry);
         result.validate();
         return result;
     }
@@ -53,6 +58,7 @@ public class ConfigFactory {
         result.setOutputFactory(outputFactoryFinder);
         result.setMapReaderFactoryFinder(mapReaderFactoryFinder);
         result.setThreadResources(this.threadResources);
+        result.setMetricRegistry(this.metricRegistry);
         result.validate();
         return result;
     }
@@ -63,6 +69,7 @@ public class ConfigFactory {
         result.setOutputFactory(outputFactoryFinder);
         result.setMapReaderFactoryFinder(mapReaderFactoryFinder);
         result.setThreadResources(this.threadResources);
+        result.setMetricRegistry(this.metricRegistry);
         result.validate();
         return result;
     }

@@ -20,7 +20,7 @@
 package org.mapfish.print.config;
 
 //import org.apache.commons.httpclient.HostConfiguration;
-
+import com.codahale.metrics.MetricRegistry;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -114,6 +114,7 @@ public class Config implements Closeable {
     private MapReaderFactoryFinder mapReaderFactoryFinder;
     private String brokenUrlPlaceholder = Constants.ImagePlaceHolderConstants.THROW;
     private String proxyBaseUrl;
+    private MetricRegistry metricRegistry;
 
     public Config() {
         hosts.add(new LocalHostMatcher());
@@ -590,15 +591,23 @@ public class Config implements Closeable {
         return maxPrintTimeBeforeWarningInSeconds;
     }
 
-    public void setMaxPrintTimeBeforeWarningInSeconds(int maxPrintTimeBeforeWarningInSeconds) {
-        this.maxPrintTimeBeforeWarningInSeconds = maxPrintTimeBeforeWarningInSeconds;
-    }
-
     public int getPrintTimeoutMinutes() {
         return printTimeoutMinutes;
     }
 
     public void setPrintTimeoutMinutes(int printTimeoutMinutes) {
         this.printTimeoutMinutes = printTimeoutMinutes;
+    }
+
+    public void setMaxPrintTimeBeforeWarningInSeconds(int maxPrintTimeBeforeWarningInSeconds) {
+        this.maxPrintTimeBeforeWarningInSeconds = maxPrintTimeBeforeWarningInSeconds;
+    }
+
+    public void setMetricRegistry(MetricRegistry metricRegistry) {
+        this.metricRegistry = metricRegistry;
+    }
+
+    public MetricRegistry getMetricRegistry() {
+        return metricRegistry;
     }
 }

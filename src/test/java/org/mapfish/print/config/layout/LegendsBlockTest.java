@@ -1,5 +1,6 @@
 package org.mapfish.print.config.layout;
 
+import com.codahale.metrics.MetricRegistry;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.pdf.PdfContentByte;
@@ -110,6 +111,7 @@ public class LegendsBlockTest {
         Config config = new Config();
         config.setThreadResources(this.threadResources);
         config.setBrokenUrlPlaceholder(Constants.ImagePlaceHolderConstants.DEFAULT);
+        config.setMetricRegistry(new MetricRegistry());
 
         RenderingContext context = mock(RenderingContext.class);
 

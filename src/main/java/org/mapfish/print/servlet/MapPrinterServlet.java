@@ -19,6 +19,8 @@
 
 package org.mapfish.print.servlet;
 
+import com.google.common.io.CharStreams;
+import com.google.common.io.Closer;
 import com.lowagie.text.DocumentException;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
@@ -222,25 +224,15 @@ public class MapPrinterServlet extends BaseMapServlet {
         if(httpServletRequest.getParameter("spec") != null) {
             return httpServletRequest.getParameter("spec");
         }
-        String encoding = getEncoding();
-        BufferedReader data = null;
-        if (encoding == null){
-        	data = new BufferedReader(new InputStreamReader(httpServletRequest.getInputStream()));
-        }else{
-        	data = new BufferedReader(new InputStreamReader(httpServletRequest.getInputStream(), encoding));
-        }
-         
+
+        Closer closer = Closer.create();
         try {
-            StringBuilder spec = new StringBuilder();
-            String cur;
-            while ((cur = data.readLine()) != null) {
-                spec.append(cur).append("\n");
-            }
-            return spec.toString();
+            final InputStreamReader reader = closer.register(new InputStreamReader(httpServletRequest.getInputStream(), getEncoding()));
+            BufferedReader bufferedReader = closer.register(new BufferedReader(reader));
+            final String spec = CharStreams.toString(bufferedReader);
+            return spec;
         } finally {
-            if(data != null) {
-                data.close();
-            }
+            closer.close();
         }
     }
     
@@ -252,7 +244,11 @@ public class MapPrinterServlet extends BaseMapServlet {
         	encoding = getInitParameter("encoding");
         	LOGGER.debug("Using '" + encoding + "' to encode Inputcontent.");
         }
-        return encoding;
+        if (encoding == null) {
+            return "UTF-8";
+        } else {
+            return encoding;
+        }
     }
     
 
