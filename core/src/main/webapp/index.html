@@ -58,6 +58,7 @@
             $.ajax({
                 type: 'GET',
                 url: 'print/' + appId + '/exampleRequest.json',
+                dataType: 'text',
                 success: function (data) {
                     $('#specText').val(data);
                     validateJSON()
