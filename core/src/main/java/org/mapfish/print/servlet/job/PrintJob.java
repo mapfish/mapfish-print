@@ -48,7 +48,7 @@ import java.util.concurrent.TimeoutException;
  *
  * @author Jesse
  */
-public abstract class PrintJob implements Callable<CompletedPrintJob> {
+public abstract class PrintJob implements Callable<PrintJobStatus> {
     private static final String JSON_HEADERS = "headers";
     private static final Logger LOGGER = LoggerFactory.getLogger(PrintJob.class);
 
@@ -106,7 +106,7 @@ public abstract class PrintJob implements Callable<CompletedPrintJob> {
     protected abstract URI withOpenOutputStream(PrintAction function) throws Throwable;
 
     @Override
-    public final CompletedPrintJob call() throws Exception {
+    public final PrintJobStatus call() throws Exception {
 
         Timer.Context timer = this.metricRegistry.timer(getClass().getName() + " call()").time();
         PJsonObject spec = null;
@@ -150,10 +150,10 @@ public abstract class PrintJob implements Callable<CompletedPrintJob> {
         }
     }
 
-    private String getAppId() {
-        String appId;
-        appId = PrintJob.this.requestData.optString(MapPrinterServlet.JSON_APP, ServletMapPrinterFactory.DEFAULT_CONFIGURATION_FILE_KEY);
-        return appId;
+    protected final String getAppId() {
+        return PrintJob.this.requestData.optString(
+                MapPrinterServlet.JSON_APP,
+                ServletMapPrinterFactory.DEFAULT_CONFIGURATION_FILE_KEY);
     }
 
     /**

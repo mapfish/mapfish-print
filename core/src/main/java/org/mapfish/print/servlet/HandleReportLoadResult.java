@@ -37,6 +37,14 @@ import javax.servlet.http.HttpServletResponse;
 public interface HandleReportLoadResult<R> {
 
     /**
+     * Called if the report reference is unknown.
+     *
+     * @param httpServletResponse response object
+     * @param referenceId         report id
+     */
+    R unknownReference(HttpServletResponse httpServletResponse, String referenceId);
+
+    /**
      * Called if no loader can be found for loading the report.
      *
      * @param httpServletResponse response object

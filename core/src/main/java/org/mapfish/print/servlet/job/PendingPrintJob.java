@@ -22,35 +22,20 @@ package org.mapfish.print.servlet.job;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Date;
-
 /**
- * Represents a failed print job.
+ * Represents a pending print job.
  *
- * @author jesseeichar on 3/18/14.
  */
-public class FailedPrintJob extends PrintJobStatus {
-    private static final String JSON_ERROR = "errorMessage";
-    private final String error;
+public class PendingPrintJob extends PrintJobStatus {
 
     /**
      * Constructor.
      *
      * @param referenceId    reference of the report.
      * @param appId          the appId used for loading the configuration.
-     * @param completionDate the date when the print job completed
-     * @param fileName       the fileName to send to the client.
-     * @param error          the error that occurred during running.
      */
-    public FailedPrintJob(final String referenceId, final String appId, final Date completionDate, final String fileName,
-                          final String error) {
-        super(referenceId, appId, completionDate, fileName);
-        this.error = error;
-    }
-
-    @Override
-    protected final void addExtraParameters(final JSONObject metadata) throws JSONException {
-        metadata.put(JSON_ERROR, this.error);
+    public PendingPrintJob(final String referenceId, final String appId) {
+        super(referenceId, appId, null, null);
     }
 
     /**
@@ -60,18 +45,14 @@ public class FailedPrintJob extends PrintJobStatus {
      *                       parent class.
      * @param referenceId    reference of the report.
      * @param appId          the appId used for loading the configuration.
-     * @param completionDate the date when the print job completed
-     * @param fileName       the fileName to send to the client.
      */
-    public static FailedPrintJob load(final JSONObject metadata, final String referenceId, final String appId,
-                                      final Date completionDate, final String fileName) throws JSONException {
-        String error = metadata.getString(JSON_ERROR);
-
-        return new FailedPrintJob(referenceId, appId, completionDate, fileName, error);
+    public static PendingPrintJob load(final JSONObject metadata, final String referenceId, final String appId)
+            throws JSONException {
+        return new PendingPrintJob(referenceId, appId);
     }
 
-
-    public final String getError() {
-        return this.error;
+    @Override
+    protected void addExtraParameters(final JSONObject metadata) throws JSONException {
     }
+
 }

@@ -286,16 +286,14 @@ public class PrintApiTest extends AbstractApiTest {
     public void testGetStatus_InvalidRef() throws Exception {
         ClientHttpRequest request = getPrintRequest(MapPrinterServlet.STATUS_URL + "/invalid-ref-number.json", HttpMethod.GET);
         response = request.execute();
-        // TODO an invalid ref simply returns "done: false" but does not indicate that the ref is wrong
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
     public void testGetDownload_InvalidRef() throws Exception {
         ClientHttpRequest request = getPrintRequest(MapPrinterServlet.REPORT_URL + "/invalid-ref-number", HttpMethod.GET);
         response = request.execute();
-        // TODO an invalid ref simply returns "Report has not yet completed processing"
-        assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     private void waitUntilDoneOrError(String ref) throws Exception {

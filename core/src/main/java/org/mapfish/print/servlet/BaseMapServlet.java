@@ -85,10 +85,10 @@ public abstract class BaseMapServlet {
             httpServletResponse.setContentType("text/plain");
             httpServletResponse.setStatus(code.value());
             out = httpServletResponse.getWriter();
-            out.println("Error while generating PDF:");
+            out.println("Error while processing request:");
             out.println(message);
 
-            LOGGER.error("Error while generating PDF: " + message);
+            LOGGER.error("Error while processing request: " + message);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         } finally {
@@ -110,10 +110,10 @@ public abstract class BaseMapServlet {
             httpServletResponse.setContentType("text/plain");
             httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             out = httpServletResponse.getWriter();
-            out.println("Error while generating PDF:");
+            out.println("Error while processing request:");
             e.printStackTrace(out);
 
-            BaseMapServlet.LOGGER.error("Error while generating PDF", e);
+            BaseMapServlet.LOGGER.error("Error while processing request", e);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         } finally {

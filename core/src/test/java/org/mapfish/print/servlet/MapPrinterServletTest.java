@@ -358,6 +358,30 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         throw new AssertionError(format + " does is not one of the elements in: " + formats);
     }
 
+    @Test(timeout = 60000)
+    public void testGetStatus_InvalidRef() throws Exception {
+        setUpConfigFiles();
+        
+        String ref = "invalid-ref";
+        MockHttpServletRequest servletStatusRequest = new MockHttpServletRequest("GET", "/print/status/" + ref + ".json");
+        MockHttpServletResponse servletStatusResponse = new MockHttpServletResponse();
+        servlet.getStatus(ref, servletStatusRequest, servletStatusResponse);
+        
+        assertEquals(HttpStatus.NOT_FOUND.value(), servletStatusResponse.getStatus());
+    }
+
+    @Test(timeout = 60000)
+    public void testGetReport_InvalidRef() throws Exception {
+        setUpConfigFiles();
+        
+        String ref = "invalid-ref";
+        MockHttpServletResponse servletGetReportResponse = new MockHttpServletResponse();
+        servlet.getReport(ref, false, servletGetReportResponse);
+
+        final int status = servletGetReportResponse.getStatus();
+        assertEquals(HttpStatus.NOT_FOUND.value(), status);
+    }
+
     @Test
     public void testGetCapabilities_NotPretty() throws Exception {
         setUpConfigFiles();

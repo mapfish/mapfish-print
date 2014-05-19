@@ -29,7 +29,7 @@ import java.util.concurrent.Future;
  */
 public class SubmittedPrintJob {
     private final String reportRef;
-    private final Future<CompletedPrintJob> reportFuture;
+    private final Future<PrintJobStatus> reportFuture;
     private final long startTime;
 
     /**
@@ -38,7 +38,7 @@ public class SubmittedPrintJob {
      * @param reportFuture the future for checking if the report is done and for getting the uri
      * @param reportRef the unique ID for the report
      */
-    public SubmittedPrintJob(final Future<CompletedPrintJob> reportFuture, final String reportRef) {
+    public SubmittedPrintJob(final Future<PrintJobStatus> reportFuture, final String reportRef) {
         this.startTime = new Date().getTime();
         this.reportFuture = reportFuture;
         this.reportRef = reportRef;
@@ -54,7 +54,7 @@ public class SubmittedPrintJob {
     /**
      * Get the future for checking if the report is done and for getting the uri.
      */
-    public final Future<CompletedPrintJob> getReportFuture() {
+    public final Future<PrintJobStatus> getReportFuture() {
         return this.reportFuture;
     }
 
