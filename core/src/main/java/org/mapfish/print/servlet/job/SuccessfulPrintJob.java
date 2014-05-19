@@ -31,7 +31,7 @@ import java.util.Date;
  *
  * @author jesseeichar on 3/18/14.
  */
-public final class SuccessfulPrintJob extends CompletedPrintJob {
+public final class SuccessfulPrintJob extends PrintJobStatus {
     private static final String JSON_REPORT_URI = "reportURI";
     private static final String JSON_MIME_TYPE = "mimeType";
     private static final String JSON_FILE_EXT = "fileExtension";

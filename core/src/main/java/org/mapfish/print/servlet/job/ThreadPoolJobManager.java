@@ -170,8 +170,13 @@ public class ThreadPoolJobManager implements JobManager {
         }
 
         this.registry.incrementInt(NEW_PRINT_COUNT, 1);
-        final Future<CompletedPrintJob> future = this.executor.submit(job);
+        final Future<PrintJobStatus> future = this.executor.submit(job);
         this.runningTasksFutures.add(new SubmittedPrintJob(future, job.getReferenceId()));
+        try {
+            new PendingPrintJob(job.getReferenceId(), job.getAppId()).store(this.registry);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -180,7 +185,7 @@ public class ThreadPoolJobManager implements JobManager {
     }
 
     @Override
-    public final boolean isDone(final String referenceId) {
+    public final boolean isDone(final String referenceId) throws NoSuchReferenceException {
         boolean done = getCompletedPrintJob(referenceId).isPresent();
         if (!done) {
             this.registry.put(LAST_POLL + referenceId, new Date().getTime());
@@ -204,9 +209,16 @@ public class ThreadPoolJobManager implements JobManager {
     }
 
     @Override
-    public final Optional<? extends CompletedPrintJob> getCompletedPrintJob(final String referenceId) {
+    public final Optional<? extends PrintJobStatus> getCompletedPrintJob(final String referenceId)
+            throws NoSuchReferenceException {
         try {
-            return CompletedPrintJob.load(referenceId, this.registry);
+            Optional<? extends PrintJobStatus> jobStatus = PrintJobStatus.load(referenceId, this.registry);
+            if (jobStatus.get() instanceof PendingPrintJob) {
+                // not yet completed
+                return Optional.absent();
+            } else {
+                return jobStatus;
+            }
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }

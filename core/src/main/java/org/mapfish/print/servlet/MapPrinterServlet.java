@@ -30,10 +30,11 @@ import org.json.JSONWriter;
 import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
-import org.mapfish.print.servlet.job.CompletedPrintJob;
 import org.mapfish.print.servlet.job.FailedPrintJob;
 import org.mapfish.print.servlet.job.JobManager;
+import org.mapfish.print.servlet.job.NoSuchReferenceException;
 import org.mapfish.print.servlet.job.PrintJob;
+import org.mapfish.print.servlet.job.PrintJobStatus;
 import org.mapfish.print.servlet.job.SuccessfulPrintJob;
 import org.mapfish.print.servlet.job.loader.ReportLoader;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -189,17 +190,17 @@ public class MapPrinterServlet extends BaseMapServlet {
     @RequestMapping(value = STATUS_URL + "/{referenceId:\\S+}.json", method = RequestMethod.GET)
     public final void getStatus(@PathVariable final String referenceId, final HttpServletRequest statusRequest,
                                 final HttpServletResponse statusResponse) {
-        boolean done = this.jobManager.isDone(referenceId);
-
         PrintWriter writer = null;
         try {
+            boolean done = this.jobManager.isDone(referenceId);
+            
             statusResponse.setContentType("application/json; charset=utf-8");
             writer = statusResponse.getWriter();
             JSONWriter json = new JSONWriter(writer);
             json.object();
             {
                 json.key(JSON_DONE).value(done);
-                Optional<? extends CompletedPrintJob> metadata = this.jobManager.getCompletedPrintJob(referenceId);
+                Optional<? extends PrintJobStatus> metadata = this.jobManager.getCompletedPrintJob(referenceId);
                 if (metadata.isPresent() && metadata.get() instanceof FailedPrintJob) {
                     json.key(JSON_ERROR).value(((FailedPrintJob) metadata.get()).getError());
                 }
@@ -215,6 +216,8 @@ public class MapPrinterServlet extends BaseMapServlet {
         } catch (IOException e) {
             LOGGER.error("Error obtaining status", e);
             throw new RuntimeException(e);
+        } catch (NoSuchReferenceException e) {
+            error(statusResponse, e.getMessage(), HttpStatus.NOT_FOUND);
         } finally {
             if (writer != null) {
                 writer.close();
@@ -282,8 +285,14 @@ public class MapPrinterServlet extends BaseMapServlet {
         loadReport(referenceId, getReportResponse, new HandleReportLoadResult<Void>() {
 
             @Override
-            public Void unsupportedLoader(final HttpServletResponse httpServletResponse, final String referenceId) {
+            public Void unknownReference(final HttpServletResponse httpServletResponse, final String referenceId) {
                 error(httpServletResponse, "Print with ref=" + referenceId + " unknown", HttpStatus.NOT_FOUND);
+                return null;
+            }
+
+            @Override
+            public Void unsupportedLoader(final HttpServletResponse httpServletResponse, final String referenceId) {
+                error(httpServletResponse, "Print with ref=" + referenceId + " can not be loaded", HttpStatus.NOT_FOUND);
                 return null;
             }
 
@@ -354,8 +363,14 @@ public class MapPrinterServlet extends BaseMapServlet {
         final HandleReportLoadResult<Boolean> handler = new HandleReportLoadResult<Boolean>() {
 
             @Override
-            public Boolean unsupportedLoader(final HttpServletResponse httpServletResponse, final String referenceId) {
+            public Boolean unknownReference(final HttpServletResponse httpServletResponse, final String referenceId) {
                 error(httpServletResponse, "Print with ref=" + referenceId + " unknown", HttpStatus.NOT_FOUND);
+                return true;
+            }
+
+            @Override
+            public Boolean unsupportedLoader(final HttpServletResponse httpServletResponse, final String referenceId) {
+                error(httpServletResponse, "Print with ref=" + referenceId + " can not be loaded", HttpStatus.NOT_FOUND);
                 return true;
             }
 
@@ -725,7 +740,13 @@ public class MapPrinterServlet extends BaseMapServlet {
 
     private <R> R loadReport(final String referenceId, final HttpServletResponse httpServletResponse,
                              final HandleReportLoadResult<R> handler) throws IOException, ServletException {
-        Optional<? extends CompletedPrintJob> metadata = this.jobManager.getCompletedPrintJob(referenceId);
+        Optional<? extends PrintJobStatus> metadata;
+        
+        try {
+            metadata = this.jobManager.getCompletedPrintJob(referenceId);
+        } catch (NoSuchReferenceException e) {
+            return handler.unknownReference(httpServletResponse, referenceId);
+        }
 
         if (!metadata.isPresent()) {
             return handler.printJobPending(httpServletResponse, referenceId);

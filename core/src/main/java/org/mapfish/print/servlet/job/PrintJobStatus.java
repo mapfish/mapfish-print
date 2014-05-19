@@ -20,6 +20,7 @@
 package org.mapfish.print.servlet.job;
 
 import com.google.common.base.Optional;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.servlet.registry.Registry;
@@ -30,7 +31,7 @@ import java.util.Date;
  * Represent a print job that has completed.  Contains the information about the print job.
  * @author jesseeichar on 3/18/14.
  */
-public abstract class CompletedPrintJob {
+public abstract class PrintJobStatus {
     /**
      * prefix for storing metadata about a job in the registry.
      */
@@ -53,7 +54,7 @@ public abstract class CompletedPrintJob {
      * @param fileName    the fileName to send to the client.
      * @param completionDate the time when the print job ended.
      */
-    public CompletedPrintJob(final String referenceId, final String appId, final Date completionDate, final String fileName) {
+    public PrintJobStatus(final String referenceId, final String appId, final Date completionDate, final String fileName) {
         this.referenceId = referenceId;
         this.appId = appId;
         this.completionDate = completionDate;
@@ -70,7 +71,9 @@ public abstract class CompletedPrintJob {
         metadata.put(JSON_APP, this.appId);
         metadata.put(JSON_FILENAME, this.fileName);
         metadata.put(JSON_SUCCESS, this instanceof SuccessfulPrintJob);
-        metadata.put(JSON_COMPLETION_DATE, this.completionDate.getTime());
+        if (this.completionDate != null) {
+            metadata.put(JSON_COMPLETION_DATE, this.completionDate.getTime());
+        }
         addExtraParameters(metadata);
         registry.put(RESULT_METADATA + this.referenceId, metadata);
     }
@@ -88,22 +91,28 @@ public abstract class CompletedPrintJob {
      * @param referenceId the reference id of the report to get information about.
      * @param registry    the registry to read from.
      */
-    public static Optional<? extends CompletedPrintJob> load(final String referenceId, final Registry registry) throws JSONException {
+    public static Optional<? extends PrintJobStatus> load(final String referenceId, final Registry registry) 
+            throws JSONException, NoSuchReferenceException {
         if (registry.containsKey(RESULT_METADATA + referenceId)) {
             JSONObject metadata = registry.getJSON(RESULT_METADATA + referenceId);
 
             String appId = metadata.optString(JSON_APP, null);
-            String fileName = metadata.getString(JSON_FILENAME);
-            Date completionDate = new Date(metadata.getLong(JSON_COMPLETION_DATE));
-            CompletedPrintJob report;
-            if (metadata.getBoolean(JSON_SUCCESS)) {
-                report = SuccessfulPrintJob.load(metadata, referenceId, appId, completionDate, fileName);
+
+            PrintJobStatus report;
+            if (!metadata.has(JSON_COMPLETION_DATE)) {
+                report = PendingPrintJob.load(metadata, referenceId, appId);
             } else {
-                report = FailedPrintJob.load(metadata, referenceId, appId, completionDate, fileName);
+                String fileName = metadata.getString(JSON_FILENAME);
+                Date completionDate = new Date(metadata.getLong(JSON_COMPLETION_DATE));
+                if (metadata.getBoolean(JSON_SUCCESS)) {
+                    report = SuccessfulPrintJob.load(metadata, referenceId, appId, completionDate, fileName);
+                } else {
+                    report = FailedPrintJob.load(metadata, referenceId, appId, completionDate, fileName);
+                }
             }
             return Optional.of(report);
         } else {
-            return Optional.absent();
+            throw new NoSuchReferenceException("invalid reference '" + referenceId + "'");
         }
     }
 
