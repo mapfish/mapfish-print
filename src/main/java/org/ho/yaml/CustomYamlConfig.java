@@ -19,7 +19,7 @@
 
 package org.ho.yaml;
 
-import java.awt.Color;
+import com.itextpdf.text.BaseColor;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +60,7 @@ public class CustomYamlConfig extends YamlConfig {
         handlers.put(Layouts.class.getName(), Layouts.Wrapper.class.getName());
         handlers.put(ColumnDefs.class.getName(), ColumnDefs.Wrapper.class.getName());
         handlers.put(Exceptions.class.getName(), Exceptions.Wrapper.class.getName());
-        handlers.put(Color.class.getName(), ColorWrapper.class.getName());
+        handlers.put(BaseColor.class.getName(), ColorWrapper.class.getName());
 
         //special enum parser
         handlers.put(HorizontalAlign.class.getName(), CustomEnumWrapper.class.getName());

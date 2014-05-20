@@ -19,7 +19,7 @@
 
 package org.mapfish.print.config.layout;
 
-import java.awt.Color;
+import com.itextpdf.text.BaseColor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,7 +29,7 @@ import org.mapfish.print.RenderingContext;
 import org.mapfish.print.config.ColorWrapper;
 import org.mapfish.print.utils.PJsonObject;
 
-import com.lowagie.text.DocumentException;
+import com.itextpdf.text.DocumentException;
 
 /**
  * Base class for blocks that can be found in "items" arrays.
@@ -67,7 +67,7 @@ public abstract class Block {
     }
 
     public interface PdfElement {
-        void add(com.lowagie.text.Element element) throws DocumentException;
+        void add(com.itextpdf.text.Element element) throws DocumentException;
     }
 
     public void setAlign(HorizontalAlign align) {
@@ -78,7 +78,7 @@ public abstract class Block {
         this.vertAlign = vertAlign;
     }
 
-    public Color getBackgroundColorVal(RenderingContext context, PJsonObject params) {
+    public BaseColor getBackgroundColorVal(RenderingContext context, PJsonObject params) {
         return ColorWrapper.convertColor(PDFUtils.evalString(context, params, backgroundColor));
     }
 

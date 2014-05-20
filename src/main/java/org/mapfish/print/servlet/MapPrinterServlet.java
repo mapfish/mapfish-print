@@ -50,7 +50,7 @@ import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.utils.PJsonObject;
 import org.pvalsecc.misc.FileUtilities;
 
-import com.lowagie.text.DocumentException;
+import com.itextpdf.text.DocumentException;
 
 /**
  * Main print servlet.

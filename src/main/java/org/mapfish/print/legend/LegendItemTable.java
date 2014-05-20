@@ -5,7 +5,7 @@
 
 package org.mapfish.print.legend;
 
-import com.lowagie.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPTable;
 
 /**
  *

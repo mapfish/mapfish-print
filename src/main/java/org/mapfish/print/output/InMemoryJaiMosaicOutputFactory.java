@@ -44,7 +44,7 @@ import org.mapfish.print.RenderingContext;
 import org.mapfish.print.TimeLogger;
 import org.mapfish.print.utils.PJsonObject;
 
-import com.lowagie.text.DocumentException;
+import com.itextpdf.text.DocumentException;
 
 /**
  * An output factory that uses pdf box to parse the pdf and create a collection of BufferedImages.  

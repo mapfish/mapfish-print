@@ -28,7 +28,7 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import com.lowagie.text.DocumentException;
+import com.itextpdf.text.DocumentException;
 
 public class PDFUtilsTest extends PdfTestCase {
     public static final Logger LOGGER = Logger.getLogger(PDFUtilsTest.class);

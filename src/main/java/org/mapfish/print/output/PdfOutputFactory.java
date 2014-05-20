@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.TimeLogger;
 
-import com.lowagie.text.DocumentException;
+import com.itextpdf.text.DocumentException;
 
 /**
  * OutputFormat and factory that Outputs PDF objects

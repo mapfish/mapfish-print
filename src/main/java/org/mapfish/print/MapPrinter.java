@@ -41,9 +41,9 @@ import org.mapfish.print.utils.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.FontFactory;
-import com.lowagie.text.pdf.ByteBuffer;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.pdf.ByteBuffer;
 
 /**
  * The main class for printing maps. Will parse the spec, create the PDF

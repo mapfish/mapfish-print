@@ -24,8 +24,8 @@ import java.util.List;
 import org.mapfish.print.PDFCustomBlocks;
 import org.mapfish.print.config.layout.ScalebarBlock;
 
-import com.lowagie.text.Font;
-import com.lowagie.text.pdf.PdfContentByte;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.pdf.PdfContentByte;
 
 /**
  * Draw a simple line with ticks.

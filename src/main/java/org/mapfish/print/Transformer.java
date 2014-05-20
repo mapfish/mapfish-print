@@ -19,7 +19,7 @@
 
 package org.mapfish.print;
 
-import java.awt.geom.AffineTransform;
+import com.itextpdf.awt.geom.AffineTransform;
 
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.referencing.CRS;
@@ -27,7 +27,7 @@ import org.geotools.referencing.GeodeticCalculator;
 import org.mapfish.print.utils.DistanceUnit;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.lowagie.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfContentByte;
 
 /**
  * Class that deals with the geometric tranformation between the geographic,

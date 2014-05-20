@@ -19,14 +19,15 @@
 
 package org.mapfish.print.config.layout;
 
+import com.itextpdf.text.BaseColor;
 import java.awt.Color;
 
 import org.mapfish.print.InvalidValueException;
 import org.mapfish.print.config.ColorWrapper;
 
-import com.lowagie.text.Font;
-import com.lowagie.text.FontFactory;
-import com.lowagie.text.pdf.BaseFont;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.pdf.BaseFont;
 
 /**
  * Base class for block having font specifications
@@ -77,7 +78,7 @@ public abstract class FontBlock extends Block {
         this.fontColor = fontColor;
     }
 
-    public Color getFontColorVal() {
+    public BaseColor getFontColorVal() {
         return ColorWrapper.convertColor(fontColor);
     }
 }

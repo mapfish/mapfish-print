@@ -19,19 +19,19 @@
 
 package org.mapfish.print;
 
-import com.lowagie.text.BadElementException;
-import com.lowagie.text.Chunk;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Font;
-import com.lowagie.text.Image;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfTemplate;
-import java.awt.Graphics2D;
+import com.itextpdf.awt.PdfGraphics2D;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfTemplate;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -398,7 +398,7 @@ public class PDFUtils {
 
     private static final Pattern VAR_REGEXP = Pattern.compile("\\$\\{([^}]+)\\}");
 
-    public static Phrase renderString(RenderingContext context, PJsonObject params, String val, com.lowagie.text.Font font) throws BadElementException {
+    public static Phrase renderString(RenderingContext context, PJsonObject params, String val, com.itextpdf.text.Font font) throws BadElementException {
         Phrase result = new Phrase();
         while (true) {
             Matcher matcher = VAR_REGEXP.matcher(val);
@@ -650,17 +650,17 @@ public class PDFUtils {
 
     public static BaseFont getBaseFont(String fontFamily, String fontSize,
             String fontWeight) {
-        int myFontValue;
+        Font.FontFamily myFontValue;
         float myFontSize;
         int myFontWeight;
         if (fontFamily.toUpperCase().contains("COURIER")) {
-            myFontValue = Font.COURIER;
+            myFontValue = Font.FontFamily.COURIER;
         } else if (fontFamily.toUpperCase().contains("HELVETICA")) {
-            myFontValue = Font.HELVETICA;
+            myFontValue = Font.FontFamily.HELVETICA;
         } else if (fontFamily.toUpperCase().contains("ROMAN")) {
-            myFontValue = Font.TIMES_ROMAN;
+            myFontValue = Font.FontFamily.TIMES_ROMAN;
         } else {
-            myFontValue = Font.HELVETICA;
+            myFontValue = Font.FontFamily.HELVETICA;
         }
         myFontSize = (float) Double.parseDouble(fontSize.toLowerCase()
                 .replaceAll("px", ""));
@@ -744,7 +744,7 @@ public class PDFUtils {
             final float svgFactor = 25.4f / userAgent.getPixelUnitToMillimeter() / 72f; // 25.4 mm = 1 inch TODO: Might need to get 72 from somewhere else?
             //float svgFactor = (float) Toolkit.getDefaultToolkit().getScreenResolution() / 72f; // this only works with AWT, i.e. when a window environment is running
             PdfTemplate map = dc.createTemplate(svgWidth * svgFactor, svgHeight * svgFactor);
-            Graphics2D g2d = map.createGraphics(svgWidth * svgFactor, svgHeight * svgFactor);
+            PdfGraphics2D g2d = new PdfGraphics2D(map, svgWidth * svgFactor, svgHeight * svgFactor);
             graphics.paint(g2d);
             g2d.dispose();
             image = Image.getInstance(map);

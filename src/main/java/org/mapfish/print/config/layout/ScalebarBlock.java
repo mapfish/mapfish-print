@@ -19,6 +19,7 @@
 
 package org.mapfish.print.config.layout;
 
+import com.itextpdf.text.BaseColor;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,9 +37,9 @@ import org.mapfish.print.scalebar.Type;
 import org.mapfish.print.utils.DistanceUnit;
 import org.mapfish.print.utils.PJsonObject;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Font;
-import com.lowagie.text.pdf.BaseFont;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.pdf.BaseFont;
 
 /**
  * Block for drawing a !scalebar block.
@@ -364,11 +365,11 @@ public class ScalebarBlock extends FontBlock {
         return intervals;
     }
 
-    public Color getBarBgColorVal() {
+    public BaseColor getBarBgColorVal() {
         return ColorWrapper.convertColor(barBgColor);
     }
 
-    public Color getColorVal() {
+    public BaseColor getColorVal() {
         return ColorWrapper.convertColor(color);
     }
 }

@@ -19,7 +19,7 @@
 
 package org.mapfish.print.map.renderers.vector;
 
-import java.awt.geom.AffineTransform;
+import com.itextpdf.awt.geom.AffineTransform;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +29,7 @@ import org.mapfish.geo.MfGeo;
 import org.mapfish.geo.MfGeometry;
 import org.mapfish.print.RenderingContext;
 
-import com.lowagie.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfContentByte;
 
 /**
  * iText renderer for MF geoJSON features.

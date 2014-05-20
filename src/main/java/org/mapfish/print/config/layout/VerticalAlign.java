@@ -19,7 +19,7 @@
 
 package org.mapfish.print.config.layout;
 
-import com.lowagie.text.Paragraph;
+import com.itextpdf.text.Paragraph;
 
 public enum VerticalAlign {
     TOP(Paragraph.ALIGN_TOP),
