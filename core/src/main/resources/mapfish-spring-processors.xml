@@ -32,15 +32,13 @@
     <bean id="!prepareTableList" class="org.mapfish.print.processor.jasper.TableListProcessor" scope="prototype" />
     <bean id="!reportBuilder" class="org.mapfish.print.processor.jasper.JasperReportBuilder" scope="prototype" />
     
-    <util:list id="processorDependencies" value-type="org.mapfish.print.processor.ProcessorDependency">
-        <bean class="org.mapfish.print.processor.ProcessorDependency">
-            <constructor-arg name="required" value="org.mapfish.print.processor.map.SetStyleProcessor" />
-            <constructor-arg name="dependent" value="org.mapfish.print.processor.map.CreateMapProcessor"/>
-            <constructor-arg name="commonInputs">
-                <util:list>
-                    <value>map</value>
-                </util:list>
-            </constructor-arg>
-        </bean>
-    </util:list>
+    <bean class="org.mapfish.print.processor.ProcessorDependency">
+        <constructor-arg name="required" value="org.mapfish.print.processor.map.SetStyleProcessor" />
+        <constructor-arg name="dependent" value="org.mapfish.print.processor.map.CreateMapProcessor"/>
+        <constructor-arg name="commonInputs">
+            <util:list>
+                <value>map</value>
+            </util:list>
+        </constructor-arg>
+    </bean>
 </beans>

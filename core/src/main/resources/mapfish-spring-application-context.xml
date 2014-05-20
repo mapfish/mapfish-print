@@ -42,9 +42,7 @@
     </bean>
 
     <bean id="configurationFactory" class="org.mapfish.print.config.ConfigurationFactory"/>
-    <bean id="processorDependencyGraphFactory" class="org.mapfish.print.processor.ProcessorDependencyGraphFactory">
-        <property name="dependencies" ref="processorDependencies" />
-    </bean>
+    <bean id="processorDependencyGraphFactory" class="org.mapfish.print.processor.ProcessorDependencyGraphFactory" />
 
     <bean id="registry" class="org.mapfish.print.servlet.registry.BasicRegistry"/>
     <bean id="jobManager" class="org.mapfish.print.servlet.job.ThreadPoolJobManager">

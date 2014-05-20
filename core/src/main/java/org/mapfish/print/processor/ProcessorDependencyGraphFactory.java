@@ -52,6 +52,7 @@ public final class ProcessorDependencyGraphFactory {
     /**
      * External dependencies between processor types.
      */
+    @Autowired
     private List<ProcessorDependency> dependencies;
 
     /**
