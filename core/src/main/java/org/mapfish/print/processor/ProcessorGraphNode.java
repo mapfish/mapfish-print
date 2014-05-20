@@ -90,6 +90,14 @@ public final class ProcessorGraphNode<In, Out> {
     private void addRequirement(final ProcessorGraphNode node) {
         this.requirements.add(node);
     }
+    
+    /**
+     * Returns true if the node has requirements, that is there are other
+     * nodes that should be run first.
+     */
+    public boolean hasRequirements() {
+        return !this.requirements.isEmpty();
+    }
 
     /**
      * Create a ForkJoinTask for running in a fork join pool.

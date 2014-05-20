@@ -19,7 +19,8 @@
   -->
 
 <beans default-lazy-init="false" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:context="http://www.springframework.org/schema/context" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
     <import resource="mapfish-spring-attributes.xml" />
     <import resource="mapfish-spring-processors.xml" />
@@ -41,7 +42,9 @@
     </bean>
 
     <bean id="configurationFactory" class="org.mapfish.print.config.ConfigurationFactory"/>
-    <bean id="processorDependencyGraphFactory" class="org.mapfish.print.processor.ProcessorDependencyGraphFactory" />
+    <bean id="processorDependencyGraphFactory" class="org.mapfish.print.processor.ProcessorDependencyGraphFactory">
+        <property name="dependencies" ref="processorDependencies" />
+    </bean>
 
     <bean id="registry" class="org.mapfish.print.servlet.registry.BasicRegistry"/>
     <bean id="jobManager" class="org.mapfish.print.servlet.job.ThreadPoolJobManager">
