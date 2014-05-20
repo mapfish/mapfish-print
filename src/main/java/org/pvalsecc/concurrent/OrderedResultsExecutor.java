@@ -3,7 +3,11 @@ package org.pvalsecc.concurrent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -156,7 +160,7 @@ public class OrderedResultsExecutor<RESULT> {
     public class Runner implements Runnable {
         public void run() {
             if (LOGGER.isDebugEnabled())
-                LOGGER.debug("Runner ["+name+"] started");
+                LOGGER.debug("Runner [" + name + "] started");
             while (true) {
                 //gets a task to be executed
                 InternalTask<RESULT> cur;
@@ -172,15 +176,28 @@ public class OrderedResultsExecutor<RESULT> {
 
                 if (cur.task == null) {
                     if (LOGGER.isDebugEnabled())
-                        LOGGER.debug("Runner ["+name+"] stopped");
+                        LOGGER.debug("Runner [" + name + "] stopped");
                     return;  //received the signal to stop
                 }
 
                 //runs it and schedule its result
-                cur.setResult(cur.task.process());
-                addOutput(cur);
+                cur.setState(ExecutionState.RUNNING);
+                try {
+                    final RESULT process = cur.task.process();
+                    cur.setResult(process);
+                    addOutput(cur);
+                } catch (Throwable t) {
+                    cur.setState(ExecutionState.ERROR);
+                    cur.setError(t);
+                } finally {
+                    cur.setState(ExecutionState.DONE);
+                }
             }
         }
+    }
+
+    private enum ExecutionState {
+        PENDING, RUNNING, DONE, ERROR
     }
 
     /**
@@ -191,12 +208,15 @@ public class OrderedResultsExecutor<RESULT> {
         private final Task<RESULT> task;
         private final ResultCollector<RESULT> resultCollector;
         private final long sequenceNumber;
+        private ExecutionState state;
         private RESULT result = null;
+        private Throwable error;
 
         public InternalTask(Task<RESULT> task, ResultCollector<RESULT> resultCollector, long sequenceNumber) {
             this.task = task;
             this.resultCollector = resultCollector;
             this.sequenceNumber = sequenceNumber;
+            this.state = ExecutionState.PENDING;
         }
 
         public void setResult(RESULT result) {
@@ -208,6 +228,14 @@ public class OrderedResultsExecutor<RESULT> {
 
         public int compareTo(InternalTask<RESULT> o) {
             return (sequenceNumber < o.sequenceNumber ? -1 : (sequenceNumber == o.sequenceNumber ? 0 : 1));
+        }
+
+        public synchronized void setState(ExecutionState state) {
+            this.state = state;
+        }
+
+        public synchronized void setError(Throwable error) {
+            this.error = error;
         }
     }
 

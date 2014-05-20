@@ -175,7 +175,7 @@ public class MapPrinter {
         } finally {
             final long printTime = timer.stop();
             if (TimeUnit.SECONDS.toNanos(getConfig().getMaxPrintTimeBeforeWarningInSeconds()) < printTime) {
-                LOGGER.warn("[Overtime Print] "+jsonSpec);
+                LOGGER.warn("[Overtime Print] "+jsonSpec.getInternalObj());
             }
         }
     }
