@@ -32,7 +32,7 @@ import java.util.List;
  * <p/>
  * Created by Stéphane Brunner on 16/4/14.
  */
-public class SetWmsCustomParamProcessor extends AbstractProcessor<SetWmsCustomParamProcessor.Input, SetWmsCustomParamProcessor.Output> {
+public class SetWmsCustomParamProcessor extends AbstractProcessor<SetWmsCustomParamProcessor.Input, Void> {
 
     /**
      * The parameter name.
@@ -44,7 +44,7 @@ public class SetWmsCustomParamProcessor extends AbstractProcessor<SetWmsCustomPa
      * Constructor.
      */
     protected SetWmsCustomParamProcessor() {
-        super(Output.class);
+        super(Void.class);
     }
 
     @Override
@@ -53,13 +53,13 @@ public class SetWmsCustomParamProcessor extends AbstractProcessor<SetWmsCustomPa
     }
 
     @Override
-    public final Output execute(final Input values) throws Exception {
+    public final Void execute(final Input values) throws Exception {
         for (MapLayer layer : values.map.getLayers()) {
             if (layer instanceof WmsLayer) {
                 ((WmsLayer) layer).getParams().setCustomParam(this.paramName, values.value);
             }
         }
-        return new Output(values.map);
+        return null;
     }
 
     @Override
@@ -83,24 +83,6 @@ public class SetWmsCustomParamProcessor extends AbstractProcessor<SetWmsCustomPa
          * The value.
          */
         public String value;
-    }
-
-    /**
-     * The Output object of the processor method.
-     */
-    public static final class Output {
-        /**
-         * The input map.
-         */
-        public MapAttributeValues map;
-
-        /**
-         * Construct.
-         * @param map The input map
-         */
-        private Output(final MapAttributeValues map) {
-            this.map = map;
-        }
     }
 
     /**

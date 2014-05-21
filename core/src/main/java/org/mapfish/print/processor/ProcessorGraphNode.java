@@ -108,6 +108,7 @@ public final class ProcessorGraphNode<In, Out> {
     @SuppressWarnings("unchecked")
     public Optional<ProcessorNodeForkJoinTask> createTask(@Nonnull final ProcessorExecutionContext execContext) {
         if (execContext.isFinished(this) || !execContext.allAreFinished(this.requirements)) {
+            // either this task was already executed or a requirements for this task has not finished yet
             return Optional.absent();
         } else {
             return Optional.of(new ProcessorNodeForkJoinTask(this, execContext));

@@ -33,13 +33,13 @@ import java.util.List;
  * Created by Stéphane Brunner on 16/4/14.
  */
 public class SetFeaturesProcessor extends
-        AbstractProcessor<SetFeaturesProcessor.Input, SetFeaturesProcessor.Output> {
+        AbstractProcessor<SetFeaturesProcessor.Input, Void> {
 
     /**
      * Constructor.
      */
     protected SetFeaturesProcessor() {
-        super(Output.class);
+        super(Void.class);
     }
 
     @Override
@@ -48,14 +48,14 @@ public class SetFeaturesProcessor extends
     }
 
     @Override
-    public final Output execute(final Input values) throws Exception {
+    public final Void execute(final Input values) throws Exception {
         for (MapLayer layer : values.map.getLayers()) {
             if (layer instanceof AbstractFeatureSourceLayer) {
                 ((AbstractFeatureSourceLayer) layer).setFeatursCollection(values.features.getFeatures());
             }
         }
 
-        return new Output(values.map);
+        return null;
     }
 
     @Override
@@ -77,23 +77,5 @@ public class SetFeaturesProcessor extends
          * The features.
          */
         public FeaturesAttributeValues features;
-    }
-
-    /**
-     * The Output object of the processor method.
-     */
-    public static final class Output {
-        /**
-         * The input map.
-         */
-        public MapAttributeValues map;
-
-        /**
-         * Construct.
-         * @param map The input map
-         */
-        private Output(final MapAttributeValues map) {
-            this.map = map;
-        }
     }
 }

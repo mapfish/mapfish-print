@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.output.Values;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -90,6 +91,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     }
     
     @Test
+    @DirtiesContext
     public void testSimpleBuild_ExternalDependency_NoInput() throws Exception {
         final ArrayList<TestProcessor> processors = Lists.newArrayList(RootNoOutput, NeedsTable, NeedsMap, RootMapOut,
                 RootTableAndWidthOut);
@@ -113,6 +115,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     }
     
     @Test
+    @DirtiesContext
     public void testSimpleBuild_ExternalDependency_SameInput() throws Exception {
         final ArrayList<TestProcessor> processors = Lists.newArrayList(RootNoOutput, NeedsTable, NeedsMap, StyleNeedsMap,
                 RootMapOut, RootTableAndWidthOut);
@@ -143,6 +146,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
      * or `NeedsMap` on `StyleNeedsMap2`.
      */
     @Test
+    @DirtiesContext
     public void testSimpleBuild_ExternalDependency_SameInputTwoMaps() throws Exception {
         // add processors for a second map
         TestProcessor needsMap2 = new NeedsMapClass("NeedsMap2", Void.class);

@@ -13,7 +13,6 @@ templates:
         inputMapper: 
           map1: map
           features: features
-        outputMapper: {map: map2}
     - !createMap
-        inputMapper: {map2: map}
+        inputMapper: {map1: map}
         outputMapper: {mapSubReport: map}
