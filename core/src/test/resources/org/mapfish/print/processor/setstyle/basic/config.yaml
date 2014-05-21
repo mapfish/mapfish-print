@@ -20,4 +20,3 @@ templates:
       inputMapper:
         mapDef: map
         styleDef: style
-      outputMapper: {map: map}

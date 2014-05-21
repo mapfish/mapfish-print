@@ -90,6 +90,18 @@ public final class ProcessorGraphNode<In, Out> {
     private void addRequirement(final ProcessorGraphNode node) {
         this.requirements.add(node);
     }
+    
+    protected List<ProcessorGraphNode<?, ?>> getRequirements() {
+        return this.requirements;
+    }
+
+    /**
+     * Returns true if the node has requirements, that is there are other
+     * nodes that should be run first.
+     */
+    public boolean hasRequirements() {
+        return !this.requirements.isEmpty();
+    }
 
     /**
      * Create a ForkJoinTask for running in a fork join pool.
@@ -99,7 +111,7 @@ public final class ProcessorGraphNode<In, Out> {
      */
     @SuppressWarnings("unchecked")
     public Optional<ProcessorNodeForkJoinTask> createTask(@Nonnull final ProcessorExecutionContext execContext) {
-        if (execContext.isFinished(this) || !execContext.allAreFinished(this.requirements)) {
+        if (!execContext.tryStart(this)) {
             return Optional.absent();
         } else {
             return Optional.of(new ProcessorNodeForkJoinTask(this, execContext));

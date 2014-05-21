@@ -33,13 +33,13 @@ import java.util.List;
  * Created by Stéphane Brunner on 24/4/14.
  */
 public class SetStyleProcessor extends
-        AbstractProcessor<SetStyleProcessor.Input, SetStyleProcessor.Output> {
+        AbstractProcessor<SetStyleProcessor.Input, Void> {
 
     /**
      * Constructor.
      */
     protected SetStyleProcessor() {
-        super(Output.class);
+        super(Void.class);
     }
 
     @Override
@@ -48,14 +48,14 @@ public class SetStyleProcessor extends
     }
 
     @Override
-    public final Output execute(final Input values) throws Exception {
+    public final Void execute(final Input values) throws Exception {
         for (MapLayer layer : values.map.getLayers()) {
             if (layer instanceof AbstractFeatureSourceLayer) {
                 ((AbstractFeatureSourceLayer) layer).setStyle(values.style.getStyle());
             }
         }
 
-        return new Output(values.map);
+        return null;
     }
 
     @Override
@@ -76,23 +76,5 @@ public class SetStyleProcessor extends
          * The features.
          */
         public StyleAttribute.StylesAttributeValues style;
-    }
-
-    /**
-     * The Output object of the processor method.
-     */
-    public static final class Output {
-        /**
-         * The input map.
-         */
-        public MapAttributeValues map;
-
-        /**
-         * Construct.
-         * @param map The input map
-         */
-        private Output(final MapAttributeValues map) {
-            this.map = map;
-        }
     }
 }

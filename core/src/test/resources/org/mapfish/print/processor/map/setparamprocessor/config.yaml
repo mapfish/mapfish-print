@@ -18,13 +18,11 @@ templates:
         inputMapper: 
           map1: map
           customP1: value
-        outputMapper: {map: map2}
     - !setWmsCustomParam
         paramName: customP2
         inputMapper: 
-          map2: map
+          map1: map
           customP2: value
-        outputMapper: {map: map3}
     - !createMap
-        inputMapper: {map3: map}
+        inputMapper: {map1: map}
         outputMapper: {mapSubReport: map}

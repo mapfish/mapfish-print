@@ -27,6 +27,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+import jsr166y.ForkJoinPool;
+
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -61,6 +63,9 @@ public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
     private TestHttpClientFactory requestFactory;
     @Autowired
     private MapfishParser parser;
+    
+    @Autowired
+    private ForkJoinPool forkJoinPool;
 
     @Test
     public void testExecute() throws Exception {
@@ -125,7 +130,7 @@ public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values(requestData, template, this.parser, getTaskDirectory());
-        template.getProcessorGraph().createTask(values).invoke();
+        forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);

@@ -19,7 +19,9 @@
   -->
 
 <beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
     <bean id="!createMap" class="org.mapfish.print.processor.map.CreateMapProcessor" scope="prototype" />
     <bean id="!setStyle" class="org.mapfish.print.processor.map.SetStyleProcessor" scope="prototype" />
     <bean id="!setFeatures" class="org.mapfish.print.processor.map.SetFeaturesProcessor" scope="prototype" />
@@ -29,4 +31,34 @@
     <bean id="!prepareTable" class="org.mapfish.print.processor.jasper.TableProcessor" scope="prototype" />
     <bean id="!prepareTableList" class="org.mapfish.print.processor.jasper.TableListProcessor" scope="prototype" />
     <bean id="!reportBuilder" class="org.mapfish.print.processor.jasper.JasperReportBuilder" scope="prototype" />
+    
+    <bean class="org.mapfish.print.processor.ProcessorDependency">
+        <constructor-arg name="required" value="org.mapfish.print.processor.map.SetStyleProcessor" />
+        <constructor-arg name="dependent" value="org.mapfish.print.processor.map.CreateMapProcessor"/>
+        <constructor-arg name="commonInputs">
+            <util:list>
+                <value>map</value>
+            </util:list>
+        </constructor-arg>
+    </bean>
+    
+    <bean class="org.mapfish.print.processor.ProcessorDependency">
+        <constructor-arg name="required" value="org.mapfish.print.processor.map.SetFeaturesProcessor" />
+        <constructor-arg name="dependent" value="org.mapfish.print.processor.map.CreateMapProcessor"/>
+        <constructor-arg name="commonInputs">
+            <util:list>
+                <value>map</value>
+            </util:list>
+        </constructor-arg>
+    </bean>
+    
+    <bean class="org.mapfish.print.processor.ProcessorDependency">
+        <constructor-arg name="required" value="org.mapfish.print.processor.map.SetWmsCustomParamProcessor" />
+        <constructor-arg name="dependent" value="org.mapfish.print.processor.map.CreateMapProcessor"/>
+        <constructor-arg name="commonInputs">
+            <util:list>
+                <value>map</value>
+            </util:list>
+        </constructor-arg>
+    </bean>
 </beans>
