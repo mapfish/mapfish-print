@@ -91,6 +91,10 @@ public final class ProcessorGraphNode<In, Out> {
         this.requirements.add(node);
     }
     
+    protected List<ProcessorGraphNode<?, ?>> getRequirements() {
+        return this.requirements;
+    }
+
     /**
      * Returns true if the node has requirements, that is there are other
      * nodes that should be run first.
@@ -107,8 +111,7 @@ public final class ProcessorGraphNode<In, Out> {
      */
     @SuppressWarnings("unchecked")
     public Optional<ProcessorNodeForkJoinTask> createTask(@Nonnull final ProcessorExecutionContext execContext) {
-        if (execContext.isFinished(this) || !execContext.allAreFinished(this.requirements)) {
-            // either this task was already executed or a requirements for this task has not finished yet
+        if (!execContext.tryStart(this)) {
             return Optional.absent();
         } else {
             return Optional.of(new ProcessorNodeForkJoinTask(this, execContext));
