@@ -7,19 +7,19 @@ apply plugin: 'maven'
 defaultTasks 'test', 'interactiveTest', 'jar', 'war', 'imageMagickWar', 'standalone', 'install'
 
 allprojects {
-    group = 'org.mapfish.print'
+group = 'org.mapfish.print'
     version = '2.1-SNAPSHOT'
 
-    apply plugin: 'java'
-    apply plugin: 'eclipse'
-    apply plugin: 'idea'
-    apply plugin: 'project-report'
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'project-report'
 
-    repositories {
+repositories {
         mavenLocal()
         maven {url "http://download.osgeo.org/webdav/geotools"}
-        mavenCentral()
-    }
+  mavenCentral()
+}
 }
 
 //task wrapper(type: Wrapper) {
@@ -34,11 +34,11 @@ configurations {
 project.ext.junitVersion = "4.11"
 dependencies {
     def metricsVersion = "3.0.2"
-    def springVersion = "3.1.0.RELEASE"
+  def springVersion = "3.1.0.RELEASE"
     compile (
             "org.springframework:spring-context:$springVersion",
             "org.springframework:spring-web:$springVersion",
-            'com.lowagie:itext:2.1.5',
+            'com.itextpdf:itextpdf:5.4.4',
             'xerces:xercesImpl:2.4.0',
             'org.json:json:20080701',
             'org.jyaml:jyaml:1.3',
@@ -60,12 +60,12 @@ dependencies {
             'javax.media:jai_codec:1.1.3',
             "com.google.guava:guava:15.0")
 
-    compile ('org.apache.xmlgraphics:batik-transcoder:1.7'){
-        exclude module: 'fop'
-    }
-    providedCompile 'javax.servlet:servlet-api:2.5'
+  compile ('org.apache.xmlgraphics:batik-transcoder:1.7'){
+    exclude module: 'fop'
+  }
+  providedCompile 'javax.servlet:servlet-api:2.5'
 
-    proguard 'net.sf.proguard:proguard:4.4'
+  proguard 'net.sf.proguard:proguard:4.4'
 }
 
 allprojects {
@@ -81,18 +81,18 @@ allprojects {
 }
 
 def gitRevision() {
-    try {
-        def cmd = "git rev-parse HEAD"
-        def proc = cmd.execute()
-        return proc.getText()
-    } catch (Exception e) {
-        return "Error occurred while trying to execute git commandline tool: "+e
-    }
+	try {
+		def cmd = "git rev-parse HEAD"
+		def proc = cmd.execute()
+		return proc.getText()
+	} catch (Exception e) {
+		return "Error occurred while trying to execute git commandline tool: "+e
+	}
 }
 manifest.mainAttributes(
-        'Main-Class':'org.mapfish.print.ShellMapPrinter',
-        'Build-Time': new Date().getDateTimeString(),
-        'git-revision': gitRevision())
+	'Main-Class':'org.mapfish.print.ShellMapPrinter', 
+	'Build-Time': new Date().getDateTimeString(),
+	'git-revision': gitRevision())
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
@@ -100,73 +100,73 @@ targetCompatibility = 1.6
 compileJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
 
 jar {
-    enabled = true
-    baseName = "print-lib"
+  enabled = true
+  baseName = "print-lib"
 }
 
 war {
-    baseName = "print-servlet"
-    manifest.mainAttributes(
-            'Build-Time': new Date().getDateTimeString(),
-            'git-revision': gitRevision())
+  baseName = "print-servlet"
+  manifest.mainAttributes(
+	'Build-Time': new Date().getDateTimeString(),
+	'git-revision': gitRevision())
 }
 task imageMagickWar (type: War) {
-    baseName = "print-servlet"
-    manifest.mainAttributes(
-            'Build-Time': new Date().getDateTimeString(),
-            'git-revision': gitRevision())
-    classifier = "IMG-MAGICK"
-    from fileTree('sample-spring/imagemagick')
+  baseName = "print-servlet"
+  manifest.mainAttributes(
+	'Build-Time': new Date().getDateTimeString(),
+	'git-revision': gitRevision())
+  classifier = "IMG-MAGICK"
+  from fileTree('sample-spring/imagemagick')
 }
 
 task standalone (type: Jar) {
-    baseName = "print-standalone"
+  baseName = "print-standalone"
 
-    manifest = jar.manifest
+  manifest = jar.manifest
 
-    from sourceSets.main.output
+  from sourceSets.main.output
 
 
-    def dependencies = configurations.compile.resolve().findAll{ file ->
-        return !file.name.contains("servlet-api")
+  def dependencies = configurations.compile.resolve().findAll{ file ->
+      return !file.name.contains("servlet-api")
+  }
+
+  
+  def serviceDir = new File("$buildDir/META-INF/services")
+  def metaInfDir = new File("$buildDir/META-INF/")
+
+  for(file in dependencies) {
+    
+    def files = zipTree(file).matching { 
+        exclude 'META-INF/**'
+        exclude 'LICENSE'
     }
+    
+    from files
+  }
 
-
-    def serviceDir = new File("$buildDir/META-INF/services")
-    def metaInfDir = new File("$buildDir/META-INF/")
-
-    for(file in dependencies) {
-
-        def files = zipTree(file).matching {
-            exclude 'META-INF/**'
-            exclude 'LICENSE'
-        }
-
-        from files
-    }
-
-    doFirst {
-
-        serviceDir.deleteDir()
-        serviceDir.mkdirs()
-        for(file in dependencies.findAll({it.name.matches("((gt)|(spring-)).*")})) {
-            zipTree(file).matching {
-                include 'META-INF/services/*'
-                include 'META-INF/spring.*'
-            }.each {f ->
-                def base = serviceDir
-                if (f.name.startsWith("spring")) {
-                    base = metaInfDir;
-                }
-                new File(base,f.name) << f.getText("UTF-8")
-            }
-        }
-    }
-
-    from fileTree(buildDir).matching{include 'META-INF/*'}
-
-    into ""
-
+  doFirst {
+      
+      serviceDir.deleteDir()
+      serviceDir.mkdirs()
+      for(file in dependencies.findAll({it.name.matches("((gt)|(spring-)).*")})) {
+          zipTree(file).matching {
+            include 'META-INF/services/*'
+            include 'META-INF/spring.*'
+          }.each {f ->
+              def base = serviceDir
+              if (f.name.startsWith("spring")) {
+                  base = metaInfDir;
+              }
+              new File(base,f.name) << f.getText("UTF-8")
+          }
+      }
+  }
+  
+  from fileTree(buildDir).matching{include 'META-INF/*'}
+  
+  into ""
+  
 }
 
 task libJavadocJar(type: Jar, dependsOn: javadoc) {
@@ -174,7 +174,7 @@ task libJavadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from 'build/docs/javadoc'
 }
-
+ 
 task libSourcesJar(type: Jar) {
     baseName = 'print-lib'
     from sourceSets.main.allSource
@@ -186,7 +186,7 @@ task standaloneJavadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from 'build/docs/javadoc'
 }
-
+ 
 task standaloneSourcesJar(type: Jar) {
     baseName = 'print-standalone'
     from sourceSets.main.allSource
@@ -195,19 +195,19 @@ task standaloneSourcesJar(type: Jar) {
 
 task show << {
 //    sourceSets.main.classes.asFileTree.each {println it}
-    println gitRevision()
+println gitRevision()
 }
 artifacts {
-    archives jar, war, imageMagickWar, standalone, libSourcesJar, libJavadocJar, standaloneSourcesJar, standaloneJavadocJar
+  archives jar, war, imageMagickWar, standalone, libSourcesJar, libJavadocJar, standaloneSourcesJar, standaloneJavadocJar
 }
 
 def artifactFilterMapping = ['lib':'print-lib', 'standalone':'print-standalone', 'war':'print-servlet']
 configure(install.repositories.mavenInstaller) {
-    artifactFilterMapping.each {entry ->
-        addFilter(entry.key) { artifact, file ->
-            artifact.name.contains entry.value
-        }
+  artifactFilterMapping.each {entry ->
+    addFilter(entry.key) { artifact, file ->
+      artifact.name.contains entry.value
     }
+  }
 }
 
 
@@ -219,106 +219,110 @@ configure(install.repositories.mavenInstaller) {
  */
 // need to sign jars for uploading releases to maven central
 if (Boolean.parseBoolean(enablePublishing)) {
-    apply plugin: 'signing'
-    signing {
-        sign configurations.archives
-    }
+  apply plugin: 'signing'
+  signing {
+    sign configurations.archives
+  }
 
-    uploadArchives {
+  uploadArchives {
         dependsOn test, ':e2e-tests:interactiveTest'
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+    repositories {
+      mavenDeployer {
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-                repository(url: "https://$host/service/local/staging/deploy/maven2") {
-                    authentication(userName: sonatypeUsername, password: sonatypePassword)
-                }
-                snapshotRepository(url: "https://$host/content/repositories/snapshots")  {
-                    authentication(userName: sonatypeUsername, password: sonatypePassword)
-                    uniqueVersion = false
-                }
-                artifactFilterMapping.each {entry ->
-                    addFilter(entry.key) { artifact, file ->
-                        artifact.name.contains entry.value
-                    }
-                }
-                pom('lib').project {
-                    name 'print-lib'
-                    packaging 'jar'
-                    description 'Library for generating PDFs and images from oneline webmapping services'
-                }
-                pom('war').project {
-                    name 'print'
-                    packaging 'war'
-                    description 'Web application for generating PDFs and images from oneline webmapping services'
-                }
-                pom('standalone').project {
-                    name 'print-standalone'
-                    packaging 'jar'
-                    description 'Application for generating PDFs and images from oneline webmapping services. All dependencies are included'
-                }
-                artifactFilterMapping.keySet().each { filterName ->
-                    pom(filterName).project {
-                        url 'http://www.mapfish.org/doc/print/'
-
-                        scm {
-                            url 'scm:git@github.com:mapfish/mapfish-print.git'
-                            connection 'scm:git@github.com:mapfish/mapfish-print.git'
-                            developerConnection 'scm:git@github.com:mapfish/mapfish-print.git'
-                        }
-
-                        licenses {
-                            license {
-                                name 'GNU General Public License'
-                                url 'http://www.gnu.org/licenses/#GPL'
-                                distribution 'repo'
-                            }
-                        }
-
-                        developers {
-                            developer {
-                                id 'jesseeichar'
-                                name 'Jesse Eichar'
-                            }
-                            developer {
-                                id 'geekdenz'
-                                name 'Tim-Hinnerk Heuer'
-                            }
-                        }
-                        mailingLists {
-                            mailingList {
-                                name ='Users'
-                                subscribe='users-subscribe@mapfish.org'
-                                unsubscribe='users-subscribe@mapfish.org'
-                                post='users@mapfish.org'
-                                archive='http://www.mapfish.org/pipermail/users/'
-                            }
-                            mailingList {
-                                name ='Dev'
-                                subscribe='dev-subscribe@mapfish.org'
-                                unsubscribe='dev-subscribe@mapfish.org'
-                                post='dev@mapfish.org'
-                                archive='http://www.mapfish.org/pipermail/dev/'
-                            }
-                        }
-                    }
-                }
-            }
+        repository(url: "https://$host/service/local/staging/deploy/maven2") {
+          authentication(userName: sonatypeUsername, password: sonatypePassword)
         }
+        snapshotRepository(url: "https://$host/content/repositories/snapshots")  {
+          authentication(userName: sonatypeUsername, password: sonatypePassword)
+          uniqueVersion = false
+        }
+        artifactFilterMapping.each {entry ->
+          addFilter(entry.key) { artifact, file ->
+            artifact.name.contains entry.value
+          }
+        }
+        pom('lib').project {
+          name 'print-lib'
+          packaging 'jar'
+          description 'Library for generating PDFs and images from oneline webmapping services'
+        }
+        pom('war').project {
+          name 'print'
+          packaging 'war'
+          description 'Web application for generating PDFs and images from oneline webmapping services'
+        }
+        pom('standalone').project {
+          name 'print-standalone'
+          packaging 'jar'
+          description 'Application for generating PDFs and images from oneline webmapping services. All dependencies are included'
+        }
+        artifactFilterMapping.keySet().each { filterName ->
+          pom(filterName).project {
+            url 'http://www.mapfish.org/doc/print/'
+
+            scm {
+               url 'scm:git@github.com:mapfish/mapfish-print.git'
+               connection 'scm:git@github.com:mapfish/mapfish-print.git'
+               developerConnection 'scm:git@github.com:mapfish/mapfish-print.git'
+            }
+
+            licenses {
+               license {
+                   name 'GNU General Public License'
+                   url 'http://www.gnu.org/licenses/#GPL'
+                   distribution 'repo'
+               }
+            }
+
+            developers {
+               developer {
+                   id 'jesseeichar'
+                   name 'Jesse Eichar'
+               }
+               developer {
+                   id 'geekdenz'
+                   name 'Tim-Hinnerk Heuer'
+               }
+               developer {
+                   id 'miblon'
+                   name 'Milo van der Linden'
+            }
+            }
+            mailingLists {
+              mailingList {
+                name ='Users'
+                subscribe='users-subscribe@mapfish.org'
+                unsubscribe='users-subscribe@mapfish.org'
+                post='users@mapfish.org'
+                archive='http://www.mapfish.org/pipermail/users/'
+              }
+              mailingList {
+                name ='Dev'
+                subscribe='dev-subscribe@mapfish.org'
+                unsubscribe='dev-subscribe@mapfish.org'
+                post='dev@mapfish.org'
+                archive='http://www.mapfish.org/pipermail/dev/'
+              }
+            }
+          }
+        }
+      }
     }
+  }
 } else {
-    uploadArchives << {
-        throw new IllegalStateException("Cannot upload archives because enablePublishing property is not true.  It is $enablePublishing")
-    }
+	uploadArchives << {
+		throw new IllegalStateException("Cannot upload archives because enablePublishing property is not true.  It is $enablePublishing")
+	}
 }
 
 def prop(key) {
-    return System.getProperty(key) == null ? null : "--${key}=${System.getProperty(key)}"
+  return System.getProperty(key) == null ? null : "--${key}=${System.getProperty(key)}"
 }
 
 task run (dependsOn: compileJava) << {
-    def warning = """[WARNING] config parameter is required.
-
+  def warning = """[WARNING] config parameter is required. 
+  
   Usage:
     gradle run -Dconfig={value} [-Dspec={value}] [-Dverbose={value}] [-Doutput={value}] [-DclientConfig] [-Dreferer={value}] [-Dlog4jConfig={value}]
   Params:
@@ -329,26 +333,26 @@ task run (dependsOn: compileJava) << {
     -DclientConfig={on|off}: Get the config for the client form. Doesn't generate a PDF (defaults to [off])
     -Dreferer={String}: Referer address to use when doing queries (defaults to [null])
     -Dlog4jConfig={String}: Property file for the log4j configuration (defaults to [null])
-
+    
   Example:
     gradle run -Dconfig=samples/config.yaml -Dspec=samples/spec.json -Doutput=/tmp/print-out.pdf
-
-
+    
+    
   """
 
-    def args = [prop("config"),prop("spec"),prop("output"),prop("verbose"),prop("clientConfig"),prop("referer"),prop("log4jConfig")]
-    if(prop("config") == null) {
-        println(warning)
-    } else {
-        ant.java(classname: 'org.mapfish.print.ShellMapPrinter', fork: false, logError: false,
-                classpath: "${sourceSets.main.runtimeClasspath.asPath}")  {
-            for(a in args.findAll {it!=null}){
-                arg(value: a)
-            }
+  def args = [prop("config"),prop("spec"),prop("output"),prop("verbose"),prop("clientConfig"),prop("referer"),prop("log4jConfig")]
+  if(prop("config") == null) {
+    println(warning)
+  } else {  
+    ant.java(classname: 'org.mapfish.print.ShellMapPrinter', fork: false, logError: false,
+             classpath: "${sourceSets.main.runtimeClasspath.asPath}")  {
+        for(a in args.findAll {it!=null}){
+          arg(value: a)
         }
-    }
+     }
+   }
 }
-run.description = 'Run mapfish print from commandline.  All commandline parameters apply. Execute task without system parameters to get help'
+run.description = 'Run mapfish print from commandline.  All commandline parameters apply. Execute task without system parameters to get help' 
 
 jettyRun {
     httpPort = 8080
@@ -357,9 +361,9 @@ jettyRun {
 }
 
 task jettyRunImgMgk (type: JettyRun) {
-    description = 'Run mapfish-print within jetty with the imagemagick format installed'
+	description = 'Run mapfish-print within jetty with the imagemagick format installed'
     httpPort = 8080
-    def imgMagickSpring = file("sample-spring/imagemagick/WEB-INF/classes/imagemagick-spring-application-context-override.xml")
+    def imgMagickSpring = file("sample-spring/imagemagick/WEB-INF/classes/imagemagick-spring-application-context-override.xml") 
     scanTargets = (fileTree("src/main/").include("webapp/WEB-INF/**") + fileTree(compileJava.destinationDir)).files
     reload = 'manual'
 
@@ -382,12 +386,12 @@ This task is not ready for prime time.  I do not know what parameters the class 
 task runWarTest(dependsOn: jettyRunWar) << {
   description = "run load test on embedded jetty"
   try {
-
-    testServer = System.properties('testServer') :?
+    
+    testServer = System.properties('testServer') :? 
     def constructor
     ant.java(
       classname: 'integration.HeavyLoad', fork:false,
-      classpath: "${configurations.testCompile.asPath}")
+      classpath: "${configurations.testCompile.asPath}") 
       {
         arg(value: "http://localhost:$httpPort/print")
         arg(value: "samples/spec.json")
@@ -407,25 +411,25 @@ task generateProguardConfigFile << {
     proguardConfig.withWriter{
         writer ->
 
-            writer << "-injars ${standalone.archivePath}\n"
-            writer << "-outjars ${proguardOutput}\n"
-            writer << '-printseeds\n'
-            writer << '-dontskipnonpubliclibraryclasses\n'
-            writer << '-dontskipnonpubliclibraryclassmembers\n'
-            writer << '-keepclasseswithmembers public class * {\n'
-            writer << '    public static void main(java.lang.String[]);\n'
-            writer << '}\n'
+          writer << "-injars ${standalone.archivePath}\n"
+          writer << "-outjars ${proguardOutput}\n"
+          writer << '-printseeds\n'
+          writer << '-dontskipnonpubliclibraryclasses\n'
+          writer << '-dontskipnonpubliclibraryclassmembers\n'
+          writer << '-keepclasseswithmembers public class * {\n'
+          writer << '    public static void main(java.lang.String[]);\n'
+          writer << '}\n'
 //          writer << '-optimizations !code/simplification/cast' + '\n'
-            writer << '-allowaccessmodification\n'
+          writer << '-allowaccessmodification\n'
     }
 }
 
 task minify(dependsOn: [generateProguardConfigFile]) << {
-    inputs.file standalone.archivePath
-    outputs.file proguardOutput
-    ant.taskdef(resource: 'proguard/ant/task.properties',
-            classpath:  configurations.proguard.asPath    )
-    ant.proguard(configuration: proguardConfig)
+  inputs.file standalone.archivePath
+  outputs.file proguardOutput
+  ant.taskdef(resource: 'proguard/ant/task.properties',
+              classpath:  configurations.proguard.asPath    )
+  ant.proguard(configuration: proguardConfig)
 }
 minify.description = 'Minify standalone jar, not yet functioning'
 

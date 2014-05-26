@@ -21,18 +21,20 @@ package org.mapfish.print;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.lowagie.text.BadElementException;
-import com.lowagie.text.Chunk;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Font;
-import com.lowagie.text.Image;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfTemplate;
+
+import com.itextpdf.awt.PdfGraphics2D;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfTemplate;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.DocumentLoader;
 import org.apache.batik.bridge.GVTBuilder;
@@ -40,36 +42,34 @@ import org.apache.batik.bridge.UserAgent;
 import org.apache.batik.bridge.UserAgentAdapter;
 import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.dom.svg.SVGDocumentFactory;
-import org.apache.batik.gvt.GraphicsNode;
-import org.apache.batik.util.XMLResourceDescriptor;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.log4j.Logger;
-import org.mapfish.print.config.layout.Block;
-import org.mapfish.print.config.layout.HorizontalAlign;
-import org.mapfish.print.config.layout.MapBlock;
-import org.mapfish.print.config.layout.ScalebarBlock;
-import org.mapfish.print.config.layout.TableConfig;
-import org.mapfish.print.utils.PJsonObject;
-import org.w3c.dom.svg.SVGDocument;
-
-import java.awt.Graphics2D;
 import java.io.ByteArrayOutputStream;
+import org.apache.batik.gvt.GraphicsNode;
 import java.io.File;
+import org.apache.batik.util.XMLResourceDescriptor;
 import java.io.IOException;
+import org.apache.commons.httpclient.Header;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import org.apache.commons.httpclient.methods.GetMethod;
 import java.text.SimpleDateFormat;
+import org.apache.log4j.Logger;
 import java.util.Date;
+import org.mapfish.print.config.layout.Block;
 import java.util.HashMap;
+import org.mapfish.print.config.layout.HorizontalAlign;
 import java.util.List;
+import org.mapfish.print.config.layout.MapBlock;
 import java.util.Map;
+import org.mapfish.print.config.layout.ScalebarBlock;
 import java.util.regex.Matcher;
+import org.mapfish.print.config.layout.TableConfig;
 import java.util.regex.Pattern;
+import org.mapfish.print.utils.PJsonObject;
+import org.w3c.dom.svg.SVGDocument;
 
 /**
  * Some utility functions for iText.
@@ -416,7 +416,7 @@ public class PDFUtils {
 
     private static final Pattern VAR_REGEXP = Pattern.compile("\\$\\{([^}]+)\\}");
 
-    public static Phrase renderString(RenderingContext context, PJsonObject params, String val, com.lowagie.text.Font font, String mapName) throws BadElementException {
+    public static Phrase renderString(RenderingContext context, PJsonObject params, String val, com.itextpdf.text.Font font, String mapName) throws BadElementException {
         Phrase result = new Phrase();
         while (true) {
             Matcher matcher = VAR_REGEXP.matcher(val);
@@ -676,17 +676,17 @@ public class PDFUtils {
 
     public static BaseFont getBaseFont(String fontFamily, String fontSize,
             String fontWeight) {
-        int myFontValue;
+        Font.FontFamily myFontValue;
         float myFontSize;
         int myFontWeight;
         if (fontFamily.toUpperCase().contains("COURIER")) {
-            myFontValue = Font.COURIER;
+            myFontValue = Font.FontFamily.COURIER;
         } else if (fontFamily.toUpperCase().contains("HELVETICA")) {
-            myFontValue = Font.HELVETICA;
+            myFontValue = Font.FontFamily.HELVETICA;
         } else if (fontFamily.toUpperCase().contains("ROMAN")) {
-            myFontValue = Font.TIMES_ROMAN;
+            myFontValue = Font.FontFamily.TIMES_ROMAN;
         } else {
-            myFontValue = Font.HELVETICA;
+            myFontValue = Font.FontFamily.HELVETICA;
         }
         myFontSize = (float) Double.parseDouble(fontSize.toLowerCase()
                 .replaceAll("px", ""));
@@ -769,7 +769,7 @@ public class PDFUtils {
             final float svgFactor = 25.4f / userAgent.getPixelUnitToMillimeter() / 72f; // 25.4 mm = 1 inch TODO: Might need to get 72 from somewhere else?
             //float svgFactor = (float) Toolkit.getDefaultToolkit().getScreenResolution() / 72f; // this only works with AWT, i.e. when a window environment is running
             PdfTemplate map = dc.createTemplate(svgWidth * svgFactor, svgHeight * svgFactor);
-            Graphics2D g2d = map.createGraphics(svgWidth * svgFactor, svgHeight * svgFactor);
+            PdfGraphics2D g2d = new PdfGraphics2D(map, svgWidth * svgFactor, svgHeight * svgFactor);
             graphics.paint(g2d);
             g2d.dispose();
             image = Image.getInstance(map);

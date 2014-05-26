@@ -8,3 +8,4 @@ deploy.sh
 .settings/org.eclipse.jdt.core.prefs
 mapfish-print.ipr
 mapfish-print.iws
+/.nb-gradle/private/

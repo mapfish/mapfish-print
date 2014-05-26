@@ -1,10 +1,11 @@
 package org.mapfish.print.config.layout;
 
 import com.codahale.metrics.MetricRegistry;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfTemplate;
+
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfTemplate;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
@@ -18,7 +19,6 @@ import org.mapfish.print.RenderingContext;
 import org.mapfish.print.ThreadResources;
 import org.mapfish.print.config.Config;
 import org.mapfish.print.utils.PJsonObject;
-
 import java.net.URL;
 
 import static org.junit.Assert.fail;

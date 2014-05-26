@@ -19,15 +19,16 @@
 
 package org.mapfish.print;
 
-import com.lowagie.text.pdf.PdfContentByte;
+import com.itextpdf.awt.geom.AffineTransform;
+
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.GeodeticCalculator;
 import org.mapfish.print.config.Config;
+import org.geotools.referencing.GeodeticCalculator;
 import org.mapfish.print.utils.DistanceUnit;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import java.awt.geom.AffineTransform;
+import com.itextpdf.text.pdf.PdfContentByte;
 
 /**
  * Class that deals with the geometric tranformation between the geographic,
@@ -73,6 +74,41 @@ public class Transformer implements Cloneable {
     private double rotation;
     private final boolean strictEpsg4326;
 
+    private void adjustSvgFactor(int dpi, boolean isIntegerSvg) {
+        /**
+         * The following code has been changed due to the fact that it seems
+         * wrong. However, I'm not sure if my "correction" solves the problem
+         * for the better. So, please review.
+         *
+         * The ('wrong') code below can be reformed: (600 + dpi - 1) / dpi = 1 +
+         * 599/dpi and is never smaller than 1, since dpi>1. Also, it does not
+         * make sense, as this factor gets smaller with increasing values for
+         * dpi.
+         */
+        // target at least 600DPI for the SVG precision
+        // svgFactor = Math.max((600 + dpi - 1) / dpi, 1);
+
+        /**
+         * svgFactor seems to not matter so much so we set it to 1 (above) needs
+         * to get bigger if DPI increases and at standard 72 DPI needs to be 1.0
+         */
+        if (isIntegerSvg) { // integerSvg: true # in yaml
+            // config file
+            if (dpi < 600) { // target at least 600 DPI, this is a hack and only
+                // needed for MapServer <= 5.6 where integers
+                // are put into SVG
+                svgFactor = 600f / 72.0f;
+                /**
+                 * = 8.33 so almost 9 as before with svgFactor being (600 + dpi
+                 * -1)/dpi = ~9 if dpi = 72
+                 */
+            } else {
+                svgFactor = dpi / 72.0f; // gets greater than 8.33
+            }
+        } // else defaults to 1.0 as it should with MapServer >= 6 and CAIRO SVG
+        // rendering with floating point values
+    }
+
     /**
      * @param centerX       geographic center in projection - x
      * @param centerY       geographic center in projection - y
@@ -112,41 +148,6 @@ public class Transformer implements Cloneable {
             this.maxGeoY = minGeoY + geoHeight;
         }
 
-    }
-
-    private void adjustSvgFactor(int dpi, boolean isIntegerSvg) {
-        /**
-         * The following code has been changed due to the fact that it seems
-         * wrong. However, I'm not sure if my "correction" solves the problem
-         * for the better. So, please review.
-         *
-         * The ('wrong') code below can be reformed: (600 + dpi - 1) / dpi = 1 +
-         * 599/dpi and is never smaller than 1, since dpi>1. Also, it does not
-         * make sense, as this factor gets smaller with increasing values for
-         * dpi.
-         */
-        // target at least 600DPI for the SVG precision
-        // svgFactor = Math.max((600 + dpi - 1) / dpi, 1);
-
-        /**
-         * svgFactor seems to not matter so much so we set it to 1 (above) needs
-         * to get bigger if DPI increases and at standard 72 DPI needs to be 1.0
-         */
-        if (isIntegerSvg) { // integerSvg: true # in yaml
-            // config file
-            if (dpi < 600) { // target at least 600 DPI, this is a hack and only
-                // needed for MapServer <= 5.6 where integers
-                // are put into SVG
-                svgFactor = 600f / 72.0f;
-                /**
-                 * = 8.33 so almost 9 as before with svgFactor being (600 + dpi
-                 * -1)/dpi = ~9 if dpi = 72
-                 */
-            } else {
-                svgFactor = dpi / 72.0f; // gets greater than 8.33
-            }
-        } // else defaults to 1.0 as it should with MapServer >= 6 and CAIRO SVG
-        // rendering with floating point values
     }
 
     private void computeGeodeticBBox(double geoWidth, double geoHeight,

@@ -23,7 +23,7 @@ import org.mapfish.print.PDFUtils;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.utils.PJsonObject;
 
-import com.lowagie.text.Document;
+import com.itextpdf.text.Document;
 
 /**
  * Bean to configure the metaData part of a layout.

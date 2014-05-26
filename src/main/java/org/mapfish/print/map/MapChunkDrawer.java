@@ -19,7 +19,7 @@
 
 package org.mapfish.print.map;
 
-import java.awt.Color;
+import com.itextpdf.text.BaseColor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,10 +33,13 @@ import org.mapfish.print.utils.Maps;
 import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfLayer;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfLayer;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Special drawer for map chunks.
@@ -46,11 +49,11 @@ public class MapChunkDrawer extends ChunkDrawer {
     private final double overviewMap;
     private final PJsonObject params;
     private final RenderingContext context;
-    private final Color backgroundColor;
+    private final BaseColor backgroundColor;
     private final String name;
 
 
-    public MapChunkDrawer(PDFCustomBlocks customBlocks, Transformer transformer, double overviewMap, PJsonObject params, RenderingContext context, Color backgroundColor, String name) {
+    public MapChunkDrawer(PDFCustomBlocks customBlocks, Transformer transformer, double overviewMap, PJsonObject params, RenderingContext context, BaseColor backgroundColor, String name) {
         super(customBlocks);
         this.transformer = transformer;
         this.overviewMap = overviewMap;
@@ -172,7 +175,12 @@ public class MapChunkDrawer extends ChunkDrawer {
                 //mark the starting of a new PDF layer
                 parallelMapTileLoader.addTileToLoad(new MapTileTask.RenderOnly() {
                     public void renderOnPdf(PdfContentByte dc) throws DocumentException {
-                        PdfLayer pdfLayer = new PdfLayer(reader.toString(), context.getWriter());
+                        PdfLayer pdfLayer = null;
+                        try {
+                            pdfLayer = new PdfLayer(reader.toString(), context.getWriter());
+                        } catch (IOException ex) {
+                            Logger.getLogger(MapChunkDrawer.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                         mapLayer.addChild(pdfLayer);
                         dc.beginLayer(pdfLayer);
                     }
@@ -188,6 +196,8 @@ public class MapChunkDrawer extends ChunkDrawer {
                     }
                 });
             }
+        } catch (IOException ex) {
+            Logger.getLogger(MapChunkDrawer.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             //wait for all the tiles to be loaded
             parallelMapTileLoader.waitForCompletion();
@@ -218,7 +228,7 @@ public class MapChunkDrawer extends ChunkDrawer {
             transformer.setRotation(0);
 
             dc.setLineWidth((float)(1 * transformer.getGeoW() / transformer.getPaperW()));
-            dc.setColorStroke(new Color(255, 0, 0));
+            dc.setColorStroke(new BaseColor(255, 0, 0));
             dc.rectangle((float) mainTransformer.getMinGeoX(), (float) mainTransformer.getMinGeoY(),
                     (float) mainTransformer.getGeoW(), (float)mainTransformer.getGeoH());
             dc.stroke();

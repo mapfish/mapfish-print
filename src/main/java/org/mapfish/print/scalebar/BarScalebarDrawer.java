@@ -19,14 +19,14 @@
 
 package org.mapfish.print.scalebar;
 
-import java.awt.Color;
+import com.itextpdf.text.BaseColor;
 import java.util.List;
 
 import org.mapfish.print.PDFCustomBlocks;
 import org.mapfish.print.config.layout.ScalebarBlock;
 
-import com.lowagie.text.Font;
-import com.lowagie.text.pdf.PdfContentByte;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.pdf.PdfContentByte;
 
 /**
  * Draw a bar with alternating black and white zones marking the sub-intervals.
@@ -44,7 +44,7 @@ public class BarScalebarDrawer extends ScalebarDrawer {
         float subIntervalWidth = intervalWidth / subIntervals;
         for (int i = 0; i < block.getIntervals() * subIntervals; ++i) {
             float pos = i * subIntervalWidth;
-            final Color color = i % 2 == 0 ? block.getBarBgColorVal() : block.getColorVal();
+            final BaseColor color = i % 2 == 0 ? block.getBarBgColorVal() : block.getColorVal();
             if (color != null) {
                 dc.setColorFill(color);
                 dc.rectangle(pos, 0, subIntervalWidth, barSize);

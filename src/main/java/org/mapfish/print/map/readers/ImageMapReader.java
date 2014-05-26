@@ -19,7 +19,7 @@
 
 package org.mapfish.print.map.readers;
 
-import java.awt.geom.AffineTransform;
+import com.itextpdf.awt.geom.AffineTransform;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
@@ -35,10 +35,10 @@ import org.mapfish.print.map.ParallelMapTileLoader;
 import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Image;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfGState;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfGState;
 
 /**
  * Renders using a georeferenced image directly.

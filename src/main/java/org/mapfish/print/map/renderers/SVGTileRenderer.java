@@ -19,6 +19,7 @@
 
 package org.mapfish.print.map.renderers;
 
+import com.itextpdf.awt.PdfGraphics2D;
 import java.awt.Graphics2D;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
@@ -52,9 +53,9 @@ import org.mapfish.print.map.ParallelMapTileLoader;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfGState;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfGState;
 
 public class SVGTileRenderer extends TileRenderer {
     public static final Logger LOGGER = Logger.getLogger(SVGTileRenderer.class);
@@ -124,8 +125,7 @@ public class SVGTileRenderer extends TileRenderer {
                     //gs.setBlendMode(PdfGState.BM_SOFTLIGHT);
                     dc.setGState(gs);
                 }
-
-                Graphics2D g2 = dc.createGraphics(transformer.getRotatedSvgW(), transformer.getRotatedSvgH());
+                PdfGraphics2D g2 = new PdfGraphics2D(dc, transformer.getRotatedSvgW(), transformer.getRotatedSvgH());
 
                 //avoid a warning from Batik
                 System.setProperty("org.apache.batik.warn_destination", "false");

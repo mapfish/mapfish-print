@@ -22,8 +22,8 @@ package org.mapfish.print;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Rectangle;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Rectangle;
 
 /**
  * Non production utility main to print the pages sizes defined by iText.

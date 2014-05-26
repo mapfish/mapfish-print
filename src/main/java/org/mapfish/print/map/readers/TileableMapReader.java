@@ -25,6 +25,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.Transformer;
@@ -54,8 +56,12 @@ public abstract class TileableMapReader extends HTTPMapReader {
         double maxGeoY = transformer.getRotatedMaxGeoY();
 
         if (tileCacheLayerInfo != null) {
+            try {
             //tiled
             transformer = fixTiledTransformer(transformer);
+            } catch (CloneNotSupportedException ex) {
+                Logger.getLogger(TileableMapReader.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             if (transformer == null) {
                 if (LOGGER.isDebugEnabled()) {
@@ -126,7 +132,7 @@ public abstract class TileableMapReader extends HTTPMapReader {
     /**
      * fix the resolution to something compatible with the resolutions available in tilecache.
      */
-    private Transformer fixTiledTransformer(Transformer transformer) {
+    private Transformer fixTiledTransformer(Transformer transformer) throws CloneNotSupportedException {
         double resolution;
 
         // if clientResolution is passed from client use it explicitly if available otherwise calculate nearest resolution

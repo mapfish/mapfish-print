@@ -19,18 +19,19 @@
 
 package org.mapfish.print.map.renderers.vector;
 
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfGState;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineString;
-import org.mapfish.print.InvalidValueException;
-import org.mapfish.print.RenderingContext;
-import org.mapfish.print.config.ColorWrapper;
-import org.mapfish.print.utils.PJsonObject;
+import com.itextpdf.awt.geom.AffineTransform;
 
-import java.awt.geom.AffineTransform;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfGState;
+
+import org.mapfish.print.InvalidValueException;
+import com.vividsolutions.jts.geom.Coordinate;
 
 import static java.lang.Float.parseFloat;
+import org.mapfish.print.RenderingContext;
+import com.vividsolutions.jts.geom.LineString;
+import org.mapfish.print.config.ColorWrapper;
+import org.mapfish.print.utils.PJsonObject;
 
 public class LineStringRenderer extends GeometriesRenderer<LineString> {
     protected static void applyStyle(RenderingContext context, PdfContentByte dc, PJsonObject style, PdfGState state) {

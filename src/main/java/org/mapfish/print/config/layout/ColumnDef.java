@@ -24,8 +24,8 @@ import org.mapfish.print.PDFUtils;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.utils.PJsonObject;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfPCell;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfPCell;
 
 /**
  * Bean to configure an attributes block's column.

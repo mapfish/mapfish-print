@@ -2,9 +2,11 @@ package org.mapfish.print;
 
 
 import com.codahale.metrics.MetricRegistry;
-import com.lowagie.text.Document;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.pdf.PdfWriter;
+
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.log4j.*;
 import org.json.JSONObject;
 import org.junit.After;
@@ -32,6 +34,7 @@ public abstract class MapTestBasic {
 
     @Rule
     public TestName name = new TestName();
+
     protected RenderingContext context;
 
     private ThreadResources threadResources;

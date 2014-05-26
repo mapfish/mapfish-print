@@ -29,7 +29,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.mapfish.print.config.Key;
 
-import com.lowagie.text.pdf.codec.Base64;
+import com.itextpdf.text.pdf.codec.Base64;
 
 public class GoogleURLSigner {
     // This variable stores the binary key, which is computed from the string

@@ -19,7 +19,7 @@
 
 package org.mapfish.print.map.renderers.vector;
 
-import java.awt.geom.AffineTransform;
+import com.itextpdf.awt.geom.AffineTransform;
 
 import org.apache.log4j.Logger;
 import org.mapfish.print.PDFUtils;
@@ -27,8 +27,8 @@ import org.mapfish.print.RenderingContext;
 import org.mapfish.print.config.ColorWrapper;
 import org.mapfish.print.utils.PJsonObject;
 
-import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfContentByte;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 

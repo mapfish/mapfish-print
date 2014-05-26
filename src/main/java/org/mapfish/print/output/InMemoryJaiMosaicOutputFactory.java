@@ -18,13 +18,12 @@
  */
 
 package org.mapfish.print.output;
-
-import com.lowagie.text.DocumentException;
-import org.apache.log4j.Logger;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.mapfish.print.RenderingContext;
 import org.mapfish.print.utils.PJsonObject;
+import org.mapfish.print.RenderingContext;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDDocument;
+
+import org.apache.log4j.Logger;
 
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -37,11 +36,14 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.imageio.ImageIO;
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
 import javax.media.jai.TileCache;
 import javax.media.jai.operator.MosaicDescriptor;
+
+import com.itextpdf.text.DocumentException;
 
 /**
  * An output factory that uses pdf box to parse the pdf and create a collection of BufferedImages.
@@ -153,7 +155,7 @@ public class InMemoryJaiMosaicOutputFactory implements OutputFormatFactory {
             PDDocument pdf = PDDocument.load(tmpFile);
             try {
                 @SuppressWarnings("unchecked")
-                List<PDPage> pages = pdf.getDocumentCatalog().getAllPages();
+				List<PDPage> pages = pdf.getDocumentCatalog().getAllPages();
 
                 for (PDPage page : pages) {
                     BufferedImage img = page.convertToImage(BufferedImage.TYPE_4BYTE_ABGR, calculateDPI(context, jsonSpec));

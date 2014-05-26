@@ -18,13 +18,12 @@
  */
 
 package org.mapfish.print.output;
-
-import com.lowagie.text.DocumentException;
-import org.apache.log4j.Logger;
-import org.json.JSONException;
-import org.mapfish.print.RenderingContext;
-import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
+import org.mapfish.print.utils.PJsonArray;
+import org.mapfish.print.RenderingContext;
+import org.json.JSONException;
+
+import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -42,6 +41,8 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import com.itextpdf.text.DocumentException;
+
 /**
  * Print Output that generate a PNG. It will first generate a PDF ant convert it to PNG
  * using the convert command provide by a native process.
@@ -58,11 +59,11 @@ public class NativeProcessOutputFactory implements OutputFormatFactory {
      * The logger.
      */
     public static final Logger LOGGER = Logger.getLogger(NativeProcessOutputFactory.class);
-    private String cmd;
-    private List<String> cmdArgs = new ArrayList<String>();
-    private List<String> formats = new ArrayList<String>();
-    private int timeoutSeconds = 30;
-    private final Semaphore runningProcesses;
+	private String cmd;
+	private List<String> cmdArgs = new ArrayList<String>();
+	private List<String> formats = new ArrayList<String>();
+	private int timeoutSeconds = 30;
+	private final Semaphore runningProcesses;
 
     public NativeProcessOutputFactory(int maxProcesses) {
         runningProcesses = new Semaphore(maxProcesses,true);
@@ -113,14 +114,14 @@ public class NativeProcessOutputFactory implements OutputFormatFactory {
     public void setTimeoutSeconds(int timeoutSeconds) {
         this.timeoutSeconds = timeoutSeconds;
     }
-    /**
-     * Set the formats that the current native process installation can support
-     * @param formats
-     */
-    public void setFormats(List<String> formats) {
-        this.formats = formats;
-    }
-
+	/**
+	 * Set the formats that the current native process installation can support
+	 * @param formats
+	 */
+	public void setFormats(List<String> formats) {
+		this.formats = formats;
+	}
+	
     @Override
     public List<String> formats() {
         return formats;
@@ -216,22 +217,22 @@ public class NativeProcessOutputFactory implements OutputFormatFactory {
          */
         private void drawImage(OutputStream out, File tmpPngFile) throws IOException {
             FileInputStream inputStream = new FileInputStream(tmpPngFile);
-            FileChannel channel = inputStream.getChannel();
+			FileChannel channel = inputStream.getChannel();
             try {
-                channel.transferTo(0, tmpPngFile.length(), Channels.newChannel(out));
+	            channel.transferTo(0, tmpPngFile.length(), Channels.newChannel(out));
             } finally {
-                closeQuiet(channel);
-                closeQuiet(inputStream);
+            	closeQuiet(channel);
+            	closeQuiet(inputStream);
             }
         }
 
         private void closeQuiet(Closeable c) {
-            try {
-                if(c != null) c.close();
-            } catch(Throwable e) {
-                LOGGER.error("Error closing resource", e);
-            }
-        }
+        	try {
+        		if(c != null) c.close();
+        	} catch(Throwable e) {
+        		LOGGER.error("Error closing resource", e);
+        	}
+		}
 
         /**
          * Creates a PNG image from a PDF file using the native process

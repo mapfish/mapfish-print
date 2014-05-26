@@ -29,10 +29,10 @@ import org.mapfish.print.config.Config;
 import org.mapfish.print.config.layout.Layout;
 import org.mapfish.print.utils.PJsonObject;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfTemplate;
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfTemplate;
+import com.itextpdf.text.pdf.PdfWriter;
 
 /**
  * Holds some "per rendering request" information.

@@ -19,7 +19,7 @@
 
 package org.mapfish.print.scalebar;
 
-import com.lowagie.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.BaseFont;
 
 /**
  * Position, size and content of a label
