@@ -18,28 +18,26 @@
  */
 
 package org.mapfish.print;
-import com.lowagie.text.Font;
-import org.apache.log4j.Logger;
 
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Font;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
-
-import java.io.IOException;
 import org.junit.Test;
-import java.net.URI;
 import org.mapfish.print.config.Config;
-import java.net.URISyntaxException;
 import org.mapfish.print.config.ConfigFactory;
 import org.mapfish.print.config.ConfigTest;
 import org.mapfish.print.utils.PJsonObject;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
-import com.itextpdf.text.DocumentException;
 
 public class PDFUtilsTest extends PdfTestCase {
     private static final String FIVE_HUNDRED_ROUTE = "/500";
