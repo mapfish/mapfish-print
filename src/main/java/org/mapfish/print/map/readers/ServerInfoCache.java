@@ -1,20 +1,30 @@
 package org.mapfish.print.map.readers;
 
+import com.codahale.metrics.MetricRegistry;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
-import org.apache.xerces.util.DOMUtil;
 import org.mapfish.print.RenderingContext;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.*;
-import java.util.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Contains shared code for loading information from a server and caching it for later use.
@@ -62,6 +72,9 @@ public class ServerInfoCache<T extends ServiceInfo> {
         URL url = loader.createURL(baseUrl, context);
 
         GetMethod method = null;
+
+        MetricRegistry registry = context.getConfig().getMetricRegistry();
+        final com.codahale.metrics.Timer.Context timer = registry.timer("http_" + url.getAuthority()).time();
         try {
             final InputStream stream;
 
@@ -102,6 +115,7 @@ public class ServerInfoCache<T extends ServiceInfo> {
             }
             return result;
         } finally {
+            timer.stop();
             if (method != null) {
                 method.releaseConnection();
             }

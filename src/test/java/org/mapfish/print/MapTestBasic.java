@@ -1,6 +1,7 @@
 package org.mapfish.print;
 
 
+import com.codahale.metrics.MetricRegistry;
 import com.lowagie.text.Document;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.pdf.PdfWriter;
@@ -33,8 +34,13 @@ public abstract class MapTestBasic {
     public TestName name = new TestName();
     protected RenderingContext context;
 
+    private ThreadResources threadResources;
+
     @Before
     public void setUp() throws Exception {
+
+        this.threadResources = new ThreadResources();
+        this.threadResources.init();
         BasicConfigurator.configure(new ConsoleAppender(
                 new PatternLayout("%d{HH:mm:ss.SSS} [%t] %-5p %30.30c - %m%n")));
         Logger.getRootLogger().setLevel(Level.DEBUG);
@@ -51,6 +57,8 @@ public abstract class MapTestBasic {
         layout.setMainPage(mainPage);
         Config config = new Config();
         try {
+            config.setThreadResources(this.threadResources);
+            config.setMetricRegistry(new MetricRegistry());
             config.setDpis(new TreeSet<Integer>(Arrays.asList(96, 190, 254)));
             config.setScales(new TreeSet<Number>(Arrays.asList(20000.0, 25000.0, 100000.0, 500000.0, 4000000.0)));
             List<HostMatcher> hosts = new ArrayList<HostMatcher>(1);
@@ -69,6 +77,8 @@ public abstract class MapTestBasic {
 
     @After
     public void tearDown() throws Exception {
+        this.threadResources.destroy();
+
         BasicConfigurator.resetConfiguration();
 
         context.getWriter().close();

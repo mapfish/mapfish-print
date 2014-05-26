@@ -70,23 +70,23 @@ public class MetaData {
         final Document doc = context.getDocument();
 
         if (title != null) {
-            doc.addTitle(PDFUtils.evalString(context, params, title));
+            doc.addTitle(PDFUtils.evalString(context, params, title, null));
         }
 
         if (author != null) {
-            doc.addAuthor(PDFUtils.evalString(context, params, author));
+            doc.addAuthor(PDFUtils.evalString(context, params, author, null));
         }
 
         if (subject != null) {
-            doc.addSubject(PDFUtils.evalString(context, params, subject));
+            doc.addSubject(PDFUtils.evalString(context, params, subject, null));
         }
 
         if (keywords != null) {
-            doc.addKeywords(PDFUtils.evalString(context, params, keywords));
+            doc.addKeywords(PDFUtils.evalString(context, params, keywords, null));
         }
 
         if (creator != null) {
-            doc.addCreator(PDFUtils.evalString(context, params, creator));
+            doc.addCreator(PDFUtils.evalString(context, params, creator, null));
         }
     }
 }

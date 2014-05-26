@@ -1,0 +1,75 @@
+{
+    "maps": {
+        "main": {
+            "layers": [{
+                "type": "vector",
+                "styles": {
+                    "": {
+                        "pointRadius": 10,
+                        "fill": "red",
+                        "stroke-width": "3",
+                        "fill-opacity": 0.6
+                    }
+                },
+                "geoJson": {
+                    "type": "FeatureCollection",
+                    "features": [
+                        {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [102.0, 0.6]
+                             },
+                             "properties": {}
+                         }
+                     ]
+                }
+            }],
+            "srs": "EPSG:4326"
+        },
+        "other": {
+            "layers": [{
+                "type": "vector",
+                "styles": {
+                    "": {
+                        "stroke": "red",
+                        "stroke-width": "3",
+                        "fill-opacity": 0.6
+                    }
+                },
+                "geoJson": {
+                    "type": "FeatureCollection",
+                    "features": [
+                        {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "LineString",
+                                "coordinates": [
+                                  [102.0, 0.0], [103.0, 1.0], [104.0, 0.0], [105.0, 1.0]
+                                ]
+                             },
+                             "properties": {}
+                         }
+                     ]
+                }
+            }],
+            "srs": "EPSG:4326"
+        }
+    },
+    "units": "m",
+    "pages": [{
+        "maps": {
+            "main": {
+                "dpi": "300", 
+                "center": [47, 12],
+                "scale": 20000
+            
+            },
+            "other": {
+                "dpi": "300", 
+                "center": [45.2, 13.1],
+                "scale": 20000
+            }
+         }
+    }]
+}

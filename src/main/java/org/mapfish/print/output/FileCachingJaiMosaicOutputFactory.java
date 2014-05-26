@@ -19,6 +19,14 @@
 
 package org.mapfish.print.output;
 
+import com.lowagie.text.DocumentException;
+import com.sun.media.jai.codec.FileSeekableStream;
+import org.apache.log4j.Logger;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.mapfish.print.RenderingContext;
+import org.mapfish.print.utils.PJsonObject;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
@@ -28,20 +36,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.imageio.ImageIO;
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
-
-import org.apache.log4j.Logger;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.mapfish.print.RenderingContext;
-import org.mapfish.print.TimeLogger;
-import org.mapfish.print.utils.PJsonObject;
-
-import com.lowagie.text.DocumentException;
-import com.sun.media.jai.codec.FileSeekableStream;
 
 /**
  * Similar to {@link InMemoryJaiMosaicOutputFactory} in that it uses pdf box to parse pdf.  However it writes
@@ -81,20 +78,14 @@ public class FileCachingJaiMosaicOutputFactory extends InMemoryJaiMosaicOutputFa
                 FileOutputStream tmpOut = new FileOutputStream(tmpFile);
                 RenderingContext context;
                 try {
-                    TimeLogger timeLog = TimeLogger.info(LOGGER, "PDF Creation");
                     context = doPrint(params.withOutput(tmpOut));
-                    timeLog.done();
                 } finally {
                     tmpOut.close();
                 }
 
-                TimeLogger timeLog = TimeLogger.info(LOGGER, "Pdf to image conversion");
                 List<ImageInfo> images = createImages(params.jsonSpec, tmpFile, context);
-                timeLog.done();
 
-                timeLog = TimeLogger.info(LOGGER, "Write Mosaiced Image");
                 drawImage(params.outputStream, images);
-                timeLog.done();
 
                 return context;
             } catch (IOException e) {

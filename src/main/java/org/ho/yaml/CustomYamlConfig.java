@@ -20,6 +20,10 @@
 package org.ho.yaml;
 
 import java.awt.Color;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,6 +93,27 @@ public class CustomYamlConfig extends YamlConfig {
         transfers.put("key", Key.class.getName());
 
         setTransfers(transfers);
+    }
+
+    /**
+     * Workaround for jyaml bug that does not close
+     * files.
+     */
+    @Override
+    public <T> T loadType(File file, Class<T> cls) throws FileNotFoundException {
+        FileInputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(file);
+            return super.loadType(inputStream, cls);
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+    
+                }
+            }
+        }
     }
 
     public ObjectWrapper getWrapper(String classname) {

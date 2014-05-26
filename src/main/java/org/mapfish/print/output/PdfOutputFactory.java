@@ -19,14 +19,11 @@
 
 package org.mapfish.print.output;
 
+import com.lowagie.text.DocumentException;
+import org.mapfish.print.RenderingContext;
+
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.log4j.Logger;
-import org.mapfish.print.RenderingContext;
-import org.mapfish.print.TimeLogger;
-
-import com.lowagie.text.DocumentException;
 
 /**
  * OutputFormat and factory that Outputs PDF objects
@@ -58,10 +55,7 @@ public class PdfOutputFactory extends AbstractOutputFormat implements OutputForm
     }
 
     public RenderingContext print(PrintParams params) throws DocumentException {
-        final TimeLogger timeLog = TimeLogger.info(Logger.getLogger(PdfOutputFactory.class), "PDF Creation");
         final RenderingContext context = doPrint(params);
-        timeLog.done();
-
         return context;
 
     }

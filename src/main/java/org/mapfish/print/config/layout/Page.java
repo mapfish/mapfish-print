@@ -58,7 +58,7 @@ public class Page {
                     getMarginTop(context, params) + (header != null ? header.getHeight() : 0),
                     getMarginBottom(context, params) + (footer != null ? footer.getHeight() : 0));
 
-            context.getCustomBlocks().setBackgroundPdf(PDFUtils.evalString(context, params, backgroundPdf));
+            context.getCustomBlocks().setBackgroundPdf(PDFUtils.evalString(context, params, backgroundPdf, null));
             if (doc.isOpen()) {
                 doc.newPage();
             } else {
@@ -110,7 +110,7 @@ public class Page {
     }
 
     public String getPageSize(RenderingContext context, PJsonObject params) {
-        return PDFUtils.evalString(context, params, pageSize);
+        return PDFUtils.evalString(context, params, pageSize, null);
     }
 
     public void setPageSize(String pageSize) {
@@ -131,19 +131,19 @@ public class Page {
     }
 
     public int getMarginLeft(RenderingContext context, PJsonObject params) {
-        return Integer.parseInt(PDFUtils.evalString(context, params, marginLeft));
+        return Integer.parseInt(PDFUtils.evalString(context, params, marginLeft, null));
     }
 
     public int getMarginRight(RenderingContext context, PJsonObject params) {
-        return Integer.parseInt(PDFUtils.evalString(context, params, marginRight));
+        return Integer.parseInt(PDFUtils.evalString(context, params, marginRight, null));
     }
 
     public int getMarginTop(RenderingContext context, PJsonObject params) {
-        return Integer.parseInt(PDFUtils.evalString(context, params, marginTop));
+        return Integer.parseInt(PDFUtils.evalString(context, params, marginTop, null));
     }
 
     public int getMarginBottom(RenderingContext context, PJsonObject params) {
-        return Integer.parseInt(PDFUtils.evalString(context, params, marginBottom));
+        return Integer.parseInt(PDFUtils.evalString(context, params, marginBottom, null));
     }
 
     public void setMarginLeft(String marginLeft) {

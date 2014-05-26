@@ -19,11 +19,24 @@
 
 package org.mapfish.print.servlet;
 
+import com.google.common.io.CharStreams;
+import com.google.common.io.Closer;
+import com.lowagie.text.DocumentException;
+import org.apache.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONWriter;
+import org.mapfish.print.Constants;
+import org.mapfish.print.MapPrinter;
+import org.mapfish.print.output.OutputFormat;
+import org.mapfish.print.utils.PJsonObject;
+import org.pvalsecc.misc.FileUtilities;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -37,25 +50,15 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.json.JSONException;
-import org.json.JSONWriter;
-import org.mapfish.print.Constants;
-import org.mapfish.print.MapPrinter;
-import org.mapfish.print.output.OutputFormat;
-import org.mapfish.print.utils.PJsonObject;
-import org.pvalsecc.misc.FileUtilities;
-
-import com.lowagie.text.DocumentException;
 
 /**
  * Main print servlet.
  */
 public class MapPrinterServlet extends BaseMapServlet {
+    public static final Logger SPEC_LOGGER = Logger.getLogger(BaseMapServlet.class.getPackage().toString() + ".spec");
     private static final long serialVersionUID = -4706371598927161642L;
     private static final String CONTEXT_TEMPDIR = "javax.servlet.context.tempdir";
 
@@ -70,6 +73,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     private static final int TEMP_FILE_PURGE_SECONDS = 10 * 60;
 
     private File tempDir = null;
+    private String encoding = null;
     /**
      * Tells if a thread is alread purging the old temporary files or not.
      */
@@ -220,20 +224,33 @@ public class MapPrinterServlet extends BaseMapServlet {
         if(httpServletRequest.getParameter("spec") != null) {
             return httpServletRequest.getParameter("spec");
         }
-        BufferedReader data = httpServletRequest.getReader();
+
+        Closer closer = Closer.create();
         try {
-            StringBuilder spec = new StringBuilder();
-            String cur;
-            while ((cur = data.readLine()) != null) {
-                spec.append(cur).append("\n");
-            }
-            return spec.toString();
+            final InputStreamReader reader = closer.register(new InputStreamReader(httpServletRequest.getInputStream(), getEncoding()));
+            BufferedReader bufferedReader = closer.register(new BufferedReader(reader));
+            final String spec = CharStreams.toString(bufferedReader);
+            return spec;
         } finally {
-            if(data != null) {
-                data.close();
-            }
+            closer.close();
         }
     }
+    
+    /**
+     * Get and cache the used Encoding.
+     */
+    protected String getEncoding() {
+        if (encoding == null) {
+        	encoding = getInitParameter("encoding");
+        	LOGGER.debug("Using '" + encoding + "' to encode Inputcontent.");
+        }
+        if (encoding == null) {
+            return "UTF-8";
+        } else {
+            return encoding;
+        }
+    }
+    
 
     /**
      * To get the PDF created previously.
@@ -293,6 +310,9 @@ public class MapPrinterServlet extends BaseMapServlet {
             }
         } finally {
             writer.close();
+            if(app == null && printer != null) {
+                printer.stop();
+            }
         }
     }
 
@@ -304,6 +324,10 @@ public class MapPrinterServlet extends BaseMapServlet {
     protected TempFile doCreatePDFFile(String spec, HttpServletRequest httpServletRequest) throws IOException, DocumentException, ServletException, InterruptedException {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Generating PDF for spec=" + spec);
+        }
+
+        if (SPEC_LOGGER.isInfoEnabled()) {
+            SPEC_LOGGER.info(spec);
         }
 
         PJsonObject specJson = MapPrinter.parseSpec(spec);
@@ -350,8 +374,9 @@ public class MapPrinterServlet extends BaseMapServlet {
             deleteFile(tempFile);
             throw e;
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
+            }
         }
     }
 
@@ -361,10 +386,11 @@ public class MapPrinterServlet extends BaseMapServlet {
     protected void sendPdfFile(HttpServletResponse httpServletResponse, TempFile tempFile, boolean inline) throws IOException, ServletException {
         FileInputStream pdf = new FileInputStream(tempFile);
         final OutputStream response = httpServletResponse.getOutputStream();
+        MapPrinter mapPrinter = getMapPrinter(app);
         try {
             httpServletResponse.setContentType(tempFile.contentType());
             if (!inline) {
-                final String fileName = tempFile.getOutputFileName(getMapPrinter(app));
+                final String fileName = tempFile.getOutputFileName(mapPrinter);
                 httpServletResponse.setHeader("Content-disposition", "attachment; filename=" + fileName);
             }
             FileUtilities.copyStream(pdf, response);
@@ -373,6 +399,9 @@ public class MapPrinterServlet extends BaseMapServlet {
                 pdf.close();
             } finally{
                 response.close();
+            }
+            if(app == null && mapPrinter != null) {
+                mapPrinter.stop();
             }
         }
     }

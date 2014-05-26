@@ -1,24 +1,41 @@
 package org.mapfish.print.config.layout;
 
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfWriter;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.renderer.lite.RendererUtilities;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mapfish.print.MapPrinter;
+import org.mapfish.print.PDFCustomBlocks;
 import org.mapfish.print.RenderingContext;
+import org.mapfish.print.ThreadResources;
 import org.mapfish.print.Transformer;
 import org.mapfish.print.config.Config;
+import org.mapfish.print.map.readers.MapReaderFactoryFinder;
+import org.mapfish.print.map.readers.VectorMapReader;
 import org.mapfish.print.utils.DistanceUnit;
 import org.mapfish.print.utils.PJsonObject;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.pvalsecc.misc.FileUtilities;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test MapBlock's createTransformer method.
@@ -35,9 +52,16 @@ public class MapBlockTest {
     private Config config;
     private double centerY;
     private double centerX;
+    
+    private static String tempDir = System.getProperty("java.io.tmpdir");
+    private static String fileSeparator = System.getProperty("file.separator");
 
+    private ThreadResources threadResources;
     @Before
     public void init(){
+
+        this.threadResources = new ThreadResources();
+        this.threadResources.init();
         minx = -139.84870868359;
         miny = 18.549281576172;
         maxx = -51.852562316406;
@@ -57,6 +81,7 @@ public class MapBlockTest {
 
 
         this.config = new Config();
+        this.config.setThreadResources(this.threadResources);
         config.setDpis(dpis);
         config.setScales(scales);
         config.setDisableScaleLocking(true);
@@ -64,6 +89,11 @@ public class MapBlockTest {
         centerY = miny + (maxy - miny) / 2;
         centerX = maxx - (maxx - minx) / 2;
 
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        this.threadResources.destroy();
     }
 
     @Test @Ignore
@@ -210,5 +240,85 @@ public class MapBlockTest {
         assertEquals(maxx, transformer.getMaxGeoX(), delta);
         assertEquals(miny, transformer.getMinGeoY(), delta);
         assertEquals(maxy, transformer.getMaxGeoY(), delta);
+    }
+    
+    @Test
+    public void testMultipleMaps() throws IOException, DocumentException,
+            JSONException {
+    
+        PJsonObject globalParams = MapPrinter.parseSpec(FileUtilities
+                .readWholeTextFile(new File(MapBlockTest.class.getClassLoader()
+                        .getResource("config/multiple-maps.json").getFile())));
+        
+        PJsonObject params = globalParams.getJSONArray("pages").getJSONObject(0);
+        
+        // mocked PdfWriter
+        final PdfWriter writer = Mockito.mock(PdfWriter.class);
+        final PdfContentByte dc = Mockito.mock(PdfContentByte.class);
+        Mockito.when(writer.getDirectContent()).thenReturn(dc);
+        
+        // mocked RenderingContext
+        final RenderingContext context = Mockito.mock(RenderingContext.class);
+        Mockito.when(context.getGlobalParams()).thenReturn(globalParams);
+        Mockito.when(context.getConfig()).thenReturn(config);
+        Mockito.when(context.getPdfLock()).thenReturn(new Object());
+        PDFCustomBlocks blocks = new PDFCustomBlocks(writer, context);
+        Mockito.when(context.getCustomBlocks()).thenReturn(blocks);
+        Mockito.when(context.getWriter()).thenReturn(writer);
+        
+        
+        
+        // mock the MapReader creation chain to return a VectorMapReader for test layers
+        MapReaderFactoryFinder finder = Mockito.mock(MapReaderFactoryFinder.class);
+        config.setMapReaderFactoryFinder(finder);
+        Mockito.doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                VectorMapReader reader = new VectorMapReader(context, (PJsonObject)invocation.getArguments()[3]);
+                ((List)invocation.getArguments()[0]).add(reader);
+                return reader;
+            }
+            
+        }).when(finder).create(Mockito.anyList(),Mockito.anyString(),Mockito.any(RenderingContext.class), Mockito.any(PJsonObject.class));
+        
+        // mock PdfElement
+        Block.PdfElement target = Mockito.mock(Block.PdfElement.class);
+        
+        // render the mapblock named 'main'
+        renderMap(params, target, context, "main");
+        
+        // check that a circle is drawn on map
+        Mockito.verify(dc, Mockito.atLeastOnce()).circle(Mockito.anyFloat(),
+                Mockito.anyFloat(), Mockito.anyFloat());
+    
+        // render the mapblock named 'other'
+        renderMap(params, target, context, "other");
+        
+        // check that a linestring is drawn on map
+        Mockito.verify(dc, Mockito.atLeastOnce()).moveTo(Mockito.anyFloat(),
+                Mockito.anyFloat());
+        Mockito.verify(dc, Mockito.atLeastOnce()).lineTo(Mockito.anyFloat(),
+                Mockito.anyFloat());
+        
+        // render the mapblock named 'error' (not existing in spec)
+        boolean error = false;
+        try {
+            
+            renderMap(params, target, context, "error");
+        } catch(RuntimeException e) {
+            error = true;
+        }
+        assertTrue(error);
+    }
+
+    private void renderMap(PJsonObject params, Block.PdfElement target,
+            final RenderingContext context, String mapName) throws DocumentException {
+        MapBlock mapBlock = new MapBlock();
+        mapBlock.setAbsoluteX("10");
+        mapBlock.setAbsoluteY("10");
+        mapBlock.setWidth("100");
+        mapBlock.setHeight("100");
+        mapBlock.setName(mapName);
+        mapBlock.render(params, target, context);
     }
 }

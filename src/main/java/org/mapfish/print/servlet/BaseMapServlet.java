@@ -19,14 +19,7 @@
 
 package org.mapfish.print.servlet;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-
+import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.ShellMapPrinter;
@@ -34,6 +27,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Map;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 
 /**
  * Base class for MapPrinter servlets (deals with the configuration loading)
@@ -43,10 +42,8 @@ public abstract class BaseMapServlet extends HttpServlet {
 
     public static final Logger LOGGER = Logger.getLogger(BaseMapServlet.class);
 
-    private Map<String, MapPrinter> printers = null;
-    private long lastModified = 0L;
-    private long defaultLastModified = 0L;
-    private Map<String,Long> lastModifieds = null;
+    private final Map<String, MapPrinter> printers = Maps.newHashMap();
+    private final Map<String,Long> lastModifieds = Maps.newHashMap();
 
     private volatile ApplicationContext context;
 
@@ -59,33 +56,20 @@ public abstract class BaseMapServlet extends HttpServlet {
      * </ul>
      * <p/>
      * If the location is a relative path, it's taken from the servlet's root directory.
-     * @param servletContext
      */
     protected synchronized MapPrinter getMapPrinter(String app) throws ServletException {
-        String configPath = getInitParameter("config");
+        String configPath = System.getProperty("mapfish-print-config", getInitParameter("config"));
         if (configPath == null) {
             throw new ServletException("Missing configuration in web.xml 'web-app/servlet/init-param[param-name=config]' or 'web-app/context-param[param-name=config]'");
         }
         //String debugPath = "";
 
-        MapPrinter printer = null;
-        File configFile = null;
+        MapPrinter printer = printers.get(app);
+        File configFile;
         if (app != null) {
-            if (lastModifieds == null) {
-                lastModifieds = new HashMap<String, Long>();
-                //debugPath += "new HashMap\n";
-            }
-            if (printers instanceof HashMap &&  printers.containsKey(app)) {
-                printer = printers.get(app);
-                //debugPath += "get printer from hashmap\n";
-            } else {
-                printer = null;
-                //debugPath += "printer = null 1\n";
-            }
             configFile = new File(app);
         } else {
             configFile = new File(configPath);
-            //debugPath += "configFile = new ..., 1\n";
         }
         if (!configFile.isAbsolute()) {
             if (app != null) {
@@ -104,25 +88,19 @@ public abstract class BaseMapServlet extends HttpServlet {
                 //debugPath += "config is absolute app DEFAULT\n";
             }
         }
-        if (app != null) {
-            if (lastModifieds instanceof HashMap && lastModifieds.containsKey(app)) {
-                lastModified = lastModifieds.get(app);
-                //debugPath += "app = "+app+" lastModifieds has key and gotten: "+ lastModified +"\n";
-            } else {
-                lastModified = 0L;
-                //debugPath += "app = "+app+" lastModifieds has NOT key and gotten: "+ lastModified +" (0L)\n";
-            }
+        final long lastModified;
+        if (lastModifieds.containsKey(app)) {
+            lastModified = lastModifieds.get(app);
         } else {
-            lastModified = defaultLastModified; // this is a fix for when configuration files have changed
-            //debugPath += "app = NULL lastModifieds from defaultLastModified: "+ lastModified +"\n";
+            lastModified = 0L;
         }
 
         boolean forceReload = false;
-        if (printer != null && printer.getConfig().getReloadConfig()) {
+        if (printer != null && (!printer.isRunning() || printer.getConfig().getReloadConfig())) {
             forceReload = true;
         }
 
-        if (forceReload || (printer != null && configFile.lastModified() != lastModified)) {
+        if (forceReload || (printer != null && (configFile.lastModified() != lastModified || !printer.isRunning()))) {
             //file modified, reload it
             if (!forceReload) {
                 LOGGER.info("Configuration file modified. Reloading...");
@@ -143,20 +121,12 @@ public abstract class BaseMapServlet extends HttpServlet {
         }
 
         if (printer == null) {
-            lastModified = configFile.lastModified();
             //debugPath += "printer == null, lastModified from configFile = "+lastModified+"\n";
             try {
                 LOGGER.info("Loading configuration file: " + configFile.getAbsolutePath());
                 printer = getApplicationContext().getBean(MapPrinter.class).setYamlConfigFile(configFile);
-                if (app != null) {
-                    if (printers == null) {
-                        printers = new HashMap<String, MapPrinter>();
-                    }
-                    printers.put(app, printer);
-                    lastModifieds.put(app, lastModified);
-                } else {
-                    defaultLastModified = lastModified; // need this for default application
-                }
+                printers.put(app, printer);
+                lastModifieds.put(app,  configFile.lastModified());
             } catch (FileNotFoundException e) {
                 throw new ServletException("Cannot read configuration file: " + configPath, e);
             } catch (Throwable e) {

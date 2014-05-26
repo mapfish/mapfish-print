@@ -19,17 +19,18 @@
 
 package org.mapfish.print.map.renderers.vector;
 
-import java.awt.geom.AffineTransform;
-
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfGState;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.LineString;
 import org.mapfish.print.InvalidValueException;
 import org.mapfish.print.RenderingContext;
 import org.mapfish.print.config.ColorWrapper;
 import org.mapfish.print.utils.PJsonObject;
 
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfGState;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineString;
+import java.awt.geom.AffineTransform;
+
+import static java.lang.Float.parseFloat;
 
 public class LineStringRenderer extends GeometriesRenderer<LineString> {
     protected static void applyStyle(RenderingContext context, PdfContentByte dc, PJsonObject style, PdfGState state) {
@@ -86,6 +87,21 @@ public class LineStringRenderer extends GeometriesRenderer<LineString> {
                 dc.setLineDash(def, 0);
             } else if (dashStyle.equalsIgnoreCase("solid")) {
 
+            } else if (dashStyle.contains(" ")) {
+                //check for pattern if empty array, throw.
+                try {
+                    String[] x = dashStyle.split(" ");
+                    if(x.length > 1){
+                        final float[] def = new float[x.length];
+                        for (int i=0; i<x.length; i++) {
+                            def[i] = parseFloat(x[i]);
+                        }
+                        dc.setLineDash(def,0);
+                    }
+                } catch(NumberFormatException e){
+
+                }
+                //assume solid!
             } else {
                 throw new InvalidValueException("strokeDashstyle", dashStyle);
             }

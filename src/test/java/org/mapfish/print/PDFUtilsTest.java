@@ -34,15 +34,16 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class PDFUtilsTest extends PdfTestCase {
     private static final String FIVE_HUNDRED_ROUTE = "/500";
     private static final String NOT_IMAGE_ROUTE = "/notImage";
     private FakeHttpd httpd;
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -54,6 +55,7 @@ public class PDFUtilsTest extends PdfTestCase {
                 FakeHttpd.Route.textResponse(NOT_IMAGE_ROUTE, "Blahblah")
                 );
         httpd.start();
+
     }
 
     @Override
@@ -104,7 +106,7 @@ public class PDFUtilsTest extends PdfTestCase {
     @Test
     public void testRenderString_Scale() throws Exception {
         final File file = ConfigTest.getSampleConfigFiles().get(ConfigTest.GEORCHESTRA_YAML);
-        Config config = new ConfigFactory().fromYaml(file);
+        Config config = new ConfigFactory(this.threadResources).fromYaml(file);
         context = new RenderingContext(doc, context.getWriter(), config, context.getGlobalParams(), file.getParent(),
                 context.getLayout(), context.getHeaders());
         JSONObject internal = new JSONObject();
@@ -115,9 +117,52 @@ public class PDFUtilsTest extends PdfTestCase {
         internal.append("bbox", "10");
         PJsonObject params = new PJsonObject(internal, "params");
         Font font = new Font();
-        context.getLayout().getMainPage().getMap().setWidth("300");
-        context.getLayout().getMainPage().getMap().setHeight("600");
-        PDFUtils.renderString(context, params, "${scaleLbl}1:${format %,d scale}", font);
+        context.getLayout().getMainPage().getMap(null).setWidth("300");
+        context.getLayout().getMainPage().getMap(null).setHeight("600");
+        PDFUtils.renderString(context, params, "${scaleLbl}1:${format %,d scale}", font, null);
 
+    }
+    
+    @Test
+    public void testRenderString_ScaleForMultipleMaps() throws Exception {
+        final File file = ConfigTest.getSampleConfigFiles().get("configMultipleMaps.yaml");
+        Config config = new ConfigFactory(this.threadResources).fromYaml(file);
+        context = new RenderingContext(doc, context.getWriter(), config, context.getGlobalParams(), file.getParent(),
+                config.getLayout("A4 portrait"), context.getHeaders());
+        JSONObject internal = new JSONObject();
+        
+        
+        
+        internal.accumulate("scaleLbl", "Scale Label");
+        
+        JSONObject mainMap = new JSONObject();
+        mainMap.append("bbox", "-10");
+        mainMap.append("bbox", "-10");
+        mainMap.append("bbox", "10");
+        mainMap.append("bbox", "10");
+        
+        JSONObject otherMap = new JSONObject();
+        otherMap.append("bbox", "-10000");
+        otherMap.append("bbox", "-10000");
+        otherMap.append("bbox", "10000");
+        otherMap.append("bbox", "10000");
+        
+        JSONObject maps = new JSONObject();
+        maps.accumulate("main", mainMap);
+        maps.accumulate("other", otherMap);
+        
+        internal.accumulate("maps", maps);
+        
+        
+        PJsonObject params = new PJsonObject(internal, "params");
+        Font font = new Font();
+        
+        context.getLayout().getMainPage().getMap("main").setWidth("300");
+        context.getLayout().getMainPage().getMap("main").setHeight("600");
+        context.getLayout().getMainPage().getMap("other").setWidth("300");
+        context.getLayout().getMainPage().getMap("other").setHeight("600");
+        
+        assertTrue(PDFUtils.renderString(context, params, "${scaleLbl}1:${format %,d scale.main}", font, null).getContent().contains("1:25"));
+        assertTrue(PDFUtils.renderString(context, params, "${scaleLbl}1:${format %,d scale.other}", font, null).getContent().contains("1:200"));
     }
 }
