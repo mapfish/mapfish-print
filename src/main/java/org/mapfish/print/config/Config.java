@@ -20,6 +20,7 @@
 package org.mapfish.print.config;
 
 //import org.apache.commons.httpclient.HostConfiguration;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -74,6 +75,7 @@ public class Config implements Closeable {
 
     private boolean ignoreCapabilities = false;
     private int maxPrintTimeBeforeWarningInSeconds = 30;
+    private int printTimeoutMinutes = 5;
 
     private ThreadResources threadResources;
 
@@ -590,5 +592,13 @@ public class Config implements Closeable {
 
     public void setMaxPrintTimeBeforeWarningInSeconds(int maxPrintTimeBeforeWarningInSeconds) {
         this.maxPrintTimeBeforeWarningInSeconds = maxPrintTimeBeforeWarningInSeconds;
+    }
+
+    public int getPrintTimeoutMinutes() {
+        return printTimeoutMinutes;
+    }
+
+    public void setPrintTimeoutMinutes(int printTimeoutMinutes) {
+        this.printTimeoutMinutes = printTimeoutMinutes;
     }
 }
