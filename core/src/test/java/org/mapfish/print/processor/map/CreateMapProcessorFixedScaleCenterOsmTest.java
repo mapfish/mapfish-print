@@ -109,7 +109,7 @@ public class CreateMapProcessorFixedScaleCenterOsmTest extends AbstractMapfishSp
 //        Files.copy(new File(layerGraphics.get(0)), new File("/tmp/0_"+getClass().getSimpleName()+".tiff"));
 //        Files.copy(new File(layerGraphics.get(1)), new File("/tmp/1_"+getClass().getSimpleName()+".tiff"));
         
-        new ImageSimilarity(ImageSimilarity.mergeImages(layerGraphics), 2)
+        new ImageSimilarity(ImageSimilarity.mergeImages(layerGraphics, 780, 330), 2)
                 .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 30);
 
     }

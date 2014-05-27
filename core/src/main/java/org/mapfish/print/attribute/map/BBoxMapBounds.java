@@ -135,6 +135,51 @@ public final class BBoxMapBounds extends MapBounds {
         return new Scale(scale);
     }
 
+    @Override
+    public MapBounds adjustBoundsToRotation(final double rotation) {
+        if (rotation == 0.0) {
+            return this;
+        }
+        
+        /**
+         * When a rotation is set, the map is rotated around the center of the
+         * original bbox. This means that the bbox might has to be expanded, so
+         * that all visible parts are rendered.
+         */
+        final double rotatedWidth = getRotatedWidth(rotation);
+        final double rotatedHeight = getRotatedHeight(rotation);
+        
+        final double widthDifference = (rotatedWidth - this.bbox.getWidth()) / 2.0;
+        final double rotatedMinX = this.bbox.getMinX() - widthDifference;
+        final double rotatedMaxX = this.bbox.getMaxX() + widthDifference;
+        
+        final double heightDifference = (rotatedHeight - this.bbox.getHeight()) / 2.0;
+        final double rotatedMinY = this.bbox.getMinY() - heightDifference;
+        final double rotatedMaxY = this.bbox.getMaxY() + heightDifference;
+        
+        return new BBoxMapBounds(getProjection(), 
+                rotatedMinX, rotatedMinY, rotatedMaxX, rotatedMaxY);
+    }
+
+    private double getRotatedWidth(final double rotation) {
+        double width = this.bbox.getWidth();
+        if (rotation != 0.0) {
+            double height = this.bbox.getHeight();
+            width = (float) (Math.abs(width * Math.cos(rotation)) + 
+                    Math.abs(height * Math.sin(rotation)));
+        }
+        return width;
+    }
+
+    private double getRotatedHeight(final double rotation) {
+        double height = this.bbox.getHeight();
+        if (rotation != 0.0) {
+            double width = this.bbox.getWidth();
+            height = (float) (Math.abs(height * Math.cos(rotation)) + 
+                    Math.abs(width * Math.sin(rotation)));
+        }
+        return height;
+    }
 
     // CHECKSTYLE:OFF
     @Override
