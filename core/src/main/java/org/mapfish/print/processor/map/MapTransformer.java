@@ -88,7 +88,6 @@ public class MapTransformer {
         transform.translate(this.mapSize.width / 2, this.mapSize.height / 2);
         
         // then rotate around this center
-        // TODO use transform.quadrantRotate when possible
         transform.rotate(this.rotation);
         
         // then move to an artificial origin (0,0) which might be outside of the actual
