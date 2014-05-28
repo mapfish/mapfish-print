@@ -26,6 +26,7 @@ import org.geotools.map.MapContent;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
+import org.mapfish.print.attribute.map.MapTransformer;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -56,8 +57,19 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
     }
 
     @Override
-    public final void render(final Graphics2D graphics2D, final MapBounds bounds, final Rectangle paintArea, final double dpi,
+    public final void render(final Graphics2D graphics2D, final MapTransformer transformer, final double dpi,
                              final boolean isFirstLayer) {
+        Rectangle paintArea = new Rectangle(transformer.getMapSize());
+        MapBounds bounds = transformer.getBounds();
+        
+        if (transformer.getRotation() != 0.0 && !this.supportsNativeRotation()) {
+            // if a rotation is set and the rotation can not be handled natively
+            // by the layer, we have to adjust the bounds and map size
+            paintArea = new Rectangle(transformer.getRotatedMapSize());
+            bounds = transformer.getRotatedBounds();
+            graphics2D.setTransform(transformer.getTransform());
+        }
+        
         List<? extends Layer> layers = getLayers(bounds, paintArea, dpi, isFirstLayer);
 
         MapContent content = new MapContent();
@@ -107,5 +119,12 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
      */
     protected abstract List<? extends Layer> getLayers(MapBounds bounds, Rectangle paintArea, double dpi,
                                                        final boolean isFirstLayer);
+    
+    //CHECKSTYLE:OFF: DesignForExtension - Set a default value for all sub classes.
+    @Override
+    public boolean supportsNativeRotation() {
+        return false;
+    }
+    //CHECKSTYLE:ON
 
 }

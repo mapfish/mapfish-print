@@ -22,7 +22,6 @@ package org.mapfish.print.attribute.map;
 import com.google.common.base.Optional;
 
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 
 /**
  * Encapsulates the data required to load map data for a layer and render it.
@@ -48,13 +47,17 @@ public interface MapLayer {
      * Render the layer to the graphics2D object.
      *
      * @param graphics2D   the graphics object.
-     * @param bounds       the map bounds
-     * @param paintArea    the area to paint
+     * @param transformer  the map transformer containing the map bounds and size
      * @param dpi          the DPI to render at
      * @param isFirstLayer true indicates this layer is the first layer in the map (the first layer drawn, ie the base layer)
      */
-    void render(Graphics2D graphics2D, MapBounds bounds, Rectangle paintArea, double dpi,
+    void render(Graphics2D graphics2D, MapTransformer transformer, double dpi,
                 final boolean isFirstLayer);
 
-
+    /**
+     * Indicate if the layer supports native rotation (e.g. WMS layers with 
+     * the "angle" parameter).
+     * @return True if the layer itself takes care of rotating.
+     */
+    boolean supportsNativeRotation();
 }

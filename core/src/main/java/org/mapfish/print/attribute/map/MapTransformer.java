@@ -17,16 +17,14 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.processor.map;
-
-import org.mapfish.print.attribute.map.MapBounds;
+package org.mapfish.print.attribute.map;
 
 import java.awt.Dimension;
 import java.awt.geom.AffineTransform;
 
 /**
  * Utility class that adjusts the bounds and the map size in case a rotation
- * is set. Also it creates an {@link AffineTransform} to render the layer graphics.
+ * is set. Also it provides an {@link AffineTransform} to render the layer graphics.
  */
 public class MapTransformer {
 
@@ -50,10 +48,18 @@ public class MapTransformer {
      */
     public final double getRotation() {
         return this.rotation;
-    } 
+    }
+    
+    public final MapBounds getBounds() {
+        return this.bounds;
+    }
     
     public final MapBounds getRotatedBounds() {
         return this.bounds.adjustBoundsToRotation(this.rotation);
+    }
+    
+    public final Dimension getMapSize() {
+        return this.mapSize;
     }
     
     /**

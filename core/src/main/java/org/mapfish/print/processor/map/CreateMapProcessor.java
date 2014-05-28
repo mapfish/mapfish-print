@@ -26,6 +26,7 @@ import org.apache.batik.svggen.SVGGraphics2D;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
+import org.mapfish.print.attribute.map.MapTransformer;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.processor.AbstractProcessor;
@@ -36,7 +37,6 @@ import org.w3c.dom.Document;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -48,6 +48,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
 import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -155,13 +156,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             bounds = bounds.adjustedEnvelope(paintArea);
         }
 
-        AffineTransform transform = null;
-        if (mapValues.getRotation() != 0.0) {
-            final MapTransformer transformer = new MapTransformer(bounds, mapSize, mapValues.getRotation());
-            bounds = transformer.getRotatedBounds();
-            paintArea = new Rectangle(transformer.getRotatedMapSize());
-            transform = transformer.getTransform();
-        }
+        final MapTransformer transformer = new MapTransformer(bounds, mapSize, mapValues.getRotation());
         
         // reverse layer list to draw from bottom to top.  normally position 0 is top-most layer.
         final List<MapLayer> layers = Lists.reverse(mapValues.getLayers());
@@ -176,12 +171,9 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             if (renderAsSvg(layer)) {
                 // render layer as SVG
                 final SVGGraphics2D graphics2D = getSvgGraphics(mapSize);
-                if (transform != null) {
-                    graphics2D.transform(transform);
-                }
 
                 try {
-                    layer.render(graphics2D, bounds, paintArea, dpi, isFirstLayer);
+                    layer.render(graphics2D, transformer, dpi, isFirstLayer);
                     
                     path = new File(printDirectory, mapKey + "_layer_" + i + ".svg");
                     saveSvgFile(graphics2D, path);
@@ -192,12 +184,9 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 // render layer as raster graphic
                 final BufferedImage bufferedImage = new BufferedImage(mapSize.width, mapSize.height, this.imageType.value);
                 final Graphics2D graphics2D = bufferedImage.createGraphics();
-                if (transform != null) {
-                    graphics2D.transform(transform);
-                }
                 
                 try {
-                    layer.render(graphics2D, bounds, paintArea, dpi, isFirstLayer);
+                    layer.render(graphics2D, transformer, dpi, isFirstLayer);
                     
                     path = new File(printDirectory, mapKey + "_layer_" + i + ".tiff");
                     ImageIO.write(bufferedImage, "tiff", path);

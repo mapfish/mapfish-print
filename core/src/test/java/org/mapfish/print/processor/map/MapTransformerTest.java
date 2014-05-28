@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.mapfish.print.attribute.map.BBoxMapBounds;
 import org.mapfish.print.attribute.map.CenterScaleMapBounds;
 import org.mapfish.print.attribute.map.MapBounds;
+import org.mapfish.print.attribute.map.MapTransformer;
 import org.mapfish.print.map.Scale;
 
 public class MapTransformerTest {
