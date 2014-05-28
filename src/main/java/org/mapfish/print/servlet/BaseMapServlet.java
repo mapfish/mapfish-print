@@ -30,6 +30,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -64,30 +65,29 @@ public abstract class BaseMapServlet extends HttpServlet {
         }
         //String debugPath = "";
 
-        MapPrinter printer = printers.get(app);
-        File configFile;
-        if (app != null) {
-            configFile = new File(app);
-        } else {
-            configFile = new File(configPath);
+        if (app == null) {
+            app = configPath;
         }
+
+        if (!app.toLowerCase().endsWith(".yaml")) {
+            app = app + ".yaml";
+        }
+
+        File configFile = new File(app);
+
         if (!configFile.isAbsolute()) {
-            if (app != null) {
-                //debugPath += "config is absolute app = "+app+"\n";
-                if(app.toLowerCase().endsWith(".yaml")) {
-                    configFile = new File(getServletContext().getRealPath(app));
-                } else {
-                    configFile = new File(getServletContext().getRealPath(app +".yaml"));
-                }
-            } else {
-                if(configPath.toLowerCase().endsWith(".yaml")) {
-                    configFile = new File(getServletContext().getRealPath(configPath));
-                } else {
-                    configFile = new File(getServletContext().getRealPath(configPath+".yaml"));
-                }
-                //debugPath += "config is absolute app DEFAULT\n";
-            }
+            configFile = new File(getServletContext().getRealPath(app));
         }
+
+        MapPrinter printer;
+        final String configFileCanonicalPath;
+        try {
+            configFileCanonicalPath = configFile.getCanonicalPath();
+            printer = printers.get(configFileCanonicalPath);
+        } catch (IOException e) {
+            throw new ServletException(e);
+        }
+
         final long lastModified;
         if (lastModifieds.containsKey(app)) {
             lastModified = lastModifieds.get(app);
@@ -114,10 +114,8 @@ public abstract class BaseMapServlet extends HttpServlet {
             }
 
             printer = null;
-            if (app != null) {
-                LOGGER.info("Printer for "+ app +" stopped");
-                printers.put(app, null);
-            }
+            LOGGER.info("Printer for "+ app +" stopped");
+            printers.put(configFileCanonicalPath, null);
         }
 
         if (printer == null) {
@@ -125,7 +123,7 @@ public abstract class BaseMapServlet extends HttpServlet {
             try {
                 LOGGER.info("Loading configuration file: " + configFile.getAbsolutePath());
                 printer = getApplicationContext().getBean(MapPrinter.class).setYamlConfigFile(configFile);
-                printers.put(app, printer);
+                printers.put(configFileCanonicalPath, printer);
                 lastModifieds.put(app,  configFile.lastModified());
             } catch (FileNotFoundException e) {
                 throw new ServletException("Cannot read configuration file: " + configPath, e);
