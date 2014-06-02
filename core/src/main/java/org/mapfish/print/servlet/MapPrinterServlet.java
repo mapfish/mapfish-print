@@ -600,8 +600,16 @@ public class MapPrinterServlet extends BaseMapServlet {
         PrintWriter writer = null;
         try {
             final MapPrinter mapPrinter = this.printerFactory.create(appId);
-            final File requestDataFile = new File(mapPrinter.getConfiguration().getDirectory(), "requestData.json");
-            if (requestDataFile.exists()) {
+            final Iterable<File> children = Files.fileTreeTraverser().children(mapPrinter.getConfiguration().getDirectory());
+            File requestDataFile = null;
+            for (File child : children) {
+                if (child.isFile() && child.getName().startsWith("requestData") && child.getName().endsWith(".json")) {
+                    requestDataFile = child;
+                    break;
+                }
+            }
+
+            if (requestDataFile != null && requestDataFile.exists()) {
                 String requestData = Files.toString(requestDataFile, Constants.DEFAULT_CHARSET);
                 try {
                     final JSONObject jsonObject = new JSONObject(requestData);

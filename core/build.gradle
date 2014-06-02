@@ -145,7 +145,6 @@ jettyRun {
     httpPort = 8080
     scanTargets = (fileTree("src/main/").include("webapp/WEB-INF/**") + fileTree(compileJava.destinationDir)).files
     reload = 'manual'
-    jettyRun.classpath.add(files("jettyRunExtraFiles"))
     System.properties.setProperty("path_to_examples", examplesDir)
 }
 
@@ -158,6 +157,9 @@ task jettyRunWarBackground (dependsOn: jettyRunWar) {
 }
 
 gradle.taskGraph.whenReady {taskGraph ->
+    if (taskGraph.hasTask(jettyRun)) {
+        jettyRun.classpath.add(files("jettyRunExtraFiles"))
+    }
     if (taskGraph.hasTask(jettyRunWarBackground)) {
         jettyRunWar.doFirst{
             logger.info("Running test server in daemon (background) mode")
@@ -173,7 +175,7 @@ gradle.taskGraph.whenReady {taskGraph ->
 
 
 task show << {
-    println jettyRun.classpath.files
+    war.classpath.files.each {println it}
 //    project(":core").war.properties.each {println it}
 //      components.java.usages.iterator().next().artifacts.each {println it}
 //    publishing.getPublications().each { pub ->
