@@ -70,7 +70,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
             graphics2D.setTransform(transformer.getTransform());
         }
         
-        List<? extends Layer> layers = getLayers(bounds, paintArea, dpi, isFirstLayer);
+        List<? extends Layer> layers = getLayers(bounds, paintArea, dpi, transformer, isFirstLayer);
 
         MapContent content = new MapContent();
         try {
@@ -115,10 +115,11 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
      * @param bounds the map bounds
      * @param paintArea the area to paint
      * @param dpi the DPI to render at
+     * @param transformer the map transformer
      * @param isFirstLayer true indicates this layer is the first layer in the map (the first layer drawn, ie the base layer)
      */
     protected abstract List<? extends Layer> getLayers(MapBounds bounds, Rectangle paintArea, double dpi,
-                                                       final boolean isFirstLayer);
+                                                       MapTransformer transformer, final boolean isFirstLayer);
     
     //CHECKSTYLE:OFF: DesignForExtension - Set a default value for all sub classes.
     @Override

@@ -19,17 +19,24 @@
 
 package org.mapfish.print.map.tiled;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.vividsolutions.jts.geom.Coordinate;
-import jsr166y.ForkJoinTask;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import jsr166y.RecursiveTask;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.mapfish.print.attribute.map.MapBounds;
+import org.mapfish.print.attribute.map.MapTransformer;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -40,6 +47,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -57,8 +65,10 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
     private final MapBounds bounds;
     private final Rectangle paintArea;
     private final double dpi;
+    private final MapTransformer transformer;
     private final TileCacheInformation tiledLayer;
     private final BufferedImage errorImage;
+    private Optional<Geometry> cachedRotatedMapBounds = null;
 
     /**
      * Constructor.
@@ -66,13 +76,15 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
      * @param bounds        the map bounds
      * @param paintArea     the area to paint
      * @param dpi           the DPI to render at
+     * @param transformer 
      * @param tileCacheInfo the object used to create the tile requests
      */
     public TileLoaderTask(final MapBounds bounds, final Rectangle paintArea,
-                          final double dpi, final TileCacheInformation tileCacheInfo) {
+                          final double dpi, final MapTransformer transformer, final TileCacheInformation tileCacheInfo) {
         this.bounds = bounds;
         this.paintArea = paintArea;
         this.dpi = dpi;
+        this.transformer = transformer;
         this.tiledLayer = tileCacheInfo;
         final Dimension tileSize = this.tiledLayer.getTileSize();
         this.errorImage = new BufferedImage(tileSize.width, tileSize.height, BufferedImage.TYPE_4BYTE_ABGR);
@@ -115,7 +127,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
 
             double gridCoverageMaxX = gridCoverageOrigin.x;
             double gridCoverageMaxY = gridCoverageOrigin.y;
-            List<ForkJoinTask<Tile>> loaderTasks = Lists.newArrayList();
+            List<TileTask> loaderTasks = Lists.newArrayList();
 
             for (double geoY = gridCoverageOrigin.y; geoY < mapGeoBounds.getMaxY(); geoY += tileSizeInWorld.y) {
                 yIndex--;
@@ -138,9 +150,11 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
 
                     ClientHttpRequest tileRequest = this.tiledLayer.getTileRequest(commonUri, tileBounds, tileSizeOnScreen, column, row);
 
-                    if (isVisible(tileCacheBounds, tileBounds)) {
-                        final SingleTileLoaderTask task = new SingleTileLoaderTask(tileRequest, this.errorImage, xIndex, yIndex);
-                        loaderTasks.add(task);
+                    if (isInTileCacheBounds(tileCacheBounds, tileBounds)) {
+                        if (isTileVisible(tileBounds)) {
+                            final SingleTileLoaderTask task = new SingleTileLoaderTask(tileRequest, this.errorImage, xIndex, yIndex);
+                            loaderTasks.add(task);
+                        }
                     } else {
                         if (LOGGER.isDebugEnabled()) {
                             LOGGER.debug("Tile out of bounds: " + tileRequest);
@@ -153,10 +167,11 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
             BufferedImage coverageImage = this.tiledLayer.createBufferedImage(imageWidth, imageHeight);
             Graphics2D graphics = coverageImage.createGraphics();
             try {
-                for (ForkJoinTask<Tile> loaderTask : loaderTasks) {
+                for (TileTask loaderTask : loaderTasks) {
                     Tile tile = loaderTask.invoke();
                     if (tile.image != null) {
-                        graphics.drawImage(tile.image, tile.xIndex * tileSizeOnScreen.width, tile.yIndex * tileSizeOnScreen.height, null);
+                        graphics.drawImage(tile.image,
+                                tile.xIndex * tileSizeOnScreen.width, tile.yIndex * tileSizeOnScreen.height, null);
                     }
                 }
             } finally {
@@ -176,26 +191,90 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
         }
     }
 
-    private boolean isVisible(final ReferencedEnvelope tileCacheBounds, final ReferencedEnvelope tileBounds) {
-        final double boundsMinX = tileBounds.getMinX();
-        final double boundsMinY = tileBounds.getMinY();
+    private boolean isInTileCacheBounds(final ReferencedEnvelope tileCacheBounds, final ReferencedEnvelope tilesBounds) {
+        final double boundsMinX = tilesBounds.getMinX();
+        final double boundsMinY = tilesBounds.getMinY();
         return boundsMinX >= tileCacheBounds.getMinX() && boundsMinX <= tileCacheBounds.getMaxX()
                && boundsMinY >= tileCacheBounds.getMinY() && boundsMinY <= tileCacheBounds.getMaxY();
         //we don't use maxX and maxY since tilecache doesn't seems to care about those...
     }
 
-    private static final class SingleTileLoaderTask extends RecursiveTask<Tile> {
+    /** 
+     * When using a map rotation, there might be tiles that are outside the
+     * rotated map area. To avoid to load these tiles, this method checks
+     * if a tile is really required to draw the map.
+     */
+    private boolean isTileVisible(final ReferencedEnvelope tileBounds) {
+        if (this.transformer.getRotation() == 0.0) {
+            return true;
+        }
+        
+        final GeometryFactory gfac = new GeometryFactory();
+        final Optional<Geometry> rotatedMapBounds = getRotatedMapBounds(gfac);
+        
+        if (rotatedMapBounds.isPresent()) {
+            return rotatedMapBounds.get().intersects(gfac.toGeometry(tileBounds));
+        } else {
+            // in case of an error, we simply load the tile
+            return true;
+        }
+    }
 
-        private final ClientHttpRequest tileRequest;
+    private Optional<Geometry> getRotatedMapBounds(final GeometryFactory gfac) {
+        if (this.cachedRotatedMapBounds != null) {
+            return this.cachedRotatedMapBounds;
+        }
+        
+        // get the bounds for the unrotated map area
+        final ReferencedEnvelope mapBounds = this.transformer.getBounds().toReferencedEnvelope(
+                new Rectangle(this.transformer.getMapSize()), this.dpi);
+        
+        // then rotate the geometry around its center
+        final Coordinate center = mapBounds.centre();
+        final AffineTransform affineTransform = AffineTransform.getRotateInstance(
+                this.transformer.getRotation(), center.x, center.y);
+        final MathTransform mathTransform = new AffineTransform2D(affineTransform);
+
+        try {
+            final Geometry rotatedBounds = JTS.transform(gfac.toGeometry(mapBounds), mathTransform);
+            this.cachedRotatedMapBounds = Optional.of(rotatedBounds);
+        } catch (TransformException e) {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Failed to rotate map bounds: " + mapBounds.toString(), e);
+            }
+            this.cachedRotatedMapBounds = Optional.absent();
+        }
+        
+        return this.cachedRotatedMapBounds;
+    }
+
+    private abstract static class TileTask extends RecursiveTask<Tile> {
         private final int tileIndexX;
         private final int tileIndexY;
+        
+        public TileTask(final int tileIndexX, final int tileIndexY) {
+            this.tileIndexX = tileIndexX;
+            this.tileIndexY = tileIndexY;
+        }
+
+        public int getTileIndexX() {
+            return this.tileIndexX;
+        }
+
+        public int getTileIndexY() {
+            return this.tileIndexY;
+        } 
+    }
+    
+    private static final class SingleTileLoaderTask extends TileTask {
+
+        private final ClientHttpRequest tileRequest;
         private final BufferedImage errorImage;
 
         public SingleTileLoaderTask(final ClientHttpRequest tileRequest, final BufferedImage errorImage, final int tileIndexX,
                                     final int tileIndexY) {
+            super(tileIndexX, tileIndexY);
             this.tileRequest = tileRequest;
-            this.tileIndexX = tileIndexX;
-            this.tileIndexY = tileIndexY;
             this.errorImage = errorImage;
         }
 
@@ -209,12 +288,12 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
                 if (statusCode != HttpStatus.OK) {
                     LOGGER.error("Error making tile request: " + this.tileRequest.getURI() + "\n\tStatus: " + statusCode +
                                  "\n\tMessage: " + response.getStatusText());
-                    return new Tile(this.errorImage, this.tileIndexX, this.tileIndexY);
+                    return new Tile(this.errorImage, this.getTileIndexX(), this.getTileIndexY());
                 }
 
                 BufferedImage image = ImageIO.read(response.getBody());
 
-                return new Tile(image, this.tileIndexX, this.tileIndexY);
+                return new Tile(image, this.getTileIndexX(), this.getTileIndexY());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } finally {
@@ -225,21 +304,18 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
         }
     }
 
-    private static class PlaceHolderImageTask extends RecursiveTask<Tile> {
+    private static class PlaceHolderImageTask extends TileTask {
 
         private final BufferedImage placeholderImage;
-        private final int tileOriginX;
-        private final int tileOriginY;
 
         public PlaceHolderImageTask(final BufferedImage placeholderImage, final int tileOriginX, final int tileOriginY) {
+            super(tileOriginX, tileOriginY);
             this.placeholderImage = placeholderImage;
-            this.tileOriginX = tileOriginX;
-            this.tileOriginY = tileOriginY;
         }
 
         @Override
         protected Tile compute() {
-            return new Tile(this.placeholderImage, this.tileOriginX, this.tileOriginY);
+            return new Tile(this.placeholderImage, this.getTileIndexX(), this.getTileIndexY());
         }
     }
 

@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -40,6 +41,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 
 /**
@@ -58,6 +60,12 @@ public class CreateMapProcessorFixedScaleCenterOsmRotationTest extends AbstractM
     @Test
     public void testExecute() throws Exception {
         final String host = "center_osm_rotation_fixedscale";
+
+        final Set<String> expectedTiles = Sets.newHashSet(
+                "/14/4823/6156.tiff", "/14/4823/6157.tiff",
+                "/14/4824/6155.tiff", "/14/4824/6156.tiff", "/14/4824/6157.tiff",
+                "/14/4825/6154.tiff", "/14/4825/6155.tiff", "/14/4825/6156.tiff",
+                "/14/4826/6155.tiff");
         requestFactory.registerHandler(
                 new Predicate<URI>() {
                     @Override
@@ -67,6 +75,10 @@ public class CreateMapProcessorFixedScaleCenterOsmRotationTest extends AbstractM
                 }, new TestHttpClientFactory.Handler() {
                     @Override
                     public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                        if (!expectedTiles.contains(uri.getPath())) {
+                            return failOnExecute(uri, httpMethod);
+                        }
+                        
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data/osm" + uri.getPath()));
                             return ok(uri, bytes, httpMethod);

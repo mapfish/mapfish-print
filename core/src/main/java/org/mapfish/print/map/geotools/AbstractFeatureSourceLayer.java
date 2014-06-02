@@ -30,6 +30,7 @@ import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
 import org.mapfish.print.attribute.map.MapBounds;
+import org.mapfish.print.attribute.map.MapTransformer;
 
 import java.awt.Rectangle;
 import java.util.List;
@@ -78,7 +79,7 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
 
     @Override
     public final List<? extends Layer> getLayers(final MapBounds bounds, final Rectangle paintArea, final double dpi,
-                                                 final boolean isFirstLayer) {
+                                                 final MapTransformer transformer, final boolean isFirstLayer) {
         if (this.layers == null) {
             synchronized (this) {
                 if (this.layers == null) {
