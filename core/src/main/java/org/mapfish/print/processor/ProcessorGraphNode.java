@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
 
@@ -224,7 +225,7 @@ public final class ProcessorGraphNode<In, Out> {
                 }
             } finally {
                 this.execContext.finished(this.node);
-                final long processorTime = timerContext.stop();
+                final long processorTime = TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS);
                 LOGGER.debug("Time taken to run processor: '" + process.getClass() + "' was " + processorTime + " ms");
             }
 
