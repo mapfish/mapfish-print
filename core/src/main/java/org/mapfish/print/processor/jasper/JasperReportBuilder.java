@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A processor that actually compiles a jasper report.
@@ -91,7 +92,7 @@ public class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.I
                     try {
                         JasperCompileManager.compileReportToFile(jasperFile.getAbsolutePath(), buildFile.getAbsolutePath());
                     } finally {
-                        final long compileTime = compileJasperReport.stop();
+                        final long compileTime = TimeUnit.MILLISECONDS.convert(compileJasperReport.stop(), TimeUnit.NANOSECONDS);
                         LOGGER.info("Report built in " + compileTime + "ms.");
                     }
                 } else {

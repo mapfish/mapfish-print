@@ -145,7 +145,7 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
             }
             return new FailedPrintJob(this.referenceId, getAppId(), new Date(), fileName, e.getMessage());
         } finally {
-            final long stop = timer.stop();
+            final long stop = TimeUnit.MILLISECONDS.convert(timer.stop(), TimeUnit.NANOSECONDS);
             LOGGER.debug("Print Job " + PrintJob.this.referenceId + " completed in " + stop + "ms");
         }
     }
