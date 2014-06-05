@@ -35,18 +35,18 @@
       ],
         "legend": {
             "name": "",
-            "classes": [{
-                "name": "Polling station",
-                "icons": ["http://mapfish-geoportal.demo-camptocamp.com/demo/wsgi/mapserv_proxy?TRANSPARENT=TRUE&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=bureaux_vote&FORMAT=image%2Fpng&SCALE=200000"]
+           "classes": [{
+                "name": "Arbres",
+                "icons": ["http://localhost:9876/e2egeoserver/www/legends/arbres.png"]
             }, {
-                "name": "Sub-districts",
-                "icons": ["http://mapfish-geoportal.demo-camptocamp.com/demo/wsgi/mapserv_proxy?TRANSPARENT=TRUE&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=sous_quartiers&FORMAT=image%2Fpng&SCALE=200000"]
+                "name": "Peturbations",
+                "icons": ["http://localhost:9876/e2egeoserver/www/legends/perturbations.png"]
             }, {
-                "name": "Districts",
-                "icons": ["http://mapfish-geoportal.demo-camptocamp.com/demo/wsgi/mapserv_proxy?TRANSPARENT=TRUE&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=quartiers&FORMAT=image%2Fpng&SCALE=200000"]
+                "name": "Points de vente",
+                "icons": ["http://localhost:9876/e2egeoserver/www/legends/points-de-vente.png"]
             }, {
-                "name": "Area",
-                "icons": ["http://mapfish-geoportal.demo-camptocamp.com/demo/wsgi/mapserv_proxy?TRANSPARENT=TRUE&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=circonscription&FORMAT=image%2Fpng&SCALE=200000"]
+                "name": "Stationement",
+                "icons": ["http://localhost:9876/e2egeoserver/www/legends/stationement.png"]
             }]
         },
         "map": {
