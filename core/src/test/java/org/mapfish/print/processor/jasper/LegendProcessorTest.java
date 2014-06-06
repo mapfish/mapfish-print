@@ -19,8 +19,11 @@
 
 package org.mapfish.print.processor.jasper;
 
-import jsr166y.ForkJoinPool;
+import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+
+import jsr166y.ForkJoinPool;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 
 import org.junit.Test;
@@ -32,10 +35,6 @@ import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * @author Jesse on 4/10/2014.
@@ -53,6 +52,9 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
 
     @Test
     public void testBasicLegendProperties() throws Exception {
+        // register "legends:" protocol
+        System.setProperty("java.protocol.handler.pkgs", "org.mapfish.print.processor.jasper");
+        
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
