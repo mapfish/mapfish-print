@@ -120,7 +120,7 @@ public class CreateMapProcessorFixedScaleCenterOsmRotationTest extends AbstractM
         //Files.copy(new File(layerGraphics.get(1)), new File("/tmp/1_" + getClass().getSimpleName() + ".svg"));
         
         new ImageSimilarity(ImageSimilarity.mergeImages(layerGraphics, 780, 330), 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 30);
+                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 45);
 
     }
 
