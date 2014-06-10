@@ -174,7 +174,7 @@ public final class ProcessorDependencyGraph {
         protected Values compute() {
             final ProcessorDependencyGraph graph = ProcessorDependencyGraph.this;
 
-            LOGGER.debug("Starting to execute processor graph 1: \n" + graph);
+            LOGGER.debug("Starting to execute processor graph: \n" + graph);
             try {
                 List<ProcessorGraphNode.ProcessorNodeForkJoinTask<?, ?>> tasks =
                         new ArrayList<ProcessorGraphNode.ProcessorNodeForkJoinTask<?, ?>>(graph.roots.size());

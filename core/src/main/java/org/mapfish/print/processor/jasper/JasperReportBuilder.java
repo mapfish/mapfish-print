@@ -79,6 +79,7 @@ public class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.I
         Timer.Context buildReports = this.metricRegistry.timer(getClass() + "_execute()").time();
         try {
             for (final File jasperFile : Files.fileTreeTraverser().children(this.directory)) {
+                checkCancelState(context);
                 if (!jasperFile.getName().endsWith(JASPER_REPORT_XML_FILE_EXT)) {
                     continue;
                 }

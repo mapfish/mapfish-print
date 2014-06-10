@@ -58,11 +58,10 @@ public class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, Le
 
     @Override
     public final Output execute(final Input values, final ExecutionContext context) throws Exception {
-
         final List<Object[]> legendList = new ArrayList<Object[]>();
         final String[] legendColumns = {NAME_COLUMN, ICON_COLUMN, LEVEL_COLUMN};
         final LegendAttributeValue legendAttributes = values.legend;
-        fillLegend(legendAttributes, legendList, 0);
+        fillLegend(legendAttributes, legendList, 0, context);
         final Object[][] legend = new Object[legendList.size()][];
 
         final JRTableModelDataSource dataSource = new JRTableModelDataSource(new TableDataSource(legendColumns,
@@ -71,13 +70,14 @@ public class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, Le
     }
 
     private void fillLegend(final LegendAttributeValue legendAttributes, final List<Object[]> legendList,
-                            final int level) throws IOException {
+                            final int level, final ExecutionContext context) throws IOException {
         final Object[] row = {legendAttributes.name, null, level};
         legendList.add(row);
 
         final URL[] icons = legendAttributes.icons;
         if (icons != null) {
             for (URL icon : icons) {
+                checkCancelState(context);
                 final Image image = ImageIO.read(icon);
                 final Object[] iconRow = {null, image, level};
                 legendList.add(iconRow);
@@ -86,7 +86,7 @@ public class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, Le
 
         if (legendAttributes.classes != null) {
             for (LegendAttributeValue value : legendAttributes.classes) {
-                fillLegend(value, legendList, level + 1);
+                fillLegend(value, legendList, level + 1, context);
             }
         }
     }

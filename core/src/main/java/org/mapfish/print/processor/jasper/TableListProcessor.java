@@ -105,6 +105,7 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Inp
         if (jsonTableList != null) {
 
             for (TableListAttributeValue tableListAttributeValue : jsonTableList) {
+                checkCancelState(context);
                 String id = tableListAttributeValue.id;
                 createColumnDataSource(tableListAttributeValue, tableList);
                 final String[] jsonColumns = tableListAttributeValue.columns;

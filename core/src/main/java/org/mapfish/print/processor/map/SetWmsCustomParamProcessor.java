@@ -55,6 +55,7 @@ public class SetWmsCustomParamProcessor extends AbstractProcessor<SetWmsCustomPa
     @Override
     public final Void execute(final Input values, final ExecutionContext context) throws Exception {
         for (MapLayer layer : values.map.getLayers()) {
+            checkCancelState(context);
             if (layer instanceof WmsLayer) {
                 ((WmsLayer) layer).getParams().setCustomParam(this.paramName, values.value);
             }

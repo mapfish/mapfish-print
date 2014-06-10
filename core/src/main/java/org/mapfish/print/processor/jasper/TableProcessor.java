@@ -58,6 +58,7 @@ public class TableProcessor extends AbstractProcessor<TableProcessor.Input, Tabl
         final String[] jsonColumns = jsonTable.columns;
         final PJsonArray[] jsonData = jsonTable.data;
         for (final PJsonArray jsonRow : jsonData) {
+            checkCancelState(context);
             final Map<String, String> row = new HashMap<String, String>();
             for (int j = 0; j < jsonRow.size(); j++) {
                 row.put(jsonColumns[j], jsonRow.getString(j));

@@ -50,6 +50,7 @@ public class SetStyleProcessor extends
     @Override
     public final Void execute(final Input values, final ExecutionContext context) throws Exception {
         for (MapLayer layer : values.map.getLayers()) {
+            checkCancelState(context);
             if (layer instanceof AbstractFeatureSourceLayer) {
                 ((AbstractFeatureSourceLayer) layer).setStyle(values.style.getStyle());
             }
