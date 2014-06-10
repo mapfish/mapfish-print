@@ -46,7 +46,7 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
         final MapAttribute.MapAttributeValues map = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
         final AbstractFeatureSourceLayer layer = (AbstractFeatureSourceLayer) map.getLayers().get(0);
         assertEquals("Default Line",
-                layer.getLayers(null, null, 0.0, true).get(0).getStyle().getDescription().getTitle().toString());
+                layer.getLayers(null, null, 0.0, null, true).get(0).getStyle().getDescription().getTitle().toString());
     }
 
     @Test

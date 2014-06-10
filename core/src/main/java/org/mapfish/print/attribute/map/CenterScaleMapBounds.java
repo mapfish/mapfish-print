@@ -102,6 +102,12 @@ public final class CenterScaleMapBounds extends MapBounds {
         return this.scale;
     }
 
+    @Override
+    public MapBounds adjustBoundsToRotation(final double rotation) {
+        // nothing to change when rotating, because the center stays the same
+        return this;
+    }
+
     private ReferencedEnvelope computeGeodeticBBox(final double geoWidthInInches, final double geoHeightInInches) {
         try {
 

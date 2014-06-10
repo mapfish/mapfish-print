@@ -19,6 +19,9 @@
 
 package org.mapfish.print;
 
+
+import static org.junit.Assert.fail;
+
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import org.springframework.http.HttpMethod;
@@ -76,6 +79,17 @@ public class TestHttpClientFactory implements ClientHttpRequestFactory {
             MockClientHttpRequest request = new MockClientHttpRequest(httpMethod, uri);
             MockClientHttpResponse response = new MockClientHttpResponse(new byte[0], HttpStatus.NOT_FOUND);
             request.setResponse(response);
+            return request;
+        }
+
+        public MockClientHttpRequest failOnExecute(final URI uri, final HttpMethod httpMethod) {
+            MockClientHttpRequest request = new MockClientHttpRequest(httpMethod, uri) {
+                @Override
+                protected ClientHttpResponse executeInternal() throws IOException {
+                    fail("request should not be executed " + uri.toString());
+                    throw new IOException();
+                }
+            };
             return request;
         }
     }

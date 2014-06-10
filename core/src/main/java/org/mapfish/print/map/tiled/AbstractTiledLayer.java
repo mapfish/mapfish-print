@@ -25,6 +25,7 @@ import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
 import org.mapfish.print.attribute.map.MapBounds;
+import org.mapfish.print.attribute.map.MapTransformer;
 import org.mapfish.print.map.geotools.AbstractGeotoolsLayer;
 
 import java.awt.Rectangle;
@@ -58,13 +59,13 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
 
     @Override
     protected final List<? extends Layer> getLayers(final MapBounds bounds, final Rectangle paintArea, final double dpi,
-                                                    final boolean isFirstLayer) {
+                                                    final MapTransformer transformer, final boolean isFirstLayer) {
         if (this.layer == null) {
             synchronized (this) {
                 if (this.layer == null) {
                     TileCacheInformation tileCacheInformation = createTileInformation(bounds, paintArea, dpi, isFirstLayer);
                     final GridCoverage2D gridCoverage2D = this.forkJoinPool.invoke(new TileLoaderTask(bounds, paintArea, dpi,
-                            tileCacheInformation));
+                            transformer, tileCacheInformation));
                     this.layer = new GridCoverageLayer(gridCoverage2D, this.rasterStyle);
                 }
             }

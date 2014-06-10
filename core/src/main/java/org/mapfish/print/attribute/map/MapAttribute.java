@@ -347,6 +347,10 @@ public final class MapAttribute extends AttributeWithDefaultConfig<MapAttribute.
             return this.dpi;
         }
 
+        public double getRotation() {
+            return this.rotation;
+        }
+
         /**
          * Return true if requestData has useNearestScale and configuration has some zoom levels defined.
          *

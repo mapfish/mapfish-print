@@ -116,4 +116,15 @@ public final class WmsLayer extends AbstractSingleImageLayer {
     public WmsLayerParam getParams() {
         return this.params;
     }
+    
+    /**
+     * If supported by the WMS server, a parameter "angle" can be set
+     * on "customParams" or "mergeableParams". In this case the rotation
+     * will be done natively by the WMS.
+     */
+    @Override
+    public boolean supportsNativeRotation() {
+        return this.params.getCustomParams().containsKey("angle") ||
+                this.params.getMergeableParams().containsKey("angle");
+    }
 }

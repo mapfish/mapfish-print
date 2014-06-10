@@ -1,0 +1,27 @@
+{
+	"layout": "A4 landscape",
+	"outputFormat": "pdf",
+	"attributes": 
+	{
+		"map": 
+		{
+			"projection": "EPSG:4326",
+			"dpi": 90,
+            "center": [-95.8506355, 37.163851],
+            "longitudeFirst": true,
+            "scale": 45000000,
+            "rotation": 90,
+			"layers": 
+			[
+				{
+		            "type": "WMS",
+		            "layers": ["topp:states"],
+		            "baseURL": "http://localhost:9876/e2egeoserver/wms",
+		            "imageFormat": "image/png",
+		            "version": "1.1.1",
+		            "customParams":{"TRANSPARENT":"true","EXCEPTIONS":"INIMAGE"}
+		        }
+			]
+		}
+	}
+}

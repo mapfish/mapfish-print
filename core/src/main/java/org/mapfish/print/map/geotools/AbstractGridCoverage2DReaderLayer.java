@@ -24,6 +24,7 @@ import org.geotools.map.GridReaderLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
 import org.mapfish.print.attribute.map.MapBounds;
+import org.mapfish.print.attribute.map.MapTransformer;
 
 import java.awt.Rectangle;
 import java.util.Collections;
@@ -52,7 +53,7 @@ public class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
 
     @Override
     public final List<? extends Layer> getLayers(final MapBounds bounds, final Rectangle paintArea, final double dpi,
-                                                 final boolean isFirstLayer) {
+                                                 final MapTransformer transformer, final boolean isFirstLayer) {
         return this.layers;
     }
 

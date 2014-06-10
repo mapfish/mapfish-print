@@ -210,23 +210,38 @@ public class ImageSimilarity {
      * Merges a list of graphic files into a single graphic.
      * 
      * @param graphicFiles a list of graphic files
+     * @param width the graphic width (required for svg files)
+     * @param height the graphic height (required for svg files)
      * @return a single graphic
+     * @throws TranscoderException 
      */
-    public static BufferedImage mergeImages(List<URI> graphicFiles)
-            throws IOException {
+    public static BufferedImage mergeImages(List<URI> graphicFiles, int width, int height)
+            throws IOException, TranscoderException {
         if (graphicFiles.size() == 0) {
             throw new IllegalArgumentException("no graphics given");
         }
         
-        BufferedImage mergedImage = ImageIO.read(new File(graphicFiles.get(0)));
+        BufferedImage mergedImage = loadGraphic(graphicFiles.get(0), width, height);
         Graphics g = mergedImage.getGraphics();
         for (int i = 1; i < graphicFiles.size(); i++) {
-            BufferedImage image = ImageIO.read(new File(graphicFiles.get(i)));
+            BufferedImage image = loadGraphic(graphicFiles.get(i), width, height);
             g.drawImage(image, 0, 0, null);
         }
         g.dispose();
         
+        // ImageIO.write(mergedImage, "tiff", new File("/tmp/expectedSimpleImage.tiff"));
+        
         return mergedImage;
+    }
+    
+    private static BufferedImage loadGraphic(URI path, int width, int height) throws IOException, TranscoderException {
+        File file = new File(path);
+        
+        if (file.getName().endsWith(".svg")) {
+            return convertFromSvg(path, width, height);
+        } else {
+            return ImageIO.read(file);
+        }
     }
     
     /**

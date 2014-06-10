@@ -132,7 +132,7 @@ public abstract class TileCacheInformation {
      * This equates to the minX and minY of the GridCoverage as well.
      *
      * @param envelope    the area that will be displayed.
-     * @param geoTileSize the size of each time in world space.
+     * @param geoTileSize the size of each tile in world space.
      */
     // CSOFF:DesignForExtension
     @Nonnull
