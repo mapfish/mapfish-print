@@ -145,8 +145,17 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                                                    + iterator.getClass());
             }
             
-            // TODO make this also cancel-aware
-            final List<Map<String, ?>> dataSource = this.forkJoinPool.invoke(new ExecuteIterProcessorsTask(values, template));
+            final ForkJoinTask<List<Map<String, ?>>> iterTaskFuture =
+                    this.forkJoinPool.submit(new ExecuteIterProcessorsTask(values, template));
+
+            List<Map<String, ?>> dataSource = null;
+            try {
+                dataSource = iterTaskFuture.get();
+            } catch (InterruptedException exc) {
+                iterTaskFuture.cancel(true);
+                Thread.currentThread().interrupt();
+                throw new CancellationException();
+            }
 
             final JRDataSource jrDataSource = new JRMapCollectionDataSource(dataSource);
             print = JasperFillManager.fillReport(
