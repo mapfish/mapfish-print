@@ -106,10 +106,12 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
     }
 
     @Override
-    public Output execute(final Input param) throws Exception {
+    public Output execute(final Input param, final ExecutionContext context) throws Exception {
+        checkCancelState(context);
         MapAttribute.MapAttributeValues mapValues = param.map;
         final List<URI> graphics = createLayerGraphics(param.tempTaskDirectory,
-                mapValues);
+                mapValues, context);
+        checkCancelState(context);
         final URI mapSubReport = createMapSubReport(param.tempTaskDirectory,
                 mapValues.getMapSize(), graphics);
 
@@ -135,7 +137,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
     }
 
     private List<URI> createLayerGraphics(final File printDirectory,
-            final MapAttribute.MapAttributeValues mapValues)
+            final MapAttribute.MapAttributeValues mapValues, final ExecutionContext context)
             throws Exception {
         final Dimension mapSize = mapValues.getMapSize();
         final double dpi = mapValues.getDpi();
@@ -161,6 +163,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         final List<URI> graphics = new ArrayList<URI>(layers.size());
         int i = 0;
         for (MapLayer layer : layers) {
+            checkCancelState(context);
             boolean isFirstLayer = i == 0;
             
             File path = null;

@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
@@ -211,12 +212,17 @@ public final class ProcessorGraphNode<In, Out> {
 
                 Out output;
                 try {
-                    LOGGER.debug("Executing process: " + process);
-                    output = process.execute(inputParameter);
-                    LOGGER.debug("Succeeded in executing process: " + process);
+                    LOGGER.info("Executing process: " + process);
+                    output = process.execute(inputParameter, this.execContext.getContext());
+                    LOGGER.info("Succeeded in executing process: " + process);
                 } catch (Exception e) {
-                    LOGGER.error("Error while executing process: " + process, e);
-                    throw new RuntimeException(e);
+                    if (this.execContext.getContext().isCanceled()) {
+                        // the processor is already canceled, so we don't care if something fails
+                        throw new CancellationException();
+                    } else {
+                        LOGGER.error("Error while executing process: " + process, e);
+                        throw new RuntimeException(e);
+                    }
                 }
 
 
@@ -229,6 +235,9 @@ public final class ProcessorGraphNode<In, Out> {
                 LOGGER.debug("Time taken to run processor: '" + process.getClass() + "' was " + processorTime + " ms");
             }
 
+            if (this.execContext.getContext().isCanceled()) {
+                throw new CancellationException();
+            }
             executeDependencyProcessors();
 
             return values;
@@ -237,7 +246,7 @@ public final class ProcessorGraphNode<In, Out> {
         private void executeDependencyProcessors() {
             final List<ProcessorGraphNode<?, ?>> dependencyNodes = this.node.dependencies;
 
-            List<ProcessorNodeForkJoinTask> tasks = new ArrayList<ProcessorNodeForkJoinTask>(dependencyNodes.size());
+            List<ProcessorNodeForkJoinTask<?, ?>> tasks = new ArrayList<ProcessorNodeForkJoinTask<?, ?>>(dependencyNodes.size());
 
             // fork all but 1 dependencies (the first will be ran in current thread)
             for (final ProcessorGraphNode<?, ?> depNode : dependencyNodes) {

@@ -70,7 +70,7 @@ public class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.I
     }
 
     @Override
-    public final Void execute(final JasperReportBuilder.Input param) throws JRException {
+    public final Void execute(final JasperReportBuilder.Input param, final ExecutionContext context) throws JRException {
         final String configurationAbsolutePath = this.configuration.getDirectory().getAbsolutePath();
         if (!this.directory.getAbsolutePath().startsWith(configurationAbsolutePath)) {
             throw new IllegalArgumentException("All directories and files referenced in the configuration must be in the configuration " +

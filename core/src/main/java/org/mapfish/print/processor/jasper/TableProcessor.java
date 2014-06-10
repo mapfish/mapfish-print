@@ -51,7 +51,7 @@ public class TableProcessor extends AbstractProcessor<TableProcessor.Input, Tabl
     }
 
     @Override
-    public final Output execute(final Input values) throws Exception {
+    public final Output execute(final Input values, final ExecutionContext context) throws Exception {
         final TableAttributeValue jsonTable = values.table;
         final Collection<Map<String, ?>> table = new ArrayList<Map<String, ?>>();
 

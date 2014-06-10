@@ -310,7 +310,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         }
 
         @Override
-        public final Out execute(In values) throws Exception {
+        public final Out execute(In values, ExecutionContext context) throws Exception {
             TestOrderExecution tracker = values.executionOrder;
             if (tracker != null) {
                 tracker.doExecute(this);
@@ -458,7 +458,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
 
         @Nullable
         @Override
-        public TrackerContainer execute(Void values) throws Exception {
+        public TrackerContainer execute(Void values, final ExecutionContext context) throws Exception {
             assertNull(values);
             final TrackerContainer trackerContainer = new TrackerContainer();
             trackerContainer.executionOrder = new TestOrderExecution();

@@ -57,7 +57,7 @@ public class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, Le
     }
 
     @Override
-    public final Output execute(final Input values) throws Exception {
+    public final Output execute(final Input values, final ExecutionContext context) throws Exception {
 
         final List<Object[]> legendList = new ArrayList<Object[]>();
         final String[] legendColumns = {NAME_COLUMN, ICON_COLUMN, LEVEL_COLUMN};
