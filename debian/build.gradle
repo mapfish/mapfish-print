@@ -31,7 +31,8 @@ task debianDataFiles(type: Copy) {
     from  file(war.archivePath)
     rename {file ->
         if (file.endsWith(".war")) {
-            return "/srv/tomcat/tomcat1/webapps/print.war"
+            println("----" + file)
+            return "print.war"
         }
         return null;
     }
@@ -40,7 +41,7 @@ task debianDataFiles(type: Copy) {
 
 
 task debian {
-    inputs.dir debianDataFiles.destinationDir
+
     inputs.dir debianDataFiles.destinationDir
     outputs.dir "$buildDir/deb"
     ext.debFile = file("$buildDir/deb/print-app-${version}.deb")
@@ -50,16 +51,30 @@ task debian {
             keyId = keyId.substring(2)
         }
         ant.taskdef(name: 'deb', classname: 'org.vafer.jdeb.ant.DebAntTask', classpath: configurations.jdeb.asPath)
-        ant.deb(destfile: debFile,
-                control: "$debianControlFiles.destinationDir",
-                keyring: signing_secretKeyRingFile,
-                key: keyId,
-                passphrase: signing_password,
-                changesIn: "$projectDir/src/changelog",
-                changesOut: "$buildDir/changelog") {
-            data(src: "$debianDataFiles.destinationDir", type: 'directory')
-        }
-        signing.sign(debFile)
+        if (!file(signing_secretKeyRingFile).exists()) {
+            ant.deb(destfile: debFile,
+                    control: "$debianControlFiles.destinationDir",
+                    changesIn: "$projectDir/src/changelog",
+                    changesOut: "$buildDir/changelog") {
+                data(src: "$debianDataFiles.destinationDir", type: 'directory') {
+                    mapper(type:"perm", prefix:"/srv/tomcat/tomcat1/webapps/")
+                }
+            }
+        } else {
+            ant.deb(destfile: debFile,
+                    control: "$debianControlFiles.destinationDir",
+                    keyring: keyring,
+                    key: keyId,
+                    passphrase: signing_password,
+                    changesIn: "$projectDir/src/changelog",
+                    changesOut: "$buildDir/changelog") {
+                data(src: "$debianDataFiles.destinationDir", type: 'directory') {
+                    mapper(type:"perm", prefix:"/srv/tomcat/tomcat1/webapps/")
+                }
+            }
+ 
+            signing.sign(debFile)
+       }
     }
 }
 
