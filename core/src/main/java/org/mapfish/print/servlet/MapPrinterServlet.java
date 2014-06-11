@@ -426,12 +426,12 @@ public class MapPrinterServlet extends BaseMapServlet {
         };
 
 
-        final boolean[] isDone = new boolean[]{false};
+        boolean isDone = false;
         long startWaitTime = System.currentTimeMillis();
         final long maxWaitTimeInMillis = TimeUnit.SECONDS.toMillis(this.maxCreateAndGetWaitTimeInSeconds);
-        while (!isDone[0] && System.currentTimeMillis() - startWaitTime < maxWaitTimeInMillis) {
+        while (!isDone && System.currentTimeMillis() - startWaitTime < maxWaitTimeInMillis) {
             Thread.sleep(TimeUnit.SECONDS.toMillis(1));
-            isDone[0] = loadReport(ref, createReportResponse, handler);
+            isDone = loadReport(ref, createReportResponse, handler);
         }
     }
 
