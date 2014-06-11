@@ -357,6 +357,41 @@ public class PrintApiTest extends AbstractApiTest {
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
+    @Test
+    public void testCancel_InvalidRef() throws Exception {
+        ClientHttpRequest request = getPrintRequest(MapPrinterServlet.CANCEL_URL + "/invalid-ref-number", HttpMethod.DELETE);
+        response = request.execute();
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    public void testCancel() throws Exception {
+        ClientHttpRequest request = getPrintRequest("geoext" + MapPrinterServlet.REPORT_URL + ".png", HttpMethod.POST);
+        setPrintSpec(getPrintSpec("examples/geoext/requestData.json"), request);
+        response = request.execute();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
+        
+        String responseAsText = getBodyAsText(response);
+        response.close();
+        
+        JSONObject createResult = new JSONObject(responseAsText);
+        String ref = createResult.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
+        
+        request = getPrintRequest(MapPrinterServlet.CANCEL_URL + "/" + ref, HttpMethod.DELETE);
+        response = request.execute();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        response.close();
+        
+        request = getPrintRequest(MapPrinterServlet.STATUS_URL + "/" + ref + ".json", HttpMethod.GET);
+        response = request.execute();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        final JSONObject statusResult = new JSONObject(
+                getBodyAsText(response));
+        assertTrue(statusResult.getBoolean(MapPrinterServlet.JSON_DONE));
+        assertEquals("task canceled", statusResult.getString(MapPrinterServlet.JSON_ERROR));
+    }
+
     private void waitUntilDoneOrError(String ref) throws Exception {
         boolean done = false;
         do {

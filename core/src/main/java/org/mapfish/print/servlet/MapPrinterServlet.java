@@ -107,6 +107,10 @@ public class MapPrinterServlet extends BaseMapServlet {
      */
     public static final String STATUS_URL = "/status";
     /**
+     * The url path to cancel a print task.
+     */
+    public static final String CANCEL_URL = "/cancel";
+    /**
      * The url path to create a print task and to get a finished print.
      */
     public static final String REPORT_URL = "/report";
@@ -233,7 +237,27 @@ public class MapPrinterServlet extends BaseMapServlet {
     }
 
     /**
-     * add the print job to the job queue.
+     * Cancel a job.
+     * 
+     * Even if a job was already finished, subsequent status requests will
+     * return that the job was canceled.
+     *
+     * @param referenceId    the job reference
+     * @param statusResponse the response object
+     */
+    @RequestMapping(value = CANCEL_URL + "/{referenceId:\\S+}", method = RequestMethod.DELETE)
+    public final void cancel(
+            @PathVariable final String referenceId,
+            final HttpServletResponse statusResponse) {
+        try {
+            this.jobManager.cancel(referenceId);
+        } catch (NoSuchReferenceException e) {
+            error(statusResponse, e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    /**
+     * Add the print job to the job queue.
      *
      * @param appId                the id of the app to get the request for.
      * @param format               the format of the returned report

@@ -139,9 +139,9 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
         } catch (Throwable e) {
             String canceledText = "";
             if (Thread.currentThread().isInterrupted()) {
-                canceledText = " (canceled)";
+                canceledText = "(canceled) ";
             }
-            LOGGER.info("Error executing print job" + this.referenceId + canceledText + "\n" + this.requestData, e);
+            LOGGER.info("Error executing print job " + canceledText + this.referenceId + "\n" + this.requestData, e);
             this.metricRegistry.counter(getClass().getName() + "failure").inc();
             String fileName = "unknownFileName";
             if (spec != null) {

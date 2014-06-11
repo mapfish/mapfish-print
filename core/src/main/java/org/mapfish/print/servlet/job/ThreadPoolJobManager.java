@@ -28,11 +28,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CancellationException;
@@ -118,7 +118,12 @@ public class ThreadPoolJobManager implements JobManager {
 
     private ThreadPoolExecutor executor;
 
-    private final Collection<SubmittedPrintJob> runningTasksFutures = new ArrayList<SubmittedPrintJob>();
+    /**
+     * A collection of jobs that are currently being processed or that are awaiting
+     * to be processed.
+     */
+    private final Map<String, SubmittedPrintJob> runningTasksFutures =
+            Collections.synchronizedMap(new HashMap<String, SubmittedPrintJob>());
     @Autowired
     private Registry registry;
     private PriorityBlockingQueue<Runnable> queue;
@@ -185,7 +190,7 @@ public class ThreadPoolJobManager implements JobManager {
 
         this.registry.incrementInt(NEW_PRINT_COUNT, 1);
         final Future<PrintJobStatus> future = this.executor.submit(job);
-        this.runningTasksFutures.add(new SubmittedPrintJob(future, job.getReferenceId(), job.getAppId()));
+        this.runningTasksFutures.put(job.getReferenceId(), new SubmittedPrintJob(future, job.getReferenceId(), job.getAppId()));
         try {
             new PendingPrintJob(job.getReferenceId(), job.getAppId()).store(this.registry);
         } catch (JSONException e) {
@@ -205,6 +210,39 @@ public class ThreadPoolJobManager implements JobManager {
             this.registry.put(LAST_POLL + referenceId, new Date().getTime());
         }
         return done;
+    }
+
+    @Override
+    public final void cancel(final String referenceId) throws NoSuchReferenceException {
+        Optional<? extends PrintJobStatus> jobStatus = null;
+        try {
+            // check if the reference id is valid
+            jobStatus = PrintJobStatus.load(referenceId, this.registry);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        synchronized (this.runningTasksFutures) {
+            if (this.runningTasksFutures.containsKey(referenceId)) {
+                // the job is not yet finished (or has not even started), cancel
+                final SubmittedPrintJob printJob = this.runningTasksFutures.get(referenceId);
+                if (!printJob.getReportFuture().cancel(true)) {
+                    LOGGER.info("Could not cancel job " + referenceId);
+                }
+                this.runningTasksFutures.remove(referenceId);
+                this.registry.incrementInt(NB_PRINT_DONE, 1);
+                this.registry.incrementLong(TOTAL_PRINT_TIME, printJob.getTimeSinceStart());
+            }
+        }
+
+        // even if the job is already finished, we store it as "canceled" in the registry,
+        // so that all subsequent status requests return "canceled"
+        final FailedPrintJob failedJob = new FailedPrintJob(
+                referenceId, jobStatus.get().getAppId(), new Date(), "", "task canceled");
+        try {
+            failedJob.store(this.registry);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -254,21 +292,20 @@ public class ThreadPoolJobManager implements JobManager {
 
             // run in try-catch to ensure that the timer task is not stopped
             try {
-                updateRegistry();
+                synchronized (ThreadPoolJobManager.this.runningTasksFutures) {
+                    updateRegistry();
+                }
             } catch (Throwable t) {
                 LOGGER.error("Error while updating registry", t);
             }
         }
         
         private void updateRegistry() {
-            Iterator<SubmittedPrintJob> iterator = ThreadPoolJobManager.this.runningTasksFutures.iterator();
-            while (iterator.hasNext()) {
-                SubmittedPrintJob printJob = iterator.next();
-
+            for (SubmittedPrintJob printJob : ThreadPoolJobManager.this.runningTasksFutures.values()) {
                 if (!printJob.getReportFuture().isDone() && isTimeoutExceeded(printJob)) {
                     LOGGER.info("Cancelling job after timeout " + printJob.getReportRef());
                     if (!printJob.getReportFuture().cancel(true)) {
-                        LOGGER.info("Could not cancel job " + printJob.getReportRef());
+                        LOGGER.info("Could not cancel job after timeout " + printJob.getReportRef());
                     }
                     // remove all canceled tasks from the work queue (otherwise the queue comparator
                     // might stumble on non-PrintJob entries)
@@ -276,7 +313,7 @@ public class ThreadPoolJobManager implements JobManager {
                 }
 
                 if (printJob.getReportFuture().isDone()) {
-                    iterator.remove();
+                    ThreadPoolJobManager.this.runningTasksFutures.remove(printJob.getReportRef());
                     final Registry registryRef = ThreadPoolJobManager.this.registry;
                     try {
                         printJob.getReportFuture().get().store(registryRef);
@@ -294,7 +331,7 @@ public class ThreadPoolJobManager implements JobManager {
                     } catch (CancellationException e) {
                         try {
                             final FailedPrintJob failedJob = new FailedPrintJob(
-                                    printJob.getReportRef(), printJob.getAppId(), new Date(), "", "task canceled");
+                                    printJob.getReportRef(), printJob.getAppId(), new Date(), "", "task canceled (timeout)");
                             failedJob.store(registryRef);
                             registryRef.incrementInt(NB_PRINT_DONE, 1);
                             registryRef.incrementLong(TOTAL_PRINT_TIME, printJob.getTimeSinceStart());

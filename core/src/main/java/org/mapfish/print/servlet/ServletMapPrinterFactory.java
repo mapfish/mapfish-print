@@ -36,6 +36,7 @@ import org.springframework.context.ApplicationContext;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.channels.ClosedByInterruptException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -128,6 +129,12 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
 
                 this.printers.put(finalApp, printer);
             } catch (Throwable e) {
+                if (e instanceof ClosedByInterruptException) {
+                    // because of a bug in the JDK, the interrupted status might not be set
+                    // when throwing a ClosedByInterruptException. so, we do it manually.
+                    // see also http://bugs.java.com/view_bug.do?bug_id=7043425
+                    Thread.currentThread().interrupt();
+                }
                 LOGGER.error("Error occurred while reading configuration file", e);
                 throw new RuntimeException("Error occurred while reading configuration file '"
                                            + configFile + "': ", e);
