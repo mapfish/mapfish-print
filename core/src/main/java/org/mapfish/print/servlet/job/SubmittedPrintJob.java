@@ -29,6 +29,7 @@ import java.util.concurrent.Future;
  */
 public class SubmittedPrintJob {
     private final String reportRef;
+    private final String appId;
     private final Future<PrintJobStatus> reportFuture;
     private final long startTime;
 
@@ -37,11 +38,13 @@ public class SubmittedPrintJob {
      *
      * @param reportFuture the future for checking if the report is done and for getting the uri
      * @param reportRef the unique ID for the report
+     * @param appId the app id
      */
-    public SubmittedPrintJob(final Future<PrintJobStatus> reportFuture, final String reportRef) {
+    public SubmittedPrintJob(final Future<PrintJobStatus> reportFuture, final String reportRef, final String appId) {
         this.startTime = new Date().getTime();
         this.reportFuture = reportFuture;
         this.reportRef = reportRef;
+        this.appId = appId;
     }
 
     /**
@@ -49,6 +52,13 @@ public class SubmittedPrintJob {
      */
     public final String getReportRef() {
         return this.reportRef;
+    }
+    
+    /**
+     * Get the app ID for the report.
+     */
+    public final String getAppId() {
+        return this.appId;
     }
 
     /**
@@ -58,6 +68,9 @@ public class SubmittedPrintJob {
         return this.reportFuture;
     }
 
+    /**
+     * @return The time in milliseconds since the start.
+     */
     public final long getTimeSinceStart() {
         return System.currentTimeMillis() - this.startTime;
     }

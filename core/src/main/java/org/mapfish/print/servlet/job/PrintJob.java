@@ -137,7 +137,11 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
             String fileExtension = outputFormat.getFileSuffix();
             return new SuccessfulPrintJob(this.referenceId, reportURI, getAppId(), new Date(), fileName, mimeType, fileExtension);
         } catch (Throwable e) {
-            LOGGER.info("Error executing print job" + this.referenceId + "\n" + this.requestData, e);
+            String canceledText = "";
+            if (Thread.currentThread().isInterrupted()) {
+                canceledText = " (canceled)";
+            }
+            LOGGER.info("Error executing print job" + this.referenceId + canceledText + "\n" + this.requestData, e);
             this.metricRegistry.counter(getClass().getName() + "failure").inc();
             String fileName = "unknownFileName";
             if (spec != null) {

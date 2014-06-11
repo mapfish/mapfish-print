@@ -156,19 +156,32 @@ public final class ProcessorDependencyGraph {
             this.execContext = new ProcessorExecutionContext(values);
         }
 
+        /**
+         * Cancels the complete processor graph of a print task.
+         * 
+         * This is achieved by setting the cancel flag of the execution
+         * context, so that every processor can stop its execution.
+         * 
+         * @param mayInterruptIfRunning is ignored
+         */
+        @Override
+        public boolean cancel(final boolean mayInterruptIfRunning) {
+            this.execContext.cancel();
+            return super.cancel(mayInterruptIfRunning);
+        }
+        
         @Override
         protected Values compute() {
             final ProcessorDependencyGraph graph = ProcessorDependencyGraph.this;
 
             LOGGER.debug("Starting to execute processor graph: \n" + graph);
             try {
-                List<ProcessorGraphNode.ProcessorNodeForkJoinTask> tasks =
-                        new ArrayList<ProcessorGraphNode.ProcessorNodeForkJoinTask>(graph.roots.size());
-
+                List<ProcessorGraphNode.ProcessorNodeForkJoinTask<?, ?>> tasks =
+                        new ArrayList<ProcessorGraphNode.ProcessorNodeForkJoinTask<?, ?>>(graph.roots.size());
                 // fork all but 1 dependencies (the first will be ran in current thread)
                 for (int i = 0; i < graph.roots.size(); i++) {
                     @SuppressWarnings("unchecked")
-                    Optional<ProcessorGraphNode.ProcessorNodeForkJoinTask> task = graph.roots.get(i).createTask(this.execContext);
+                    Optional<ProcessorGraphNode.ProcessorNodeForkJoinTask<?, ?>> task = graph.roots.get(i).createTask(this.execContext);
                     if (task.isPresent()) {
                         tasks.add(task.get());
                         if (tasks.size() > 1) {

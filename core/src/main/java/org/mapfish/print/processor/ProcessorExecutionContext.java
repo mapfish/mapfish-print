@@ -20,6 +20,7 @@
 package org.mapfish.print.processor;
 
 import org.mapfish.print.output.Values;
+import org.mapfish.print.processor.AbstractProcessor.Context;
 
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -36,6 +37,7 @@ public final class ProcessorExecutionContext {
     private final IdentityHashMap<Processor, Void> runningProcessors = new IdentityHashMap<Processor, Void>();
     private final IdentityHashMap<Processor, Void> executedProcessors = new IdentityHashMap<Processor, Void>();
     private final Lock processorLock = new ReentrantLock();
+    private final Context context = new Context();
     /**
      * Constructor.
      *
@@ -153,5 +155,19 @@ public final class ProcessorExecutionContext {
             this.processorLock.unlock();
         }
 
+    }
+
+    /**
+     * Set a {@code cancel} flag.
+     * 
+     * All processors are supposed to check this flag frequently
+     * and terminate the execution if requested.
+     */
+    public void cancel() {
+        this.context.cancel();
+    }
+
+    public Context getContext() {
+        return this.context;
     }
 }

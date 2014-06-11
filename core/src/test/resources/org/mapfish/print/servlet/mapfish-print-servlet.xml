@@ -31,5 +31,6 @@
             </map>
         </property>
     </bean>
-
+    
+    <bean id="!sleeper" class="org.mapfish.print.servlet.MapPrinterServletTest.SleepProcessor" scope="prototype" />
 </beans>

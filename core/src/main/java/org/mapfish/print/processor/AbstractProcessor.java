@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
 
 import javax.annotation.Nonnull;
 
@@ -124,10 +125,43 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
      */
     protected abstract void extraValidation(final List<Throwable> validationErrors);
 
+    /**
+     * Checks if the print was canceled and throws a
+     * {@link CancellationException} if so.
+     * 
+     * @param context the execution context
+     * @throws CancellationException
+     */
+    protected final void checkCancelState(final ExecutionContext context) {
+        if (context.isCanceled()) {
+            throw new CancellationException("task was canceled");
+        }
+    }
+    
     // CHECKSTYLE:OFF
     @Override
     public String toString() {
         return getClass().getSimpleName();
     }
     // CHECKSTYLE:ON
+    
+    /**
+     * Default implementation of {@link ExecutionContext}.
+     */
+    public static final class Context implements ExecutionContext {
+
+        private volatile boolean canceled = false;
+        
+        /**
+         * Sets the canceled flag.
+         */
+        public void cancel() {
+            this.canceled = true;
+        }
+        
+        @Override
+        public boolean isCanceled() {
+            return this.canceled;
+        }
+    }
 }

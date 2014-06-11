@@ -112,7 +112,7 @@ public class ProcessorDependencyGraphTest {
 
         @Nullable
         @Override
-        public Void execute(TestIn values) throws Exception {
+        public Void execute(TestIn values, ExecutionContext context) throws Exception {
             return null;
         }
     }

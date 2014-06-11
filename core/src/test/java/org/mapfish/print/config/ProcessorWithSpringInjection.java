@@ -56,7 +56,7 @@ public class ProcessorWithSpringInjection extends AbstractProcessor<Object, Void
 
     @Nullable
     @Override
-    public Void execute(Object values) throws Exception {
+    public Void execute(Object values, ExecutionContext context) throws Exception {
         return null;
     }
 

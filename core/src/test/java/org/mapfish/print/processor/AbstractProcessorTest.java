@@ -96,7 +96,7 @@ public class AbstractProcessorTest {
 
         @Nullable
         @Override
-        public TestOut execute(TestIn values) throws Exception {
+        public TestOut execute(TestIn values, ExecutionContext context) throws Exception {
             return new TestOut();
         }
 

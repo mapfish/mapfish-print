@@ -29,7 +29,6 @@ import ar.com.fdvs.dj.domain.constants.Border;
 import ar.com.fdvs.dj.domain.constants.Font;
 import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
 import ar.com.fdvs.dj.domain.constants.VerticalAlign;
-
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
@@ -99,13 +98,14 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Inp
     }
 
     @Override
-    public final Output execute(final Input values) throws Exception {
+    public final Output execute(final Input values, final ExecutionContext context) throws Exception {
         final TableListAttributeValue[] jsonTableList = values.tableList;
         final List<Values> tableList = new ArrayList<Values>();
 
         if (jsonTableList != null) {
 
             for (TableListAttributeValue tableListAttributeValue : jsonTableList) {
+                checkCancelState(context);
                 String id = tableListAttributeValue.id;
                 createColumnDataSource(tableListAttributeValue, tableList);
                 final String[] jsonColumns = tableListAttributeValue.columns;

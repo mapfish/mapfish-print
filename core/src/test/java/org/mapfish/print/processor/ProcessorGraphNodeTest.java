@@ -136,7 +136,7 @@ public class ProcessorGraphNodeTest {
 
         @Nullable
         @Override
-        public DataTransferObject execute(DataTransferObject values) throws Exception {
+        public DataTransferObject execute(DataTransferObject values, ExecutionContext context) throws Exception {
             return null;
         }
 

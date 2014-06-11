@@ -21,13 +21,16 @@ package org.mapfish.print.output;
 
 
 import com.google.common.annotations.VisibleForTesting;
+
 import jsr166y.ForkJoinPool;
+import jsr166y.ForkJoinTask;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+
 import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
@@ -47,6 +50,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Jesse on 5/7/2014.
@@ -79,6 +84,11 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                             final File taskDirectory, final OutputStream outputStream)
             throws Exception {
         final JasperPrint print = getJasperPrint(requestData, config, configDir, taskDirectory);
+        
+        if (Thread.currentThread().isInterrupted()) {
+            throw new CancellationException();
+        }
+        
         doExport(outputStream, print);
     }
 
@@ -90,11 +100,12 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
      * @param configDir     the directory that contains the configuration, used for resolving resources like images etc...
      * @param taskDirectory the temporary directory for this printing task.
      * @return a jasper print object which can be used to generate a PDF or other outputs.
+     * @throws ExecutionException 
      */
     @VisibleForTesting
     protected final JasperPrint getJasperPrint(final PJsonObject requestData, final Configuration config,
                                                final File configDir, final File taskDirectory)
-            throws JRException, SQLException {
+            throws JRException, SQLException, ExecutionException {
         final String templateName = requestData.getString(Constants.JSON_LAYOUT_KEY);
 
         final Template template = config.getTemplate(templateName);
@@ -109,7 +120,17 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         values.put(SUBREPORT_DIR, jasperTemplateDirectory.getAbsolutePath());
         values.put(SUBREPORT_TABLE_DIR, taskDirectory.getAbsolutePath());
 
-        this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
+        final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(template.getProcessorGraph().createTask(values));
+        
+        try {
+            taskFuture.get();
+        } catch (InterruptedException exc) {
+            // if cancel() is called on the current thread, this exception will be thrown.
+            // in this case, also properly cancel the task future.
+            taskFuture.cancel(true);
+            Thread.currentThread().interrupt();
+            throw new CancellationException();
+        }
 
         final JasperPrint print;
         if (template.getIterValue() != null) {
@@ -123,7 +144,18 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                 throw new IllegalArgumentException(template.getIterValue() + " is supposed to be an iterable but was a "
                                                    + iterator.getClass());
             }
-            final List<Map<String, ?>> dataSource = this.forkJoinPool.invoke(new ExecuteIterProcessorsTask(values, template));
+            
+            final ForkJoinTask<List<Map<String, ?>>> iterTaskFuture =
+                    this.forkJoinPool.submit(new ExecuteIterProcessorsTask(values, template));
+
+            List<Map<String, ?>> dataSource = null;
+            try {
+                dataSource = iterTaskFuture.get();
+            } catch (InterruptedException exc) {
+                iterTaskFuture.cancel(true);
+                Thread.currentThread().interrupt();
+                throw new CancellationException();
+            }
 
             final JRDataSource jrDataSource = new JRMapCollectionDataSource(dataSource);
             print = JasperFillManager.fillReport(
