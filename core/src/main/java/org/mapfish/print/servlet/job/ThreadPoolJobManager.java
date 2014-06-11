@@ -80,6 +80,7 @@ public class ThreadPoolJobManager implements JobManager {
     private static final int DEFAULT_MAX_WAITING_JOBS = 5000;
     private static final long DEFAULT_THREAD_IDLE_TIME = 60L;
     private static final long DEFAULT_TIMEOUT_IN_SECONDS = 600L;
+    private static final long DEFAULT_ABANDONED_TIMEOUT_IN_SECONDS = 120L;
 
     /**
      * The maximum number of threads that will be used for print jobs, this is not the number of threads
@@ -102,6 +103,11 @@ public class ThreadPoolJobManager implements JobManager {
      * amount of time (in seconds).
      */
     private long timeout = DEFAULT_TIMEOUT_IN_SECONDS;
+    /**
+     * A print job is canceled, if this amount of time (in seconds) has
+     * passed, without that the user checked the status of the job.
+     */
+    private long abandonedTimeout = DEFAULT_ABANDONED_TIMEOUT_IN_SECONDS;
     /**
      * A comparator for comparing {@link org.mapfish.print.servlet.job.SubmittedPrintJob}s and
      * prioritizing them.
@@ -139,6 +145,10 @@ public class ThreadPoolJobManager implements JobManager {
 
     public final void setTimeout(final long timeout) {
         this.timeout = timeout;
+    }
+
+    public final void setAbandonedTimeout(final long abandonedTimeout) {
+        this.abandonedTimeout = abandonedTimeout;
     }
 
     public final void setJobPriorityComparator(final Comparator<PrintJob> jobPriorityComparator) {
@@ -193,6 +203,7 @@ public class ThreadPoolJobManager implements JobManager {
         this.runningTasksFutures.put(job.getReferenceId(), new SubmittedPrintJob(future, job.getReferenceId(), job.getAppId()));
         try {
             new PendingPrintJob(job.getReferenceId(), job.getAppId()).store(this.registry);
+            this.registry.put(LAST_POLL + job.getReferenceId(), new Date().getTime());
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -302,7 +313,8 @@ public class ThreadPoolJobManager implements JobManager {
         
         private void updateRegistry() {
             for (SubmittedPrintJob printJob : ThreadPoolJobManager.this.runningTasksFutures.values()) {
-                if (!printJob.getReportFuture().isDone() && isTimeoutExceeded(printJob)) {
+                if (!printJob.getReportFuture().isDone() &&
+                        (isTimeoutExceeded(printJob) || isAbandoned(printJob))) {
                     LOGGER.info("Cancelling job after timeout " + printJob.getReportRef());
                     if (!printJob.getReportFuture().cancel(true)) {
                         LOGGER.info("Could not cancel job after timeout " + printJob.getReportRef());
@@ -346,6 +358,23 @@ public class ThreadPoolJobManager implements JobManager {
         private boolean isTimeoutExceeded(final SubmittedPrintJob printJob) {
             return printJob.getTimeSinceStart() > 
                 TimeUnit.MILLISECONDS.convert(ThreadPoolJobManager.this.timeout, TimeUnit.SECONDS);
+        }
+
+        /**
+         * If the status of a print job is not checked for a while, we assume that the user
+         * is no longer interested in the report, and we cancel the job.
+         * 
+         * @param printJob
+         * @return is the abandoned timeout exceeded?
+         */
+        private boolean isAbandoned(final SubmittedPrintJob printJob) {
+            final long duration = new Date().getTime() - timeSinceLastStatusCheck(printJob.getReportRef());
+            final boolean abandoned = duration > TimeUnit.SECONDS.toMillis(ThreadPoolJobManager.this.abandonedTimeout);
+            if (abandoned) {
+                LOGGER.info("Job " + printJob.getReportRef() + " is abandoned (no status check within the "
+                        + "last " + ThreadPoolJobManager.this.abandonedTimeout + " seconds)");
+            }
+            return abandoned;
         }
     }
 }

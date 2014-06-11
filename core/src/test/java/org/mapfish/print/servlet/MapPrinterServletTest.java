@@ -444,6 +444,35 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         testCreateReport_Success_explicitAppId();
     }
 
+    @Test(timeout = 60000)
+    @DirtiesContext
+    public void testCreateReport_AbandonedTimeout() throws Exception {
+        jobManager.setAbandonedTimeout(1L);
+        setUpConfigFiles();
+        
+        final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
+        final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+
+        String requestData = loadRequestDataAsString();
+        servlet.createReport("timeout", "png", requestData, servletCreateRequest, servletCreateResponse);
+        final PJsonObject createResponseJson = parseJSONObjectFromString(servletCreateResponse.getContentAsString());
+        assertTrue(createResponseJson.has(MapPrinterServlet.JSON_PRINT_JOB_REF));
+        assertEquals(HttpStatus.OK.value(), servletCreateResponse.getStatus());
+
+        String ref = createResponseJson.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
+
+        // wait for 2 seconds without making a status request, the job should be canceled after that time
+        Thread.sleep(2000);
+        
+        final MockHttpServletRequest statusRequest = new MockHttpServletRequest();
+        final MockHttpServletResponse statusResponse = new MockHttpServletResponse();
+        servlet.getStatus(ref, "", statusRequest, statusResponse);
+
+        final PJsonObject statusJson = parseJSONObjectFromString(statusResponse.getContentAsString());
+        assertEquals("true", statusJson.getString(MapPrinterServlet.JSON_DONE));
+        assertEquals("task canceled (timeout)", statusJson.getString(MapPrinterServlet.JSON_ERROR));
+    }
+
     private void waitForCanceled(String ref) throws IOException,
             ServletException, InterruptedException,
             UnsupportedEncodingException {
