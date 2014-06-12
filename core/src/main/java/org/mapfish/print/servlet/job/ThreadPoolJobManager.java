@@ -200,12 +200,13 @@ public class ThreadPoolJobManager implements JobManager {
 
         this.registry.incrementInt(NEW_PRINT_COUNT, 1);
         final Future<PrintJobStatus> future = this.executor.submit(job);
-        this.runningTasksFutures.put(job.getReferenceId(), new SubmittedPrintJob(future, job.getReferenceId(), job.getAppId()));
         try {
             new PendingPrintJob(job.getReferenceId(), job.getAppId()).store(this.registry);
             this.registry.put(LAST_POLL + job.getReferenceId(), new Date().getTime());
         } catch (JSONException e) {
             throw new RuntimeException(e);
+        } finally {
+            this.runningTasksFutures.put(job.getReferenceId(), new SubmittedPrintJob(future, job.getReferenceId(), job.getAppId()));
         }
     }
 
