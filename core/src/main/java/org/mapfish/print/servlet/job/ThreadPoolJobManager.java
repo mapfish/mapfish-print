@@ -20,7 +20,6 @@
 package org.mapfish.print.servlet.job;
 
 import com.google.common.base.Optional;
-import com.vividsolutions.jts.util.Assert;
 import org.json.JSONException;
 import org.mapfish.print.servlet.registry.Registry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,9 +137,15 @@ public class ThreadPoolJobManager implements JobManager {
         this.queue = new PriorityBlockingQueue<Runnable>(this.maxNumberOfWaitingJobs, new Comparator<Runnable>() {
             @Override
             public int compare(final Runnable o1, final Runnable o2) {
-                Assert.isTrue(o1 instanceof PrintJob, o1 + " should be a " + PrintJob.class.getName());
-                Assert.isTrue(o2 instanceof PrintJob, o2 + " should be a " + PrintJob.class.getName());
-                return ThreadPoolJobManager.this.jobPriorityComparator.compare((PrintJob) o1, (PrintJob) o2);
+                if (o1 instanceof PrintJob) {
+                    if (o2 instanceof PrintJob) {
+                        return ThreadPoolJobManager.this.jobPriorityComparator.compare((PrintJob) o1, (PrintJob) o2);
+                    }
+                    return 1;
+                } else if (o2 instanceof PrintJob) {
+                    return -1;
+                }
+                return 0;
             }
         });
         this.executor = new ThreadPoolExecutor(0, this.maxNumberOfRunningPrintJobs, this.maxIdleTime, TimeUnit.SECONDS, this.queue,
