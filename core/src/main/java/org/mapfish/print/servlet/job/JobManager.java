@@ -71,4 +71,12 @@ public interface JobManager {
      * @throws NoSuchReferenceException 
      */
     Optional<? extends PrintJobStatus> getCompletedPrintJob(String referenceId) throws NoSuchReferenceException;
+
+    /**
+     * Cancel a job.
+     *
+     * @param referenceId the referenceId od the job to cancel.
+     * @throws NoSuchReferenceException 
+     */
+    void cancel(String referenceId) throws NoSuchReferenceException;
 }
