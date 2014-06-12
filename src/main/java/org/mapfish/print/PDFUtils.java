@@ -516,7 +516,7 @@ public class PDFUtils {
                 if(key.startsWith("scale.")) {
                     mapName = key.substring(6);
                 }
-                return Double.toString(context.getLayout().getMainPage().getMap(mapName).createTransformer(context, params).getScale());
+                return Integer.toString((int)context.getLayout().getMainPage().getMap(mapName).createTransformer(context, params).getScale());
             }
             result = context.getGlobalParams().optString(key);
         }
