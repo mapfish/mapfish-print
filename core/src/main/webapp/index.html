@@ -32,6 +32,12 @@
             window.open(url, '_capabilities')
         }
         function copyRequestToTextArea() {
+            var att = $('#selectExample').val();
+            $('#specText').val(requestExamples[att]);
+            validateJSON();
+        }
+
+        function updateApp() {
             var appId = $('#selectSpec').val();
 
             $.ajax({
@@ -50,7 +56,7 @@
                     }
 
                     formatSelect.val(select);
-                    $('#spec').attr('action', 'print/' + appId + "/buildreport." + data.formats[0]);
+                    $('#spec').attr('action', 'print/' + appId + "/buildreport." + select);
                     var caps = $('#capabilities');
                     caps.attr("url", 'print/' + appId + '/capabilities.json?pretty=true');
                 }
@@ -58,10 +64,22 @@
             $.ajax({
                 type: 'GET',
                 url: 'print/' + appId + '/exampleRequest.json',
-                dataType: 'text',
+                dataType: 'json',
                 success: function (data) {
-                    $('#specText').val(data);
-                    validateJSON()
+                    var setExample = true;
+                    requestExamples = data;
+                    var exampleSelect = $('#selectExample');
+                    exampleSelect.empty();
+                    for (var att in data) {
+                        if (data.hasOwnProperty(att)) {
+                            exampleSelect.append(new Option(att, att));
+                            if (setExample) {
+                                $('#specText').val(data[att]);
+                                validateJSON();
+                                setExample = false;
+                            }
+                        }
+                    }
                 }
             });
 
@@ -78,7 +96,7 @@
             $('#messages').text("");
             var data = $('#specText').val();
             try {
-                $.parseJSON(data)
+                $.parseJSON(data);
                 $('#validation').text("");
 
                 $('#CreateAndGetPrint').attr('disabled', false);
@@ -94,7 +112,7 @@
             var data = encodeURIComponent($('#specText').val());
             var appId = $('#selectSpec').val();
             var format = $('#selectFormat').val();
-            disableUI(true)
+            disableUI(true);
 
             var startTime = new Date().getTime();
             $('#messages').text('Waiting for report...');
@@ -116,7 +134,7 @@
         }
         function updateWaitingMsg(startTime, data) {
             var elapsed = Math.floor((new Date().getTime() - startTime) / 100);
-            var time = ''
+            var time = '';
             if (elapsed > 5) {
                 time = (elapsed / 10) +" sec";
             }
@@ -155,7 +173,7 @@
 
                     specSelect.val(data[0]);
 
-                    copyRequestToTextArea();
+                    updateApp();
                 }
             });
         }
@@ -172,7 +190,8 @@
         </textarea>
         <p>
         <table>
-            <tr><td><label for="selectSpec">Print App/Example:</label></td><td><select id="selectSpec" onchange="copyRequestToTextArea()"></select></td></tr>
+            <tr><td><label for="selectSpec">Print App/Example:</label></td><td><select id="selectSpec" onchange="updateApp()"></select></td></tr>
+            <tr><td><label for="selectExample">Sample Request Data:</label></td><td><select id="selectExample" onchange="copyRequestToTextArea()"></select></td></tr>
             <tr><td><label for="selectFormat">Output Format:</label></td><td><select id="selectFormat" onchange="changeFormat()"></select></td></tr>
         </table>
         </p>

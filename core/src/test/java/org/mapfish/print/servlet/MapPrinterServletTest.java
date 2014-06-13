@@ -24,13 +24,14 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.Constants;
 import org.mapfish.print.processor.AbstractProcessor;
-import org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest;
 import org.mapfish.print.servlet.job.ThreadPoolJobManager;
-import org.mapfish.print.util.ImageSimilarity;
+import org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest;
+import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -89,6 +90,10 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals(HttpStatus.OK.value(), getExampleResponseImplicit.getStatus());
         final PJsonObject createResponseJson = parseJSONObjectFromString(getExampleResponseImplicit.getContentAsString());
         assertTrue(createResponseJson.size() > 0);
+
+        String example = createResponseJson.getString("requestData");
+        JSONObject obj = new JSONObject(example);
+        assertTrue(obj.length() > 0);
 
         final MockHttpServletResponse getExampleResponseExplicit = new MockHttpServletResponse();
         this.servlet.getExampleRequest(DEFAULT_CONFIGURATION_FILE_KEY, "", getExampleResponseExplicit);
@@ -530,6 +535,10 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertCorrectResponse(servletCreateResponse);
     }
 
+    private String getFormEncodedRequestData() throws IOException {
+        return "spec=" + URLEncoder.encode(loadRequestDataAsString(), Constants.DEFAULT_ENCODING);
+    }
+
     @Test(timeout = 60000)
     @DirtiesContext
     public void testCreateReportAndGet_Timeout() throws Exception {
@@ -543,10 +552,6 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         this.servlet.createReportAndGet("timeout", "png", requestData, false, servletCreateRequest, servletCreateResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), servletCreateResponse.getStatus());
-    }
-
-    private String getFormEncodedRequestData() throws IOException {
-        return "spec=" + URLEncoder.encode(loadRequestDataAsString(), Constants.DEFAULT_ENCODING);
     }
 
     @Test(timeout = 60000)
@@ -634,11 +639,18 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals("MapAttributeValues", mainLayout.getArray("attributes").getObject(1).getString("name"));
         assertTrue(getInfoJson.has("formats"));
         final PJsonArray formats = getInfoJson.getJSONArray("formats");
+        assertCapabilitiesFormats(formats);
+
+    }
+
+    private void assertCapabilitiesFormats(PJsonArray formats) {
         assertTrue(formats.size() > 0);
         assertArrayContains(formats, "png");
         assertArrayContains(formats, "pdf");
-        assertArrayContains(formats, "xsl");
-
+        assertArrayContains(formats, "tiff");
+        assertArrayContains(formats, "tif");
+        assertArrayContains(formats, "gif");
+        assertArrayContains(formats, "bmp");
     }
 
     @Test
@@ -662,11 +674,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals("MapAttributeValues", mainLayout.getArray("attributes").getObject(1).getString("name"));
         assertTrue(getInfoJson.has("formats"));
         final PJsonArray formats = getInfoJson.getJSONArray("formats");
-        assertTrue(formats.size() > 0);
-        assertArrayContains(formats, "png");
-        assertArrayContains(formats, "pdf");
-        assertArrayContains(formats, "xsl");
-
+        assertCapabilitiesFormats(formats);
     }
 
     @Test

@@ -23,16 +23,20 @@ import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Map;
+import javax.imageio.ImageIO;
 
 import static org.junit.Assert.fail;
 
@@ -73,10 +77,18 @@ public class ExamplesTest {
 
         if (!errors.isEmpty()) {
             for (Map.Entry<String, Throwable> error : errors.entrySet()) {
-                System.err.println("Example: '" + error.getKey() + "' failed with the error:\n");
+                System.err.println("\nExample: '" + error.getKey() + "' failed with the error:");
                 error.getValue().printStackTrace();
             }
-            fail(errors.size() + " errors encountered while running examples.");
+            StringBuilder errorReport = new StringBuilder();
+            errorReport.append("\n").append(errors.size()).append(" errors encountered while running examples.\n");
+            errorReport.append("See Standard Error for the stacktraces.  A summary is as follows:\n\n");
+            for (Map.Entry<String, Throwable> entry : errors.entrySet()) {
+                errorReport.append("    * ").append(entry.getKey()).append(" -> ").append(entry.getValue().getMessage());
+                errorReport.append('\n');
+            }
+            errorReport.append("\n\n");
+            fail(errorReport.toString());
         }
     }
 
@@ -89,17 +101,21 @@ public class ExamplesTest {
                 if (requestFile.isFile() && requestFile.getName().matches(REQUEST_DATA_FILE)) {
                     String requestData = Files.asCharSource(requestFile, Charset.forName(Constants.DEFAULT_ENCODING)).read();
                     final PJsonObject jsonSpec = MapPrinter.parseSpec(requestData);
-                    //ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    
-                    File file = new File("/tmp/test-" + example.getName()
-                            + requestFile.getName().replace("requestData", "").replace(".json", "")
-                            + ".pdf");
-                    FileOutputStream fs = new FileOutputStream(file);
-                    
+                    jsonSpec.getInternalObj().put("outputFormat", "png");
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+
                     Map<String, String> headers = Maps.newHashMap();
-                    this.mapPrinter.print(jsonSpec, fs, headers);
-                    
-                    fs.close();
+                    this.mapPrinter.print(jsonSpec, out, headers);
+
+                    BufferedImage image = ImageIO.read(new ByteArrayInputStream(out.toByteArray()));
+
+//                    File outDir = new File("e:/tmp", example.getName()+"/expected_output");
+//                    outDir.mkdirs();
+//                    ImageIO.write(image, "png", new File(outDir, requestFile.getName().replace(".json", ".png")));
+
+                    File expectedOutputDir = new File(example, "expected_output");
+                    File expectedOutput = new File(expectedOutputDir, requestFile.getName().replace(".json", ".png"));
+                    new ImageSimilarity(image, 50).assertSimilarity(expectedOutput, 50);
                 }
             }
         } catch (Throwable e) {

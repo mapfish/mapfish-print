@@ -138,7 +138,7 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
             if (spec != null) {
                 fileName = getFileName(spec);
             }
-            return new FailedPrintJob(this.referenceId, getAppId(), new Date(), fileName, e.getMessage());
+            return new FailedPrintJob(this.referenceId, getAppId(), new Date(), fileName, e.toString());
         } finally {
             final long stop = TimeUnit.MILLISECONDS.convert(timer.stop(), TimeUnit.NANOSECONDS);
             LOGGER.debug("Print Job " + PrintJob.this.referenceId + " completed in " + stop + "ms");

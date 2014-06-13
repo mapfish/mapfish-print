@@ -23,7 +23,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
-
+import org.jfree.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
@@ -69,7 +69,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -80,7 +79,7 @@ import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGU
  * The default servlet.
  *
  * @author Jesse
- * CSOFF: RedundantThrowsCheck
+ *         CSOFF: RedundantThrowsCheck
  */
 @Controller
 public class MapPrinterServlet extends BaseMapServlet {
@@ -128,7 +127,8 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * The number of print jobs done by the cluster (or this server if count is not shared through-out cluster).
      * <p/>
-     * Part of the {@link #getStatus(String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)} response
+     * Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)}
+     * response
      */
     public static final String JSON_COUNT = "count";
     /**
@@ -138,13 +138,15 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * If the job is done (value is true) or not (value is false).
      * <p/>
-     * Part of the {@link #getStatus(String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)} response
+     * Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)}
+     * response
      */
     public static final String JSON_DONE = "done";
     /**
      * The time taken for the job to complete.
      * <p/>
-     * Part of the {@link #getStatus(String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)} response
+     * Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)}
+     * response
      */
     public static final String JSON_TIME = "time";
     /**
@@ -188,7 +190,7 @@ public class MapPrinterServlet extends BaseMapServlet {
      * </code></pre>
      *
      * @param referenceId    the job reference
-     * @param jsonpCallback if given the result is returned with a function call wrapped around it
+     * @param jsonpCallback  if given the result is returned with a function call wrapped around it
      * @param statusRequest  the request object
      * @param statusResponse the response object
      */
@@ -201,10 +203,10 @@ public class MapPrinterServlet extends BaseMapServlet {
         PrintWriter writer = null;
         try {
             boolean done = this.jobManager.isDone(referenceId);
-            
+
             setContentType(statusResponse, jsonpCallback);
             writer = statusResponse.getWriter();
-            
+
             appendJsonpCallback(jsonpCallback, writer);
             JSONWriter json = new JSONWriter(writer);
             json.object();
@@ -460,7 +462,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * To get (in JSON) the information about the available formats and CO.
      *
-     * @param jsonpCallback if given the result is returned with a function call wrapped around it
+     * @param jsonpCallback    if given the result is returned with a function call wrapped around it
      * @param listAppsResponse the response object
      */
     @RequestMapping(value = LIST_APPS_URL, method = RequestMethod.GET)
@@ -469,12 +471,12 @@ public class MapPrinterServlet extends BaseMapServlet {
             final HttpServletResponse listAppsResponse) throws ServletException,
             IOException {
         Set<String> appIds = this.printerFactory.getAppIds();
-        
+
         setContentType(listAppsResponse, jsonpCallback);
         final PrintWriter writer = listAppsResponse.getWriter();
         try {
             appendJsonpCallback(jsonpCallback, writer);
-            
+
             JSONWriter json = new JSONWriter(writer);
             try {
                 json.array();
@@ -485,7 +487,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             } catch (JSONException e) {
                 throw new ServletException(e);
             }
-            
+
             appendJsonpCallbackEnd(jsonpCallback, writer);
         } finally {
             if (writer != null) {
@@ -498,8 +500,8 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * To get (in JSON) the information about the available formats and CO.
      *
-     * @param pretty if true then pretty print the capabilities
-     * @param jsonpCallback if given the result is returned with a function call wrapped around it
+     * @param pretty               if true then pretty print the capabilities
+     * @param jsonpCallback        if given the result is returned with a function call wrapped around it
      * @param capabilitiesResponse the response object
      */
     @RequestMapping(value = CAPABILITIES_URL, method = RequestMethod.GET)
@@ -514,9 +516,9 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * To get (in JSON) the information about the available formats and CO.
      *
-     * @param appId  the name of the "app" or in other words, a mapping to the configuration file for this request.
-     * @param pretty if true then pretty print the capabilities
-     * @param jsonpCallback if given the result is returned with a function call wrapped around it
+     * @param appId                the name of the "app" or in other words, a mapping to the configuration file for this request.
+     * @param pretty               if true then pretty print the capabilities
+     * @param jsonpCallback        if given the result is returned with a function call wrapped around it
      * @param capabilitiesResponse the response object
      */
     @RequestMapping(value = "/{appId:\\w+}" + CAPABILITIES_URL, method = RequestMethod.GET)
@@ -533,9 +535,9 @@ public class MapPrinterServlet extends BaseMapServlet {
             error(capabilitiesResponse, e.getMessage(), HttpStatus.NOT_FOUND);
             return;
         }
-        
+
         setContentType(capabilitiesResponse, jsonpCallback);
-        
+
         final Writer writer;
         final ByteArrayOutputStream prettyPrintBuffer = new ByteArrayOutputStream();
         if (pretty) {
@@ -548,7 +550,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             if (!pretty && !Strings.isNullOrEmpty(jsonpCallback)) {
                 writer.append(jsonpCallback + "(");
             }
-            
+
             JSONWriter json = new JSONWriter(writer);
             try {
                 json.object();
@@ -569,7 +571,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             } catch (JSONException e) {
                 throw new ServletException(e);
             }
-            
+
             if (!pretty && !Strings.isNullOrEmpty(jsonpCallback)) {
                 writer.append(");");
             }
@@ -581,7 +583,7 @@ public class MapPrinterServlet extends BaseMapServlet {
 
         if (pretty) {
             final JSONObject jsonObject = new JSONObject(new String(prettyPrintBuffer.toByteArray(), Constants.DEFAULT_CHARSET));
-            
+
             if (!Strings.isNullOrEmpty(jsonpCallback)) {
                 capabilitiesResponse.getOutputStream().print(jsonpCallback + "(");
             }
@@ -596,7 +598,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * Get a sample request for the app.  An empty response may be returned if there is not example request.
      *
-     * @param jsonpCallback if given the result is returned with a function call wrapped around it
+     * @param jsonpCallback      if given the result is returned with a function call wrapped around it
      * @param getExampleResponse the response object
      */
     @RequestMapping(value = EXAMPLE_REQUEST_URL, method = RequestMethod.GET)
@@ -610,8 +612,8 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * Get a sample request for the app.  An empty response may be returned if there is not example request.
      *
-     * @param appId the id of the app to get the request for.
-     * @param jsonpCallback if given the result is returned with a function call wrapped around it
+     * @param appId              the id of the app to get the request for.
+     * @param jsonpCallback      if given the result is returned with a function call wrapped around it
      * @param getExampleResponse the response object
      */
     @RequestMapping(value = "{appId}" + EXAMPLE_REQUEST_URL, method = RequestMethod.GET)
@@ -625,34 +627,57 @@ public class MapPrinterServlet extends BaseMapServlet {
         try {
             final MapPrinter mapPrinter = this.printerFactory.create(appId);
             final Iterable<File> children = Files.fileTreeTraverser().children(mapPrinter.getConfiguration().getDirectory());
-            File requestDataFile = null;
+            JSONObject allExamples = new JSONObject();
+
             for (File child : children) {
-                if (child.isFile() && child.getName().startsWith("requestData") && child.getName().endsWith(".json")) {
-                    requestDataFile = child;
-                    break;
+                final String requestDataPrefix = "requestData";
+                if (child.isFile() && child.getName().startsWith(requestDataPrefix) && child.getName().endsWith(".json")) {
+                    String requestData = Files.toString(child, Constants.DEFAULT_CHARSET);
+                    try {
+                        final JSONObject jsonObject = new JSONObject(requestData);
+                        jsonObject.remove(JSON_OUTPUT_FORMAT);
+                        jsonObject.remove(JSON_APP);
+                        requestData = jsonObject.toString(JSON_INDENT_FACTOR);
+
+                        setContentType(getExampleResponse, jsonpCallback);
+                    } catch (JSONException e) {
+                        // ignore, return raw text;
+                    }
+
+                    String name = child.getName();
+                    name = name.substring(requestDataPrefix.length());
+                    if (name.startsWith("-")) {
+                        name = name.substring(1);
+                    }
+                    name = Files.getNameWithoutExtension(name);
+                    name = name.trim();
+                    if (name.isEmpty()) {
+                        name = Files.getNameWithoutExtension(child.getName());
+                    }
+
+                    try {
+                        allExamples.put(name, requestData);
+                    } catch (JSONException e) {
+                        Log.error("Error translating object to json", e);
+                        error(getExampleResponse, "Error translating object to json: " + e.getMessage(),
+                                HttpStatus.INTERNAL_SERVER_ERROR);
+                        return;
+                    }
                 }
             }
-
-            if (requestDataFile != null && requestDataFile.exists()) {
-                String requestData = Files.toString(requestDataFile, Constants.DEFAULT_CHARSET);
-                try {
-                    final JSONObject jsonObject = new JSONObject(requestData);
-                    jsonObject.remove(JSON_OUTPUT_FORMAT);
-                    jsonObject.remove(JSON_APP);
-                    requestData = jsonObject.toString(JSON_INDENT_FACTOR);
-
-                    setContentType(getExampleResponse, jsonpCallback);
-                } catch (JSONException e) {
-                    // ignore, return raw text;
-
-                    getExampleResponse.setContentType("text/plain; charset=utf-8");
-                }
-                
-                writer = getExampleResponse.getWriter();
-                appendJsonpCallback(jsonpCallback, writer);
-                writer.append(requestData);
-                appendJsonpCallbackEnd(jsonpCallback, writer);
+            final String result;
+            try {
+                result = allExamples.toString(JSON_INDENT_FACTOR);
+            } catch (JSONException e) {
+                Log.error("Error translating object to json", e);
+                error(getExampleResponse, "Error translating object to json: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+                return;
             }
+
+            writer = getExampleResponse.getWriter();
+            appendJsonpCallback(jsonpCallback, writer);
+            writer.append(result);
+            appendJsonpCallbackEnd(jsonpCallback, writer);
         } catch (NoSuchAppException e) {
             error(getExampleResponse, "No print app identified by: " + appId, HttpStatus.NOT_FOUND);
         } finally {
@@ -805,7 +830,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     private <R> R loadReport(final String referenceId, final HttpServletResponse httpServletResponse,
                              final HandleReportLoadResult<R> handler) throws IOException, ServletException {
         Optional<? extends PrintJobStatus> metadata;
-        
+
         try {
             metadata = this.jobManager.getCompletedPrintJob(referenceId);
         } catch (NoSuchReferenceException e) {
@@ -840,7 +865,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     }
 
     private void setContentType(final HttpServletResponse statusResponse,
-            final String jsonpCallback) {
+                                final String jsonpCallback) {
         if (Strings.isNullOrEmpty(jsonpCallback)) {
             statusResponse.setContentType("application/json; charset=utf-8");
         } else {
@@ -849,14 +874,14 @@ public class MapPrinterServlet extends BaseMapServlet {
     }
 
     private void appendJsonpCallback(final String jsonpCallback,
-            final PrintWriter writer) {
+                                     final PrintWriter writer) {
         if (!Strings.isNullOrEmpty(jsonpCallback)) {
             writer.append(jsonpCallback + "(");
         }
     }
 
     private void appendJsonpCallbackEnd(final String jsonpCallback,
-            final PrintWriter writer) {
+                                        final PrintWriter writer) {
         if (!Strings.isNullOrEmpty(jsonpCallback)) {
             writer.append(");");
         }
