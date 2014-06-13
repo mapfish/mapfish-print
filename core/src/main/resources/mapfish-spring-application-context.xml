@@ -48,6 +48,10 @@
     <bean id="jobManager" class="org.mapfish.print.servlet.job.ThreadPoolJobManager">
         <property name="maxNumberOfRunningPrintJobs" value="10" />
         <property name="maxNumberOfWaitingJobs" value="5000" />
+        <!-- Timeout for print jobs in seconds -->
+        <property name="timeout" value="600" />
+        <!-- Timeout after which a print job is canceled, if the status has not been checked (in seconds). -->
+        <property name="abandonedTimeout" value="120" />
     </bean>
     <bean id="printJobPrototype" class="org.mapfish.print.servlet.job.FilePrintJob" scope="prototype"/>
     <bean id="fileReportLoader" class="org.mapfish.print.servlet.job.loader.FileReportLoader"/>

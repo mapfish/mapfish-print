@@ -23,10 +23,13 @@ import jsr166y.ForkJoinTask;
 import jsr166y.RecursiveTask;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
+import org.mapfish.print.processor.ProcessorDependencyGraph.ProcessorGraphForkJoinTask;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CancellationException;
 
 /**
  * Created by Jesse on 3/25/14.
@@ -34,7 +37,8 @@ import java.util.Map;
 public class ExecuteIterProcessorsTask extends RecursiveTask<List<Map<String, ?>>> {
     private final Values values;
     private final Template template;
-
+    private final List<ProcessorGraphForkJoinTask> forkedTasks;
+    
     /**
      * Constructor.
      *
@@ -44,6 +48,17 @@ public class ExecuteIterProcessorsTask extends RecursiveTask<List<Map<String, ?>
     public ExecuteIterProcessorsTask(final Values values, final Template template) {
         this.values = values;
         this.template = template;
+        this.forkedTasks = new LinkedList<ProcessorDependencyGraph.ProcessorGraphForkJoinTask>();
+    }        
+    
+    @Override
+    public final boolean cancel(final boolean mayInterruptIfRunning) {
+        synchronized (this.forkedTasks) {
+            for (ProcessorGraphForkJoinTask task : this.forkedTasks) {
+                task.cancel(mayInterruptIfRunning);
+            }
+        }
+        return super.cancel(mayInterruptIfRunning);
     }
 
     @Override
@@ -52,16 +67,33 @@ public class ExecuteIterProcessorsTask extends RecursiveTask<List<Map<String, ?>
         List<Map<String, ?>> dataSource = new ArrayList<Map<String, ?>>();
         final ProcessorDependencyGraph processorGraph = this.template.getIterProcessorGraph();
 
-        final List<ForkJoinTask<Values>> forks = new ArrayList<ForkJoinTask<Values>>(processorGraph.getRoots().size());
-
-        for (Values v : iterValues) {
-            forks.add(processorGraph.createTask(v).fork());
+        // the tasks are created in a synchronized block to ensure that all
+        // tasks get canceled, if cancel() is called
+        synchronized (this.forkedTasks) {
+            checkCancelState();
+            for (Values v : iterValues) {
+                this.forkedTasks.add(processorGraph.createTask(v));
+            }
         }
-        for (ForkJoinTask<Values> fork : forks) {
+        
+        // only when all tasks are created, fork them
+        for (ForkJoinTask<Values> fork : this.forkedTasks) {
+            fork.fork();
+        }
+        
+        // then wait until all graphs are processed
+        for (ForkJoinTask<Values> fork : this.forkedTasks) {
+            checkCancelState();
             final Values v = fork.join();
             dataSource.add(v.getParameters());
         }
 
         return dataSource;
+    }
+
+    private void checkCancelState() {
+        if (isCancelled()) {
+            throw new CancellationException("task was canceled");
+        }
     }
 }

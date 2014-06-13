@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * The information for printing a report.
@@ -111,14 +110,6 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
         Timer.Context timer = this.metricRegistry.timer(getClass().getName() + " call()").time();
         PJsonObject spec = null;
         try {
-            long duration = new Date().getTime() - this.jobManager.timeSinceLastStatusCheck(this.referenceId);
-
-            if (duration > TimeUnit.MINUTES.toMillis(1)) {
-                throw new TimeoutException("Request is cancelled because the client has not requested the status within the last 1 " +
-                                           "minute");
-            }
-
-
             spec = PrintJob.this.requestData;
             final MapPrinter mapPrinter = PrintJob.this.mapPrinterFactory.create(getAppId());
             URI reportURI = withOpenOutputStream(new PrintAction() {
@@ -137,7 +128,11 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
             String fileExtension = outputFormat.getFileSuffix();
             return new SuccessfulPrintJob(this.referenceId, reportURI, getAppId(), new Date(), fileName, mimeType, fileExtension);
         } catch (Throwable e) {
-            LOGGER.info("Error executing print job" + this.referenceId + "\n" + this.requestData, e);
+            String canceledText = "";
+            if (Thread.currentThread().isInterrupted()) {
+                canceledText = "(canceled) ";
+            }
+            LOGGER.info("Error executing print job " + canceledText + this.referenceId + "\n" + this.requestData, e);
             this.metricRegistry.counter(getClass().getName() + "failure").inc();
             String fileName = "unknownFileName";
             if (spec != null) {

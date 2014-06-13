@@ -27,7 +27,9 @@ import org.json.JSONArray;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.Constants;
+import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest;
+import org.mapfish.print.servlet.job.ThreadPoolJobManager;
 import org.mapfish.print.util.ImageSimilarity;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonArray;
@@ -36,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.awt.image.BufferedImage;
@@ -46,6 +49,7 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -73,6 +77,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     private ServletInfo servletInfo;
     @Autowired
     private ServletMapPrinterFactory printerFactory;
+    @Autowired
+    private ThreadPoolJobManager jobManager;
 
     @Test
     public void testExampleRequest() throws Exception {
@@ -205,7 +211,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         }, true);
     }
 
-    private void doCreateAndPollAndGetReport(Function<MockHttpServletRequest, MockHttpServletResponse> createReport, boolean checkJsonp)
+    private String doCreateAndPollAndGetReport(Function<MockHttpServletRequest, MockHttpServletResponse> createReport, boolean checkJsonp)
             throws URISyntaxException, IOException, InterruptedException, ServletException {
         setUpConfigFiles();
 
@@ -262,6 +268,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         final int status = servletGetReportResponse.getStatus();
         assertEquals(HttpStatus.OK.value(), status);
         assertCorrectResponse(servletGetReportResponse);
+        
+        return ref;
 
     }
 
@@ -288,6 +296,203 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         waitForFailure(ref);
     }
 
+    private void waitForFailure(String ref) throws IOException,
+            ServletException, InterruptedException,
+            UnsupportedEncodingException {
+        while (true) {
+            MockHttpServletResponse servletGetReportResponse = new MockHttpServletResponse();
+            servlet.getReport(ref, false, servletGetReportResponse);
+            final int status = servletGetReportResponse.getStatus();
+            if (status == HttpStatus.ACCEPTED.value()) {
+                // still processing
+                Thread.sleep(500);
+            } else if (status == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+                return;
+            } else {
+                fail(status + " was not one of the expected response codes.  Expected: 500 or 202");
+            }
+        }
+    }
+
+    @Test(timeout = 60000)
+    public void testCancel() throws Exception {
+        setUpConfigFiles();
+        
+        final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
+        final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+
+        String requestData = loadRequestDataAsString();
+        servlet.createReport("png", requestData, servletCreateRequest, servletCreateResponse);
+        final PJsonObject createResponseJson = parseJSONObjectFromString(servletCreateResponse.getContentAsString());
+        assertTrue(createResponseJson.has(MapPrinterServlet.JSON_PRINT_JOB_REF));
+        assertEquals(HttpStatus.OK.value(), servletCreateResponse.getStatus());
+
+        String ref = createResponseJson.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
+
+        // cancel directly after starting the print
+        MockHttpServletResponse servletCancelResponse = new MockHttpServletResponse();
+        servlet.cancel(ref, servletCancelResponse);
+        assertEquals(HttpStatus.OK.value(), servletCancelResponse.getStatus());
+
+        final MockHttpServletRequest statusRequest = new MockHttpServletRequest();
+        final MockHttpServletResponse statusResponse = new MockHttpServletResponse();
+        servlet.getStatus(ref, "", statusRequest, statusResponse);
+
+        final PJsonObject statusJson = parseJSONObjectFromString(statusResponse.getContentAsString());
+        assertEquals("true", statusJson.getString(MapPrinterServlet.JSON_DONE));
+        assertEquals("task canceled", statusJson.getString(MapPrinterServlet.JSON_ERROR));
+    }
+
+    @Test(timeout = 60000)
+    public void testCancel_Sleep() throws Exception {
+        setUpConfigFiles();
+        
+        final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
+        final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+
+        String requestData = loadRequestDataAsString();
+        servlet.createReport("png", requestData, servletCreateRequest, servletCreateResponse);
+        final PJsonObject createResponseJson = parseJSONObjectFromString(servletCreateResponse.getContentAsString());
+        assertTrue(createResponseJson.has(MapPrinterServlet.JSON_PRINT_JOB_REF));
+        assertEquals(HttpStatus.OK.value(), servletCreateResponse.getStatus());
+
+        String ref = createResponseJson.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
+
+        // sleep a bit, so that the processors have time to start ...
+        Thread.sleep(500);
+        
+        // ... then cancel
+        MockHttpServletResponse servletCancelResponse = new MockHttpServletResponse();
+        servlet.cancel(ref, servletCancelResponse);
+        assertEquals(HttpStatus.OK.value(), servletCancelResponse.getStatus());
+
+        final MockHttpServletRequest statusRequest = new MockHttpServletRequest();
+        final MockHttpServletResponse statusResponse = new MockHttpServletResponse();
+        servlet.getStatus(ref, "", statusRequest, statusResponse);
+
+        final PJsonObject statusJson = parseJSONObjectFromString(statusResponse.getContentAsString());
+        assertEquals("true", statusJson.getString(MapPrinterServlet.JSON_DONE));
+        assertEquals("task canceled", statusJson.getString(MapPrinterServlet.JSON_ERROR));
+    }
+
+    @Test(timeout = 60000)
+    public void testCancel_FinishedJob() throws Exception {
+        // start a job and wait until it is finished
+        String ref = doCreateAndPollAndGetReport(new Function<MockHttpServletRequest, MockHttpServletResponse>() {
+            @Nullable
+            @Override
+            public MockHttpServletResponse apply(@Nullable MockHttpServletRequest servletCreateRequest) {
+                try {
+                    final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+                    String requestData = URLEncoder.encode(loadRequestDataAsString(), Constants.DEFAULT_ENCODING);
+                    servlet.createReport("png", requestData, servletCreateRequest, servletCreateResponse);
+                    return servletCreateResponse;
+                } catch (Exception e) {
+                    throw new AssertionError(e);
+                }
+            }
+        }, false);
+        
+        // ... then cancel
+        MockHttpServletResponse servletCancelResponse = new MockHttpServletResponse();
+        servlet.cancel(ref, servletCancelResponse);
+        assertEquals(HttpStatus.OK.value(), servletCancelResponse.getStatus());
+
+        final MockHttpServletRequest statusRequest = new MockHttpServletRequest();
+        final MockHttpServletResponse statusResponse = new MockHttpServletResponse();
+        servlet.getStatus(ref, "", statusRequest, statusResponse);
+
+        final PJsonObject statusJson = parseJSONObjectFromString(statusResponse.getContentAsString());
+        assertEquals("true", statusJson.getString(MapPrinterServlet.JSON_DONE));
+        assertEquals("task canceled", statusJson.getString(MapPrinterServlet.JSON_ERROR));
+    }
+
+    @Test(timeout = 60000)
+    public void testCancel_WrongRef() throws Exception {
+        setUpConfigFiles();
+
+        MockHttpServletResponse servletCancelResponse = new MockHttpServletResponse();
+        servlet.cancel("invalid-ref", servletCancelResponse);
+        assertEquals(HttpStatus.NOT_FOUND.value(), servletCancelResponse.getStatus());
+    }
+
+    @Test(timeout = 60000)
+    @DirtiesContext
+    public void testCreateReport_Timeout() throws Exception {
+        jobManager.setTimeout(1L);
+        setUpConfigFiles();
+        
+        final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
+        final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+
+        String requestData = loadRequestDataAsString();
+        servlet.createReport("timeout", "png", requestData, servletCreateRequest, servletCreateResponse);
+        final PJsonObject createResponseJson = parseJSONObjectFromString(servletCreateResponse.getContentAsString());
+        assertTrue(createResponseJson.has(MapPrinterServlet.JSON_PRINT_JOB_REF));
+        assertEquals(HttpStatus.OK.value(), servletCreateResponse.getStatus());
+
+        String ref = createResponseJson.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
+
+        final String atHostRefSegment = "@" + this.servletInfo.getServletId();
+        assertTrue(ref.endsWith(atHostRefSegment));
+        assertTrue(ref.indexOf(atHostRefSegment) > 0);
+        waitForCanceled(ref);
+        
+        // now after canceling a task, check that the system is left in a state in which
+        // it still can process jobs
+        jobManager.setTimeout(600L);
+        testCreateReport_Success_explicitAppId();
+    }
+
+    @Test(timeout = 60000)
+    @DirtiesContext
+    public void testCreateReport_AbandonedTimeout() throws Exception {
+        jobManager.setAbandonedTimeout(1L);
+        setUpConfigFiles();
+        
+        final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
+        final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+
+        String requestData = loadRequestDataAsString();
+        servlet.createReport("timeout", "png", requestData, servletCreateRequest, servletCreateResponse);
+        final PJsonObject createResponseJson = parseJSONObjectFromString(servletCreateResponse.getContentAsString());
+        assertTrue(createResponseJson.has(MapPrinterServlet.JSON_PRINT_JOB_REF));
+        assertEquals(HttpStatus.OK.value(), servletCreateResponse.getStatus());
+
+        String ref = createResponseJson.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
+
+        // wait for 2 seconds without making a status request, the job should be canceled after that time
+        Thread.sleep(2000);
+        
+        final MockHttpServletRequest statusRequest = new MockHttpServletRequest();
+        final MockHttpServletResponse statusResponse = new MockHttpServletResponse();
+        servlet.getStatus(ref, "", statusRequest, statusResponse);
+
+        final PJsonObject statusJson = parseJSONObjectFromString(statusResponse.getContentAsString());
+        assertEquals("true", statusJson.getString(MapPrinterServlet.JSON_DONE));
+        assertEquals("task canceled (timeout)", statusJson.getString(MapPrinterServlet.JSON_ERROR));
+    }
+
+    private void waitForCanceled(String ref) throws IOException,
+            ServletException, InterruptedException,
+            UnsupportedEncodingException {
+        while (true) {
+            MockHttpServletResponse servletGetReportResponse = new MockHttpServletResponse();
+            servlet.getReport(ref, false, servletGetReportResponse);
+            final int status = servletGetReportResponse.getStatus();
+            if (status == HttpStatus.ACCEPTED.value()) {
+                // still processing
+                Thread.sleep(500);
+            } else if (status == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+                String error = servletGetReportResponse.getContentAsString();
+                assertTrue(error.contains("canceled"));
+                return;
+            } else {
+                fail(status + " was not one of the expected response codes.  Expected: 500 or 202");
+            }
+        }
+    }
+
     @Test(timeout = 60000)
     public void testCreateReport_Failure_InvalidFormat() throws Exception {
         setUpConfigFiles();
@@ -310,24 +515,6 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         waitForFailure(ref);
     }
 
-    private void waitForFailure(String ref) throws IOException,
-            ServletException, InterruptedException,
-            UnsupportedEncodingException {
-        while (true) {
-            MockHttpServletResponse servletGetReportResponse = new MockHttpServletResponse();
-            servlet.getReport(ref, false, servletGetReportResponse);
-            final int status = servletGetReportResponse.getStatus();
-            if (status == HttpStatus.ACCEPTED.value()) {
-                // still processing
-                Thread.sleep(500);
-            } else if (status == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
-                return;
-            } else {
-                fail(status + " was not one of the expected response codes.  Expected either: 200 or 202");
-            }
-        }
-    }
-
     @Test(timeout = 60000)
     public void testCreateReportAndGet_Success() throws Exception {
         setUpConfigFiles();
@@ -341,6 +528,21 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals(HttpStatus.OK.value(), servletCreateResponse.getStatus());
 
         assertCorrectResponse(servletCreateResponse);
+    }
+
+    @Test(timeout = 60000)
+    @DirtiesContext
+    public void testCreateReportAndGet_Timeout() throws Exception {
+        jobManager.setTimeout(1L);
+        setUpConfigFiles();
+
+        final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
+        final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+
+        String requestData = loadRequestDataAsString();
+
+        this.servlet.createReportAndGet("timeout", "png", requestData, false, servletCreateRequest, servletCreateResponse);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), servletCreateResponse.getStatus());
     }
 
     private String getFormEncodedRequestData() throws IOException {
@@ -591,11 +793,37 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     private void setUpConfigFiles() throws URISyntaxException {
         final HashMap<String, String> configFiles = Maps.newHashMap();
         configFiles.put("default", getFile(MapPrinterServletTest.class, "config.yaml").getAbsolutePath());
+        configFiles.put("timeout", getFile(MapPrinterServletTest.class, "config-timeout.yaml").getAbsolutePath());
         printerFactory.setConfigurationFiles(configFiles);
     }
 
     private String loadRequestDataAsString() throws IOException {
         final PJsonObject requestJson = parseJSONObjectFromFile(MapPrinterServletTest.class, "requestData.json");
         return requestJson.getInternalObj().toString();
+    }
+    
+    /**
+     * Processor which sleeps for 2 seconds, to test timeouts.
+     */
+    public static class SleepProcessor extends AbstractProcessor<Void, Void> {
+
+        public SleepProcessor() {
+            super(Void.class);
+        }
+
+        @Override
+        public final Void execute(final Void nothing, final ExecutionContext context) throws Exception {
+            Thread.sleep(2000L);
+            return null;
+        }
+
+        @Override
+        public Void createInputParameter() {
+            return null;
+        }
+
+        @Override
+        protected void extraValidation(List<Throwable> validationErrors) {
+        }
     }
 }

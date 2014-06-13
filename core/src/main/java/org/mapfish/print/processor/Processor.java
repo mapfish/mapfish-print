@@ -88,12 +88,13 @@ public interface Processor<In, Out> extends ConfigurationObject {
      *
      * @param values A Java object whose <em>public fields</em> are populated from the {@link org.mapfish.print.output.Values} object
      *               (which is used for transferring properties between processors).
+     * @param context The execution context for a print task.
      * @return A Java object whose <em>public fields</em> will be put into the {@link org.mapfish.print.output.Values} object.  The
      *         key in the {@link org.mapfish.print.output.Values} object is the name of the field or if there is a mapping in the
      *         {@link #getOutputMapperBiMap()} map, the mapped name.  The key is determined in a similar way as for the input object.
      */
     @Nullable
-    Out execute(In values) throws Exception;
+    Out execute(In values, ExecutionContext context) throws Exception;
 
     /**
      * Map output from processor to the variable in the Jasper Report.
@@ -101,4 +102,13 @@ public interface Processor<In, Out> extends ConfigurationObject {
     @Nullable
     BiMap<String, String> getOutputMapperBiMap();
 
+    /**
+     * An execution context for a specific print task. 
+     */
+    public interface ExecutionContext {
+        /**
+         * @return Was the print task canceled?
+         */
+        boolean isCanceled();
+    }
 }

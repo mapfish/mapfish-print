@@ -70,7 +70,7 @@ public class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.I
     }
 
     @Override
-    public final Void execute(final JasperReportBuilder.Input param) throws JRException {
+    public final Void execute(final JasperReportBuilder.Input param, final ExecutionContext context) throws JRException {
         final String configurationAbsolutePath = this.configuration.getDirectory().getAbsolutePath();
         if (!this.directory.getAbsolutePath().startsWith(configurationAbsolutePath)) {
             throw new IllegalArgumentException("All directories and files referenced in the configuration must be in the configuration " +
@@ -79,6 +79,7 @@ public class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.I
         Timer.Context buildReports = this.metricRegistry.timer(getClass() + "_execute()").time();
         try {
             for (final File jasperFile : Files.fileTreeTraverser().children(this.directory)) {
+                checkCancelState(context);
                 if (!jasperFile.getName().endsWith(JASPER_REPORT_XML_FILE_EXT)) {
                     continue;
                 }

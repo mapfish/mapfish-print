@@ -22,18 +22,20 @@ package org.mapfish.print.servlet.job;
 import com.google.common.base.Optional;
 import org.json.JSONException;
 import org.mapfish.print.servlet.registry.Registry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -47,6 +49,8 @@ import javax.annotation.PreDestroy;
  * @author jesseeichar on 3/18/14.
  */
 public class ThreadPoolJobManager implements JobManager {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ThreadPoolJobManager.class);
+    
     /**
      * The prefix for looking up the uri a completed report in the registry.
      */
@@ -74,6 +78,8 @@ public class ThreadPoolJobManager implements JobManager {
     private static final String LAST_POLL = "lastPoll_";
     private static final int DEFAULT_MAX_WAITING_JOBS = 5000;
     private static final long DEFAULT_THREAD_IDLE_TIME = 60L;
+    private static final long DEFAULT_TIMEOUT_IN_SECONDS = 600L;
+    private static final long DEFAULT_ABANDONED_TIMEOUT_IN_SECONDS = 120L;
 
     /**
      * The maximum number of threads that will be used for print jobs, this is not the number of threads
@@ -92,6 +98,16 @@ public class ThreadPoolJobManager implements JobManager {
      */
     private long maxIdleTime = DEFAULT_THREAD_IDLE_TIME;
     /**
+     * A print job is canceled, if it is not completed after this
+     * amount of time (in seconds).
+     */
+    private long timeout = DEFAULT_TIMEOUT_IN_SECONDS;
+    /**
+     * A print job is canceled, if this amount of time (in seconds) has
+     * passed, without that the user checked the status of the job.
+     */
+    private long abandonedTimeout = DEFAULT_ABANDONED_TIMEOUT_IN_SECONDS;
+    /**
      * A comparator for comparing {@link org.mapfish.print.servlet.job.SubmittedPrintJob}s and
      * prioritizing them.
      * <p/>
@@ -105,9 +121,14 @@ public class ThreadPoolJobManager implements JobManager {
         }
     };
 
-    private ExecutorService executor;
+    private ThreadPoolExecutor executor;
 
-    private final Collection<SubmittedPrintJob> runningTasksFutures = new ArrayList<SubmittedPrintJob>();
+    /**
+     * A collection of jobs that are currently being processed or that are awaiting
+     * to be processed.
+     */
+    private final Map<String, SubmittedPrintJob> runningTasksFutures =
+            Collections.synchronizedMap(new HashMap<String, SubmittedPrintJob>());
     @Autowired
     private Registry registry;
     private PriorityBlockingQueue<Runnable> queue;
@@ -119,6 +140,14 @@ public class ThreadPoolJobManager implements JobManager {
 
     public final void setMaxNumberOfWaitingJobs(final int maxNumberOfWaitingJobs) {
         this.maxNumberOfWaitingJobs = maxNumberOfWaitingJobs;
+    }
+
+    public final void setTimeout(final long timeout) {
+        this.timeout = timeout;
+    }
+
+    public final void setAbandonedTimeout(final long abandonedTimeout) {
+        this.abandonedTimeout = abandonedTimeout;
     }
 
     public final void setJobPriorityComparator(final Comparator<PrintJob> jobPriorityComparator) {
@@ -176,11 +205,13 @@ public class ThreadPoolJobManager implements JobManager {
 
         this.registry.incrementInt(NEW_PRINT_COUNT, 1);
         final Future<PrintJobStatus> future = this.executor.submit(job);
-        this.runningTasksFutures.add(new SubmittedPrintJob(future, job.getReferenceId()));
         try {
             new PendingPrintJob(job.getReferenceId(), job.getAppId()).store(this.registry);
+            this.registry.put(LAST_POLL + job.getReferenceId(), new Date().getTime());
         } catch (JSONException e) {
             throw new RuntimeException(e);
+        } finally {
+            this.runningTasksFutures.put(job.getReferenceId(), new SubmittedPrintJob(future, job.getReferenceId(), job.getAppId()));
         }
     }
 
@@ -196,6 +227,39 @@ public class ThreadPoolJobManager implements JobManager {
             this.registry.put(LAST_POLL + referenceId, new Date().getTime());
         }
         return done;
+    }
+
+    @Override
+    public final void cancel(final String referenceId) throws NoSuchReferenceException {
+        Optional<? extends PrintJobStatus> jobStatus = null;
+        try {
+            // check if the reference id is valid
+            jobStatus = PrintJobStatus.load(referenceId, this.registry);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        synchronized (this.runningTasksFutures) {
+            if (this.runningTasksFutures.containsKey(referenceId)) {
+                // the job is not yet finished (or has not even started), cancel
+                final SubmittedPrintJob printJob = this.runningTasksFutures.get(referenceId);
+                if (!printJob.getReportFuture().cancel(true)) {
+                    LOGGER.info("Could not cancel job " + referenceId);
+                }
+                this.runningTasksFutures.remove(referenceId);
+                this.registry.incrementInt(NB_PRINT_DONE, 1);
+                this.registry.incrementLong(TOTAL_PRINT_TIME, printJob.getTimeSinceStart());
+            }
+        }
+
+        // even if the job is already finished, we store it as "canceled" in the registry,
+        // so that all subsequent status requests return "canceled"
+        final FailedPrintJob failedJob = new FailedPrintJob(
+                referenceId, jobStatus.get().getAppId(), new Date(), "", "task canceled");
+        try {
+            failedJob.store(this.registry);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -229,6 +293,10 @@ public class ThreadPoolJobManager implements JobManager {
         }
     }
 
+    /**
+     * This timer task changes the status of finished jobs in the registry.
+     * Also it stops jobs that have been running for too long (timeout).
+     */
     private class PostResultToRegistryTask extends TimerTask {
 
         private static final int CHECK_INTERVAL = 500;
@@ -238,25 +306,81 @@ public class ThreadPoolJobManager implements JobManager {
             if (ThreadPoolJobManager.this.executor.isShutdown()) {
                 return;
             }
-            Iterator<SubmittedPrintJob> iterator = ThreadPoolJobManager.this.runningTasksFutures.iterator();
-            while (iterator.hasNext()) {
-                SubmittedPrintJob next = iterator.next();
-                if (next.getReportFuture().isDone()) {
-                    iterator.remove();
+
+            // run in try-catch to ensure that the timer task is not stopped
+            try {
+                synchronized (ThreadPoolJobManager.this.runningTasksFutures) {
+                    updateRegistry();
+                }
+            } catch (Throwable t) {
+                LOGGER.error("Error while updating registry", t);
+            }
+        }
+        
+        private void updateRegistry() {
+            for (SubmittedPrintJob printJob : ThreadPoolJobManager.this.runningTasksFutures.values()) {
+                if (!printJob.getReportFuture().isDone() &&
+                        (isTimeoutExceeded(printJob) || isAbandoned(printJob))) {
+                    LOGGER.info("Cancelling job after timeout " + printJob.getReportRef());
+                    if (!printJob.getReportFuture().cancel(true)) {
+                        LOGGER.info("Could not cancel job after timeout " + printJob.getReportRef());
+                    }
+                    // remove all canceled tasks from the work queue (otherwise the queue comparator
+                    // might stumble on non-PrintJob entries)
+                    ThreadPoolJobManager.this.executor.purge();
+                }
+
+                if (printJob.getReportFuture().isDone()) {
+                    ThreadPoolJobManager.this.runningTasksFutures.remove(printJob.getReportRef());
                     final Registry registryRef = ThreadPoolJobManager.this.registry;
                     try {
-                        next.getReportFuture().get().store(registryRef);
+                        printJob.getReportFuture().get().store(registryRef);
                         registryRef.incrementInt(NB_PRINT_DONE, 1);
-                        registryRef.incrementLong(TOTAL_PRINT_TIME, next.getTimeSinceStart());
+                        registryRef.incrementLong(TOTAL_PRINT_TIME, printJob.getTimeSinceStart());
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        // if this happens, the timer task was interrupted. restore the interrupted
+                        // status to not lose the information.
+                        Thread.currentThread().interrupt();
                     } catch (ExecutionException e) {
+                        // TODO check if in this case the job remains in the registry with status pending!
                         registryRef.incrementInt(LAST_PRINT_COUNT, 1);
                     } catch (JSONException e) {
                         registryRef.incrementInt(LAST_PRINT_COUNT, 1);
+                    } catch (CancellationException e) {
+                        try {
+                            final FailedPrintJob failedJob = new FailedPrintJob(
+                                    printJob.getReportRef(), printJob.getAppId(), new Date(), "", "task canceled (timeout)");
+                            failedJob.store(registryRef);
+                            registryRef.incrementInt(NB_PRINT_DONE, 1);
+                            registryRef.incrementLong(TOTAL_PRINT_TIME, printJob.getTimeSinceStart());
+                        } catch (JSONException e1) {
+                            registryRef.incrementInt(LAST_PRINT_COUNT, 1);
+                        }
                     }
                 }
             }
+        }
+
+        private boolean isTimeoutExceeded(final SubmittedPrintJob printJob) {
+            return printJob.getTimeSinceStart() > 
+                TimeUnit.MILLISECONDS.convert(ThreadPoolJobManager.this.timeout, TimeUnit.SECONDS);
+        }
+
+        /**
+         * If the status of a print job is not checked for a while, we assume that the user
+         * is no longer interested in the report, and we cancel the job.
+         * 
+         * @param printJob
+         * @return is the abandoned timeout exceeded?
+         */
+        private boolean isAbandoned(final SubmittedPrintJob printJob) {
+            final long duration = new Date().getTime() - timeSinceLastStatusCheck(printJob.getReportRef());
+            final boolean abandoned = duration > TimeUnit.SECONDS.toMillis(ThreadPoolJobManager.this.abandonedTimeout);
+            if (abandoned) {
+                LOGGER.info("Job " + printJob.getReportRef() + " is abandoned (no status check within the "
+                        + "last " + ThreadPoolJobManager.this.abandonedTimeout + " seconds)");
+            }
+            return abandoned;
         }
     }
 }

@@ -116,6 +116,14 @@ public abstract class PrintJobStatus {
         }
     }
 
+    public final String getReferenceId() {
+        return this.referenceId;
+    }
+
+    public final String getAppId() {
+        return this.appId;
+    }
+
     public final String getFileName() {
         return this.fileName;
     }
