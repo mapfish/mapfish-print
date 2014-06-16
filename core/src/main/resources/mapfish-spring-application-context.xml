@@ -46,7 +46,7 @@
     <bean id="processorDependencyGraphFactory" class="org.mapfish.print.processor.ProcessorDependencyGraphFactory" />
 
     <bean id="registry" class="org.mapfish.print.servlet.registry.BasicRegistry">
-        <property name="timeToKeepAfterAccessInSeconds" value="30" />
+        <property name="timeToKeepAfterAccessInMinutes" value="30" />
     </bean>
 
     <bean id="jobManager" class="org.mapfish.print.servlet.job.ThreadPoolJobManager">

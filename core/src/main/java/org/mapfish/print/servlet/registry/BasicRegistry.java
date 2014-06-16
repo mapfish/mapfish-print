@@ -35,17 +35,17 @@ import javax.annotation.PostConstruct;
 public class BasicRegistry implements Registry {
     private static final int TIME_TO_KEEP_AFTER_ACCESS = 30;
     private Cache<String, Object> registry;
-    private int timeToKeepAfterAccessInSeconds = TIME_TO_KEEP_AFTER_ACCESS;
+    private int timeToKeepAfterAccessInMinutes = TIME_TO_KEEP_AFTER_ACCESS;
 
-    public final void setTimeToKeepAfterAccessInSeconds(final int timeToKeepAfterAccessInSeconds) {
-        this.timeToKeepAfterAccessInSeconds = timeToKeepAfterAccessInSeconds;
+    public final void setTimeToKeepAfterAccessInMinutes(final int timeToKeepAfterAccessInMinutes) {
+        this.timeToKeepAfterAccessInMinutes = timeToKeepAfterAccessInMinutes;
     }
 
     @PostConstruct
     private void init() {
         this.registry = CacheBuilder.newBuilder().
                 concurrencyLevel(1).
-                expireAfterAccess(this.timeToKeepAfterAccessInSeconds, TimeUnit.MINUTES).build();
+                expireAfterAccess(this.timeToKeepAfterAccessInMinutes, TimeUnit.MINUTES).build();
     }
 
 
