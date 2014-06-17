@@ -19,6 +19,8 @@
 
 package org.mapfish.print.servlet;
 
+
+import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 
@@ -27,6 +29,11 @@ import org.json.JSONWriter;
 import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
+import org.mapfish.print.attribute.Attribute;
+import org.mapfish.print.attribute.map.MapAttribute;
+import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.Template;
 import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
@@ -38,6 +45,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -63,6 +71,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGURATION_FILE_KEY;
 
 /**
  * Main print servlet.
@@ -115,7 +125,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
         if (additionalPath.equals(PRINT_URL)) {
             createAndGetPDF(httpServletRequest, httpServletResponse);
         } else if (additionalPath.equals(CREATE_URL)) {
-            createPDF(httpServletRequest, httpServletResponse, getBaseUrl(httpServletRequest));
+            createPDF(httpServletRequest, httpServletResponse, getBaseUrl(httpServletRequest).toString());
         } else {
             error(httpServletResponse, "Unknown method: " + additionalPath, HttpStatus.NOT_FOUND);
         }
@@ -306,19 +316,21 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     /**
      * To get (in JSON) the information about the available formats and CO.
      *
-     * @param req the http request
-     * @param resp the http response
-     * @param basePath the path to the webapp
+     * @param baseUrl  the path to the webapp
+     * @param jsonpVar if given the result is returned as a variable assignment
+     * @param req      the http request
+     * @param resp     the http response
      */
     @RequestMapping(INFO_URL)
-    public final void getInfo(final HttpServletRequest req, final HttpServletResponse resp, final String basePath)
+    public final void getInfo(
+            @RequestParam(value = "url", defaultValue = "") final String baseUrl,
+            @RequestParam(value = "var", defaultValue = "") final String jsonpVar,
+            final HttpServletRequest req, final HttpServletResponse resp)
             throws ServletException, IOException {
-        this.app = req.getParameter("app");
-        //System.out.println("app = "+app);
 
         final MapPrinter printer;
         try {
-            printer = this.printerFactory.create(this.app);
+            printer = this.printerFactory.create(DEFAULT_CONFIGURATION_FILE_KEY);
         } catch (NoSuchAppException e) {
             error(resp, e.getMessage(), HttpStatus.NOT_FOUND);
             return;
@@ -327,40 +339,109 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
         final PrintWriter writer = resp.getWriter();
 
         try {
-            final String var = req.getParameter("var");
-            if (var != null) {
-                writer.print(var + "=");
+            if (!Strings.isNullOrEmpty(jsonpVar)) {
+                writer.print("var " + jsonpVar + "=");
             }
 
             JSONWriter json = new JSONWriter(writer);
             try {
                 json.object();
-                {
-                    printer.printClientConfig(json);
-                    String urlToUseInSpec = basePath;
-
-                    String proxyUrl = printer.getConfiguration().getProxyBaseUrl();
-                    if (proxyUrl != null) {
-                        urlToUseInSpec = proxyUrl;
-                    }
-                    json.key("printURL").value(urlToUseInSpec + PRINT_URL);
-                    json.key("createURL").value(urlToUseInSpec + CREATE_URL);
-                    if (this.app != null) {
-                        json.key("app").value(this.app);
-                    }
-                }
+                writeInfoJson(json, baseUrl, printer, req);
                 json.endObject();
             } catch (JSONException e) {
                 throw new ServletException(e);
             }
-            if (var != null) {
+            if (!Strings.isNullOrEmpty(jsonpVar)) {
                 writer.print(";");
             }
+        } catch (UnsupportedOperationException exc) {
+            error(resp, exc.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception exc) {
+            error(resp, "Unexpected error, please see the server logs", HttpStatus.INTERNAL_SERVER_ERROR);
         } finally {
             writer.close();
         }
     }
 
+    private void writeInfoJson(final JSONWriter json, final String baseUrl,
+            final MapPrinter printer, final HttpServletRequest req)
+            throws JSONException {
+        // TODO scales
+        json.key("scales");
+        json.array();
+        json.endArray();
+        
+        // TODO dpis
+        json.key("dpis");
+        json.array();
+        json.endArray();
+        
+        json.key("outputFormats");
+        json.array();
+        {
+            for (String format : printer.getOutputFormatsNames()) {
+                json.object();
+                json.key("name").value(format);
+                json.endObject();
+            }
+        }
+        json.endArray();
+        
+        json.key("layouts");
+        json.array();
+        writeInfoLayouts(json, printer.getConfiguration());
+        json.endArray();
+
+        String urlToUseInSpec = null;
+        if (!Strings.isNullOrEmpty(baseUrl) && baseUrl.endsWith(INFO_URL)) {
+            urlToUseInSpec = baseUrl.replace(INFO_URL, "");
+        } else {
+            urlToUseInSpec = getBaseUrl(req).toString();
+        }
+        json.key("printURL").value(urlToUseInSpec + PRINT_URL);
+        json.key("createURL").value(urlToUseInSpec + CREATE_URL);
+    }
+
+
+    private void writeInfoLayouts(final JSONWriter json, final Configuration configuration) throws JSONException {
+        for (String name : configuration.getTemplates().keySet()) {
+            json.object();
+            {
+                json.key("name").value(name);
+                json.key("rotation").value(true);
+                
+                Template template = configuration.getTemplates().get(name);
+                
+                // find the map attribute
+                MapAttribute map = null;
+                for (Attribute attribute : template.getAttributes().values()) {
+                    if (attribute instanceof MapAttribute) {
+                        if (map != null) {
+                            throw new UnsupportedOperationException("Template '" + name + "' contains "
+                                    + "more than one map configuration. The legacy API "
+                                    + "supports only one map per template.");
+                        } else {
+                            map = (MapAttribute) attribute;
+                        }
+                    }
+                }
+                if (map == null) {
+                    throw new UnsupportedOperationException("Template '" + name + "' contains "
+                            + "no map configuration.");
+                }
+                
+                json.key("map");
+                json.object();
+                {
+                    MapAttributeValues mapValues = map.createValue(template);
+                    json.key("width").value(mapValues.getMapSize().width);
+                    json.key("height").value(mapValues.getMapSize().height);
+                }
+                json.endObject();
+            }
+            json.endObject();
+        }
+    }
 
     /**
      * Do the actual work of creating the PDF temporary file.
@@ -516,22 +597,6 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
                 }
             }
             this.purging.set(false);
-        }
-    }
-
-    /**
-     * Get the base url of the webapp.
-     *
-     * @param httpServletRequest the http request object.
-     */
-    protected final String getBaseUrl(final HttpServletRequest httpServletRequest) {
-        final String additionalPath = httpServletRequest.getPathInfo();
-        String fullUrl = httpServletRequest.getParameter("url");
-        if (fullUrl != null) {
-            return fullUrl.replaceFirst(additionalPath + "$", "");
-        } else {
-            return httpServletRequest.getRequestURL().toString()
-                    .replaceFirst(additionalPath + "$", "");
         }
     }
 

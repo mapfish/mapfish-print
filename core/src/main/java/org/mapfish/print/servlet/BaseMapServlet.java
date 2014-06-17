@@ -28,6 +28,8 @@ import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -101,7 +103,7 @@ public abstract class BaseMapServlet {
     /**
      * Send an error to the client with an exception.
      *
-     * @param httpServletResponse the http response to send the rror to
+     * @param httpServletResponse the http response to send the error to
      * @param e the error that occurred
      */
     protected final void error(final HttpServletResponse httpServletResponse, final Throwable e) {
@@ -121,5 +123,22 @@ public abstract class BaseMapServlet {
                 out.close();
             }
         }
+    }
+
+    /**
+     * Returns the base URL of the print servlet.
+     * 
+     * @param httpServletRequest the request
+     * @return
+     */
+    protected final StringBuilder getBaseUrl(final HttpServletRequest httpServletRequest) {
+        StringBuilder baseURL = new StringBuilder();
+        if (httpServletRequest.getContextPath() != null && !httpServletRequest.getContextPath().isEmpty()) {
+            baseURL.append(httpServletRequest.getContextPath());
+        }
+        if (httpServletRequest.getServletPath() != null && !httpServletRequest.getServletPath().isEmpty()) {
+            baseURL.append(httpServletRequest.getServletPath());
+        }
+        return baseURL;
     }
 }

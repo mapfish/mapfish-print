@@ -156,6 +156,7 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
      */
     public final void setConfigurationFiles(final Map<String, String> configurationFiles) throws URISyntaxException {
         this.configurationFiles.clear();
+        this.configurationFileLastModifiedTimes.clear();
         for (Map.Entry<String, String> entry : configurationFiles.entrySet()) {
             if (!entry.getValue().contains(":/")) {
                 // assume is a file
