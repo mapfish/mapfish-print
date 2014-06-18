@@ -57,7 +57,7 @@ public final class OldAPIRequestConverter {
      * @param spec          the request in the format of the old API
      * @param configuration the configuration
      */
-    public static JSONObject convert(final String spec, final Configuration configuration) throws JSONException {
+    public static PJsonObject convert(final String spec, final Configuration configuration) throws JSONException {
         final PJsonObject oldRequest = MapPrinter.parseSpec(spec);
         final String layout = oldRequest.getString("layout");
         
@@ -70,9 +70,12 @@ public final class OldAPIRequestConverter {
         if (oldRequest.has("outputFilename")) {
             request.put(Constants.OUTPUT_FILENAME_KEY, oldRequest.getString("outputFilename"));
         }
+        if (oldRequest.has("outputFormat")) {
+            request.put("outputFormat", oldRequest.getString("outputFormat"));
+        }
         request.put("attributes", getAttributes(oldRequest, configuration.getTemplate(layout)));
         
-        return request;
+        return new PJsonObject(request, "spec");
     }
 
     private static JSONObject getAttributes(final PJsonObject oldRequest, final Template template) throws JSONException {

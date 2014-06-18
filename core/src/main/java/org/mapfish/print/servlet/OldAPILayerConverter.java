@@ -144,9 +144,6 @@ public final class OldAPILayerConverter {
             final JSONObject layer = super.convert(oldLayer);
             layer.put("type", "geojson");
             
-            if (oldLayer.has("opacity")) {
-                layer.put("opacity", oldLayer.getDouble("opacity"));
-            }
             if (oldLayer.has("geoJson")) {
                 layer.put("geoJson", oldLayer.getInternalObj().getJSONObject("geoJson"));
             }

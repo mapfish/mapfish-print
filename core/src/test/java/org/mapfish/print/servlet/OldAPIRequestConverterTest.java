@@ -57,11 +57,13 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
     public void testConvert() throws IOException, JSONException, NoSuchAppException, URISyntaxException {
         setUpConfigFiles();
         Configuration configuration = printerFactory.create("default").getConfiguration();
-        JSONObject request = OldAPIRequestConverter.convert(loadRequestDataAsString(), configuration);
+        JSONObject request = OldAPIRequestConverter.convert(
+                loadRequestDataAsString(), configuration).getInternalObj();
         
         assertNotNull(request);
         assertEquals("A4 Portrait", request.getString(Constants.JSON_LAYOUT_KEY));
         assertEquals("political-boundaries", request.getString(Constants.OUTPUT_FILENAME_KEY));
+        assertEquals("pdf", request.getString("outputFormat"));
         assertTrue(request.has("attributes"));
         
         JSONObject attributes = request.getJSONObject("attributes");
@@ -124,7 +126,7 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
 
     private String loadRequestDataAsString() throws IOException {
         final PJsonObject requestJson = AbstractMapfishSpringTest.parseJSONObjectFromFile(
-                OldAPIRequestConverterTest.class, "requestData-old-api.json");
+                OldAPIRequestConverterTest.class, "requestData-old-api-all.json");
         return requestJson.getInternalObj().toString();
     }
 }

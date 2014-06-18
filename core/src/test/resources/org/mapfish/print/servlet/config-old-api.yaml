@@ -2,7 +2,7 @@ throwErrorOnExtraParameters: true
 
 templates:
   A4 Portrait: !template
-    reportTemplate: MapOnly_A4.jrxml
+    reportTemplate: MapOnly_A4-old-api.jrxml
     attributes:
       geojsonMap: !map
         width: 802

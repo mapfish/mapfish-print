@@ -131,6 +131,116 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), infoResponse.getStatus());
         assertTrue(infoResponse.getContentAsString().contains("Error while processing request"));
     }
+    
+    @Test
+    public void testCreate() throws Exception {
+        setUpConfigFiles();
+        
+        final MockHttpServletRequest createRequest = new MockHttpServletRequest();
+        createRequest.setContextPath("/print-old");
+        createRequest.setPathInfo("/create.json");
+        createRequest.setParameter("spec", loadRequestDataAsString("requestData-old-api.json"));
+        final MockHttpServletResponse createResponse = new MockHttpServletResponse();
+        
+        this.servlet.doPost("http://demo.mapfish.org/2.2/print/pdf/create.json", createRequest, createResponse);
+        assertEquals(HttpStatus.OK.value(), createResponse.getStatus());
+        
+        final String result = createResponse.getContentAsString();
+        final String url = parseJSONObjectFromString(result).getString("getURL");
+        assertTrue(url.startsWith("http://demo.mapfish.org/2.2/print/pdf/"));
+        assertTrue(url.endsWith(".pdf.printout"));
+        final String printId = url.replace("http://demo.mapfish.org/2.2/print/pdf/", "")
+                .replace(".printout", "");
+
+        final MockHttpServletRequest getFileRequest = new MockHttpServletRequest();
+        createRequest.setContextPath("/print-old");
+        final MockHttpServletResponse getFileResponse = new MockHttpServletResponse();
+        this.servlet.getFile(printId, getFileRequest, getFileResponse);
+        assertEquals(HttpStatus.OK.value(), getFileResponse.getStatus());
+    }
+    
+    @Test
+    public void testCreateFromPostBody() throws Exception {
+        setUpConfigFiles();
+        
+        final MockHttpServletRequest createRequest = new MockHttpServletRequest();
+        createRequest.setContextPath("/print-old");
+        createRequest.setPathInfo("/create.json");
+        createRequest.setContent(loadRequestDataAsString("requestData-old-api.json").getBytes());
+        final MockHttpServletResponse createResponse = new MockHttpServletResponse();
+        
+        this.servlet.doPost("http://demo.mapfish.org/2.2/print/pdf/create.json", createRequest, createResponse);
+        assertEquals(HttpStatus.OK.value(), createResponse.getStatus());
+    }
+    
+    @Test
+    public void testCreateMissingSpec() throws Exception {
+        setUpConfigFiles();
+        
+        final MockHttpServletRequest createRequest = new MockHttpServletRequest();
+        createRequest.setContextPath("/print-old");
+        createRequest.setPathInfo("/create.json");
+        final MockHttpServletResponse createResponse = new MockHttpServletResponse();
+        
+        this.servlet.doPost("http://demo.mapfish.org/2.2/print/pdf/create.json", createRequest, createResponse);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), createResponse.getStatus());
+        assertTrue(createResponse.getContentAsString().contains("Missing 'spec' parameter"));
+    }
+    
+    @Test
+    public void testPrint() throws Exception {
+        setUpConfigFiles();
+        
+        final MockHttpServletRequest createRequest = new MockHttpServletRequest();
+        createRequest.setContextPath("/print-old");
+        createRequest.setPathInfo("/print.pdf");
+        createRequest.setParameter("spec", loadRequestDataAsString("requestData-old-api.json"));
+        final MockHttpServletResponse createResponse = new MockHttpServletResponse();
+        
+        this.servlet.doPost(null, createRequest, createResponse);
+        assertEquals(HttpStatus.OK.value(), createResponse.getStatus());
+    }
+    
+    @Test
+    public void testPrintFromPostBody() throws Exception {
+        setUpConfigFiles();
+        
+        final MockHttpServletRequest createRequest = new MockHttpServletRequest();
+        createRequest.setContextPath("/print-old");
+        createRequest.setPathInfo("/print.pdf");
+        createRequest.setContent(loadRequestDataAsString("requestData-old-api.json").getBytes());
+        final MockHttpServletResponse createResponse = new MockHttpServletResponse();
+        
+        this.servlet.doPost(null, createRequest, createResponse);
+        assertEquals(HttpStatus.OK.value(), createResponse.getStatus());
+    }
+    
+    @Test
+    public void testPrintMissingSpec() throws Exception {
+        setUpConfigFiles();
+        
+        final MockHttpServletRequest createRequest = new MockHttpServletRequest();
+        createRequest.setContextPath("/print-old");
+        createRequest.setPathInfo("/print.pdf");
+        final MockHttpServletResponse createResponse = new MockHttpServletResponse();
+        
+        this.servlet.doPost(null, createRequest, createResponse);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), createResponse.getStatus());
+        assertTrue(createResponse.getContentAsString().contains("Missing 'spec' parameter"));
+    }
+    
+    @Test
+    public void testGetFileNotFound() throws Exception {
+        setUpConfigFiles();
+        
+        final MockHttpServletRequest getFileRequest = new MockHttpServletRequest();
+        getFileRequest.setContextPath("/print-old");
+        getFileRequest.setPathInfo("/print.pdf");
+        final MockHttpServletResponse getFileResponse = new MockHttpServletResponse();
+        
+        this.servlet.getFile("invalid-id.pdf", getFileRequest, getFileResponse);
+        assertEquals(HttpStatus.NOT_FOUND.value(), getFileResponse.getStatus());
+    }
 
     private void setUpConfigFiles() throws URISyntaxException {
         final HashMap<String, String> configFiles = Maps.newHashMap();
@@ -144,8 +254,8 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         printerFactory.setConfigurationFiles(configFiles);
     }
 
-    private String loadRequestDataAsString() throws IOException {
-        final PJsonObject requestJson = parseJSONObjectFromFile(OldAPIMapPrinterServletTest.class, "requestData.json");
+    private String loadRequestDataAsString(String file) throws IOException {
+        final PJsonObject requestJson = parseJSONObjectFromFile(OldAPIMapPrinterServletTest.class, file);
         return requestJson.getInternalObj().toString();
     }
     
