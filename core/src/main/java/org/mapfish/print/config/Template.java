@@ -115,6 +115,10 @@ public class Template implements ConfigurationObject, HasConfiguration {
         this.reportTemplate = reportTemplate;
     }
 
+    public final List<Processor> getProcessors() {
+        return this.processors;
+    }
+    
     /**
      * Set the normal processors.
      *

@@ -82,7 +82,7 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
 
         assertTrue(info.getArray("layouts").size() > 0);
         PObject layout = info.getArray("layouts").getObject(0);
-        assertEquals("A4 Landscape", layout.getString("name"));
+        assertEquals("A4 Portrait", layout.getString("name"));
         assertTrue(layout.getBool("rotation"));
         assertEquals(802, layout.getObject("map").getInt("width"));
         assertEquals(500, layout.getObject("map").getInt("height"));

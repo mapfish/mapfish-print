@@ -1,7 +1,7 @@
 throwErrorOnExtraParameters: true
 
 templates:
-  A4 Landscape: !template
+  A4 Portrait: !template
     reportTemplate: MapOnly_A4.jrxml
     attributes:
       geojsonMap: !map
