@@ -81,7 +81,7 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         
         assertTrue(map.has("layers"));
         JSONArray layers = map.getJSONArray("layers");
-        assertEquals(3, layers.length());
+        assertEquals(4, layers.length());
         
         JSONObject osmLayer = layers.getJSONObject(0);
         assertEquals("osm", osmLayer.getString("type"));
@@ -102,10 +102,14 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertEquals(false, wmsLayer.getJSONObject("customParams").has("version"));
         assertEquals("1.1.1", wmsLayer.getString("version"));
         
-        JSONObject geojsonLayer = layers.getJSONObject(2);
-        assertEquals("geojson", geojsonLayer.getString("type"));
-        JSONObject geoJson = geojsonLayer.getJSONObject("geoJson");
+        JSONObject geojsonLayer1 = layers.getJSONObject(2);
+        assertEquals("geojson", geojsonLayer1.getString("type"));
+        JSONObject geoJson = geojsonLayer1.getJSONObject("geoJson");
         assertEquals(1, geoJson.getJSONArray("features").length());
+        
+        JSONObject geojsonLayer2 = layers.getJSONObject(3);
+        assertEquals("geojson", geojsonLayer2.getString("type"));
+        assertEquals("http://xyz.com/places.json", geojsonLayer2.getString("geoJson"));
     }
     
     @Test(expected = IllegalArgumentException.class)

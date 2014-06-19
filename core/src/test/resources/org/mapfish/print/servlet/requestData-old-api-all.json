@@ -134,6 +134,13 @@
          "name":"c2cgeoportal212",
          "opacity":1,
          "useNativeAngle":false
+      },
+      {
+         "type":"Vector",
+         "geoJson":"http://xyz.com/places.json",
+         "name":"c2cgeoportal212",
+         "opacity":1,
+         "useNativeAngle":false
       }
    ],
    "pages":[

@@ -145,7 +145,14 @@ public final class OldAPILayerConverter {
             layer.put("type", "geojson");
             
             if (oldLayer.has("geoJson")) {
-                layer.put("geoJson", oldLayer.getInternalObj().getJSONObject("geoJson"));
+                // the GeoJSON can either be given directly inline, or as URL to a file 
+                try {
+                    // first try to get an inline GeoJSON definition
+                    layer.put("geoJson", oldLayer.getInternalObj().getJSONObject("geoJson"));
+                } catch (JSONException e) {
+                    // if that doesn't work, assume that it is linking to a file
+                    layer.put("geoJson", oldLayer.getString("geoJson"));
+                }
             }
             
             // TODO convert styles
