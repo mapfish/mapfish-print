@@ -20,6 +20,7 @@
 package org.mapfish.print.servlet;
 
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,12 +30,15 @@ import org.mapfish.print.MapPrinter;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.processor.Processor;
+import org.mapfish.print.processor.jasper.TableProcessor;
 import org.mapfish.print.processor.map.CreateMapProcessor;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -82,7 +86,8 @@ public final class OldAPIRequestConverter {
         final JSONObject attributes = new JSONObject();
         
         setMapAttribute(attributes, oldRequest, template);
-        // TODO table, legends
+        setTableAttribute(attributes, oldRequest, template);
+        // TODO legends, scales, ...
         
         // copy custom parameters
         Iterator<String> keys = oldRequest.keys();
@@ -192,5 +197,186 @@ public final class OldAPIRequestConverter {
             PJsonObject oldLayer = (PJsonObject) oldLayers.getObject(i);
             layers.put(OldAPILayerConverter.convert(oldLayer));
         }
+    }
+
+    /**
+     * Converts a table definition from something like:
+     *          
+     *   "table":{
+     *       "data":[
+     *          {
+     *             "col0":"a",
+     *             "col1":"b",
+     *             "col2":"c"
+     *          },
+     *          {
+     *             "col0":"d",
+     *             "col1":"e",
+     *             "col2":"f"
+     *          },
+     *          {},
+     *          {}
+     *       ],
+     *       "columns":[
+     *          "col0",
+     *          "col1",
+     *          "col2"
+     *       ]
+     *    },
+     *    "col0":"Column 1",
+     *    "col1":"Column 2",
+     *    "col2":"Column 3"
+     *    
+     *    ... to ...:
+     *    
+     *   "table": {
+     *       "columns": ["Column 1", "Column 2", "Column 3"],
+     *       "data": [
+     *           ["a", "b", "c"],
+     *           ["d", "e", "f"]
+     *       ]
+     *   },
+     */
+    private static void setTableAttribute(final JSONObject attributes,
+            final PJsonObject oldRequest, final Template template) throws JSONException {
+        final TableProcessor tableProcessor = getTableProcessor(template);
+        final PJsonObject oldTablePage = (PJsonObject) getOldTablePage(oldRequest);
+        
+        if (tableProcessor == null && oldTablePage == null) {
+            // no table, no work
+            return;
+        } else if (tableProcessor != null && oldTablePage == null) {
+            throw new IllegalArgumentException("Configuration expects a table, but no "
+                    + "table is defined in the request.");
+        }
+        
+        String tableAttributeName = "table";
+        if (tableProcessor.getInputMapperBiMap().containsValue("table")) {
+            tableAttributeName = tableProcessor.getInputMapperBiMap().inverse().get("table");
+        }
+        
+        final JSONObject table = new JSONObject();
+        attributes.put(tableAttributeName, table);
+        
+        final List<String> columnKeys = getTableColumnKeys(oldTablePage);
+        final List<String> columnLabels = getTableColumnLabels(columnKeys, oldTablePage);
+        final List<JSONArray> tableData = getTableData(columnKeys, oldTablePage);
+        
+        table.put("columns", columnLabels);
+        table.put("data", tableData);
+    }
+
+    private static TableProcessor getTableProcessor(final Template template) {
+        TableProcessor tableProcessor = null;
+        
+        for (Processor<?, ?> processor : template.getProcessors()) {
+            if (processor instanceof TableProcessor) {
+                if (tableProcessor == null) {
+                    tableProcessor = (TableProcessor) processor;
+                } else {
+                    throw new UnsupportedOperationException("Template contains "
+                            + "more than one table configuration. The legacy API "
+                            + "supports only one table per template.");
+                }
+            }
+        }
+        return tableProcessor;
+    }
+
+    private static PObject getOldTablePage(final PJsonObject oldRequest) {
+        final PArray pages = oldRequest.getArray("pages");
+        
+        PObject tablePage = null;
+        for (int i = 0; i < pages.size(); i++) {
+            final PObject page = pages.getObject(i);
+            
+            if (isTablePage(page)) {
+                if (tablePage == null) {
+                    tablePage = page;
+                } else {
+                    throw new UnsupportedOperationException("Request contains "
+                            + "more than one page with a table. The legacy API "
+                            + "supports only one table per report.");
+                }
+            }
+        }
+        return tablePage;
+    }
+
+    private static boolean isTablePage(final PObject page) {
+        if (page.has("table")) {
+            // page has a table, but let's check if it's not a "dummy" table created by GeoExt,
+            // like this one:
+            //
+            // "table":{
+            //    "data":[
+            //       {
+            //          "col0":""
+            //       }
+            //    ],
+            //    "columns":[
+            //       "col0"
+            //    ]
+            // }
+            PObject table = page.getObject("table");
+            if (table.getArray("columns").size() == 1 && table.getArray("data").size() == 1) {
+                String columnName = table.getArray("columns").getString(0);
+                String value = table.getArray("data").getObject(0).getString(columnName);
+                return !Strings.isNullOrEmpty(value);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private static List<String> getTableColumnKeys(final PJsonObject oldTablePage) {
+        final PObject table = oldTablePage.getObject("table");
+        final PArray columns = table.getArray("columns");
+        
+        final List<String> columnKeys = new LinkedList<String>();
+        for (int i = 0; i < columns.size(); i++) {
+            columnKeys.add(columns.getString(i));
+        }
+        
+        return columnKeys;
+    }
+
+    private static List<String> getTableColumnLabels(final List<String> columnKeys,
+            final PJsonObject oldTablePage) {
+        final List<String> columnLabels = new LinkedList<String>();
+        
+        for (String key : columnKeys) {
+            if (oldTablePage.has(key)) {
+                columnLabels.add(oldTablePage.getString(key));
+            } else {
+                columnLabels.add("");
+            }
+        }
+        
+        return columnLabels;
+    }
+
+    private static List<JSONArray> getTableData(final List<String> columnKeys,
+            final PJsonObject oldTablePage) {
+        final PObject table = oldTablePage.getObject("table");
+        final PArray oldTableRows = table.getArray("data");
+        
+        final List<JSONArray> tableData = new LinkedList<JSONArray>();
+        for (int i = 0; i < oldTableRows.size(); i++) {
+            final PObject oldRow = oldTableRows.getObject(i);
+            if (!oldRow.keys().hasNext()) {
+                // row is empty, skip
+                continue;
+            }
+            
+            // copy the values for each column
+            final JSONArray row = new JSONArray();
+            for (String key : columnKeys) {
+                row.put(oldRow.getString(key));
+            }
+            tableData.add(row);
+        }
+        
+        return tableData;
     }
 }

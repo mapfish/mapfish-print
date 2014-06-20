@@ -5,6 +5,7 @@
 	<parameter name="geojsonMap" class="java.lang.String">
 		<parameterDescription><![CDATA[Geo Json map]]></parameterDescription>
 	</parameter>
+	<parameter name="table" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -14,12 +15,19 @@
 	<detail>
 		<band height="500" splitType="Stretch">
 			<subreport>
-                <reportElement x="0" y="0" width="802" height="500" uuid="15bb6ec6-4375-402f-90ec-cd1f6d4f56f2">
-                    <property name="local_mesure_unitwidth" value="pixel"/>
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                </reportElement>
-                <subreportExpression><![CDATA[$P{geojsonMap}]]></subreportExpression>
-            </subreport>
+				<reportElement x="0" y="0" width="802" height="500" uuid="15bb6ec6-4375-402f-90ec-cd1f6d4f56f2">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<subreportExpression><![CDATA[$P{geojsonMap}]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="70">
+			<subreport>
+				<reportElement x="0" y="10" width="555" height="57" uuid="c6b99036-9edf-444d-9084-7c6b51ce0b2c"/>
+				<dataSourceExpression><![CDATA[$P{table}]]></dataSourceExpression>
+				<subreportExpression><![CDATA["table.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
 	</detail>
 </jasperReport>

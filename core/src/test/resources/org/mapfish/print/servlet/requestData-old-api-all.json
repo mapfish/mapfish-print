@@ -150,7 +150,69 @@
             5711360.4205031
          ],
          "scale":5000,
-         "rotation":0
+         "rotation":0,
+         "col0":"",
+         "table":{
+            "data":[
+               {
+                  "col0":""
+               }
+            ],
+            "columns":[
+               "col0"
+            ]
+         }
+      },
+      {
+         "center":[
+            659307.58735556,
+            5711360.4205031
+         ],
+         "scale":5000,
+         "rotation":0,
+         "showMap": false,
+         "table":{
+            "data":[
+               {
+                  "col0":"27634972",
+                  "col1":"2763",
+                  "col2":"4972",
+                  "col3":"Grundbuchabfrage",
+                  "col4":"277",
+                  "col5":"Arlesheim"
+               },
+               {
+                  "col0":"27634973",
+                  "col1":"2763",
+                  "col2":"4972",
+                  "col3":"Grundbuchabfrage",
+                  "col4":"277",
+                  "col5":"Otherheim"},
+               {},
+               {},
+               {},
+               {},
+               {},
+               {},
+               {},
+               {},
+               {}
+            ],
+            "columns":[
+               "col0",
+               "col1",
+               "col2",
+               "col3",
+               "col4",
+               "col5"
+            ]
+         },
+         "col0":"ID",
+         "col1":"BFS-Nr.",
+         "col2":"Parzellennummer",
+         "col3":"Eigentümer",
+         "col4":"Grundbuchfläche (m2)",
+         "col5":"Gemeinde"
       }
    ]
 }

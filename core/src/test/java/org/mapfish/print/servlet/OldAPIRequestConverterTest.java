@@ -64,15 +64,16 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertEquals("A4 Portrait", request.getString(Constants.JSON_LAYOUT_KEY));
         assertEquals("political-boundaries", request.getString(Constants.OUTPUT_FILENAME_KEY));
         assertEquals("pdf", request.getString("outputFormat"));
-        assertTrue(request.has("attributes"));
         
+        assertTrue(request.has("attributes"));
         JSONObject attributes = request.getJSONObject("attributes");
-        assertTrue(attributes.has("geojsonMap"));
         assertEquals("Map title", attributes.getString("title"));
         assertEquals("Comment on the map", attributes.getString("comment"));
         assertEquals(1, attributes.getInt("customParam1"));
         assertTrue(!attributes.has("units"));
-        
+
+        // map
+        assertTrue(attributes.has("geojsonMap"));
         JSONObject map = attributes.getJSONObject("geojsonMap");
         assertEquals(5000.0, map.getDouble("scale"), 0.1);
         assertEquals(659307.58735556, map.getJSONArray("center").getDouble(0), 0.1);
@@ -110,6 +111,22 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         JSONObject geojsonLayer2 = layers.getJSONObject(3);
         assertEquals("geojson", geojsonLayer2.getString("type"));
         assertEquals("http://xyz.com/places.json", geojsonLayer2.getString("geoJson"));
+
+        // table
+        assertTrue(attributes.has("entries"));
+        JSONObject table = attributes.getJSONObject("entries");
+        assertTrue(table.has("columns"));
+        assertTrue(table.has("data"));
+        
+        JSONArray columns = table.getJSONArray("columns");
+        assertEquals(6, columns.length());
+        assertEquals("ID", columns.getString(0));
+        assertEquals("BFS-Nr.", columns.getString(1));
+        
+        JSONArray data = table.getJSONArray("data");
+        assertEquals(2, data.length());
+        assertEquals("27634972", data.getJSONArray(0).getString(0));
+        assertEquals("27634973", data.getJSONArray(1).getString(0));
     }
     
     @Test(expected = IllegalArgumentException.class)

@@ -60,7 +60,31 @@
    "pages":[
       {
          "bbox": [95, -3.175810473815462, 110, 6.175810473815462],
-         "rotation":0
+         "rotation":0,
+         "table": {
+            "data":[
+               {
+                  "col0":"1",
+                  "col1":"blah",
+                  "col2":"icon_pan"
+               },
+               {
+                  "col0":"2",
+                  "col1":"blip",
+                  "col2":"icon_zoom"
+               },
+               {},
+               {}
+            ],
+            "columns":[
+               "col0",
+               "col1",
+               "col2"
+            ]
+         },
+         "col0":"id",
+         "col1":"name",
+         "col2":"icon"
       }
    ]
 }
