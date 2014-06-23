@@ -34,6 +34,7 @@ import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
@@ -82,8 +83,6 @@ import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGU
 public class OldAPIMapPrinterServlet extends BaseMapServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(OldAPIMapPrinterServlet.class);
 
-    private static final String CONTEXT_TEMPDIR = "javax.servlet.context.tempdir";
-
     private static final String INFO_URL = "/info.json";
     private static final String PRINT_URL = "/print.pdf";
     private static final String CREATE_URL = "/create.json";
@@ -108,6 +107,8 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     @Qualifier("servletContext")
     @Autowired
     private ServletContext servletContext;
+    @Autowired
+    private WorkingDirectories workingDirectories;
 
 
     /**
@@ -558,16 +559,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
      */
     protected final File getTempDir() {
         if (this.tempDir == null) {
-            String tempDirPath = this.servletContext.getInitParameter("tempdir");
-            if (tempDirPath != null) {
-                this.tempDir = new File(tempDirPath);
-            } else {
-                this.tempDir = (File) this.servletContext.getAttribute(CONTEXT_TEMPDIR);
-            }
-            if (!this.tempDir.exists() && !this.tempDir.mkdirs()) {
-                throw new RuntimeException("unable to create dir:" + this.tempDir);
-            }
-
+            this.tempDir = this.workingDirectories.getReportsOldApi();
         }
         LOGGER.debug("Using '" + this.tempDir.getAbsolutePath() + "' as temporary directory");
         return this.tempDir;
