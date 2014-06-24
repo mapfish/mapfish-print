@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -318,7 +319,9 @@ public class ThreadPoolJobManager implements JobManager {
         }
         
         private void updateRegistry() {
-            for (SubmittedPrintJob printJob : ThreadPoolJobManager.this.runningTasksFutures.values()) {
+            final Iterator<SubmittedPrintJob> submittedJobs = ThreadPoolJobManager.this.runningTasksFutures.values().iterator();
+            while (submittedJobs.hasNext()) {
+                final SubmittedPrintJob printJob = submittedJobs.next(); 
                 if (!printJob.getReportFuture().isDone() &&
                         (isTimeoutExceeded(printJob) || isAbandoned(printJob))) {
                     LOGGER.info("Cancelling job after timeout " + printJob.getReportRef());
@@ -331,7 +334,7 @@ public class ThreadPoolJobManager implements JobManager {
                 }
 
                 if (printJob.getReportFuture().isDone()) {
-                    ThreadPoolJobManager.this.runningTasksFutures.remove(printJob.getReportRef());
+                    submittedJobs.remove();
                     final Registry registryRef = ThreadPoolJobManager.this.registry;
                     try {
                         printJob.getReportFuture().get().store(registryRef);

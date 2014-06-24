@@ -139,6 +139,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
             }
         }, false);
     }
+
     @Test(timeout = 60000)
     public void testCreateReport_Success_EncodedSpec() throws Exception {
         doCreateAndPollAndGetReport(new Function<MockHttpServletRequest, MockHttpServletResponse>() {
@@ -209,6 +210,29 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
                 }
             }
         }, true);
+    }
+    
+    @Test(timeout = 60000)
+    public void testCreateReport_2Requests_Success_NoAppId() throws Exception {
+        doCreateAndPollAndGetReport(new Function<MockHttpServletRequest, MockHttpServletResponse>() {
+            @Nullable
+            @Override
+            public MockHttpServletResponse apply(@Nullable MockHttpServletRequest servletCreateRequest) {
+                try {
+                    final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+                    String requestData = loadRequestDataAsString();
+                    servlet.createReport("png", requestData, servletCreateRequest, servletCreateResponse);
+
+                    // make a 2nd request, but ignore the result
+                    final MockHttpServletResponse dummyResponse = new MockHttpServletResponse();
+                    servlet.createReport("png", requestData, servletCreateRequest, dummyResponse);
+                    
+                    return servletCreateResponse;
+                } catch (Exception e) {
+                    throw new AssertionError(e);
+                }
+            }
+        }, false);
     }
 
     private String doCreateAndPollAndGetReport(Function<MockHttpServletRequest, MockHttpServletResponse> createReport, boolean checkJsonp)
