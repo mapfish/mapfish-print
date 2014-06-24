@@ -19,6 +19,7 @@
 
 package org.mapfish.print.servlet.oldapi;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -119,7 +120,10 @@ public final class OldAPILayerConverter {
                 layer.put("imageFormat", oldLayer.getString("format"));
             }
             if (oldLayer.has("styles")) {
-                layer.put("styles", oldLayer.getInternalObj().getJSONArray("styles"));
+                JSONArray stylesJson = oldLayer.getInternalObj().getJSONArray("styles");
+                if (stylesJson.length() > 1 || (stylesJson.length() == 1 && !stylesJson.getString(0).trim().isEmpty())) {
+                    layer.put("styles", stylesJson);
+                }
             }
             if (oldLayer.has("customParams")) {
                 JSONObject customParams = oldLayer.getInternalObj().getJSONObject("customParams");

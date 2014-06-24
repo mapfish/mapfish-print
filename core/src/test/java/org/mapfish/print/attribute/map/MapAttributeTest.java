@@ -73,7 +73,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         mapDef.accumulate("dpi", 1000);
 
         final ReflectiveAttribute<MapAttribute.MapAttributeValues> mapAttribute = (ReflectiveAttribute<MapAttribute
-                .MapAttributeValues>) template.getAttributes().get("mapDef");
+                        .MapAttributeValues>) template.getAttributes().get("mapDef");
 
         final MapAttribute.MapAttributeValues value = mapAttribute.createValue(template);
         parser.parse(true, attributesJson.getJSONObject("mapDef"), value);

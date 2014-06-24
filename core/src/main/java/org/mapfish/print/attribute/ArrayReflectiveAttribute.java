@@ -22,8 +22,11 @@ package org.mapfish.print.attribute;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.wrapper.yaml.PYamlArray;
 
+import java.util.Collections;
 import java.util.List;
+import javax.annotation.PostConstruct;
 
 /**
  * An attribute which is essentially a ReflectiveAttribute but rather than representing a single object it represents
@@ -35,10 +38,38 @@ import java.util.List;
 public abstract class ArrayReflectiveAttribute<Value> implements Attribute {
 
     private volatile ReflectiveAttribute<Value> delegate;
+    private PYamlArray defaults;
+
+    @PostConstruct
+    private void init() {
+        if (this.defaults == null) {
+            this.defaults = new PYamlArray(null, Collections.<Object>emptyList(), getAttributeName());
+        }
+    }
+
+    /**
+     * The YAML config default values.
+     *
+     * @return the default values
+     */
+    public final PYamlArray getDefaultValue() {
+        return this.defaults;
+    }
+
+    public final void setDefault(final List<Object> defaultValue) {
+        this.defaults = new PYamlArray(null, defaultValue, getAttributeName());
+    }
+
+    /**
+     * Return a descriptive name of this attribute.
+     */
+    protected final String getAttributeName() {
+        return getClass().getSimpleName().substring(0, 1).toLowerCase() + getClass().getSimpleName().substring(1);
+    }
 
     /**
      * Create an instance for each element in the array.
-     * See {@link org.mapfish.print.attribute.ReflectiveAttribute#createValue(org.mapfish.print.config.Template)} for
+     * See {@link ReflectiveAttribute#createValue(org.mapfish.print.config.Template)} for
      * details on how the mechanism works.
      *
      * @param template the template for this attribute.

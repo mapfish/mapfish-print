@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
  */
 @SuppressWarnings("unchecked")
 public class ProcessorDependencyGraphTest {
+    @Test
     public void testToString() throws Exception {
         ProcessorDependencyGraph graph = new ProcessorDependencyGraph();
         ProcessorGraphNode root1 = new ProcessorGraphNode(new TestProcessor("root1"), null);

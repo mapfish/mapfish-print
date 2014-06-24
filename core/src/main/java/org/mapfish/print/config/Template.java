@@ -265,7 +265,6 @@ public class Template implements ConfigurationObject, HasConfiguration {
             validationErrors.add(new ConfigurationException("No reportTemplate is defined in template"));
         }
 
-
         for (Processor processor : this.processors) {
             processor.validate(validationErrors);
         }

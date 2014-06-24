@@ -19,23 +19,24 @@
 
 package org.mapfish.print.output;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.mapfish.print.attribute.ArrayReflectiveAttribute;
 import org.mapfish.print.attribute.Attribute;
-import org.mapfish.print.attribute.AttributeWithDefaultConfig;
 import org.mapfish.print.attribute.PrimitiveAttribute;
 import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.MapfishParser;
+import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PObject;
-import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
+import org.mapfish.print.wrapper.multi.PMultiArray;
 import org.mapfish.print.wrapper.multi.PMultiObject;
 
 import java.io.File;
 import java.lang.reflect.Array;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -77,7 +78,7 @@ public class Values {
      * @param taskDirectory the temporary directory for this printing task.
      */
     public Values(final PJsonObject requestData, final Template template, final MapfishParser parser,
-            final File taskDirectory) {
+            final File taskDirectory) throws JSONException {
         // add task dir. to values so that all processors can access it
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
 
@@ -89,30 +90,44 @@ public class Values {
             final Object value;
             if (attribute instanceof PrimitiveAttribute) {
                 PrimitiveAttribute pAtt = (PrimitiveAttribute) attribute;
-                value = parser.parsePrimitive(attributeName, pAtt.getValueClass(), jsonAttributes);
+                Object defaultVal = pAtt.getDefault();
+                PObject jsonToUse = jsonAttributes;
+                if (defaultVal != null) {
+                    final JSONObject obj = new JSONObject();
+                    obj.put(attributeName, defaultVal);
+                    PObject[] pValues = new PObject[]{ jsonAttributes, new PJsonObject(obj, "default_" + attributeName) };
+                    jsonToUse = new PMultiObject(pValues);
+                }
+                value = parser.parsePrimitive(attributeName, pAtt.getValueClass(), jsonToUse);
+            } else if (attribute instanceof ArrayReflectiveAttribute) {
+                boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
+                ArrayReflectiveAttribute rAtt = (ArrayReflectiveAttribute) attribute;
+                PArray arrayValues = jsonAttributes.optJSONArray(attributeName);
+                if (arrayValues != null) {
+                    PArray[] pValues = new PArray[]{ arrayValues, rAtt.getDefaultValue() };
+                    arrayValues = new PMultiArray(pValues);
+                } else {
+                    arrayValues = rAtt.getDefaultValue();
+                }
+                value = Array.newInstance(rAtt.createValue(template).getClass(), arrayValues.size());
+                for (int i = 0; i < arrayValues.size(); i++) {
+                    Object elem = rAtt.createValue(template);
+                    Array.set(value, i, elem);
+                    parser.parse(errorOnExtraParameters, arrayValues.getObject(i), elem);
+                }
             } else if (attribute instanceof ReflectiveAttribute) {
                 boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
                 ReflectiveAttribute rAtt = (ReflectiveAttribute) attribute;
                 value = rAtt.createValue(template);
-                PObject pValue = jsonAttributes.getJSONObject(attributeName);
-                if (rAtt instanceof AttributeWithDefaultConfig<?>) {
-                    PObject[] pValues = {
-                            jsonAttributes.getJSONObject(attributeName),
-                            ((AttributeWithDefaultConfig<?>) rAtt).getDefaultValues()
-                    };
+                PObject pValue = jsonAttributes.optJSONObject(attributeName);
+
+                if (pValue != null) {
+                    PObject[] pValues = new PObject[]{ pValue, rAtt.getDefaultValue() };
                     pValue = new PMultiObject(pValues);
+                } else {
+                   pValue = rAtt.getDefaultValue();
                 }
                 parser.parse(errorOnExtraParameters, pValue, value);
-            } else if (attribute instanceof ArrayReflectiveAttribute) {
-                boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
-                ArrayReflectiveAttribute rAtt = (ArrayReflectiveAttribute) attribute;
-                final PJsonArray jsonArray = jsonAttributes.getJSONArray(attributeName);
-                value = Array.newInstance(rAtt.createValue(template).getClass(), jsonArray.size());
-                for (int i = 0; i < jsonArray.size(); i++) {
-                    Object elem = rAtt.createValue(template);
-                    Array.set(value, i, elem);
-                    parser.parse(errorOnExtraParameters, jsonArray.getJSONObject(i), elem);
-                }
             } else {
                 throw new IllegalArgumentException("Unsupported attribute type: " + attribute);
             }
@@ -179,7 +194,8 @@ public class Values {
      *
      */
     public final <V> V getObject(final String key, final Class<V> type) {
-        return type.cast(this.values.get(key));
+        final Object obj = this.values.get(key);
+        return type.cast(obj);
     }
 
     /**

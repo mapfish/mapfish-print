@@ -31,6 +31,7 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 
+import org.json.JSONException;
 import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
@@ -100,12 +101,15 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
      * @param configDir     the directory that contains the configuration, used for resolving resources like images etc...
      * @param taskDirectory the temporary directory for this printing task.
      * @return a jasper print object which can be used to generate a PDF or other outputs.
-     * @throws ExecutionException 
+     * @throws ExecutionException
+     *
+     * // CSOFF: RedundantThrows
      */
     @VisibleForTesting
     protected final JasperPrint getJasperPrint(final PJsonObject requestData, final Configuration config,
                                                final File configDir, final File taskDirectory)
-            throws JRException, SQLException, ExecutionException {
+            throws JRException, SQLException, ExecutionException, JSONException {
+        // CSON: RedundantThrows
         final String templateName = requestData.getString(Constants.JSON_LAYOUT_KEY);
 
         final Template template = config.getTemplate(templateName);

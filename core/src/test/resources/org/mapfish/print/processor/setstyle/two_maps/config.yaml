@@ -7,7 +7,7 @@ templates:
         maxDpi: 300
         width: 555
         height: 400
-        defaults:
+        default:
           dpi: 300
           rotation: 0
           useAdjustBounds: true
@@ -19,7 +19,7 @@ templates:
         maxDpi: 300
         width: 1000
         height: 500
-        defaults:
+        default:
           dpi: 300
           rotation: 0
           useAdjustBounds: true

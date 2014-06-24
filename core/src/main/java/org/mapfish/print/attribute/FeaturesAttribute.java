@@ -24,8 +24,6 @@ import org.geotools.referencing.CRS;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.geotools.FeaturesParser;
 import org.mapfish.print.parser.HasDefaultValue;
-import org.mapfish.print.wrapper.PObject;
-import org.mapfish.print.wrapper.yaml.PYamlObject;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -35,36 +33,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Attribute for GeoJson features collection.
  * <p/>
  * Created by Stéphane Brunner on 16/4/14.
  */
-public class FeaturesAttribute extends AttributeWithDefaultConfig<FeaturesAttribute.FeaturesAttributeValues> {
+public class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribute.FeaturesAttributeValues> {
 
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LoggerFactory.getLogger(FeaturesAttribute.class);
-
-    private PYamlObject defaults = new PYamlObject(Collections.<String, Object>emptyMap(), "featuresAttribute");
 
     /**
      * A http request factory for making http requests.
      */
     @Autowired
     protected ClientHttpRequestFactory httpRequestFactory;
-
-    public final void setDefaults(final Map<String, Object> defaults) {
-        this.defaults = new PYamlObject(defaults, "featuresAttribute");
-    }
-
-    @Override
-    public final PObject getDefaultValues() {
-        return this.defaults;
-    }
 
     @Override
     public final FeaturesAttributeValues createValue(final Template template) {
