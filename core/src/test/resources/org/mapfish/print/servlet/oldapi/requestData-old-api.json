@@ -1,0 +1,90 @@
+{
+   "units":"degree",
+   "srs":"CRS:84",
+   "layout":"A4 Portrait",
+   "outputFilename": "political-boundaries",
+   "outputFormat": "pdf",
+   "dpi":90,
+   "layers":[
+      {
+         "type":"Vector",
+         "styles":{},
+         "geoJson":{ "type": "FeatureCollection",
+            "features": [
+              { "type": "Feature",
+                "geometry": {
+                  "type": "Polygon",
+                  "coordinates": [
+                    [ [102.0, 0.0], [103.0, 0.0], [103.0, 1.0],
+                      [102.0, 1.0], [102.0, 0.0] ]
+                  ]
+                },
+                "properties": {
+                  "prop0": "value1",
+                  "prop1": 1.0
+                }
+              },
+              { "type": "Feature",
+                "geometry": {
+                  "type": "Polygon",
+                  "coordinates": [
+                    [ [104.0, 0.0], [105.0, 0.0], [105.0, 1.0],
+                      [104.0, 1.0], [104.0, 0.0] ]
+                  ]
+                },
+                "properties": {
+                  "prop0": "value0",
+                  "prop1": 0.0
+                }
+              },
+              { "type": "Feature",
+                "geometry": {
+                  "type": "Polygon",
+                  "coordinates": [
+                    [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0],
+                      [100.0, 1.0], [100.0, 0.0] ]
+                  ]
+                },
+                "properties": {
+                  "prop0": "value0",
+                  "prop1": {"this": "that"}
+                }
+              }
+            ]
+          },
+         "name":"c2cgeoportal212",
+         "opacity":1,
+         "useNativeAngle":false
+      }
+   ],
+   "pages":[
+      {
+         "bbox": [95, -3.175810473815462, 110, 6.175810473815462],
+         "rotation":0,
+         "table": {
+            "data":[
+               {
+                  "col0":"1",
+                  "col1":"blah",
+                  "col2":"icon_pan"
+               },
+               {
+                  "col0":"2",
+                  "col1":"blip",
+                  "col2":"icon_zoom"
+               },
+               {},
+               {}
+            ],
+            "columns":[
+               "col0",
+               "col1",
+               "col2"
+            ]
+         },
+         "col0":"id",
+         "col1":"name",
+         "col2":"icon"
+      }
+   ]
+}

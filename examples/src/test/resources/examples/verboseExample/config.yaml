@@ -74,3 +74,17 @@ templates:
     - !reportBuilder  # compile all jasper report templates in subreports directory
       directory: "subreports"
     iterValue: tableList
+
+  A4 portrait old api: !template
+    reportTemplate: simpleReport-old-api.jrxml
+    attributes:
+      map: !map
+        maxDpi: 400
+        width: 780
+        height: 330
+    processors:
+    - !reportBuilder # compile all reports in current directory
+      directory: '.'
+    - !createMap
+      inputMapper: {map: map}
+      outputMapper: {mapSubReport: map}

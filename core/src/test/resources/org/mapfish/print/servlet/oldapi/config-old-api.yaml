@@ -1,0 +1,21 @@
+throwErrorOnExtraParameters: true
+
+templates:
+  A4 Portrait: !template
+    reportTemplate: MapOnly_A4-old-api.jrxml
+    attributes:
+      geojsonMap: !map
+        width: 802
+        height: 500
+        maxDpi: 400
+      entries: !table {}
+    processors:
+    - !reportBuilder # compile all reports in current directory
+        directory: '.'
+    - !createMap
+        inputMapper: {geojsonMap: map}
+        outputMapper: {mapSubReport: geojsonMap, layerGraphics: geojsonGraphics}
+    - !prepareTable
+      inputMapper: {entries: table}
+      outputMapper: {table: table}
+

@@ -20,15 +20,18 @@
 package org.mapfish.print;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 
 import org.json.JSONObject;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequest;
 
 /**
@@ -51,8 +54,164 @@ public class OldPrintApiTest extends AbstractApiTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
         
-        // TODO
-        assertNotNull(new JSONObject(getBodyAsText(response)));
+        JSONObject info = new JSONObject(getBodyAsText(response));
+        assertTrue(info.has("scales"));
+        assertTrue(info.has("dpis"));
+        assertTrue(info.has("outputFormats"));
+        assertTrue(info.has("layouts"));
+        assertTrue(info.has("printURL"));
+        assertTrue(info.has("createURL"));
+    }
+    
+    @Test
+    public void testInfoVarAndUrl() throws Exception {
+        ClientHttpRequest request = getPrintRequest(
+                "info.json?var=printConfig&url=http://demo.mapfish.org/2.2/print/pdf/info.json", HttpMethod.GET);
+        response = request.execute();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
+
+        final String result = getBodyAsText(response);
+        assertTrue(result.startsWith("var printConfig="));
+        assertTrue(result.endsWith(";"));
+        
+        final JSONObject info = new JSONObject(
+                result.replace("var printConfig=", "").replace(";", ""));
+        
+        assertTrue(info.has("scales"));
+        assertEquals("http://demo.mapfish.org/2.2/print/pdf/print.pdf", info.getString("printURL"));
+        assertEquals("http://demo.mapfish.org/2.2/print/pdf/create.json", info.getString("createURL"));
+    }
+
+    @Test
+    public void testCreate() throws Exception {
+        ClientHttpRequest request = getPrintRequest("create.json", HttpMethod.POST);
+        setPrintSpec(getPrintSpec("examples/verboseExample/old-api-requestData.json"), request);
+        response = request.execute();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
+
+        final JSONObject result = new JSONObject(getBodyAsText(response));
+        response.close();
+        
+        String getUrl = result.getString("getURL");
+        assertTrue(getUrl.startsWith("/print-servlet/dep-pdf/"));
+        assertTrue(getUrl.endsWith(".pdf.printout"));
+          
+        ClientHttpRequest requestGetPdf = getPrintRequest(
+                getUrl.replace("/print-servlet/dep-pdf/", ""), HttpMethod.POST);
+        response = requestGetPdf.execute();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(new MediaType("application", "pdf"), response.getHeaders().getContentType());
+        assertTrue(response.getBody().read() >= 0);
+    }
+
+    @Test
+    public void testCreate_MissingSpec() throws Exception {
+        ClientHttpRequest request = getPrintRequest("create.json", HttpMethod.POST);
+        response = request.execute();
+        assertEquals(HttpStatus.UNSUPPORTED_MEDIA_TYPE, response.getStatusCode());
+    }
+
+    @Test
+    public void testCreate_InvalidSpec() throws Exception {
+        ClientHttpRequest request = getPrintRequest("create.json", HttpMethod.POST);
+        setPrintSpec("{}", request);
+        response = request.execute();
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    public void testCreate_Var() throws Exception {
+        String url = "create.json?url=" +
+                URLEncoder.encode("http://localhost:8080/print-servlet/dep-pdf/create.json", Constants.DEFAULT_ENCODING);
+        ClientHttpRequest request = getPrintRequest(url, HttpMethod.POST);
+        setPrintSpec(getPrintSpec("examples/verboseExample/old-api-requestData.json"), request);
+        response = request.execute();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
+
+        final JSONObject result = new JSONObject(getBodyAsText(response));
+        response.close();
+        
+        String getUrl = result.getString("getURL");
+        assertTrue(getUrl.startsWith("http://localhost:8080/print-servlet/dep-pdf/"));
+        assertTrue(getUrl.endsWith(".pdf.printout"));
+
+        ClientHttpRequest requestGetPdf = httpRequestFactory.createRequest(new URI(getUrl), HttpMethod.POST);
+        response = requestGetPdf.execute();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(new MediaType("application", "pdf"), response.getHeaders().getContentType());
+        assertTrue(response.getBody().read() >= 0);
+    }
+
+    @Test
+    public void testPrint_SpecAsPostBody() throws Exception {
+        ClientHttpRequest request = getPrintRequest("print.pdf", HttpMethod.POST);
+        setPrintSpec(getPrintSpec("examples/verboseExample/old-api-requestData.json"), request);
+        response = request.execute();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(new MediaType("application", "pdf"), response.getHeaders().getContentType());
+        assertTrue(response.getBody().read() >= 0);
+    }
+
+    @Test
+    public void testPrint_SpecAsFormPost() throws Exception {
+        ClientHttpRequest request = getPrintRequest("print.pdf", HttpMethod.POST);
+        setPrintSpec("spec=" + getPrintSpec("examples/verboseExample/old-api-requestData.json"), request);
+        response = request.execute();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(new MediaType("application", "pdf"), response.getHeaders().getContentType());
+        assertTrue(response.getBody().read() >= 0);
+    }
+
+    @Test
+    public void testPrint_MissingSpecPostBody() throws Exception {
+        ClientHttpRequest request = getPrintRequest("print.pdf", HttpMethod.POST);
+        response = request.execute();
+        assertEquals(HttpStatus.UNSUPPORTED_MEDIA_TYPE, response.getStatusCode());
+    }
+
+    @Test
+    public void testPrint_InvalidSpecAsPostBody() throws Exception {
+        ClientHttpRequest request = getPrintRequest("print.pdf", HttpMethod.POST);
+        setPrintSpec("{}", request);
+        response = request.execute();
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    public void testPrint_SpecAsGetParameter() throws Exception {
+        String printSpec = getPrintSpec("examples/verboseExample/old-api-requestData.json");
+        String url = "print.pdf?spec=" + URLEncoder.encode(printSpec, Constants.DEFAULT_ENCODING);
+        ClientHttpRequest request = getPrintRequest(url, HttpMethod.GET);
+        response = request.execute();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(new MediaType("application", "pdf"), response.getHeaders()
+                .getContentType());
+        assertTrue(response.getBody().read() >= 0);
+    }
+
+    @Test
+    public void testPrint_MissingSpecGet() throws Exception {
+        ClientHttpRequest request = getPrintRequest("print.pdf", HttpMethod.GET);
+        response = request.execute();
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    public void testPrint_InvlidSpecAsGetParameter() throws Exception {
+        String url = "print.pdf?spec=" + URLEncoder.encode("{}", Constants.DEFAULT_ENCODING);
+        ClientHttpRequest request = getPrintRequest(url, HttpMethod.GET);
+        response = request.execute();
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    public void testGetFile_InvalidKey() throws Exception {
+        ClientHttpRequest request = getPrintRequest("invalid-key.pdf.printout", HttpMethod.GET);
+        response = request.execute();
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     protected ClientHttpRequest getPrintRequest(String path, HttpMethod method) throws IOException,
