@@ -812,7 +812,12 @@ public class MapPrinterServlet extends BaseMapServlet {
         job.setRequestData(specJson);
         job.setHeaders(getHeaders(httpServletRequest));
 
-        this.jobManager.submit(job);
+        try {
+            this.jobManager.submit(job);
+        } catch (RuntimeException exc) {
+            LOGGER.error("Error when creating job", exc);
+            ref = null;
+        }
         return ref;
     }
 

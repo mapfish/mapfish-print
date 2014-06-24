@@ -806,6 +806,25 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertTrue(contentAsString.endsWith(");"));
     }
 
+    @Test(timeout = 60000)
+    @DirtiesContext
+    public void testCreateReport_ExceedsMaxNumberOfWaitingJobs() throws Exception {
+        jobManager.setMaxNumberOfWaitingJobs(2);
+        setUpConfigFiles();
+
+        String requestData = loadRequestDataAsString();
+        // create a few jobs to fill up the queue
+        for (int i = 0; i < 20; i++) {
+            servlet.createReport("timeout", "png", requestData, new MockHttpServletRequest(), new MockHttpServletResponse());
+        }
+
+        // then check that jobs are rejected
+        final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
+        final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+        servlet.createReport("timeout", "png", requestData, servletCreateRequest, servletCreateResponse);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), servletCreateResponse.getStatus());
+    }
+
     private byte[] assertCorrectResponse(MockHttpServletResponse servletGetReportResponse) throws IOException {
         byte[] report;
         report = servletGetReportResponse.getContentAsByteArray();

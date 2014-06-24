@@ -188,9 +188,13 @@ public class ThreadPoolJobManager implements JobManager {
                 return 0;
             }
         });
-        this.executor = new ThreadPoolExecutor(0, this.maxNumberOfRunningPrintJobs, this.maxIdleTime, TimeUnit.SECONDS, this.queue,
-                threadFactory);
-
+        /* The ThreadPoolExecutor uses a unbounded queue (though we are enforcing a limit in `submit()`).
+         * Because of that, the executor creates only `corePoolSize` threads. But to use all threads,
+         * we set both `corePoolSize` and `maximumPoolSize` to `maxNumberOfRunningPrintJobs`. As a
+         * consequence, the `maxIdleTime` will be ignored, idle threads will not be terminated.
+         */
+        this.executor = new ThreadPoolExecutor(this.maxNumberOfRunningPrintJobs, this.maxNumberOfRunningPrintJobs,
+                this.maxIdleTime, TimeUnit.SECONDS, this.queue, threadFactory);
 
         this.timer = new Timer("Post result to registry", true);
         this.timer.schedule(new PostResultToRegistryTask(), PostResultToRegistryTask.CHECK_INTERVAL,
@@ -210,7 +214,7 @@ public class ThreadPoolJobManager implements JobManager {
     public final void submit(final PrintJob job) {
         final int numberOfWaitingRequests = this.queue.size();
         if (numberOfWaitingRequests >= this.maxNumberOfWaitingJobs) {
-            throw new RuntimeException("Max number of waiting print job requests exceeded.  Number of waiting requests are: " +
+            throw new RuntimeException("Max. number of waiting print job requests exceeded.  Number of waiting requests are: " +
                                        numberOfWaitingRequests);
         }
 
