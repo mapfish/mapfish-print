@@ -734,17 +734,6 @@ public class MapPrinterServlet extends BaseMapServlet {
         return headers;
     }
 
-    private StringBuilder getBaseUrl(final HttpServletRequest httpServletRequest) {
-        StringBuilder baseURL = new StringBuilder();
-        if (httpServletRequest.getContextPath() != null && !httpServletRequest.getContextPath().isEmpty()) {
-            baseURL.append(httpServletRequest.getContextPath());
-        }
-        if (httpServletRequest.getServletPath() != null && !httpServletRequest.getServletPath().isEmpty()) {
-            baseURL.append(httpServletRequest.getServletPath());
-        }
-        return baseURL;
-    }
-
     private PJsonObject parseJson(final String requestDataRaw, final HttpServletResponse httpServletResponse) {
 
         try {

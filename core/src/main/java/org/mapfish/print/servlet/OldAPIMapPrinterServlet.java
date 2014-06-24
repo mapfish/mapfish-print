@@ -19,6 +19,8 @@
 
 package org.mapfish.print.servlet;
 
+
+import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 
@@ -27,6 +29,12 @@ import org.json.JSONWriter;
 import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
+import org.mapfish.print.attribute.Attribute;
+import org.mapfish.print.attribute.map.MapAttribute;
+import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.Template;
+import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
@@ -36,10 +44,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -47,6 +56,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -64,14 +74,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGURATION_FILE_KEY;
+
 /**
- * Main print servlet.
+ * Servlet with the old print API.
  */
 @Controller
 public class OldAPIMapPrinterServlet extends BaseMapServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(OldAPIMapPrinterServlet.class);
-
-    private static final String CONTEXT_TEMPDIR = "javax.servlet.context.tempdir";
 
     private static final String INFO_URL = "/info.json";
     private static final String PRINT_URL = "/print.pdf";
@@ -79,8 +89,6 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
 
     private static final String TEMP_FILE_PREFIX = "mapfish-print";
     private static final String TEMP_FILE_SUFFIX = ".printout";
-
-    private String app = null;
 
     private static final int TEMP_FILE_PURGE_SECONDS = 10 * 60;
 
@@ -99,28 +107,74 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     @Qualifier("servletContext")
     @Autowired
     private ServletContext servletContext;
+    @Autowired
+    private WorkingDirectories workingDirectories;
 
 
     /**
-     * Handle post requests.
+     * Print the report from a POST request.
      *
+     * @param requestData the request spec as POST body
      * @param httpServletRequest the request object
      * @param httpServletResponse the response object
      */
-    @RequestMapping(value = "/**", method = RequestMethod.POST)
-    public final void doPost(final HttpServletRequest httpServletRequest,
+    @RequestMapping(value = PRINT_URL, method = RequestMethod.POST)
+    public final void printReportPost(
+            @RequestBody final String requestData,
+            final HttpServletRequest httpServletRequest,
             final HttpServletResponse httpServletResponse) throws ServletException,
             IOException {
-        final String additionalPath = httpServletRequest.getPathInfo();
-        if (additionalPath.equals(PRINT_URL)) {
-            createAndGetPDF(httpServletRequest, httpServletResponse);
-        } else if (additionalPath.equals(CREATE_URL)) {
-            createPDF(httpServletRequest, httpServletResponse, getBaseUrl(httpServletRequest));
-        } else {
-            error(httpServletResponse, "Unknown method: " + additionalPath, HttpStatus.NOT_FOUND);
+        if (Strings.isNullOrEmpty(requestData)) {
+            error(httpServletResponse, "Missing 'spec' parameter", HttpStatus.INTERNAL_SERVER_ERROR);
+            return;
         }
+        createAndGetPDF(httpServletRequest, httpServletResponse, requestData);
     }
 
+    /**
+     * Print the report from a GET request. Avoid to use
+     * it, the accents in the spec are not all supported.
+     * 
+     * @param spec the request spec as GET parameter
+     * @param httpServletRequest the request object
+     * @param httpServletResponse the response object
+     */
+    @RequestMapping(value = PRINT_URL, method = RequestMethod.GET)
+    public final void printReport(
+            @RequestParam(value = "spec", defaultValue = "") final String spec,
+            final HttpServletRequest httpServletRequest,
+            final HttpServletResponse httpServletResponse) throws ServletException {
+        if (Strings.isNullOrEmpty(spec)) {
+            error(httpServletResponse, "Missing 'spec' parameter", HttpStatus.INTERNAL_SERVER_ERROR);
+            return;
+        }
+        createAndGetPDF(httpServletRequest, httpServletResponse, spec);
+    }
+
+    /**
+     * Create the report from a POST request.
+     * 
+     * @param baseUrl the base url to the servlet
+     * @param requestData the request spec as POST body
+     * @param httpServletRequest the request object
+     * @param httpServletResponse the response object
+     */
+    @RequestMapping(value = CREATE_URL + "**" , method = RequestMethod.POST)
+    public final void createReportPost(
+            @RequestParam(value = "url", defaultValue = "") final String baseUrl,
+            @RequestBody final String requestData,
+            final HttpServletRequest httpServletRequest,
+            final HttpServletResponse httpServletResponse) throws ServletException, UnsupportedEncodingException {
+        if (Strings.isNullOrEmpty(requestData)) {
+            // TODO in case the POST body is empty, status code 415 is returned automatically, so we never get here
+            error(httpServletResponse, "Missing 'spec' parameter", HttpStatus.INTERNAL_SERVER_ERROR);
+            return;
+        }
+        String baseUrlPath = getBaseUrl(CREATE_URL,
+                URLDecoder.decode(baseUrl, Constants.DEFAULT_ENCODING), httpServletRequest);
+        createPDF(httpServletRequest, httpServletResponse, baseUrlPath, requestData);
+    }
+    
     /**
      * Initialization method, called by spring.
      */
@@ -147,38 +201,21 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     }
 
     /**
-     * All in one method: create and returns the PDF to the client. Avoid to use
-     * it, the accents in the spec are not all supported.
+     * All in one method: create and returns the PDF to the client.
      *
      * @param httpServletRequest the request object
      * @param httpServletResponse the response object
+     * @param spec the request spec
      */
-    @RequestMapping(PRINT_URL)
     public final void createAndGetPDF(final HttpServletRequest httpServletRequest,
-            final HttpServletResponse httpServletResponse) {
-        //get the spec from the query
-        TempFile tempFile = null;
-        String spec;
+            final HttpServletResponse httpServletResponse, final String spec) {
         try {
             httpServletRequest.setCharacterEncoding("UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-        if (httpServletRequest.getMethod().equals("POST")) {
-            try {
-                spec = getSpecFromPostBody(httpServletRequest);
-            } catch (IOException e) {
-                error(httpServletResponse, "Missing 'spec' in request body", HttpStatus.INTERNAL_SERVER_ERROR);
-                return;
-            }
-        } else {
-            spec = httpServletRequest.getParameter("spec");
-        }
-        if (spec == null) {
-            error(httpServletResponse, "Missing 'spec' parameter", HttpStatus.INTERNAL_SERVER_ERROR);
-            return;
-        }
 
+        TempFile tempFile = null;
         try {
             tempFile = doCreatePDFFile(spec, httpServletRequest);
             sendPdfFile(httpServletResponse, tempFile, Boolean.parseBoolean(httpServletRequest.getParameter("inline")));
@@ -197,22 +234,18 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
      * @param httpServletRequest the request object
      * @param httpServletResponse the response object
      * @param basePath the path of the webapp
+     * @param spec the request spec
      */
     protected final void createPDF(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse,
-                             final String basePath) throws ServletException {
+                             final String basePath, final String spec) throws ServletException {
         TempFile tempFile = null;
         try {
             purgeOldTemporaryFiles();
-
-            String spec = getSpecFromPostBody(httpServletRequest);
+            
             try {
                 tempFile = doCreatePDFFile(spec, httpServletRequest);
             } catch (NoSuchAppException e) {
                 error(httpServletResponse, e.getMessage(), HttpStatus.NOT_FOUND);
-                return;
-            }
-            if (tempFile == null) {
-                error(httpServletResponse, "Missing 'spec' parameter", HttpStatus.INTERNAL_SERVER_ERROR);
                 return;
             }
         } catch (Throwable e) {
@@ -220,7 +253,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
             error(httpServletResponse, e);
             return;
         }
-
+        
         final String id = generateId(tempFile);
         httpServletResponse.setContentType("application/json; charset=utf-8");
         PrintWriter writer = null;
@@ -259,30 +292,6 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     }
 
     /**
-     * Read the json from the http request.
-     *
-     * @param httpServletRequest the request
-     */
-    protected final String getSpecFromPostBody(final HttpServletRequest httpServletRequest) throws IOException {
-        if (httpServletRequest.getParameter("spec") != null) {
-            return httpServletRequest.getParameter("spec");
-        }
-        BufferedReader data = httpServletRequest.getReader();
-        try {
-            StringBuilder spec = new StringBuilder();
-            String cur;
-            while ((cur = data.readLine()) != null) {
-                spec.append(cur).append("\n");
-            }
-            return spec.toString();
-        } finally {
-            if (data != null) {
-                data.close();
-            }
-        }
-    }
-
-    /**
      * To get the PDF created previously and write it to the http response.
      *
      * @param req the http request
@@ -306,19 +315,21 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     /**
      * To get (in JSON) the information about the available formats and CO.
      *
-     * @param req the http request
-     * @param resp the http response
-     * @param basePath the path to the webapp
+     * @param baseUrl  the path to the webapp
+     * @param jsonpVar if given the result is returned as a variable assignment
+     * @param req      the http request
+     * @param resp     the http response
      */
     @RequestMapping(INFO_URL)
-    public final void getInfo(final HttpServletRequest req, final HttpServletResponse resp, final String basePath)
+    public final void getInfo(
+            @RequestParam(value = "url", defaultValue = "") final String baseUrl,
+            @RequestParam(value = "var", defaultValue = "") final String jsonpVar,
+            final HttpServletRequest req, final HttpServletResponse resp)
             throws ServletException, IOException {
-        this.app = req.getParameter("app");
-        //System.out.println("app = "+app);
 
         final MapPrinter printer;
         try {
-            printer = this.printerFactory.create(this.app);
+            printer = this.printerFactory.create(DEFAULT_CONFIGURATION_FILE_KEY);
         } catch (NoSuchAppException e) {
             error(resp, e.getMessage(), HttpStatus.NOT_FOUND);
             return;
@@ -327,45 +338,118 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
         final PrintWriter writer = resp.getWriter();
 
         try {
-            final String var = req.getParameter("var");
-            if (var != null) {
-                writer.print(var + "=");
+            if (!Strings.isNullOrEmpty(jsonpVar)) {
+                writer.print("var " + jsonpVar + "=");
             }
 
             JSONWriter json = new JSONWriter(writer);
             try {
                 json.object();
-                {
-                    printer.printClientConfig(json);
-                    String urlToUseInSpec = basePath;
-
-                    String proxyUrl = printer.getConfiguration().getProxyBaseUrl();
-                    if (proxyUrl != null) {
-                        urlToUseInSpec = proxyUrl;
-                    }
-                    json.key("printURL").value(urlToUseInSpec + PRINT_URL);
-                    json.key("createURL").value(urlToUseInSpec + CREATE_URL);
-                    if (this.app != null) {
-                        json.key("app").value(this.app);
-                    }
-                }
+                writeInfoJson(json, baseUrl, printer, req);
                 json.endObject();
             } catch (JSONException e) {
                 throw new ServletException(e);
             }
-            if (var != null) {
+            if (!Strings.isNullOrEmpty(jsonpVar)) {
                 writer.print(";");
             }
+        } catch (UnsupportedOperationException exc) {
+            error(resp, exc.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception exc) {
+            error(resp, "Unexpected error, please see the server logs", HttpStatus.INTERNAL_SERVER_ERROR);
         } finally {
             writer.close();
         }
     }
 
+    private void writeInfoJson(final JSONWriter json, final String baseUrl,
+            final MapPrinter printer, final HttpServletRequest req)
+            throws JSONException {
+        // TODO scales
+        json.key("scales");
+        json.array();
+        json.endArray();
+        
+        // TODO dpis
+        json.key("dpis");
+        json.array();
+        json.endArray();
+        
+        json.key("outputFormats");
+        json.array();
+        {
+            for (String format : printer.getOutputFormatsNames()) {
+                json.object();
+                json.key("name").value(format);
+                json.endObject();
+            }
+        }
+        json.endArray();
+        
+        json.key("layouts");
+        json.array();
+        writeInfoLayouts(json, printer.getConfiguration());
+        json.endArray();
+
+        String urlToUseInSpec = getBaseUrl(INFO_URL, baseUrl, req);
+        json.key("printURL").value(urlToUseInSpec + PRINT_URL);
+        json.key("createURL").value(urlToUseInSpec + CREATE_URL);
+    }
+
+    private void writeInfoLayouts(final JSONWriter json, final Configuration configuration) throws JSONException {
+        for (String name : configuration.getTemplates().keySet()) {
+            json.object();
+            {
+                json.key("name").value(name);
+                json.key("rotation").value(true);
+                
+                Template template = configuration.getTemplates().get(name);
+                
+                // find the map attribute
+                MapAttribute map = null;
+                for (Attribute attribute : template.getAttributes().values()) {
+                    if (attribute instanceof MapAttribute) {
+                        if (map != null) {
+                            throw new UnsupportedOperationException("Template '" + name + "' contains "
+                                    + "more than one map configuration. The legacy API "
+                                    + "supports only one map per template.");
+                        } else {
+                            map = (MapAttribute) attribute;
+                        }
+                    }
+                }
+                if (map == null) {
+                    throw new UnsupportedOperationException("Template '" + name + "' contains "
+                            + "no map configuration.");
+                }
+                
+                json.key("map");
+                json.object();
+                {
+                    MapAttributeValues mapValues = map.createValue(template);
+                    json.key("width").value(mapValues.getMapSize().width);
+                    json.key("height").value(mapValues.getMapSize().height);
+                }
+                json.endObject();
+            }
+            json.endObject();
+        }
+    }
+
+    private String getBaseUrl(final String suffix, final String baseUrl, final HttpServletRequest req) {
+        String urlToUseInSpec = null;
+        if (!Strings.isNullOrEmpty(baseUrl) && baseUrl.endsWith(suffix)) {
+            urlToUseInSpec = baseUrl.replace(suffix, "");
+        } else {
+            urlToUseInSpec = super.getBaseUrl(req).toString();
+        }
+        return urlToUseInSpec;
+    }
 
     /**
      * Do the actual work of creating the PDF temporary file.
      *
-     * @param spec the json specification
+     * @param spec the json specification in the old API format
      * @param httpServletRequest the request
      */
     protected final TempFile doCreatePDFFile(final String spec, final HttpServletRequest httpServletRequest)
@@ -375,14 +459,8 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
             SPEC_LOGGER.info(spec.toString());
         }
 
-        PJsonObject specJson = MapPrinter.parseSpec(spec);
-        if (specJson.has("app")) {
-            this.app = specJson.getString("app");
-        } else {
-            this.app = null;
-        }
-
-        MapPrinter mapPrinter = this.printerFactory.create(this.app);
+        MapPrinter mapPrinter = this.printerFactory.create(DEFAULT_CONFIGURATION_FILE_KEY);
+        PJsonObject specJson = parseSpec(spec, mapPrinter);
 
         Map<String, String> headers = new HashMap<String, String>();
         TreeSet<String> configHeaders = mapPrinter.getConfiguration().getHeaders();
@@ -419,6 +497,32 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
         }
     }
 
+    private PJsonObject parseSpec(final String requestDataRaw, final MapPrinter mapPrinter) {
+        try {
+            String requestData = requestDataRaw;
+            if (requestData.startsWith("spec=")) {
+                requestData = requestData.substring("spec=".length());
+            }
+
+            try {
+                return OldAPIRequestConverter.convert(requestData, mapPrinter.getConfiguration());
+            } catch (RuntimeException e) {
+                try {
+                    String decoded = URLDecoder.decode(requestData, Constants.DEFAULT_ENCODING);
+                    if (decoded.startsWith("spec=")) {
+                        decoded = decoded.substring("spec=".length());
+                    }
+                    return OldAPIRequestConverter.convert(decoded, mapPrinter.getConfiguration());
+                } catch (UnsupportedEncodingException uee) {
+                    throw new RuntimeException(e);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Error parsing request data: " + requestDataRaw);
+            throw new RuntimeException("Error parsing request data", e);
+        }
+    }
+
     /**
      * copy the PDF into the output stream.
      *
@@ -434,7 +538,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
         try {
             httpServletResponse.setContentType(tempFile.contentType());
             if (!inline) {
-                final String fileName = tempFile.getOutputFileName(this.printerFactory.create(this.app));
+                final String fileName = tempFile.getOutputFileName(this.printerFactory.create(DEFAULT_CONFIGURATION_FILE_KEY));
                 httpServletResponse.setHeader("Content-disposition", "attachment; filename=" + fileName);
             }
             ByteStreams.copy(pdf, response);
@@ -455,16 +559,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
      */
     protected final File getTempDir() {
         if (this.tempDir == null) {
-            String tempDirPath = this.servletContext.getInitParameter("tempdir");
-            if (tempDirPath != null) {
-                this.tempDir = new File(tempDirPath);
-            } else {
-                this.tempDir = (File) this.servletContext.getAttribute(CONTEXT_TEMPDIR);
-            }
-            if (!this.tempDir.exists() && !this.tempDir.mkdirs()) {
-                throw new RuntimeException("unable to create dir:" + this.tempDir);
-            }
-
+            this.tempDir = this.workingDirectories.getReportsOldApi();
         }
         LOGGER.debug("Using '" + this.tempDir.getAbsolutePath() + "' as temporary directory");
         return this.tempDir;
@@ -516,22 +611,6 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
                 }
             }
             this.purging.set(false);
-        }
-    }
-
-    /**
-     * Get the base url of the webapp.
-     *
-     * @param httpServletRequest the http request object.
-     */
-    protected final String getBaseUrl(final HttpServletRequest httpServletRequest) {
-        final String additionalPath = httpServletRequest.getPathInfo();
-        String fullUrl = httpServletRequest.getParameter("url");
-        if (fullUrl != null) {
-            return fullUrl.replaceFirst(additionalPath + "$", "");
-        } else {
-            return httpServletRequest.getRequestURL().toString()
-                    .replaceFirst(additionalPath + "$", "");
         }
     }
 
