@@ -127,4 +127,12 @@ public interface Registry {
      * @return the new value
      */
     long incrementLong(String key, long amount);
+
+    /**
+     * Return the amount of time the registry will keep an entry before purging the record.  This ability to purge old records
+     * prevents the registry from growing in size indefinitely.
+     *
+     * @return the number of milliseconds between the last access of a record and the time when a record can be purged from the registry.
+     */
+    long getTimeToKeepAfterAccessInMillis();
 }

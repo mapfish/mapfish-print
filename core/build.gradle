@@ -61,7 +61,7 @@ dependencies {
             'ch.qos.logback:logback-classic:1.1.1',
             'org.yaml:snakeyaml:1.13',
             "com.github.spullara.cli-parser:cli-parser:1.1.1",
-	        'net.sf.jasperreports:jasperreports:5.5.0',
+	        "net.sf.jasperreports:jasperreports:$project.jasperReportVersion",
 	        'org.codehaus.groovy:groovy-all:2.2.2',
 	        'ar.com.fdvs:DynamicJasper:5.0.0',
             'org.apache.httpcomponents:httpclient:4.3.3'

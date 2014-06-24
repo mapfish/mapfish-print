@@ -63,7 +63,7 @@ task debian {
         } else {
             ant.deb(destfile: debFile,
                     control: "$debianControlFiles.destinationDir",
-                    keyring: keyring,
+                    keyring: signing_secretKeyRingFile,
                     key: keyId,
                     passphrase: signing_password,
                     changesIn: "$projectDir/src/changelog",

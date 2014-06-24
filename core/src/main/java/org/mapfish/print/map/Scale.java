@@ -29,7 +29,6 @@ import javax.annotation.Nonnull;
  * @author Jesse on 3/27/14.
  */
 public final class Scale {
-    private static final String SCALE = "scale";
     private final double denominator;
 
     /**

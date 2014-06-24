@@ -13,6 +13,7 @@ allprojects {
     version = '3.0-SNAPSHOT'
     ext.junitVersion = "4.11"
     ext.springVersion = "3.2.8.RELEASE"
+    ext.jasperReportVersion = "5.5.0"
     ext."signing.keyId" = signing_keyId
     ext."signing.secretKeyRingFile" = signing_secretKeyRingFile
     ext."signing.password" = signing_password
@@ -20,7 +21,7 @@ allprojects {
 
 
 
-configure(subprojects.findAll {['core', 'examples', 'e2e-tests'].contains(it.name)}) {
+configure(subprojects.findAll {['core', 'examples'].contains(it.name)}) {
 
     apply plugin: 'java'
     apply plugin: 'findbugs'
@@ -34,9 +35,8 @@ configure(subprojects.findAll {['core', 'examples', 'e2e-tests'].contains(it.nam
     repositories {
         mavenLocal()
         mavenCentral()
-        maven {url "http://download.osgeo.org/webdav/geotools"}
-        maven {url "http://archiva.fdvs.com.ar/repository/public1"}
         maven {url "http://dev.mapfish.org/maven/repository"}
+        maven {url "http://download.osgeo.org/webdav/geotools"}
     }
     checkstyle {
         configFile = file("$rootProject.rootDir/checkstyle_checks.xml")
