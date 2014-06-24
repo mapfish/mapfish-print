@@ -17,7 +17,7 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.servlet;
+package org.mapfish.print.servlet.oldapi;
 
 
 import com.google.common.base.Strings;
@@ -36,6 +36,8 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.output.OutputFormat;
+import org.mapfish.print.servlet.BaseMapServlet;
+import org.mapfish.print.servlet.NoSuchAppException;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

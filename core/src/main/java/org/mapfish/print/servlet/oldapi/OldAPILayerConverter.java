@@ -17,7 +17,7 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.servlet;
+package org.mapfish.print.servlet.oldapi;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -17,17 +17,14 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.servlet;
+package org.mapfish.print.servlet.oldapi;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-
+import com.google.common.collect.Maps;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.servlet.MapPrinterServletTest;
+import org.mapfish.print.servlet.ServletInfo;
+import org.mapfish.print.servlet.ServletMapPrinterFactory;
 import org.mapfish.print.servlet.job.ThreadPoolJobManager;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -37,7 +34,12 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.google.common.collect.Maps;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = {
         OldAPIMapPrinterServletTest.PRINT_CONTEXT,
@@ -234,7 +236,7 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
 
     private void setUpInvalidConfigFiles() throws URISyntaxException {
         final HashMap<String, String> configFiles = Maps.newHashMap();
-        configFiles.put("default", getFile(OldAPIMapPrinterServletTest.class, "config.yaml").getAbsolutePath());
+        configFiles.put("default", getFile(MapPrinterServletTest.class, "config.yaml").getAbsolutePath());
         printerFactory.setConfigurationFiles(configFiles);
     }
 

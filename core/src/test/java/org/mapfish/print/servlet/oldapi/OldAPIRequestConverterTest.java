@@ -17,16 +17,9 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.servlet;
+package org.mapfish.print.servlet.oldapi;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-
+import com.google.common.collect.Maps;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,11 +27,20 @@ import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.servlet.MapPrinterServletTest;
+import org.mapfish.print.servlet.NoSuchAppException;
+import org.mapfish.print.servlet.ServletMapPrinterFactory;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.google.common.collect.Maps;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 
 @ContextConfiguration(locations = {
@@ -141,7 +143,7 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
     private void setUpConfigFiles() throws URISyntaxException {
         final HashMap<String, String> configFiles = Maps.newHashMap();
         configFiles.put("default", getFile(OldAPIMapPrinterServletTest.class, "config-old-api.yaml").getAbsolutePath());
-        configFiles.put("wrong-layout", getFile(OldAPIMapPrinterServletTest.class, "config.yaml").getAbsolutePath());
+        configFiles.put("wrong-layout", getFile(MapPrinterServletTest.class, "config.yaml").getAbsolutePath());
         printerFactory.setConfigurationFiles(configFiles);
     }
 
