@@ -48,6 +48,10 @@ public class BasicRegistry implements Registry {
                 expireAfterAccess(this.timeToKeepAfterAccessInMinutes, TimeUnit.MINUTES).build();
     }
 
+    @Override
+    public final long getTimeToKeepAfterAccessInMillis() {
+        return TimeUnit.MINUTES.toMillis(this.timeToKeepAfterAccessInMinutes);
+    }
 
     @Override
     public final synchronized boolean containsKey(final String key) {

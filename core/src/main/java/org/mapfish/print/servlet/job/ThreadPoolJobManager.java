@@ -159,6 +159,16 @@ public class ThreadPoolJobManager implements JobManager {
      */
     @PostConstruct
     public final void init() {
+        if (TimeUnit.SECONDS.toMillis(this.abandonedTimeout) >= this.registry.getTimeToKeepAfterAccessInMillis()) {
+            final String msg = String.format("%s abandonTimeout must be smaller than %s timeToKeepAfterAccess",
+                    getClass().getName(), this.registry.getClass().getName());
+            throw new IllegalStateException(msg);
+        }
+        if (TimeUnit.SECONDS.toMillis(this.timeout) >= this.registry.getTimeToKeepAfterAccessInMillis()) {
+            final String msg = String.format("%s timeout must be smaller than %s timeToKeepAfterAccess",
+                    getClass().getName(), this.registry.getClass().getName());
+            throw new IllegalStateException(msg);
+        }
         CustomizableThreadFactory threadFactory = new CustomizableThreadFactory();
         threadFactory.setDaemon(true);
         threadFactory.setThreadNamePrefix("PrintJobManager-");
