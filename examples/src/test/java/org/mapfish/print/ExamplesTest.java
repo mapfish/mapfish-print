@@ -23,6 +23,7 @@ import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapfish.print.servlet.oldapi.OldAPIMapPrinterServlet;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,7 @@ public class ExamplesTest {
     public static final String DEFAULT_SPRING_XML = "classpath:mapfish-spring-application-context.xml";
 
     private static final String REQUEST_DATA_FILE = "requestData(-.*)?.json";
+    private static final String OLD_API_REQUEST_DATA_FILE = "oldApi-requestData(-.*)?.json";
     private static final String CONFIG_FILE = "config.yaml";
     @Autowired
     MapPrinter mapPrinter;
@@ -96,26 +98,38 @@ public class ExamplesTest {
         try {
             final File configFile = new File(example, CONFIG_FILE);
             this.mapPrinter.setConfiguration(configFile);
-            
+
             for (File requestFile : Files.fileTreeTraverser().children(example)) {
-                if (requestFile.isFile() && requestFile.getName().matches(REQUEST_DATA_FILE)) {
-                    String requestData = Files.asCharSource(requestFile, Charset.forName(Constants.DEFAULT_ENCODING)).read();
-                    final PJsonObject jsonSpec = MapPrinter.parseSpec(requestData);
-                    jsonSpec.getInternalObj().put("outputFormat", "png");
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                if (!requestFile.isFile()) {
+                    continue;
+                }
+                try {
+                    if (requestFile.getName().matches(REQUEST_DATA_FILE) || requestFile.getName().matches(OLD_API_REQUEST_DATA_FILE)) {
+                        String requestData = Files.asCharSource(requestFile, Charset.forName(Constants.DEFAULT_ENCODING)).read();
+                        final PJsonObject jsonSpec;
+                        if (requestFile.getName().matches(OLD_API_REQUEST_DATA_FILE)) {
+                            jsonSpec = OldAPIMapPrinterServlet.parseSpec(requestData, this.mapPrinter);
+                        } else {
+                            jsonSpec = MapPrinter.parseSpec(requestData);
+                        }
+                        jsonSpec.getInternalObj().put("outputFormat", "png");
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-                    Map<String, String> headers = Maps.newHashMap();
-                    this.mapPrinter.print(jsonSpec, out, headers);
+                        Map<String, String> headers = Maps.newHashMap();
+                        this.mapPrinter.print(jsonSpec, out, headers);
 
-                    BufferedImage image = ImageIO.read(new ByteArrayInputStream(out.toByteArray()));
+                        BufferedImage image = ImageIO.read(new ByteArrayInputStream(out.toByteArray()));
 
-//                    File outDir = new File("e:/tmp", example.getName()+"/expected_output");
-//                    outDir.mkdirs();
-//                    ImageIO.write(image, "png", new File(outDir, requestFile.getName().replace(".json", ".png")));
+//                        File outDir = new File("e:/temp", example.getName()+"/expected_output");
+//                        outDir.mkdirs();
+//                        ImageIO.write(image, "png", new File(outDir, requestFile.getName().replace(".json", ".png")));
 
-                    File expectedOutputDir = new File(example, "expected_output");
-                    File expectedOutput = new File(expectedOutputDir, requestFile.getName().replace(".json", ".png"));
-                    new ImageSimilarity(image, 50).assertSimilarity(expectedOutput, 50);
+                        File expectedOutputDir = new File(example, "expected_output");
+                        File expectedOutput = new File(expectedOutputDir, requestFile.getName().replace(".json", ".png"));
+                        new ImageSimilarity(image, 50).assertSimilarity(expectedOutput, 50);
+                    }
+                } catch (Throwable e) {
+                    errors.put(example.getName() + " (" + requestFile.getName() + ")", e);
                 }
             }
         } catch (Throwable e) {

@@ -162,8 +162,6 @@ public class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.I
 
     @Override
     protected final void extraValidation(final List<Throwable> validationErrors) {
-        if (!jasperXmlFiles().iterator().hasNext()) {
-            validationErrors.add(new IllegalStateException("No jasper template output directory defined in " + getClass().getName()));
-        }
+        // nothing to do
     }
 }
