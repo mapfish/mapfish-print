@@ -24,9 +24,12 @@ import com.google.common.io.ByteSource;
 import com.google.common.io.Files;
 import org.mapfish.print.FileUtils;
 import org.mapfish.print.config.Configuration;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.File;
 import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Style parser plugin that loads styles from a file containing SLD xml.
@@ -39,7 +42,9 @@ import java.util.List;
 public final class FileSLDParserPlugin extends AbstractSLDParserPlugin {
 
     @Override
-    protected List<ByteSource> getInputStreamSuppliers(final Configuration configuration, final String styleString) {
+    protected List<ByteSource> getInputStreamSuppliers(@Nullable final Configuration configuration,
+                                                       @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
+                                                       @Nonnull final String styleString) {
         List<ByteSource> options = Lists.newArrayList();
 
         addRelativeFile(styleString, options, configuration);
@@ -47,7 +52,13 @@ public final class FileSLDParserPlugin extends AbstractSLDParserPlugin {
         return options;
     }
 
-    private void addRelativeFile(final String styleString, final List<ByteSource> options, final Configuration configuration) {
+    private void addRelativeFile(final String styleString,
+                                 final List<ByteSource> options,
+                                 @Nullable final Configuration configuration) {
+        if (configuration == null) {
+            throw new NullPointerException(getClass().getName() + " requires a configuration object");
+        }
+
         final File file = new File(configuration.getDirectory(), styleString);
         if (file.exists()) {
             FileUtils.assertFileIsInConfigDir(configuration, file);

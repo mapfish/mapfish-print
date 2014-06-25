@@ -31,7 +31,8 @@
     <bean id="!prepareTable" class="org.mapfish.print.processor.jasper.TableProcessor" scope="prototype" />
     <bean id="!prepareTableList" class="org.mapfish.print.processor.jasper.TableListProcessor" scope="prototype" />
     <bean id="!reportBuilder" class="org.mapfish.print.processor.jasper.JasperReportBuilder" scope="prototype" />
-    
+    <bean id="!useHttpForHttps" class="org.mapfish.print.processor.UseHttpForHttpsProcessor" scope="prototype" />
+
     <bean class="org.mapfish.print.processor.ProcessorDependency">
         <constructor-arg name="required" value="org.mapfish.print.processor.map.SetStyleProcessor" />
         <constructor-arg name="dependent" value="org.mapfish.print.processor.map.CreateMapProcessor"/>
@@ -51,13 +52,23 @@
             </util:list>
         </constructor-arg>
     </bean>
-    
+
     <bean class="org.mapfish.print.processor.ProcessorDependency">
         <constructor-arg name="required" value="org.mapfish.print.processor.map.SetWmsCustomParamProcessor" />
         <constructor-arg name="dependent" value="org.mapfish.print.processor.map.CreateMapProcessor"/>
         <constructor-arg name="commonInputs">
             <util:list>
                 <value>map</value>
+            </util:list>
+        </constructor-arg>
+    </bean>
+
+    <bean class="org.mapfish.print.processor.ProcessorDependency">
+        <constructor-arg name="required" value="org.mapfish.print.processor.UseHttpForHttpsProcessor" />
+        <constructor-arg name="dependent" value="org.mapfish.print.processor.map.CreateMapProcessor"/>
+        <constructor-arg name="commonInputs">
+            <util:list>
+                <value>clientHttpRequestFactory</value>
             </util:list>
         </constructor-arg>
     </bean>

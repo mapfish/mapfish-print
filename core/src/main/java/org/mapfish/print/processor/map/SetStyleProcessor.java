@@ -24,6 +24,7 @@ import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class SetStyleProcessor extends
         for (MapLayer layer : values.map.getLayers()) {
             checkCancelState(context);
             if (layer instanceof AbstractFeatureSourceLayer) {
-                ((AbstractFeatureSourceLayer) layer).setStyle(values.style.getStyle());
+                ((AbstractFeatureSourceLayer) layer).setStyle(values.style.getStyle(values.clientHttpRequestFactory));
             }
         }
 
@@ -68,6 +69,11 @@ public class SetStyleProcessor extends
      * The input parameter object for {@link SetFeaturesProcessor}.
      */
     public static final class Input {
+        /**
+         * A factory for making http requests.  This is added to the values by the framework and therefore
+         * does not need to be set in configuration
+         */
+        public ClientHttpRequestFactory clientHttpRequestFactory;
         /**
          * The map to update.
          */

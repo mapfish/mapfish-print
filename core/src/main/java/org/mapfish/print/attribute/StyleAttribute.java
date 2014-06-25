@@ -24,11 +24,12 @@ import org.mapfish.print.attribute.StyleAttribute.StylesAttributeValues;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.style.StringSLDParserPlugin;
 import org.mapfish.print.map.style.StyleParserPlugin;
-import org.opengis.referencing.FactoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.List;
+import javax.annotation.Nonnull;
 
 /**
  * Attribute for GeoJson Styles collection.
@@ -73,20 +74,19 @@ public class StyleAttribute extends ReflectiveAttribute<StylesAttributeValues> {
 
         /**
          * Validate the values provided by the request data and construct MapBounds and parse the layers.
+         * @param clientHttpRequestFactory a factory for creating http requests
          */
-        public void postConstruct() throws FactoryException {
-            final StyleParserPlugin parser = new StringSLDParserPlugin();
-            try {
-                this.styleObject = parser.parseStyle(null, this.style).get();
-            } catch (Throwable e) {
-                throw new RuntimeException("Unable to parce the SDL style", e);
+        public synchronized Style getStyle(@Nonnull final ClientHttpRequestFactory clientHttpRequestFactory) throws Exception {
+            if (this.styleObject == null) {
+                final StyleParserPlugin parser = new StringSLDParserPlugin();
+                try {
+                    this.styleObject = parser.parseStyle(null, clientHttpRequestFactory, this.style).get();
+                } catch (Exception exception) {
+                    throw exception;
+                } catch (Throwable throwable) {
+                    throw new RuntimeException(throwable);
+                }
             }
-        }
-
-        /**
-         * Validate the values provided by the request data and construct MapBounds and parse the layers.
-         */
-        public Style getStyle() throws FactoryException {
             return this.styleObject;
 
         }

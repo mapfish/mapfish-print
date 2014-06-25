@@ -20,7 +20,6 @@
 package org.mapfish.print.processor.jasper;
 
 import jsr166y.ForkJoinPool;
-
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.Configuration;
@@ -30,6 +29,7 @@ import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -48,14 +48,15 @@ public class TableListProcessorTest  extends AbstractMapfishSpringTest {
     private MapfishParser parser;
     @Autowired
     private ForkJoinPool forkJoinPool;
-
+    @Autowired
+    private ClientHttpRequestFactory httpRequestFactory;
 
     @Test
     public void testBasicTableProperties() throws Exception {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, parser, getTaskDirectory());
+        Values values = new Values(requestData, template, parser, getTaskDirectory(), this.httpRequestFactory);
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final Iterator<Values> tablelist = values.getIterator("tableList").iterator();

@@ -19,13 +19,6 @@
 
 package org.mapfish.print.processor.map;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.Configuration;
@@ -36,6 +29,14 @@ import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.client.ClientHttpRequestFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Basic test of the Map processor.
@@ -49,13 +50,15 @@ public class CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest extends Abstrac
     private ConfigurationFactory configurationFactory;
     @Autowired
     private MapfishParser parser;
+    @Autowired
+    private ClientHttpRequestFactory httpRequestFactory;
 
     @Test
     public void testExecute() throws Exception {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory());
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.httpRequestFactory);
         template.getProcessorGraph().createTask(values).invoke();
 
         @SuppressWarnings("unchecked")

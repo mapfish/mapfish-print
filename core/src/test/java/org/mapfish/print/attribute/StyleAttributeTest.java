@@ -4,6 +4,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
@@ -21,6 +22,8 @@ public class StyleAttributeTest extends AbstractMapfishSpringTest {
     public TemporaryFolder folder = new TemporaryFolder();
     @Autowired
     private ConfigurationFactory configurationFactory;
+    @Autowired
+    private TestHttpClientFactory clientHttpRequestFactory;
 
     @Test
     public void testAttributesFromJson() throws Exception {
@@ -29,9 +32,10 @@ public class StyleAttributeTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
         final PJsonObject pJsonObject = parseJSONObjectFromFile(StyleAttributeTest.class, "style_attributes/request.json");
-        final Values values = new Values(pJsonObject, template, new MapfishParser(), this.folder.getRoot());
+        final Values values = new Values(pJsonObject, template, new MapfishParser(), this.folder.getRoot(),
+                this.clientHttpRequestFactory);
         final StyleAttribute.StylesAttributeValues value = values.getObject("styleDef", StyleAttribute.StylesAttributeValues.class);
 
-        assertNotNull(value.getStyle());
+        assertNotNull(value.getStyle(clientHttpRequestFactory));
     }
 }

@@ -21,11 +21,12 @@ package org.mapfish.print.map.tiled.wmts;
 
 import com.google.common.collect.Multimap;
 import jsr166y.ForkJoinPool;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.styling.Style;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.map.Scale;
+import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.tiled.AbstractTiledLayer;
 import org.mapfish.print.map.tiled.TileCacheInformation;
 import org.springframework.http.HttpMethod;
@@ -46,21 +47,19 @@ import javax.annotation.Nonnull;
  */
 public class WMTSLayer extends AbstractTiledLayer {
     private final WMTSLayerParam param;
-    private final ClientHttpRequestFactory requestFactory;
 
     /**
      * Constructor.
      *
      * @param executorService the thread pool for doing the rendering.
-     * @param rasterStyle     the style to use when drawing the constructed grid coverage on the map.
+     * @param styleSupplier   strategy for loading the style for this layer
      * @param param           the information needed to create WMTS requests.
-     * @param requestFactory  A factory for making http request objects.
      */
-    protected WMTSLayer(final ForkJoinPool executorService, final Style rasterStyle, final WMTSLayerParam param,
-                        final ClientHttpRequestFactory requestFactory) {
-        super(executorService, rasterStyle);
+    protected WMTSLayer(final ForkJoinPool executorService,
+                        final StyleSupplier<GridCoverage2D> styleSupplier,
+                        final WMTSLayerParam param) {
+        super(executorService, styleSupplier);
         this.param = param;
-        this.requestFactory = requestFactory;
     }
 
     @Override
@@ -110,8 +109,12 @@ public class WMTSLayer extends AbstractTiledLayer {
 
         @Override
         @Nonnull
-        public ClientHttpRequest getTileRequest(final URI commonURI, final ReferencedEnvelope tileBounds,
-                                                final Dimension tileSizeOnScreen, final int column, final int row)
+        public ClientHttpRequest getTileRequest(final ClientHttpRequestFactory httpRequestFactory,
+                                                final URI commonURI,
+                                                final ReferencedEnvelope tileBounds,
+                                                final Dimension tileSizeOnScreen,
+                                                final int column,
+                                                final int row)
                 throws URISyntaxException, IOException {
             URI uri;
             final WMTSLayerParam layerParam = WMTSLayer.this.param;
@@ -120,7 +123,7 @@ public class WMTSLayer extends AbstractTiledLayer {
             } else {
                 uri = createKVPUri(commonURI, row, column, layerParam);
             }
-            return WMTSLayer.this.requestFactory.createRequest(uri, HttpMethod.GET);
+            return httpRequestFactory.createRequest(uri, HttpMethod.GET);
         }
 
         private URI createKVPUri(final URI commonURI, final int row, final int col,

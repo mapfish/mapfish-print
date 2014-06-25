@@ -29,10 +29,13 @@ import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Basic implementation for loading and parsing an SLD style.
@@ -50,10 +53,12 @@ public abstract class AbstractSLDParserPlugin implements StyleParserPlugin {
     public static final String STYLE_INDEX_REF_SEPARATOR = "##";
 
     @Override
-    public final Optional<Style> parseStyle(final Configuration configuration, final String styleString) throws Throwable {
+    public final Optional<Style> parseStyle(@Nullable final Configuration configuration,
+                                            @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
+                                            @Nonnull final String styleString) throws Throwable {
         Integer styleIndex = lookupStyleIndex(styleString).orNull();
         String styleStringWithoutIndexReference = removeIndexReference(styleString);
-        List<ByteSource> inputStream = getInputStreamSuppliers(configuration, styleStringWithoutIndexReference);
+        List<ByteSource> inputStream = getInputStreamSuppliers(configuration, clientHttpRequestFactory, styleStringWithoutIndexReference);
         for (ByteSource source : inputStream) {
             Optional<Style> style = tryLoadSLD(source, styleIndex);
             if (style.isPresent()) {
@@ -81,11 +86,13 @@ public abstract class AbstractSLDParserPlugin implements StyleParserPlugin {
 
     /**
      * Return a ByteSource for each known interpretation of the style string.
-     *
-     * @param configuration the configuration object being used.
+     *  @param configuration the configuration object being used.
+     * @param clientHttpRequestFactory a factory for making http requests
      * @param styleString   the string (url, file, etc...) representing the style or the location to load the style from.
      */
-    protected abstract List<ByteSource> getInputStreamSuppliers(Configuration configuration, String styleString);
+    protected abstract List<ByteSource> getInputStreamSuppliers(@Nullable Configuration configuration,
+                                                                @Nonnull ClientHttpRequestFactory clientHttpRequestFactory,
+                                                                @Nonnull String styleString);
 
     private Optional<Style> tryLoadSLD(final ByteSource byteSource, final Integer styleIndex) throws IOException {
         Assert.isTrue(styleIndex == null || styleIndex > -1, "styleIndex must be > -1 but was: " + styleIndex);

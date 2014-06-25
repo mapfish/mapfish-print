@@ -20,7 +20,6 @@
 package org.mapfish.print.config;
 
 import com.google.common.base.Optional;
-
 import org.geotools.styling.Style;
 import org.json.JSONException;
 import org.json.JSONWriter;
@@ -31,6 +30,8 @@ import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -39,7 +40,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -68,6 +68,10 @@ public class Template implements ConfigurationObject, HasConfiguration {
     private Configuration configuration;
     @Autowired
     private StyleParser styleParser;
+    @Qualifier("httpClientFactory")
+    @Autowired
+    private ClientHttpRequestFactory httpRequestFactory;
+
 
     /**
      * Print out the template information that the client needs for performing a request.
@@ -224,7 +228,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
      * @param styles set the styles specific for this template.
      */
     public final void setStyles(final Map<String, String> styles) {
-        Map<String, Style> map = StyleParser.loadStyles(this.configuration, this.styleParser, styles);
+        Map<String, Style> map = StyleParser.loadStyles(this.configuration, this.styleParser, this.httpRequestFactory, styles);
 
         this.styles = map;
     }

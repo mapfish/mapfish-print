@@ -30,6 +30,7 @@ import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.wrapper.ObjectMissingException;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.File;
 
@@ -46,6 +47,8 @@ public class ValuesTest extends AbstractMapfishSpringTest {
     private ConfigurationFactory configurationFactory;
     @Autowired
     private MapfishParser parser;
+    @Autowired
+    private ClientHttpRequestFactory httpRequestFactory;
 
     @Test
     public void testNoDefaults() throws Exception {
@@ -56,7 +59,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
 
         Template template = config.getTemplates().values().iterator().next();
-        final Values values = new Values(requestData, template, this.parser, new File("tmp"));
+        final Values values = new Values(requestData, template, this.parser, new File("tmp"), this.httpRequestFactory);
 
         assertTrue(values.containsKey("title"));
         assertEquals("title", values.getString("title"));
@@ -77,7 +80,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
 
         Template template = config.getTemplates().values().iterator().next();
-        new Values(requestData, template, this.parser, new File("tmp"));
+        new Values(requestData, template, this.parser, new File("tmp"), this.httpRequestFactory);
     }
 
     @Test
@@ -90,7 +93,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-defaults.yaml"));
 
         Template template = config.getTemplates().values().iterator().next();
-        final Values values = new Values(requestData, template, this.parser, new File("tmp"));
+        final Values values = new Values(requestData, template, this.parser, new File("tmp"), this.httpRequestFactory);
 
         assertTrue(values.containsKey("title"));
         assertEquals("title", values.getString("title"));

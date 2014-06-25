@@ -17,20 +17,24 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.map.tiled.wmts;
+package org.mapfish.print.map.geotools;
+
+import org.geotools.styling.Style;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 /**
- * The types of encoding to use when making http requests.
+ * A strategy for loading style objects.
  *
- * @author Jesse on 4/3/14.
+ * @author Jesse on 6/25/2014.
+ *
+ * @param <Source> the type source that the style applies to
  */
-public enum RequestEncoding {
+public interface StyleSupplier<Source> {
     /**
-     * Use query parameters for the WMTS tile parameters.
+     * Load the style.
+     *  @param requestFactory the factory to use for making http requests
+     * @param featureSource the source the style applies to
      */
-    KVP,
-    /**
-     * Use Rest format for encoding the WMTS tile parameters.
-     */
-    REST
+    Style load(final ClientHttpRequestFactory requestFactory,
+               final Source featureSource);
 }

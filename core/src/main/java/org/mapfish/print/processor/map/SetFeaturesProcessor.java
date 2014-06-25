@@ -19,11 +19,13 @@
 
 package org.mapfish.print.processor.map;
 
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.mapfish.print.attribute.FeaturesAttribute.FeaturesAttributeValues;
 import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.List;
 
@@ -52,7 +54,8 @@ public class SetFeaturesProcessor extends
         for (MapLayer layer : values.map.getLayers()) {
             checkCancelState(context);
             if (layer instanceof AbstractFeatureSourceLayer) {
-                ((AbstractFeatureSourceLayer) layer).setFeatursCollection(values.features.getFeatures());
+                final SimpleFeatureCollection features = values.features.getFeatures(values.clientHttpRequestFactory);
+                ((AbstractFeatureSourceLayer) layer).setFeatureCollection(features);
             }
         }
 
@@ -68,7 +71,10 @@ public class SetFeaturesProcessor extends
      * The input parameter object for {@link SetFeaturesProcessor}.
      */
     public static final class Input {
-
+        /**
+         * The factory to use for making http requests.
+         */
+        public ClientHttpRequestFactory clientHttpRequestFactory;
         /**
          * The map to update.
          */

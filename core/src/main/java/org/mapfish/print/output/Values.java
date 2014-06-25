@@ -32,6 +32,7 @@ import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.mapfish.print.wrapper.multi.PMultiArray;
 import org.mapfish.print.wrapper.multi.PMultiObject;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.File;
 import java.lang.reflect.Array;
@@ -50,7 +51,11 @@ public class Values {
      * The key that is used to store the task directory in the values map.
      */
     public static final String TASK_DIRECTORY_KEY = "tempTaskDirectory";
-    
+    /**
+     * The key that is used to store {@link org.springframework.http.client.ClientHttpRequestFactory}.
+     */
+    public static final String CLIENT_HTTP_REQUEST_FACTORY_KEY = "clientHttpRequestFactory";
+
     private final Map<String, Object> values = new ConcurrentHashMap<String, Object>();
 
     /**
@@ -71,16 +76,20 @@ public class Values {
 
     /**
      * Construct from the json request body and the associated template.
-     *
-     * @param requestData the json request data
+     *  @param requestData the json request data
      * @param template the template
      * @param parser the parser to use for parsing the request data.
      * @param taskDirectory the temporary directory for this printing task.
+     * @param httpRequestFactory a factory for making http requests.
      */
-    public Values(final PJsonObject requestData, final Template template, final MapfishParser parser,
-            final File taskDirectory) throws JSONException {
+    public Values(final PJsonObject requestData,
+                  final Template template,
+                  final MapfishParser parser,
+                  final File taskDirectory,
+                  final ClientHttpRequestFactory httpRequestFactory) throws JSONException {
         // add task dir. to values so that all processors can access it
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
+        this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY, httpRequestFactory);
 
         final PJsonObject jsonAttributes = requestData.getJSONObject("attributes");
 

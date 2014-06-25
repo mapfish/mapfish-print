@@ -41,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
 
 import java.awt.Color;
@@ -68,22 +69,29 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
     private final MapTransformer transformer;
     private final TileCacheInformation tiledLayer;
     private final BufferedImage errorImage;
+    private final ClientHttpRequestFactory httpRequestFactory;
     private Optional<Geometry> cachedRotatedMapBounds = null;
 
     /**
      * Constructor.
      *
-     * @param bounds        the map bounds
-     * @param paintArea     the area to paint
-     * @param dpi           the DPI to render at
-     * @param transformer 
-     * @param tileCacheInfo the object used to create the tile requests
+     * @param httpRequestFactory the factory to use for making http requests
+     * @param bounds             the map bounds
+     * @param paintArea          the area to paint
+     * @param dpi                the DPI to render at
+     * @param transformer        a transformer for making calculations
+     * @param tileCacheInfo      the object used to create the tile requests
      */
-    public TileLoaderTask(final MapBounds bounds, final Rectangle paintArea,
-                          final double dpi, final MapTransformer transformer, final TileCacheInformation tileCacheInfo) {
+    public TileLoaderTask(final ClientHttpRequestFactory httpRequestFactory,
+                          final MapBounds bounds,
+                          final Rectangle paintArea,
+                          final double dpi,
+                          final MapTransformer transformer,
+                          final TileCacheInformation tileCacheInfo) {
         this.bounds = bounds;
         this.paintArea = paintArea;
         this.dpi = dpi;
+        this.httpRequestFactory = httpRequestFactory;
         this.transformer = transformer;
         this.tiledLayer = tileCacheInfo;
         final Dimension tileSize = this.tiledLayer.getTileSize();
@@ -148,7 +156,8 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
                     int row = (int) Math.round((tileCacheBounds.getMaxY() - tileBounds.getMaxY()) * rowFactor);
                     int column = (int) Math.round((tileBounds.getMinX() - tileCacheBounds.getMinX()) * columnFactor);
 
-                    ClientHttpRequest tileRequest = this.tiledLayer.getTileRequest(commonUri, tileBounds, tileSizeOnScreen, column, row);
+                    ClientHttpRequest tileRequest = this.tiledLayer.getTileRequest(this.httpRequestFactory, commonUri, tileBounds,
+                            tileSizeOnScreen, column, row);
 
                     if (isInTileCacheBounds(tileCacheBounds, tileBounds)) {
                         if (isTileVisible(tileBounds)) {
@@ -199,7 +208,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
         //we don't use maxX and maxY since tilecache doesn't seems to care about those...
     }
 
-    /** 
+    /**
      * When using a map rotation, there might be tiles that are outside the
      * rotated map area. To avoid to load these tiles, this method checks
      * if a tile is really required to draw the map.
@@ -208,10 +217,10 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
         if (this.transformer.getRotation() == 0.0) {
             return true;
         }
-        
+
         final GeometryFactory gfac = new GeometryFactory();
         final Optional<Geometry> rotatedMapBounds = getRotatedMapBounds(gfac);
-        
+
         if (rotatedMapBounds.isPresent()) {
             return rotatedMapBounds.get().intersects(gfac.toGeometry(tileBounds));
         } else {
@@ -224,11 +233,11 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
         if (this.cachedRotatedMapBounds != null) {
             return this.cachedRotatedMapBounds;
         }
-        
+
         // get the bounds for the unrotated map area
         final ReferencedEnvelope mapBounds = this.transformer.getBounds().toReferencedEnvelope(
                 new Rectangle(this.transformer.getMapSize()), this.dpi);
-        
+
         // then rotate the geometry around its center
         final Coordinate center = mapBounds.centre();
         final AffineTransform affineTransform = AffineTransform.getRotateInstance(
@@ -244,14 +253,14 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
             }
             this.cachedRotatedMapBounds = Optional.absent();
         }
-        
+
         return this.cachedRotatedMapBounds;
     }
 
     private abstract static class TileTask extends RecursiveTask<Tile> {
         private final int tileIndexX;
         private final int tileIndexY;
-        
+
         public TileTask(final int tileIndexX, final int tileIndexY) {
             this.tileIndexX = tileIndexX;
             this.tileIndexY = tileIndexY;
@@ -263,9 +272,9 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
 
         public int getTileIndexY() {
             return this.tileIndexY;
-        } 
+        }
     }
-    
+
     private static final class SingleTileLoaderTask extends TileTask {
 
         private final ClientHttpRequest tileRequest;

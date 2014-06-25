@@ -23,12 +23,13 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.io.Closer;
 import com.vividsolutions.jts.util.Assert;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.wms.request.GetMapRequest;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.geotools.styling.Style;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.attribute.map.MapBounds;
+import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.image.AbstractSingleImageLayer;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -50,28 +51,28 @@ import javax.imageio.ImageIO;
 public final class WmsLayer extends AbstractSingleImageLayer {
 
     private final WmsLayerParam params;
-    private final ClientHttpRequestFactory requestFactory;
 
     /**
      * Constructor.
      *
      * @param executorService the thread pool for doing the rendering.
-     * @param rasterStyle     the style to use when drawing the constructed grid coverage on the map.
+     * @param styleSupplier   the style to use when drawing the constructed grid coverage on the map.
      * @param params          the params from the request data.
-     * @param requestFactory  a factory for making http requests.
      */
-    protected WmsLayer(final ExecutorService executorService, final Style rasterStyle, final WmsLayerParam params,
-                       final ClientHttpRequestFactory requestFactory) {
-        super(executorService, rasterStyle);
+    protected WmsLayer(final ExecutorService executorService,
+                       final StyleSupplier<GridCoverage2D> styleSupplier,
+                       final WmsLayerParam params) {
+        super(executorService, styleSupplier);
         this.params = params;
-        this.requestFactory = requestFactory;
     }
 
     @Override
-    protected BufferedImage loadImage(final MapBounds bounds, final Rectangle imageSize, final double dpi,
+    protected BufferedImage loadImage(final ClientHttpRequestFactory requestFactory,
+                                      final MapBounds bounds,
+                                      final Rectangle imageSize,
+                                      final double dpi,
                                       final boolean isFirstLayer) throws Throwable {
         final URI commonURI = this.params.getBaseUri();
-
 
         ReferencedEnvelope envelope = bounds.toReferencedEnvelope(imageSize, dpi);
         final GetMapRequest getMapRequest = WmsVersion.lookup(this.params.version).getGetMapRequest(commonURI.toURL());
@@ -97,7 +98,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
 
         Closer closer = Closer.create();
         try {
-            final ClientHttpResponse response = closer.register(this.requestFactory.createRequest(uri, HttpMethod.GET).execute());
+            final ClientHttpResponse response = closer.register(requestFactory.createRequest(uri, HttpMethod.GET).execute());
 
             Assert.equals(HttpStatus.OK, response.getStatusCode(), "Http status code for " + uri + " was not OK.  It was: " + response
                     .getStatusCode() + ".  The response message was: '" + response.getStatusText() + "'");
@@ -116,7 +117,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
     public WmsLayerParam getParams() {
         return this.params;
     }
-    
+
     /**
      * If supported by the WMS server, a parameter "angle" can be set
      * on "customParams" or "mergeableParams". In this case the rotation
@@ -125,6 +126,6 @@ public final class WmsLayer extends AbstractSingleImageLayer {
     @Override
     public boolean supportsNativeRotation() {
         return this.params.getCustomParams().containsKey("angle") ||
-                this.params.getMergeableParams().containsKey("angle");
+               this.params.getMergeableParams().containsKey("angle");
     }
 }

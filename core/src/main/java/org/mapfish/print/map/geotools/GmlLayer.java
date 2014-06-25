@@ -20,18 +20,16 @@
 package org.mapfish.print.map.geotools;
 
 import com.google.common.base.Function;
-import com.google.common.base.Supplier;
-
 import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.gml2.GMLConfiguration;
-import org.geotools.styling.Style;
 import org.geotools.xml.Parser;
 import org.mapfish.print.FileUtils;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.HasDefaultValue;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -40,7 +38,6 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
-
 import javax.annotation.Nonnull;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
@@ -60,8 +57,10 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
      * @param styleSupplier         a function that creates the style for styling the features. This will only be called once.
      * @param renderAsSvg is the layer rendered as SVG?
      */
-    public GmlLayer(final ExecutorService executorService, final Supplier<FeatureSource> featureSourceSupplier,
-                    final Function<FeatureSource, Style> styleSupplier, final boolean renderAsSvg) {
+    public GmlLayer(final ExecutorService executorService,
+                    final Function<ClientHttpRequestFactory, FeatureSource> featureSourceSupplier,
+                    final StyleSupplier<FeatureSource> styleSupplier,
+                    final boolean renderAsSvg) {
         super(executorService, featureSourceSupplier, styleSupplier, renderAsSvg);
     }
 
@@ -91,7 +90,8 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
 
         @Nonnull
         @Override
-        public GmlLayer parse(final Template template, @Nonnull final GmlParam param) throws IOException {
+        public GmlLayer parse(final Template template,
+                              @Nonnull final GmlParam param) throws IOException {
             return new GmlLayer(
                     this.forkJoinPool,
                     createFeatureSourceSupplier(template, param.url),
@@ -99,13 +99,14 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
                     param.renderAsSvg);
         }
 
-        private Supplier<FeatureSource> createFeatureSourceSupplier(final Template template, final String url) {
-            return new Supplier<FeatureSource>() {
+        private Function<ClientHttpRequestFactory, FeatureSource> createFeatureSourceSupplier(final Template template,
+                                                                    final String url) {
+            return new Function<ClientHttpRequestFactory, FeatureSource>() {
                 @Override
-                public FeatureSource get() {
-                    SimpleFeatureCollection featureCollection = null;
+                public FeatureSource apply(final ClientHttpRequestFactory requestFactory) {
+                    SimpleFeatureCollection featureCollection;
                     try {
-                        featureCollection = createFeatureSource(template, url);
+                        featureCollection = createFeatureSource(template, requestFactory, url);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -117,12 +118,14 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
             };
         }
 
-        private SimpleFeatureCollection createFeatureSource(final Template template, final String gmlString) throws IOException {
+        private SimpleFeatureCollection createFeatureSource(final Template template,
+                                                            final ClientHttpRequestFactory httpRequestFactory,
+                                                            final String gmlString) throws IOException {
             try {
                 URL url = new URL(gmlString);
                 FileUtils.testForLegalFileUrl(template.getConfiguration(), url);
                 try {
-                    final String gmlData = URIUtils.toString(this.httpRequestFactory, url.toURI());
+                    final String gmlData = URIUtils.toString(httpRequestFactory, url.toURI());
                     final int endIndex = 200;
                     String startOfData = gmlData.substring(0, endIndex);
                     if (startOfData.contains("\"http://www.opengis.net/gml/3.2\"")) {

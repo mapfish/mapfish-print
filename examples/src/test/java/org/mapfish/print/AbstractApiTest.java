@@ -19,14 +19,8 @@
 
 package org.mapfish.print;
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.runner.RunWith;
@@ -39,15 +33,19 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         ExamplesTest.DEFAULT_SPRING_XML
 })
 public abstract class AbstractApiTest {
-    public static final String DEFAULT_SPRING_XML = "classpath:mapfish-spring-application-context.xml";
     
     protected static final String PRINT_SERVER = "http://localhost:8080/print-servlet/";
     

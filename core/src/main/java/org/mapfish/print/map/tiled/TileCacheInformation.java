@@ -26,6 +26,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.map.Scale;
 import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
@@ -81,15 +82,20 @@ public abstract class TileCacheInformation {
     /**
      * Create the http request for loading the image at the indicated area and the indicated size.
      *
-     * @param commonURI        the uri that is common to all tiles.  See {@link #createCommonURI()}
-     * @param tileBounds       the bounds of the image in world coordinates
-     * @param tileSizeOnScreen the size of the tile on the screen or on the image.
-     * @param column           the column index of the tile from the origin of the tile cache.
-     * @param row              the row index of the tile from the origin of the tile cache.
+     * @param httpRequestFactory the factory to use for making http requests
+     * @param commonURI          the uri that is common to all tiles.  See {@link #createCommonURI()}
+     * @param tileBounds         the bounds of the image in world coordinates
+     * @param tileSizeOnScreen   the size of the tile on the screen or on the image.
+     * @param column             the column index of the tile from the origin of the tile cache.
+     * @param row                the row index of the tile from the origin of the tile cache.
      */
     @Nonnull
-    public abstract ClientHttpRequest getTileRequest(URI commonURI, ReferencedEnvelope tileBounds,
-                                                     Dimension tileSizeOnScreen, int column, int row)
+    public abstract ClientHttpRequest getTileRequest(ClientHttpRequestFactory httpRequestFactory,
+                                                     URI commonURI,
+                                                     ReferencedEnvelope tileBounds,
+                                                     Dimension tileSizeOnScreen,
+                                                     int column,
+                                                     int row)
             throws IOException, URISyntaxException;
 
     /**

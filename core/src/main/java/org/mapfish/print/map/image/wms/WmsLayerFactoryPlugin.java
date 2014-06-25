@@ -20,31 +20,27 @@
 package org.mapfish.print.map.image.wms;
 
 import jsr166y.ForkJoinPool;
-import org.geotools.styling.Style;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
+import org.mapfish.print.map.geotools.AbstractGridCoverageLayerPlugin;
 import org.mapfish.print.map.style.StyleParser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.Collections;
 import java.util.Set;
 import javax.annotation.Nonnull;
-
-import static org.mapfish.print.Constants.RASTER_STYLE_NAME;
 
 /**
  * Layer plugin factory for creating WMS layers.
  *
  * @author Jesse on 4/10/2014.
  */
-public final class WmsLayerFactoryPlugin implements MapLayerFactoryPlugin<WmsLayerParam> {
+public final class WmsLayerFactoryPlugin extends AbstractGridCoverageLayerPlugin implements MapLayerFactoryPlugin<WmsLayerParam> {
     private static final String TYPE = "wms";
     @Autowired
     private ForkJoinPool forkJoinPool;
-    @Autowired
-    private ClientHttpRequestFactory requestFactory;
     @Autowired
     private StyleParser styleParser;
 
@@ -61,12 +57,12 @@ public final class WmsLayerFactoryPlugin implements MapLayerFactoryPlugin<WmsLay
 
     @Nonnull
     @Override
-    public MapLayer parse(@Nonnull final Template template, @Nonnull final WmsLayerParam layerData) throws Throwable {
+    public MapLayer parse(@Nonnull final Template template,
+                          @Nonnull final WmsLayerParam layerData) throws Throwable {
 
         String styleRef = layerData.rasterStyle;
-        Style rasterStyle = template.getStyle(styleRef)
-                .or(this.styleParser.loadStyle(template.getConfiguration(), styleRef))
-                .or(template.getConfiguration().getDefaultStyle(RASTER_STYLE_NAME));
-        return new WmsLayer(this.forkJoinPool, rasterStyle, layerData, this.requestFactory);
+        return new WmsLayer(this.forkJoinPool,
+                super.<GridCoverage2D>createStyleSupplier(template, styleRef),
+                layerData);
     }
 }
