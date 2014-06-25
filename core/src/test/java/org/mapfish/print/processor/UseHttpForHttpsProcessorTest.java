@@ -181,6 +181,7 @@ public class UseHttpForHttpsProcessorTest extends AbstractMapfishSpringTest {
             assertEquals(host, request.getURI().getHost());
             assertEquals(9999, request.getURI().getPort());
             assertEquals("/" + path, request.getURI().getPath());
+            assertEquals(query, request.getURI().getQuery());
             assertEquals(fragment, request.getURI().getFragment());
         }
 
@@ -192,6 +193,7 @@ public class UseHttpForHttpsProcessorTest extends AbstractMapfishSpringTest {
             assertEquals(host, request.getURI().getHost());
             assertEquals(9999, request.getURI().getPort());
             assertEquals("/" + path, request.getURI().getPath());
+            assertEquals(query, request.getURI().getQuery());
             assertEquals(fragment, request.getURI().getFragment());
         }
 
@@ -203,6 +205,7 @@ public class UseHttpForHttpsProcessorTest extends AbstractMapfishSpringTest {
             assertEquals(host, request.getURI().getHost());
             assertEquals(-1, request.getURI().getPort());
             assertEquals("/" + path, request.getURI().getPath());
+            assertEquals(query, request.getURI().getQuery());
             assertEquals(fragment, request.getURI().getFragment());
         }
     }

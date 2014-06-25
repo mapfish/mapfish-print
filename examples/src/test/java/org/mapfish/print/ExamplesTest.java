@@ -43,13 +43,13 @@ import static org.junit.Assert.fail;
 
 /**
  * To run this test make sure that the test GeoServer is running:
- * 
- *      ./gradlew examples:jettyRun
- *      
+ * <p/>
+ * ./gradlew examples:jettyRun
+ * <p/>
  * Or run the tests with the following task (which automatically starts the server):
- * 
- *      ./gradlew examples:test
- * 
+ * <p/>
+ * ./gradlew examples:test
+ *
  * @author Jesse on 3/31/14.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -69,11 +69,12 @@ public class ExamplesTest {
     public void testAllExamples() throws Exception {
         Map<String, Throwable> errors = Maps.newHashMap();
 
+        int testsRan = 0;
         final File examplesDir = getFile(ExamplesTest.class, "/examples");
 
         for (File example : Files.fileTreeTraverser().children(examplesDir)) {
             if (example.isDirectory()) {
-                runExample(example, errors);
+                testsRan += runExample(example, errors);
             }
         }
 
@@ -83,7 +84,8 @@ public class ExamplesTest {
                 error.getValue().printStackTrace();
             }
             StringBuilder errorReport = new StringBuilder();
-            errorReport.append("\n").append(errors.size()).append(" errors encountered while running examples.\n");
+            errorReport.append("\n").append(errors.size()).append(" errors encountered while running ");
+            errorReport.append(testsRan).append(" examples.\n");
             errorReport.append("See Standard Error for the stacktraces.  A summary is as follows:\n\n");
             for (Map.Entry<String, Throwable> entry : errors.entrySet()) {
                 errorReport.append("    * ").append(entry.getKey()).append(" -> ").append(entry.getValue().getMessage());
@@ -94,7 +96,8 @@ public class ExamplesTest {
         }
     }
 
-    private void runExample(File example, Map<String, Throwable> errors) {
+    private int runExample(File example, Map<String, Throwable> errors) {
+        int testsRan = 0;
         try {
             final File configFile = new File(example, CONFIG_FILE);
             this.mapPrinter.setConfiguration(configFile);
@@ -109,9 +112,11 @@ public class ExamplesTest {
                         final PJsonObject jsonSpec;
                         if (requestFile.getName().matches(OLD_API_REQUEST_DATA_FILE)) {
                             jsonSpec = OldAPIMapPrinterServlet.parseSpec(requestData, this.mapPrinter);
+                            continue;
                         } else {
                             jsonSpec = MapPrinter.parseSpec(requestData);
                         }
+                        testsRan++;
                         jsonSpec.getInternalObj().put("outputFormat", "png");
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -135,6 +140,8 @@ public class ExamplesTest {
         } catch (Throwable e) {
             errors.put(example.getName(), e);
         }
+
+        return testsRan;
     }
 
 
