@@ -58,7 +58,7 @@ public class ProcessorGraphNodeTest {
         TestProcessor processor = new TestProcessor();
         processor.getInputMapperBiMap().put(iMappingName, "i");
         processor.getInputMapperBiMap().put(bMappingName, "b");
-        DataTransferObject param = ProcessorGraphNode.populateInputParameter(processor, values);
+        DataTransferObject param = ProcessorUtils.populateInputParameter(processor, values);
 
         assertEquals(sVal, param.s);
         assertEquals(intVal.intValue(), param.i);
@@ -81,7 +81,7 @@ public class ProcessorGraphNodeTest {
         TestProcessor processor = new TestProcessor();
         processor.getInputMapperBiMap().put(iMappingName, "i");
         processor.getInputMapperBiMap().put(bMappingName, "b");
-        ProcessorGraphNode.populateInputParameter(processor, values);
+        ProcessorUtils.populateInputParameter(processor, values);
 
 
     }
@@ -100,7 +100,7 @@ public class ProcessorGraphNodeTest {
         processor.getOutputMapperBiMap().put("i", iMappingName);
         processor.getOutputMapperBiMap().put("b", bMappingName);
 
-        ProcessorGraphNode.writeProcessorOutputToValues(dto, processor.getOutputMapperBiMap(), values);
+        ProcessorUtils.writeProcessorOutputToValues(dto, processor.getOutputMapperBiMap(), values);
 
         assertEquals(dto.defaultI, values.getInteger("defaultI").intValue());
         assertEquals(dto.i, values.getInteger(iMappingName).intValue());

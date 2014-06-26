@@ -17,10 +17,11 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.processor;
+package org.mapfish.print.processor.http;
 
 import com.google.common.base.Predicate;
 import jsr166y.ForkJoinPool;
+import org.json.JSONException;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -28,13 +29,14 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
+import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.ProcessorDependencyGraph;
+import org.mapfish.print.processor.ProcessorGraphNode;
 import org.mapfish.print.processor.map.CreateMapProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.mock.http.client.MockClientHttpRequest;
-import org.springframework.test.context.ContextConfiguration;
 
 import java.net.URI;
 import java.util.List;
@@ -43,12 +45,7 @@ import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
 
-@ContextConfiguration(locations = {
-        "classpath:org/mapfish/print/processor/map-uri/add-custom-processor-application-context.xml"
-})
-public class MapUriProcessorTest extends AbstractMapfishSpringTest {
-
-    private static final String BASE_DIR = "map-uri";
+public abstract class AbstractHttpProcessorTest extends AbstractMapfishSpringTest {
     @Autowired
     private ConfigurationFactory configurationFactory;
     @Autowired
@@ -56,6 +53,10 @@ public class MapUriProcessorTest extends AbstractMapfishSpringTest {
 
     @Autowired
     private ForkJoinPool forkJoinPool;
+
+    protected abstract String baseDir();
+    protected abstract Class<? extends AbstractTestProcessor> testProcessorClass();
+    protected abstract Class<? extends HttpProcessor> classUnderTest();
 
     @Test
     public void testExecute() throws Exception {
@@ -72,41 +73,46 @@ public class MapUriProcessorTest extends AbstractMapfishSpringTest {
         });
 
         this.configurationFactory.setDoValidation(false);
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "/config.yaml"));
+        final Configuration config = configurationFactory.getConfig(getFile(baseDir() + "/config.yaml"));
         final Template template = config.getTemplate("main");
 
         ProcessorDependencyGraph graph = template.getProcessorGraph();
         List<ProcessorGraphNode> roots = graph.getRoots();
 
         assertEquals(1, roots.size());
-        final ProcessorGraphNode mapUriProcessor = roots.get(0);
-        assertEquals(MapUriProcessor.class, mapUriProcessor.getProcessor().getClass());
+        final ProcessorGraphNode processor = roots.get(0);
+        assertEquals(classUnderTest(), processor.getProcessor().getClass());
 
-        final Set dependencies = mapUriProcessor.getAllProcessors();
-        dependencies.remove(mapUriProcessor.getProcessor());
+        final Set dependencies = processor.getAllProcessors();
+        dependencies.remove(processor.getProcessor());
         assertEquals(1, dependencies.size());
-        assertEquals(TestProcessor.class, dependencies.iterator().next().getClass());
+        assertEquals(testProcessorClass(), dependencies.iterator().next().getClass());
 
         Values values = new Values();
         values.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, this.httpClientFactory);
+        addExtraValues(values);
         forkJoinPool.invoke(graph.createTask(values));
+    }
+
+    protected void addExtraValues(Values values) throws JSONException {
+        // default does nothing
     }
 
     @Test
     public void testCreateMapDependency() throws Exception {
 
         this.configurationFactory.setDoValidation(false);
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "/config-createmap.yaml"));
+        final Configuration config = configurationFactory.getConfig(getFile(baseDir() + "/config-createmap.yaml"));
         final Template template = config.getTemplate("main");
 
         ProcessorDependencyGraph graph = template.getProcessorGraph();
         List<ProcessorGraphNode> roots = graph.getRoots();
 
         assertEquals(1, roots.size());
-        final ProcessorGraphNode mapUriProcessor = roots.get(0);
-        assertEquals(MapUriProcessor.class, mapUriProcessor.getProcessor().getClass());
-        final Set dependencies = mapUriProcessor.getAllProcessors();
-        dependencies.remove(mapUriProcessor.getProcessor());
+        final ProcessorGraphNode compositeClientHttpRequestFactoryProcessor = roots.get(0);
+        assertEquals(classUnderTest(), compositeClientHttpRequestFactoryProcessor.getProcessor().getClass());
+        final Set dependencies = compositeClientHttpRequestFactoryProcessor.getAllProcessors();
+        dependencies.remove(compositeClientHttpRequestFactoryProcessor.getProcessor());
         assertEquals(1, dependencies.size());
         assertEquals(CreateMapProcessor.class, dependencies.iterator().next().getClass());
     }
@@ -115,12 +121,12 @@ public class MapUriProcessorTest extends AbstractMapfishSpringTest {
         public ClientHttpRequestFactory clientHttpRequestFactory;
     }
 
-    public static class TestProcessor extends AbstractProcessor<TestParam, Void> {
+    public static abstract class AbstractTestProcessor  extends AbstractProcessor<TestParam, Void> {
 
         /**
          * Constructor.
          */
-        protected TestProcessor() {
+        protected AbstractTestProcessor() {
             super(Void.class);
         }
 
@@ -135,21 +141,5 @@ public class MapUriProcessorTest extends AbstractMapfishSpringTest {
             return new TestParam();
         }
 
-        @Nullable
-        @Override
-        public Void execute(TestParam values, ExecutionContext context) throws Exception {
-            final URI uri = new URI("http://localhost:8080/path?query#fragment");
-            final ClientHttpRequest request = values.clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
-            final URI finalUri = request.getURI();
-
-            assertEquals("http", finalUri.getScheme());
-            assertEquals("127.0.0.1", finalUri.getHost());
-            assertEquals("/path", finalUri.getPath());
-            assertEquals(8080, finalUri.getPort());
-            assertEquals("query", finalUri.getQuery());
-            assertEquals("fragment", finalUri.getFragment());
-
-            return null;
-        }
     }
 }

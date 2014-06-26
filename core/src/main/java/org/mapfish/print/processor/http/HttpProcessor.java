@@ -17,44 +17,25 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.processor;
+package org.mapfish.print.processor.http;
 
+import org.mapfish.print.processor.Processor;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
-import javax.annotation.Nullable;
-
 /**
- * @author Jesse on 6/25/2014.
+ * A flag interface indicating that this type of processor affects the {@link org.springframework.http.client.ClientHttpRequestFactory}
+ * object.
+ *
+ * @author Jesse on 6/26/2014.
+ * @param <Param> the type of parameter object required when creating the wrapper object.
  */
-public abstract class AbstractClientHttpRequestFactoryProcessor
-        extends AbstractProcessor<ClientHttpFactoryProcessorParam, ClientHttpFactoryProcessorParam> {
-
-    /**
-     * Constructor.
-     */
-    protected AbstractClientHttpRequestFactoryProcessor() {
-        super(ClientHttpFactoryProcessorParam.class);
-    }
-
-    @Nullable
-    @Override
-    public final ClientHttpFactoryProcessorParam createInputParameter() {
-        return new ClientHttpFactoryProcessorParam();
-    }
-
-    @Nullable
-    @Override
-    public final ClientHttpFactoryProcessorParam execute(final ClientHttpFactoryProcessorParam values,
-                               final ExecutionContext context) throws Exception {
-        values.clientHttpRequestFactory = createFactoryWrapper(values.clientHttpRequestFactory);
-        return values;
-    }
+public interface HttpProcessor<Param> extends Processor<Param, ClientHttpFactoryProcessorParam> {
 
     /**
      * Create the {@link org.springframework.http.client.ClientHttpRequestFactory} to use.
      *
+     * @param param extra parameters required to create the updated request factory
      * @param requestFactory the basic request factory.  It should be unmodified and just wrapped with a proxy class.
      */
-    protected abstract ClientHttpRequestFactory createFactoryWrapper(ClientHttpRequestFactory requestFactory);
-
+    ClientHttpRequestFactory createFactoryWrapper(Param param, ClientHttpRequestFactory requestFactory);
 }

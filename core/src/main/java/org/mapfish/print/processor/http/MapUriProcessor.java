@@ -17,7 +17,7 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.processor;
+package org.mapfish.print.processor.http;
 
 import com.google.common.collect.Maps;
 import org.springframework.http.HttpMethod;
@@ -58,7 +58,8 @@ public final class MapUriProcessor extends AbstractClientHttpRequestFactoryProce
     }
 
     @Override
-    protected ClientHttpRequestFactory createFactoryWrapper(final ClientHttpRequestFactory requestFactory) {
+    public ClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
+                                                         final ClientHttpRequestFactory requestFactory) {
         return new AbstractClientHttpRequestFactoryWrapper(requestFactory) {
             @Override
             protected ClientHttpRequest createRequest(final URI uri,

@@ -31,9 +31,11 @@
     <bean id="!prepareTable" class="org.mapfish.print.processor.jasper.TableProcessor" scope="prototype" />
     <bean id="!prepareTableList" class="org.mapfish.print.processor.jasper.TableListProcessor" scope="prototype" />
     <bean id="!reportBuilder" class="org.mapfish.print.processor.jasper.JasperReportBuilder" scope="prototype" />
-    <bean id="!useHttpForHttps" class="org.mapfish.print.processor.UseHttpForHttpsProcessor" scope="prototype" />
-    <bean id="!mapUri" class="org.mapfish.print.processor.MapUriProcessor" scope="prototype" />
-    <bean id="!requestFactory" class="org.mapfish.print.processor.CompositeClientHttpRequestFactoryProcessor" scope="prototype" />
+    <bean id="!useHttpForHttps" class="org.mapfish.print.processor.http.UseHttpForHttpsProcessor" scope="prototype" />
+    <bean id="!mapUri" class="org.mapfish.print.processor.http.MapUriProcessor" scope="prototype" />
+    <bean id="!requestFactory" class="org.mapfish.print.processor.http.CompositeClientHttpRequestFactoryProcessor" scope="prototype" />
+    <bean id="!addHeaders" class="org.mapfish.print.processor.http.AddHeadersProcessor" scope="prototype" />
+    <bean id="!forwardHeaders" class="org.mapfish.print.processor.http.ForwardHeadersProcessor" scope="prototype" />
 
     <bean class="org.mapfish.print.processor.ProcessorDependency">
         <constructor-arg name="required" value="org.mapfish.print.processor.map.SetStyleProcessor" />
@@ -66,7 +68,7 @@
     </bean>
 
     <bean class="org.mapfish.print.processor.ProcessorDependency">
-        <constructor-arg name="required" value="org.mapfish.print.processor.UseHttpForHttpsProcessor" />
+        <constructor-arg name="required" value="org.mapfish.print.processor.http.UseHttpForHttpsProcessor" />
         <constructor-arg name="dependent" value="org.mapfish.print.processor.map.CreateMapProcessor"/>
         <constructor-arg name="commonInputs">
             <util:list>
@@ -75,7 +77,7 @@
         </constructor-arg>
     </bean>
     <bean class="org.mapfish.print.processor.ProcessorDependency">
-        <constructor-arg name="required" value="org.mapfish.print.processor.MapUriProcessor" />
+        <constructor-arg name="required" value="org.mapfish.print.processor.http.MapUriProcessor" />
         <constructor-arg name="dependent" value="org.mapfish.print.processor.map.CreateMapProcessor"/>
         <constructor-arg name="commonInputs">
             <util:list>
@@ -84,7 +86,25 @@
         </constructor-arg>
     </bean>
     <bean class="org.mapfish.print.processor.ProcessorDependency">
-        <constructor-arg name="required" value="org.mapfish.print.processor.CompositeClientHttpRequestFactoryProcessor" />
+        <constructor-arg name="required" value="org.mapfish.print.processor.http.CompositeClientHttpRequestFactoryProcessor" />
+        <constructor-arg name="dependent" value="org.mapfish.print.processor.map.CreateMapProcessor"/>
+        <constructor-arg name="commonInputs">
+            <util:list>
+                <value>clientHttpRequestFactory</value>
+            </util:list>
+        </constructor-arg>
+    </bean>
+    <bean class="org.mapfish.print.processor.ProcessorDependency">
+        <constructor-arg name="required" value="org.mapfish.print.processor.http.AddHeadersProcessor" />
+        <constructor-arg name="dependent" value="org.mapfish.print.processor.map.CreateMapProcessor"/>
+        <constructor-arg name="commonInputs">
+            <util:list>
+                <value>clientHttpRequestFactory</value>
+            </util:list>
+        </constructor-arg>
+    </bean>
+    <bean class="org.mapfish.print.processor.ProcessorDependency">
+        <constructor-arg name="required" value="org.mapfish.print.processor.http.ForwardHeadersProcessor" />
         <constructor-arg name="dependent" value="org.mapfish.print.processor.map.CreateMapProcessor"/>
         <constructor-arg name="commonInputs">
             <util:list>

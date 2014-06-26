@@ -17,20 +17,8 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.parser;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
-
 /**
- * Marks a Processor input parameter object setter method as being optional.  If there is no value for the property then no error
- * will be thrown when populating the method in
- * {@link org.mapfish.print.processor.ProcessorUtils#populateInputParameter(org.mapfish.print.processor.Processor,
- * org.mapfish.print.output.Values)}
- *
- * @author Jesse on 3/29/14.
+ * This package contains processors that affect the {@link org.springframework.http.client.ClientHttpRequestFactory}.
+ * @author Jesse on 6/26/2014.
  */
-@Target(value = ElementType.FIELD)
-@java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
-public @interface HasDefaultValue {
-}
+package org.mapfish.print.processor.http;

@@ -17,20 +17,12 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.parser;
+package org.mapfish.print.attribute;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
+public class HttpHeadersAttributeTest extends AbstractAttributeTest {
 
-/**
- * Marks a Processor input parameter object setter method as being optional.  If there is no value for the property then no error
- * will be thrown when populating the method in
- * {@link org.mapfish.print.processor.ProcessorUtils#populateInputParameter(org.mapfish.print.processor.Processor,
- * org.mapfish.print.output.Values)}
- *
- * @author Jesse on 3/29/14.
- */
-@Target(value = ElementType.FIELD)
-@java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
-public @interface HasDefaultValue {
+    @Override
+    protected Attribute createAttribute() {
+        return new HttpHeadersAttribute();
+    }
 }

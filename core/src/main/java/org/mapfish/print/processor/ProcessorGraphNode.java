@@ -29,25 +29,17 @@ import com.google.common.collect.Lists;
 import jsr166y.RecursiveTask;
 
 import org.mapfish.print.output.Values;
-import org.mapfish.print.parser.HasDefaultValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
-
-import static org.mapfish.print.parser.ParserUtils.getAllAttributes;
 
 /**
  * Represents one node in the Processor dependency graph ({@link ProcessorDependencyGraph}).
@@ -208,7 +200,7 @@ public final class ProcessorGraphNode<In, Out> {
             final String name = ProcessorGraphNode.class.getName() + "_compute():" + process.getClass();
             Timer.Context timerContext = registry.timer(name).time();
             try {
-                In inputParameter = populateInputParameter(process, values);
+                In inputParameter = ProcessorUtils.populateInputParameter(process, values);
 
                 Out output;
                 try {
@@ -227,7 +219,7 @@ public final class ProcessorGraphNode<In, Out> {
 
 
                 if (output != null) {
-                    writeProcessorOutputToValues(output, process.getOutputMapperBiMap(), values);
+                    ProcessorUtils.writeProcessorOutputToValues(output, process.getOutputMapperBiMap(), values);
                 }
             } finally {
                 this.execContext.finished(this.node);
@@ -271,66 +263,4 @@ public final class ProcessorGraphNode<In, Out> {
         }
     }
 
-
-    static <In, Out> In populateInputParameter(final Processor<In, Out> process, final Values values) {
-        In inputObject = process.createInputParameter();
-        if (inputObject != null) {
-            Map<String, String> inputMapper = process.getInputMapperBiMap();
-            if (inputMapper == null) {
-                inputMapper = Collections.emptyMap();
-            } else {
-                inputMapper = process.getInputMapperBiMap().inverse();
-            }
-
-            Collection<Field> fields = getAllAttributes(inputObject.getClass());
-            for (Field field : fields) {
-                String name = inputMapper.get(field.getName());
-                if (name == null) {
-                    name = field.getName();
-                }
-                Object value = values.getObject(name, Object.class);
-                if (value != null) {
-                    try {
-                        field.set(inputObject, value);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-                } else {
-                    if (field.getAnnotation(HasDefaultValue.class) == null) {
-                        throw new NoSuchElementException(name + " is a required property for " + process +
-                                                         " and therefore must be defined in the Request Data or be an output of one" +
-                                                         " of the other processors.");
-                    }
-                }
-            }
-
-        }
-        return inputObject;
-    }
-
-    static void writeProcessorOutputToValues(final Object output, final BiMap<String, String> outputMapper,
-                                             final Values values) {
-        Map<String, String> mapper = outputMapper;
-        if (outputMapper == null) {
-            mapper = Collections.emptyMap();
-        }
-
-        final Collection<Field> fields = getAllAttributes(output.getClass());
-        for (Field field : fields) {
-            String name = mapper.get(field.getName());
-            if (name == null) {
-                name = field.getName();
-            }
-            try {
-                final Object value = field.get(output);
-                if (value != null) {
-                    values.put(name, value);
-                } else {
-                    values.remove(name);
-                }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
 }
