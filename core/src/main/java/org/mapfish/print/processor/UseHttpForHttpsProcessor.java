@@ -40,10 +40,10 @@ import javax.annotation.Nonnull;
  * @author Jesse on 6/25/2014.
  */
 public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFactoryProcessor {
-    static final int HTTPS_STANDARD_PORT = 443;
-    static final int HTTP_STANDARD_PORT = 80;
-    static final int JAVA_HTTPS_STANDARD_PORT = 8443;
-    static final int JAVA_HTTP_STANDARD_PORT = 8080;
+    private static final int HTTPS_STANDARD_PORT = 443;
+    private static final int HTTP_STANDARD_PORT = 80;
+    private static final int JAVA_HTTPS_STANDARD_PORT = 8443;
+    private static final int JAVA_HTTP_STANDARD_PORT = 8080;
     private static final Pattern HTTP_AUTHORITY_PORT_EXTRACTOR = Pattern.compile("(.*@)?.*:(\\d+)");
     private static final Pattern HTTP_AUTHORITY_HOST_EXTRACTOR = Pattern.compile("(.*@)?([^:]*)(:\\d+)?");
     private Map<Integer, Integer> portMapping = Maps.newHashMap();

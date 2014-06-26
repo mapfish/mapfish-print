@@ -126,24 +126,28 @@ public final class PMultiArray extends PElement implements PArray {
     }
     @Override
     public int getInt(final int i) {
-        return (Integer) get(i);
+        return getNumber(i).intValue();
     }
 
     @Override
     public float getFloat(final int i) {
-        return (Float) get(i);
+        return getNumber(i).floatValue();
 
     }
 
     @Override
     public double getDouble(final int i) {
-        return (Double) get(i);
+        return getNumber(i).doubleValue();
 
+    }
+
+    private Number getNumber(final int i) {
+        return (Number) get(i);
     }
 
     @Override
     public String getString(final int i) {
-        return (String) get(i);
+        return get(i).toString();
 
     }
 
