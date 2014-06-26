@@ -32,14 +32,13 @@ import ar.com.fdvs.dj.domain.constants.VerticalAlign;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
-
 import org.mapfish.print.attribute.TableListAttribute.TableListAttributeValue;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.HasConfiguration;
 import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.AbstractProcessor;
-import org.mapfish.print.wrapper.json.PJsonArray;
+import org.mapfish.print.wrapper.PArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -178,14 +177,14 @@ public class TableListProcessor extends AbstractProcessor<TableListProcessor.Inp
 
     private void createColumnDataSource(final TableListAttributeValue jsonTable, final List<Values> tableList) {
         final String[] jsonColumns = jsonTable.columns;
-        final PJsonArray[] jsonData = jsonTable.data;
+        final PArray[] jsonData = jsonTable.data;
         final List<Map<String, ?>> table = new ArrayList<Map<String, ?>>();
 
         Map<String, Object> tableValues = new HashMap<String, Object>();
         tableValues.put(COLUMN_NAME, jsonTable.id);
         tableValues.put(COLUMN_DISPLAYNAME, jsonTable.getDisplayName());
 
-        for (PJsonArray jsonRow : jsonData) {
+        for (PArray jsonRow : jsonData) {
             final Map<String, String> row = new HashMap<String, String>();
             for (int j = 0; j < jsonRow.size(); j++) {
                 row.put(jsonColumns[j], jsonRow.getString(j));

@@ -32,6 +32,7 @@ import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
 import org.mapfish.print.processor.jasper.MapSubReport;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.w3c.dom.Document;
 
 import java.awt.Dimension;
@@ -101,7 +102,6 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         super(Output.class);
     }
 
-
     @Override
     public Input createInputParameter() {
         return new Input();
@@ -111,7 +111,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
     public Output execute(final Input param, final ExecutionContext context) throws Exception {
         checkCancelState(context);
         MapAttribute.MapAttributeValues mapValues = param.map;
-        final List<URI> graphics = createLayerGraphics(param.tempTaskDirectory,
+        final List<URI> graphics = createLayerGraphics(param.tempTaskDirectory, param.clientHttpRequestFactory,
                 mapValues, context);
         checkCancelState(context);
         final URI mapSubReport = createMapSubReport(param.tempTaskDirectory,
@@ -139,7 +139,9 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
     }
 
     private List<URI> createLayerGraphics(final File printDirectory,
-            final MapAttribute.MapAttributeValues mapValues, final ExecutionContext context)
+                                          final ClientHttpRequestFactory clientHttpRequestFactory,
+                                          final MapAttribute.MapAttributeValues mapValues,
+                                          final ExecutionContext context)
             throws Exception {
         final Dimension mapSize = mapValues.getMapSize();
         final double dpi = mapValues.getDpi();
@@ -176,7 +178,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 final SVGGraphics2D graphics2D = getSvgGraphics(mapSize);
 
                 try {
-                    layer.render(graphics2D, transformer, dpi, isFirstLayer);
+                    layer.render(graphics2D, clientHttpRequestFactory, transformer, dpi, isFirstLayer);
                     
                     path = new File(printDirectory, mapKey + "_layer_" + i + ".svg");
                     saveSvgFile(graphics2D, path);
@@ -189,7 +191,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 final Graphics2D graphics2D = bufferedImage.createGraphics();
                 
                 try {
-                    layer.render(graphics2D, transformer, dpi, isFirstLayer);
+                    layer.render(graphics2D, clientHttpRequestFactory, transformer, dpi, isFirstLayer);
                     
                     path = new File(printDirectory, mapKey + "_layer_" + i + ".tiff");
                     ImageIO.write(bufferedImage, "tiff", path);
@@ -256,6 +258,12 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
      * The Input object for processor.
      */
     public static final class Input {
+        /**
+         * A factory for making http requests.  This is added to the values by the framework and therefore
+         * does not need to be set in configuration
+         */
+        public ClientHttpRequestFactory clientHttpRequestFactory;
+
         /**
          * The required parameters for the map.
          */

@@ -21,31 +21,24 @@ package org.mapfish.print.map.tiled.wmts;
 
 import com.google.common.collect.Sets;
 import jsr166y.ForkJoinPool;
-import org.geotools.styling.Style;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
-import org.mapfish.print.map.style.StyleParser;
+import org.mapfish.print.map.geotools.AbstractGridCoverageLayerPlugin;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.Set;
 import javax.annotation.Nonnull;
 
-import static org.mapfish.print.Constants.RASTER_STYLE_NAME;
-
 /**
  * The Plugin for creating WMTS layers.
  *
-* @author Jesse on 4/3/14.
-*/
-public final class WmtsLayerParserPlugin implements MapLayerFactoryPlugin<WMTSLayerParam> {
-    @Autowired
-    private StyleParser parser;
+ * @author Jesse on 4/3/14.
+ */
+public final class WmtsLayerParserPlugin extends AbstractGridCoverageLayerPlugin implements MapLayerFactoryPlugin<WMTSLayerParam> {
     @Autowired
     private ForkJoinPool forkJoinPool;
-    @Autowired
-    private ClientHttpRequestFactory httpRequestFactory;
 
     private Set<String> typenames = Sets.newHashSet("wmts");
 
@@ -61,12 +54,11 @@ public final class WmtsLayerParserPlugin implements MapLayerFactoryPlugin<WMTSLa
 
     @Nonnull
     @Override
-    public MapLayer parse(@Nonnull final Template template, @Nonnull final WMTSLayerParam param) throws Throwable {
-
+    public MapLayer parse(@Nonnull final Template template,
+                          @Nonnull final WMTSLayerParam param) throws Throwable {
         String styleRef = param.rasterStyle;
-        Style style = template.getStyle(styleRef)
-                .or(this.parser.loadStyle(template.getConfiguration(), styleRef))
-                .or(template.getConfiguration().getDefaultStyle(RASTER_STYLE_NAME));
-        return new WMTSLayer(this.forkJoinPool, style, param, this.httpRequestFactory);
+        return new WMTSLayer(this.forkJoinPool,
+                super.<GridCoverage2D>createStyleSupplier(template, styleRef),
+                param);
     }
 }

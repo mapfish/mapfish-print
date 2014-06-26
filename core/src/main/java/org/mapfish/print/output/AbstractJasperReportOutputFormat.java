@@ -21,7 +21,6 @@ package org.mapfish.print.output;
 
 
 import com.google.common.annotations.VisibleForTesting;
-
 import jsr166y.ForkJoinPool;
 import jsr166y.ForkJoinTask;
 import net.sf.jasperreports.engine.JRDataSource;
@@ -30,7 +29,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
-
+import org.json.JSONException;
 import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
@@ -41,6 +40,7 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,6 +67,10 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
 
     @Autowired
     private WorkingDirectories workingDirectories;
+
+    @Autowired
+    private ClientHttpRequestFactory httpRequestFactory;
+
 
     /**
      * Export the report to the output stream.
@@ -100,12 +104,15 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
      * @param configDir     the directory that contains the configuration, used for resolving resources like images etc...
      * @param taskDirectory the temporary directory for this printing task.
      * @return a jasper print object which can be used to generate a PDF or other outputs.
-     * @throws ExecutionException 
+     * @throws ExecutionException
+     *
+     * // CSOFF: RedundantThrows
      */
     @VisibleForTesting
     protected final JasperPrint getJasperPrint(final PJsonObject requestData, final Configuration config,
                                                final File configDir, final File taskDirectory)
-            throws JRException, SQLException, ExecutionException {
+            throws JRException, SQLException, ExecutionException, JSONException {
+        // CSON: RedundantThrows
         final String templateName = requestData.getString(Constants.JSON_LAYOUT_KEY);
 
         final Template template = config.getTemplate(templateName);
@@ -114,7 +121,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             throw new IllegalArgumentException("\nThere is no template with the name: " + templateName +
             ".\nAvailable templates: " + possibleTemplates);
         }
-        final Values values = new Values(requestData, template, this.parser, taskDirectory);
+        final Values values = new Values(requestData, template, this.parser, taskDirectory, this.httpRequestFactory);
 
         final File jasperTemplateFile = new File(configDir, template.getReportTemplate());
         final File jasperTemplateBuild = this.workingDirectories.getBuildFileFor(config, jasperTemplateFile,

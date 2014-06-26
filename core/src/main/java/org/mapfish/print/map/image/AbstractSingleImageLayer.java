@@ -30,6 +30,8 @@ import org.geotools.styling.Style;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapTransformer;
 import org.mapfish.print.map.geotools.AbstractGeotoolsLayer;
+import org.mapfish.print.map.geotools.StyleSupplier;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -42,29 +44,34 @@ import java.util.concurrent.ExecutorService;
  */
 public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
 
-    private final Style rasterStyle;
+    private final StyleSupplier<GridCoverage2D> styleSupplier;
     private volatile GridCoverageLayer layer;
 
     /**
      * Constructor.
      *
      * @param executorService the thread pool for doing the rendering.
-     * @param rasterStyle     the style to use when drawing the constructed grid coverage on the map.
+     * @param styleSupplier     the style to use when drawing the constructed grid coverage on the map.
      */
-    protected AbstractSingleImageLayer(final ExecutorService executorService, final Style rasterStyle) {
+    protected AbstractSingleImageLayer(final ExecutorService executorService,
+                                       final StyleSupplier<GridCoverage2D> styleSupplier) {
         super(executorService);
-        this.rasterStyle = rasterStyle;
+        this.styleSupplier = styleSupplier;
     }
 
     @Override
-    protected final List<? extends Layer> getLayers(final MapBounds bounds, final Rectangle paintArea, final double dpi,
-                                                    final MapTransformer transformer, final boolean isFirstLayer) {
+    protected final List<? extends Layer> getLayers(final ClientHttpRequestFactory httpRequestFactory,
+                                                    final MapBounds bounds,
+                                                    final Rectangle paintArea,
+                                                    final double dpi,
+                                                    final MapTransformer transformer,
+                                                    final boolean isFirstLayer) {
         if (this.layer == null) {
             synchronized (this) {
                 if (this.layer == null) {
                     BufferedImage image;
                     try {
-                        image = loadImage(bounds, paintArea, dpi, isFirstLayer);
+                        image = loadImage(httpRequestFactory, bounds, paintArea, dpi, isFirstLayer);
                     } catch (RuntimeException throwable) {
                         throw throwable;
                     } catch (Error e) {
@@ -80,7 +87,8 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
                     gridEnvelope.setEnvelope(mapEnvelope.getMinX(), mapEnvelope.getMinY(), mapEnvelope.getMaxX(), mapEnvelope.getMaxY());
                     final GridCoverage2D gridCoverage2D = factory.create(getClass().getSimpleName(), image, gridEnvelope, null, null,
                             null);
-                    this.layer = new GridCoverageLayer(gridCoverage2D, this.rasterStyle);
+                    Style style = this.styleSupplier.load(httpRequestFactory, gridCoverage2D);
+                    this.layer = new GridCoverageLayer(gridCoverage2D, style);
                 }
             }
         }
@@ -90,11 +98,15 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
     /**
      * Load the image at the requested size for the provided map bounds.
      *
+     * @param requestFactory the factory to use for making http requests
      * @param bounds       the map bounds
      * @param imageSize    the area to paint
      * @param dpi          the DPI to render at
      * @param isFirstLayer true indicates this layer is the first layer in the map (the first layer drawn, ie the base layer)
      */
-    protected abstract BufferedImage loadImage(final MapBounds bounds, final Rectangle imageSize, double dpi,
-                                               final boolean isFirstLayer) throws Throwable;
+    protected abstract BufferedImage loadImage(ClientHttpRequestFactory requestFactory,
+                                               MapBounds bounds,
+                                               Rectangle imageSize,
+                                               double dpi,
+                                               boolean isFirstLayer) throws Throwable;
 }

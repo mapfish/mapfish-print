@@ -26,6 +26,7 @@ import org.mapfish.print.parser.HasDefaultValue;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 
 /**
  * Layer parameters for WMS layer.
@@ -75,8 +76,10 @@ public final class WmsLayerParam extends AbstractTiledLayerParams {
         getBaseUri();
 
         Assert.isTrue(this.layers.length > 0, "There must be at least one layer defined for a WMS request to make sense");
+
         Assert.isTrue(this.styles == null || this.layers.length == this.styles.length,
-                "If styles are defined then there must be one for each layer");
+                "If styles are defined then there must be one for each layer.  Number of layers: " + this.layers.length + "\nStyles: "
+                + Arrays.toString(this.styles));
 
         if (!this.imageFormat.startsWith("image/")) {
             this.imageFormat = "image/" + this.imageFormat;

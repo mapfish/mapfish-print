@@ -19,12 +19,9 @@
 
 package org.mapfish.print.processor.map;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-
+import com.google.common.base.Predicate;
+import com.google.common.collect.Multimap;
+import com.google.common.io.Files;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -40,9 +37,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Multimap;
-import com.google.common.io.Files;
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Basic test of the Map processor.
@@ -109,7 +108,7 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSTest extends AbstractMapfi
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, parser, getTaskDirectory());
+        Values values = new Values(requestData, template, parser, getTaskDirectory(), this.requestFactory);
         template.getProcessorGraph().createTask(values).invoke();
 
         @SuppressWarnings("unchecked")

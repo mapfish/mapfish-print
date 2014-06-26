@@ -19,11 +19,8 @@
 
 package org.mapfish.print.map.geotools;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Sets;
-
 import jsr166y.ForkJoinPool;
-
 import org.geotools.data.FeatureSource;
 import org.geotools.styling.Style;
 import org.mapfish.print.config.Template;
@@ -33,8 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.Set;
-
-import javax.annotation.Nullable;
 
 /**
  * Abstract class for FeatureSource based {@link org.mapfish.print.map.MapLayerFactoryPlugin} objects.
@@ -53,11 +48,6 @@ public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFac
      */
     @Autowired
     protected ForkJoinPool forkJoinPool;
-    /**
-     * A http request factory for making http requests.
-     */
-    @Autowired
-    protected ClientHttpRequestFactory httpRequestFactory;
 
     private final Set<String> typeNames;
 
@@ -80,27 +70,29 @@ public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFac
     /**
      * Create a function that will create the style on demand.  This is called later in a separate thread so any blocking calls
      * will not block the parsing of the layer attributes.
-     *
-     * @param template    the template for this map
+     *  @param template    the template for this map
      * @param styleString a string that identifies a style.
      */
-    protected final Function<FeatureSource, Style> createStyleFunction(final Template template, final String styleString) {
-        return new Function<FeatureSource, Style>() {
-            @Nullable
+    protected final StyleSupplier<FeatureSource> createStyleFunction(final Template template,
+                                                                       final String styleString) {
+        return new StyleSupplier<FeatureSource>() {
             @Override
-            public Style apply(@Nullable final FeatureSource featureCollection) {
-                if (featureCollection == null) {
+            public Style load(final ClientHttpRequestFactory requestFactory,
+                              final FeatureSource featureSource) {
+                if (featureSource == null) {
                     throw new IllegalArgumentException("Feature source cannot be null");
                 }
 
-                String geomType = featureCollection.getSchema().getGeometryDescriptor().getType().getBinding().getSimpleName();
+                String geomType = featureSource.getSchema().getGeometryDescriptor().getType().getBinding().getSimpleName();
                 String styleRef = styleString;
 
                 if (styleRef == null) {
                     styleRef = geomType;
                 }
                 return template.getStyle(styleRef)
-                        .or(AbstractFeatureSourceLayerPlugin.this.parser.loadStyle(template.getConfiguration(), styleRef))
+                        .or(AbstractFeatureSourceLayerPlugin.this.parser.loadStyle(
+                                template.getConfiguration(),
+                                requestFactory, styleRef))
                         .or(template.getConfiguration().getDefaultStyle(geomType));
             }
         };

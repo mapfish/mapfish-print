@@ -21,11 +21,12 @@ package org.mapfish.print.map.tiled.osm;
 
 import com.google.common.collect.Multimap;
 import jsr166y.ForkJoinPool;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.styling.Style;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.map.Scale;
+import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.tiled.AbstractTiledLayer;
 import org.mapfish.print.map.tiled.TileCacheInformation;
 import org.springframework.http.HttpMethod;
@@ -46,21 +47,19 @@ import javax.annotation.Nonnull;
  */
 public final class OsmLayer extends AbstractTiledLayer {
     private final OsmLayerParam param;
-    private final ClientHttpRequestFactory requestFactory;
 
     /**
      * Constructor.
      *
-     * @param forkJoinPool   the thread pool for doing the rendering.
-     * @param rasterStyle    the style to use when drawing the constructed grid coverage on the map.
-     * @param param          the information needed to create OSM requests.
-     * @param requestFactory A factory for making http request objects.
+     * @param forkJoinPool  the thread pool for doing the rendering.
+     * @param styleSupplier strategy for loading the style for this layer
+     * @param param         the information needed to create OSM requests.
      */
-    public OsmLayer(final ForkJoinPool forkJoinPool, final Style rasterStyle, final OsmLayerParam param,
-                    final ClientHttpRequestFactory requestFactory) {
-        super(forkJoinPool, rasterStyle);
+    public OsmLayer(final ForkJoinPool forkJoinPool,
+                    final StyleSupplier<GridCoverage2D> styleSupplier,
+                    final OsmLayerParam param) {
+        super(forkJoinPool, styleSupplier);
         this.param = param;
-        this.requestFactory = requestFactory;
     }
 
     @Override
@@ -96,8 +95,12 @@ public final class OsmLayer extends AbstractTiledLayer {
 
         @Nonnull
         @Override
-        public ClientHttpRequest getTileRequest(final URI commonUri, final ReferencedEnvelope tileBounds,
-                                                final Dimension tileSizeOnScreen, final int column, final int row)
+        public ClientHttpRequest getTileRequest(final ClientHttpRequestFactory httpRequestFactory,
+                                                final URI commonUri,
+                                                final ReferencedEnvelope tileBounds,
+                                                final Dimension tileSizeOnScreen,
+                                                final int column,
+                                                final int row)
                 throws IOException, URISyntaxException {
 
             StringBuilder path = new StringBuilder();
@@ -111,7 +114,7 @@ public final class OsmLayer extends AbstractTiledLayer {
 
 
             final URI uri = URIUtils.setPath(commonUri, commonUri.getPath() + path.toString());
-            return OsmLayer.this.requestFactory.createRequest(uri, HttpMethod.GET);
+            return httpRequestFactory.createRequest(uri, HttpMethod.GET);
         }
 
         @Override

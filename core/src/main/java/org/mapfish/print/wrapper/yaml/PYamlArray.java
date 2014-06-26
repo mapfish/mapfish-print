@@ -102,4 +102,8 @@ public class PYamlArray extends PElement implements PArray {
         return (Boolean) this.array.get(i);
     }
 
+    @Override
+    public final Object get(final int i) {
+        return this.array.get(i);
+    }
 }

@@ -21,7 +21,7 @@ package org.mapfish.print.attribute;
 
 import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.HasDefaultValue;
-import org.mapfish.print.wrapper.json.PJsonArray;
+import org.mapfish.print.wrapper.PArray;
 
 import java.util.List;
 
@@ -60,7 +60,7 @@ public final class TableListAttribute extends ArrayReflectiveAttribute<TableList
         /**
          * The row data for each table.
          */
-        public PJsonArray[] data;
+        public PArray[] data;
 
         public String getDisplayName() {
             return this.displayName == null ? this.id : this.displayName;

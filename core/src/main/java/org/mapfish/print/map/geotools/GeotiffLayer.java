@@ -21,17 +21,14 @@ package org.mapfish.print.map.geotools;
 
 import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
-
 import jsr166y.ForkJoinPool;
-
+import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.geotools.styling.Style;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
-import org.mapfish.print.map.style.StyleParser;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -42,10 +39,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-
 import javax.annotation.Nonnull;
-
-import static org.mapfish.print.Constants.RASTER_STYLE_NAME;
 
 /**
  * Reads a Geotiff file from a URL.
@@ -61,16 +55,16 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
      * @param style           style to use for rendering the data.
      * @param executorService the thread pool for doing the rendering.
      */
-    public GeotiffLayer(final GeoTiffReader reader, final Style style, final ExecutorService executorService) {
+    public GeotiffLayer(final GeoTiffReader reader,
+                        final StyleSupplier<AbstractGridCoverage2DReader> style,
+                        final ExecutorService executorService) {
         super(reader, style, executorService);
     }
 
     /**
      * Parser for creating {@link org.mapfish.print.map.geotools.GeotiffLayer} layers from request data.
      */
-    public static final class Plugin implements MapLayerFactoryPlugin<GeotiffParam> {
-        @Autowired
-        private StyleParser parser;
+    public static final class Plugin extends AbstractGridCoverageLayerPlugin implements MapLayerFactoryPlugin<GeotiffParam> {
         @Autowired
         private ForkJoinPool forkJoinPool;
 
@@ -88,15 +82,15 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
 
         @Nonnull
         @Override
-        public MapLayer parse(final Template template, @Nonnull final GeotiffParam param) throws IOException {
+        public MapLayer parse(final Template template,
+                              @Nonnull final GeotiffParam param) throws IOException {
             GeoTiffReader geotiffReader = getGeotiffReader(template, param.url);
 
             String styleRef = param.style;
-            Style style = template.getStyle(styleRef)
-                    .or(this.parser.loadStyle(template.getConfiguration(), styleRef))
-                    .or(template.getConfiguration().getDefaultStyle(RASTER_STYLE_NAME));
 
-            return new GeotiffLayer(geotiffReader, style, this.forkJoinPool);
+            return new GeotiffLayer(geotiffReader,
+                    super.<AbstractGridCoverage2DReader>createStyleSupplier(template, styleRef),
+                    this.forkJoinPool);
         }
 
         private GeoTiffReader getGeotiffReader(final Template template, final String geotiffUrl) throws IOException {

@@ -17,21 +17,20 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.attribute;
+package org.mapfish.print.processor;
 
-import org.mapfish.print.wrapper.PObject;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 /**
- * Used for attribute that can have defaults specified in the YAML config file.
- * @author sbrunner
+ * The parameter for a processors that have {@link org.springframework.http.client.ClientHttpRequestFactory}.
  *
- * @param <Value>
- */
-public abstract class AttributeWithDefaultConfig<Value> extends ReflectiveAttribute<Value> {
-
+* @author Jesse on 6/25/2014.
+ * CSOFF: VisibilityModifier
+*/
+public class ClientHttpFactoryProcessorParam {
     /**
-     * The YAML config default values.
-     * @return the default values
+     * The object for creating requests.  There should always be an instance in the values object
+     * so it does not need to be created.
      */
-    public abstract PObject getDefaultValues();
+    public ClientHttpRequestFactory clientHttpRequestFactory;
 }

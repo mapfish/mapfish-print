@@ -1,0 +1,11 @@
+
+templates:
+  main: !template
+    processors:
+      - !useHttpForHttpsTestProcessor {}
+      - !useHttpForHttps
+        portMapping:
+          8443: 9999
+        hosts:
+          - /.+\.com/
+          - localhost

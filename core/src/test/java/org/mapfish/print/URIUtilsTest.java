@@ -156,6 +156,9 @@ public class URIUtilsTest {
         initialUri = new URI("http://center_wmts_fixedscale.com:1234/wmts");
         assertEquals("http://center_wmts_fixedscale.com:1234/wmts?a=1&b=2&b=3", URIUtils.setQueryParams(initialUri, params).toString());
 
+        initialUri = new URI("http://user:pass@center_wmts_fixedscale.com:1234/wmts");
+        assertEquals("http://user:pass@center_wmts_fixedscale.com:1234/wmts?a=1&b=2&b=3", URIUtils.setQueryParams(initialUri, params).toString());
+
         initialUri = new URI("http","center_wmts_fixedscale.com:1234", "/wmts", "a=3", "fragment");
         assertEquals("http://center_wmts_fixedscale.com:1234/wmts?a=1&b=2&b=3#fragment", URIUtils.setQueryParams(initialUri, params).toString());
 

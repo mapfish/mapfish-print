@@ -20,6 +20,7 @@
 package org.mapfish.print.attribute.map;
 
 import com.google.common.base.Optional;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.awt.Graphics2D;
 
@@ -45,13 +46,16 @@ public interface MapLayer {
 
     /**
      * Render the layer to the graphics2D object.
-     *
-     * @param graphics2D   the graphics object.
+     *  @param graphics2D   the graphics object.
+     * @param clientHttpRequestFactory The factory to use for making http requests.
      * @param transformer  the map transformer containing the map bounds and size
      * @param dpi          the DPI to render at
      * @param isFirstLayer true indicates this layer is the first layer in the map (the first layer drawn, ie the base layer)
      */
-    void render(Graphics2D graphics2D, MapTransformer transformer, double dpi,
+    void render(Graphics2D graphics2D,
+                ClientHttpRequestFactory clientHttpRequestFactory,
+                MapTransformer transformer,
+                double dpi,
                 final boolean isFirstLayer);
 
     /**

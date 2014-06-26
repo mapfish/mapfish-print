@@ -499,7 +499,13 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
         }
     }
 
-    private PJsonObject parseSpec(final String requestDataRaw, final MapPrinter mapPrinter) {
+    /**
+     * Parse request and convert it to the new API.
+     *
+     * @param requestDataRaw the json in string form with no processing done
+     * @param mapPrinter the mapPrinter to use for printing
+     */
+    public static PJsonObject parseSpec(final String requestDataRaw, final MapPrinter mapPrinter) {
         try {
             String requestData = requestDataRaw;
             if (requestData.startsWith("spec=")) {

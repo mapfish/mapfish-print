@@ -21,6 +21,7 @@ package org.mapfish.print.map.tiled.wmts;
 
 /**
  * The types of encoding to use when making http requests.
+ *
  * @author Jesse on 4/3/14.
  */
 public enum RequestEncoding {

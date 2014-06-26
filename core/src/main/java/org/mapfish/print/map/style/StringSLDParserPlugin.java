@@ -21,11 +21,12 @@ package org.mapfish.print.map.style;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteSource;
-
 import org.mapfish.print.config.Configuration;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 /**
  * Style parser plugin that loads styles from a file containing SLD xml.
@@ -38,7 +39,9 @@ import java.util.List;
 public final class StringSLDParserPlugin extends AbstractSLDParserPlugin {
 
     @Override
-    protected List<ByteSource> getInputStreamSuppliers(final Configuration configuration, final String styleString) {
+    protected List<ByteSource> getInputStreamSuppliers(@Nonnull final Configuration configuration,
+                                                       @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
+                                                       final String styleString) {
         List<ByteSource> options = Lists.newArrayList();
         try {
             options.add(ByteSource.wrap(styleString.getBytes("UTF8")));

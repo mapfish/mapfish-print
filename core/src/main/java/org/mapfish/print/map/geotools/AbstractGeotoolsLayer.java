@@ -27,6 +27,7 @@ import org.geotools.renderer.lite.StreamingRenderer;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.attribute.map.MapTransformer;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -44,8 +45,8 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
 
     /**
      * Constructor.
+     *  @param executorService the thread pool for doing the rendering.
      *
-     * @param executorService the thread pool for doing the rendering.
      */
     protected AbstractGeotoolsLayer(final ExecutorService executorService) {
         this.executorService = executorService;
@@ -57,7 +58,10 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
     }
 
     @Override
-    public final void render(final Graphics2D graphics2D, final MapTransformer transformer, final double dpi,
+    public final void render(final Graphics2D graphics2D,
+                             final ClientHttpRequestFactory clientHttpRequestFactory,
+                             final MapTransformer transformer,
+                             final double dpi,
                              final boolean isFirstLayer) {
         Rectangle paintArea = new Rectangle(transformer.getMapSize());
         MapBounds bounds = transformer.getBounds();
@@ -70,7 +74,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
             graphics2D.setTransform(transformer.getTransform());
         }
         
-        List<? extends Layer> layers = getLayers(bounds, paintArea, dpi, transformer, isFirstLayer);
+        List<? extends Layer> layers = getLayers(clientHttpRequestFactory, bounds, paintArea, dpi, transformer, isFirstLayer);
 
         MapContent content = new MapContent();
         try {
@@ -112,14 +116,19 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
     /**
      * Get the {@link org.geotools.data.DataStore} object that contains the data for this layer.
      *
+     * @param httpRequestFactory the factory for making http requests
      * @param bounds the map bounds
      * @param paintArea the area to paint
      * @param dpi the DPI to render at
      * @param transformer the map transformer
      * @param isFirstLayer true indicates this layer is the first layer in the map (the first layer drawn, ie the base layer)
      */
-    protected abstract List<? extends Layer> getLayers(MapBounds bounds, Rectangle paintArea, double dpi,
-                                                       MapTransformer transformer, final boolean isFirstLayer);
+    protected abstract List<? extends Layer> getLayers(ClientHttpRequestFactory httpRequestFactory,
+                                                       MapBounds bounds,
+                                                       Rectangle paintArea,
+                                                       double dpi,
+                                                       MapTransformer transformer,
+                                                       final boolean isFirstLayer);
     
     //CHECKSTYLE:OFF: DesignForExtension - Set a default value for all sub classes.
     @Override

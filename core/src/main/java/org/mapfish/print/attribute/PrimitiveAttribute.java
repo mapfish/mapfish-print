@@ -48,6 +48,7 @@ import java.util.List;
 public abstract class PrimitiveAttribute<Value> implements Attribute {
     private Class<Value> valueClass;
     private LinkedHashMap<String, ?> clientOptions;
+    private Value defaultValue;
 
     /**
      * Constructor.
@@ -60,6 +61,14 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
 
     public final Class<Value> getValueClass() {
         return this.valueClass;
+    }
+
+    public final void setDefault(final Value value) {
+        this.defaultValue = value;
+    }
+
+    public final Value getDefault() {
+        return this.defaultValue;
     }
 
     @Override

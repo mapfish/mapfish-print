@@ -21,9 +21,8 @@ package org.mapfish.print.attribute.map;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-
 import org.geotools.referencing.CRS;
-import org.mapfish.print.attribute.AttributeWithDefaultConfig;
+import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
@@ -34,7 +33,6 @@ import org.mapfish.print.parser.OneOf;
 import org.mapfish.print.parser.Requires;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PObject;
-import org.mapfish.print.wrapper.yaml.PYamlObject;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -44,21 +42,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import java.awt.Dimension;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 /**
  * The attributes for {@link org.mapfish.print.processor.map.CreateMapProcessor}.
  */
-public final class MapAttribute extends AttributeWithDefaultConfig<MapAttribute.MapAttributeValues> {
+public final class MapAttribute extends ReflectiveAttribute<MapAttribute.MapAttributeValues> {
 
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LoggerFactory.getLogger(MapAttribute.class);
-    /**
-     * The key in the config.yaml file of the set of defaults values for this map.
-     */
-    static final String DEFAULTS = "defaults";
     private static final double DEFAULT_SNAP_TOLERANCE = 0.05;
 
     @Autowired
@@ -70,8 +63,6 @@ public final class MapAttribute extends AttributeWithDefaultConfig<MapAttribute.
     private ZoomLevels zoomLevels;
     private double zoomSnapTolerance = DEFAULT_SNAP_TOLERANCE;
     private ZoomLevelSnapStrategy zoomLevelSnapStrategy;
-
-    private PYamlObject defaults = new PYamlObject(Collections.<String, Object>emptyMap(), "mapAttribute");
 
     private int width;
     private int height;
@@ -104,15 +95,6 @@ public final class MapAttribute extends AttributeWithDefaultConfig<MapAttribute.
 
     public void setZoomLevelSnapStrategy(final ZoomLevelSnapStrategy zoomLevelSnapStrategy) {
         this.zoomLevelSnapStrategy = zoomLevelSnapStrategy;
-    }
-
-    public void setDefaults(final Map<String, Object> defaults) {
-        this.defaults = new PYamlObject(defaults, "mapAttribute");
-    }
-
-    @Override
-    public PObject getDefaultValues() {
-        return this.defaults;
     }
 
     @Override

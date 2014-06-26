@@ -40,11 +40,12 @@ public class PMultiObject extends PAbstractObject {
 
     /**
      * Build the context name.
+     *
      * @param objs the objects
      * @return the global context name
      */
-    public static String getContect(final PObject[] objs) {
-        StringBuffer result = new StringBuffer("(");
+    public static String getContext(final PObject[] objs) {
+        StringBuilder result = new StringBuilder("(");
         boolean first = true;
         for (PObject obj : objs) {
             if (!first) {
@@ -63,7 +64,7 @@ public class PMultiObject extends PAbstractObject {
      * @param objs the possible elements
      */
     public PMultiObject(final PObject[] objs) {
-        super(null, getContect(objs));
+        super(null, getContext(objs));
         this.objs = objs;
     }
 
@@ -135,9 +136,9 @@ public class PMultiObject extends PAbstractObject {
             return null;
         }
         if (results.size() == 1) {
-            return results.get(1);
+            return results.get(0);
         }
-        return new PMultiObject(results.toArray(new PObject[0]));
+        return new PMultiObject(results.toArray(new PObject[results.size()]));
     }
 
     @Override
@@ -148,7 +149,7 @@ public class PMultiObject extends PAbstractObject {
                 return result;
             }
         }
-        return null;
+            return null;
     }
 
     @Override

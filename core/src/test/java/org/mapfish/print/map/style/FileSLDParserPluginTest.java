@@ -23,6 +23,7 @@ import com.google.common.base.Optional;
 import org.geotools.styling.Style;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -39,6 +40,8 @@ import static org.junit.Assert.assertTrue;
 public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
     @Autowired
     private FileSLDParserPlugin parser;
+    @Autowired
+    private TestHttpClientFactory clientHttpRequestFactory;
 
     @Test
     public void testParseStyle_SingleStyleRelativeToConfig() throws Throwable {
@@ -46,7 +49,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         Configuration config = new Configuration();
         config.setConfigurationFile(file);
 
-        final Optional<Style> styleOptional = this.parser.parseStyle(config, file.getName());
+        final Optional<Style> styleOptional = this.parser.parseStyle(config, clientHttpRequestFactory, file.getName());
         assertTrue (styleOptional.isPresent());
         assertTrue(styleOptional.get() instanceof Style);
         assertEquals(1, styleOptional.get().featureTypeStyles().size());
@@ -61,7 +64,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         Configuration config = new Configuration();
         config.setConfigurationFile(file);
 
-        final Optional<Style> styleOptional = this.parser.parseStyle(config, file.getName()+"##1");
+        final Optional<Style> styleOptional = this.parser.parseStyle(config, clientHttpRequestFactory, file.getName()+"##1");
         assertTrue (styleOptional.isPresent());
         assertTrue(styleOptional.get() instanceof Style);
         assertEquals(1, styleOptional.get().featureTypeStyles().size());
@@ -76,7 +79,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         Configuration config = new Configuration();
         config.setConfigurationFile(file);
 
-        final Optional<Style> styleOptional = this.parser.parseStyle(config, file.getAbsolutePath());
+        final Optional<Style> styleOptional = this.parser.parseStyle(config, clientHttpRequestFactory, file.getAbsolutePath());
         assertTrue (styleOptional.isPresent());
         assertTrue(styleOptional.get() instanceof Style);
         assertEquals(1, styleOptional.get().featureTypeStyles().size());
@@ -91,7 +94,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         Configuration config = new Configuration();
         config.setConfigurationFile(file);
 
-        this.parser.parseStyle(config, file.getName());
+        this.parser.parseStyle(config, clientHttpRequestFactory, file.getName());
     }
 
     @Test
@@ -100,7 +103,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         Configuration config = new Configuration();
         config.setConfigurationFile(file);
 
-        Optional<Style> styleOptional = this.parser.parseStyle(config, file.getName()+"##1");
+        Optional<Style> styleOptional = this.parser.parseStyle(config, clientHttpRequestFactory, file.getName()+"##1");
         assertTrue (styleOptional.isPresent());
         assertTrue(styleOptional.get() instanceof Style);
         assertEquals(1, styleOptional.get().featureTypeStyles().size());
@@ -109,7 +112,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         assertEquals(1, styleOptional.get().featureTypeStyles().get(0).rules().get(1).symbolizers().size());
 
 
-        styleOptional = this.parser.parseStyle(config, file.getName()+"##2");
+        styleOptional = this.parser.parseStyle(config, clientHttpRequestFactory, file.getName()+"##2");
         assertTrue (styleOptional.isPresent());
         assertTrue(styleOptional.get() instanceof Style);
         assertEquals(1, styleOptional.get().featureTypeStyles().size());
@@ -124,7 +127,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         Configuration config = new Configuration();
         config.setConfigurationFile(file);
 
-        this.parser.parseStyle(config, file.getName()+"##3");
+        this.parser.parseStyle(config, clientHttpRequestFactory, file.getName()+"##3");
     }
 
     @Test(expected = Exception.class)
@@ -133,7 +136,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         Configuration config = new Configuration();
         config.setConfigurationFile(file);
 
-        this.parser.parseStyle(config, file.getName()+"##-1");
+        this.parser.parseStyle(config, clientHttpRequestFactory, file.getName()+"##-1");
     }
 
     @Test(expected = Exception.class)
@@ -143,6 +146,6 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         Configuration config = new Configuration();
         config.setConfigurationFile(tempFile);
 
-        this.parser.parseStyle(config, file.getAbsolutePath());
+        this.parser.parseStyle(config, clientHttpRequestFactory, file.getAbsolutePath());
     }
 }

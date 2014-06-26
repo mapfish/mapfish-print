@@ -23,25 +23,52 @@ import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.ParserUtils;
+import org.mapfish.print.wrapper.PObject;
+import org.mapfish.print.wrapper.yaml.PYamlObject;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import javax.annotation.PostConstruct;
 
 import static org.mapfish.print.parser.MapfishParser.stringRepresentation;
 
 /**
- * An attribute whose type is an object that will be auto-populated from the json based on the public fields of the value object.
- * <p/>
- * This type of attribute creates a template object from the {@link #createValue(org.mapfish.print.config.Template)} method.  The
- * instance that is created
- * has the appropriate default values and the rest of the values are parsed from the json provided for the print request.
- * <p/>
- * For more details on parsing see: {@link #createValue(org.mapfish.print.config.Template)}
+ * Used for attribute that can have defaults specified in the YAML config file.
  *
- * @param <Value> The value object of the attribute
- * @author Jesse on 4/9/2014.
+ * @param <Value>
+ * @author sbrunner
  */
 public abstract class ReflectiveAttribute<Value> implements Attribute {
+    private PYamlObject defaults;
+
+    @PostConstruct
+    private void init() {
+        if (this.defaults == null) {
+            this.defaults = new PYamlObject(Collections.<String, Object>emptyMap(), getAttributeName());
+        }
+    }
+
+    /**
+     * The YAML config default values.
+     *
+     * @return the default values
+     */
+    public final PObject getDefaultValue() {
+        return this.defaults;
+    }
+
+    public final void setDefault(final Map<String, Object> defaultValue) {
+        this.defaults = new PYamlObject(defaultValue, getAttributeName());
+    }
+
+    /**
+     * Return a descriptive name of this attribute.
+     */
+    protected final String getAttributeName() {
+        return getClass().getSimpleName().substring(0, 1).toLowerCase() + getClass().getSimpleName().substring(1);
+    }
 
     /**
      * Create an instance of a attribute value object.  Each instance must be new and unique. Instances must <em>NOT</em> be shared.
@@ -72,7 +99,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
      * <li>array of any of the above (String[], boolean[], PJsonObject[], ...)</li>
      * </ul>
      * <p/>
-     * If there is a public <code>{@value org.mapfish.print.json.parser.MapfishParser#POST_CONSTRUCT_METHOD_NAME}()</code>
+     * If there is a public <code>{@value org.mapfish.print.parser.MapfishParser#POST_CONSTRUCT_METHOD_NAME}()</code>
      * method then it will be called after the fields are all set.
      * <p/>
      * In the case where the a parameter type is a normal POJO (not a special case like PJsonObject, URL, enum, double, etc...)
@@ -101,7 +128,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
      *
      * @param json     the json writer to write to
      * @param template the template that this attribute is part of
-     * @throws JSONException
+     * @throws org.json.JSONException
      */
     @Override
     public final void printClientConfig(final JSONWriter json, final Template template) throws JSONException {
@@ -147,6 +174,4 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
             throw new Error(e);
         }
     }
-
-
 }

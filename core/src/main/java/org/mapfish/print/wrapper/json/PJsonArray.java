@@ -171,6 +171,15 @@ public class PJsonArray extends PElement implements PArray {
     }
 
     @Override
+    public final Object get(final int i) {
+        try {
+            return this.array.get(i);
+        } catch (JSONException e) {
+            throw new ObjectMissingException(this, "[" + i + "]");
+        }
+    }
+
+    @Override
     public final String toString() {
         return getCurrentPath() + ":\n\t" + this.array;
     }

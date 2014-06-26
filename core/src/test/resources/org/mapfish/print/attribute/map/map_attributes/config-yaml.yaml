@@ -6,7 +6,7 @@ templates:
         width: 500
         height: 100
         maxDpi: 400
-        defaults:
+        default:
           bbox: [95, -1, 110, 2]
           projection: "CRS:84"
           dpi: 80

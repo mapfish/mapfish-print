@@ -20,8 +20,6 @@
 package org.mapfish.print;
 
 
-import static org.junit.Assert.fail;
-
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import org.springframework.http.HttpMethod;
@@ -36,6 +34,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
 
+import static org.junit.Assert.fail;
+
 /**
  * Allows tests to provide canned responses to requests.
  *
@@ -43,7 +43,7 @@ import java.util.Map;
  */
 public class TestHttpClientFactory implements ClientHttpRequestFactory {
 
-    private static final Map<Predicate<URI>, Handler> handlers = Maps.newConcurrentMap();
+    private final Map<Predicate<URI>, Handler> handlers = Maps.newConcurrentMap();
 
     public void registerHandler(Predicate<URI> matcher, Handler handler) {
         if (handlers.containsKey(matcher)) {

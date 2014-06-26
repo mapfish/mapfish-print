@@ -21,11 +21,11 @@ package org.mapfish.print.processor.jasper;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.common.io.Files;
-
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
-
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.HasConfiguration;
 import org.mapfish.print.config.WorkingDirectories;
@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 
 /**
  * A processor that actually compiles a jasper report.
@@ -55,7 +56,7 @@ public class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.I
      */
     public static final String JASPER_REPORT_COMPILED_FILE_EXT = ".jasper";
 
-    private File directory = new File(".");
+    private File directory = null;
     private Configuration configuration;
     @Autowired
     private MetricRegistry metricRegistry;
@@ -71,18 +72,10 @@ public class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.I
 
     @Override
     public final Void execute(final JasperReportBuilder.Input param, final ExecutionContext context) throws JRException {
-        final String configurationAbsolutePath = this.configuration.getDirectory().getAbsolutePath();
-        if (!this.directory.getAbsolutePath().startsWith(configurationAbsolutePath)) {
-            throw new IllegalArgumentException("All directories and files referenced in the configuration must be in the configuration " +
-                                               "directory: " + this.directory + " is not in " + this.configuration.getDirectory());
-        }
         Timer.Context buildReports = this.metricRegistry.timer(getClass() + "_execute()").time();
         try {
-            for (final File jasperFile : Files.fileTreeTraverser().children(this.directory)) {
+            for (final File jasperFile : jasperXmlFiles()) {
                 checkCancelState(context);
-                if (!jasperFile.getName().endsWith(JASPER_REPORT_XML_FILE_EXT)) {
-                    continue;
-                }
                 final File buildFile = this.workingDirectories.getBuildFileFor(this.configuration, jasperFile,
                         JASPER_REPORT_COMPILED_FILE_EXT, LOGGER);
 
@@ -104,6 +97,25 @@ public class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.I
         } finally {
             buildReports.stop();
         }
+    }
+
+    private Iterable<File> jasperXmlFiles() {
+        File directoryToSearch = this.directory;
+        if (directoryToSearch == null) {
+            directoryToSearch = this.configuration.getDirectory();
+        }
+        final String configurationAbsolutePath = this.configuration.getDirectory().getAbsolutePath();
+        if (!directoryToSearch.getAbsolutePath().startsWith(configurationAbsolutePath)) {
+            throw new IllegalArgumentException("All directories and files referenced in the configuration must be in the configuration " +
+                                               "directory: " + directoryToSearch + " is not in " + this.configuration.getDirectory());
+        }
+        final Iterable<File> children = Files.fileTreeTraverser().children(directoryToSearch);
+        return Iterables.filter(children, new Predicate<File>() {
+            @Override
+            public boolean apply(@Nullable final File input) {
+                return input != null && input.getName().endsWith(JASPER_REPORT_XML_FILE_EXT);
+            }
+        });
     }
 
 
@@ -150,8 +162,6 @@ public class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.I
 
     @Override
     protected final void extraValidation(final List<Throwable> validationErrors) {
-        if (this.directory == null) {
-            validationErrors.add(new IllegalStateException("No jasper template output directory defined in " + getClass().getName()));
-        }
+        // nothing to do
     }
 }

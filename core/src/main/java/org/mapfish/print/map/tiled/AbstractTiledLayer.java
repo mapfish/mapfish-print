@@ -23,10 +23,11 @@ import jsr166y.ForkJoinPool;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.Layer;
-import org.geotools.styling.Style;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapTransformer;
 import org.mapfish.print.map.geotools.AbstractGeotoolsLayer;
+import org.mapfish.print.map.geotools.StyleSupplier;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.awt.Rectangle;
 import java.util.Collections;
@@ -41,32 +42,37 @@ import java.util.List;
 public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
 
 
-    private final Style rasterStyle;
+    private final StyleSupplier<GridCoverage2D> styleSupplier;
     private final ForkJoinPool forkJoinPool;
     private volatile GridCoverageLayer layer;
 
     /**
      * Constructor.
-     *
      * @param forkJoinPool the thread pool for doing the rendering.
-     * @param rasterStyle  the style to use when drawing the constructed grid coverage on the map.
+     * @param styleSupplier strategy for loading the style for this layer
      */
-    protected AbstractTiledLayer(final ForkJoinPool forkJoinPool, final Style rasterStyle) {
+    protected AbstractTiledLayer(final ForkJoinPool forkJoinPool, final StyleSupplier<GridCoverage2D> styleSupplier) {
         super(forkJoinPool);
         this.forkJoinPool = forkJoinPool;
-        this.rasterStyle = rasterStyle;
+        this.styleSupplier = styleSupplier;
     }
 
     @Override
-    protected final List<? extends Layer> getLayers(final MapBounds bounds, final Rectangle paintArea, final double dpi,
-                                                    final MapTransformer transformer, final boolean isFirstLayer) {
+    protected final List<? extends Layer> getLayers(final ClientHttpRequestFactory httpRequestFactory,
+                                                    final MapBounds bounds,
+                                                    final Rectangle paintArea,
+                                                    final double dpi,
+                                                    final MapTransformer transformer,
+                                                    final boolean isFirstLayer) {
         if (this.layer == null) {
             synchronized (this) {
                 if (this.layer == null) {
                     TileCacheInformation tileCacheInformation = createTileInformation(bounds, paintArea, dpi, isFirstLayer);
-                    final GridCoverage2D gridCoverage2D = this.forkJoinPool.invoke(new TileLoaderTask(bounds, paintArea, dpi,
-                            transformer, tileCacheInformation));
-                    this.layer = new GridCoverageLayer(gridCoverage2D, this.rasterStyle);
+                    final TileLoaderTask task = new TileLoaderTask(httpRequestFactory, bounds, paintArea, dpi,
+                            transformer, tileCacheInformation);
+                    final GridCoverage2D gridCoverage2D = this.forkJoinPool.invoke(task);
+
+                    this.layer = new GridCoverageLayer(gridCoverage2D, this.styleSupplier.load(httpRequestFactory, gridCoverage2D));
                 }
             }
         }

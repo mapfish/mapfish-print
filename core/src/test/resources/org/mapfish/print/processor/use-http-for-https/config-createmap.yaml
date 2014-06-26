@@ -1,0 +1,6 @@
+
+templates:
+  main: !template
+    processors:
+      - !createMap {}
+      - !useHttpForHttps {}

@@ -124,7 +124,7 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0Test extends AbstractM
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory());
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory);
         template.getProcessorGraph().createTask(values).invoke();
 
         @SuppressWarnings("unchecked")

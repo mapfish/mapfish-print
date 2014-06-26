@@ -7,8 +7,6 @@ templates:
         width: 780
         height: 330
     processors:
-    - !reportBuilder
-      directory: '.'
     - !createMap
       inputMapper: {map: map}
       outputMapper: {mapSubReport: map}

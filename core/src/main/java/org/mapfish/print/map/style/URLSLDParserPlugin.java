@@ -25,7 +25,6 @@ import com.google.common.io.Closer;
 import com.google.common.io.Resources;
 import org.mapfish.print.FileUtils;
 import org.mapfish.print.config.Configuration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -49,12 +48,10 @@ import javax.annotation.Nonnull;
  */
 public final class URLSLDParserPlugin extends AbstractSLDParserPlugin {
 
-
-    @Autowired
-    private ClientHttpRequestFactory requestFactory;
-
     @Override
-    protected List<ByteSource> getInputStreamSuppliers(final Configuration configuration, final String styleString) {
+    protected List<ByteSource> getInputStreamSuppliers(@Nonnull final Configuration configuration,
+                                                       @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
+                                                       @Nonnull final String styleString) {
         List<ByteSource> options = Lists.newArrayList();
 
         try {
@@ -62,7 +59,7 @@ public final class URLSLDParserPlugin extends AbstractSLDParserPlugin {
             if (url.toExternalForm().startsWith("file:/")) {
                 options.add(Resources.asByteSource(url));
             } else {
-                addUrlByteSource(options, url);
+                addUrlByteSource(options, clientHttpRequestFactory, url);
             }
             return options;
         } catch (MalformedURLException e) {
@@ -70,7 +67,9 @@ public final class URLSLDParserPlugin extends AbstractSLDParserPlugin {
         }
     }
 
-    private void addUrlByteSource(final List<ByteSource> options, final URL url) {
+    private void addUrlByteSource(final List<ByteSource> options,
+                                  @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
+                                  final URL url) {
         options.add(new ByteSource() {
             @Override
             public InputStream openStream() throws IOException {
@@ -80,8 +79,7 @@ public final class URLSLDParserPlugin extends AbstractSLDParserPlugin {
                     private final InputStream in;
                     {
                         try {
-                            final ClientHttpRequestFactory requestFactory1 = URLSLDParserPlugin.this.requestFactory;
-                            final ClientHttpRequest request = requestFactory1.createRequest(url.toURI(), HttpMethod.GET);
+                            final ClientHttpRequest request = clientHttpRequestFactory.createRequest(url.toURI(), HttpMethod.GET);
                             ClientHttpResponse response = this.closer.register(request.execute());
                             this.in = closer.register(response.getBody());
                         } catch (IOException e) {

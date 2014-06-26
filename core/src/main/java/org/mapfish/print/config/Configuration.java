@@ -34,6 +34,7 @@ import org.json.JSONWriter;
 import org.mapfish.print.Constants;
 import org.mapfish.print.map.style.StyleParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.awt.Color;
 import java.io.File;
@@ -86,6 +87,8 @@ public class Configuration {
 
     @Autowired
     private StyleParser styleParser;
+    @Autowired
+    private ClientHttpRequestFactory clientHttpRequestFactory;
 
     /**
      * Print out the configuration that the client needs to make a request.
@@ -178,9 +181,7 @@ public class Configuration {
      * @param styles the style definition.  StyleParser plugins will be used to load the style.
      */
     public final void setStyles(final Map<String, String> styles) {
-        Map<String, Style> map = StyleParser.loadStyles(this, this.styleParser, styles);
-
-        this.styles = map;
+        this.styles = StyleParser.loadStyles(this, this.styleParser, this.clientHttpRequestFactory, styles);
     }
 
     /**

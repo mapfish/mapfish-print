@@ -25,6 +25,7 @@ import org.geotools.map.Layer;
 import org.geotools.styling.Style;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapTransformer;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.awt.Rectangle;
 import java.util.Collections;
@@ -36,7 +37,9 @@ import java.util.concurrent.ExecutorService;
  */
 public class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
 
-    private final List<? extends Layer> layers;
+    private final AbstractGridCoverage2DReader coverage2DReader;
+    private volatile List<? extends Layer> layers;
+    private final StyleSupplier<AbstractGridCoverage2DReader> styleSupplier;
 
     /**
      * Constructor.
@@ -45,15 +48,25 @@ public class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
      * @param style            style to use for rendering the data.
      * @param executorService  the thread pool for doing the rendering.
      */
-    public AbstractGridCoverage2DReaderLayer(final AbstractGridCoverage2DReader coverage2DReader, final Style style,
+    public AbstractGridCoverage2DReaderLayer(final AbstractGridCoverage2DReader coverage2DReader,
+                                             final StyleSupplier<AbstractGridCoverage2DReader> style,
                                              final ExecutorService executorService) {
         super(executorService);
-        this.layers = Collections.singletonList(new GridReaderLayer(coverage2DReader, style));
+        this.styleSupplier = style;
+        this.coverage2DReader = coverage2DReader;
     }
 
     @Override
-    public final List<? extends Layer> getLayers(final MapBounds bounds, final Rectangle paintArea, final double dpi,
-                                                 final MapTransformer transformer, final boolean isFirstLayer) {
+    public final synchronized List<? extends Layer> getLayers(final ClientHttpRequestFactory httpRequestFactory,
+                                                 final MapBounds bounds,
+                                                 final Rectangle paintArea,
+                                                 final double dpi,
+                                                 final MapTransformer transformer,
+                                                 final boolean isFirstLayer) {
+        if (this.layers == null) {
+            Style style = this.styleSupplier.load(httpRequestFactory, this.coverage2DReader);
+            this.layers = Collections.singletonList(new GridReaderLayer(this.coverage2DReader, style));
+        }
         return this.layers;
     }
 

@@ -20,13 +20,12 @@
 package org.mapfish.print.map.geotools;
 
 import com.google.common.base.Function;
-import com.google.common.base.Supplier;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.styling.Style;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.HasDefaultValue;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -47,8 +46,10 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
      * @param styleSupplier         a function that creates the style for styling the features. This will only be called once.
      * @param renderAsSvg           is the layer rendered as SVG?
      */
-    public GeoJsonLayer(final ExecutorService executorService, final Supplier<FeatureSource> featureSourceSupplier,
-                        final Function<FeatureSource, Style> styleSupplier, final boolean renderAsSvg) {
+    public GeoJsonLayer(final ExecutorService executorService,
+                        final Function<ClientHttpRequestFactory, FeatureSource> featureSourceSupplier,
+                        final StyleSupplier<FeatureSource> styleSupplier,
+                        final boolean renderAsSvg) {
         super(executorService, featureSourceSupplier, styleSupplier, renderAsSvg);
     }
 
@@ -74,7 +75,8 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
 
         @Nonnull
         @Override
-        public GeoJsonLayer parse(@Nonnull final Template template, @Nonnull final GeoJsonParam param) throws IOException {
+        public GeoJsonLayer parse(@Nonnull final Template template,
+                                  @Nonnull final GeoJsonParam param) throws IOException {
             return new GeoJsonLayer(
                     this.forkJoinPool,
                     createFeatureSourceSupplier(template, param.geoJson),
@@ -82,11 +84,12 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
                     param.renderAsSvg);
         }
 
-        private Supplier<FeatureSource> createFeatureSourceSupplier(final Template template, final String geoJsonString) {
-            final FeaturesParser parser = new FeaturesParser(Plugin.this.httpRequestFactory);
-            return new Supplier<FeatureSource>() {
+        private Function<ClientHttpRequestFactory, FeatureSource> createFeatureSourceSupplier(final Template template,
+                                                                    final String geoJsonString) {
+            return new Function<ClientHttpRequestFactory, FeatureSource>() {
                 @Override
-                public FeatureSource get() {
+                public FeatureSource apply(final ClientHttpRequestFactory requestFactory) {
+                    final FeaturesParser parser = new FeaturesParser(requestFactory);
                     SimpleFeatureCollection featureCollection;
                     try {
                         featureCollection = parser.autoTreat(template, geoJsonString);
