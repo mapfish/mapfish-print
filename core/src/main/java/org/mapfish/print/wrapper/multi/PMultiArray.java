@@ -116,58 +116,40 @@ public final class PMultiArray extends PElement implements PArray {
     }
 
     @Override
-    public int getInt(final int i) {
+    public Object get(final int i) {
         for (PArray array : this.arrays) {
             if (i < array.size()) {
-                return array.getInt(i);
+                return array.get(i);
             }
         }
         throw new ObjectMissingException(this, "" + i);
-
+    }
+    @Override
+    public int getInt(final int i) {
+        return (Integer) get(i);
     }
 
     @Override
     public float getFloat(final int i) {
-        for (PArray array : this.arrays) {
-            if (i < array.size()) {
-                return array.getFloat(i);
-            }
-        }
-        throw new ObjectMissingException(this, "" + i);
+        return (Float) get(i);
 
     }
 
     @Override
     public double getDouble(final int i) {
-        for (PArray array : this.arrays) {
-            if (i < array.size()) {
-                return array.getDouble(i);
-            }
-        }
-        throw new ObjectMissingException(this, "" + i);
+        return (Double) get(i);
 
     }
 
     @Override
     public String getString(final int i) {
-        for (PArray array : this.arrays) {
-            if (i < array.size()) {
-                return array.getString(i);
-            }
-        }
-        throw new ObjectMissingException(this, "" + i);
+        return (String) get(i);
 
     }
 
     @Override
     public boolean getBool(final int i) {
-        for (PArray array : this.arrays) {
-            if (i < array.size()) {
-                return array.getBool(i);
-            }
-        }
-        throw new ObjectMissingException(this, "" + i);
-
+        return (Boolean) get(i);
     }
 
 }

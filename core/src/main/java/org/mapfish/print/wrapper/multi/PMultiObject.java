@@ -122,7 +122,12 @@ public class PMultiObject extends PAbstractObject {
         }
         return null;
     }
-
+    /**
+     * Behaviour is slightly different for this implementation because it returns a multiarray so that for child objects all the
+     * children will still be checked.
+     *
+     * @param key the property name
+     */
     @Override
     public final PObject optObject(final String key) {
         List<PObject> results = new ArrayList<PObject>();
@@ -141,6 +146,12 @@ public class PMultiObject extends PAbstractObject {
         return new PMultiObject(results.toArray(new PObject[results.size()]));
     }
 
+    /**
+     * Behaviour is slightly different for this implementation because it returns a multiarray so that for child objects all the
+     * children will still be checked.
+     *
+     * @param key the property name
+     */
     @Override
     public final PArray optArray(final String key) {
         List<PArray> results = new ArrayList<PArray>();

@@ -84,4 +84,11 @@ public interface PArray {
      * Gets the string representation of the path to the current element.
      */
     String getCurrentPath();
+
+    /**
+     * Get the object at the given index.
+     *
+     * @param i the index of the element to access
+     */
+    Object get(int i);
 }
