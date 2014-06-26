@@ -89,7 +89,7 @@ public class Values {
             final Attribute attribute = attributes.get(attributeName);
             final Object value;
             if (attribute instanceof PrimitiveAttribute) {
-                PrimitiveAttribute pAtt = (PrimitiveAttribute) attribute;
+                PrimitiveAttribute<?> pAtt = (PrimitiveAttribute<?>) attribute;
                 Object defaultVal = pAtt.getDefault();
                 PObject jsonToUse = jsonAttributes;
                 if (defaultVal != null) {
@@ -101,7 +101,7 @@ public class Values {
                 value = parser.parsePrimitive(attributeName, pAtt.getValueClass(), jsonToUse);
             } else if (attribute instanceof ArrayReflectiveAttribute) {
                 boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
-                ArrayReflectiveAttribute rAtt = (ArrayReflectiveAttribute) attribute;
+                ArrayReflectiveAttribute<?> rAtt = (ArrayReflectiveAttribute<?>) attribute;
                 PArray arrayValues = jsonAttributes.optJSONArray(attributeName);
                 if (arrayValues != null) {
                     PArray[] pValues = new PArray[]{ arrayValues, rAtt.getDefaultValue() };
@@ -117,7 +117,7 @@ public class Values {
                 }
             } else if (attribute instanceof ReflectiveAttribute) {
                 boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
-                ReflectiveAttribute rAtt = (ReflectiveAttribute) attribute;
+                ReflectiveAttribute<?> rAtt = (ReflectiveAttribute<?>) attribute;
                 value = rAtt.createValue(template);
                 PObject pValue = jsonAttributes.optJSONObject(attributeName);
 
