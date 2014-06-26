@@ -38,6 +38,7 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.io.IOException;
 import java.net.URI;
@@ -66,6 +67,7 @@ public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
     private ForkJoinPool forkJoinPool;
 
     @Test
+    @DirtiesContext
     public void testExecute() throws Exception {
         final String host = "setparamprocessor";
         requestFactory.registerHandler(

@@ -38,12 +38,9 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.awt.Color;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 import javax.annotation.Nonnull;
 
 /**
@@ -74,11 +71,6 @@ public class Configuration {
         map.put("multipoint", Point.class.getSimpleName().toLowerCase());
         GEOMETRY_NAME_ALIASES = map;
     }
-    private boolean reloadConfig;
-    private String proxyBaseUrl;
-    private TreeSet<String> headers;
-    private List<HostMatcher> hosts = new ArrayList<HostMatcher>();
-    private List<SecurityStrategy> security = Collections.emptyList();
     private Map<String, Template> templates;
     private File configurationFile;
     private Map<String, Style> styles = new HashMap<String, Style>();
@@ -109,22 +101,6 @@ public class Configuration {
         json.endArray();
     }
 
-    public final String getProxyBaseUrl() {
-        return this.proxyBaseUrl;
-    }
-
-    public final void setProxyBaseUrl(final String proxyBaseUrl) {
-        this.proxyBaseUrl = proxyBaseUrl;
-    }
-
-    public final TreeSet<String> getHeaders() {
-        return this.headers;
-    }
-
-    public final void setHeaders(final TreeSet<String> headers) {
-        this.headers = headers;
-    }
-
     /**
      * Calculate the name of the pdf file to return to the user.
      *
@@ -133,22 +109,6 @@ public class Configuration {
     public final String getOutputFilename(final String layoutName) {
         // TODO implement
         throw new UnsupportedOperationException();
-    }
-
-    public final List<HostMatcher> getHosts() {
-        return this.hosts;
-    }
-
-    public final void setHosts(final List<HostMatcher> hosts) {
-        this.hosts = hosts;
-    }
-
-    public final List<SecurityStrategy> getSecurity() {
-        return this.security;
-    }
-
-    public final void setSecurity(final List<SecurityStrategy> security) {
-        this.security = security;
     }
 
     public final Map<String, Template> getTemplates() {

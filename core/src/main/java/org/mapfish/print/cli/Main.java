@@ -161,7 +161,7 @@ public final class Main {
                 if (cookie != null) {
                     headers.put("Cookie", cookie);
                 }
-                this.mapPrinter.print(jsonSpec, outFile, headers);
+                this.mapPrinter.print(jsonSpec, outFile);
             }
         } finally {
             if (outFile != null) {

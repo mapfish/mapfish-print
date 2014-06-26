@@ -22,7 +22,6 @@ package org.mapfish.print.map.geotools;
 import com.google.common.io.CharSource;
 import com.google.common.io.Closer;
 import com.google.common.io.Files;
-
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.geojson.feature.FeatureJSON;
 import org.mapfish.print.Constants;

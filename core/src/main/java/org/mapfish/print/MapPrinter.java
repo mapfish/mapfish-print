@@ -125,14 +125,11 @@ public class MapPrinter {
 
     /**
      * Start a print.
-     *
-     * @param specJson the client json request.
+     *  @param specJson the client json request.
      * @param out the stream to write to.
-     * @param headers the headers passed from client.
      */
-    public final void print(final PJsonObject specJson, final OutputStream out, final Map<String, String> headers)
+    public final void print(final PJsonObject specJson, final OutputStream out)
             throws Exception {
-        // TODO use queue etc..
         final OutputFormat format = getOutputFormat(specJson);
         final File taskDirectory = this.workingDirectories.getTaskDirectory();
         

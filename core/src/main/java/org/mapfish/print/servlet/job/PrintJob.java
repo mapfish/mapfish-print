@@ -31,14 +31,10 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -53,10 +49,7 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
 
     private String referenceId;
     private PJsonObject requestData;
-    private HttpHeaders headers;
 
-    @Autowired
-    private JobManager jobManager;
     @Autowired
     private MapPrinterFactory mapPrinterFactory;
     @Autowired
@@ -88,15 +81,6 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
     }
 
     /**
-     * Set The request headers to use when making requests.
-     *
-     * @param headers The request headers to use when making requests.
-     */
-    public final void setHeaders(final HttpHeaders headers) {
-        this.headers = headers;
-    }
-
-    /**
      * Open an OutputStream and execute the function using the OutputStream.
      *
      * @param function the function to execute
@@ -115,7 +99,7 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
             URI reportURI = withOpenOutputStream(new PrintAction() {
                 @Override
                 public void run(final OutputStream outputStream) throws Throwable {
-                    doCreateReport(PrintJob.this.requestData, mapPrinter, outputStream);
+                    mapPrinter.print(PrintJob.this.requestData, outputStream);
                 }
             });
 
@@ -161,31 +145,6 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
         }
         return fileName;
     }
-
-
-    private void doCreateReport(final PJsonObject job, final MapPrinter mapPrinter, final OutputStream out)
-            throws Exception {
-
-        Map<String, String> headerMap = new HashMap<String, String>();
-        TreeSet<String> configHeaders = mapPrinter.getConfiguration().getHeaders();
-        if (configHeaders == null) {
-            configHeaders = new TreeSet<String>();
-            configHeaders.add("Referrer");
-            configHeaders.add("Cookie");
-        }
-        PJsonObject jobHeaders = job.optJSONObject(JSON_HEADERS);
-        if (jobHeaders != null) {
-            for (String header : configHeaders) {
-                String headerValue = jobHeaders.optString(header);
-                if (headerValue != null) {
-                    headerMap.put(header, headerValue);
-                }
-            }
-        }
-
-        mapPrinter.print(job, out, headerMap);
-    }
-
 
     /**
      * Interface encapsulating the code to run with the open output stream.

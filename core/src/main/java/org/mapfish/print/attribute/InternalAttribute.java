@@ -19,10 +19,18 @@
 
 package org.mapfish.print.attribute;
 
-public class HttpHeadersAttributeTest extends AbstractAttributeTest {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    @Override
-    protected Attribute createAttribute() {
-        return new HttpHeadersAttribute();
-    }
+/**
+ * An annotation indicating that the attribute should not be printed in client config (client does not need to know about it)
+ * because it is registered automatically.
+ *
+ * @author Jesse on 6/26/2014.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface InternalAttribute {
 }

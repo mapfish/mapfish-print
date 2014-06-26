@@ -19,6 +19,7 @@
 
 package org.mapfish.print.map.geotools;
 
+import com.google.common.base.Function;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.map.GridReaderLayer;
 import org.geotools.map.Layer;
@@ -37,7 +38,7 @@ import java.util.concurrent.ExecutorService;
  */
 public class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
 
-    private final AbstractGridCoverage2DReader coverage2DReader;
+    private final Function<ClientHttpRequestFactory, AbstractGridCoverage2DReader> coverage2DReaderSupplier;
     private volatile List<? extends Layer> layers;
     private final StyleSupplier<AbstractGridCoverage2DReader> styleSupplier;
 
@@ -48,12 +49,12 @@ public class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
      * @param style            style to use for rendering the data.
      * @param executorService  the thread pool for doing the rendering.
      */
-    public AbstractGridCoverage2DReaderLayer(final AbstractGridCoverage2DReader coverage2DReader,
+    public AbstractGridCoverage2DReaderLayer(final Function<ClientHttpRequestFactory, AbstractGridCoverage2DReader> coverage2DReader,
                                              final StyleSupplier<AbstractGridCoverage2DReader> style,
                                              final ExecutorService executorService) {
         super(executorService);
         this.styleSupplier = style;
-        this.coverage2DReader = coverage2DReader;
+        this.coverage2DReaderSupplier = coverage2DReader;
     }
 
     @Override
@@ -64,8 +65,9 @@ public class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
                                                  final MapTransformer transformer,
                                                  final boolean isFirstLayer) {
         if (this.layers == null) {
-            Style style = this.styleSupplier.load(httpRequestFactory, this.coverage2DReader);
-            this.layers = Collections.singletonList(new GridReaderLayer(this.coverage2DReader, style));
+            AbstractGridCoverage2DReader coverage2DReader = this.coverage2DReaderSupplier.apply(httpRequestFactory);
+            Style style = this.styleSupplier.load(httpRequestFactory, coverage2DReader);
+            this.layers = Collections.singletonList(new GridReaderLayer(coverage2DReader, style));
         }
         return this.layers;
     }

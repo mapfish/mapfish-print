@@ -24,6 +24,7 @@ import org.geotools.styling.Style;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.attribute.Attribute;
+import org.mapfish.print.attribute.InternalAttribute;
 import org.mapfish.print.map.style.StyleParser;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
@@ -82,10 +83,13 @@ public class Template implements ConfigurationObject, HasConfiguration {
         json.key("attributes");
         json.array();
         for (String name : this.attributes.keySet()) {
-            json.object();
-            json.key("name").value(name);
-            this.attributes.get(name).printClientConfig(json, this);
-            json.endObject();
+            final Attribute attribute = this.attributes.get(name);
+            if (attribute.getClass().getAnnotation(InternalAttribute.class) == null) {
+                json.object();
+                json.key("name").value(name);
+                attribute.printClientConfig(json, this);
+                json.endObject();
+            }
         }
         json.endArray();
     }

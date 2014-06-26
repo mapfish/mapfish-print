@@ -22,7 +22,7 @@ package org.mapfish.print.processor.http;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import org.mapfish.print.attribute.HttpHeadersAttribute;
+import org.mapfish.print.attribute.HttpRequestHeadersAttribute;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
@@ -41,6 +41,7 @@ public final class ForwardHeadersProcessor
         implements HttpProcessor<ForwardHeadersProcessor.Param> {
 
     Set<String> headerNames = Sets.newHashSet();
+    boolean forwardAll = false;
     /**
      * Constructor.
      */
@@ -57,6 +58,15 @@ public final class ForwardHeadersProcessor
         this.headerNames = names;
     }
 
+    /**
+     * If set to true the headers is ignored and all headers are forwarded.
+     *
+     * @param all if true forward all headers
+     */
+    public void setAll(final boolean all) {
+        this.forwardAll = all;
+    }
+
     @Override
     protected void extraValidation(final List<Throwable> validationErrors) {
         if (this.headerNames.isEmpty()) {
@@ -68,10 +78,11 @@ public final class ForwardHeadersProcessor
     public ClientHttpRequestFactory createFactoryWrapper(final Param param,
                                                          final ClientHttpRequestFactory requestFactory) {
 
-        Map<String, List<String>> headers = Maps.filterKeys(param.httpHeaders.getHeaders(), new Predicate<String>() {
+        Map<String, List<String>> headers = Maps.filterKeys(param.requestHeaders.getHeaders(), new Predicate<String>() {
             @Override
             public boolean apply(@Nullable final String input) {
-                return input != null && ForwardHeadersProcessor.this.headerNames.contains(input);
+                return input != null &&
+                       (ForwardHeadersProcessor.this.forwardAll || ForwardHeadersProcessor.this.headerNames.contains(input));
             }
         });
 
@@ -101,7 +112,7 @@ public final class ForwardHeadersProcessor
         /**
          * The http headers from the print request.
          */
-        public HttpHeadersAttribute.Value httpHeaders;
+        public HttpRequestHeadersAttribute.Value requestHeaders;
     }
 
 }

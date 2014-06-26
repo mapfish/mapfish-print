@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.mock.http.client.MockClientHttpRequest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.net.URI;
 import java.util.List;
@@ -47,18 +48,19 @@ import static org.junit.Assert.assertEquals;
 
 public abstract class AbstractHttpProcessorTest extends AbstractMapfishSpringTest {
     @Autowired
-    private ConfigurationFactory configurationFactory;
+    ConfigurationFactory configurationFactory;
     @Autowired
     TestHttpClientFactory httpClientFactory;
 
     @Autowired
-    private ForkJoinPool forkJoinPool;
+    ForkJoinPool forkJoinPool;
 
     protected abstract String baseDir();
     protected abstract Class<? extends AbstractTestProcessor> testProcessorClass();
     protected abstract Class<? extends HttpProcessor> classUnderTest();
 
     @Test
+    @DirtiesContext
     public void testExecute() throws Exception {
         this.httpClientFactory.registerHandler(new Predicate<URI>() {
             @Override

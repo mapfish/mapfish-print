@@ -11,6 +11,7 @@ import org.mapfish.print.config.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.net.URI;
 
@@ -28,6 +29,7 @@ public class URLSLDParserPluginTest extends AbstractMapfishSpringTest {
     private TestHttpClientFactory clientHttpRequestFactory;
 
     @Test
+    @DirtiesContext
     public void testParseStyle() throws Throwable {
         final String host = "URLSLDParserPluginTest.com";
         clientHttpRequestFactory.registerHandler(new Predicate<URI>() {

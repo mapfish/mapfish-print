@@ -21,7 +21,7 @@ package org.mapfish.print.processor.http;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.mapfish.print.attribute.HttpHeadersAttribute;
+import org.mapfish.print.attribute.HttpRequestHeadersAttribute;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.http.HttpMethod;
@@ -56,10 +56,10 @@ public class CompositeClientHttpRequestFactoryProcessorTest extends AbstractHttp
 
     @Override
     protected void addExtraValues(Values values) throws JSONException {
-        HttpHeadersAttribute.Value headers = new HttpHeadersAttribute.Value();
+        HttpRequestHeadersAttribute.Value headers = new HttpRequestHeadersAttribute.Value();
         JSONObject inner = new JSONObject("{\"header1\": [\"value\"]}");
-        headers.headers = new PJsonObject(inner, "headers");
-        values.put("httpHeaders", headers);
+        headers.requestHeaders = new PJsonObject(inner, "headers");
+        values.put("requestHeaders", headers);
     }
 
     public static class TestProcessor extends AbstractTestProcessor {

@@ -34,7 +34,8 @@ import java.util.Map;
  *
  * @author Jesse on 6/26/2014.
  */
-public final class HttpHeadersAttribute extends ReflectiveAttribute<HttpHeadersAttribute.Value> {
+@InternalAttribute
+public final class HttpRequestHeadersAttribute extends ReflectiveAttribute<HttpRequestHeadersAttribute.Value> {
 
     @Override
     public Value createValue(final Template template) {
@@ -46,11 +47,14 @@ public final class HttpHeadersAttribute extends ReflectiveAttribute<HttpHeadersA
         // nothing to do
     }
 
+    /**
+     * The object containing the attribute data.
+     */
     public static final class Value {
         /**
          * The headers from the request.
          */
-        public PObject headers;
+        public PObject requestHeaders;
 
         /**
          * Get all the headers in map form.
@@ -58,11 +62,11 @@ public final class HttpHeadersAttribute extends ReflectiveAttribute<HttpHeadersA
         public Map<String, List<String>> getHeaders() {
             Map<String, List<String>> headerMap = Maps.newHashMap();
 
-            final Iterator<String> keys = this.headers.keys();
+            final Iterator<String> keys = this.requestHeaders.keys();
 
             while (keys.hasNext()) {
                 String headerName = keys.next();
-                final PArray values = this.headers.getArray(headerName);
+                final PArray values = this.requestHeaders.getArray(headerName);
                 List<String> valuesAsList = Lists.newArrayList();
                 for (int i = 0; i < values.size(); i++) {
                     valuesAsList.add(values.getString(i));

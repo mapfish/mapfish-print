@@ -121,7 +121,7 @@ public class ExamplesTest {
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
                         Map<String, String> headers = Maps.newHashMap();
-                        this.mapPrinter.print(jsonSpec, out, headers);
+                        this.mapPrinter.print(jsonSpec, out);
 
                         BufferedImage image = ImageIO.read(new ByteArrayInputStream(out.toByteArray()));
 
