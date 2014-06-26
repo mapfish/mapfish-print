@@ -30,7 +30,6 @@ import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
-import org.mapfish.print.wrapper.multi.PMultiArray;
 import org.mapfish.print.wrapper.multi.PMultiObject;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
@@ -112,10 +111,7 @@ public class Values {
                 boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
                 ArrayReflectiveAttribute<?> rAtt = (ArrayReflectiveAttribute<?>) attribute;
                 PArray arrayValues = jsonAttributes.optJSONArray(attributeName);
-                if (arrayValues != null) {
-                    PArray[] pValues = new PArray[]{ arrayValues, rAtt.getDefaultValue() };
-                    arrayValues = new PMultiArray(pValues);
-                } else {
+                if (arrayValues == null) {
                     arrayValues = rAtt.getDefaultValue();
                 }
                 value = Array.newInstance(rAtt.createValue(template).getClass(), arrayValues.size());
