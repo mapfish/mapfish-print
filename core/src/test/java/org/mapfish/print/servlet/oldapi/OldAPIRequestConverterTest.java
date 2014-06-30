@@ -44,14 +44,9 @@ import static org.junit.Assert.assertTrue;
 
 
 @ContextConfiguration(locations = {
-        OldAPIRequestConverterTest.PRINT_CONTEXT,
-        OldAPIRequestConverterTest.SERVLET_CONTEXT_CONTEXT
+        MapPrinterServletTest.PRINT_CONTEXT,
 })
 public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
-
-    public static final String PRINT_CONTEXT = "classpath:org/mapfish/print/servlet/mapfish-print-servlet.xml";
-    public static final String SERVLET_CONTEXT_CONTEXT = "classpath:org/mapfish/print/servlet/mapfish-spring-servlet-context-config.xml";
-
     @Autowired
     private ServletMapPrinterFactory printerFactory;
         
@@ -59,8 +54,7 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
     public void testConvert() throws IOException, JSONException, NoSuchAppException, URISyntaxException {
         setUpConfigFiles();
         Configuration configuration = printerFactory.create("default").getConfiguration();
-        JSONObject request = OldAPIRequestConverter.convert(
-                loadRequestDataAsString(), configuration).getInternalObj();
+        JSONObject request = OldAPIRequestConverter.convert(loadRequestDataAsJson(), configuration).getInternalObj();
         
         assertNotNull(request);
         assertEquals("A4 Portrait", request.getString(Constants.JSON_LAYOUT_KEY));
@@ -137,7 +131,7 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         Configuration configuration = printerFactory.create("wrong-layout").getConfiguration();
         // will trigger an exception, because the configuration uses a 
         // different layout than specified in the request
-        OldAPIRequestConverter.convert(loadRequestDataAsString(), configuration);
+        OldAPIRequestConverter.convert(loadRequestDataAsJson(), configuration);
     }
 
     private void setUpConfigFiles() throws URISyntaxException {
@@ -147,9 +141,7 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         printerFactory.setConfigurationFiles(configFiles);
     }
 
-    private String loadRequestDataAsString() throws IOException {
-        final PJsonObject requestJson = AbstractMapfishSpringTest.parseJSONObjectFromFile(
-                OldAPIRequestConverterTest.class, "requestData-old-api-all.json");
-        return requestJson.getInternalObj().toString();
+    private PJsonObject loadRequestDataAsJson() throws IOException {
+        return AbstractMapfishSpringTest.parseJSONObjectFromFile(OldAPIRequestConverterTest.class, "requestData-old-api-all.json");
     }
 }

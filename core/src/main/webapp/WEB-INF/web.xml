@@ -91,14 +91,4 @@
         <url-pattern>/print/*</url-pattern>
     </servlet-mapping>
 
-    <servlet>
-        <servlet-name>mapfish-print-deprecated</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>mapfish-print-deprecated</servlet-name>
-        <url-pattern>/dep-pdf/*</url-pattern>
-    </servlet-mapping>
-
 </web-app>

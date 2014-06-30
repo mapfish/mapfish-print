@@ -81,7 +81,7 @@ public abstract class BaseMapServlet {
      * @param message the message to send
      * @param code the error code
      */
-    protected final void error(final HttpServletResponse httpServletResponse, final String message, final HttpStatus code) {
+    protected static final void error(final HttpServletResponse httpServletResponse, final String message, final HttpStatus code) {
         PrintWriter out = null;
         try {
             httpServletResponse.setContentType("text/plain");

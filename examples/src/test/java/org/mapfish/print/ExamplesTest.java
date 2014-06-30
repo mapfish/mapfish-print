@@ -23,7 +23,8 @@ import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mapfish.print.servlet.oldapi.OldAPIMapPrinterServlet;
+import org.mapfish.print.servlet.MapPrinterServlet;
+import org.mapfish.print.servlet.oldapi.OldAPIRequestConverter;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,10 +55,12 @@ import static org.junit.Assert.fail;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-        ExamplesTest.DEFAULT_SPRING_XML
+        ExamplesTest.DEFAULT_SPRING_XML,
+        ExamplesTest.TEST_SPRING_XML
 })
 public class ExamplesTest {
     public static final String DEFAULT_SPRING_XML = "classpath:mapfish-spring-application-context.xml";
+    public static final String TEST_SPRING_XML = "classpath:test-http-request-factory-application-context.xml";
 
     private static final String REQUEST_DATA_FILE = "requestData(-.*)?.json";
     private static final String OLD_API_REQUEST_DATA_FILE = "oldApi-requestData(-.*)?.json";
@@ -111,10 +114,12 @@ public class ExamplesTest {
                         String requestData = Files.asCharSource(requestFile, Charset.forName(Constants.DEFAULT_ENCODING)).read();
                         final PJsonObject jsonSpec;
                         if (requestFile.getName().matches(OLD_API_REQUEST_DATA_FILE)) {
-                            jsonSpec = OldAPIMapPrinterServlet.parseSpec(requestData, this.mapPrinter);
+                            PJsonObject oldSpec = MapPrinterServlet.parseJson(requestData, null);
+                            jsonSpec = OldAPIRequestConverter.convert(oldSpec, this.mapPrinter.getConfiguration());
                             continue;
                         } else {
                             jsonSpec = MapPrinter.parseSpec(requestData);
+//                            continue;
                         }
                         testsRan++;
                         jsonSpec.getInternalObj().put("outputFormat", "png");

@@ -25,13 +25,12 @@ import com.google.common.collect.Sets;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.mapfish.print.Constants;
-import org.mapfish.print.MapPrinter;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.jasper.TableProcessor;
 import org.mapfish.print.processor.map.CreateMapProcessor;
+import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -40,6 +39,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import static org.mapfish.print.Constants.JSON_LAYOUT_KEY;
+import static org.mapfish.print.Constants.OUTPUT_FILENAME_KEY;
+import static org.mapfish.print.servlet.MapPrinterServlet.JSON_OUTPUT_FORMAT;
 
 /**
  * Converter for print requests of the old API.
@@ -58,26 +61,25 @@ public final class OldAPIRequestConverter {
      * Note that the converter does not support all features of the old API, for example
      * only requests containing a single map are supported.
      * 
-     * @param spec          the request in the format of the old API
+     * @param oldRequest          the request in the format of the old API
      * @param configuration the configuration
      */
-    public static PJsonObject convert(final String spec, final Configuration configuration) throws JSONException {
-        final PJsonObject oldRequest = MapPrinter.parseSpec(spec);
-        final String layout = oldRequest.getString("layout");
+    public static PJsonObject convert(final PJsonObject oldRequest, final Configuration configuration) throws JSONException {
+        final String layout = oldRequest.getString(JSON_LAYOUT_KEY);
         
         if (configuration.getTemplate(layout) == null) {
             throw new IllegalArgumentException("Layout '" + layout + "' is not configured");
         }
         
         final JSONObject request = new JSONObject();
-        request.put(Constants.JSON_LAYOUT_KEY, oldRequest.getString("layout"));
-        if (oldRequest.has("outputFilename")) {
-            request.put(Constants.OUTPUT_FILENAME_KEY, oldRequest.getString("outputFilename"));
+        request.put(JSON_LAYOUT_KEY, oldRequest.getString(JSON_LAYOUT_KEY));
+        if (oldRequest.has(OUTPUT_FILENAME_KEY)) {
+            request.put(OUTPUT_FILENAME_KEY, oldRequest.getString(OUTPUT_FILENAME_KEY));
         }
-        if (oldRequest.has("outputFormat")) {
-            request.put("outputFormat", oldRequest.getString("outputFormat"));
+        if (oldRequest.has(JSON_OUTPUT_FORMAT)) {
+            request.put(JSON_OUTPUT_FORMAT, oldRequest.getString(JSON_OUTPUT_FORMAT));
         }
-        request.put("attributes", getAttributes(oldRequest, configuration.getTemplate(layout)));
+        request.put(MapPrinterServlet.JSON_ATTRIBUTES, getAttributes(oldRequest, configuration.getTemplate(layout)));
         
         return new PJsonObject(request, "spec");
     }

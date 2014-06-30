@@ -5,38 +5,9 @@
 #===========================================================================
 #formats: ['*']
 
-#outputFilename: 'mapfish-print-${date}.pdf'
-
-#===========================================================================
-# the list of allowed hosts
-#===========================================================================
-hosts:
-  - !localMatch {}
-  - !ipMatch
-    ip: www.camptocamp.org
-  - !dnsMatch
-    host: labs.metacarta.com
-    port: 80
-  - !dnsMatch
-    host: terraservice.net
-    port: 80
-  - !dnsMatch
-    host: tile.openstreetmap.org
-    port: 80
-  - !dnsMatch
-    host: www.geocat.ch
-    port: 80
+# outputFilename: 'mapfish-print-${date}.pdf'
 
 throwErrorOnExtraParameters: true
-
-security:
-#  - !basicAuth
-#    matcher: !dnsMatch
-#      host: c2cpc61.camptocamp.com
-#      port: 80
-#    username: xyz
-#    password: yxz
-#    preemptive: true
 
 templates:
   A4 portrait: !template

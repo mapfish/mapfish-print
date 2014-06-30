@@ -37,7 +37,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = {
-        MapPrinterServletTest.SERVLET_CONTEXT_CONTEXT
+        MapPrinterServletTest.PRINT_CONTEXT
 })
 public class ServletConfigFileLoaderTest extends AbstractMapfishSpringTest {
 
