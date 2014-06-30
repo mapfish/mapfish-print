@@ -43,13 +43,11 @@ import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.mock.http.client.MockClientHttpResponse;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Map;
 import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
 
@@ -131,7 +129,7 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
         JasperPrint print = format.getJasperPrint(requestData, config, getFile(TableProcessorTest.class, baseDir), getTaskDirectory());
         BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
-        ImageIO.write(reportImage, "png", new File("e:/tmp/testColumnImageConverter.png"));
+//        ImageIO.write(reportImage, "png", new File("e:/tmp/testColumnImageConverter.png"));
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
         new ImageSimilarity(reportImage, 50).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
