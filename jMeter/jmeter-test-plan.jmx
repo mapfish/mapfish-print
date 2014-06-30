@@ -1,0 +1,885 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="2.6" jmeter="2.11 r1554548">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
+      <stringProp name="TestPlan.comments"></stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="MapFish Print Server Config" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="printServer" elementType="Argument">
+            <stringProp name="Argument.name">printServer</stringProp>
+            <stringProp name="Argument.value">127.0.0.1</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="port" elementType="Argument">
+            <stringProp name="Argument.name">port</stringProp>
+            <stringProp name="Argument.value">8081</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="servletName" elementType="Argument">
+            <stringProp name="Argument.name">servletName</stringProp>
+            <stringProp name="Argument.value">/print-servlet-3.0-SNAPSHOT</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create And Get Report" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">700</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">20</stringProp>
+        <longProp name="ThreadGroup.start_time">1403528769000</longProp>
+        <longProp name="ThreadGroup.end_time">1403528769000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="reportId" elementType="Argument">
+              <stringProp name="Argument.name">reportId</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="done" elementType="Argument">
+              <stringProp name="Argument.name">done</stringProp>
+              <stringProp name="Argument.value">false</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+        </Arguments>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create Report Request" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+    &quot;attributes&quot;: {&#xd;
+        &quot;description&quot;: &quot;Hello every body !&quot;,&#xd;
+        &quot;legend&quot;: {&#xd;
+            &quot;classes&quot;: [&#xd;
+                {&#xd;
+                    &quot;icons&quot;: [&quot;http://localhost:9876/e2egeoserver/www/legends/arbres.png&quot;],&#xd;
+                    &quot;name&quot;: &quot;Arbres&quot;&#xd;
+                },&#xd;
+                {&#xd;
+                    &quot;icons&quot;: [&quot;http://localhost:9876/e2egeoserver/www/legends/perturbations.png&quot;],&#xd;
+                    &quot;name&quot;: &quot;Peturbations&quot;&#xd;
+                },&#xd;
+                {&#xd;
+                    &quot;icons&quot;: [&quot;http://localhost:9876/e2egeoserver/www/legends/points-de-vente.png&quot;],&#xd;
+                    &quot;name&quot;: &quot;Points de vente&quot;&#xd;
+                },&#xd;
+                {&#xd;
+                    &quot;icons&quot;: [&quot;http://localhost:9876/e2egeoserver/www/legends/stationement.png&quot;],&#xd;
+                    &quot;name&quot;: &quot;Stationement&quot;&#xd;
+                }&#xd;
+            ],&#xd;
+            &quot;name&quot;: &quot;&quot;&#xd;
+        },&#xd;
+        &quot;length&quot;: 45.123,&#xd;
+        &quot;map&quot;: {&#xd;
+            &quot;bbox&quot;: [&#xd;
+                100,&#xd;
+                -1,&#xd;
+                106,&#xd;
+                2&#xd;
+            ],&#xd;
+            &quot;dpi&quot;: 90,&#xd;
+            &quot;layers&quot;: [{&#xd;
+                &quot;geoJson&quot;: &quot;file://resources/geojson.json&quot;,&#xd;
+                &quot;style&quot;: &quot;polygon&quot;,&#xd;
+                &quot;type&quot;: &quot;geojson&quot;&#xd;
+            }],&#xd;
+            &quot;projection&quot;: &quot;CRS:84&quot;,&#xd;
+            &quot;rotation&quot;: 0&#xd;
+        },&#xd;
+        &quot;name&quot;: &quot;Hello&quot;,&#xd;
+        &quot;number&quot;: 45,&#xd;
+        &quot;table&quot;: {&#xd;
+            &quot;columns&quot;: [&#xd;
+                &quot;id&quot;,&#xd;
+                &quot;name&quot;,&#xd;
+                &quot;icon&quot;&#xd;
+            ],&#xd;
+            &quot;data&quot;: [&#xd;
+                [&#xd;
+                    1,&#xd;
+                    &quot;blah&quot;,&#xd;
+                    &quot;icon_pan&quot;&#xd;
+                ],&#xd;
+                [&#xd;
+                    2,&#xd;
+                    &quot;blip&quot;,&#xd;
+                    &quot;icon_zoomin&quot;&#xd;
+                ]&#xd;
+            ]&#xd;
+        },&#xd;
+        &quot;tableList&quot;: [&#xd;
+            {&#xd;
+                &quot;columns&quot;: [&#xd;
+                    &quot;id&quot;,&#xd;
+                    &quot;name&quot;,&#xd;
+                    &quot;icon&quot;&#xd;
+                ],&#xd;
+                &quot;data&quot;: [&#xd;
+                    [&#xd;
+                        1,&#xd;
+                        &quot;blah&quot;,&#xd;
+                        &quot;icon_pan&quot;&#xd;
+                    ],&#xd;
+                    [&#xd;
+                        2,&#xd;
+                        &quot;blip&quot;,&#xd;
+                        &quot;icon_zoomin&quot;&#xd;
+                    ]&#xd;
+                ],&#xd;
+                &quot;displayName&quot;: &quot;Feature 1&quot;,&#xd;
+                &quot;id&quot;: &quot;f1&quot;&#xd;
+            },&#xd;
+            {&#xd;
+                &quot;columns&quot;: [&#xd;
+                    &quot;id&quot;,&#xd;
+                    &quot;name&quot;,&#xd;
+                    &quot;icon&quot;&#xd;
+                ],&#xd;
+                &quot;data&quot;: [&#xd;
+                    [&#xd;
+                        10,&#xd;
+                        &quot;blah2&quot;,&#xd;
+                        &quot;icon_pan2&quot;&#xd;
+                    ],&#xd;
+                    [&#xd;
+                        20,&#xd;
+                        &quot;blip2&quot;,&#xd;
+                        &quot;icon_zoomin2&quot;&#xd;
+                    ]&#xd;
+                ],&#xd;
+                &quot;displayName&quot;: &quot;Feature 2&quot;,&#xd;
+                &quot;id&quot;: &quot;f2&quot;&#xd;
+            }&#xd;
+        ]&#xd;
+    },&#xd;
+    &quot;layout&quot;: &quot;A4 portrait&quot;&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${printServer}</stringProp>
+          <stringProp name="HTTPSampler.port">${port}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">${servletName}/print/verboseExample/report.pdf</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <boolProp name="HTTPSampler.monitor">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Report ID Extractor" enabled="true">
+            <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+            <stringProp name="RegexExtractor.refname">reportId</stringProp>
+            <stringProp name="RegexExtractor.regex">&quot;ref&quot;:&quot;([^.&quot;]+)&quot;,</stringProp>
+            <stringProp name="RegexExtractor.template">$1$</stringProp>
+            <stringProp name="RegexExtractor.default">REGEX BROKEN</stringProp>
+            <stringProp name="RegexExtractor.match_number">1</stringProp>
+          </RegexExtractor>
+          <hashTree/>
+        </hashTree>
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Create Successful" enabled="true">
+          <stringProp name="IfController.condition">&quot;${reportId}&quot;!=&quot;REGEX BROKEN&quot;</stringProp>
+          <boolProp name="IfController.evaluateAll">false</boolProp>
+        </IfController>
+        <hashTree>
+          <WhileController guiclass="WhileControllerGui" testclass="WhileController" testname="While Controller" enabled="true">
+            <stringProp name="WhileController.condition">${__javaScript(&quot;${done}&quot;==&quot;false&quot;)} </stringProp>
+          </WhileController>
+          <hashTree>
+            <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="false">
+              <boolProp name="displayJMeterProperties">false</boolProp>
+              <boolProp name="displayJMeterVariables">true</boolProp>
+              <boolProp name="displaySystemProperties">false</boolProp>
+            </DebugSampler>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Status" enabled="true">
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                <collectionProp name="Arguments.arguments"/>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain">${printServer}</stringProp>
+              <stringProp name="HTTPSampler.port">${port}</stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">http://${printServer}:${port}${servletName}/print/status/${reportId}.json</stringProp>
+              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Status Extractor" enabled="true">
+                <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+                <stringProp name="RegexExtractor.refname">done</stringProp>
+                <stringProp name="RegexExtractor.regex">&quot;done&quot;:([^&quot;,.]+),</stringProp>
+                <stringProp name="RegexExtractor.template">$1$</stringProp>
+                <stringProp name="RegexExtractor.default">REGEX BROKEN</stringProp>
+                <stringProp name="RegexExtractor.match_number">1</stringProp>
+              </RegexExtractor>
+              <hashTree/>
+            </hashTree>
+            <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
+              <stringProp name="ConstantTimer.delay">300</stringProp>
+            </ConstantTimer>
+            <hashTree/>
+          </hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Report" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain">${printServer}</stringProp>
+            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">http://${printServer}:${port}${servletName}/print/report/${reportId}</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+        </hashTree>
+        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="false">
+          <boolProp name="displayJMeterProperties">false</boolProp>
+          <boolProp name="displayJMeterVariables">true</boolProp>
+          <boolProp name="displaySystemProperties">false</boolProp>
+        </DebugSampler>
+        <hashTree/>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">true</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+            </value>
+          </objProp>
+          <stringProp name="filename">/home/tsauerwein/Downloads/apache-jmeter-2.11/mfp-log.jtl</stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Simple Data Writer" enabled="false">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>true</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+            </value>
+          </objProp>
+          <stringProp name="filename">/home/tsauerwein/Downloads/apache-jmeter-2.11/mfp-log.jtl</stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Get Example" enabled="false">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">100</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <longProp name="ThreadGroup.start_time">1403532164000</longProp>
+        <longProp name="ThreadGroup.end_time">1403532164000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Example Request" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${printServer}</stringProp>
+          <stringProp name="HTTPSampler.port">{port}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">${servletName}/print/verboseExample/capabilities.json</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <boolProp name="HTTPSampler.monitor">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Build Report" enabled="false">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">50</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">5</stringProp>
+        <longProp name="ThreadGroup.start_time">1403532288000</longProp>
+        <longProp name="ThreadGroup.end_time">1403532288000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Build Report Request" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+    &quot;attributes&quot;: {&#xd;
+        &quot;description&quot;: &quot;Hello every body !&quot;,&#xd;
+        &quot;legend&quot;: {&#xd;
+            &quot;classes&quot;: [&#xd;
+                {&#xd;
+                    &quot;icons&quot;: [&quot;http://localhost:9876/e2egeoserver/www/legends/arbres.png&quot;],&#xd;
+                    &quot;name&quot;: &quot;Arbres&quot;&#xd;
+                },&#xd;
+                {&#xd;
+                    &quot;icons&quot;: [&quot;http://localhost:9876/e2egeoserver/www/legends/perturbations.png&quot;],&#xd;
+                    &quot;name&quot;: &quot;Peturbations&quot;&#xd;
+                },&#xd;
+                {&#xd;
+                    &quot;icons&quot;: [&quot;http://localhost:9876/e2egeoserver/www/legends/points-de-vente.png&quot;],&#xd;
+                    &quot;name&quot;: &quot;Points de vente&quot;&#xd;
+                },&#xd;
+                {&#xd;
+                    &quot;icons&quot;: [&quot;http://localhost:9876/e2egeoserver/www/legends/stationement.png&quot;],&#xd;
+                    &quot;name&quot;: &quot;Stationement&quot;&#xd;
+                }&#xd;
+            ],&#xd;
+            &quot;name&quot;: &quot;&quot;&#xd;
+        },&#xd;
+        &quot;length&quot;: 45.123,&#xd;
+        &quot;map&quot;: {&#xd;
+            &quot;bbox&quot;: [&#xd;
+                100,&#xd;
+                -1,&#xd;
+                106,&#xd;
+                2&#xd;
+            ],&#xd;
+            &quot;dpi&quot;: 90,&#xd;
+            &quot;layers&quot;: [{&#xd;
+                &quot;geoJson&quot;: &quot;file://resources/geojson.json&quot;,&#xd;
+                &quot;style&quot;: &quot;polygon&quot;,&#xd;
+                &quot;type&quot;: &quot;geojson&quot;&#xd;
+            }],&#xd;
+            &quot;projection&quot;: &quot;CRS:84&quot;,&#xd;
+            &quot;rotation&quot;: 0&#xd;
+        },&#xd;
+        &quot;name&quot;: &quot;Hello&quot;,&#xd;
+        &quot;number&quot;: 45,&#xd;
+        &quot;table&quot;: {&#xd;
+            &quot;columns&quot;: [&#xd;
+                &quot;id&quot;,&#xd;
+                &quot;name&quot;,&#xd;
+                &quot;icon&quot;&#xd;
+            ],&#xd;
+            &quot;data&quot;: [&#xd;
+                [&#xd;
+                    1,&#xd;
+                    &quot;blah&quot;,&#xd;
+                    &quot;icon_pan&quot;&#xd;
+                ],&#xd;
+                [&#xd;
+                    2,&#xd;
+                    &quot;blip&quot;,&#xd;
+                    &quot;icon_zoomin&quot;&#xd;
+                ]&#xd;
+            ]&#xd;
+        },&#xd;
+        &quot;tableList&quot;: [&#xd;
+            {&#xd;
+                &quot;columns&quot;: [&#xd;
+                    &quot;id&quot;,&#xd;
+                    &quot;name&quot;,&#xd;
+                    &quot;icon&quot;&#xd;
+                ],&#xd;
+                &quot;data&quot;: [&#xd;
+                    [&#xd;
+                        1,&#xd;
+                        &quot;blah&quot;,&#xd;
+                        &quot;icon_pan&quot;&#xd;
+                    ],&#xd;
+                    [&#xd;
+                        2,&#xd;
+                        &quot;blip&quot;,&#xd;
+                        &quot;icon_zoomin&quot;&#xd;
+                    ]&#xd;
+                ],&#xd;
+                &quot;displayName&quot;: &quot;Feature 1&quot;,&#xd;
+                &quot;id&quot;: &quot;f1&quot;&#xd;
+            },&#xd;
+            {&#xd;
+                &quot;columns&quot;: [&#xd;
+                    &quot;id&quot;,&#xd;
+                    &quot;name&quot;,&#xd;
+                    &quot;icon&quot;&#xd;
+                ],&#xd;
+                &quot;data&quot;: [&#xd;
+                    [&#xd;
+                        10,&#xd;
+                        &quot;blah2&quot;,&#xd;
+                        &quot;icon_pan2&quot;&#xd;
+                    ],&#xd;
+                    [&#xd;
+                        20,&#xd;
+                        &quot;blip2&quot;,&#xd;
+                        &quot;icon_zoomin2&quot;&#xd;
+                    ]&#xd;
+                ],&#xd;
+                &quot;displayName&quot;: &quot;Feature 2&quot;,&#xd;
+                &quot;id&quot;: &quot;f2&quot;&#xd;
+            }&#xd;
+        ]&#xd;
+    },&#xd;
+    &quot;layout&quot;: &quot;A4 portrait&quot;&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${printServer}</stringProp>
+          <stringProp name="HTTPSampler.port">{port}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">${servletName}/print/verboseExample/buildreport.pdf</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <boolProp name="HTTPSampler.monitor">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Only Create Report" enabled="false">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">4</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">5000</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">20</stringProp>
+        <longProp name="ThreadGroup.start_time">1403528769000</longProp>
+        <longProp name="ThreadGroup.end_time">1403528769000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create Report Request" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+    &quot;attributes&quot;: {&#xd;
+        &quot;description&quot;: &quot;Hello every body !&quot;,&#xd;
+        &quot;legend&quot;: {&#xd;
+            &quot;classes&quot;: [&#xd;
+                {&#xd;
+                    &quot;icons&quot;: [&quot;http://localhost:9876/e2egeoserver/www/legends/arbres.png&quot;],&#xd;
+                    &quot;name&quot;: &quot;Arbres&quot;&#xd;
+                },&#xd;
+                {&#xd;
+                    &quot;icons&quot;: [&quot;http://localhost:9876/e2egeoserver/www/legends/perturbations.png&quot;],&#xd;
+                    &quot;name&quot;: &quot;Peturbations&quot;&#xd;
+                },&#xd;
+                {&#xd;
+                    &quot;icons&quot;: [&quot;http://localhost:9876/e2egeoserver/www/legends/points-de-vente.png&quot;],&#xd;
+                    &quot;name&quot;: &quot;Points de vente&quot;&#xd;
+                },&#xd;
+                {&#xd;
+                    &quot;icons&quot;: [&quot;http://localhost:9876/e2egeoserver/www/legends/stationement.png&quot;],&#xd;
+                    &quot;name&quot;: &quot;Stationement&quot;&#xd;
+                }&#xd;
+            ],&#xd;
+            &quot;name&quot;: &quot;&quot;&#xd;
+        },&#xd;
+        &quot;length&quot;: 45.123,&#xd;
+        &quot;map&quot;: {&#xd;
+            &quot;bbox&quot;: [&#xd;
+                100,&#xd;
+                -1,&#xd;
+                106,&#xd;
+                2&#xd;
+            ],&#xd;
+            &quot;dpi&quot;: 90,&#xd;
+            &quot;layers&quot;: [{&#xd;
+                &quot;geoJson&quot;: &quot;file://resources/geojson.json&quot;,&#xd;
+                &quot;style&quot;: &quot;polygon&quot;,&#xd;
+                &quot;type&quot;: &quot;geojson&quot;&#xd;
+            }],&#xd;
+            &quot;projection&quot;: &quot;CRS:84&quot;,&#xd;
+            &quot;rotation&quot;: 0&#xd;
+        },&#xd;
+        &quot;name&quot;: &quot;Hello&quot;,&#xd;
+        &quot;number&quot;: 45,&#xd;
+        &quot;table&quot;: {&#xd;
+            &quot;columns&quot;: [&#xd;
+                &quot;id&quot;,&#xd;
+                &quot;name&quot;,&#xd;
+                &quot;icon&quot;&#xd;
+            ],&#xd;
+            &quot;data&quot;: [&#xd;
+                [&#xd;
+                    1,&#xd;
+                    &quot;blah&quot;,&#xd;
+                    &quot;icon_pan&quot;&#xd;
+                ],&#xd;
+                [&#xd;
+                    2,&#xd;
+                    &quot;blip&quot;,&#xd;
+                    &quot;icon_zoomin&quot;&#xd;
+                ]&#xd;
+            ]&#xd;
+        },&#xd;
+        &quot;tableList&quot;: [&#xd;
+            {&#xd;
+                &quot;columns&quot;: [&#xd;
+                    &quot;id&quot;,&#xd;
+                    &quot;name&quot;,&#xd;
+                    &quot;icon&quot;&#xd;
+                ],&#xd;
+                &quot;data&quot;: [&#xd;
+                    [&#xd;
+                        1,&#xd;
+                        &quot;blah&quot;,&#xd;
+                        &quot;icon_pan&quot;&#xd;
+                    ],&#xd;
+                    [&#xd;
+                        2,&#xd;
+                        &quot;blip&quot;,&#xd;
+                        &quot;icon_zoomin&quot;&#xd;
+                    ]&#xd;
+                ],&#xd;
+                &quot;displayName&quot;: &quot;Feature 1&quot;,&#xd;
+                &quot;id&quot;: &quot;f1&quot;&#xd;
+            },&#xd;
+            {&#xd;
+                &quot;columns&quot;: [&#xd;
+                    &quot;id&quot;,&#xd;
+                    &quot;name&quot;,&#xd;
+                    &quot;icon&quot;&#xd;
+                ],&#xd;
+                &quot;data&quot;: [&#xd;
+                    [&#xd;
+                        10,&#xd;
+                        &quot;blah2&quot;,&#xd;
+                        &quot;icon_pan2&quot;&#xd;
+                    ],&#xd;
+                    [&#xd;
+                        20,&#xd;
+                        &quot;blip2&quot;,&#xd;
+                        &quot;icon_zoomin2&quot;&#xd;
+                    ]&#xd;
+                ],&#xd;
+                &quot;displayName&quot;: &quot;Feature 2&quot;,&#xd;
+                &quot;id&quot;: &quot;f2&quot;&#xd;
+            }&#xd;
+        ]&#xd;
+    },&#xd;
+    &quot;layout&quot;: &quot;A4 portrait&quot;&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${printServer}</stringProp>
+          <stringProp name="HTTPSampler.port">${port}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">${servletName}/print/verboseExample/report.pdf</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <boolProp name="HTTPSampler.monitor">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Report ID Extractor" enabled="true">
+            <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+            <stringProp name="RegexExtractor.refname">reportId</stringProp>
+            <stringProp name="RegexExtractor.regex">&quot;ref&quot;:&quot;([^.&quot;]+)&quot;,</stringProp>
+            <stringProp name="RegexExtractor.template">$1$</stringProp>
+            <stringProp name="RegexExtractor.default">REGEX BROKEN</stringProp>
+            <stringProp name="RegexExtractor.match_number">1</stringProp>
+          </RegexExtractor>
+          <hashTree/>
+        </hashTree>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">true</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+            </value>
+          </objProp>
+          <stringProp name="filename">/home/tsauerwein/Downloads/apache-jmeter-2.11/mfp-log.jtl</stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Only Create Report (Large Request)" enabled="false">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">700</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">20</stringProp>
+        <longProp name="ThreadGroup.start_time">1403528769000</longProp>
+        <longProp name="ThreadGroup.end_time">1403528769000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create Report Request" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${printServer}</stringProp>
+          <stringProp name="HTTPSampler.port">${port}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">${servletName}/print/verboseExample/report.pdf</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
+            <collectionProp name="HTTPFileArgs.files">
+              <elementProp name="/home/tsauerwein/projects/mapfish-printV3/jMeter/large-request.json" elementType="HTTPFileArg">
+                <stringProp name="File.path">/home/tsauerwein/projects/mapfish-printV3/jMeter/large-request.json</stringProp>
+                <stringProp name="File.paramname"></stringProp>
+                <stringProp name="File.mimetype">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <boolProp name="HTTPSampler.monitor">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Report ID Extractor" enabled="true">
+            <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+            <stringProp name="RegexExtractor.refname">reportId</stringProp>
+            <stringProp name="RegexExtractor.regex">&quot;ref&quot;:&quot;([^.&quot;]+)&quot;,</stringProp>
+            <stringProp name="RegexExtractor.template">$1$</stringProp>
+            <stringProp name="RegexExtractor.default">REGEX BROKEN</stringProp>
+            <stringProp name="RegexExtractor.match_number">1</stringProp>
+          </RegexExtractor>
+          <hashTree/>
+        </hashTree>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+          <boolProp name="ResultCollector.success_only_logging">true</boolProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
