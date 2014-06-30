@@ -24,8 +24,11 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
     <context:annotation-config/>
+
     <bean id="servlet" class="org.mapfish.print.servlet.MapPrinterServlet">
         <property name="maxCreateAndGetWaitTimeInSeconds" value="30" />
     </bean>
+    <bean id="deprecatedServlet" class="org.mapfish.print.servlet.oldapi.OldAPIMapPrinterServlet"/>
+
 
 </beans>

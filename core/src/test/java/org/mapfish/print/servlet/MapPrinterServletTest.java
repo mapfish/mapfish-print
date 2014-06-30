@@ -71,13 +71,11 @@ import static org.junit.Assert.fail;
 import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGURATION_FILE_KEY;
 
 @ContextConfiguration(locations = {
-        MapPrinterServletTest.PRINT_CONTEXT,
-        MapPrinterServletTest.SERVLET_CONTEXT_CONTEXT
+        MapPrinterServletTest.PRINT_CONTEXT
 })
 public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
     public static final String PRINT_CONTEXT = "classpath:org/mapfish/print/servlet/mapfish-print-servlet.xml";
-    public static final String SERVLET_CONTEXT_CONTEXT = "classpath:org/mapfish/print/servlet/mapfish-spring-servlet-context-config.xml";
 
     @Autowired
     private MapPrinterServlet servlet;

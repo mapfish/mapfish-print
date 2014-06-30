@@ -21,7 +21,6 @@ package org.mapfish.print.servlet.fileloader;
 
 import com.google.common.collect.Iterators;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.File;
 import java.net.URI;
@@ -39,7 +38,6 @@ public final class ServletConfigFileLoader extends AbstractFileConfigFileLoader 
     private static final String PREFIX = "servlet";
     private static final int PREFIX_LENGTH = (PREFIX + "://").length();
 
-    @Qualifier("servletContext")
     @Autowired
     private ServletContext servletContext;
 

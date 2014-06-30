@@ -47,12 +47,6 @@ public final class CliDefinition {
     @Argument(description = "Get the config for the client form. Doesn't generate a PDF")
     public static boolean clientConfig = false;
 
-    @Argument(description = "Referer address to use when doing queries")
-    public static String referer = null;
-
-    @Argument(description = "Cookie to use when doing queries")
-    public static String cookie = null;
-
     @Argument(description = "Spring configuration file to use in addition to the default.  This allows overriding certain values if " +
                             "desired")
     public static String springConfig = null;

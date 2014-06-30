@@ -762,21 +762,33 @@ public class MapPrinterServlet extends BaseMapServlet {
         return requestHeadersAttribute;
     }
 
-    private PJsonObject parseJson(final String requestDataRaw, final HttpServletResponse httpServletResponse) {
+    /**
+     * Parse the print request json data.
+     *
+     * @param requestDataRaw the request json in string form
+     * @param httpServletResponse the response object to use for returning errors if needed
+     */
+    public static PJsonObject parseJson(final String requestDataRaw, final HttpServletResponse httpServletResponse) {
 
         try {
             if (requestDataRaw == null) {
                 error(httpServletResponse, "Missing post data.  The post payload must either be a form post with a spec parameter or " +
-                                           "must " +
-
-                                           "be a raw json post with the request.", HttpStatus.INTERNAL_SERVER_ERROR);
+                                           "must be a raw json post with the request.", HttpStatus.INTERNAL_SERVER_ERROR);
                 return null;
             }
 
             String requestData = requestDataRaw;
+            if (!requestData.startsWith("spec=") && !requestData.startsWith("{")) {
+                try {
+                    requestData = URLDecoder.decode(requestData, Constants.DEFAULT_ENCODING);
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
+            }
             if (requestData.startsWith("spec=")) {
                 requestData = requestData.substring("spec=".length());
             }
+
 
             try {
                 return MapPrinter.parseSpec(requestData);
@@ -793,12 +805,24 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
     }
 
-
-    private String createAndSubmitPrintJob(final String appId, final String format, final String requestDataRaw,
+    /**
+     * Start a print job.
+     *
+     * @param appId the id of the printer app
+     * @param format the format of the returned report.
+     * @param requestDataRaw the request json in string form
+     * @param httpServletRequest the request object
+     * @param httpServletResponse the response object
+     * @return the job reference id
+     */
+    public final String createAndSubmitPrintJob(final String appId, final String format, final String requestDataRaw,
                                            final HttpServletRequest httpServletRequest,
                                            final HttpServletResponse httpServletResponse) throws JSONException {
 
         PJsonObject specJson = parseJson(requestDataRaw, httpServletResponse);
+        if (specJson == null) {
+            return null;
+        }
         if (SPEC_LOGGER.isInfoEnabled()) {
             SPEC_LOGGER.info(specJson.toString());
         }

@@ -19,20 +19,20 @@
 
 package org.mapfish.print;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-
 import org.json.JSONObject;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequest;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test the old print API.
@@ -66,7 +66,7 @@ public class OldPrintApiTest extends AbstractApiTest {
     @Test
     public void testInfoVarAndUrl() throws Exception {
         ClientHttpRequest request = getPrintRequest(
-                "info.json?var=printConfig&url=http://demo.mapfish.org/2.2/print/pdf/info.json", HttpMethod.GET);
+                "info.json?var=printConfig&url=http://demo.mapfish.org/2.2/print/dep/info.json", HttpMethod.GET);
         response = request.execute();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
@@ -79,8 +79,8 @@ public class OldPrintApiTest extends AbstractApiTest {
                 result.replace("var printConfig=", "").replace(";", ""));
         
         assertTrue(info.has("scales"));
-        assertEquals("http://demo.mapfish.org/2.2/print/pdf/print.pdf", info.getString("printURL"));
-        assertEquals("http://demo.mapfish.org/2.2/print/pdf/create.json", info.getString("createURL"));
+        assertEquals("http://demo.mapfish.org/2.2/print/dep/print.pdf", info.getString("printURL"));
+        assertEquals("http://demo.mapfish.org/2.2/print/dep/create.json", info.getString("createURL"));
     }
 
     @Test
@@ -95,11 +95,9 @@ public class OldPrintApiTest extends AbstractApiTest {
         response.close();
         
         String getUrl = result.getString("getURL");
-        assertTrue(getUrl.startsWith("/print-servlet/dep-pdf/"));
-        assertTrue(getUrl.endsWith(".pdf.printout"));
+        assertTrue(getUrl.startsWith("/print-servlet/print/report/"));
           
-        ClientHttpRequest requestGetPdf = getPrintRequest(
-                getUrl.replace("/print-servlet/dep-pdf/", ""), HttpMethod.POST);
+        ClientHttpRequest requestGetPdf = getRequest(getUrl.replace("/print-servlet/", ""), HttpMethod.GET);
         response = requestGetPdf.execute();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(new MediaType("application", "pdf"), response.getHeaders().getContentType());
@@ -124,7 +122,7 @@ public class OldPrintApiTest extends AbstractApiTest {
     @Test
     public void testCreate_Var() throws Exception {
         String url = "create.json?url=" +
-                URLEncoder.encode("http://localhost:8080/print-servlet/dep-pdf/create.json", Constants.DEFAULT_ENCODING);
+                URLEncoder.encode("http://localhost:8080/print-servlet/print/dep/create.json", Constants.DEFAULT_ENCODING);
         ClientHttpRequest request = getPrintRequest(url, HttpMethod.POST);
         setPrintSpec(getPrintSpec("examples/verboseExample/old-api-requestData.json"), request);
         response = request.execute();
@@ -135,10 +133,9 @@ public class OldPrintApiTest extends AbstractApiTest {
         response.close();
         
         String getUrl = result.getString("getURL");
-        assertTrue(getUrl.startsWith("http://localhost:8080/print-servlet/dep-pdf/"));
-        assertTrue(getUrl.endsWith(".pdf.printout"));
+        assertTrue(getUrl.startsWith("http://localhost:8080/print-servlet/print/report/"));
 
-        ClientHttpRequest requestGetPdf = httpRequestFactory.createRequest(new URI(getUrl), HttpMethod.POST);
+        ClientHttpRequest requestGetPdf = httpRequestFactory.createRequest(new URI(getUrl), HttpMethod.GET);
         response = requestGetPdf.execute();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(new MediaType("application", "pdf"), response.getHeaders().getContentType());
@@ -216,7 +213,7 @@ public class OldPrintApiTest extends AbstractApiTest {
 
     protected ClientHttpRequest getPrintRequest(String path, HttpMethod method) throws IOException,
             URISyntaxException {
-        return getRequest("dep-pdf/" + path, method);
+        return getRequest("print/dep/" + path, method);
     }
 
 }

@@ -22,8 +22,8 @@ package org.mapfish.print.servlet.oldapi;
 import com.google.common.collect.Maps;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.servlet.MapPrinterServletTest;
-import org.mapfish.print.servlet.ServletInfo;
 import org.mapfish.print.servlet.ServletMapPrinterFactory;
 import org.mapfish.print.servlet.job.ThreadPoolJobManager;
 import org.mapfish.print.wrapper.PObject;
@@ -42,18 +42,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = {
-        OldAPIMapPrinterServletTest.PRINT_CONTEXT,
-        OldAPIMapPrinterServletTest.SERVLET_CONTEXT_CONTEXT
+        MapPrinterServletTest.PRINT_CONTEXT,
 })
 public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
-
-    public static final String PRINT_CONTEXT = "classpath:org/mapfish/print/servlet/mapfish-print-servlet.xml";
-    public static final String SERVLET_CONTEXT_CONTEXT = "classpath:org/mapfish/print/servlet/mapfish-spring-servlet-context-config.xml";
 
     @Autowired
     private OldAPIMapPrinterServlet servlet;
     @Autowired
-    private ServletInfo servletInfo;
+    private MapPrinterServlet newApiServlet;
     @Autowired
     private ServletMapPrinterFactory printerFactory;
     @Autowired
@@ -89,8 +85,8 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals(802, layout.getObject("map").getInt("width"));
         assertEquals(500, layout.getObject("map").getInt("height"));
         
-        assertEquals("/print-old/print.pdf", info.getString("printURL"));
-        assertEquals("/print-old/create.json", info.getString("createURL"));
+        assertEquals("/print-old/dep/print.pdf", info.getString("printURL"));
+        assertEquals("/print-old/dep/create.json", info.getString("createURL"));
     }
 
     @Test
@@ -100,7 +96,7 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         final MockHttpServletRequest infoRequest = new MockHttpServletRequest();
         infoRequest.setContextPath("/print-old");
         final MockHttpServletResponse infoResponse = new MockHttpServletResponse();
-        this.servlet.getInfo("http://demo.mapfish.org/2.2/print/pdf/info.json", "printConfig",
+        this.servlet.getInfo("http://demo.mapfish.org/2.2/print/dep/info.json", "printConfig",
                 infoRequest, infoResponse);
         assertEquals(HttpStatus.OK.value(), infoResponse.getStatus());
         
@@ -118,8 +114,8 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         assertTrue(info.has("printURL"));
         assertTrue(info.has("createURL"));
         
-        assertEquals("http://demo.mapfish.org/2.2/print/pdf/print.pdf", info.getString("printURL"));
-        assertEquals("http://demo.mapfish.org/2.2/print/pdf/create.json", info.getString("createURL"));
+        assertEquals("http://demo.mapfish.org/2.2/print/dep/print.pdf", info.getString("printURL"));
+        assertEquals("http://demo.mapfish.org/2.2/print/dep/create.json", info.getString("createURL"));
     }
 
     @Test
@@ -143,21 +139,22 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         createRequest.setPathInfo("/create.json");
         final MockHttpServletResponse createResponse = new MockHttpServletResponse();
         
-        this.servlet.createReportPost("http://demo.mapfish.org/2.2/print/pdf/create.json",
+        this.servlet.createReportPost("http://demo.mapfish.org/2.2/print/dep/create.json",
                 loadRequestDataAsString("requestData-old-api.json"), createRequest, createResponse);
         assertEquals(HttpStatus.OK.value(), createResponse.getStatus());
         
         final String result = createResponse.getContentAsString();
         final String url = parseJSONObjectFromString(result).getString("getURL");
-        assertTrue(url.startsWith("http://demo.mapfish.org/2.2/print/pdf/"));
-        assertTrue(url.endsWith(".pdf.printout"));
-        final String printId = url.replace("http://demo.mapfish.org/2.2/print/pdf/", "")
-                .replace(".printout", "");
+        final String reportUrl = "http://demo.mapfish.org/2.2/print" + MapPrinterServlet.REPORT_URL + "/";
+        assertTrue(url.startsWith(reportUrl));
+        final String printId = url.replace(reportUrl, "");
 
-        final MockHttpServletRequest getFileRequest = new MockHttpServletRequest();
-        createRequest.setContextPath("/print-old");
+        final MockHttpServletResponse getReportResponse = new MockHttpServletResponse();
+        newApiServlet.getReport(printId, false, getReportResponse);
+        assertEquals(HttpStatus.OK.value(), getReportResponse.getStatus());
+
         final MockHttpServletResponse getFileResponse = new MockHttpServletResponse();
-        this.servlet.getFile(printId, getFileRequest, getFileResponse);
+        this.servlet.getFile(printId, false, getFileResponse);
         assertEquals(HttpStatus.OK.value(), getFileResponse.getStatus());
     }
     
@@ -218,13 +215,10 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
     @Test
     public void testGetFileNotFound() throws Exception {
         setUpConfigFiles();
-        
-        final MockHttpServletRequest getFileRequest = new MockHttpServletRequest();
-        getFileRequest.setContextPath("/print-old");
-        getFileRequest.setPathInfo("/print.pdf");
+
         final MockHttpServletResponse getFileResponse = new MockHttpServletResponse();
         
-        this.servlet.getFile("invalid-id.pdf", getFileRequest, getFileResponse);
+        this.servlet.getFile("invalid-id.pdf", false, getFileResponse);
         assertEquals(HttpStatus.NOT_FOUND.value(), getFileResponse.getStatus());
     }
 

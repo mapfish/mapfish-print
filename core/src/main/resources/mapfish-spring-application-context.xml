@@ -32,7 +32,6 @@
     <context:annotation-config/>
     <context:property-placeholder system-properties-mode="FALLBACK" file-encoding="UTF-8" location="classpath:mapfish-spring.properties"/>
 
-
     <bean id="servletInfo" class="org.mapfish.print.servlet.ConfigBasedServletInfo">
         <!-- If servlet id is not set then a random uuid will be used -->
         <!--<property name="servletId" value="print-server-1" />-->

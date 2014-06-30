@@ -33,6 +33,8 @@
             </map>
         </property>
     </bean>
-    
+
+    <bean id="servletContext" class="org.springframework.mock.web.MockServletContext"/>
+
     <bean id="!sleeper" class="org.mapfish.print.servlet.MapPrinterServletTest.SleepProcessor" scope="prototype" />
 </beans>

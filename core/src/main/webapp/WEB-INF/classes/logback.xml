@@ -26,12 +26,29 @@
         </layout>
     </appender>
 
+    <appender name="File" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logFile.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
     <logger name="org.mapfish" level="INFO" />
+    <logger name="org.springframework" level="OFF" />
     <!-- Set spec logger to INFO to log all print spec json data -->
     <logger name="org.mapfish.print.servlet.BaseMapServlet.spec" level="OFF" />
 
 
-    <root level="INFO">
+    <root level="ALL">
         <appender-ref ref="standardOut" />
+        <appender-ref ref="File" />
     </root>
 </configuration>

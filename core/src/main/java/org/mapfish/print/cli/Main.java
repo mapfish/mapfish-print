@@ -23,10 +23,8 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
-
 import com.google.common.io.CharStreams;
 import com.sampullara.cli.Args;
-
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
@@ -47,15 +45,11 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.mapfish.print.cli.CliDefinition.clientConfig;
 import static org.mapfish.print.cli.CliDefinition.config;
-import static org.mapfish.print.cli.CliDefinition.cookie;
 import static org.mapfish.print.cli.CliDefinition.output;
-import static org.mapfish.print.cli.CliDefinition.referer;
 import static org.mapfish.print.cli.CliDefinition.spec;
 import static org.mapfish.print.cli.CliDefinition.springConfig;
 import static org.mapfish.print.cli.CliDefinition.verbose;
@@ -154,13 +148,6 @@ public final class Main {
                 final String jsonConfiguration = CharStreams.toString(new InputStreamReader(inFile, Constants.DEFAULT_ENCODING));
                 final PJsonObject jsonSpec = MapPrinter.parseSpec(jsonConfiguration);
                 outFile = getOutputStream(this.mapPrinter.getOutputFormat(jsonSpec).getFileSuffix());
-                Map<String, String> headers = new HashMap<String, String>();
-                if (referer != null) {
-                    headers.put("Referer", referer);
-                }
-                if (cookie != null) {
-                    headers.put("Cookie", cookie);
-                }
                 this.mapPrinter.print(jsonSpec, outFile);
             }
         } finally {

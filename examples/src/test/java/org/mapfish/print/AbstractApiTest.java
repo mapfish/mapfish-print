@@ -43,7 +43,8 @@ import java.util.Map;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-        ExamplesTest.DEFAULT_SPRING_XML
+        ExamplesTest.DEFAULT_SPRING_XML,
+        ExamplesTest.TEST_SPRING_XML
 })
 public abstract class AbstractApiTest {
     
