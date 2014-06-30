@@ -39,16 +39,6 @@
 			<style mode="Opaque" backcolor="#E6E6E6"/>
 		</conditionalStyle>
 	</style>
-	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
-	<parameter name="attribute_center_esting" class="java.lang.String"/>
-	<parameter name="attribute_scale" class="java.lang.String"/>
-	<parameter name="attribute_comment" class="java.lang.String"/>
-	<parameter name="attribute_title" class="java.lang.String"/>
-	<parameter name="attribute_srs" class="java.lang.String"/>
-	<parameter name="attribute_center_northing" class="java.lang.String"/>
-	<parameter name="attribute_rotation" class="java.lang.String"/>
-	<parameter name="map_main" class="java.awt.image.BufferedImage"/>
-	<parameter name="attribute_units" class="java.lang.String"/>
 	<field name="id" class="java.lang.String"/>
 	<field name="name" class="java.lang.String"/>
 	<field name="icon" class="java.awt.Image"/>
