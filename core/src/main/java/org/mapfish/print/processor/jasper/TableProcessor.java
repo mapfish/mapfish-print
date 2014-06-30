@@ -50,6 +50,8 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     /**
      * Set strategies for converting the textual representation of each column to some other object (image, other text, etc...).
      *
+     * Note: The type returned by the column converter must match the type in the jasper template.
+     *
      * @param columnConverters Map from column name -> {@link TableColumnConverter}
      */
     public void setColumns(final Map<String, TableColumnConverter> columnConverters) {

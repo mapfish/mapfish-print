@@ -186,7 +186,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                     values.getParameters(),
                     connection);
         } else if (template.getTableDataKey() != null) {
-            final JRMapCollectionDataSource dataSource = values.getObject(template.getTableDataKey(), JRMapCollectionDataSource.class);
+            final JRDataSource dataSource = values.getObject(template.getTableDataKey(), JRDataSource.class);
             print = JasperFillManager.fillReport(
                     jasperTemplateBuild.getAbsolutePath(),
                     values.getParameters(),
