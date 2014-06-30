@@ -4,7 +4,7 @@
 		"map": 
 		{
 			"projection": "EPSG:4326",
-			"dpi": 90,
+			"dpi": 72,
 			"rotation": 90,
             "bbox": [-139.84870868359,18.549281576172,-51.852562316406,55.778420423828],
             "longitudeFirst": true,

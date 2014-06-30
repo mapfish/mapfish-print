@@ -3,7 +3,7 @@
     "mapDef": {
       "bbox": [95, -1, 110, 2],
       "projection": "CRS:84",
-      "dpi": 90,
+      "dpi": 72,
       "layers": [
         {
           "type": "vector",

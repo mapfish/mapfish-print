@@ -31,10 +31,12 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
 

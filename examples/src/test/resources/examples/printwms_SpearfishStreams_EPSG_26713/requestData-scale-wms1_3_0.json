@@ -6,7 +6,7 @@
 		"map": 
 		{
 			"projection": "EPSG:26713",
-			"dpi": 90,
+			"dpi": 72,
 			"rotation": 0,
 			"center": [599476.35443317, 4921009.1961324],
             "scale": 140000,

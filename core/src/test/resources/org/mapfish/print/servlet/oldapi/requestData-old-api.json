@@ -4,7 +4,7 @@
    "layout":"A4 Portrait",
    "outputFilename": "political-boundaries",
    "outputFormat": "pdf",
-   "dpi":90,
+   "dpi":72,
    "layers":[
       {
          "type":"Vector",
