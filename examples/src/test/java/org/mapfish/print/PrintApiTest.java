@@ -211,6 +211,22 @@ public class PrintApiTest extends AbstractApiTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
+    @Test
+    public void testCreateReport_RequestTooLarge() throws Exception {
+        ClientHttpRequest request = getPrintRequest("geoext" + MapPrinterServlet.REPORT_URL + ".pdf", HttpMethod.POST);
+        final String printSpec = getPrintSpec("examples/geoext/requestData.json");
+        
+        // create a large, fake request
+        StringBuilder largeRequest = new StringBuilder();
+        for (int i = 0; i < 9999; i++) {
+            largeRequest.append(printSpec);
+        }
+        
+        setPrintSpec(largeRequest.toString(), request);
+        response = request.execute();
+        assertNotEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
     @Test(timeout = 60000)
     public void testCreateReport_Success_App() throws Exception {
         final String printSpec = getPrintSpec("examples/geoext/requestData.json");
