@@ -19,8 +19,8 @@
 
 package org.mapfish.print.processor.jasper;
 
+import com.google.common.collect.Maps;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
-
 import org.mapfish.print.attribute.TableAttribute.TableAttributeValue;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.wrapper.json.PJsonArray;
@@ -37,7 +37,9 @@ import java.util.Map;
  * @author Jesse
  * @author sbrunner
  */
-public class TableProcessor extends AbstractProcessor<TableProcessor.Input, TableProcessor.Output> {
+public final class TableProcessor extends AbstractProcessor<TableProcessor.Input, TableProcessor.Output> {
+    private Map<String, TableColumnConverter> columnConverterMap = Maps.newHashMap();
+
     /**
      * Constructor.
      */
@@ -45,13 +47,22 @@ public class TableProcessor extends AbstractProcessor<TableProcessor.Input, Tabl
         super(Output.class);
     }
 
+    /**
+     * Set strategies for converting the textual representation of each column to some other object (image, other text, etc...).
+     *
+     * @param columnConverters Map from column name -> {@link TableColumnConverter}
+     */
+    public void setColumns(final Map<String, TableColumnConverter> columnConverters) {
+        this.columnConverterMap = columnConverters;
+    }
+
     @Override
-    public final Input createInputParameter() {
+    public Input createInputParameter() {
         return new Input();
     }
 
     @Override
-    public final Output execute(final Input values, final ExecutionContext context) throws Exception {
+    public Output execute(final Input values, final ExecutionContext context) throws Exception {
         final TableAttributeValue jsonTable = values.table;
         final Collection<Map<String, ?>> table = new ArrayList<Map<String, ?>>();
 
@@ -59,9 +70,17 @@ public class TableProcessor extends AbstractProcessor<TableProcessor.Input, Tabl
         final PJsonArray[] jsonData = jsonTable.data;
         for (final PJsonArray jsonRow : jsonData) {
             checkCancelState(context);
-            final Map<String, String> row = new HashMap<String, String>();
+            final Map<String, Object> row = new HashMap<String, Object>();
             for (int j = 0; j < jsonRow.size(); j++) {
-                row.put(jsonColumns[j], jsonRow.getString(j));
+                final String columnName = jsonColumns[j];
+                final String rowValue = jsonRow.getString(j);
+                TableColumnConverter converter = this.columnConverterMap.get(columnName);
+                if (converter != null) {
+                    Object convertedValue = converter.resolve(rowValue);
+                    row.put(columnName, convertedValue);
+                } else {
+                    row.put(columnName, rowValue);
+                }
             }
             table.add(row);
         }
@@ -71,7 +90,7 @@ public class TableProcessor extends AbstractProcessor<TableProcessor.Input, Tabl
     }
 
     @Override
-    protected final void extraValidation(final List<Throwable> validationErrors) {
+    protected void extraValidation(final List<Throwable> validationErrors) {
         // no checks needed
     }
 

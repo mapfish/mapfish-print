@@ -72,6 +72,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
     @Qualifier("httpClientFactory")
     @Autowired
     private ClientHttpRequestFactory httpRequestFactory;
+    private String tableDataKey;
 
 
     /**
@@ -126,7 +127,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
     public final List<Processor> getProcessors() {
         return this.processors;
     }
-    
+
     /**
      * Set the normal processors.
      *
@@ -168,6 +169,19 @@ public class Template implements ConfigurationObject, HasConfiguration {
     public final void setIterProcessors(final List<Processor> iterProcessors) {
         assertProcessors(iterProcessors);
         this.iterProcessors = iterProcessors;
+    }
+
+    /**
+     * Set the key of the data that is the datasource for the main table in the report.
+     *
+     * @param tableData the key of the data that is the datasource for the main table in the report.
+     */
+    public final void setTableData(final String tableData) {
+        this.tableDataKey = tableData;
+    }
+
+    public final String getTableDataKey() {
+        return this.tableDataKey;
     }
 
     public final String getJdbcUrl() {
@@ -232,9 +246,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
      * @param styles set the styles specific for this template.
      */
     public final void setStyles(final Map<String, String> styles) {
-        Map<String, Style> map = StyleParser.loadStyles(this.configuration, this.styleParser, this.httpRequestFactory, styles);
-
-        this.styles = map;
+        this.styles = StyleParser.loadStyles(this.configuration, this.styleParser, this.httpRequestFactory, styles);
     }
 
     /**
@@ -259,8 +271,9 @@ public class Template implements ConfigurationObject, HasConfiguration {
 
     /**
      * Register the named style.
+     *
      * @param styleName the style name
-     * @param style the style to register under that name.
+     * @param style     the style to register under that name.
      */
     public final void setStyle(final String styleName, final Style style) {
         this.styles.put(styleName, style);
@@ -268,9 +281,12 @@ public class Template implements ConfigurationObject, HasConfiguration {
 
     @Override
     public final void validate(final List<Throwable> validationErrors) {
+        int numberOfTableConfigurations = this.iterProcessors.isEmpty() ? 0 : 1;
+        numberOfTableConfigurations += this.tableDataKey == null ? 0 : 1;
+        numberOfTableConfigurations += this.jdbcUrl == null ? 0 : 1;
 
-        if (getReportTemplate() == null) {
-            validationErrors.add(new ConfigurationException("No reportTemplate is defined in template"));
+        if (numberOfTableConfigurations > 1) {
+            validationErrors.add(new ConfigurationException("Only one of 'iterValue' or 'tableData' or 'jdbcUrl' should be defined."));
         }
 
         for (Processor processor : this.processors) {

@@ -19,20 +19,37 @@
 
 package org.mapfish.print.processor.jasper;
 
+import com.google.common.base.Predicate;
+import com.google.common.io.Resources;
 import jsr166y.ForkJoinPool;
+import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.output.AbstractJasperReportOutputFormat;
+import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.MapfishParser;
+import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.mock.http.client.MockClientHttpRequest;
+import org.springframework.mock.http.client.MockClientHttpResponse;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
+import java.util.Map;
+import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
 
@@ -40,7 +57,8 @@ import static org.junit.Assert.assertEquals;
  * @author Jesse on 4/10/2014.
  */
 public class TableProcessorTest extends AbstractMapfishSpringTest {
-    public static final String BASE_DIR = "table/";
+    public static final String BASIC_BASE_DIR = "table/";
+    public static final String IMAGE_CONVERTER_BASE_DIR = "table-image-column-resolver/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
@@ -49,14 +67,17 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
     @Autowired
     private ForkJoinPool forkJoinPool;
     @Autowired
-    private ClientHttpRequestFactory httpRequestFactory;
-
+    private TestHttpClientFactory httpRequestFactory;
+    @Autowired
+    private Map<String, OutputFormat> outputFormat;
 
     @Test
     public void testBasicTableProperties() throws Exception {
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
+        final String baseDir = BASIC_BASE_DIR;
+
+        final Configuration config = configurationFactory.getConfig(getFile(baseDir + "config.yaml"));
         final Template template = config.getTemplate("main");
-        PJsonObject requestData = loadJsonRequestData();
+        PJsonObject requestData = loadJsonRequestData(baseDir);
         Values values = new Values(requestData, template, parser, getTaskDirectory(), this.httpRequestFactory);
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
@@ -70,7 +91,53 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         assertEquals(2, count);
     }
 
-    private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(TableProcessorTest.class, BASE_DIR + "requestData.json");
+    @Test
+    public void testBasicTablePrint() throws Exception {
+        final String baseDir = BASIC_BASE_DIR;
+        final Configuration config = configurationFactory.getConfig(getFile(baseDir + "config.yaml"));
+        PJsonObject requestData = loadJsonRequestData(baseDir);
+
+        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
+        JasperPrint print = format.getJasperPrint(requestData, config, getFile(TableProcessorTest.class, baseDir), getTaskDirectory());
+        BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
+
+        // note that we are using a sample size of 50, because the image is quite big.
+        // otherwise small differences are not detected!
+        new ImageSimilarity(reportImage, 50).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
+    }
+
+    @Test
+    public void testColumnImageConverter() throws Exception {
+        httpRequestFactory.registerHandler(new Predicate<URI>() {
+            @Override
+            public boolean apply(@Nullable URI input) {
+                return input.toString().contains("icons.com");
+            }
+        }, new TestHttpClientFactory.Handler() {
+            @Override
+            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                final URL imageUrl = TableProcessorTest.class.getResource("/icons" + uri.getPath());
+                final byte[] imageBytes = Resources.toByteArray(imageUrl);
+                MockClientHttpRequest request = new MockClientHttpRequest();
+                request.setResponse(new MockClientHttpResponse(imageBytes, HttpStatus.OK));
+                return request;
+            }
+        });
+
+        final String baseDir = IMAGE_CONVERTER_BASE_DIR;
+        final Configuration config = configurationFactory.getConfig(getFile(baseDir + "config.yaml"));
+        PJsonObject requestData = loadJsonRequestData(baseDir);
+
+        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
+        JasperPrint print = format.getJasperPrint(requestData, config, getFile(TableProcessorTest.class, baseDir), getTaskDirectory());
+        BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
+        ImageIO.write(reportImage, "png", new File("e:/tmp/testColumnImageConverter.png"));
+        // note that we are using a sample size of 50, because the image is quite big.
+        // otherwise small differences are not detected!
+        new ImageSimilarity(reportImage, 50).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
+    }
+
+    private static PJsonObject loadJsonRequestData(String baseDir) throws IOException {
+        return parseJSONObjectFromFile(TableProcessorTest.class, baseDir + "requestData.json");
     }
 }

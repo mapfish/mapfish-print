@@ -109,7 +109,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
      * // CSOFF: RedundantThrows
      */
     @VisibleForTesting
-    protected final JasperPrint getJasperPrint(final PJsonObject requestData, final Configuration config,
+    public final JasperPrint getJasperPrint(final PJsonObject requestData, final Configuration config,
                                                final File configDir, final File taskDirectory)
             throws JRException, SQLException, ExecutionException, JSONException {
         // CSON: RedundantThrows
@@ -185,6 +185,12 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                     jasperTemplateBuild.getAbsolutePath(),
                     values.getParameters(),
                     connection);
+        } else if (template.getTableDataKey() != null) {
+            final JRMapCollectionDataSource dataSource = values.getObject(template.getTableDataKey(), JRMapCollectionDataSource.class);
+            print = JasperFillManager.fillReport(
+                    jasperTemplateBuild.getAbsolutePath(),
+                    values.getParameters(),
+                    dataSource);
         } else {
             print = JasperFillManager.fillReport(
                     jasperTemplateBuild.getAbsolutePath(),

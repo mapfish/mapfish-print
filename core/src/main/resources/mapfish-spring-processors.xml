@@ -37,6 +37,9 @@
     <bean id="!addHeaders" class="org.mapfish.print.processor.http.AddHeadersProcessor" scope="prototype" />
     <bean id="!forwardHeaders" class="org.mapfish.print.processor.http.ForwardHeadersProcessor" scope="prototype" />
 
+    <bean id="!urlImage" class="org.mapfish.print.processor.jasper.HttpImageResolver" scope="prototype" />
+
+
     <bean class="org.mapfish.print.processor.ProcessorDependency">
         <constructor-arg name="required" value="org.mapfish.print.processor.map.SetStyleProcessor" />
         <constructor-arg name="dependent" value="org.mapfish.print.processor.map.CreateMapProcessor"/>
