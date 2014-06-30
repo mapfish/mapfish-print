@@ -46,7 +46,7 @@ public final class ParserUtils {
     public static final Predicate<Field> FILTER_ONLY_REQUIRED_ATTRIBUTES = new Predicate<Field>() {
         @Override
         public boolean apply(@Nullable final Field input) {
-            return input != null && input.getAnnotation(HasDefaultValue.class) == null;
+            return input != null && input.getAnnotation(HasDefaultValue.class) == null && !Modifier.isFinal(input.getModifiers());
         }
     };
     /**

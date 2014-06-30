@@ -17,7 +17,7 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.processor;
+package org.mapfish.print.processor.http;
 
 import org.springframework.http.client.ClientHttpRequestFactory;
 

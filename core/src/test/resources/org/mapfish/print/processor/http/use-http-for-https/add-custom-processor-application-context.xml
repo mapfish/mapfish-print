@@ -24,11 +24,12 @@
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-    <bean id="!mapUriTestProcessor" class="org.mapfish.print.processor.MapUriProcessorTest$TestProcessor" scope="prototype"/>
+    <bean id="!useHttpForHttpsTestProcessor" class="org.mapfish.print.processor.http.UseHttpForHttpsProcessorTest$TestProcessor" scope="prototype"/>
+
 
     <bean class="org.mapfish.print.processor.ProcessorDependency">
-        <constructor-arg name="required" value="org.mapfish.print.processor.MapUriProcessor" />
-        <constructor-arg name="dependent" value="org.mapfish.print.processor.MapUriProcessorTest$TestProcessor"/>
+        <constructor-arg name="required" value="org.mapfish.print.processor.http.UseHttpForHttpsProcessor" />
+        <constructor-arg name="dependent" value="org.mapfish.print.processor.http.UseHttpForHttpsProcessorTest$TestProcessor"/>
         <constructor-arg name="commonInputs">
             <util:list>
                 <value>clientHttpRequestFactory</value>

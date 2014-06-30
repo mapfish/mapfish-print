@@ -21,7 +21,6 @@ package org.mapfish.print.servlet;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import org.jfree.util.Log;
 import org.json.JSONException;
@@ -42,7 +41,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -61,7 +59,6 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
@@ -168,6 +165,11 @@ public class MapPrinterServlet extends BaseMapServlet {
      */
     public static final String JSON_OUTPUT_FORMAT = "outputFormat";
     private static final int JSON_INDENT_FACTOR = 4;
+    /**
+     * The json tag referring to the attributes.
+     */
+    public static final String JSON_ATTRIBUTES = "attributes";
+    private static final String JSON_REQUEST_HEADERS = "requestHeaders";
 
     @Autowired
     private JobManager jobManager;
@@ -742,21 +744,22 @@ public class MapPrinterServlet extends BaseMapServlet {
      *
      * @param httpServletRequest the request object
      */
-    protected final HttpHeaders getHeaders(final HttpServletRequest httpServletRequest) {
+    protected final JSONObject getHeaders(final HttpServletRequest httpServletRequest) throws JSONException {
         @SuppressWarnings("rawtypes")
         Enumeration headersName = httpServletRequest.getHeaderNames();
-        HttpHeaders headers = new HttpHeaders();
+        JSONObject headers = new JSONObject();
         while (headersName.hasMoreElements()) {
             String name = headersName.nextElement().toString();
-            ArrayList<String> headerValues = Lists.newArrayList();
             @SuppressWarnings("unchecked")
             Enumeration<String> e = httpServletRequest.getHeaders(name);
             while (e.hasMoreElements()) {
-                headerValues.add(e.nextElement());
+                headers.append(name, e.nextElement());
             }
-            headers.put(name, headerValues);
+
         }
-        return headers;
+        final JSONObject requestHeadersAttribute = new JSONObject();
+        requestHeadersAttribute.put(JSON_REQUEST_HEADERS, headers);
+        return requestHeadersAttribute;
     }
 
     private PJsonObject parseJson(final String requestDataRaw, final HttpServletResponse httpServletResponse) {
@@ -803,14 +806,13 @@ public class MapPrinterServlet extends BaseMapServlet {
         specJson.getInternalObj().put(JSON_OUTPUT_FORMAT, format);
         specJson.getInternalObj().remove(JSON_APP);
         specJson.getInternalObj().put(JSON_APP, appId);
-
+        specJson.getInternalObj().getJSONObject(JSON_ATTRIBUTES).put(JSON_REQUEST_HEADERS, getHeaders(httpServletRequest));
         String ref = UUID.randomUUID().toString() + "@" + this.servletInfo.getServletId();
 
         PrintJob job = this.context.getBean(PrintJob.class);
 
         job.setReferenceId(ref);
         job.setRequestData(specJson);
-        job.setHeaders(getHeaders(httpServletRequest));
 
         try {
             this.jobManager.submit(job);

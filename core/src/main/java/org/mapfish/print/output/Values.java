@@ -27,6 +27,7 @@ import org.mapfish.print.attribute.PrimitiveAttribute;
 import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.MapfishParser;
+import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -90,7 +91,7 @@ public class Values {
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
         this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY, httpRequestFactory);
 
-        final PJsonObject jsonAttributes = requestData.getJSONObject("attributes");
+        final PJsonObject jsonAttributes = requestData.getJSONObject(MapPrinterServlet.JSON_ATTRIBUTES);
 
         Map<String, Attribute> attributes = template.getAttributes();
         for (String attributeName : attributes.keySet()) {

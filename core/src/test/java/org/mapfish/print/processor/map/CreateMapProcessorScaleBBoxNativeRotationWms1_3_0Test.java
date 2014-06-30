@@ -38,6 +38,7 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,6 +66,7 @@ public class CreateMapProcessorScaleBBoxNativeRotationWms1_3_0Test extends Abstr
     private ForkJoinPool forkJoinPool;
 
     @Test
+    @DirtiesContext
     public void testExecute() throws Exception {
         final String host = "bbox_native_rotation_wms1_3_0_scale";
         requestFactory.registerHandler(

@@ -17,7 +17,7 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.processor;
+package org.mapfish.print.processor.http;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
 
 /**
  * @author Jesse on 6/25/2014.
@@ -64,9 +63,9 @@ public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFac
         }
     }
 
-    @Nonnull
     @Override
-    protected ClientHttpRequestFactory createFactoryWrapper(final ClientHttpRequestFactory requestFactory) {
+    public ClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
+                                                         final ClientHttpRequestFactory requestFactory) {
         return new AbstractClientHttpRequestFactoryWrapper(requestFactory) {
             @Override
             protected ClientHttpRequest createRequest(final URI uri,

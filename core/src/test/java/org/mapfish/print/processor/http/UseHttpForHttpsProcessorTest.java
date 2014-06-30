@@ -17,119 +17,40 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.processor;
+package org.mapfish.print.processor.http;
 
-import com.google.common.base.Predicate;
-import jsr166y.ForkJoinPool;
-import org.junit.Test;
-import org.mapfish.print.AbstractMapfishSpringTest;
-import org.mapfish.print.TestHttpClientFactory;
-import org.mapfish.print.config.Configuration;
-import org.mapfish.print.config.ConfigurationFactory;
-import org.mapfish.print.config.Template;
-import org.mapfish.print.output.Values;
-import org.mapfish.print.processor.map.CreateMapProcessor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Set;
 import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
 
 @ContextConfiguration(locations = {
-        "classpath:org/mapfish/print/processor/use-http-for-https/add-custom-processor-application-context.xml"
+        "classpath:org/mapfish/print/processor/http/use-http-for-https/add-custom-processor-application-context.xml"
 })
-public class UseHttpForHttpsProcessorTest extends AbstractMapfishSpringTest {
+public class UseHttpForHttpsProcessorTest extends AbstractHttpProcessorTest {
 
-    private static final String BASE_DIR = "use-http-for-https";
-    @Autowired
-    private ConfigurationFactory configurationFactory;
-    @Autowired
-    TestHttpClientFactory httpClientFactory;
-
-    @Autowired
-    private ForkJoinPool forkJoinPool;
-
-    @Test
-    public void testExecute() throws Exception {
-        this.httpClientFactory.registerHandler(new Predicate<URI>() {
-            @Override
-            public boolean apply(@Nullable URI input) {
-                return true;
-            }
-        }, new TestHttpClientFactory.Handler() {
-            @Override
-            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
-                return new MockClientHttpRequest(httpMethod, uri);
-            }
-        });
-
-        this.configurationFactory.setDoValidation(false);
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "/config.yaml"));
-        final Template template = config.getTemplate("main");
-
-        ProcessorDependencyGraph graph = template.getProcessorGraph();
-        List<ProcessorGraphNode> roots = graph.getRoots();
-
-        assertEquals(1, roots.size());
-        assertEquals(UseHttpForHttpsProcessor.class, roots.get(0).getProcessor().getClass());
-
-        Values values = new Values();
-        values.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, this.httpClientFactory);
-        forkJoinPool.invoke(graph.createTask(values));
+    @Override
+    protected String baseDir() {
+        return "use-http-for-https";
     }
 
-    @Test
-    public void testCreateMapDependency() throws Exception {
-
-        this.configurationFactory.setDoValidation(false);
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "/config-createmap.yaml"));
-        final Template template = config.getTemplate("main");
-
-        ProcessorDependencyGraph graph = template.getProcessorGraph();
-        List<ProcessorGraphNode> roots = graph.getRoots();
-
-        assertEquals(1, roots.size());
-        final ProcessorGraphNode useHttpForHttpsProcessorNode = roots.get(0);
-        assertEquals(UseHttpForHttpsProcessor.class, useHttpForHttpsProcessorNode.getProcessor().getClass());
-        final Set dependencies = useHttpForHttpsProcessorNode.getAllProcessors();
-        dependencies.remove(useHttpForHttpsProcessorNode.getProcessor());
-        assertEquals(1, dependencies.size());
-        assertEquals(CreateMapProcessor.class, dependencies.iterator().next().getClass());
+    @Override
+    protected Class<TestProcessor> testProcessorClass() {
+        return TestProcessor.class;
     }
 
-    public static class TestParam {
-        public ClientHttpRequestFactory clientHttpRequestFactory;
+    @Override
+    protected Class<? extends AbstractClientHttpRequestFactoryProcessor> classUnderTest() {
+        return UseHttpForHttpsProcessor.class;
     }
 
-    public static class TestProcessor extends AbstractProcessor<TestParam, Void> {
-
-        /**
-         * Constructor.
-         */
-        protected TestProcessor() {
-            super(Void.class);
-        }
-
-        @Override
-        protected void extraValidation(List<Throwable> validationErrors) {
-            // do nothing
-        }
-
-        @Nullable
-        @Override
-        public TestParam createInputParameter() {
-            return new TestParam();
-        }
+    public static class TestProcessor extends AbstractTestProcessor {
 
         String userinfo = "user:pass";
         String host = "localhost";

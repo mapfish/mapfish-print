@@ -1,0 +1,9 @@
+
+templates:
+  main: !template
+    processors:
+      - !addHeadersTestProcessor {}
+      - !addHeaders
+        headers:
+          Cookie : [cookie-value, cookie-value2]
+          Header2 : [header2-value]

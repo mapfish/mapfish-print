@@ -18,8 +18,20 @@
   ~ along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<configuration>
 
-    <bean id="httpClientFactory" class="org.mapfish.print.TestHttpClientFactory" />
-</beans>
+    <appender name="standardOut" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
+        </layout>
+    </appender>
+
+    <logger name="org.mapfish" level="ALL" />
+    <!-- Set spec logger to INFO to log all print spec json data -->
+    <logger name="org.mapfish.print.servlet.BaseMapServlet.spec" level="OFF" />
+
+
+    <root level="ALL">
+        <appender-ref ref="standardOut" />
+    </root>
+</configuration>

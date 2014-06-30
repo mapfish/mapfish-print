@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) 2014  Camptocamp
+  ~
+  ~ This file is part of MapFish Print
+  ~
+  ~ MapFish Print is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ MapFish Print is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+    <bean id="!forwardHeadersTestProcessor" class="org.mapfish.print.processor.http.ForwardHeadersProcessorTest$TestProcessor" scope="prototype"/>
+    <bean id="!forwardHeadersTestProcessor2" class="org.mapfish.print.processor.http.ForwardHeadersProcessorTest$TestProcessor2" scope="prototype"/>
+
+    <bean class="org.mapfish.print.processor.ProcessorDependency">
+        <constructor-arg name="required" value="org.mapfish.print.processor.http.AddHeadersProcessor" />
+        <constructor-arg name="dependent" value="org.mapfish.print.processor.http.ForwardHeadersProcessorTest$TestProcessor"/>
+        <constructor-arg name="commonInputs">
+            <util:list>
+                <value>clientHttpRequestFactory</value>
+            </util:list>
+        </constructor-arg>
+    </bean>
+    <bean class="org.mapfish.print.processor.ProcessorDependency">
+        <constructor-arg name="required" value="org.mapfish.print.processor.http.AddHeadersProcessor" />
+        <constructor-arg name="dependent" value="org.mapfish.print.processor.http.ForwardHeadersProcessorTest$TestProcessor2"/>
+        <constructor-arg name="commonInputs">
+            <util:list>
+                <value>clientHttpRequestFactory</value>
+            </util:list>
+        </constructor-arg>
+    </bean>
+</beans>

@@ -39,5 +39,6 @@
     <bean id="!tableList" class="org.mapfish.print.attribute.TableListAttribute" scope="prototype" />
 
     <bean id="!zoomLevels" class="org.mapfish.print.attribute.map.ZoomLevels" scope="prototype" />
+    <bean id="!requestHeaders" class="org.mapfish.print.attribute.HttpRequestHeadersAttribute" scope="prototype" />
 
 </beans>

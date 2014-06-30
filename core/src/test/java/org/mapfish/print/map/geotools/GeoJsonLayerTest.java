@@ -36,6 +36,7 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.io.File;
 import java.net.URI;
@@ -141,6 +142,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
     }
 
     @Test
+    @DirtiesContext
     public void testUrl() throws Exception {
         final String host = "GeoJsonLayerTest.com";
         this.httpRequestFactory.registerHandler(

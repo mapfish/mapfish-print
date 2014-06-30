@@ -35,6 +35,7 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,6 +61,7 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
 
 
     @Test
+    @DirtiesContext
     public void testExecute() throws Exception {
         final String host = "center_gml_flexible_scale.com";
         requestFactory.registerHandler(

@@ -17,20 +17,20 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.parser;
+package org.mapfish.print.attribute;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a Processor input parameter object setter method as being optional.  If there is no value for the property then no error
- * will be thrown when populating the method in
- * {@link org.mapfish.print.processor.ProcessorUtils#populateInputParameter(org.mapfish.print.processor.Processor,
- * org.mapfish.print.output.Values)}
+ * An annotation indicating that the attribute should not be printed in client config (client does not need to know about it)
+ * because it is registered automatically.
  *
- * @author Jesse on 3/29/14.
+ * @author Jesse on 6/26/2014.
  */
-@Target(value = ElementType.FIELD)
-@java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
-public @interface HasDefaultValue {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface InternalAttribute {
 }

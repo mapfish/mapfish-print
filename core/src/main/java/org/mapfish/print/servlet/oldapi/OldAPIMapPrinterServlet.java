@@ -23,7 +23,6 @@ package org.mapfish.print.servlet.oldapi;
 import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
-
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
@@ -63,12 +62,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.servlet.ServletContext;
@@ -458,24 +455,11 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
             throws IOException, ServletException,
             InterruptedException, NoSuchAppException {
         if (SPEC_LOGGER.isInfoEnabled()) {
-            SPEC_LOGGER.info(spec.toString());
+            SPEC_LOGGER.info(spec);
         }
 
         MapPrinter mapPrinter = this.printerFactory.create(DEFAULT_CONFIGURATION_FILE_KEY);
         PJsonObject specJson = parseSpec(spec, mapPrinter);
-
-        Map<String, String> headers = new HashMap<String, String>();
-        TreeSet<String> configHeaders = mapPrinter.getConfiguration().getHeaders();
-        if (configHeaders == null) {
-            configHeaders = new TreeSet<String>();
-            configHeaders.add("Referer");
-            configHeaders.add("Cookie");
-        }
-        for (String header : configHeaders) {
-            if (httpServletRequest.getHeader(header) != null) {
-                headers.put(header, httpServletRequest.getHeader(header));
-            }
-        }
 
         final OutputFormat outputFormat = mapPrinter.getOutputFormat(specJson);
         //create a temporary file that will contain the PDF
@@ -486,7 +470,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(tempFile);
-            mapPrinter.print(specJson, out, headers);
+            mapPrinter.print(specJson, out);
 
             return tempFile;
         } catch (Exception e) {
