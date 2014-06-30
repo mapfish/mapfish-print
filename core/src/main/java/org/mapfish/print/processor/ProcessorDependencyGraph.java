@@ -99,7 +99,7 @@ public final class ProcessorDependencyGraph {
             }
             final Object inputParameter = root.getProcessor().createInputParameter();
             if (inputParameter instanceof Values) {
-                return requiredInputs;
+                continue;
             } else if (inputParameter != null) {
                 final Class<?> inputParameterClass = inputParameter.getClass();
                 final Set<String> requiredAttributesDefinedInInputParameter = getAttributeNames(inputParameterClass,
