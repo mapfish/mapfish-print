@@ -17,7 +17,7 @@
     "geojsonMap": {
       "bbox": [95, -3.175810473815462, 110, 6.175810473815462],
       "projection": "CRS:84",
-      "dpi": 90,
+      "dpi": 72,
       "layers": [
         {
           "type": "geojson",

@@ -4,10 +4,6 @@ task wrapper(type: Wrapper) {
     gradleVersion = '1.11'
 }
 
-task travisBuild {
-    dependsOn (':core:build')
-}
-
 allprojects {
     group = 'org.mapfish.print'
     version = '3.0-SNAPSHOT'
@@ -19,10 +15,7 @@ allprojects {
     ext."signing.password" = signing_password
 }
 
-
-
 configure(subprojects.findAll {['core', 'examples'].contains(it.name)}) {
-
     apply plugin: 'java'
     apply plugin: 'findbugs'
     apply plugin: 'eclipse'

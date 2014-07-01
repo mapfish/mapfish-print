@@ -9,5 +9,9 @@ templates:
     - !reportBuilder # compile all reports in current directory
       directory: '.'
     - !prepareTable
+      columns:
+        icon: !urlImage
+          urlExtractor: <img src="([^"]+)".*
+          urlGroup: 1
       inputMapper: {table: table}
       outputMapper: {table: table}

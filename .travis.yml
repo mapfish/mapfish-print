@@ -6,4 +6,4 @@ jdk:
 - openjdk7
 
 script:
-- ./gradlew --no-color travisBuild
+- ./gradlew --no-color build

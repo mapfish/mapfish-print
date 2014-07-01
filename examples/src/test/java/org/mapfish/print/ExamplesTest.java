@@ -116,7 +116,7 @@ public class ExamplesTest {
                         if (requestFile.getName().matches(OLD_API_REQUEST_DATA_FILE)) {
                             PJsonObject oldSpec = MapPrinterServlet.parseJson(requestData, null);
                             jsonSpec = OldAPIRequestConverter.convert(oldSpec, this.mapPrinter.getConfiguration());
-                            continue;
+//                            continue;
                         } else {
                             jsonSpec = MapPrinter.parseSpec(requestData);
 //                            continue;

@@ -21,6 +21,7 @@ package org.mapfish.print.processor;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import jsr166y.RecursiveTask;
 import org.mapfish.print.output.Values;
@@ -178,8 +179,7 @@ public final class ProcessorDependencyGraph {
 
             LOGGER.debug("Starting to execute processor graph: \n" + graph);
             try {
-                List<ProcessorGraphNode.ProcessorNodeForkJoinTask<?, ?>> tasks =
-                        new ArrayList<ProcessorGraphNode.ProcessorNodeForkJoinTask<?, ?>>(graph.roots.size());
+                List<ProcessorGraphNode.ProcessorNodeForkJoinTask<?, ?>> tasks = Lists.newArrayListWithExpectedSize(graph.roots.size());
                 // fork all but 1 dependencies (the first will be ran in current thread)
                 for (int i = 0; i < graph.roots.size(); i++) {
                     @SuppressWarnings("unchecked")

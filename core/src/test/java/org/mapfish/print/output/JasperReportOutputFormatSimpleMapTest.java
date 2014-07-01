@@ -32,7 +32,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
+import java.util.Map;
 
 public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpringTest {
     public static final String BASE_DIR = "simple_map/";
@@ -41,14 +41,14 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
     private ConfigurationFactory configurationFactory;
     
     @Autowired
-    private List<OutputFormat> outputFormat;
+    private Map<String, OutputFormat> outputFormat;
 
     @Test
     public void testPrint() throws Exception {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         PJsonObject requestData = loadJsonRequestData();
 
-        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) findOutputFormat("png");
+        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
         JasperPrint print = format.getJasperPrint(requestData, config,
                 getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR), getTaskDirectory());
         BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
@@ -63,7 +63,7 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         PJsonObject requestData = loadJsonRequestData();
 
-        for (OutputFormat format : this.outputFormat) {
+        for (OutputFormat format : this.outputFormat.values()) {
             OutputStream outputStream = new ByteArrayOutputStream();
             format.print(requestData, config,
                     getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR), getTaskDirectory(),
@@ -72,15 +72,6 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
 
 
         }
-    }
-
-    private OutputFormat findOutputFormat(String format) {
-        for (OutputFormat f : this.outputFormat) {
-            if(f.getFileSuffix().equals(format)) {
-                return f;
-            }
-        }
-        throw new IllegalArgumentException(format + " is not a supported format");
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {

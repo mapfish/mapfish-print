@@ -37,7 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.annotation.DirtiesContext;
-
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
@@ -119,9 +118,9 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSTest extends AbstractMapfi
 
 //      Files.copy(new File(layerGraphics.get(0)), new File("/tmp/0_"+getClass().getSimpleName()+".tiff"));
 //      Files.copy(new File(layerGraphics.get(1)), new File("/tmp/1_"+getClass().getSimpleName()+".tiff"));
-        
+
         new ImageSimilarity(ImageSimilarity.mergeImages(layerGraphics, 630, 294), 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 10);
+                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 20);
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {

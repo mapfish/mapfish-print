@@ -121,6 +121,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
      * Create the report from a POST request.
      *
      * @param baseUrl             the base url to the servlet
+     * @param spec                if spec is form data then this will be nonnull
      * @param requestData         the request spec as POST body
      * @param httpServletRequest  the request object
      * @param httpServletResponse the response object
@@ -128,6 +129,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     @RequestMapping(value = CREATE_URL + "**", method = RequestMethod.POST)
     public final void createReportPost(
             @RequestParam(value = "url", defaultValue = "") final String baseUrl,
+            @RequestParam(value = "spec", required = false) final String spec,
             @RequestBody final String requestData,
             final HttpServletRequest httpServletRequest,
             final HttpServletResponse httpServletResponse) throws IOException, JSONException {
@@ -138,7 +140,8 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
         }
         String baseUrlPath = getBaseUrl(CREATE_URL,
                 URLDecoder.decode(baseUrl, Constants.DEFAULT_ENCODING), httpServletRequest);
-        createPDF(httpServletRequest, httpServletResponse, baseUrlPath, requestData);
+        String specData = spec == null ? requestData : spec;
+        createPDF(httpServletRequest, httpServletResponse, baseUrlPath, specData);
     }
 
     /**

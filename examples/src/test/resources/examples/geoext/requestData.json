@@ -5,7 +5,7 @@
         "map": {
             "bbox": [100, -1, 106, 1.538],
             "projection": "CRS:84",
-            "dpi": 90,
+            "dpi": 72,
             "rotation": 0,
             "layers": [
                 {
