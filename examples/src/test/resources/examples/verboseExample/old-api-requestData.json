@@ -1,4 +1,5 @@
 {
+  "app" : "verboseExample",
   "units": "degree",
   "srs": "CRS:84",
   "layout": "A4 portrait old api",
