@@ -74,22 +74,17 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
 
     /**
      * Constructor.
-     *
-     * @param httpRequestFactory the factory to use for making http requests
-     * @param bounds             the map bounds
-     * @param paintArea          the area to paint
+     *  @param httpRequestFactory the factory to use for making http requests
      * @param dpi                the DPI to render at
      * @param transformer        a transformer for making calculations
      * @param tileCacheInfo      the object used to create the tile requests
      */
     public TileLoaderTask(final ClientHttpRequestFactory httpRequestFactory,
-                          final MapBounds bounds,
-                          final Rectangle paintArea,
                           final double dpi,
                           final MapTransformer transformer,
                           final TileCacheInformation tileCacheInfo) {
-        this.bounds = bounds;
-        this.paintArea = paintArea;
+        this.bounds = transformer.getBounds();
+        this.paintArea = new Rectangle(transformer.getMapSize());
         this.dpi = dpi;
         this.httpRequestFactory = httpRequestFactory;
         this.transformer = transformer;

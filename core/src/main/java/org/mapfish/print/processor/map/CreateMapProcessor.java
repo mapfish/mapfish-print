@@ -23,6 +23,8 @@ import com.google.common.collect.Lists;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.batik.svggen.SVGGeneratorContext;
 import org.apache.batik.svggen.SVGGraphics2D;
+import org.mapfish.print.Constants;
+import org.mapfish.print.attribute.map.BBoxMapBounds;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
@@ -147,20 +149,31 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         final double dpi = mapValues.getDpi();
         Rectangle paintArea = new Rectangle(mapSize);
 
+        // We are making the same assumption as Openlayers 2.x versions, that the DPI is 72.
+        // In the future we probably need to change this assumption and allow the client software to
+        // specify the DPI they are using for creating the bounds.
+        // For the moment we require the client to convert their bounds to 72 DPI
+        final double dpiOfRequestor = Constants.PDF_DPI;
+
         MapBounds bounds = mapValues.getMapBounds();
 
         if (mapValues.isUseNearestScale()) {
                 bounds = bounds.adjustBoundsToNearestScale(
                         mapValues.getZoomLevels(),
                         mapValues.getZoomSnapTolerance(),
-                        mapValues.getZoomLevelSnapStrategy(), paintArea, dpi);
+                        mapValues.getZoomLevelSnapStrategy(), paintArea, dpiOfRequestor);
         }
         
+        bounds = new BBoxMapBounds(bounds.toReferencedEnvelope(paintArea, dpiOfRequestor));
+
         if (mapValues.isUseAdjustBounds()) {
             bounds = bounds.adjustedEnvelope(paintArea);
         }
 
-        final MapTransformer transformer = new MapTransformer(bounds, mapSize, mapValues.getRotation());
+        // if the DPI is higher than the PDF DPI we need to make the image larger so it will be
+        final double dpiRatio = dpi / dpiOfRequestor;
+        paintArea.setBounds(0, 0, (int) (mapSize.getWidth() * dpiRatio), (int) (mapSize.getHeight() * dpiRatio));
+        final MapTransformer transformer = new MapTransformer(bounds, paintArea.getSize(), mapValues.getRotation(), dpi);
         
         // reverse layer list to draw from bottom to top.  normally position 0 is top-most layer.
         final List<MapLayer> layers = Lists.reverse(mapValues.getLayers());
@@ -178,7 +191,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 final SVGGraphics2D graphics2D = getSvgGraphics(mapSize);
 
                 try {
-                    layer.render(graphics2D, clientHttpRequestFactory, transformer, dpi, isFirstLayer);
+                    layer.render(graphics2D, clientHttpRequestFactory, transformer, isFirstLayer);
                     
                     path = new File(printDirectory, mapKey + "_layer_" + i + ".svg");
                     saveSvgFile(graphics2D, path);
@@ -187,11 +200,12 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 }
             } else {
                 // render layer as raster graphic
-                final BufferedImage bufferedImage = new BufferedImage(mapSize.width, mapSize.height, this.imageType.value);
+                final BufferedImage bufferedImage = new BufferedImage((int) paintArea.getWidth(),
+                        (int) paintArea.getHeight(), this.imageType.value);
                 final Graphics2D graphics2D = bufferedImage.createGraphics();
                 
                 try {
-                    layer.render(graphics2D, clientHttpRequestFactory, transformer, dpi, isFirstLayer);
+                    layer.render(graphics2D, clientHttpRequestFactory, transformer, isFirstLayer);
                     
                     path = new File(printDirectory, mapKey + "_layer_" + i + ".tiff");
                     ImageIO.write(bufferedImage, "tiff", path);

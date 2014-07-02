@@ -12,7 +12,26 @@
 			"scale": 25000,
 			"layers": 
 			[
-				{
+              {
+                "baseURL": "http://localhost:9876/e2egeoserver/wms",
+                "opacity": 1,
+                "type": "WMS",
+                "layers":
+                  [
+                    "tiger:tiger_roads"
+                  ],
+
+                "imageFormat": "image/png",
+                "styles":
+                  [
+                    "line"
+                  ],
+
+                "customParams":
+                {
+                  "TRANSPARENT": "true"
+                }
+              },{
 					"type": "WMTS",
 					"baseURL": "http://localhost:9876/e2egeoserver/gwc/service/wmts",
 					"opacity": 1.0,
@@ -60,27 +79,6 @@
 					  "topLeftCorner": [-2.003750834E7, 2.0037508E7]
 					}],
 					"imageFormat": "png"
-				},
-		
-				{
-					"baseURL": "http://localhost:9876/e2egeoserver/wms",
-					"opacity": 1,
-					"type": "WMS",
-					"layers": 
-					[
-						"tiger:tiger_roads"
-					],
-		
-					"imageFormat": "image/png",
-					"styles": 
-					[
-						"line"
-					],
-		
-					"customParams": 
-					{
-						"TRANSPARENT": "true"
-					}
 				}
 			]
 		}

@@ -36,6 +36,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
@@ -109,8 +110,9 @@ public class CreateMapProcessorFixedScaleCenterOsmTest extends AbstractMapfishSp
 
 //        Files.copy(new File(layerGraphics.get(0)), new File("/tmp/0_"+getClass().getSimpleName()+".tiff"));
 //        Files.copy(new File(layerGraphics.get(1)), new File("/tmp/1_"+getClass().getSimpleName()+".tiff"));
-        
-        new ImageSimilarity(ImageSimilarity.mergeImages(layerGraphics, 780, 330), 2)
+
+        final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
+        new ImageSimilarity(referenceImage, 2)
                 .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 30);
 
     }

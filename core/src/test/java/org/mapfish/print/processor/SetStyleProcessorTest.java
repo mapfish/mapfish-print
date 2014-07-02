@@ -1,6 +1,7 @@
 package org.mapfish.print.processor;
 
 import jsr166y.ForkJoinPool;
+import org.geotools.styling.Style;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -21,6 +22,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
+@SuppressWarnings("unchecked")
 public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
     public static final String BASE_DIR = "setstyle/";
 
@@ -35,11 +37,10 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
     @Autowired
     private TestHttpClientFactory httpClientFactory;
 
-
     @Test
     public void testAssignStyleBasic() throws Exception {
         this.configurationFactory.setDoValidation(false);
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "basic/config.yaml"));
+        final Configuration config = this.configurationFactory.getConfig(getFile(BASE_DIR + "basic/config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = parseJSONObjectFromFile(SetStyleProcessorTest.class, BASE_DIR + "basic/request.json");
         Values values = new Values(requestData, template, parser, this.folder.getRoot(), this.httpClientFactory);
@@ -48,7 +49,7 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
         final MapAttribute.MapAttributeValues map = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
         final AbstractFeatureSourceLayer layer = (AbstractFeatureSourceLayer) map.getLayers().get(0);
         assertEquals("Default Line",
-                layer.getLayers(httpClientFactory, null, null, 0.0, null, true).get(0).getStyle().getDescription().getTitle().toString());
+                layer.getLayers(httpClientFactory, null, true).get(0).getStyle().getDescription().getTitle().toString());
     }
 
     @Test

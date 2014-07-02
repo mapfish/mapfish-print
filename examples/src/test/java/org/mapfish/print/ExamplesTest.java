@@ -106,7 +106,7 @@ public class ExamplesTest {
             this.mapPrinter.setConfiguration(configFile);
 
             for (File requestFile : Files.fileTreeTraverser().children(example)) {
-                if (!requestFile.isFile()) {
+                if (!requestFile.isFile() || !requestFile.getName().equals("requestData-scale-wms1_0_0-high-dpi.json")) {
                     continue;
                 }
                 try {
@@ -125,14 +125,13 @@ public class ExamplesTest {
                         jsonSpec.getInternalObj().put("outputFormat", "png");
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-                        Map<String, String> headers = Maps.newHashMap();
                         this.mapPrinter.print(jsonSpec, out);
 
                         BufferedImage image = ImageIO.read(new ByteArrayInputStream(out.toByteArray()));
 
-//                        File outDir = new File("e:/temp", example.getName()+"/expected_output");
-//                        outDir.mkdirs();
-//                        ImageIO.write(image, "png", new File(outDir, requestFile.getName().replace(".json", ".png")));
+                        File outDir = new File("e:/temp", example.getName()+"/expected_output");
+                        outDir.mkdirs();
+                        ImageIO.write(image, "png", new File(outDir, requestFile.getName().replace(".json", ".png")));
 
                         File expectedOutputDir = new File(example, "expected_output");
                         File expectedOutput = new File(expectedOutputDir, requestFile.getName().replace(".json", ".png"));

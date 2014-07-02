@@ -28,9 +28,11 @@ import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.Renderable;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.json.JSONException;
 import org.mapfish.print.Constants;
+import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.config.WorkingDirectories;
@@ -123,6 +125,8 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         }
         final Values values = new Values(requestData, template, this.parser, taskDirectory, this.httpRequestFactory);
 
+        double maxDpi = maxDpi(values);
+
         final File jasperTemplateFile = new File(configDir, template.getReportTemplate());
         final File jasperTemplateBuild = this.workingDirectories.getBuildFileFor(config, jasperTemplateFile,
                 JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT, LOGGER);
@@ -160,7 +164,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             final ForkJoinTask<List<Map<String, ?>>> iterTaskFuture =
                     this.forkJoinPool.submit(new ExecuteIterProcessorsTask(values, template));
 
-            List<Map<String, ?>> dataSource = null;
+            List<Map<String, ?>> dataSource;
             try {
                 dataSource = iterTaskFuture.get();
             } catch (InterruptedException exc) {
@@ -197,6 +201,19 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                     values.getParameters(),
                     new JREmptyDataSource());
         }
+        print.setProperty(Renderable.PROPERTY_IMAGE_DPI, String.valueOf(Math.round(maxDpi)));
         return print;
+    }
+
+    private double maxDpi(final Values values) {
+        Map<String, MapAttribute.MapAttributeValues> maps = values.find(MapAttribute.MapAttributeValues.class);
+        double maxDpi = Constants.PDF_DPI;
+        for (MapAttribute.MapAttributeValues attributeValues : maps.values()) {
+            final double dpi = attributeValues.dpi;
+            if (dpi > maxDpi) {
+                maxDpi = dpi;
+            }
+        }
+        return maxDpi;
     }
 }
