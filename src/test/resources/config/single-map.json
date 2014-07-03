@@ -1,0 +1,34 @@
+{
+    
+    "layers": [{
+        "type": "vector",
+        "styles": {
+            "": {
+                "pointRadius": 10,
+                "fill": "red",
+                "stroke-width": "3",
+                "fill-opacity": 0.6
+            }
+        },
+        "geoJson": {
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [102.0, 0.6]
+                     },
+                     "properties": {}
+                 }
+             ]
+        }
+    }],
+    "srs": "EPSG:4326",
+    "units": "m",
+    "pages": [{
+        "dpi": "300", 
+        "center": [47, 12],
+        "scale": 20000
+    }]
+}

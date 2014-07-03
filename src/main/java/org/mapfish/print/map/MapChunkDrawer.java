@@ -51,6 +51,7 @@ public class MapChunkDrawer extends ChunkDrawer {
     private final RenderingContext context;
     private final BaseColor backgroundColor;
     private final String name;
+    private final String mainName;
 
 
     public MapChunkDrawer(PDFCustomBlocks customBlocks, Transformer transformer, double overviewMap, PJsonObject params, RenderingContext context, BaseColor backgroundColor, String name) {
@@ -61,18 +62,26 @@ public class MapChunkDrawer extends ChunkDrawer {
         this.context = context;
         this.backgroundColor = backgroundColor;
         this.name = computeName(overviewMap, name);
+        this.mainName = computeMainName(overviewMap, name);
     }
 
     private static String computeName(double overviewMap, String name) {
         if (name != null) {
-            return name;
+            return (Double.isNaN(overviewMap) ? name : name + "-overview");
         } else {
             return (Double.isNaN(overviewMap) ? "map" : "overview");
         }
     }
+    
+    private static String computeMainName(double overviewMap, String name) {
+        if (name != null) {
+            return name;
+        }
+        return null;
+    }
 
     public void renderImpl(Rectangle rectangle, PdfContentByte dc) {
-        final PJsonObject parent = Maps.getMapRoot(context.getGlobalParams(), name);
+        final PJsonObject parent = Maps.getMapRoot(context.getGlobalParams(), mainName);
         PJsonArray layers = parent.getJSONArray("layers");
         String srs = parent.getString("srs");
 
@@ -83,7 +92,7 @@ public class MapChunkDrawer extends ChunkDrawer {
         Transformer mainTransformer = null;
         if (!Double.isNaN(overviewMap)) {
             //manage the overview map
-            mainTransformer = context.getLayout().getMainPage().getMap(name).createTransformer(context, params);
+            mainTransformer = context.getLayout().getMainPage().getMap(mainName).createTransformer(context, params);
             transformer.zoom(mainTransformer, (float) (1.0 / overviewMap));
             transformer.setRotation(0);   //overview always north up!
             context.setStyleFactor((float) (transformer.getPaperW() / mainTransformer.getPaperW() / overviewMap));

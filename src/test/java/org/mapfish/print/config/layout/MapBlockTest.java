@@ -311,14 +311,146 @@ public class MapBlockTest {
         assertTrue(error);
     }
 
-    private void renderMap(PJsonObject params, Block.PdfElement target,
-            final RenderingContext context, String mapName) throws DocumentException {
+    @Test
+    public void testMultipleMapsOverview() throws IOException, DocumentException {
+        PJsonObject globalParams = MapPrinter.parseSpec(FileUtilities
+                .readWholeTextFile(new File(MapBlockTest.class.getClassLoader()
+                        .getResource("config/multiple-maps.json").getFile())));
+        
+        PJsonObject params = globalParams.getJSONArray("pages").getJSONObject(0);
+        
+        // mocked PdfWriter
+        final PdfWriter writer = Mockito.mock(PdfWriter.class);
+        final PdfContentByte dc = Mockito.mock(PdfContentByte.class);
+        Mockito.when(writer.getDirectContent()).thenReturn(dc);
+        
+        
+        // mocked RenderingContext
+        final RenderingContext context = Mockito.mock(RenderingContext.class);
+        Mockito.when(context.getGlobalParams()).thenReturn(globalParams);
+        Mockito.when(context.getConfig()).thenReturn(config);
+        Mockito.when(context.getPdfLock()).thenReturn(new Object());
+        PDFCustomBlocks blocks = new PDFCustomBlocks(writer, context);
+        Mockito.when(context.getCustomBlocks()).thenReturn(blocks);
+        Mockito.when(context.getWriter()).thenReturn(writer);
+        Layout layout = Mockito.mock(Layout.class);
+        MainPage mainPage = Mockito.mock(MainPage.class);
+        Mockito.when(context.getLayout()).thenReturn(layout);
+        Mockito.when(layout.getMainPage()).thenReturn(mainPage);
+        
+        
+        
+        // mock the MapReader creation chain to return a VectorMapReader for test layers
+        MapReaderFactoryFinder finder = Mockito.mock(MapReaderFactoryFinder.class);
+        config.setMapReaderFactoryFinder(finder);
+        Mockito.doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                VectorMapReader reader = new VectorMapReader(context, (PJsonObject)invocation.getArguments()[3]);
+                ((List)invocation.getArguments()[0]).add(reader);
+                return reader;
+            }
+            
+        }).when(finder).create(Mockito.anyList(),Mockito.anyString(),Mockito.any(RenderingContext.class), Mockito.any(PJsonObject.class));
+        
+        // mock PdfElement
+        Block.PdfElement target = Mockito.mock(Block.PdfElement.class);
+        
+        // main mapblock
+        MapBlock mapBlock = new MapBlock();
+        mapBlock.setAbsoluteX("10");
+        mapBlock.setAbsoluteY("10");
+        mapBlock.setWidth("100");
+        mapBlock.setHeight("100");
+        mapBlock.setName("main");
+        
+        Mockito.when(mainPage.getMap("main")).thenReturn(mapBlock);
+        
+        // render the overview for map named 'main'
+        renderMap(params, target, context, "main", true);
+        // check that a circle is drawn on map
+        Mockito.verify(dc, Mockito.atLeastOnce()).circle(Mockito.anyFloat(),
+                Mockito.anyFloat(), Mockito.anyFloat());
+    }
+    
+    @Test
+    public void testOverview() throws IOException, DocumentException {
+        PJsonObject globalParams = MapPrinter.parseSpec(FileUtilities
+                .readWholeTextFile(new File(MapBlockTest.class.getClassLoader()
+                        .getResource("config/single-map.json").getFile())));
+        
+        PJsonObject params = globalParams.getJSONArray("pages").getJSONObject(0);
+        
+        // mocked PdfWriter
+        final PdfWriter writer = Mockito.mock(PdfWriter.class);
+        final PdfContentByte dc = Mockito.mock(PdfContentByte.class);
+        Mockito.when(writer.getDirectContent()).thenReturn(dc);
+        
+        
+        // mocked RenderingContext
+        final RenderingContext context = Mockito.mock(RenderingContext.class);
+        Mockito.when(context.getGlobalParams()).thenReturn(globalParams);
+        Mockito.when(context.getConfig()).thenReturn(config);
+        Mockito.when(context.getPdfLock()).thenReturn(new Object());
+        PDFCustomBlocks blocks = new PDFCustomBlocks(writer, context);
+        Mockito.when(context.getCustomBlocks()).thenReturn(blocks);
+        Mockito.when(context.getWriter()).thenReturn(writer);
+        Layout layout = Mockito.mock(Layout.class);
+        MainPage mainPage = Mockito.mock(MainPage.class);
+        Mockito.when(context.getLayout()).thenReturn(layout);
+        Mockito.when(layout.getMainPage()).thenReturn(mainPage);
+        
+        
+        
+        // mock the MapReader creation chain to return a VectorMapReader for test layers
+        MapReaderFactoryFinder finder = Mockito.mock(MapReaderFactoryFinder.class);
+        config.setMapReaderFactoryFinder(finder);
+        Mockito.doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                VectorMapReader reader = new VectorMapReader(context, (PJsonObject)invocation.getArguments()[3]);
+                ((List)invocation.getArguments()[0]).add(reader);
+                return reader;
+            }
+            
+        }).when(finder).create(Mockito.anyList(),Mockito.anyString(),Mockito.any(RenderingContext.class), Mockito.any(PJsonObject.class));
+        
+        // mock PdfElement
+        Block.PdfElement target = Mockito.mock(Block.PdfElement.class);
+        
+        // main mapblock
+        MapBlock mapBlock = new MapBlock();
+        mapBlock.setAbsoluteX("10");
+        mapBlock.setAbsoluteY("10");
+        mapBlock.setWidth("100");
+        mapBlock.setHeight("100");
+        
+        Mockito.when(mainPage.getMap(null)).thenReturn(mapBlock);
+        
+        // render the overview for map named 'main'
+        renderMap(params, target, context, null, true);
+        // check that a circle is drawn on map
+        Mockito.verify(dc, Mockito.atLeastOnce()).circle(Mockito.anyFloat(),
+                Mockito.anyFloat(), Mockito.anyFloat());
+    }
+    
+    private MapBlock renderMap(PJsonObject params, Block.PdfElement target,
+            final RenderingContext context, String mapName, boolean isOverview) throws DocumentException {
         MapBlock mapBlock = new MapBlock();
         mapBlock.setAbsoluteX("10");
         mapBlock.setAbsoluteY("10");
         mapBlock.setWidth("100");
         mapBlock.setHeight("100");
         mapBlock.setName(mapName);
+        if(isOverview) {
+            mapBlock.setOverviewMap(1);
+        }
         mapBlock.render(params, target, context);
+        return mapBlock;
+    }
+    
+    private MapBlock renderMap(PJsonObject params, Block.PdfElement target,
+            final RenderingContext context, String mapName) throws DocumentException {
+        return renderMap(params, target, context, mapName, false);
     }
 }
