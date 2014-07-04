@@ -95,7 +95,7 @@ public class CreateMapProcessorFixedScaleCenterGridFixedNumlinesTest extends Abs
 
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
 
-        ImageIO.write(referenceImage, "png", new File("e:/tmp/expectedSimpleImage.png"));
+//        ImageIO.write(referenceImage, "png", new File("e:/tmp/expectedSimpleImage.png"));
 
         new ImageSimilarity(referenceImage, 2)
                 .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 30);
