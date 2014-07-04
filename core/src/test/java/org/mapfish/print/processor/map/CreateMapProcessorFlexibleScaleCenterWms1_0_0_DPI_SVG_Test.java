@@ -139,7 +139,7 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0_DPI_SVG_Test extends 
 //        ImageIO.write(referenceImage, "png", new File("e:/tmp/expectedSimpleImage.png"));
 
         new ImageSimilarity(referenceImage, 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 10);
+                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 20);
 
     }
 
