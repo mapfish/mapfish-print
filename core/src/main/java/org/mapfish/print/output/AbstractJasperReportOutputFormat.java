@@ -76,11 +76,10 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
 
     /**
      * Export the report to the output stream.
-     *
-     * @param outputStream the output stream to export to
+     *  @param outputStream the output stream to export to
      * @param print        the report
      */
-    protected abstract void doExport(final OutputStream outputStream, final JasperPrint print) throws JRException, IOException;
+    protected abstract void doExport(final OutputStream outputStream, final Print print) throws JRException, IOException;
 
     @Autowired
     private MapfishParser parser;
@@ -89,7 +88,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
     public final void print(final PJsonObject requestData, final Configuration config, final File configDir,
                             final File taskDirectory, final OutputStream outputStream)
             throws Exception {
-        final JasperPrint print = getJasperPrint(requestData, config, configDir, taskDirectory);
+        final Print print = getJasperPrint(requestData, config, configDir, taskDirectory);
         
         if (Thread.currentThread().isInterrupted()) {
             throw new CancellationException();
@@ -111,8 +110,8 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
      * // CSOFF: RedundantThrows
      */
     @VisibleForTesting
-    public final JasperPrint getJasperPrint(final PJsonObject requestData, final Configuration config,
-                                               final File configDir, final File taskDirectory)
+    public final Print getJasperPrint(final PJsonObject requestData, final Configuration config,
+                                      final File configDir, final File taskDirectory)
             throws JRException, SQLException, ExecutionException, JSONException {
         // CSON: RedundantThrows
         final String templateName = requestData.getString(Constants.JSON_LAYOUT_KEY);
@@ -125,7 +124,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         }
         final Values values = new Values(requestData, template, this.parser, taskDirectory, this.httpRequestFactory);
 
-        double maxDpi = maxDpi(values);
+        double[] maxDpi = maxDpi(values);
 
         final File jasperTemplateFile = new File(configDir, template.getReportTemplate());
         final File jasperTemplateBuild = this.workingDirectories.getBuildFileFor(config, jasperTemplateFile,
@@ -201,19 +200,40 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                     values.getParameters(),
                     new JREmptyDataSource());
         }
-        print.setProperty(Renderable.PROPERTY_IMAGE_DPI, String.valueOf(Math.round(maxDpi)));
-        return print;
+        print.setProperty(Renderable.PROPERTY_IMAGE_DPI, String.valueOf(Math.round(maxDpi[0])));
+        return new Print(print, maxDpi[0], maxDpi[1]);
     }
 
-    private double maxDpi(final Values values) {
+    private double[] maxDpi(final Values values) {
         Map<String, MapAttribute.MapAttributeValues> maps = values.find(MapAttribute.MapAttributeValues.class);
         double maxDpi = Constants.PDF_DPI;
+        double maxRequestorDpi = Constants.PDF_DPI;
         for (MapAttribute.MapAttributeValues attributeValues : maps.values()) {
-            final double dpi = attributeValues.dpi;
-            if (dpi > maxDpi) {
-                maxDpi = dpi;
+            if (attributeValues.getDpi() > maxDpi) {
+                maxDpi = attributeValues.getDpi();
+            }
+
+            if (attributeValues.getRequestorDPI() > maxRequestorDpi) {
+                maxRequestorDpi = attributeValues.getRequestorDPI();
             }
         }
-        return maxDpi;
+        return new double[]{maxDpi, maxRequestorDpi};
+    }
+
+    /**
+     * The print information for doing the export.
+     */
+    public static final class Print {
+        // CHECKSTYLE:OFF
+        public final JasperPrint print;
+        public final double dpi;
+        public final double requestorDpi;
+        // CHECKSTYLE:ON
+
+        private Print(final JasperPrint print, final double dpi, final double requestorDpi) {
+            this.print = print;
+            this.dpi = dpi;
+            this.requestorDpi = requestorDpi;
+        }
     }
 }

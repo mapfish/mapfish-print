@@ -24,6 +24,7 @@ import com.google.common.io.Files;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.Renderable;
 import net.sf.jasperreports.engine.design.JRDesignBand;
 import net.sf.jasperreports.engine.design.JRDesignElement;
 import net.sf.jasperreports.engine.design.JRDesignExpression;
@@ -53,12 +54,13 @@ public class MapSubReport {
      * 
      * @param layerGraphics A list of rendered graphic files for each layer.
      * @param mapSize The size of the map in pixel.
+     * @param dpi the dpi of the map
      */
-    public MapSubReport(final List<URI> layerGraphics, final Dimension mapSize) {
-        this.reportDesign = createReport(layerGraphics, mapSize);
+    public MapSubReport(final List<URI> layerGraphics, final Dimension mapSize, final double dpi) {
+        this.reportDesign = createReport(layerGraphics, mapSize, dpi);
     }
 
-    private JasperDesign createReport(final List<URI> layerGraphics, final Dimension mapSize) {
+    private JasperDesign createReport(final List<URI> layerGraphics, final Dimension mapSize, final double dpi) {
         final JasperDesign design = new JasperDesign();
         design.setName("map");
 
@@ -83,7 +85,7 @@ public class MapSubReport {
         // sub-report
         design.setNoData(band);
         design.setWhenNoDataType(WhenNoDataTypeEnum.NO_DATA_SECTION);
-        
+        design.setProperty(Renderable.PROPERTY_IMAGE_DPI, String.valueOf(Math.round(dpi)));
         return design;
     }
 

@@ -22,6 +22,7 @@ package org.mapfish.print.attribute.map;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.geotools.referencing.CRS;
+import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.Template;
@@ -361,6 +362,14 @@ public final class MapAttribute extends ReflectiveAttribute<MapAttribute.MapAttr
 
         public ZoomLevelSnapStrategy getZoomLevelSnapStrategy() {
             return MapAttribute.this.zoomLevelSnapStrategy;
+        }
+
+        public double getRequestorDPI() {
+            // We are making the same assumption as Openlayers 2.x versions, that the DPI is 72.
+            // In the future we probably need to change this assumption and allow the client software to
+            // specify the DPI they are using for creating the bounds.
+            // For the moment we require the client to convert their bounds to 72 DPI
+            return Constants.PDF_DPI;
         }
     }
 }
