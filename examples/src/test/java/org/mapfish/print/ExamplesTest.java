@@ -86,10 +86,12 @@ public class ExamplesTest {
                 System.err.println("\nExample: '" + error.getKey() + "' failed with the error:");
                 error.getValue().printStackTrace();
             }
+
             StringBuilder errorReport = new StringBuilder();
             errorReport.append("\n").append(errors.size()).append(" errors encountered while running ");
             errorReport.append(testsRan).append(" examples.\n");
-            errorReport.append("See Standard Error for the stacktraces.  A summary is as follows:\n\n");
+            errorReport.append("See Standard Error for the stack traces.  A summary is as follows:\n\n");
+
             for (Map.Entry<String, Throwable> entry : errors.entrySet()) {
                 errorReport.append("    * ").append(entry.getKey()).append(" -> ").append(entry.getValue().getMessage());
                 errorReport.append('\n');
@@ -106,12 +108,13 @@ public class ExamplesTest {
             this.mapPrinter.setConfiguration(configFile);
 
             for (File requestFile : Files.fileTreeTraverser().children(example)) {
-                if (!requestFile.isFile() || !requestFile.getName().equals("requestData-scale-wms1_0_0-high-dpi.json")) {
+                if (!requestFile.isFile()) {
                     continue;
                 }
                 try {
                     if (requestFile.getName().matches(REQUEST_DATA_FILE) || requestFile.getName().matches(OLD_API_REQUEST_DATA_FILE)) {
                         String requestData = Files.asCharSource(requestFile, Charset.forName(Constants.DEFAULT_ENCODING)).read();
+
                         final PJsonObject jsonSpec;
                         if (requestFile.getName().matches(OLD_API_REQUEST_DATA_FILE)) {
                             PJsonObject oldSpec = MapPrinterServlet.parseJson(requestData, null);
@@ -121,6 +124,7 @@ public class ExamplesTest {
                             jsonSpec = MapPrinter.parseSpec(requestData);
 //                            continue;
                         }
+
                         testsRan++;
                         jsonSpec.getInternalObj().put("outputFormat", "png");
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -129,9 +133,9 @@ public class ExamplesTest {
 
                         BufferedImage image = ImageIO.read(new ByteArrayInputStream(out.toByteArray()));
 
-                        File outDir = new File("e:/temp", example.getName()+"/expected_output");
-                        outDir.mkdirs();
-                        ImageIO.write(image, "png", new File(outDir, requestFile.getName().replace(".json", ".png")));
+//                        File outDir = new File("e:/tmp", example.getName()+"/expected_output");
+//                        outDir.mkdirs();
+//                        ImageIO.write(image, "png", new File(outDir, requestFile.getName().replace(".json", ".png")));
 
                         File expectedOutputDir = new File(example, "expected_output");
                         File expectedOutput = new File(expectedOutputDir, requestFile.getName().replace(".json", ".png"));

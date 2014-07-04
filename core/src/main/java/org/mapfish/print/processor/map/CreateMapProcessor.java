@@ -174,7 +174,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         final double dpiRatio = dpi / dpiOfRequestor;
         paintArea.setBounds(0, 0, (int) (mapSize.getWidth() * dpiRatio), (int) (mapSize.getHeight() * dpiRatio));
         final MapTransformer transformer = new MapTransformer(bounds, paintArea.getSize(), mapValues.getRotation(), dpi);
-        
+
         // reverse layer list to draw from bottom to top.  normally position 0 is top-most layer.
         final List<MapLayer> layers = Lists.reverse(mapValues.getLayers());
 
@@ -188,7 +188,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             File path = null;
             if (renderAsSvg(layer)) {
                 // render layer as SVG
-                final SVGGraphics2D graphics2D = getSvgGraphics(mapSize);
+                final SVGGraphics2D graphics2D = getSvgGraphics(paintArea.getSize());
 
                 try {
                     layer.render(graphics2D, clientHttpRequestFactory, transformer, isFirstLayer);

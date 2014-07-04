@@ -1,0 +1,28 @@
+{
+  "attributes": {"map": {
+    "center": [
+      -8233518.5005945,
+      4980320.4059228
+    ],
+    "dpi": 300,
+    "layers": [
+      {
+        "type": "geojson",
+        "geojson": "http://localhost:9876/e2egeoserver/www/geojson/ny-roads-3857.json",
+        "renderAsSvg": true
+      },
+      {
+        "baseURL": "http://localhost:9876/e2egeoserver/wms",
+        "customParams": {"TRANSPARENT": "true"},
+        "imageFormat": "image/png",
+        "layers": ["tiger-ny"],
+        "opacity": 1,
+        "type": "WMS"
+      }
+    ],
+    "projection": "EPSG:900913",
+    "rotation": 0,
+    "scale": 25000
+  }},
+  "layout": "A4 landscape"
+}
