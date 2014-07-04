@@ -93,7 +93,7 @@ public interface Constants {
              */
             String ATT_LABEL = "label";
             /**
-             * The geometry attribute name;
+             * The geometry attribute name.
              */
             String ATT_GEOM = "geom";
         }

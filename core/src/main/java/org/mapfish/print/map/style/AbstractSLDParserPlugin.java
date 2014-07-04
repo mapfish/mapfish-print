@@ -56,7 +56,8 @@ public abstract class AbstractSLDParserPlugin implements StyleParserPlugin {
     @Override
     public final Optional<Style> parseStyle(@Nullable final Configuration configuration,
                                             @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
-                                            @Nonnull final String styleString, MapfishMapContext mapContext) throws Throwable {
+                                            @Nonnull final String styleString,
+                                            @Nonnull final MapfishMapContext mapContext) throws Throwable {
         Integer styleIndex = lookupStyleIndex(styleString).orNull();
         String styleStringWithoutIndexReference = removeIndexReference(styleString);
         List<ByteSource> inputStream = getInputStreamSuppliers(configuration, clientHttpRequestFactory, styleStringWithoutIndexReference);

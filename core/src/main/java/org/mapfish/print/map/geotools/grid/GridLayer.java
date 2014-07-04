@@ -19,33 +19,12 @@
 
 package org.mapfish.print.map.geotools.grid;
 
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.util.Assert;
-import jsr166y.ForkJoinPool;
 import org.geotools.data.FeatureSource;
-import org.geotools.data.collection.CollectionFeatureSource;
-import org.geotools.feature.DefaultFeatureCollection;
-import org.geotools.feature.simple.SimpleFeatureBuilder;
-import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.styling.Style;
-import org.mapfish.print.Constants;
-import org.mapfish.print.attribute.map.MapfishMapContext;
-import org.mapfish.print.config.Template;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
-import org.mapfish.print.map.geotools.AbstractFeatureSourceLayerPlugin;
 import org.mapfish.print.map.geotools.FeatureSourceSupplier;
 import org.mapfish.print.map.geotools.StyleSupplier;
-import org.mapfish.print.parser.HasDefaultValue;
-import org.mapfish.print.parser.OneOf;
-import org.mapfish.print.parser.Requires;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
-import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
-import javax.annotation.Nonnull;
 
 /**
  * A layer which is a spatial grid of lines on the map.
