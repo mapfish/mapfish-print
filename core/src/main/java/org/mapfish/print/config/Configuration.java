@@ -228,10 +228,10 @@ public class Configuration {
                                                     final Color color) {
         Expression xDisplacement = builder.attributeExpression(Constants.Style.Grid.ATT_X_DISPLACEMENT);
         Expression yDisplacement = builder.attributeExpression(Constants.Style.Grid.ATT_Y_DISPLACEMENT);
-        Displacement displacement1 = builder.createDisplacement(xDisplacement, yDisplacement);
-        Expression rotation1 = builder.attributeExpression(Constants.Style.Grid.ATT_ROTATION);
+        Displacement displacement = builder.createDisplacement(xDisplacement, yDisplacement);
+        Expression rotation = builder.attributeExpression(Constants.Style.Grid.ATT_ROTATION);
 
-        PointPlacement text1Placement = builder.createPointPlacement(builder.createAnchorPoint(0, 0), displacement1, rotation1);
+        PointPlacement text1Placement = builder.createPointPlacement(builder.createAnchorPoint(0, 0), displacement, rotation);
         final TextSymbolizer text1 = builder.createTextSymbolizer();
         text1.setFill(builder.createFill(color));
         text1.setLabelPlacement(text1Placement);

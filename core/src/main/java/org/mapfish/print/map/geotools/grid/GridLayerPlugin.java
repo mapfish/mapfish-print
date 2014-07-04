@@ -155,9 +155,9 @@ public final class GridLayerPlugin extends AbstractFeatureSourceLayerPlugin<Grid
                                       final GridParam layerData,
                                       final int ordinal) {
         double spaceFromOrigin = bounds.getMinimum(ordinal) - layerData.origin[ordinal];
-        double lineBetweenOriginAndMap = Math.ceil(spaceFromOrigin / layerData.spacing[ordinal]);
+        double linesBetweenOriginAndMap = Math.ceil(spaceFromOrigin / layerData.spacing[ordinal]);
 
-        return lineBetweenOriginAndMap * layerData.spacing[ordinal] + layerData.origin[ordinal];
+        return linesBetweenOriginAndMap * layerData.spacing[ordinal] + layerData.origin[ordinal];
     }
 
     private DefaultFeatureCollection sharedCreateFeatures(final SimpleFeatureBuilder featureBuilder,
@@ -212,7 +212,7 @@ public final class GridLayerPlugin extends AbstractFeatureSourceLayerPlugin<Grid
                                                                    final int i,
                                                                    final int ordinate) {
         featureBuilder.reset();
-        final int numPoints = layerData.pointsInLine + 1; // add 2 for the last points
+        final int numPoints = layerData.pointsInLine + 1; // add 1 for the last point
         final LinearCoordinateSequence coordinateSequence = new LinearCoordinateSequence().
                 setDimension(numDimensions).
                 setOrigin(x, y).
