@@ -23,7 +23,6 @@ import com.google.common.collect.Lists;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.batik.svggen.SVGGeneratorContext;
 import org.apache.batik.svggen.SVGGraphics2D;
-import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.BBoxMapBounds;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapBounds;
@@ -51,7 +50,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
 import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -116,8 +114,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         final List<URI> graphics = createLayerGraphics(param.tempTaskDirectory, param.clientHttpRequestFactory,
                 mapValues, context);
         checkCancelState(context);
-        final URI mapSubReport = createMapSubReport(param.tempTaskDirectory,
-                mapValues.getMapSize(), graphics);
+        final URI mapSubReport = createMapSubReport(param.tempTaskDirectory, mapValues.getMapSize(), graphics, mapValues.getDpi());
 
         return new Output(graphics, mapSubReport.toString());
     }
@@ -129,9 +126,11 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         }
     }
 
-    private URI createMapSubReport(final File printDirectory, final Dimension mapSize,
-            final List<URI> graphics) throws IOException, JRException {
-        final MapSubReport subReport = new MapSubReport(graphics, mapSize);
+    private URI createMapSubReport(final File printDirectory,
+                                   final Dimension mapSize,
+                                   final List<URI> graphics,
+                                   final double dpi) throws IOException, JRException {
+        final MapSubReport subReport = new MapSubReport(graphics, mapSize, dpi);
         
         final File compiledReport = File.createTempFile("map-",
                 JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT, printDirectory);
@@ -149,11 +148,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         final double dpi = mapValues.getDpi();
         Rectangle paintArea = new Rectangle(mapSize);
 
-        // We are making the same assumption as Openlayers 2.x versions, that the DPI is 72.
-        // In the future we probably need to change this assumption and allow the client software to
-        // specify the DPI they are using for creating the bounds.
-        // For the moment we require the client to convert their bounds to 72 DPI
-        final double dpiOfRequestor = Constants.PDF_DPI;
+        final double dpiOfRequestor = mapValues.getRequestorDPI();
 
         MapBounds bounds = mapValues.getMapBounds();
 
@@ -170,7 +165,8 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             bounds = bounds.adjustedEnvelope(paintArea);
         }
 
-        // if the DPI is higher than the PDF DPI we need to make the image larger so it will be
+        // if the DPI is higher than the PDF DPI we need to make the image larger so the image put in the PDF is large enough for the
+        // higher DPI printer
         final double dpiRatio = dpi / dpiOfRequestor;
         paintArea.setBounds(0, 0, (int) (mapSize.getWidth() * dpiRatio), (int) (mapSize.getHeight() * dpiRatio));
         final MapTransformer transformer = new MapTransformer(bounds, paintArea.getSize(), mapValues.getRotation(), dpi);

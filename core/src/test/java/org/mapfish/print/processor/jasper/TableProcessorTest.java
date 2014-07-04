@@ -43,6 +43,7 @@ import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.mock.http.client.MockClientHttpResponse;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -96,7 +97,8 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         PJsonObject requestData = loadJsonRequestData(baseDir);
 
         final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
-        JasperPrint print = format.getJasperPrint(requestData, config, getFile(TableProcessorTest.class, baseDir), getTaskDirectory());
+        final File file = getFile(TableProcessorTest.class, baseDir);
+        JasperPrint print = format.getJasperPrint(requestData, config, file, getTaskDirectory()).print;
         BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
 
         // note that we are using a sample size of 50, because the image is quite big.
@@ -127,7 +129,8 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         PJsonObject requestData = loadJsonRequestData(baseDir);
 
         final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
-        JasperPrint print = format.getJasperPrint(requestData, config, getFile(TableProcessorTest.class, baseDir), getTaskDirectory());
+        final File file = getFile(TableProcessorTest.class, baseDir);
+        JasperPrint print = format.getJasperPrint(requestData, config, file, getTaskDirectory()).print;
         BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
 //        ImageIO.write(reportImage, "png", new File("e:/tmp/testColumnImageConverter.png"));
         // note that we are using a sample size of 50, because the image is quite big.
