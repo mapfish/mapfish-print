@@ -139,7 +139,13 @@ public class ExamplesTest {
 
                         File expectedOutputDir = new File(example, "expected_output");
                         File expectedOutput = new File(expectedOutputDir, requestFile.getName().replace(".json", ".png"));
-                        new ImageSimilarity(image, 50).assertSimilarity(expectedOutput, 50);
+                        int similarity = 50;
+                        File file = new File(expectedOutputDir, "image-similarity.txt");
+                        if (file.isFile()) {
+                            String similarityString = Files.toString(file, Constants.DEFAULT_CHARSET);
+                            similarity = Integer.parseInt(similarityString.trim());
+                        }
+                        new ImageSimilarity(image, 50).assertSimilarity(expectedOutput, similarity);
                     }
                 } catch (Throwable e) {
                     errors.put(example.getName() + " (" + requestFile.getName() + ")", e);
