@@ -71,7 +71,6 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
         Template template = new Template();
         template.setConfiguration(configuration);
-        template.setStyle("polygon", template.getConfiguration().getDefaultStyle("polygon"));
 
         GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
         MapfishParserTest.populateLayerParam(requestData, param, "type");
@@ -100,7 +99,6 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
         Template template = new Template();
         template.setConfiguration(configuration);
-        template.setStyle("polygon", template.getConfiguration().getDefaultStyle("polygon"));
 
         GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
         MapfishParserTest.populateLayerParam(requestData, param, "type");
@@ -116,8 +114,6 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
         Template template = new Template();
         template.setConfiguration(configuration);
-        template.setStyle("polygon", template.getConfiguration().getDefaultStyle("polygon"));
-
 
         GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
         param.geoJson = "file://../" + BASE_DIR + "/geojson.json";
@@ -134,7 +130,6 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
         Template template = new Template();
         template.setConfiguration(configuration);
-        template.setStyle("polygon", template.getConfiguration().getDefaultStyle("polygon"));
 
         GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
         MapfishParserTest.populateLayerParam(requestData, param, "type");
@@ -173,8 +168,6 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
         Template template = new Template();
         template.setConfiguration(configuration);
-        template.setStyle("polygon", template.getConfiguration().getDefaultStyle("polygon"));
-
 
         GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
         MapfishParserTest.populateLayerParam(requestData, param, "type");
@@ -202,8 +195,6 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
         Template template = new Template();
         template.setConfiguration(configuration);
-        template.setStyle("polygon", template.getConfiguration().getDefaultStyle("polygon"));
-
 
         GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
         MapfishParserTest.populateLayerParam(requestData, param, "type");

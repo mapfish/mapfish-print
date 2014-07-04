@@ -33,7 +33,7 @@ import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.mapfish.print.attribute.map.MapBounds;
-import org.mapfish.print.attribute.map.MapTransformer;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
@@ -66,7 +66,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
     private final MapBounds bounds;
     private final Rectangle paintArea;
     private final double dpi;
-    private final MapTransformer transformer;
+    private final MapfishMapContext transformer;
     private final TileCacheInformation tiledLayer;
     private final BufferedImage errorImage;
     private final ClientHttpRequestFactory httpRequestFactory;
@@ -81,7 +81,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
      */
     public TileLoaderTask(final ClientHttpRequestFactory httpRequestFactory,
                           final double dpi,
-                          final MapTransformer transformer,
+                          final MapfishMapContext transformer,
                           final TileCacheInformation tileCacheInfo) {
         this.bounds = transformer.getBounds();
         this.paintArea = new Rectangle(transformer.getMapSize());

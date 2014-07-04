@@ -19,21 +19,29 @@
 
 package org.mapfish.print.config;
 
+import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.LineSymbolizer;
+import org.geotools.styling.PointPlacement;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.PolygonSymbolizer;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
+import org.geotools.styling.TextSymbolizer;
 import org.junit.Test;
 import org.mapfish.print.Constants;
+import org.mapfish.print.attribute.map.BBoxMapBounds;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mockito.Mockito;
 
+import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -47,6 +55,8 @@ public class ConfigurationTest {
 
     @Test
     public void testGetDefaultStyle_IsPresentInMap() throws Exception {
+        MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0, 72);
+
         final Configuration configuration = new Configuration();
         Map<String, Style> styles = new HashMap<String, Style>();
         final Style pointStyle = Mockito.mock(Style.class);
@@ -57,6 +67,7 @@ public class ConfigurationTest {
         styles.put("line", lineStyle);
         styles.put("polygon", polygonStyle);
         styles.put("geometry", geomStyle);
+        styles.put("grid", lineStyle);
         configuration.setDefaultStyle(styles);
 
         assertSame(pointStyle, configuration.getDefaultStyle("POINT"));
@@ -67,6 +78,7 @@ public class ConfigurationTest {
         assertSame(lineStyle, configuration.getDefaultStyle("linearRing"));
         assertSame(lineStyle, configuration.getDefaultStyle("multilInestring"));
         assertSame(lineStyle, configuration.getDefaultStyle("multiline"));
+        assertSame(lineStyle, configuration.getDefaultStyle("grid"));
 
         assertSame(polygonStyle, configuration.getDefaultStyle("poly"));
         assertSame(polygonStyle, configuration.getDefaultStyle("polygon"));
@@ -82,6 +94,7 @@ public class ConfigurationTest {
 
     @Test
     public void testGetDefaultStyle_NotInMap() throws Exception {
+        MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0, 72);
         final Configuration configuration = new Configuration();
         Map<String, Style> styles = new HashMap<String, Style>();
         final Style geomStyle = Mockito.mock(Style.class);
@@ -102,7 +115,7 @@ public class ConfigurationTest {
         assertStyleType(PolygonSymbolizer.class, configuration.getDefaultStyle("polygon"));
         assertStyleType(PolygonSymbolizer.class, configuration.getDefaultStyle("multiPolygon"));
 
-        assertStyleType(RasterSymbolizer.class, configuration.getDefaultStyle(Constants.RASTER_STYLE_NAME));
+        assertStyleType(RasterSymbolizer.class, configuration.getDefaultStyle(Constants.Style.Raster.NAME));
 
         assertSame(geomStyle, configuration.getDefaultStyle("geom"));
         assertSame(geomStyle, configuration.getDefaultStyle("geometry"));
@@ -111,13 +124,45 @@ public class ConfigurationTest {
     }
     @Test
     public void testGetDefaultStyle_GeomNotInMap() throws Exception {
+        MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0, 72);
         final Configuration configuration = new Configuration();
 
         assertStyleType(Symbolizer.class, configuration.getDefaultStyle("geom"));
         assertStyleType(Symbolizer.class, configuration.getDefaultStyle("geometry"));
         assertStyleType(Symbolizer.class, configuration.getDefaultStyle("geometryCollection"));
         assertStyleType(Symbolizer.class, configuration.getDefaultStyle("MultiGeometry"));
-        assertStyleType(Symbolizer.class, configuration.getDefaultStyle(Constants.RASTER_STYLE_NAME));
+        assertStyleType(Symbolizer.class, configuration.getDefaultStyle(Constants.Style.Grid.NAME));
+        assertStyleType(Symbolizer.class, configuration.getDefaultStyle(Constants.Style.Raster.NAME));
+    }
+
+    @Test
+    public void testGridStyle() throws Exception {
+        MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0, 72);
+        final Configuration configuration = new Configuration();
+        final Style gridStyle = configuration.getDefaultStyle(Constants.Style.Grid.NAME);
+        final AtomicInteger foundLineSymb = new AtomicInteger(0);
+        final AtomicInteger foundTextSymb = new AtomicInteger(0);
+
+        final AbstractStyleVisitor styleValidator = new AbstractStyleVisitor() {
+            @Override
+            public void visit(LineSymbolizer line) {
+                foundLineSymb.incrementAndGet();
+                super.visit(line);
+            }
+
+            @Override
+            public void visit(TextSymbolizer text) {
+                foundTextSymb.incrementAndGet();
+                final PointPlacement labelPlacement = (PointPlacement) text.getLabelPlacement();
+                assertNotNull(labelPlacement.getDisplacement());
+                super.visit(text);
+            }
+        };
+
+        styleValidator.visit(gridStyle);
+
+        assertEquals(1, foundLineSymb.intValue());
+        assertEquals(1, foundTextSymb.intValue());
     }
 
     private void assertStyleType(Class<?> expectedSymbolizerType, Style style) {

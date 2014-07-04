@@ -19,10 +19,13 @@
 
 package org.mapfish.print.processor.map;
 
+import org.geotools.styling.Style;
 import org.mapfish.print.attribute.StyleAttribute;
 import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.attribute.map.MapLayer;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
+import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
@@ -49,11 +52,18 @@ public class SetStyleProcessor extends
     }
 
     @Override
-    public final Void execute(final Input values, final ExecutionContext context) throws Exception {
+    public final Void execute(final Input values, final ExecutionContext context) {
         for (MapLayer layer : values.map.getLayers()) {
             checkCancelState(context);
             if (layer instanceof AbstractFeatureSourceLayer) {
-                ((AbstractFeatureSourceLayer) layer).setStyle(values.style.getStyle(values.clientHttpRequestFactory));
+                ((AbstractFeatureSourceLayer) layer).setStyle(new StyleSupplier() {
+                    @Override
+                    public Style load(final ClientHttpRequestFactory requestFactory,
+                                      final Object featureSource,
+                                      final MapfishMapContext mapContext) throws Exception {
+                        return values.style.getStyle(values.clientHttpRequestFactory, mapContext);
+                    }
+                });
             }
         }
 

@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
+import org.mapfish.print.attribute.map.BBoxMapBounds;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
@@ -13,6 +15,7 @@ import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.awt.Dimension;
 import java.io.File;
 
 import static org.junit.Assert.assertNotNull;
@@ -27,6 +30,7 @@ public class StyleAttributeTest extends AbstractMapfishSpringTest {
 
     @Test
     public void testAttributesFromJson() throws Exception {
+        MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0, 72);
         configurationFactory.setDoValidation(false);
         final File configFile = getFile(StyleAttributeTest.class, "style_attributes/config.yaml");
         final Configuration config = configurationFactory.getConfig(configFile);
@@ -36,6 +40,6 @@ public class StyleAttributeTest extends AbstractMapfishSpringTest {
                 this.clientHttpRequestFactory);
         final StyleAttribute.StylesAttributeValues value = values.getObject("styleDef", StyleAttribute.StylesAttributeValues.class);
 
-        assertNotNull(value.getStyle(clientHttpRequestFactory));
+        assertNotNull(value.getStyle(clientHttpRequestFactory, mapContext));
     }
 }

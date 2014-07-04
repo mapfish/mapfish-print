@@ -27,7 +27,8 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
-import org.mapfish.print.attribute.map.MapTransformer;
+import org.mapfish.print.attribute.map.MapBounds;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.map.geotools.AbstractGeotoolsLayer;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -61,14 +62,14 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
 
     @Override
     protected final List<? extends Layer> getLayers(final ClientHttpRequestFactory httpRequestFactory,
-                                                    final MapTransformer transformer,
-                                                    final boolean isFirstLayer) {
+                                                    final MapfishMapContext mapContext,
+                                                    final boolean isFirstLayer) throws Exception {
         if (this.layer == null) {
             synchronized (this) {
                 if (this.layer == null) {
                     BufferedImage image;
                     try {
-                        image = loadImage(httpRequestFactory, transformer, isFirstLayer);
+                        image = loadImage(httpRequestFactory, mapContext, isFirstLayer);
                     } catch (RuntimeException throwable) {
                         throw throwable;
                     } catch (Error e) {
@@ -77,15 +78,16 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
                         throw new RuntimeException(t);
                     }
 
-                    final ReferencedEnvelope mapEnvelope = transformer.getBounds().toReferencedEnvelope(transformer.getPaintArea(),
-                            transformer.getDPI());
+                    final MapBounds bounds = mapContext.getBounds();
+                    final ReferencedEnvelope mapEnvelope = bounds.toReferencedEnvelope(mapContext.getPaintArea(), mapContext.getDPI());
 
                     GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
                     GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapEnvelope.getCoordinateReferenceSystem());
                     gridEnvelope.setEnvelope(mapEnvelope.getMinX(), mapEnvelope.getMinY(), mapEnvelope.getMaxX(), mapEnvelope.getMaxY());
-                    final GridCoverage2D gridCoverage2D = factory.create(getClass().getSimpleName(), image, gridEnvelope, null, null,
-                            null);
-                    Style style = this.styleSupplier.load(httpRequestFactory, gridCoverage2D);
+                    final String coverageName = getClass().getSimpleName();
+                    final GridCoverage2D gridCoverage2D = factory.create(coverageName, image, gridEnvelope, null, null, null);
+
+                    Style style = this.styleSupplier.load(httpRequestFactory, gridCoverage2D, mapContext);
                     this.layer = new GridCoverageLayer(gridCoverage2D, style);
                 }
             }
@@ -100,6 +102,6 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
      * @param isFirstLayer true indicates this layer is the first layer in the map (the first layer drawn, ie the base layer)
      */
     protected abstract BufferedImage loadImage(ClientHttpRequestFactory requestFactory,
-                                               MapTransformer transformer,
+                                               MapfishMapContext transformer,
                                                boolean isFirstLayer) throws Throwable;
 }

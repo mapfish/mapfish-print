@@ -20,14 +20,14 @@
 package org.mapfish.print.map.style;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import org.geotools.styling.Style;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.annotation.Nonnull;
 
 /**
@@ -37,45 +37,22 @@ import javax.annotation.Nonnull;
  */
 public final class StyleParser {
     @Autowired
-    private List<StyleParserPlugin> plugins;
-
-    /**
-     * Load a map of named styles.
-     *  @param config the current configuration
-     * @param parser the parser to do the parsing
-     * @param clientHttpRequestFactory a factory for making http requests
-     * @param styles the name->sldIdentifier map
-     */
-    public static Map<String, Style> loadStyles(final Configuration config,
-                                                final StyleParser parser,
-                                                final ClientHttpRequestFactory clientHttpRequestFactory,
-                                                final Map<String, String> styles) {
-        Map<String, Style> map = new HashMap<String, Style>(styles.size());
-
-        for (Map.Entry<String, String> entry : styles.entrySet()) {
-            Optional<? extends Style> style = parser.loadStyle(config, clientHttpRequestFactory, entry.getValue());
-            if (style.isPresent()) {
-                map.put(entry.getKey(), style.get());
-            } else {
-                throw new RuntimeException("Unable to load style: " + entry);
-            }
-        }
-        return map;
-    }
+    private List<StyleParserPlugin> plugins = Lists.newArrayList();
 
     /**
      * Load style using one of the plugins or return Optional.absent().
-     *
-     * @param configuration the configuration for the current request.
+     *  @param configuration the configuration for the current request.
      * @param clientHttpRequestFactory a factory for making http requests
      * @param styleString   the style to load.
+     * @param mapContext information about the map projection, bounds, size, etc...
      */
     public Optional<? extends Style> loadStyle(final Configuration configuration,
                                                @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
-                                               final String styleString) {
+                                               final String styleString,
+                                               final MapfishMapContext mapContext) {
         for (StyleParserPlugin plugin : this.plugins) {
             try {
-                Optional<? extends Style> style = plugin.parseStyle(configuration, clientHttpRequestFactory, styleString);
+                Optional<? extends Style> style = plugin.parseStyle(configuration, clientHttpRequestFactory, styleString, mapContext);
                 if (style.isPresent()) {
                     return style;
                 }

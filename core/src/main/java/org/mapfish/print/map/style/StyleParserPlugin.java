@@ -21,6 +21,7 @@ package org.mapfish.print.map.style;
 
 import com.google.common.base.Optional;
 import org.geotools.styling.Style;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
@@ -42,11 +43,13 @@ public interface StyleParserPlugin {
      *
      * @param configuration the configuration being used for the current print.
      * @param clientHttpRequestFactory an factory for making http requests.
-     *
      * @param styleString the string that provides the information for loading the style.
+     * @param mapContext information about the map projection, bounds, size, etc...
+     *
      * @return if this plugin can create a style form the string then return the style otherwise Optional.absent().
      */
     Optional<Style> parseStyle(@Nullable Configuration configuration,
                                @Nonnull ClientHttpRequestFactory clientHttpRequestFactory,
-                               @Nonnull String styleString) throws Throwable;
+                               @Nonnull String styleString,
+                               @Nonnull MapfishMapContext mapContext) throws Throwable;
 }

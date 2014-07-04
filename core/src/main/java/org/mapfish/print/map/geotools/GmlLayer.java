@@ -19,7 +19,6 @@
 
 package org.mapfish.print.map.geotools;
 
-import com.google.common.base.Function;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -27,8 +26,8 @@ import org.geotools.gml2.GMLConfiguration;
 import org.geotools.xml.Parser;
 import org.mapfish.print.FileUtils;
 import org.mapfish.print.URIUtils;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.parser.HasDefaultValue;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.xml.sax.SAXException;
 
@@ -58,7 +57,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
      * @param renderAsSvg is the layer rendered as SVG?
      */
     public GmlLayer(final ExecutorService executorService,
-                    final Function<ClientHttpRequestFactory, FeatureSource> featureSourceSupplier,
+                    final FeatureSourceSupplier featureSourceSupplier,
                     final StyleSupplier<FeatureSource> styleSupplier,
                     final boolean renderAsSvg) {
         super(executorService, featureSourceSupplier, styleSupplier, renderAsSvg);
@@ -99,11 +98,13 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
                     param.renderAsSvg);
         }
 
-        private Function<ClientHttpRequestFactory, FeatureSource> createFeatureSourceSupplier(final Template template,
+        private FeatureSourceSupplier createFeatureSourceSupplier(final Template template,
                                                                     final String url) {
-            return new Function<ClientHttpRequestFactory, FeatureSource>() {
+            return new FeatureSourceSupplier() {
+                @Nonnull
                 @Override
-                public FeatureSource apply(final ClientHttpRequestFactory requestFactory) {
+                public FeatureSource load(@Nonnull final ClientHttpRequestFactory requestFactory,
+                                          @Nonnull final MapfishMapContext mapContext) {
                     SimpleFeatureCollection featureCollection;
                     try {
                         featureCollection = createFeatureSource(template, requestFactory, url);
@@ -199,27 +200,12 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
     /**
      * The parameters for creating a layer that renders Gml formatted data.
      */
-    public static class GmlParam {
+    public static class GmlParam extends AbstractVectorLayerParam  {
         /**
          * A url to the gml or the raw Gml data.
          * <p/>
          * The url can be a file url, however if it is it must be relative to the configuration directory.
          */
         public String url;
-        /**
-         * The style name of a style to apply to the features during rendering.  The style name must map to a style in the
-         * template or the configuration objects.
-         * <p/>
-         * If no style is defined then the default style for the geometry type will be used.
-         */
-        @HasDefaultValue
-        public String style;
-        /**
-         * Indicates if the layer is rendered as SVG. 
-         * <p/>
-         * Default is <code>false</code>.
-         */
-        @HasDefaultValue
-        public boolean renderAsSvg = false;
     }
 }

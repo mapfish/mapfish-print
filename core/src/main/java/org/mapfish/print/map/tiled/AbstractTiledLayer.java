@@ -24,7 +24,7 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.Layer;
 import org.mapfish.print.attribute.map.MapBounds;
-import org.mapfish.print.attribute.map.MapTransformer;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.map.geotools.AbstractGeotoolsLayer;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -59,20 +59,21 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
 
     @Override
     protected final List<? extends Layer> getLayers(final ClientHttpRequestFactory httpRequestFactory,
-                                                    final MapTransformer transformer,
-                                                    final boolean isFirstLayer) {
+                                                    final MapfishMapContext mapContext,
+                                                    final boolean isFirstLayer) throws Exception {
         if (this.layer == null) {
             synchronized (this) {
                 if (this.layer == null) {
-                    double dpi = transformer.getDPI();
-                    MapBounds bounds = transformer.getBounds();
-                    Rectangle paintArea = new Rectangle(transformer.getMapSize());
+                    double dpi = mapContext.getDPI();
+                    MapBounds bounds = mapContext.getBounds();
+                    Rectangle paintArea = new Rectangle(mapContext.getMapSize());
                     TileCacheInformation tileCacheInformation = createTileInformation(bounds, paintArea, dpi, isFirstLayer);
                     final TileLoaderTask task = new TileLoaderTask(httpRequestFactory, dpi,
-                            transformer, tileCacheInformation);
+                            mapContext, tileCacheInformation);
                     final GridCoverage2D gridCoverage2D = this.forkJoinPool.invoke(task);
 
-                    this.layer = new GridCoverageLayer(gridCoverage2D, this.styleSupplier.load(httpRequestFactory, gridCoverage2D));
+                    this.layer = new GridCoverageLayer(gridCoverage2D, this.styleSupplier.load(httpRequestFactory, gridCoverage2D,
+                            mapContext));
                 }
             }
         }

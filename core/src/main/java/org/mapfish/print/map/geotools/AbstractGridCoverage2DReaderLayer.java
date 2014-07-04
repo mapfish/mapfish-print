@@ -24,7 +24,7 @@ import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.map.GridReaderLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
-import org.mapfish.print.attribute.map.MapTransformer;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.Collections;
@@ -57,11 +57,11 @@ public class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
 
     @Override
     public final synchronized List<? extends Layer> getLayers(final ClientHttpRequestFactory httpRequestFactory,
-                                                 final MapTransformer transformer,
-                                                 final boolean isFirstLayer) {
+                                                 final MapfishMapContext mapContext,
+                                                 final boolean isFirstLayer) throws Exception {
         if (this.layers == null) {
             AbstractGridCoverage2DReader coverage2DReader = this.coverage2DReaderSupplier.apply(httpRequestFactory);
-            Style style = this.styleSupplier.load(httpRequestFactory, coverage2DReader);
+            Style style = this.styleSupplier.load(httpRequestFactory, coverage2DReader, mapContext);
             this.layers = Collections.singletonList(new GridReaderLayer(coverage2DReader, style));
         }
         return this.layers;

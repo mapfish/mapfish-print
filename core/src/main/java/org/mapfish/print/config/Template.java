@@ -25,6 +25,7 @@ import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.attribute.InternalAttribute;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.map.style.StyleParser;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
@@ -65,7 +66,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
     private String jdbcPassword;
     private volatile ProcessorDependencyGraph processorGraph;
     private volatile ProcessorDependencyGraph iterProcessorGraph;
-    private Map<String, Style> styles = new HashMap<String, Style>();
+    private Map<String, String> styles = new HashMap<String, String>();
     private Configuration configuration;
     @Autowired
     private StyleParser styleParser;
@@ -246,18 +247,27 @@ public class Template implements ConfigurationObject, HasConfiguration {
      * @param styles set the styles specific for this template.
      */
     public final void setStyles(final Map<String, String> styles) {
-        this.styles = StyleParser.loadStyles(this.configuration, this.styleParser, this.httpRequestFactory, styles);
+        this.styles = styles;
     }
 
     /**
      * Look for a style in the named styles provided in the configuration.
      *
      * @param styleName the name of the style to look for.
+     * @param mapContext information about the map projection, bounds, size, etc...
      */
+    @SuppressWarnings("unchecked")
     @Nonnull
-    public final Optional<Style> getStyle(final String styleName) {
-        return Optional.fromNullable(this.styles.get(styleName))
-                .or(this.configuration.getStyle(styleName));
+    public final Optional<Style> getStyle(final String styleName,
+                                          final MapfishMapContext mapContext) {
+        final String styleRef = this.styles.get(styleName);
+        Optional<Style> style;
+        if (styleRef != null) {
+            style = (Optional<Style>) this.styleParser.loadStyle(getConfiguration(), this.httpRequestFactory, styleRef, mapContext);
+        } else {
+            style = Optional.absent();
+        }
+        return style.or(this.configuration.getStyle(styleName, mapContext));
     }
 
     @Override
@@ -267,16 +277,6 @@ public class Template implements ConfigurationObject, HasConfiguration {
 
     public final Configuration getConfiguration() {
         return this.configuration;
-    }
-
-    /**
-     * Register the named style.
-     *
-     * @param styleName the style name
-     * @param style     the style to register under that name.
-     */
-    public final void setStyle(final String styleName, final Style style) {
-        this.styles.put(styleName, style);
     }
 
     @Override

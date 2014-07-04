@@ -28,7 +28,7 @@ import org.geotools.data.wms.request.GetMapRequest;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.mapfish.print.URIUtils;
-import org.mapfish.print.attribute.map.MapTransformer;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.image.AbstractSingleImageLayer;
 import org.springframework.http.HttpMethod;
@@ -68,7 +68,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
 
     @Override
     protected BufferedImage loadImage(final ClientHttpRequestFactory requestFactory,
-                                      final MapTransformer transformer,
+                                      final MapfishMapContext transformer,
                                       final boolean isFirstLayer) throws Throwable {
         final URI commonURI = this.params.getBaseUri();
 

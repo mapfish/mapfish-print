@@ -26,13 +26,19 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import org.geotools.styling.Displacement;
+import org.geotools.styling.LineSymbolizer;
+import org.geotools.styling.PointPlacement;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.Symbolizer;
+import org.geotools.styling.TextSymbolizer;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.map.style.StyleParser;
+import org.opengis.filter.expression.Expression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
@@ -43,13 +49,16 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
 
+
 /**
  * The Main Configuration Bean.
  * <p/>
+ *
  * @author jesseeichar on 2/20/14.
  */
 public class Configuration {
     private static final Map<String, String> GEOMETRY_NAME_ALIASES;
+
     static {
         HashMap<String, String> map = new HashMap<String, String>();
         map.put(Geometry.class.getSimpleName().toLowerCase(), Geometry.class.getSimpleName().toLowerCase());
@@ -71,9 +80,10 @@ public class Configuration {
         map.put("multipoint", Point.class.getSimpleName().toLowerCase());
         GEOMETRY_NAME_ALIASES = map;
     }
+
     private Map<String, Template> templates;
     private File configurationFile;
-    private Map<String, Style> styles = new HashMap<String, Style>();
+    private Map<String, String> styles = new HashMap<String, String>();
     private Map<String, Style> defaultStyle = new HashMap<String, Style>();
     private boolean throwErrorOnExtraParameters = true;
 
@@ -86,7 +96,6 @@ public class Configuration {
      * Print out the configuration that the client needs to make a request.
      *
      * @param json the output writer.
-     *
      * @throws JSONException
      */
     public final void printClientConfig(final JSONWriter json) throws JSONException {
@@ -117,6 +126,7 @@ public class Configuration {
 
     /**
      * Retrieve the configuration of the named template.
+     *
      * @param name the template name;
      */
     public final Template getTemplate(final String name) {
@@ -141,26 +151,34 @@ public class Configuration {
      * @param styles the style definition.  StyleParser plugins will be used to load the style.
      */
     public final void setStyles(final Map<String, String> styles) {
-        this.styles = StyleParser.loadStyles(this, this.styleParser, this.clientHttpRequestFactory, styles);
+        this.styles = styles;
     }
 
     /**
      * Return the named style ot Optional.absent() if there is not a style with the given name.
      *
-     * @param styleName the name of the style to look up
+     * @param styleName  the name of the style to look up
+     * @param mapContext information about the map projection, bounds, size, etc...
      */
-    public final Optional<? extends Style> getStyle(final String styleName) {
-        return Optional.fromNullable(this.styles.get(styleName));
+    public final Optional<? extends Style> getStyle(final String styleName,
+                                                    final MapfishMapContext mapContext) {
+        final String styleRef = this.styles.get(styleName);
+        if (styleRef != null) {
+            return this.styleParser.loadStyle(this, this.clientHttpRequestFactory, styleRef, mapContext);
+        } else {
+            return Optional.absent();
+        }
+
 
     }
 
     /**
      * Get a default style.  If null a simple black line style will be returned.
+     *  @param geometryType the name of the geometry type (point, line, polygon)
      *
-     * @param geometryType the name of the geometry type (point, line, polygon)
      */
-     @Nonnull
-     public final Style getDefaultStyle(@Nonnull final String geometryType) {
+    @Nonnull
+    public final Style getDefaultStyle(@Nonnull final String geometryType) {
         String normalizedGeomName = GEOMETRY_NAME_ALIASES.get(geometryType.toLowerCase());
         if (normalizedGeomName == null) {
             normalizedGeomName = geometryType.toLowerCase();
@@ -175,8 +193,10 @@ public class Configuration {
                 symbolizer = builder.createLineSymbolizer(Color.black, 2);
             } else if (normalizedGeomName.equalsIgnoreCase(Polygon.class.getSimpleName())) {
                 symbolizer = builder.createPolygonSymbolizer(Color.lightGray, Color.black, 2);
-            } else if (normalizedGeomName.equalsIgnoreCase(Constants.RASTER_STYLE_NAME)) {
+            } else if (normalizedGeomName.equalsIgnoreCase(Constants.Style.Raster.NAME)) {
                 symbolizer = builder.createRasterSymbolizer();
+            } else if (normalizedGeomName.equalsIgnoreCase(Constants.Style.Grid.NAME)) {
+                return createGridStyle(builder);
             } else {
                 final Style geomStyle = this.defaultStyle.get(Geometry.class.getSimpleName().toLowerCase());
                 if (geomStyle != null) {
@@ -185,9 +205,40 @@ public class Configuration {
                     symbolizer = builder.createPointSymbolizer();
                 }
             }
-            style =  builder.createStyle(symbolizer);
+            style = builder.createStyle(symbolizer);
         }
         return style;
+    }
+
+    private Style createGridStyle(final StyleBuilder builder) {
+        final LineSymbolizer lineSymbolizer = builder.createLineSymbolizer();
+        //CSOFF:MagicNumber
+        final Color strokeColor = new Color(127, 127, 255);
+        final Color textColor = new Color(50, 50, 255);
+        lineSymbolizer.setStroke(builder.createStroke(strokeColor, 1, new float[]{4f, 4f}));
+        //CSON:MagicNumber
+
+        final Style style = builder.createStyle(lineSymbolizer);
+        final List<Symbolizer> symbolizers = style.featureTypeStyles().get(0).rules().get(0).symbolizers();
+        symbolizers.add(0, createGridTextSymbolizer(builder, textColor));
+        return style;
+    }
+
+    private TextSymbolizer createGridTextSymbolizer(final StyleBuilder builder,
+                                                    final Color color) {
+        Expression xDisplacement = builder.attributeExpression(Constants.Style.Grid.ATT_X_DISPLACEMENT);
+        Expression yDisplacement = builder.attributeExpression(Constants.Style.Grid.ATT_Y_DISPLACEMENT);
+        Displacement displacement1 = builder.createDisplacement(xDisplacement, yDisplacement);
+        Expression rotation1 = builder.attributeExpression(Constants.Style.Grid.ATT_ROTATION);
+
+        PointPlacement text1Placement = builder.createPointPlacement(builder.createAnchorPoint(0, 0), displacement1, rotation1);
+        final TextSymbolizer text1 = builder.createTextSymbolizer();
+        text1.setFill(builder.createFill(color));
+        text1.setLabelPlacement(text1Placement);
+        final double opacity = 0.8;
+        text1.setHalo(builder.createHalo(Color.white, opacity, 2));
+        text1.setLabel(builder.attributeExpression(Constants.Style.Grid.ATT_LABEL));
+        return text1;
     }
 
     /**

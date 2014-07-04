@@ -19,7 +19,6 @@
 
 package org.mapfish.print.map.geotools;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
@@ -27,12 +26,12 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
-import org.mapfish.print.attribute.map.MapTransformer;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 
 /**
  * A layer that wraps a Geotools Feature Source and a style object.
@@ -41,7 +40,7 @@ import javax.annotation.Nullable;
  */
 public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
 
-    private Function<ClientHttpRequestFactory, FeatureSource> featureSourceSupplier;
+    private FeatureSourceSupplier featureSourceSupplier;
     private StyleSupplier<FeatureSource> styleSupplier;
     private volatile List<? extends Layer> layers;
     private final Boolean renderAsSvg;
@@ -55,7 +54,7 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
      * @param renderAsSvg is the layer rendered as SVG?
      */
     public AbstractFeatureSourceLayer(final ExecutorService executorService,
-                                      final Function<ClientHttpRequestFactory, FeatureSource> featureSourceSupplier,
+                                      final FeatureSourceSupplier featureSourceSupplier,
                                       final StyleSupplier<FeatureSource> styleSupplier,
                                       final boolean renderAsSvg) {
         super(executorService);
@@ -65,25 +64,20 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
         this.renderAsSvg = renderAsSvg;
     }
 
-    public final void setStyle(final Style style) {
-        this.styleSupplier = new StyleSupplier<FeatureSource>() {
-            @Override
-            public Style load(final ClientHttpRequestFactory requestFactory,
-                              final FeatureSource featureSource) {
-                return style;
-            }
-        };
+    public final void setStyle(final StyleSupplier style) {
+        this.styleSupplier = style;
     }
 
     @Override
     public final List<? extends Layer> getLayers(final ClientHttpRequestFactory httpRequestFactory,
-                                                 final MapTransformer transformer,
-                                                 final boolean isFirstLayer) {
+                                                 final MapfishMapContext mapContext,
+                                                 final boolean isFirstLayer) throws Exception {
         if (this.layers == null) {
             synchronized (this) {
                 if (this.layers == null) {
-                    FeatureSource source = this.featureSourceSupplier.apply(httpRequestFactory);
-                    Style style = this.styleSupplier.load(httpRequestFactory, source);
+                    FeatureSource source = this.featureSourceSupplier.load(httpRequestFactory, mapContext);
+                    Style style = this.styleSupplier.load(httpRequestFactory, source, mapContext);
+
                     this.layers = Lists.newArrayList(new FeatureLayer(source, style));
                 }
             }
@@ -92,10 +86,12 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
     }
 
     public final void setFeatureCollection(final SimpleFeatureCollection featureCollection) {
-        this.featureSourceSupplier = new Function<ClientHttpRequestFactory, FeatureSource>() {
-            @Nullable
+        this.featureSourceSupplier = new FeatureSourceSupplier() {
+
+            @Nonnull
             @Override
-            public FeatureSource apply(@Nullable final ClientHttpRequestFactory input) {
+            public FeatureSource load(@Nonnull final ClientHttpRequestFactory requestFactory,
+                                      @Nonnull final MapfishMapContext mapContext) {
                 return new CollectionFeatureSource(featureCollection);
             }
         };
@@ -103,7 +99,6 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
     
     /**
      * Is the layer rendered as SVG?
-     * @return
      */
     public final Boolean shouldRenderAsSvg() {
         return this.renderAsSvg;

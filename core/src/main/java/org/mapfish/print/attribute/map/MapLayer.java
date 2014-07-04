@@ -53,7 +53,7 @@ public interface MapLayer {
      */
     void render(Graphics2D graphics2D,
                 ClientHttpRequestFactory clientHttpRequestFactory,
-                MapTransformer transformer,
+                MapfishMapContext transformer,
                 final boolean isFirstLayer);
 
     /**
