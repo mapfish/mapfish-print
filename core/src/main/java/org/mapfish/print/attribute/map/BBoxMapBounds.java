@@ -36,8 +36,6 @@ import java.awt.Rectangle;
  * Created by Jesse on 3/26/14.
  */
 public final class BBoxMapBounds extends MapBounds {
-    private static final double ASPECT_RATIO_ACCEPTABLE_DIFFERENCE = 0.00001;
-    private static final double LAT_LONG_ASPECT_RATIO_ACCEPTABLE_DIFFERENCE = 0.01;
     private final Envelope bbox;
 
     /**
@@ -55,23 +53,18 @@ public final class BBoxMapBounds extends MapBounds {
         this.bbox = new Envelope(minX, maxX, minY, maxY);
     }
 
+    /**
+     * Create from a bbox.
+     * @param bbox the bounds.
+     */
+    public BBoxMapBounds(final ReferencedEnvelope bbox) {
+        this(bbox.getCoordinateReferenceSystem(), bbox.getMinX(), bbox.getMinY(),
+                bbox.getMaxX(), bbox.getMaxY());
+
+    }
+
     @Override
     public ReferencedEnvelope toReferencedEnvelope(final Rectangle paintArea, final double dpi) {
-        final double paintAreaAspectRatio = paintArea.getWidth() / paintArea.getHeight();
-        final double bboxAspectRatio = this.bbox.getWidth() / this.bbox.getHeight();
-        final double aspectRatioDifference = Math.abs(paintAreaAspectRatio - bboxAspectRatio);
-        final double acceptableDifference;
-        if (DistanceUnit.fromProjection(getProjection()) == DistanceUnit.DEGREES) {
-            // the aspect bounds are not as accurately calculated when in latlong
-            acceptableDifference = LAT_LONG_ASPECT_RATIO_ACCEPTABLE_DIFFERENCE;
-        } else {
-            acceptableDifference = ASPECT_RATIO_ACCEPTABLE_DIFFERENCE;
-        }
-        if (aspectRatioDifference > acceptableDifference) {
-            throw new IllegalArgumentException("bbox and paint area aspect ratio must be within " + ASPECT_RATIO_ACCEPTABLE_DIFFERENCE +
-                                               " of each other.\n\tPaintArea ratio: " + paintAreaAspectRatio +
-                                               "\n\tbbox ratio: " + bboxAspectRatio);
-        }
         return new ReferencedEnvelope(this.bbox, getProjection());
     }
 

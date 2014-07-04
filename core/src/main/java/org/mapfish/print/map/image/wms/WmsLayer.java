@@ -28,7 +28,7 @@ import org.geotools.data.wms.request.GetMapRequest;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.mapfish.print.URIUtils;
-import org.mapfish.print.attribute.map.MapBounds;
+import org.mapfish.print.attribute.map.MapTransformer;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.image.AbstractSingleImageLayer;
 import org.springframework.http.HttpMethod;
@@ -68,16 +68,15 @@ public final class WmsLayer extends AbstractSingleImageLayer {
 
     @Override
     protected BufferedImage loadImage(final ClientHttpRequestFactory requestFactory,
-                                      final MapBounds bounds,
-                                      final Rectangle imageSize,
-                                      final double dpi,
+                                      final MapTransformer transformer,
                                       final boolean isFirstLayer) throws Throwable {
         final URI commonURI = this.params.getBaseUri();
 
-        ReferencedEnvelope envelope = bounds.toReferencedEnvelope(imageSize, dpi);
+        final Rectangle paintArea = transformer.getPaintArea();
+        ReferencedEnvelope envelope = transformer.getBounds().toReferencedEnvelope(paintArea, transformer.getDPI());
         final GetMapRequest getMapRequest = WmsVersion.lookup(this.params.version).getGetMapRequest(commonURI.toURL());
         getMapRequest.setBBox(envelope);
-        getMapRequest.setDimensions(imageSize.width, imageSize.height);
+        getMapRequest.setDimensions(paintArea.width, paintArea.height);
         getMapRequest.setFormat(this.params.imageFormat);
         getMapRequest.setSRS(CRS.lookupIdentifier(envelope.getCoordinateReferenceSystem(), false));
 

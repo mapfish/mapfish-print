@@ -59,16 +59,16 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
 
     @Override
     protected final List<? extends Layer> getLayers(final ClientHttpRequestFactory httpRequestFactory,
-                                                    final MapBounds bounds,
-                                                    final Rectangle paintArea,
-                                                    final double dpi,
                                                     final MapTransformer transformer,
                                                     final boolean isFirstLayer) {
         if (this.layer == null) {
             synchronized (this) {
                 if (this.layer == null) {
+                    double dpi = transformer.getDPI();
+                    MapBounds bounds = transformer.getBounds();
+                    Rectangle paintArea = new Rectangle(transformer.getMapSize());
                     TileCacheInformation tileCacheInformation = createTileInformation(bounds, paintArea, dpi, isFirstLayer);
-                    final TileLoaderTask task = new TileLoaderTask(httpRequestFactory, bounds, paintArea, dpi,
+                    final TileLoaderTask task = new TileLoaderTask(httpRequestFactory, dpi,
                             transformer, tileCacheInformation);
                     final GridCoverage2D gridCoverage2D = this.forkJoinPool.invoke(task);
 

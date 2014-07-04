@@ -50,7 +50,6 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -893,6 +892,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals("test_report-" + year + ".png", fileName);
 
         final BufferedImage reportAsImage = ImageIO.read(new ByteArrayInputStream(report));
+
         new ImageSimilarity(reportAsImage, 2).assertSimilarity(getFile(MapPrinterServletTest.class, "expectedSimpleImage.png"), 10);
         return report;
     }

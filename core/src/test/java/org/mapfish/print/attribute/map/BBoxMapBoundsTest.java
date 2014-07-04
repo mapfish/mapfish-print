@@ -33,12 +33,6 @@ import static org.mapfish.print.attribute.map.CenterScaleMapBoundsTest.CH1903;
  * @author Jesse on 3/27/14.
  */
 public class BBoxMapBoundsTest {
-    @Test(expected = IllegalArgumentException.class)
-    public void testToReferencedEnvelopeMismatchAspectRatio() throws Exception {
-        final BBoxMapBounds bboxMapBounds = new BBoxMapBounds(WGS84, 0, 0, 10, 10);
-
-        bboxMapBounds.toReferencedEnvelope(new Rectangle(5, 10), 90);
-    }
 
     @Test
     public void testToReferencedEnvelope() throws Exception {

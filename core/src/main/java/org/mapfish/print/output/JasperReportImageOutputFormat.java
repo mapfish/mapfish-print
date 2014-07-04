@@ -59,16 +59,20 @@ public final class JasperReportImageOutputFormat extends AbstractJasperReportOut
     }
 
     @Override
-    protected void doExport(final OutputStream outputStream, final JasperPrint print) throws JRException, IOException {
-        final int numPages = print.getPages().size();
-        final int pageHeightOnImage = print.getPageHeight() + 1;
-        final int pageWidthOnImage = print.getPageWidth() + 1;
+    protected void doExport(final OutputStream outputStream, final Print print) throws JRException, IOException {
+        JasperPrint jasperPrint = print.print;
+        final int numPages = jasperPrint.getPages().size();
+
+        final double dpiRatio = print.dpi / print.requestorDpi;
+        final int pageHeightOnImage = (int) ((jasperPrint.getPageHeight() + 1) * dpiRatio);
+        final int pageWidthOnImage = (int) ((jasperPrint.getPageWidth() + 1) * dpiRatio);
         BufferedImage pageImage = new BufferedImage(pageWidthOnImage, numPages * pageHeightOnImage, this.imageType);
 
         Graphics2D graphics2D = pageImage.createGraphics();
+        graphics2D.scale(dpiRatio, dpiRatio);
         try {
             JRGraphics2DExporter exporter = new JRGraphics2DExporter();
-            exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
+            exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
             exporter.setParameter(JRGraphics2DExporterParameter.GRAPHICS_2D, graphics2D);
             for (int pageIndex = 0; pageIndex < numPages; pageIndex++) {
                 exporter.setParameter(JRExporterParameter.PAGE_INDEX, pageIndex);

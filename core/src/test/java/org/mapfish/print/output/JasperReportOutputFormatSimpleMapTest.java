@@ -50,7 +50,7 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
 
         final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
         JasperPrint print = format.getJasperPrint(requestData, config,
-                getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR), getTaskDirectory());
+                getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR), getTaskDirectory()).print;
         BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
 
         // note that we are using a sample size of 50, because the image is quite big.

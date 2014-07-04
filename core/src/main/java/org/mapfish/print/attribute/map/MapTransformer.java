@@ -20,6 +20,7 @@
 package org.mapfish.print.attribute.map;
 
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 
 /**
@@ -31,16 +32,19 @@ public class MapTransformer {
     private final MapBounds bounds;
     private final Dimension mapSize;
     private final double rotation;
-    
+    private final double dpi;
+
     /**
      * @param bounds the map bounds
      * @param mapSize the map size
      * @param rotationInDegree the rotation in degree
+     * @param dpi the dpi of the printed map
      */
-    public MapTransformer(final MapBounds bounds, final Dimension mapSize, final double rotationInDegree) {
+    public MapTransformer(final MapBounds bounds, final Dimension mapSize, final double rotationInDegree, final double dpi) {
         this.bounds = bounds;
         this.mapSize = mapSize;
         this.rotation = Math.toRadians(rotationInDegree);
+        this.dpi = dpi;
     }
 
     /**
@@ -103,7 +107,11 @@ public class MapTransformer {
 
         return transform;
     }
-    
+
+    public final double getDPI() {
+        return this.dpi;
+    }
+
     private int getRotatedMapWidth() {
         double width = this.mapSize.getWidth();
         if (this.rotation != 0.0) {
@@ -122,5 +130,9 @@ public class MapTransformer {
                      + Math.abs(width * Math.sin(this.rotation));
         }
         return (int) Math.round(height);
+    }
+
+    public final Rectangle getPaintArea() {
+        return new Rectangle(this.mapSize);
     }
 }

@@ -27,11 +27,9 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
-import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapTransformer;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
-import java.awt.Rectangle;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import javax.annotation.Nullable;
@@ -79,9 +77,6 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
 
     @Override
     public final List<? extends Layer> getLayers(final ClientHttpRequestFactory httpRequestFactory,
-                                                 final MapBounds bounds,
-                                                 final Rectangle paintArea,
-                                                 final double dpi,
                                                  final MapTransformer transformer,
                                                  final boolean isFirstLayer) {
         if (this.layers == null) {

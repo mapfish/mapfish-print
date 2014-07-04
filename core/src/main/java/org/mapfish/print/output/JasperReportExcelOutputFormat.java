@@ -21,7 +21,6 @@ package org.mapfish.print.output;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
 
 import java.io.OutputStream;
@@ -45,7 +44,7 @@ public final class JasperReportExcelOutputFormat extends AbstractJasperReportOut
     }
 
     @Override
-    protected void doExport(final OutputStream outputStream, final JasperPrint print) throws JRException {
+    protected void doExport(final OutputStream outputStream, final Print print) throws JRException {
         JRXlsExporter exporter = new JRXlsExporter();
         exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
         exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, outputStream);

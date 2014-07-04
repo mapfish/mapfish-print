@@ -31,6 +31,7 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
@@ -65,8 +66,8 @@ public class CreateMapProcessorFixedScaleBBoxGeoJsonTest extends AbstractMapfish
         assertEquals(1, layerGraphics.size());
 
 //        Files.copy(new File(layerGraphics.get(0)), new File("/tmp/" + getClass().getSimpleName() + ".svg"));
-        new ImageSimilarity(ImageSimilarity.convertFromSvg(layerGraphics.get(0), 500, 100), 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 0);
+        final BufferedImage referenceImage = ImageSimilarity.convertFromSvg(layerGraphics.get(0), 500, 100);
+        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 0);
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {

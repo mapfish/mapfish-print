@@ -24,11 +24,9 @@ import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.map.GridReaderLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
-import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapTransformer;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
-import java.awt.Rectangle;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -59,9 +57,6 @@ public class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
 
     @Override
     public final synchronized List<? extends Layer> getLayers(final ClientHttpRequestFactory httpRequestFactory,
-                                                 final MapBounds bounds,
-                                                 final Rectangle paintArea,
-                                                 final double dpi,
                                                  final MapTransformer transformer,
                                                  final boolean isFirstLayer) {
         if (this.layers == null) {

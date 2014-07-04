@@ -27,19 +27,19 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
-import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapTransformer;
 import org.mapfish.print.map.geotools.AbstractGeotoolsLayer;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 /**
+ * Common implementation for layers that are represented as a single grid coverage image.
+ *
  * @author Jesse on 4/10/2014.
  */
 public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
@@ -61,9 +61,6 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
 
     @Override
     protected final List<? extends Layer> getLayers(final ClientHttpRequestFactory httpRequestFactory,
-                                                    final MapBounds bounds,
-                                                    final Rectangle paintArea,
-                                                    final double dpi,
                                                     final MapTransformer transformer,
                                                     final boolean isFirstLayer) {
         if (this.layer == null) {
@@ -71,7 +68,7 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
                 if (this.layer == null) {
                     BufferedImage image;
                     try {
-                        image = loadImage(httpRequestFactory, bounds, paintArea, dpi, isFirstLayer);
+                        image = loadImage(httpRequestFactory, transformer, isFirstLayer);
                     } catch (RuntimeException throwable) {
                         throw throwable;
                     } catch (Error e) {
@@ -80,7 +77,8 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
                         throw new RuntimeException(t);
                     }
 
-                    final ReferencedEnvelope mapEnvelope = bounds.toReferencedEnvelope(paintArea, dpi);
+                    final ReferencedEnvelope mapEnvelope = transformer.getBounds().toReferencedEnvelope(transformer.getPaintArea(),
+                            transformer.getDPI());
 
                     GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
                     GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapEnvelope.getCoordinateReferenceSystem());
@@ -97,16 +95,11 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
 
     /**
      * Load the image at the requested size for the provided map bounds.
-     *
-     * @param requestFactory the factory to use for making http requests
-     * @param bounds       the map bounds
-     * @param imageSize    the area to paint
-     * @param dpi          the DPI to render at
+     *  @param requestFactory the factory to use for making http requests
+     * @param transformer object containing map rendering information
      * @param isFirstLayer true indicates this layer is the first layer in the map (the first layer drawn, ie the base layer)
      */
     protected abstract BufferedImage loadImage(ClientHttpRequestFactory requestFactory,
-                                               MapBounds bounds,
-                                               Rectangle imageSize,
-                                               double dpi,
+                                               MapTransformer transformer,
                                                boolean isFirstLayer) throws Throwable;
 }

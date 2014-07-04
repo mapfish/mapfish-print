@@ -52,7 +52,7 @@ public class MapSubReportTest {
                 layer2Tiff.toURI(),
                 layer3SVG.toURI());
 
-        MapSubReport subReport = new MapSubReport(layerImages, new Dimension(400, 500));
+        MapSubReport subReport = new MapSubReport(layerImages, new Dimension(400, 500), 72);
 
         JasperDesign report = subReport.getReportDesign();
 

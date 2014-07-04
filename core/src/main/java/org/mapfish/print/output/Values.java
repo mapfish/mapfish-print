@@ -19,6 +19,8 @@
 
 package org.mapfish.print.output;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Maps;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.attribute.ArrayReflectiveAttribute;
@@ -46,7 +48,7 @@ import javax.annotation.Nullable;
  * @author Jesse
  *
  */
-public class Values {
+public final class Values {
     /**
      * The key that is used to store the task directory in the values map.
      */
@@ -148,7 +150,7 @@ public class Values {
      * @param key id of the value for looking up.
      * @param value the value.
      */
-    public final void put(final String key, final Object value) {
+    public void put(final String key, final Object value) {
         if (TASK_DIRECTORY_KEY.equals(key)) {
             // ensure that no one overwrites the task directory 
             throw new IllegalArgumentException("Invalid key: " + key);
@@ -160,7 +162,7 @@ public class Values {
     /**
      * Get all parameters.
      */
-    protected final Map<String, Object> getParameters() {
+    protected Map<String, Object> getParameters() {
         return this.values;
     }
 
@@ -169,7 +171,7 @@ public class Values {
      *
      * @param key the key for looking up the value.
      */
-    public final String getString(final String key) {
+    public String getString(final String key) {
         return (String) this.values.get(key);
     }
 
@@ -178,7 +180,7 @@ public class Values {
      *
      * @param key the key for looking up the value.
      */
-    public final Double getDouble(final String key) {
+    public Double getDouble(final String key) {
         return (Double) this.values.get(key);
     }
 
@@ -187,7 +189,7 @@ public class Values {
      *
      * @param key the key for looking up the value.
      */
-    public final Integer getInteger(final String key) {
+    public Integer getInteger(final String key) {
         return (Integer) this.values.get(key);
     }
 
@@ -199,7 +201,7 @@ public class Values {
      * @param <V> the type
      *
      */
-    public final <V> V getObject(final String key, final Class<V> type) {
+    public <V> V getObject(final String key, final Class<V> type) {
         final Object obj = this.values.get(key);
         return type.cast(obj);
     }
@@ -210,7 +212,7 @@ public class Values {
      * @param key the key
      */
     @SuppressWarnings("unchecked")
-    public final Iterable<Values> getIterator(final String key) {
+    public Iterable<Values> getIterator(final String key) {
         return (Iterable<Values>) this.values.get(key);
     }
 
@@ -219,7 +221,7 @@ public class Values {
      *
      * @param key the key to check for.
      */
-    public final boolean containsKey(final String key) {
+    public boolean containsKey(final String key) {
         return this.values.containsKey(key);
     }
 
@@ -229,7 +231,7 @@ public class Values {
      * @param key the look up key of the value
      */
     @Nullable
-    public final Boolean getBoolean(@Nonnull final String key) {
+    public Boolean getBoolean(@Nonnull final String key) {
         return (Boolean) this.values.get(key);
     }
 
@@ -238,7 +240,26 @@ public class Values {
      *
      * @param key key of entry to remove.
      */
-    public final void remove(final String key) {
+    public void remove(final String key) {
         this.values.remove(key);
+    }
+
+    /**
+     * Find all the values of the requested type.
+     *
+     * @param valueTypeToFind the type of the value to return.
+     * @param <T> the type of the value to find.
+     * @return the key, value pairs found.
+     */
+    @SuppressWarnings("unchecked")
+    public <T> Map<String, T> find(final Class<T> valueTypeToFind) {
+        final Map<String, Object> filtered = Maps.filterEntries(this.values, new Predicate<Map.Entry<String, Object>>() {
+            @Override
+            public boolean apply(@Nullable final Map.Entry<String, Object> input) {
+                return input != null && valueTypeToFind.isInstance(input.getValue());
+            }
+        });
+
+        return (Map<String, T>) filtered;
     }
 }

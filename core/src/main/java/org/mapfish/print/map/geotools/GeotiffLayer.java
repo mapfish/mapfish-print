@@ -133,15 +133,6 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
                 }
             };
         }
-
-        private void assertFileIsInConfigDir(final Template template, final File file) {
-            final String configurationDir = template.getConfiguration().getDirectory().getAbsolutePath();
-            if (!file.getAbsolutePath().startsWith(configurationDir)) {
-                throw new IllegalArgumentException("The url attribute is a file url but indicates a file that is not within the" +
-                                                   " configurationDirectory: " + file.getAbsolutePath());
-            }
-        }
-
     }
 
     /**

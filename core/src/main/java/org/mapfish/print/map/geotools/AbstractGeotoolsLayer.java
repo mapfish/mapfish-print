@@ -29,6 +29,7 @@ import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.attribute.map.MapTransformer;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -61,20 +62,22 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
     public final void render(final Graphics2D graphics2D,
                              final ClientHttpRequestFactory clientHttpRequestFactory,
                              final MapTransformer transformer,
-                             final double dpi,
                              final boolean isFirstLayer) {
         Rectangle paintArea = new Rectangle(transformer.getMapSize());
         MapBounds bounds = transformer.getBounds();
-        
+
+        MapTransformer layerTransformer = transformer;
         if (transformer.getRotation() != 0.0 && !this.supportsNativeRotation()) {
             // if a rotation is set and the rotation can not be handled natively
             // by the layer, we have to adjust the bounds and map size
             paintArea = new Rectangle(transformer.getRotatedMapSize());
             bounds = transformer.getRotatedBounds();
             graphics2D.setTransform(transformer.getTransform());
+            Dimension mapSize = new Dimension(paintArea.width, paintArea.height);
+            layerTransformer = new MapTransformer(bounds, mapSize, transformer.getRotation(), transformer.getDPI());
         }
         
-        List<? extends Layer> layers = getLayers(clientHttpRequestFactory, bounds, paintArea, dpi, transformer, isFirstLayer);
+        List<? extends Layer> layers = getLayers(clientHttpRequestFactory, layerTransformer, isFirstLayer);
 
         MapContent content = new MapContent();
         try {
@@ -83,50 +86,45 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
             StreamingRenderer renderer = new StreamingRenderer();
 
             RenderingHints hints = new RenderingHints(Collections.<RenderingHints.Key, Object>emptyMap());
-            hints.add(new RenderingHints(RenderingHints.KEY_RENDERING,
-                    RenderingHints.VALUE_RENDER_SPEED));
-            hints.add(new RenderingHints(RenderingHints.KEY_DITHERING,
-                    RenderingHints.VALUE_DITHER_DISABLE));
             hints.add(new RenderingHints(RenderingHints.KEY_ALPHA_INTERPOLATION,
-                    RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED));
+                    RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY));
+            hints.add(new RenderingHints(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON));
             hints.add(new RenderingHints(RenderingHints.KEY_COLOR_RENDERING,
-                    RenderingHints.VALUE_COLOR_RENDER_SPEED));
+                    RenderingHints.VALUE_COLOR_RENDER_QUALITY));
+            hints.add(new RenderingHints(RenderingHints.KEY_DITHERING,
+                    RenderingHints.VALUE_DITHER_ENABLE));
+            hints.add(new RenderingHints(RenderingHints.KEY_FRACTIONALMETRICS,
+                    RenderingHints.VALUE_FRACTIONALMETRICS_ON));
             hints.add(new RenderingHints(RenderingHints.KEY_INTERPOLATION,
-                    RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR));
+                    RenderingHints.VALUE_INTERPOLATION_BICUBIC));
+            hints.add(new RenderingHints(RenderingHints.KEY_RENDERING,
+                    RenderingHints.VALUE_RENDER_QUALITY));
             hints.add(new RenderingHints(RenderingHints.KEY_STROKE_CONTROL,
                     RenderingHints.VALUE_STROKE_PURE));
-            hints.add(new RenderingHints(RenderingHints.KEY_FRACTIONALMETRICS,
-                    RenderingHints.VALUE_FRACTIONALMETRICS_OFF));
-
-            hints.add(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
+            hints.add(new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING,
+                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON));
 
             graphics2D.addRenderingHints(hints);
             renderer.setJava2DHints(hints);
 
             renderer.setMapContent(content);
             renderer.setThreadPool(this.executorService);
-            final ReferencedEnvelope mapArea = bounds.toReferencedEnvelope(paintArea, dpi);
+
+            final ReferencedEnvelope mapArea = bounds.toReferencedEnvelope(paintArea, transformer.getDPI());
             renderer.paint(graphics2D, paintArea, mapArea);
         } finally {
             content.dispose();
         }
-
     }
 
     /**
      * Get the {@link org.geotools.data.DataStore} object that contains the data for this layer.
-     *
-     * @param httpRequestFactory the factory for making http requests
-     * @param bounds the map bounds
-     * @param paintArea the area to paint
-     * @param dpi the DPI to render at
+     *  @param httpRequestFactory the factory for making http requests
      * @param transformer the map transformer
      * @param isFirstLayer true indicates this layer is the first layer in the map (the first layer drawn, ie the base layer)
      */
     protected abstract List<? extends Layer> getLayers(ClientHttpRequestFactory httpRequestFactory,
-                                                       MapBounds bounds,
-                                                       Rectangle paintArea,
-                                                       double dpi,
                                                        MapTransformer transformer,
                                                        final boolean isFirstLayer);
     
