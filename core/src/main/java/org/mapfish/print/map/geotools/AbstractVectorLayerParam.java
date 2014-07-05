@@ -19,25 +19,27 @@
 
 package org.mapfish.print.map.geotools;
 
-import org.geotools.styling.Style;
-import org.mapfish.print.attribute.map.MapfishMapContext;
-import org.springframework.http.client.ClientHttpRequestFactory;
+import org.mapfish.print.parser.HasDefaultValue;
 
 /**
- * A strategy for loading style objects.
+ * Common parameters for geotools vector layers.
  *
- * @author Jesse on 6/25/2014.
- *
- * @param <Source> the type source that the style applies to
+ * @author Jesse on 7/2/2014.
  */
-public interface StyleSupplier<Source> {
+public abstract class AbstractVectorLayerParam {
     /**
-     * Load the style.
-     * @param requestFactory the factory to use for making http requests
-     * @param featureSource the source the style applies to
-     * @param mapContext information about the map projection, bounds, size, etc...
+     * The style name of a style to apply to the features during rendering.  The style name must map to a style in the
+     * template or the configuration objects.
+     * <p/>
+     * If no style is defined then the default style for the geometry type will be used.
      */
-    Style load(final ClientHttpRequestFactory requestFactory,
-               final Source featureSource,
-               final MapfishMapContext mapContext) throws Exception;
+    @HasDefaultValue
+    public String style;
+    /**
+     * Indicates if the layer is rendered as SVG.
+     * <p/>
+     * Default is <code>false</code>.
+     */
+    @HasDefaultValue
+    public boolean renderAsSvg = false;
 }

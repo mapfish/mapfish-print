@@ -28,6 +28,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.mapfish.print.Constants;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
@@ -55,7 +56,8 @@ public abstract class AbstractSLDParserPlugin implements StyleParserPlugin {
     @Override
     public final Optional<Style> parseStyle(@Nullable final Configuration configuration,
                                             @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
-                                            @Nonnull final String styleString) throws Throwable {
+                                            @Nonnull final String styleString,
+                                            @Nonnull final MapfishMapContext mapContext) throws Throwable {
         Integer styleIndex = lookupStyleIndex(styleString).orNull();
         String styleStringWithoutIndexReference = removeIndexReference(styleString);
         List<ByteSource> inputStream = getInputStreamSuppliers(configuration, clientHttpRequestFactory, styleStringWithoutIndexReference);

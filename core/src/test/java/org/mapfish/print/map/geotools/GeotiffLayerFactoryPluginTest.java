@@ -43,8 +43,6 @@ public class GeotiffLayerFactoryPluginTest {
 
         Template template = new Template();
         template.setConfiguration(configuration);
-        template.setStyle("polygon", template.getConfiguration().getDefaultStyle("polygon"));
-
 
         GeotiffLayer.GeotiffParam param = new GeotiffLayer.GeotiffParam();
         param.url = file.toURI().toURL().toString();
@@ -58,8 +56,6 @@ public class GeotiffLayerFactoryPluginTest {
 
         Template template = new Template();
         template.setConfiguration(configuration);
-        template.setStyle("polygon", template.getConfiguration().getDefaultStyle("polygon"));
-
 
         GeotiffLayer.GeotiffParam param = new GeotiffLayer.GeotiffParam();
         param.url = "file://../" + CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.BASE_DIR + "/geojson.json";

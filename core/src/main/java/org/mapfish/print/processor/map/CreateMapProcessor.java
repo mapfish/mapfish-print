@@ -27,7 +27,7 @@ import org.mapfish.print.attribute.map.BBoxMapBounds;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
-import org.mapfish.print.attribute.map.MapTransformer;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.processor.AbstractProcessor;
@@ -169,8 +169,8 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         // higher DPI printer
         final double dpiRatio = dpi / dpiOfRequestor;
         paintArea.setBounds(0, 0, (int) (mapSize.getWidth() * dpiRatio), (int) (mapSize.getHeight() * dpiRatio));
-        final MapTransformer transformer = new MapTransformer(bounds, paintArea.getSize(), mapValues.getRotation(), dpi);
-
+        final MapfishMapContext transformer = new MapfishMapContext(bounds, paintArea.getSize(), mapValues.getRotation(), dpi);
+        
         // reverse layer list to draw from bottom to top.  normally position 0 is top-most layer.
         final List<MapLayer> layers = Lists.reverse(mapValues.getLayers());
 

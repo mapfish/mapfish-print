@@ -19,6 +19,8 @@
 
 package org.mapfish.print.attribute.map;
 
+import org.geotools.geometry.jts.ReferencedEnvelope;
+
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
@@ -27,7 +29,7 @@ import java.awt.geom.AffineTransform;
  * Utility class that adjusts the bounds and the map size in case a rotation
  * is set. Also it provides an {@link AffineTransform} to render the layer graphics.
  */
-public class MapTransformer {
+public class MapfishMapContext {
 
     private final MapBounds bounds;
     private final Dimension mapSize;
@@ -40,7 +42,7 @@ public class MapTransformer {
      * @param rotationInDegree the rotation in degree
      * @param dpi the dpi of the printed map
      */
-    public MapTransformer(final MapBounds bounds, final Dimension mapSize, final double rotationInDegree, final double dpi) {
+    public MapfishMapContext(final MapBounds bounds, final Dimension mapSize, final double rotationInDegree, final double dpi) {
         this.bounds = bounds;
         this.mapSize = mapSize;
         this.rotation = Math.toRadians(rotationInDegree);
@@ -134,5 +136,14 @@ public class MapTransformer {
 
     public final Rectangle getPaintArea() {
         return new Rectangle(this.mapSize);
+    }
+
+    /**
+     * Get the bounds as a referenced envelope.
+     *
+     * @return bounds as a referenced envelope.
+     */
+    public final ReferencedEnvelope toReferencedEnvelope() {
+        return this.bounds.toReferencedEnvelope(getPaintArea(), this.dpi);
     }
 }

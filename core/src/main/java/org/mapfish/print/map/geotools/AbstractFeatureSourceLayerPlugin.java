@@ -23,6 +23,7 @@ import com.google.common.collect.Sets;
 import jsr166y.ForkJoinPool;
 import org.geotools.data.FeatureSource;
 import org.geotools.styling.Style;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.map.style.StyleParser;
@@ -41,8 +42,11 @@ import java.util.Set;
  */
 public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFactoryPlugin<P> {
 
+    /**
+     * A parser for parsing styles.
+     */
     @Autowired
-    private StyleParser parser;
+    protected StyleParser parser;
     /**
      * A fork join pool for running async tasks.
      */
@@ -78,7 +82,8 @@ public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFac
         return new StyleSupplier<FeatureSource>() {
             @Override
             public Style load(final ClientHttpRequestFactory requestFactory,
-                              final FeatureSource featureSource) {
+                              final FeatureSource featureSource,
+                              final MapfishMapContext mapContext) {
                 if (featureSource == null) {
                     throw new IllegalArgumentException("Feature source cannot be null");
                 }
@@ -89,12 +94,16 @@ public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFac
                 if (styleRef == null) {
                     styleRef = geomType;
                 }
-                return template.getStyle(styleRef)
-                        .or(AbstractFeatureSourceLayerPlugin.this.parser.loadStyle(
-                                template.getConfiguration(),
-                                requestFactory, styleRef))
+
+                final StyleParser styleParser = AbstractFeatureSourceLayerPlugin.this.parser;
+                return template.getStyle(styleRef, mapContext)
+                        .or(styleParser.loadStyle(template.getConfiguration(), requestFactory, styleRef, mapContext))
                         .or(template.getConfiguration().getDefaultStyle(geomType));
             }
         };
+    }
+
+    public final void setParser(final StyleParser parser) {
+        this.parser = parser;
     }
 }

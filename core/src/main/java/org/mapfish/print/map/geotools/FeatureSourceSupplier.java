@@ -19,25 +19,24 @@
 
 package org.mapfish.print.map.geotools;
 
-import org.geotools.styling.Style;
+import org.geotools.data.FeatureSource;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
+import javax.annotation.Nonnull;
+
 /**
- * A strategy for loading style objects.
+ * Function for creating feature source.
  *
- * @author Jesse on 6/25/2014.
- *
- * @param <Source> the type source that the style applies to
+ * @author Jesse on 7/3/2014.
  */
-public interface StyleSupplier<Source> {
+public interface FeatureSourceSupplier {
     /**
-     * Load the style.
-     * @param requestFactory the factory to use for making http requests
-     * @param featureSource the source the style applies to
-     * @param mapContext information about the map projection, bounds, size, etc...
+     * Load/create feature source.
+     *  @param requestFactory the factory to use for making http requests
+     * @param mapContext object containing the map information like bounds, map size, dpi, rotation, etc...
      */
-    Style load(final ClientHttpRequestFactory requestFactory,
-               final Source featureSource,
-               final MapfishMapContext mapContext) throws Exception;
+    @Nonnull
+    FeatureSource load(@Nonnull final ClientHttpRequestFactory requestFactory,
+                       @Nonnull MapfishMapContext mapContext);
 }

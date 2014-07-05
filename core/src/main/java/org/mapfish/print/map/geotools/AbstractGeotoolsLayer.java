@@ -26,7 +26,7 @@ import org.geotools.map.MapContent;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
-import org.mapfish.print.attribute.map.MapTransformer;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.awt.Dimension;
@@ -61,12 +61,12 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
     @Override
     public final void render(final Graphics2D graphics2D,
                              final ClientHttpRequestFactory clientHttpRequestFactory,
-                             final MapTransformer transformer,
+                             final MapfishMapContext transformer,
                              final boolean isFirstLayer) {
         Rectangle paintArea = new Rectangle(transformer.getMapSize());
         MapBounds bounds = transformer.getBounds();
 
-        MapTransformer layerTransformer = transformer;
+        MapfishMapContext layerTransformer = transformer;
         if (transformer.getRotation() != 0.0 && !this.supportsNativeRotation()) {
             // if a rotation is set and the rotation can not be handled natively
             // by the layer, we have to adjust the bounds and map size
@@ -74,13 +74,13 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
             bounds = transformer.getRotatedBounds();
             graphics2D.setTransform(transformer.getTransform());
             Dimension mapSize = new Dimension(paintArea.width, paintArea.height);
-            layerTransformer = new MapTransformer(bounds, mapSize, transformer.getRotation(), transformer.getDPI());
+            layerTransformer = new MapfishMapContext(bounds, mapSize, transformer.getRotation(), transformer.getDPI());
         }
-        
-        List<? extends Layer> layers = getLayers(clientHttpRequestFactory, layerTransformer, isFirstLayer);
+
 
         MapContent content = new MapContent();
         try {
+            List<? extends Layer> layers = getLayers(clientHttpRequestFactory, layerTransformer, isFirstLayer);
             content.addLayers(layers);
 
             StreamingRenderer renderer = new StreamingRenderer();
@@ -113,6 +113,10 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
 
             final ReferencedEnvelope mapArea = bounds.toReferencedEnvelope(paintArea, transformer.getDPI());
             renderer.paint(graphics2D, paintArea, mapArea);
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         } finally {
             content.dispose();
         }
@@ -125,8 +129,8 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
      * @param isFirstLayer true indicates this layer is the first layer in the map (the first layer drawn, ie the base layer)
      */
     protected abstract List<? extends Layer> getLayers(ClientHttpRequestFactory httpRequestFactory,
-                                                       MapTransformer transformer,
-                                                       final boolean isFirstLayer);
+                                                       MapfishMapContext transformer,
+                                                       final boolean isFirstLayer) throws Exception;
     
     //CHECKSTYLE:OFF: DesignForExtension - Set a default value for all sub classes.
     @Override
