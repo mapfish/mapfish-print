@@ -1,0 +1,12 @@
+
+templates:
+  main: !template
+    attributes:
+      mapDef: !map
+        width: 500
+        height: 100
+        maxDpi: 400
+      overviewMapDef: !overviewMap
+        width: 200
+        height: 100
+        maxDpi: 400

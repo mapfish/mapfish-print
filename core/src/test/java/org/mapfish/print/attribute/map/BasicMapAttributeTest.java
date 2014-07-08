@@ -29,7 +29,7 @@ public class BasicMapAttributeTest extends AbstractAttributeTest {
         final MapAttribute mapAttribute = new MapAttribute();
         mapAttribute.setHeight(123);
         mapAttribute.setWidth(321);
-        mapAttribute.setMaxDpi(1232);
+        mapAttribute.setMaxDpi(1232.0);
         return mapAttribute;
     }
 }
