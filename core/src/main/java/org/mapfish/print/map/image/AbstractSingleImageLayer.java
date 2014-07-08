@@ -46,7 +46,6 @@ import java.util.concurrent.ExecutorService;
 public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
 
     private final StyleSupplier<GridCoverage2D> styleSupplier;
-    private volatile GridCoverageLayer layer;
 
     /**
      * Constructor.
@@ -64,35 +63,28 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
     protected final List<? extends Layer> getLayers(final ClientHttpRequestFactory httpRequestFactory,
                                                     final MapfishMapContext mapContext,
                                                     final boolean isFirstLayer) throws Exception {
-        if (this.layer == null) {
-            synchronized (this) {
-                if (this.layer == null) {
-                    BufferedImage image;
-                    try {
-                        image = loadImage(httpRequestFactory, mapContext, isFirstLayer);
-                    } catch (RuntimeException throwable) {
-                        throw throwable;
-                    } catch (Error e) {
-                        throw e;
-                    } catch (Throwable t) {
-                        throw new RuntimeException(t);
-                    }
-
-                    final MapBounds bounds = mapContext.getBounds();
-                    final ReferencedEnvelope mapEnvelope = bounds.toReferencedEnvelope(mapContext.getPaintArea(), mapContext.getDPI());
-
-                    GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
-                    GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapEnvelope.getCoordinateReferenceSystem());
-                    gridEnvelope.setEnvelope(mapEnvelope.getMinX(), mapEnvelope.getMinY(), mapEnvelope.getMaxX(), mapEnvelope.getMaxY());
-                    final String coverageName = getClass().getSimpleName();
-                    final GridCoverage2D gridCoverage2D = factory.create(coverageName, image, gridEnvelope, null, null, null);
-
-                    Style style = this.styleSupplier.load(httpRequestFactory, gridCoverage2D, mapContext);
-                    this.layer = new GridCoverageLayer(gridCoverage2D, style);
-                }
-            }
+        BufferedImage image;
+        try {
+            image = loadImage(httpRequestFactory, mapContext, isFirstLayer);
+        } catch (RuntimeException throwable) {
+            throw throwable;
+        } catch (Error e) {
+            throw e;
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
         }
-        return Collections.singletonList(this.layer);
+        
+        final MapBounds bounds = mapContext.getBounds();
+        final ReferencedEnvelope mapEnvelope = bounds.toReferencedEnvelope(mapContext.getPaintArea(), mapContext.getDPI());
+        
+        GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
+        GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapEnvelope.getCoordinateReferenceSystem());
+        gridEnvelope.setEnvelope(mapEnvelope.getMinX(), mapEnvelope.getMinY(), mapEnvelope.getMaxX(), mapEnvelope.getMaxY());
+        final String coverageName = getClass().getSimpleName();
+        final GridCoverage2D gridCoverage2D = factory.create(coverageName, image, gridEnvelope, null, null, null);
+        
+        Style style = this.styleSupplier.load(httpRequestFactory, gridCoverage2D, mapContext);
+        return Collections.singletonList(new GridCoverageLayer(gridCoverage2D, style));
     }
 
     /**

@@ -42,7 +42,6 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
 
     private FeatureSourceSupplier featureSourceSupplier;
     private StyleSupplier<FeatureSource> styleSupplier;
-    private volatile List<? extends Layer> layers;
     private final Boolean renderAsSvg;
 
     /**
@@ -72,17 +71,9 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
     public final List<? extends Layer> getLayers(final ClientHttpRequestFactory httpRequestFactory,
                                                  final MapfishMapContext mapContext,
                                                  final boolean isFirstLayer) throws Exception {
-        if (this.layers == null) {
-            synchronized (this) {
-                if (this.layers == null) {
-                    FeatureSource source = this.featureSourceSupplier.load(httpRequestFactory, mapContext);
-                    Style style = this.styleSupplier.load(httpRequestFactory, source, mapContext);
-
-                    this.layers = Lists.newArrayList(new FeatureLayer(source, style));
-                }
-            }
-        }
-        return this.layers;
+        FeatureSource source = this.featureSourceSupplier.load(httpRequestFactory, mapContext);
+        Style style = this.styleSupplier.load(httpRequestFactory, source, mapContext);
+        return Lists.newArrayList(new FeatureLayer(source, style));
     }
 
     public final void setFeatureCollection(final SimpleFeatureCollection featureCollection) {

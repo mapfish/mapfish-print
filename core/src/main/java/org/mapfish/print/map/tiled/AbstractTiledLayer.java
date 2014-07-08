@@ -44,7 +44,6 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
 
     private final StyleSupplier<GridCoverage2D> styleSupplier;
     private final ForkJoinPool forkJoinPool;
-    private volatile GridCoverageLayer layer;
 
     /**
      * Constructor.
@@ -61,23 +60,17 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
     protected final List<? extends Layer> getLayers(final ClientHttpRequestFactory httpRequestFactory,
                                                     final MapfishMapContext mapContext,
                                                     final boolean isFirstLayer) throws Exception {
-        if (this.layer == null) {
-            synchronized (this) {
-                if (this.layer == null) {
-                    double dpi = mapContext.getDPI();
-                    MapBounds bounds = mapContext.getBounds();
-                    Rectangle paintArea = new Rectangle(mapContext.getMapSize());
-                    TileCacheInformation tileCacheInformation = createTileInformation(bounds, paintArea, dpi, isFirstLayer);
-                    final TileLoaderTask task = new TileLoaderTask(httpRequestFactory, dpi,
-                            mapContext, tileCacheInformation);
-                    final GridCoverage2D gridCoverage2D = this.forkJoinPool.invoke(task);
-
-                    this.layer = new GridCoverageLayer(gridCoverage2D, this.styleSupplier.load(httpRequestFactory, gridCoverage2D,
-                            mapContext));
-                }
-            }
-        }
-        return Collections.singletonList(this.layer);
+        double dpi = mapContext.getDPI();
+        MapBounds bounds = mapContext.getBounds();
+        Rectangle paintArea = new Rectangle(mapContext.getMapSize());
+        TileCacheInformation tileCacheInformation = createTileInformation(bounds, paintArea, dpi, isFirstLayer);
+        final TileLoaderTask task = new TileLoaderTask(httpRequestFactory, dpi,
+                mapContext, tileCacheInformation);
+        final GridCoverage2D gridCoverage2D = this.forkJoinPool.invoke(task);
+        
+        GridCoverageLayer layer = new GridCoverageLayer(gridCoverage2D, this.styleSupplier.load(httpRequestFactory, gridCoverage2D,
+                mapContext));
+        return Collections.singletonList(layer);
     }
 
     /**

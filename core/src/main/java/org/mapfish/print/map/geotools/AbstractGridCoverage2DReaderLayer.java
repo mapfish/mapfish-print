@@ -37,7 +37,6 @@ import java.util.concurrent.ExecutorService;
 public class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
 
     private final Function<ClientHttpRequestFactory, AbstractGridCoverage2DReader> coverage2DReaderSupplier;
-    private volatile List<? extends Layer> layers;
     private final StyleSupplier<AbstractGridCoverage2DReader> styleSupplier;
 
     /**
@@ -59,12 +58,9 @@ public class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
     public final synchronized List<? extends Layer> getLayers(final ClientHttpRequestFactory httpRequestFactory,
                                                  final MapfishMapContext mapContext,
                                                  final boolean isFirstLayer) throws Exception {
-        if (this.layers == null) {
-            AbstractGridCoverage2DReader coverage2DReader = this.coverage2DReaderSupplier.apply(httpRequestFactory);
-            Style style = this.styleSupplier.load(httpRequestFactory, coverage2DReader, mapContext);
-            this.layers = Collections.singletonList(new GridReaderLayer(coverage2DReader, style));
-        }
-        return this.layers;
+        AbstractGridCoverage2DReader coverage2DReader = this.coverage2DReaderSupplier.apply(httpRequestFactory);
+        Style style = this.styleSupplier.load(httpRequestFactory, coverage2DReader, mapContext);
+        return Collections.singletonList(new GridReaderLayer(coverage2DReader, style));
     }
 
 }
