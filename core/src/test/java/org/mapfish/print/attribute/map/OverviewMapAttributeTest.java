@@ -51,7 +51,6 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
     @Before
     public void setUp() throws Exception {
         this.configurationFactory.setDoValidation(false);
-
     }
 
     @Test
@@ -65,12 +64,12 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
         final MapAttribute.MapAttributeValues mapValue = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
         final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue = 
                 values.getObject("overviewMapDef", OverviewMapAttribute.OverviewMapAttributeValues.class);
-        final MapAttribute.MapAttributeValues value = mapValue.getWithOverrides(overviewMapValue);
+        final MapAttribute.OverridenMapAttributeValues value = mapValue.getWithOverrides(overviewMapValue);
         
         assertEquals(300.0, value.getDpi(), 0.1);
         assertNotNull(value.getLayers());
         assertEquals(2, value.getLayers().size());
-        Object proj = value.getMapBounds().getProjection();
+        Object proj = value.getOriginalBounds().getProjection();
         CoordinateReferenceSystem expected = CRS.decode("CRS:84");
         assertTrue(CRS.equalsIgnoreMetadata(expected, proj));
         assertEquals(0.0, value.getRotation(), 0.1);
@@ -89,12 +88,12 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
         final MapAttribute.MapAttributeValues mapValue = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
         final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue = 
                 values.getObject("overviewMapDef", OverviewMapAttribute.OverviewMapAttributeValues.class);
-        final MapAttribute.MapAttributeValues value = mapValue.getWithOverrides(overviewMapValue);
+        final MapAttribute.OverridenMapAttributeValues value = mapValue.getWithOverrides(overviewMapValue);
 
         assertEquals(80.0, value.getDpi(), 0.1);
         assertNotNull(value.getLayers());
 
-        Object proj = value.getMapBounds().getProjection();
+        Object proj = value.getOriginalBounds().getProjection();
         CoordinateReferenceSystem expected = CRS.decode("CRS:84");
         assertTrue(CRS.equalsIgnoreMetadata(expected, proj));
         assertEquals(10.0, value.getRotation(), 0.1);
@@ -113,12 +112,12 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
         final MapAttribute.MapAttributeValues mapValue = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
         final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue = 
                 values.getObject("overviewMapDef", OverviewMapAttribute.OverviewMapAttributeValues.class);
-        final MapAttribute.MapAttributeValues value = mapValue.getWithOverrides(overviewMapValue);
+        final MapAttribute.OverridenMapAttributeValues value = mapValue.getWithOverrides(overviewMapValue);
 
         assertEquals(300.0, value.getDpi(), 0.1);
         assertNotNull(value.getLayers());
 
-        Object proj = value.getMapBounds().getProjection();
+        Object proj = value.getOriginalBounds().getProjection();
         CoordinateReferenceSystem expected = CRS.decode("CRS:84");
         assertTrue(CRS.equalsIgnoreMetadata(expected, proj));
         assertEquals(0.0, value.getRotation(), 0.1);

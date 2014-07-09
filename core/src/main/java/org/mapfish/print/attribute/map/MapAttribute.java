@@ -203,7 +203,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
          * @param paramOverrides Attributes set in this instance will override attributes in
          *  the current instance.
          */
-        public final MapAttribute.MapAttributeValues getWithOverrides(
+        public final MapAttribute.OverridenMapAttributeValues getWithOverrides(
                 final OverviewMapAttribute.OverviewMapAttributeValues paramOverrides) {
             return new OverridenMapAttributeValues(this, paramOverrides, getTemplate(), null);
         }
@@ -220,6 +220,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
         
         private MapAttribute.MapAttributeValues params;
         private OverviewMapAttribute.OverviewMapAttributeValues paramOverrides;
+        private MapBounds zoomedOutBounds = null;
         
         /**
          * Constructor.
@@ -240,7 +241,15 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
 
         @Override
         public final MapBounds getMapBounds() {
+            return this.zoomedOutBounds;
+        }
+
+        public final MapBounds getOriginalBounds() {
             return this.params.getMapBounds();
+        }
+        
+        public final void setZoomedOutBounds(final MapBounds zoomedOutBounds) {
+            this.zoomedOutBounds = zoomedOutBounds;
         }
         
         @Override

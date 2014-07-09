@@ -98,4 +98,29 @@ public class CenterScaleMapBoundsTest {
         assertEquals(DefaultGeographicCRS.WGS84, envelope.getCoordinateReferenceSystem());
     }
 
+    @Test
+    public void testZoomOut() throws Exception {
+        final Scale scale = new Scale(2500.0);
+        final CenterScaleMapBounds bounds = new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 0.0, 0.0, scale);
+        final Rectangle paintArea = new Rectangle(400, 200);
+        final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea, OPENLAYERS_2_DPI);
+        
+        CenterScaleMapBounds newBounds = bounds.zoomOut(1);
+        ReferencedEnvelope newEnvelope = newBounds.toReferencedEnvelope(paintArea, OPENLAYERS_2_DPI);
+
+        final double delta = 0.000001;
+        assertEquals(envelope.getMinX(), newEnvelope.getMinX(), delta);
+        assertEquals(envelope.getMaxX(), newEnvelope.getMaxX(), delta);
+        assertEquals(envelope.getMinY(), newEnvelope.getMinY(), delta);
+        assertEquals(envelope.getMaxY(), newEnvelope.getMaxY(), delta);
+        
+        newBounds = bounds.zoomOut(2);
+        newEnvelope = newBounds.toReferencedEnvelope(paintArea, OPENLAYERS_2_DPI);
+
+        assertEquals(envelope.getMinX() * 2, newEnvelope.getMinX(), delta);
+        assertEquals(envelope.getMaxX() * 2, newEnvelope.getMaxX(), delta);
+        assertEquals(envelope.getMinY() * 2, newEnvelope.getMinY(), delta);
+        assertEquals(envelope.getMaxY() * 2, newEnvelope.getMaxY(), delta);
+    }
+
 }

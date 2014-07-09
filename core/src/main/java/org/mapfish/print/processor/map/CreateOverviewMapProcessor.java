@@ -2,11 +2,13 @@ package org.mapfish.print.processor.map;
 
 
 import org.mapfish.print.attribute.map.MapAttribute;
+import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.OverviewMapAttribute;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
+import java.awt.Rectangle;
 import java.io.File;
 import java.net.URI;
 import java.util.List;
@@ -35,11 +37,22 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
         mapProcessorValues.clientHttpRequestFactory = values.clientHttpRequestFactory;
         mapProcessorValues.tempTaskDirectory = values.tempTaskDirectory;
         
-        MapAttribute.MapAttributeValues mapParams = values.map.getWithOverrides(values.overviewMap);
+        MapAttribute.OverridenMapAttributeValues mapParams = values.map.getWithOverrides(values.overviewMap);
         mapProcessorValues.map = mapParams;
+
+        // TODO validate parameters (dpi? mapParams.postConstruct())
         
+        // zoom-out the bounds by the given factor
+        final MapBounds originalBounds = mapParams.getOriginalBounds();
+        MapBounds overviewMapBounds = originalBounds.zoomOut(values.overviewMap.getZoomFactor());
+        
+        // adjust the bounds to size of the overview map, because the overview map
+        // might have a different aspect ratio than the main map
+        overviewMapBounds = overviewMapBounds.adjustedEnvelope(new Rectangle(values.overviewMap.getMapSize()));
+        mapParams.setZoomedOutBounds(overviewMapBounds);
+        
+        // TODO reset rotation
         // TODO add layer with box
-        // TODO apply zoom factor
 
         CreateMapProcessor.Output output = this.mapProcessor.execute(mapProcessorValues, context);
         return new Output(output.layerGraphics, output.mapSubReport);

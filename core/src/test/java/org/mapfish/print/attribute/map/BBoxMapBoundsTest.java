@@ -116,4 +116,33 @@ public class BBoxMapBoundsTest {
                 new Scale(expectedScale));
         assertEquals(expectedMapBounds.toReferencedEnvelope(screen, dpi), newBBox);
     }
+
+    @Test
+    public void testZoomOut() throws Exception {
+        BBoxMapBounds bboxMapBounds = new BBoxMapBounds(WGS84, -10, -10, 10, 10);
+        MapBounds bounds = bboxMapBounds.zoomOut(1);
+        assertEquals(bboxMapBounds, bounds);
+        
+        bounds = bboxMapBounds.zoomOut(2);
+        ReferencedEnvelope envelope = bounds.toReferencedEnvelope(new Rectangle(5, 5), 90);
+
+        assertEquals(-20, envelope.getMinX(), 0.001);
+        assertEquals(20, envelope.getMaxX(), 0.001);
+        assertEquals(-20, envelope.getMinY(), 0.001);
+        assertEquals(20, envelope.getMaxY(), 0.001);
+        assertEquals(WGS84, envelope.getCoordinateReferenceSystem());
+        
+        bboxMapBounds = new BBoxMapBounds(WGS84, -10, -5, 10, 5);
+        bounds = bboxMapBounds.zoomOut(1);
+        assertEquals(bboxMapBounds, bounds);
+        
+        bounds = bboxMapBounds.zoomOut(4);
+        envelope = bounds.toReferencedEnvelope(new Rectangle(40, 20), 90);
+
+        assertEquals(-40, envelope.getMinX(), 0.001);
+        assertEquals(40, envelope.getMaxX(), 0.001);
+        assertEquals(-20, envelope.getMinY(), 0.001);
+        assertEquals(20, envelope.getMaxY(), 0.001);
+        assertEquals(WGS84, envelope.getCoordinateReferenceSystem());
+    }
 }

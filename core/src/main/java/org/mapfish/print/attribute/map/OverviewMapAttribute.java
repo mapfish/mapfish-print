@@ -82,5 +82,9 @@ public final class OverviewMapAttribute extends GenericMapAttribute<OverviewMapA
         public PArray getRawLayers() {
             return this.layers;
         }
+
+        public double getZoomFactor() {
+            return this.zoomFactor;
+        }
     }
 }

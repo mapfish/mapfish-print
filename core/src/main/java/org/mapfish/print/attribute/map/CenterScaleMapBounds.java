@@ -108,6 +108,16 @@ public final class CenterScaleMapBounds extends MapBounds {
         return this;
     }
 
+    @Override
+    public CenterScaleMapBounds zoomOut(final double factor) {
+        if (factor == 1.0) {
+            return this;
+        }
+
+        final double newDenominator = this.scale.getDenominator() * factor;
+        return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y, new Scale(newDenominator));
+    }
+
     private ReferencedEnvelope computeGeodeticBBox(final double geoWidthInInches, final double geoHeightInInches) {
         try {
 

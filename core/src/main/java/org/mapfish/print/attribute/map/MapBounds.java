@@ -97,6 +97,14 @@ public abstract class MapBounds {
      * @return Bounds adjusted to the map rotation.
      */
     public abstract MapBounds adjustBoundsToRotation(final double rotation);
+    
+    /**
+     * Zooms-out the bounds by the given factor.
+     * 
+     * @param factor The zoom factor.
+     * @return Bounds adjusted to the zoom factor.
+     */
+    public abstract MapBounds zoomOut(final double factor);
 
     // CHECKSTYLE:OFF
     @Override

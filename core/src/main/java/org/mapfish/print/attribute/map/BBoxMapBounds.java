@@ -174,6 +174,26 @@ public final class BBoxMapBounds extends MapBounds {
         return height;
     }
 
+    @Override
+    public MapBounds zoomOut(final double factor) {
+        if (factor == 1.0) {
+            return this;
+        }
+
+        double destWidth = this.bbox.getWidth() * factor;
+        double destHeight = this.bbox.getHeight() * factor;
+
+        double centerX = (this.bbox.getMinX() + this.bbox.getMaxX()) / 2.0f;
+        double centerY = (this.bbox.getMinY() + this.bbox.getMaxY()) / 2.0f;
+        double minGeoX = centerX - destWidth / 2.0f;
+        double maxGeoX = centerX + destWidth / 2.0f;
+        double minGeoY = centerY - destHeight / 2.0f;
+        double maxGeoY = centerY + destHeight / 2.0f;
+        
+        return new BBoxMapBounds(getProjection(), 
+                minGeoX, minGeoY, maxGeoX, maxGeoY);
+    }
+
     // CHECKSTYLE:OFF
     @Override
     public boolean equals(Object o) {
@@ -207,4 +227,5 @@ public final class BBoxMapBounds extends MapBounds {
                '}';
     }
 // // CHECKSTYLE:ON
+
 }
