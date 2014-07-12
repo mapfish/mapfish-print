@@ -40,7 +40,7 @@ import org.mapfish.print.servlet.job.NoSuchReferenceException;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,7 +62,7 @@ import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGU
 /**
  * Servlet with the old print API.
  */
-@Controller
+@Service
 public class OldAPIMapPrinterServlet extends BaseMapServlet {
     private static final String INFO_URL = "/dep/info.json";
     private static final String PRINT_URL = "/dep/print.pdf";
