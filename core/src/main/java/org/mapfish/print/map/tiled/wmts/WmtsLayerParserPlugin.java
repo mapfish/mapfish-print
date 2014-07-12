@@ -22,7 +22,6 @@ package org.mapfish.print.map.tiled.wmts;
 import com.google.common.collect.Sets;
 import jsr166y.ForkJoinPool;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.map.geotools.AbstractGridCoverageLayerPlugin;
@@ -54,7 +53,7 @@ public final class WmtsLayerParserPlugin extends AbstractGridCoverageLayerPlugin
 
     @Nonnull
     @Override
-    public MapLayer parse(@Nonnull final Template template,
+    public WMTSLayer parse(@Nonnull final Template template,
                           @Nonnull final WMTSLayerParam param) throws Throwable {
         String styleRef = param.rasterStyle;
         return new WMTSLayer(this.forkJoinPool,

@@ -21,30 +21,38 @@
     <head>
         <title>Mapfish Print Documentation</title>
 
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.14/angular.min.js"></script>
         <script src="ui-bootstrap-tpls-0.11.0.min.js"></script>
 
         <script src="lib.js"></script>
+        <script src="api.js"></script>
+        <script src="attributes.js"></script>
+        <script src="config.js"></script>
+        <script src="mapLayers.js"></script>
     </head>
     <body ng-app="docsApp">
         <div ng-controller="DocsCtrl">
             <div class="col-md-10">
-                <h1>{{pages[page]}}</h1>
+                <h1>{{pages[page].title}}</h1>
                 <accordion close-others="oneAtATime">
                     <accordion-group heading="{{record.title}}" ng-repeat="record in records">
-                        {{record.content}}
+                        <div class="well well-sm">{{record.desc}}</div>
+                        <div class="well well-lg" ng-repeat="detail in record.details">
+                            <h3>{{detail.title}}</h3>
+                            {{detail.desc}}
+                        </div>
                     </accordion-group>
                 </accordion>
             </div>
             <div class="row">
                 <div class="col-md-2">
                     <ul class="nav nav-pills nav-stacked">
-                        <li class="active" ng-class="page == 'API' ? 'active' : ''"><a href="#" ng-click="select('API')">{{pages['API']}}</a></li>
-                        <li ng-class="page == 'configuration' ? 'active' : ''"><a href="#" ng-click="select('configuration')">{{pages['configuration']}}</a></li>
-                        <li ng-class="page == 'attributes' ? 'active' : ''"><a href="#" ng-click="select('attributes')">{{pages['attributes']}}</a></li>
-                        <li ng-class="page == 'layer' ? 'active' : ''"><a href="#" ng-click="select('layer')">{{pages['layer']}}</a></li>
+                        <li class="active" ng-class="page == 'API' ? 'active' : ''"><a href="#" ng-click="select('API')">{{pages['API'].title}}</a></li>
+                        <li ng-class="page == 'configuration' ? 'active' : ''"><a href="#" ng-click="select('configuration')">{{pages['configuration'].title}}</a></li>
+                        <li ng-class="page == 'attributes' ? 'active' : ''"><a href="#" ng-click="select('attributes')">{{pages['attributes'].title}}</a></li>
+                        <li ng-class="page == 'layer' ? 'active' : ''"><a href="#" ng-click="select('layer')">{{pages['layer'].title}}</a></li>
                     </ul>
                 </div>
             </div>

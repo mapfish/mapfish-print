@@ -16,22 +16,36 @@
  * You should have received a copy of the GNU General Public License
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+// Scripts will add the data to this docs variable
+var docs = {};
+
 var docsApp = angular.module('docsApp', ['ui.bootstrap']);
 
-docsApp.controller('DocsCtrl', function ($scope) {
+docsApp.controller('DocsCtrl', function ($scope, $http) {
   $scope.pages = {
-    'API' : 'API',
-    'configuration' : 'Configuration',
-    'attributes' : 'Attributes',
-    'layer' : 'Map Layer'
+    'API': {
+      title: 'API',
+      setRecords: function() {$scope.records = docs.api}
+    },
+    'configuration': {
+      title: 'Configuration',
+      setRecords: function() {$scope.records = docs.config}
+    },
+    'attributes': {
+      title: 'Attributes',
+      setRecords: function() {$scope.records = docs.attributes}
+    },
+    'layer': {
+      title: 'Map Layer',
+      setRecords: function() {$scope.records = docs.mapLayers}
+    }
   };
   $scope.page = 'API';
-  $scope.records = [{
-    title: 'Test',
-    content: 'Description'
-  }];
-  $scope.select = function(page) {
+  $scope.records = docs.api;
+  $scope.select = function (page) {
     $scope.page = page;
+    $scope.pages[page].setRecords()
   };
-
+  $scope.select($scope.page);
 });

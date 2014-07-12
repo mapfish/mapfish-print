@@ -33,7 +33,8 @@ repositories {
 dependencies {
     compile project(':core')
     compile 'org.codehaus.groovy:groovy-all:2.3.3',
-    "org.springframework:spring-test:${springVersion}"
+    "org.springframework:spring-test:${springVersion}",
+    "org.ccil.cowan.tagsoup:tagsoup:1.2.1"
 }
 
 def site = new File(buildDir, "site").path
