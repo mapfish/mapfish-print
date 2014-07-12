@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.context.support.XmlWebApplicationContext
+
+import java.lang.reflect.Method
 /*
  * Copyright (C) 2014  Camptocamp
  *
@@ -52,7 +54,7 @@ class GenerateDocs {
             handleAttribute(entry.getValue(), javadocDir, entry.getKey())
         }
         springAppContext.getBeansWithAnnotation(Service.class).entrySet().each { entry ->
-            handleService(entry.getValue(), javadocDir, entry.getKey())
+            handleApi(entry.getValue(), javadocDir, entry.getKey())
         }
         springAppContext.getBeansOfType(ConfigurationObject.class, true, true).entrySet().each { entry ->
             handleConfigurationObject(entry.getValue(), javadocDir, entry.getKey())
@@ -91,22 +93,33 @@ class GenerateDocs {
         def desc = findClassDescription(javadocDir, bean.getClass())
         attributes.add(new Record([title:beanName, desc: desc]))
     }
-    static void handleService(Object bean, File javadocDir, String beanName) {
-        bean.getClass().methods.findAll{it.getAnnotation(RequestMapping.class) != null}.each {apiMethod ->
+    static void handleApi(Object bean, File javadocDir, String beanName) {
+        def details = bean.getClass().methods.findAll{it.getAnnotation(RequestMapping.class) != null}.collectAll {apiMethod ->
             def mapping = apiMethod.getAnnotation(RequestMapping.class)
             def method = mapping.method().length  > 0 ? mapping.method()[0] : RequestMethod.GET
             method = method != null ? method.name() : RequestMethod.GET.name()
             def title =  "${mapping.value()[0]} ($method)"
-            api.add(new Record([title: title, desc: apiMethod.getName()]))
+            return new Detail([title: title, desc: findMethodDescription(javadocDir, bean.getClass(), apiMethod)])
         }
+
+        api.add(new Record([title: beanName.replaceAll(/API/, ' API'), desc: findClassDescription(javadocDir, bean.getClass()), details: details]))
     }
 
+    static String findMethodDescription(File javadocDir, Class cls, Method method) {
+        def html = loadJavadocFile(javadocDir, cls)
+
+        def contentContainer = html.depthFirst().find{it.name() == 'div' && it.@class == 'contentContainer'}
+        def detailsEl = contentContainer.depthFirst().find{it.name() == 'div' && it.@class == 'details'}
+        def methodDesc = detailsEl.depthFirst().find{it.name() == "li" && it.h4.text() == method.name}.div[0]
+
+        return methodDesc.toString()
+    }
     static String findClassDescription(File javadocDir, Class cls) {
         def html = loadJavadocFile(javadocDir, cls)
 
-        def contentContainer = html.depthFirst().findAll{it.name() == 'div' && it.@class == 'contentContainer'}
-        def descriptionEl = contentContainer[0].depthFirst().findAll{it.name() == 'div' && it.@class == 'description'}
-        return descriptionEl[0].ul.li.div
+        def contentContainer = html.depthFirst().find{it.name() == 'div' && it.@class == 'contentContainer'}
+        def descriptionEl = contentContainer.depthFirst().find{it.name() == 'div' && it.@class == 'description'}
+        return descriptionEl.ul.li.div
     }
     static def loadJavadocFile(File javadocDir, Class cls) {
         def tagsoupParser = new Parser()
@@ -115,12 +128,15 @@ class GenerateDocs {
         return slurper.parse(javadocFile)
     }
 
+    static def escape(String string) {
+        return string.replace("\n", "\\\n").replace("\"", "\\\"");
+    }
     static class Record {
         String title, desc
         List<Detail> details = []
 
         public String toString() {
-            def finalDesc = desc.replace("\n", "\\\n");
+            def finalDesc = escape(desc);
             return "{\n  \"title\":\"$title\",\n  \"desc\":\"$finalDesc\",\n  \"details\":[" + details.join(", ") + "]\n  }"
         }
     }
@@ -129,7 +145,7 @@ class GenerateDocs {
         String title, desc
 
         public String toString() {
-            def finalDesc = desc.replace("\n", "\\\n");
+            def finalDesc = escape(desc);
             return "{\n    \"title\":\"$title\",\n    \"desc\":\"$finalDesc\"\n    }"
         }
     }

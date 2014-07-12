@@ -40,7 +40,7 @@
                     <accordion-group heading="{{record.title}}" ng-repeat="record in records">
                         <div class="well well-sm">{{record.desc}}</div>
                         <div class="well well-lg" ng-repeat="detail in record.details">
-                            <h3>{{detail.title}}</h3>
+                            <div><strong>{{detail.title}}</strong></div>
                             {{detail.desc}}
                         </div>
                     </accordion-group>
