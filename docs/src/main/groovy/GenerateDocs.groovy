@@ -1,3 +1,4 @@
+import groovy.json.JsonBuilder
 import org.mapfish.print.attribute.Attribute
 import org.mapfish.print.attribute.ReflectiveAttribute
 import org.mapfish.print.config.ConfigurationObject
@@ -72,20 +73,41 @@ class GenerateDocs {
 
         springAppContext.stop()
 
-        new File(args[0], "generated-data.js").withPrintWriter "UTF-8", { printWriter ->
-            write(configuration, printWriter, 'config')
-            write(attributes, printWriter, 'attributes')
-            write(api, printWriter, 'api')
-            write(mapLayers, printWriter, 'mapLayers')
-            write(processors, printWriter, 'processors')
+        def siteDirectory = args[0]
+        new File(siteDirectory, "generated-data.js").withPrintWriter "UTF-8", { printWriter ->
+            new File(siteDirectory, "strings-en.json").withPrintWriter "UTF-8", {strings ->
+                strings.append(GenerateDocs.class.classLoader.getResource("strings-en.json").getText("UTF-8"))
+                write(configuration, printWriter, strings, 'config')
+                write(attributes, printWriter, strings, 'attributes')
+                write(api, printWriter, strings, 'api')
+                write(mapLayers, printWriter, strings, 'mapLayers')
+                write(processors, printWriter, strings, 'processors')
+
+                strings.append("\n}")
+            }
         }
     }
-    static void write (Collection<Record> records, PrintWriter printWriter, String varName) {
+    static void write (Collection<Record> records, PrintWriter printWriter, PrintWriter strings, String varName) {
         printWriter.append("docs.")
         printWriter.append(varName)
         printWriter.append(" = [")
-        printWriter.append(records.join(", "))
+        records.eachWithIndex { record, idx ->
+            if (idx > 0) {
+                printWriter.append(",\n")
+            }
+            printWriter.append(record.json())
+
+            record.translations().each { key, value ->
+                strings.append(",\n  \"")
+                strings.append(key)
+                strings.append("\" : \"")
+                strings.append(value)
+                strings.append("\"")
+            }
+        }
         printWriter.append("\n];\n\n")
+
+
     }
     static void handleConfigurationObject(ConfigurationObject bean, String beanName) {
         if (bean instanceof Attribute || bean instanceof MapLayerFactoryPlugin) {
@@ -103,32 +125,47 @@ class GenerateDocs {
     static void handleMapLayerFactoryPlugin(MapLayerFactoryPlugin<?> bean, String beanName) {
         def layerType = bean.class.methods.findAll { it.name == "parse" && it.returnType.simpleName != 'MapLayer'}[0].returnType
         def desc = javadocParser.findClassDescription(bean.getClass())
-        mapLayers.add(new Record([title:layerType.simpleName.replaceAll(/([A-Z][a-z])/, ' $1'), desc: desc]))
+        def details = findAllAttributes(bean.createParameter().class, beanName)
+        mapLayers.add(new Record([
+                title:layerType.simpleName.replaceAll(/([A-Z][a-z])/, ' $1'),
+                desc: desc,
+                details: details,
+                translateTitle: true
+        ]))
     }
     static void handleAttribute(Attribute bean, String beanName) {
         def details = []
         if (bean instanceof ReflectiveAttribute) {
-            def value = bean.createValue(new Template())
-            ParserUtils.getAllAttributes(value.class).each {att ->
-                def desc = javadocParser.findFieldDescription(value.class, att)
-                def required = att.getAnnotation(HasDefaultValue.class) != null
-                def annotations = att.getAnnotations().collect {it.toString()}
-                def rec = new Detail([
-                        title: att.name,
-                        desc: desc,
-                        required: required,
-                        annotations: annotations
-                ])
-
-                details << rec
-            }
+            details = findAllAttributes(bean.createValue(new Template()).class, beanName)
         }
         def desc = javadocParser.findClassDescription(bean.getClass())
         attributes.add(new Record([title:beanName, desc: desc, details: details]))
     }
+
+    private static Collection<Detail> findAllAttributes(Class cls, String beanName) {
+        def details = []
+        ParserUtils.getAllAttributes(cls).each { att ->
+            def desc = javadocParser.findFieldDescription(beanName, cls, att)
+            def required = att.getAnnotation(HasDefaultValue.class) != null
+            def annotations = att.getAnnotations().collect { it.toString() }
+            def rec = new Detail([
+                    title      : att.name,
+                    desc       : desc,
+                    required   : required,
+                    annotations: annotations
+            ])
+
+            details << rec
+        }
+
+        return details
+    }
+
     static void handleProcessor(Processor bean, String beanName) {
         def desc = javadocParser.findClassDescription(bean.getClass())
-        processors.add(new Record([title:beanName, desc: desc]))
+        def details = findAllAttributes(bean.createInputParameter().class, beanName)
+        def output = findAllAttributes(bean.outputType, beanName)
+        processors.add(new Record([title:beanName, desc: desc, details: details, output: output]))
     }
     static void handleApi(Object bean, String beanName) {
         def details = bean.getClass().methods.findAll{it.getAnnotation(RequestMapping.class) != null}.collectAll {apiMethod ->
@@ -136,34 +173,87 @@ class GenerateDocs {
             def method = mapping.method().length  > 0 ? mapping.method()[0] : RequestMethod.GET
             method = method != null ? method.name() : RequestMethod.GET.name()
             def title =  "${mapping.value()[0]} ($method)"
-            return new Detail([title: title, desc: javadocParser.findMethodDescription(beanName, bean.getClass(), apiMethod)])
+            return new Detail([
+                    title: title,
+                    desc: javadocParser.findMethodDescription(beanName, bean.getClass(), apiMethod),
+            ])
         }
 
-        api.add(new Record([title: beanName.replaceAll(/API/, ' API'), desc: javadocParser.findClassDescription(bean.getClass()), details: details]))
+        api.add(new Record([title: beanName.replaceAll(/API/, ' API'),
+                            desc: javadocParser.findClassDescription(bean.getClass()),
+                            details: details,
+                            translateTitle: true
+        ]))
     }
 
     static def escape(String string) {
-        return string.replace("\n", "\\\n<br/>").replace("\"", "\\\"");
+        return string.replaceAll("\\n|\"|\\\\") {it == "\n" ? " " : "\\$it"}
+    }
+    static String escapeTranslationId(id) {
+        return id.replace("\\", "")
     }
     static class Record {
         String title, desc
+        boolean translateTitle = false
         List<Detail> details = []
+        List<Detail> output = []
+        public String json() {
+            def record = this
+            def builder = new JsonBuilder()
+            builder {
+                title (translateTitle ? translationId("title") : title)
+                desc (translationId("desc"))
+                details (details.collect{it.json(record, "detail")})
+                output (output.collect{it.json(record, "output")})
+                translateTitle (translateTitle)
+            }
 
-        public String toString() {
-            def finalDesc = escape(desc);
-            return "{\n  \"title\":\"$title\",\n  \"desc\":\"$finalDesc\",\n  \"details\":[" + details.join(", ") + "]\n  }"
+            return builder.toPrettyString()
+        }
+        private String translationId(id) {
+            escapeTranslationId("record/$title/$id")
+        }
+        public Map translations() {
+            def record = this
+            def translations = [:]
+            if (translateTitle) {
+                translations[translationId("title")] = escape(title)
+            }
+
+            translations[translationId("desc")] = escape(desc)
+            details.each {it.translations(record, "detail", translations)}
+            output.each {it.translations(record, "output", translations)}
+
+            return translations
         }
     }
 
     static class Detail {
         String title, desc
+        boolean translateTitle = false
         boolean required = false
         List<String> annotations = []
+        public Object json(record, type) {
+            def jsonObj = [
+                title : translateTitle ? translationId(record, type, "title") : title,
+                desc : translationId(record, type, "desc"),
+                required : required,
+                translateTitle: translateTitle,
+                annotations : annotations.collectAll {'"' + escape(it) + '"'}.join(',')
+            ]
+            return jsonObj
+        }
 
-        public String toString() {
-            def finalDesc = escape(desc);
-            def annotationList = annotations.collectAll {'"' + escape(it) + '"'}.join(',')
-            return "{\n    \"title\":\"$title\",\n    \"desc\":\"$finalDesc\",\n    \"required\":$required,\n    \"annotations\":[$annotationList]\n    }"
+        private String translationId(record, type, id) {
+            escapeTranslationId("record/$record.title/$type/$title/$id")
+        }
+
+        public void translations(record, type, translations) {
+            if (translateTitle) {
+                translations[translationId(record, type, "title")] = escape(title)
+            }
+            translations[translationId(record, type, "desc")] = escape(desc)
         }
     }
+
 }

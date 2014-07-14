@@ -23,8 +23,18 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.14/angular.min.js"></script> -->
+    <style>
+        div.border {
+            border: 1px #ddd;
+        }
+    </style>
+     <!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.14/angular.min.js"></script>-->
+    <!--<script src="angular-translate.min.js"></script>-->
+    <!--<script src="angular-translate-loader-static-files.min.js"></script>-->
+
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.14/angular.js"></script>
+    <script src="angular-translate.js"></script>
+    <script src="angular-translate-loader-static-files.js"></script>
     <script src="ui-bootstrap-tpls-0.11.0.min.js"></script>
 
     <script src="lib.js" charset="UTF-8"></script>
@@ -33,22 +43,31 @@
 <body ng-app="docsApp">
 <div ng-controller="DocsCtrl">
     <div class="row col-md-2">
+        <h1>Contents</h1>
         <ul class="nav nav-pills nav-stacked">
             <li ng-repeat="(p,v) in pages"
-                ng-class="page == p ? 'active' : ''"><a href="#" ng-click="select(p)">{{v.title}}</a></li>
+                ng-class="page == p ? 'active' : ''"><a href="#" ng-click="select(p)">{{v.title | translate}}</a></li>
         </ul>
     </div>
     <div class="col-md-10">
-        <h1>{{pages[page].title}}</h1>
+        <h1>{{pages[page].title | translate}}</h1>
         <accordion close-others="oneAtATime">
             <accordion-group ng-repeat="record in records">
                 <accordion-heading>
-                    <h4>{{record.title}}</h4><p ng-bind-html="renderHtml(record.desc)"></p>
+                    <h4>{{getTitle(record)}}</h4><p ng-bind-html="renderHtml(record.desc)"></p>
                 </accordion-heading>
 
-                <div class="well well-sm" ng-repeat="detail in record.details">
-                    <div><strong>{{detail.title}}</strong></div>
-                    <div ng-bind-html="renderHtml(detail.desc)"/>
+                <div class="border">
+                    <div class="well well-sm" ng-repeat="detail in record.details">
+                        <div><strong>{{getTitle(detail)}}</strong></div>
+                        <p ng-bind-html="renderHtml(detail.desc)"></p>
+                    </div>
+                </div>
+                <div class="border">
+                    <div class="well well-sm" ng-repeat="output in record.output">
+                        <div><strong>{{getTitle(output)}}</strong></div>
+                        <p ng-bind-html="renderHtml(output.desc)"></p>
+                    </div>
                 </div>
             </accordion-group>
         </accordion>

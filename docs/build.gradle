@@ -19,6 +19,7 @@
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
+apply plugin: 'jetty'
 
 defaultTasks 'build'
 
@@ -39,6 +40,10 @@ dependencies {
 
 def site = new File(buildDir, "site").path
 
+jettyRun {
+    webAppSourceDirectory = file(site)
+}
+
 task copyJavadocs(type: Copy) {
     dependsOn ':core:javadoc'
     from project(':core').tasks.javadoc.destinationDir
@@ -46,7 +51,9 @@ task copyJavadocs(type: Copy) {
 }
 
 task copySite(type: Copy) {
-    from sourceSets.main.output.resourcesDir
+    from (sourceSets.main.output.resourcesDir) {
+        exclude "strings-en.json"
+    }
     into site
 }
 

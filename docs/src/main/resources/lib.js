@@ -20,12 +20,16 @@
 // Scripts will add the data to this docs variable
 var docs = {};
 
-var docsApp = angular.module('docsApp', ['ui.bootstrap']);
-//docsApp.config(function($sceProvider) {
-//  $sceProvider.enabled(false);
-//});
+var docsApp = angular.module('docsApp', ['ui.bootstrap', 'pascalprecht.translate']);
+docsApp.config(function($translateProvider) {
+  $translateProvider.useStaticFilesLoader({
+    prefix: 'strings-',
+    suffix: '.json'
+  });
+  $translateProvider.preferredLanguage('en');
+});
 
-docsApp.controller('DocsCtrl', function ($scope, $sce) {
+docsApp.controller('DocsCtrl', function ($scope, $sce, $translate) {
   $scope.pages = {
     'API': {
       title: 'API',
@@ -55,10 +59,49 @@ docsApp.controller('DocsCtrl', function ($scope, $sce) {
     $scope.pages[page].setRecords()
   };
   $scope.renderHtml = function(html){
-    return $sce.trustAsHtml(html);
+    return $sce.trustAsHtml($translate(html));
   };
-  $scope.summary = function(html){
-    return html ? html.split(/\.|</, 2)[0] + "." : ""
+  $scope.select($scope.page);
+});
+
+docsApp.controller('DocsCtrl', function ($scope, $sce, $translate) {
+  $scope.pages = {
+    'API': {
+      title: 'API',
+      setRecords: function() {$scope.records = docs.api}
+    },
+    'configuration': {
+      title: 'Configuration',
+      setRecords: function() {$scope.records = docs.config}
+    },
+    'attributes': {
+      title: 'Attributes',
+      setRecords: function() {$scope.records = docs.attributes}
+    },
+    'processors': {
+      title: 'Processor',
+      setRecords: function() {$scope.records = docs.processors}
+    },
+    'layer': {
+      title: 'Map Layer',
+      setRecords: function() {$scope.records = docs.mapLayers}
+    }
+  };
+  $scope.page = 'API';
+  $scope.records = docs.api;
+  $scope.select = function (page) {
+    $scope.page = page;
+    $scope.pages[page].setRecords()
+  };
+  $scope.getTitle = function(record) {
+    if (record.translateTitle) {
+      return $translate.instant(record.title)
+    } else {
+      return record.title
+    }
+  };
+  $scope.renderHtml = function(html){
+    return $sce.trustAsHtml($translate.instant(html));
   };
   $scope.select($scope.page);
 });
