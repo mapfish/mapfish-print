@@ -21,8 +21,11 @@
 var docs = {};
 
 var docsApp = angular.module('docsApp', ['ui.bootstrap']);
+//docsApp.config(function($sceProvider) {
+//  $sceProvider.enabled(false);
+//});
 
-docsApp.controller('DocsCtrl', function ($scope, $http) {
+docsApp.controller('DocsCtrl', function ($scope, $sce) {
   $scope.pages = {
     'API': {
       title: 'API',
@@ -36,6 +39,10 @@ docsApp.controller('DocsCtrl', function ($scope, $http) {
       title: 'Attributes',
       setRecords: function() {$scope.records = docs.attributes}
     },
+    'processors': {
+      title: 'Processor',
+      setRecords: function() {$scope.records = docs.processors}
+    },
     'layer': {
       title: 'Map Layer',
       setRecords: function() {$scope.records = docs.mapLayers}
@@ -46,6 +53,12 @@ docsApp.controller('DocsCtrl', function ($scope, $http) {
   $scope.select = function (page) {
     $scope.page = page;
     $scope.pages[page].setRecords()
+  };
+  $scope.renderHtml = function(html){
+    return $sce.trustAsHtml(html);
+  };
+  $scope.summary = function(html){
+    return html ? html.split(/\.|</, 2)[0] + "." : ""
   };
   $scope.select($scope.page);
 });

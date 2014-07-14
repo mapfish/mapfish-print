@@ -40,6 +40,7 @@ dependencies {
 def site = new File(buildDir, "site").path
 
 task copyJavadocs(type: Copy) {
+    dependsOn ':core:javadoc'
     from project(':core').tasks.javadoc.destinationDir
     into new File(site, 'javadoc')
 }

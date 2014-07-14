@@ -1,15 +1,17 @@
-import org.ccil.cowan.tagsoup.Parser
 import org.mapfish.print.attribute.Attribute
+import org.mapfish.print.attribute.ReflectiveAttribute
 import org.mapfish.print.config.ConfigurationObject
+import org.mapfish.print.config.Template
 import org.mapfish.print.map.MapLayerFactoryPlugin
+import org.mapfish.print.parser.HasDefaultValue
+import org.mapfish.print.parser.ParserUtils
+import org.mapfish.print.processor.Processor
 import org.springframework.beans.BeanUtils
 import org.springframework.mock.web.MockServletContext
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.context.support.XmlWebApplicationContext
-
-import java.lang.reflect.Method
 /*
  * Copyright (C) 2014  Camptocamp
  *
@@ -30,12 +32,14 @@ import java.lang.reflect.Method
  */
 
 class GenerateDocs {
+    static def javadocParser;
     static def configuration = []
-    static def mapLayer = []
+    static def mapLayers = []
     static def attributes = []
     static def api = []
+    static def processors = []
     public static void main(String[] args) {
-        def javadocDir = new File(args[1])
+        javadocParser = new Javadoc7Parser(javadocDir: new File(args[1]))
 
         XmlWebApplicationContext springAppContext = new XmlWebApplicationContext()
         String[] appContextLocations = new String[args.length - 2]
@@ -48,88 +52,98 @@ class GenerateDocs {
         springAppContext.refresh()
         springAppContext.start()
         springAppContext.getBeansOfType(MapLayerFactoryPlugin.class, true, true).entrySet().each {entry ->
-            handleMapLayerFactoryPlugin(entry.getValue(), javadocDir, entry.getKey())
+            handleMapLayerFactoryPlugin(entry.getValue(), entry.getKey())
         }
         springAppContext.getBeansOfType(Attribute.class, true, true).entrySet().each { entry ->
-            handleAttribute(entry.getValue(), javadocDir, entry.getKey())
+            handleAttribute(entry.getValue(), entry.getKey())
+        }
+        springAppContext.getBeansOfType(Processor.class, true, true).entrySet().each { entry ->
+            handleProcessor(entry.getValue(), entry.getKey())
         }
         springAppContext.getBeansWithAnnotation(Service.class).entrySet().each { entry ->
-            handleApi(entry.getValue(), javadocDir, entry.getKey())
+            handleApi(entry.getValue(), entry.getKey())
         }
         springAppContext.getBeansOfType(ConfigurationObject.class, true, true).entrySet().each { entry ->
-            handleConfigurationObject(entry.getValue(), javadocDir, entry.getKey())
+            def bean = entry.getValue()
+            if (!(bean instanceof Attribute || bean instanceof MapLayerFactoryPlugin || bean instanceof Processor)) {
+                handleConfigurationObject(entry.getValue(), entry.getKey())
+            }
         }
 
         springAppContext.stop()
 
-        write(configuration, args[0], 'config')
-        write(attributes, args[0], 'attributes')
-        write(api, args[0], 'api')
-        write(mapLayer, args[0], 'mapLayers')
-    }
-    static void write (Collection<Record> records, String siteDir, String varName) {
-        new File(siteDir, varName + ".js").withPrintWriter "UTF-8", { printWriter ->
-            printWriter.append("docs.")
-            printWriter.append(varName)
-            printWriter.append(" = [")
-            printWriter.append(records.join(", "))
-            printWriter.append("\n]")
+        new File(args[0], "generated-data.js").withPrintWriter "UTF-8", { printWriter ->
+            write(configuration, printWriter, 'config')
+            write(attributes, printWriter, 'attributes')
+            write(api, printWriter, 'api')
+            write(mapLayers, printWriter, 'mapLayers')
+            write(processors, printWriter, 'processors')
         }
     }
-    static void handleConfigurationObject(ConfigurationObject bean, File javadocDir, String beanName) {
+    static void write (Collection<Record> records, PrintWriter printWriter, String varName) {
+        printWriter.append("docs.")
+        printWriter.append(varName)
+        printWriter.append(" = [")
+        printWriter.append(records.join(", "))
+        printWriter.append("\n];\n\n")
+    }
+    static void handleConfigurationObject(ConfigurationObject bean, String beanName) {
+        if (bean instanceof Attribute || bean instanceof MapLayerFactoryPlugin) {
+            return;
+        }
         def descriptors = BeanUtils.getPropertyDescriptors(bean.getClass())
         def details = descriptors.findAll{it.writeMethod != null}.collect{desc ->
-            return new Detail([title : desc.displayName, desc: ''])
+            def title = desc.displayName.replaceAll(/([A-Z][a-z])/, ' $1').capitalize()
+            def detailDesc = javadocParser.findMethodDescription(beanName, bean.getClass(), desc.writeMethod)
+            return new Detail([title : title, desc: detailDesc])
         }
-        def desc = findClassDescription(javadocDir, bean.getClass())
+        def desc = javadocParser.findClassDescription(bean.getClass())
         configuration.add(new Record([title:beanName, desc:desc, details: details]))
     }
-    static void handleMapLayerFactoryPlugin(MapLayerFactoryPlugin<?> bean, File javadocDir, String beanName) {
+    static void handleMapLayerFactoryPlugin(MapLayerFactoryPlugin<?> bean, String beanName) {
         def layerType = bean.class.methods.findAll { it.name == "parse" && it.returnType.simpleName != 'MapLayer'}[0].returnType
-        def desc = findClassDescription(javadocDir, bean.getClass())
-        mapLayer.add(new Record([title:layerType.simpleName.replaceAll(/([A-Z][a-z])/, ' $1'), desc: desc]))
+        def desc = javadocParser.findClassDescription(bean.getClass())
+        mapLayers.add(new Record([title:layerType.simpleName.replaceAll(/([A-Z][a-z])/, ' $1'), desc: desc]))
     }
-    static void handleAttribute(Attribute bean, File javadocDir, String beanName) {
-        def desc = findClassDescription(javadocDir, bean.getClass())
-        attributes.add(new Record([title:beanName, desc: desc]))
+    static void handleAttribute(Attribute bean, String beanName) {
+        def details = []
+        if (bean instanceof ReflectiveAttribute) {
+            def value = bean.createValue(new Template())
+            ParserUtils.getAllAttributes(value.class).each {att ->
+                def desc = javadocParser.findFieldDescription(value.class, att)
+                def required = att.getAnnotation(HasDefaultValue.class) != null
+                def annotations = att.getAnnotations().collect {it.toString()}
+                def rec = new Detail([
+                        title: att.name,
+                        desc: desc,
+                        required: required,
+                        annotations: annotations
+                ])
+
+                details << rec
+            }
+        }
+        def desc = javadocParser.findClassDescription(bean.getClass())
+        attributes.add(new Record([title:beanName, desc: desc, details: details]))
     }
-    static void handleApi(Object bean, File javadocDir, String beanName) {
+    static void handleProcessor(Processor bean, String beanName) {
+        def desc = javadocParser.findClassDescription(bean.getClass())
+        processors.add(new Record([title:beanName, desc: desc]))
+    }
+    static void handleApi(Object bean, String beanName) {
         def details = bean.getClass().methods.findAll{it.getAnnotation(RequestMapping.class) != null}.collectAll {apiMethod ->
             def mapping = apiMethod.getAnnotation(RequestMapping.class)
             def method = mapping.method().length  > 0 ? mapping.method()[0] : RequestMethod.GET
             method = method != null ? method.name() : RequestMethod.GET.name()
             def title =  "${mapping.value()[0]} ($method)"
-            return new Detail([title: title, desc: findMethodDescription(javadocDir, bean.getClass(), apiMethod)])
+            return new Detail([title: title, desc: javadocParser.findMethodDescription(beanName, bean.getClass(), apiMethod)])
         }
 
-        api.add(new Record([title: beanName.replaceAll(/API/, ' API'), desc: findClassDescription(javadocDir, bean.getClass()), details: details]))
-    }
-
-    static String findMethodDescription(File javadocDir, Class cls, Method method) {
-        def html = loadJavadocFile(javadocDir, cls)
-
-        def contentContainer = html.depthFirst().find{it.name() == 'div' && it.@class == 'contentContainer'}
-        def detailsEl = contentContainer.depthFirst().find{it.name() == 'div' && it.@class == 'details'}
-        def methodDesc = detailsEl.depthFirst().find{it.name() == "li" && it.h4.text() == method.name}.div[0]
-
-        return methodDesc.toString()
-    }
-    static String findClassDescription(File javadocDir, Class cls) {
-        def html = loadJavadocFile(javadocDir, cls)
-
-        def contentContainer = html.depthFirst().find{it.name() == 'div' && it.@class == 'contentContainer'}
-        def descriptionEl = contentContainer.depthFirst().find{it.name() == 'div' && it.@class == 'description'}
-        return descriptionEl.ul.li.div
-    }
-    static def loadJavadocFile(File javadocDir, Class cls) {
-        def tagsoupParser = new Parser()
-        def slurper = new XmlSlurper(tagsoupParser)
-        def javadocFile = new File(javadocDir, cls.name.replace(".", File.separator).replace("\$", ".") + ".html")
-        return slurper.parse(javadocFile)
+        api.add(new Record([title: beanName.replaceAll(/API/, ' API'), desc: javadocParser.findClassDescription(bean.getClass()), details: details]))
     }
 
     static def escape(String string) {
-        return string.replace("\n", "\\\n").replace("\"", "\\\"");
+        return string.replace("\n", "\\\n<br/>").replace("\"", "\\\"");
     }
     static class Record {
         String title, desc
@@ -143,10 +157,13 @@ class GenerateDocs {
 
     static class Detail {
         String title, desc
+        boolean required = false
+        List<String> annotations = []
 
         public String toString() {
             def finalDesc = escape(desc);
-            return "{\n    \"title\":\"$title\",\n    \"desc\":\"$finalDesc\"\n    }"
+            def annotationList = annotations.collectAll {'"' + escape(it) + '"'}.join(',')
+            return "{\n    \"title\":\"$title\",\n    \"desc\":\"$finalDesc\",\n    \"required\":$required,\n    \"annotations\":[$annotationList]\n    }"
         }
     }
 }
