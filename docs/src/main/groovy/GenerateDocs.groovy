@@ -1,3 +1,4 @@
+import com.google.common.collect.HashMultimap
 import groovy.json.JsonBuilder
 import org.mapfish.print.attribute.Attribute
 import org.mapfish.print.attribute.ReflectiveAttribute
@@ -34,11 +35,8 @@ import org.springframework.web.context.support.XmlWebApplicationContext
 
 class GenerateDocs {
     static def javadocParser;
-    static def configuration = []
-    static def mapLayers = []
-    static def attributes = []
-    static def api = []
-    static def processors = []
+    static HashMultimap<String, Record> plugins = HashMultimap.create()
+
     public static void main(String[] args) {
         javadocParser = new Javadoc7Parser(javadocDir: new File(args[1]))
 
@@ -77,11 +75,9 @@ class GenerateDocs {
         new File(siteDirectory, "generated-data.js").withPrintWriter "UTF-8", { printWriter ->
             new File(siteDirectory, "strings-en.json").withPrintWriter "UTF-8", {strings ->
                 strings.append(GenerateDocs.class.classLoader.getResource("strings-en.json").getText("UTF-8"))
-                write(configuration, printWriter, strings, 'config')
-                write(attributes, printWriter, strings, 'attributes')
-                write(api, printWriter, strings, 'api')
-                write(mapLayers, printWriter, strings, 'mapLayers')
-                write(processors, printWriter, strings, 'processors')
+                plugins.asMap().each {key, value ->
+                    write(value, printWriter, strings, key)
+                }
 
                 strings.append("\n}")
             }
@@ -120,13 +116,13 @@ class GenerateDocs {
             return new Detail([title : title, desc: detailDesc])
         }
         def desc = javadocParser.findClassDescription(bean.getClass())
-        configuration.add(new Record([title:beanName, desc:desc, details: details]))
+        plugins.put('config', new Record([title:beanName, desc:desc, details: details]))
     }
     static void handleMapLayerFactoryPlugin(MapLayerFactoryPlugin<?> bean, String beanName) {
         def layerType = bean.class.methods.findAll { it.name == "parse" && it.returnType.simpleName != 'MapLayer'}[0].returnType
         def desc = javadocParser.findClassDescription(bean.getClass())
         def details = findAllAttributes(bean.createParameter().class, beanName)
-        mapLayers.add(new Record([
+        plugins.put('mapLayers', new Record([
                 title:layerType.simpleName.replaceAll(/([A-Z][a-z])/, ' $1'),
                 desc: desc,
                 details: details,
@@ -139,7 +135,7 @@ class GenerateDocs {
             details = findAllAttributes(bean.createValue(new Template()).class, beanName)
         }
         def desc = javadocParser.findClassDescription(bean.getClass())
-        attributes.add(new Record([title:beanName, desc: desc, details: details]))
+        plugins.put('attributes', new Record([title:beanName, desc: desc, details: details]))
     }
 
     private static Collection<Detail> findAllAttributes(Class cls, String beanName) {
@@ -165,7 +161,7 @@ class GenerateDocs {
         def desc = javadocParser.findClassDescription(bean.getClass())
         def details = findAllAttributes(bean.createInputParameter().class, beanName)
         def output = findAllAttributes(bean.outputType, beanName)
-        processors.add(new Record([title:beanName, desc: desc, details: details, output: output]))
+        plugins.put('processors', new Record([title:beanName, desc: desc, details: details, output: output]))
     }
     static void handleApi(Object bean, String beanName) {
         def details = bean.getClass().methods.findAll{it.getAnnotation(RequestMapping.class) != null}.collectAll {apiMethod ->
@@ -179,7 +175,7 @@ class GenerateDocs {
             ])
         }
 
-        api.add(new Record([title: beanName.replaceAll(/API/, ' API'),
+        plugins.put('api', new Record([title: beanName.replaceAll(/API/, ' API'),
                             desc: javadocParser.findClassDescription(bean.getClass()),
                             details: details,
                             translateTitle: true
@@ -187,7 +183,7 @@ class GenerateDocs {
     }
 
     static def escape(String string) {
-        return string.replaceAll("\\n|\"|\\\\") {it == "\n" ? " " : "\\$it"}
+        return string.replaceAll("\\n|\"|\\\\") {it == "\n" ? " <br/>" : "\\$it"}
     }
     static String escapeTranslationId(id) {
         return id.replace("\\", "")

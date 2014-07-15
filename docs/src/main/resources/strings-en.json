@@ -4,5 +4,7 @@
   "Attributes": "Attributes",
   "Processor": "Processor",
   "Map Layer": "Map Layer",
+  "inputParamTitle": "Input Parameters:",
+  "outputParamTitle": "Output Parameters:",
   "headerTitle": "Mapfish Print Documentation",
   "contentsTitle": "Contents"
