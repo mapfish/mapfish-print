@@ -27,4 +27,5 @@
     <bean id="wmsLayerParser" class="org.mapfish.print.map.image.wms.WmsLayerFactoryPlugin" />
     <bean id="osmLayerParser" class="org.mapfish.print.map.tiled.osm.OsmLayerParserPlugin" />
     <bean id="gridLayerParser" class="org.mapfish.print.map.geotools.grid.GridLayerPlugin" />
+    <bean id="featureLayerParser" class="org.mapfish.print.map.geotools.FeatureLayer$Plugin" />
 </beans>

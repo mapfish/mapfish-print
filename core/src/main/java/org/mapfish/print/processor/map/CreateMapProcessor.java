@@ -151,19 +151,8 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         final double dpiOfRequestor = mapValues.getRequestorDPI();
 
         MapBounds bounds = mapValues.getMapBounds();
-
-        if (mapValues.isUseNearestScale()) {
-                bounds = bounds.adjustBoundsToNearestScale(
-                        mapValues.getZoomLevels(),
-                        mapValues.getZoomSnapTolerance(),
-                        mapValues.getZoomLevelSnapStrategy(), paintArea, dpiOfRequestor);
-        }
-        
-        bounds = new BBoxMapBounds(bounds.toReferencedEnvelope(paintArea, dpiOfRequestor));
-
-        if (mapValues.isUseAdjustBounds()) {
-            bounds = bounds.adjustedEnvelope(paintArea);
-        }
+        bounds = adjustBoundsToScaleAndMapSize(mapValues, dpi, paintArea,
+                bounds);
 
         // if the DPI is higher than the PDF DPI we need to make the image larger so the image put in the PDF is large enough for the
         // higher DPI printer
@@ -214,6 +203,33 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         }
         
         return graphics;
+    }
+
+    /**
+     * If requested, adjust the bounds to the nearest scale and the map size.
+     * 
+     * @param mapValues         Map parameters
+     * @param dpiOfRequestor    The DPI.
+     * @param paintArea         The size of the painting area.
+     * @param bounds            The map bounds.
+     */
+    public static MapBounds adjustBoundsToScaleAndMapSize(
+            final MapAttribute.MapAttributeValues mapValues, final double dpiOfRequestor,
+            final Rectangle paintArea, final MapBounds bounds) {
+        MapBounds newBounds = bounds;
+        if (mapValues.isUseNearestScale()) {
+            newBounds = newBounds.adjustBoundsToNearestScale(
+                        mapValues.getZoomLevels(),
+                        mapValues.getZoomSnapTolerance(),
+                        mapValues.getZoomLevelSnapStrategy(), paintArea, dpiOfRequestor);
+        }
+        
+        newBounds = new BBoxMapBounds(newBounds.toReferencedEnvelope(paintArea, dpiOfRequestor));
+        
+        if (mapValues.isUseAdjustBounds()) {
+            newBounds = newBounds.adjustedEnvelope(paintArea);
+        }
+        return newBounds;
     }
     
     private boolean renderAsSvg(final MapLayer layer) {

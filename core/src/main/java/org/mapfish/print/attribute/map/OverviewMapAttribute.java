@@ -62,6 +62,13 @@ public final class OverviewMapAttribute extends GenericMapAttribute<OverviewMapA
          */
         @HasDefaultValue
         public Double dpi = null;
+
+        /**
+         * The style name of a style to apply to the bbox rectangle of the original map during rendering.
+         * The style name must map to a style in the template or the configuration objects.
+         */
+        @HasDefaultValue
+        public String style = null;
         
         /**
          * Constructor.

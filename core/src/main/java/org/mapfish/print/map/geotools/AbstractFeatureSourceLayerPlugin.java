@@ -47,6 +47,7 @@ public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFac
      */
     @Autowired
     protected StyleParser parser;
+
     /**
      * A fork join pool for running async tasks.
      */

@@ -49,15 +49,27 @@ public interface Constants {
      * before starting the JVM.
      */
     String DEFAULT_ENCODING = System.getProperty("mapfish.file.encoding", "UTF-8");
+
     /**
      * The default charset.  Depends on {@link #DEFAULT_ENCODING}.
      */
     Charset DEFAULT_CHARSET = Charset.forName(DEFAULT_ENCODING);
+ 
     /**
      * The DPI of a PDF according to the spec.  Also the DPI used by old Openlayers versions (2.0 and earlier).
      */
     double PDF_DPI = 72.0;
 
+    /**
+     * The default style name for raster layers.
+     */
+    String RASTER_STYLE_NAME = "raster";
+
+    /**
+     * The default style name for the bbox rectangle in the overview map.
+     */
+    String OVERVIEWMAP_STYLE_NAME = "overview-map";
+ 
     /**
      * The OGC standard dpi. (About 90 dpi)
      */

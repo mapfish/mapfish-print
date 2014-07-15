@@ -36,6 +36,7 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.awt.Dimension;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -221,6 +222,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
         private MapAttribute.MapAttributeValues params;
         private OverviewMapAttribute.OverviewMapAttributeValues paramOverrides;
         private MapBounds zoomedOutBounds = null;
+        private MapLayer mapExtentLayer = null;
         
         /**
          * Constructor.
@@ -289,13 +291,25 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
                     && getZoomLevels() != null;
         }
         
+        public final void setMapExtentLayer(final MapLayer mapExtentLayer) {
+            this.mapExtentLayer = mapExtentLayer;
+        }
+
         @Override
         public final List<MapLayer> getLayers() {
-            if (!this.paramOverrides.getLayers().isEmpty()) {
-                return this.paramOverrides.getLayers();
-            } else {
-                return this.params.getLayers();
+            // return the layers together with a layer for the bbox rectangle of the map
+            List<MapLayer> layers = new ArrayList<MapLayer>();
+            if (this.mapExtentLayer != null) {
+                layers.add(this.mapExtentLayer);
             }
+
+            if (!this.paramOverrides.getLayers().isEmpty()) {
+                layers.addAll(this.paramOverrides.getLayers());
+            } else {
+                layers.addAll(this.params.getLayers());
+            }
+            
+            return layers;
         }
     }
     
