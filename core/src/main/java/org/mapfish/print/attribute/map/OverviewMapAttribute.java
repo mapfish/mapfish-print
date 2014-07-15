@@ -31,6 +31,28 @@ import java.awt.Dimension;
  */
 public final class OverviewMapAttribute extends GenericMapAttribute<OverviewMapAttribute.OverviewMapAttributeValues> {
     
+    private static final double DEFAULT_ZOOM_FACTOR = 5.0;
+    
+    /**
+     * The zoom factor by which the extent of the main map will be augmented to
+     * create an overview.
+     */
+    private double zoomFactor = DEFAULT_ZOOM_FACTOR;
+
+    /**
+     * The style name of a style to apply to the bbox rectangle of the original map during rendering.
+     * The style name must map to a style in the template or the configuration objects.
+     */
+    private String style = null;
+
+    public void setZoomFactor(final double zoomFactor) {
+        this.zoomFactor = zoomFactor;
+    }
+
+    public void setStyle(final String style) {
+        this.style = style;
+    }
+
     @Override
     public OverviewMapAttributeValues createValue(final Template template) {
         return new OverviewMapAttributeValues(template, new Dimension(this.getWidth(), this.getHeight()));
@@ -40,15 +62,6 @@ public final class OverviewMapAttribute extends GenericMapAttribute<OverviewMapA
      * The value of {@link MapAttribute}.
      */
     public final class OverviewMapAttributeValues extends GenericMapAttribute<?>.GenericMapAttributeValues {
-        
-        private static final double DEFAULT_ZOOM_FACTOR = 5.0;
-        
-        /**
-         * The zoom factor by which the extent of the main map will be augmented to
-         * create an overview.
-         */
-        @HasDefaultValue
-        public double zoomFactor = DEFAULT_ZOOM_FACTOR;
         
         /**
          * The json with all the layer information.  This will be parsed in postConstruct into a list of layers and
@@ -62,13 +75,6 @@ public final class OverviewMapAttribute extends GenericMapAttribute<OverviewMapA
          */
         @HasDefaultValue
         public Double dpi = null;
-
-        /**
-         * The style name of a style to apply to the bbox rectangle of the original map during rendering.
-         * The style name must map to a style in the template or the configuration objects.
-         */
-        @HasDefaultValue
-        public String style = null;
         
         /**
          * Constructor.
@@ -91,7 +97,11 @@ public final class OverviewMapAttribute extends GenericMapAttribute<OverviewMapA
         }
 
         public double getZoomFactor() {
-            return this.zoomFactor;
+            return OverviewMapAttribute.this.zoomFactor;
+        }
+
+        public String getStyle() {
+            return OverviewMapAttribute.this.style;
         }
     }
 }

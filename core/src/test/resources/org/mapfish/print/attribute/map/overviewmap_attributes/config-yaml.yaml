@@ -62,3 +62,4 @@ templates:
         width: 200
         height: 100
         maxDpi: 400
+        zoomFactor: 7

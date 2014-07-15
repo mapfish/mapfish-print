@@ -88,7 +88,7 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
                 CreateMapProcessor.adjustBoundsToScaleAndMapSize(values.map, values.map.getDpi(), originalPaintArea, originalBounds);
         ReferencedEnvelope originalEnvelope =
                 originalBounds.toReferencedEnvelope(originalPaintArea, values.map.getDpi());
-        setOrignalMapExtentLayer(originalEnvelope, mapParams, values.overviewMap.style);
+        setOrignalMapExtentLayer(originalEnvelope, mapParams, values.overviewMap.getStyle());
 
         CreateMapProcessor.Output output = this.mapProcessor.execute(mapProcessorValues, context);
         return new Output(output.layerGraphics, output.mapSubReport);

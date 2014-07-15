@@ -99,6 +99,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
         assertEquals(10.0, value.getRotation(), 0.1);
         assertEquals(200, value.getMapSize().width);
         assertEquals(100, value.getMapSize().height);
+        assertEquals(7.0, overviewMapValue.getZoomFactor(), 0.1);
     }
 
     @Test
@@ -123,5 +124,6 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
         assertEquals(0.0, value.getRotation(), 0.1);
         assertEquals(200, value.getMapSize().width);
         assertEquals(100, value.getMapSize().height);
+        assertEquals(7.0, overviewMapValue.getZoomFactor(), 0.1);
     }
 }
