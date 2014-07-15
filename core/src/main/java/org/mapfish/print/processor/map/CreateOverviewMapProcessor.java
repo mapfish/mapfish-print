@@ -19,6 +19,8 @@
 
 package org.mapfish.print.processor.map;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 
 import org.geotools.feature.DefaultFeatureCollection;
@@ -26,6 +28,7 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapAttribute.OverridenMapAttributeValues;
@@ -35,10 +38,14 @@ import org.mapfish.print.map.geotools.FeatureLayer;
 import org.mapfish.print.map.geotools.FeatureLayer.FeatureLayerParam;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -81,43 +88,69 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
         
         MapBounds originalBounds = mapParams.getOriginalBounds();
         setZoomedOutBounds(mapParams, originalBounds, values);
-        
-        // TODO rotation: allow to rotate the overview map; if the rotation differs, rotate the extent of the original map
-        Rectangle originalPaintArea = new Rectangle(values.map.getMapSize());
-        originalBounds =
-                CreateMapProcessor.adjustBoundsToScaleAndMapSize(values.map, values.map.getDpi(), originalPaintArea, originalBounds);
-        ReferencedEnvelope originalEnvelope =
-                originalBounds.toReferencedEnvelope(originalPaintArea, values.map.getDpi());
-        setOrignalMapExtentLayer(originalEnvelope, mapParams, values.overviewMap.getStyle());
+        setOriginalMapExtentLayer(originalBounds, values, mapParams);
 
         CreateMapProcessor.Output output = this.mapProcessor.execute(mapProcessorValues, context);
         return new Output(output.layerGraphics, output.mapSubReport);
     }
 
-    private void setOrignalMapExtentLayer(final ReferencedEnvelope originalEnvelope,
-            final OverridenMapAttributeValues mapParams, final String style) throws IOException {
+    private void setOriginalMapExtentLayer(final MapBounds originalBounds,
+            final Input values,
+            final MapAttribute.OverridenMapAttributeValues mapParams)
+            throws IOException {
+        Rectangle originalPaintArea = new Rectangle(values.map.getMapSize());
+        MapBounds adjustedBounds =
+                CreateMapProcessor.adjustBoundsToScaleAndMapSize(values.map, values.map.getDpi(), originalPaintArea, originalBounds);
+        ReferencedEnvelope originalEnvelope =
+                adjustedBounds.toReferencedEnvelope(originalPaintArea, values.map.getDpi());
+
+        Geometry mapExtent = JTS.toGeometry(originalEnvelope);
+        if (values.map.getRotation() != 0.0) {
+            mapExtent = rotateExtent(mapExtent, values.map.getRotation(), originalEnvelope);
+        }
+        
+        FeatureLayer layer = createOrignalMapExtentLayer(mapExtent, mapParams,
+                values.overviewMap.getStyle(), originalEnvelope.getCoordinateReferenceSystem());
+        mapParams.setMapExtentLayer(layer);
+    }
+
+    private Geometry rotateExtent(final Geometry mapExtent, final double rotation,
+            final ReferencedEnvelope originalEnvelope) {
+        final Coordinate center = originalEnvelope.centre();
+        final AffineTransform affineTransform = AffineTransform.getRotateInstance(
+                Math.toRadians(rotation), center.x, center.y);
+        final MathTransform mathTransform = new AffineTransform2D(affineTransform);
+
+        try {
+            return JTS.transform(mapExtent, mathTransform);
+        } catch (TransformException e) {
+            throw new RuntimeException("Failed to rotate map extent", e);
+        }
+    }
+
+    private FeatureLayer createOrignalMapExtentLayer(final Geometry mapExtent,
+            final OverridenMapAttributeValues mapParams, final String style,
+            final CoordinateReferenceSystem crs) throws IOException {
         FeatureLayerParam layerParams = new FeatureLayerParam();
         layerParams.style = style;
         layerParams.defaultStyle = Constants.OVERVIEWMAP_STYLE_NAME;
         // TODO make this configurable?
         layerParams.renderAsSvg = false;
-        layerParams.features = wrapIntoFeatureCollection(originalEnvelope);
+        layerParams.features = wrapIntoFeatureCollection(mapExtent, crs);
 
-        FeatureLayer layer = this.featureLayerParser.parse(mapParams.getTemplate(), layerParams);
-        mapParams.setMapExtentLayer(layer);
+        return this.featureLayerParser.parse(mapParams.getTemplate(), layerParams);
     }
 
     private DefaultFeatureCollection wrapIntoFeatureCollection(
-            final ReferencedEnvelope originalEnvelope) {
-        Polygon polygon = JTS.toGeometry(originalEnvelope);
-
+            final Geometry mapExtent, final CoordinateReferenceSystem crs) {
         SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
         typeBuilder.setName("overview-map");
+        typeBuilder.setCRS(crs);
         typeBuilder.add("geom", Polygon.class);
         final SimpleFeatureType type = typeBuilder.buildFeatureType();
 
         DefaultFeatureCollection features = new DefaultFeatureCollection();
-        features.add(SimpleFeatureBuilder.build(type, new Object[]{polygon}, null));
+        features.add(SimpleFeatureBuilder.build(type, new Object[]{mapExtent}, null));
 
         return features;
     }
