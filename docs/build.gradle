@@ -50,9 +50,14 @@ task copyJavadocs(type: Copy) {
     into new File(site, 'javadoc')
 }
 
+import org.apache.tools.ant.filters.ReplaceTokens
 task copySite(type: Copy) {
     from (sourceSets.main.output.resourcesDir) {
-        exclude "strings-en.json"
+        exclude "strings-en.json", "*.html", "*.js"
+    }
+    from (sourceSets.main.output.resourcesDir) {
+        include "*.html", "*.js"
+        filter(ReplaceTokens, tokens: [version: version])
     }
     into site
 }
