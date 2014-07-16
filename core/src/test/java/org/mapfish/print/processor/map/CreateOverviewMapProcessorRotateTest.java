@@ -112,7 +112,7 @@ public class CreateOverviewMapProcessorRotateTest extends AbstractMapfishSpringT
 //        Files.copy(new File(layerGraphics.get(2)), new File("/tmp/2_ov_"+getClass().getSimpleName()+".tiff"));
         
         new ImageSimilarity(ImageSimilarity.mergeImages(layerGraphics, 300, 200), 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 30);
+                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 50);
 
     }
 

@@ -113,9 +113,9 @@ public class CreateOverviewMapProcessorCustomLayerTest extends AbstractMapfishSp
 
 //        Files.copy(new File(layerGraphics.get(0)), new File("/tmp/0_ov_"+getClass().getSimpleName()+".tiff"));
 //        Files.copy(new File(layerGraphics.get(1)), new File("/tmp/1_ov_"+getClass().getSimpleName()+".tiff"));
-
-        new ImageSimilarity(ImageSimilarity.mergeImages(layerGraphics, 300, 200), 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 30);
+        
+        new ImageSimilarity(ImageSimilarity.mergeImages(layerGraphics, 300, 200), 5)
+                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 50);
 
     }
 
