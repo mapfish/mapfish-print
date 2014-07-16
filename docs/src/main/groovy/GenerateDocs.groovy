@@ -76,7 +76,7 @@ class GenerateDocs {
             new File(siteDirectory, "strings-en.json").withPrintWriter "UTF-8", {strings ->
                 strings.append(GenerateDocs.class.classLoader.getResource("strings-en.json").getText("UTF-8"))
                 plugins.asMap().each {key, value ->
-                    write(value, printWriter, strings, key)
+                    write(value as List, printWriter, strings, key)
                 }
 
                 strings.append("\n}")

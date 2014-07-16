@@ -60,7 +60,7 @@
 <body ng-app="docsApp">
 <div ng-controller="DocsCtrl">
     <div class="row col-sm-12 title">
-        <img class="icon col-xs-2" src="mapfish_transparent.png" />
+        <a href=""><img class="icon col-xs-2" src="mapfish_transparent.png" /></a>
         <div class="col-xs-10">
             <h1>{{'headerTitle' | translate}}</h1>
             <div>@version@</div>
@@ -71,33 +71,13 @@
         <h2 class="contentsTitle">{{'contentsTitle' | translate}}</h2>
         <ul class="nav nav-pills nav-stacked">
             <li ng-repeat="(p,v) in pages"
-                ng-class="page == p ? 'active' : ''"><a href="#" ng-click="select(p)">{{v.title | translate}}</a></li>
+                ng-class="page == p ? 'active' : ''"><a href="{{'#'+p}}" ng-click="select(p)">{{v.title | translate}}</a></li>
         </ul>
     </div>
     <div class="col-sm-10">
         <h2 class="pageTitle">{{pages[page].title | translate}}</h2>
-        <accordion close-others="oneAtATime">
-            <accordion-group ng-repeat="record in records">
-                <accordion-heading>
-                    <h4>{{getTitle(record)}}</h4><p ng-bind-html="renderHtml(record.desc)"></p>
-                </accordion-heading>
-
-                <h4 ng-if="page === 'processors' && record.details.length">{{'inputParamTitle' | translate}}</h4>
-                <div class="border">
-                    <div class="well well-sm" ng-repeat="detail in record.details">
-                        <div><strong>{{getTitle(detail)}}</strong></div>
-                        <p ng-bind-html="renderHtml(detail.desc)"></p>
-                    </div>
-                </div>
-                <h4 ng-if="page === 'processors' && record.output.length">{{'outputParamTitle' | translate}}</h4>
-                <div class="border">
-                    <div class="well well-sm" ng-repeat="output in record.output">
-                        <div><strong>{{getTitle(output)}}</strong></div>
-                        <p ng-bind-html="renderHtml(output.desc)"></p>
-                    </div>
-                </div>
-            </accordion-group>
-        </accordion>
+        <p class="pageDesc" ng-bind-html="renderHtml(pages[page].desc)"></p>
+        <div ng-include="pages[page].html"/>
     </div>
 </div>
 </body>

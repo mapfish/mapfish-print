@@ -64,30 +64,48 @@ docsApp.controller('DocsCtrl', function ($scope, $sce, $translate) {
   $scope.select($scope.page);
 });
 
-docsApp.controller('DocsCtrl', function ($scope, $sce, $translate) {
+docsApp.controller('DocsCtrl', function ($scope, $sce, $translate, $location) {
   $scope.pages = {
     'API': {
       title: 'API',
-      setRecords: function() {$scope.records = docs.api}
+      html: 'user-api-part.html',
+      setRecords: function() {$scope.records = docs.api},
+      desc: 'apiPageDesc'
     },
     'configuration': {
       title: 'Configuration',
-      setRecords: function() {$scope.records = docs.config}
+      html: 'user-api-part.html',
+      setRecords: function() {$scope.records = docs.config},
+      desc: 'configurationPageDesc'
     },
     'attributes': {
       title: 'Attributes',
-      setRecords: function() {$scope.records = docs.attributes}
+      html: 'user-api-part.html',
+      setRecords: function() {$scope.records = docs.attributes},
+      desc: 'attributesPageDesc'
     },
     'processors': {
       title: 'Processor',
-      setRecords: function() {$scope.records = docs.processors}
+      html: 'user-api-part.html',
+      setRecords: function() {$scope.records = docs.processors}   ,
+      desc: 'processorsPageDesc'
     },
-    'layer': {
+    'mapLayer': {
       title: 'Map Layer',
-      setRecords: function() {$scope.records = docs.mapLayers}
+      html: 'user-api-part.html',
+      setRecords: function() {$scope.records = docs.mapLayers},
+      desc: 'mapLayerPageDesc'
     }
   };
   $scope.page = 'API';
+  var path = $location.path() || "";
+  path = path.substr(1);
+  if ($scope.pages[path]) {
+    $scope.page = path;
+  } else {
+    for ($scope.page in $scope.pages) break;
+    $location.path('/' + $scope.page);
+  }
   $scope.records = docs.api;
   $scope.select = function (page) {
     $scope.page = page;
