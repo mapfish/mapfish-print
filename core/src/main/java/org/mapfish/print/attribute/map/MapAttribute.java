@@ -38,6 +38,7 @@ import java.util.List;
 public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttributeValues> {
 
     private static final double DEFAULT_SNAP_TOLERANCE = 0.05;
+    private static final ZoomLevelSnapStrategy DEFAULT_SNAP_STRATEGY = ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE;
 
 
     @Override
@@ -166,6 +167,13 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
         public Double getZoomSnapTolerance() {
         //CSON: DesignForExtension
             return MapAttribute.getValueOr(super.getZoomSnapTolerance(), DEFAULT_SNAP_TOLERANCE);
+        }
+
+        //CSOFF: DesignForExtension
+        @Override
+        public ZoomLevelSnapStrategy getZoomLevelSnapStrategy() {
+        //CSON: DesignForExtension
+            return MapAttribute.getValueOr(super.getZoomLevelSnapStrategy(), DEFAULT_SNAP_STRATEGY);
         }
 
         //CSOFF: DesignForExtension
