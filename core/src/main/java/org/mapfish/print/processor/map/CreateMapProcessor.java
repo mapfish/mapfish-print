@@ -151,8 +151,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         final double dpiOfRequestor = mapValues.getRequestorDPI();
 
         MapBounds bounds = mapValues.getMapBounds();
-        bounds = adjustBoundsToScaleAndMapSize(mapValues, dpi, paintArea,
-                bounds);
+        bounds = adjustBoundsToScaleAndMapSize(mapValues, dpiOfRequestor, paintArea, bounds);
 
         // if the DPI is higher than the PDF DPI we need to make the image larger so the image put in the PDF is large enough for the
         // higher DPI printer

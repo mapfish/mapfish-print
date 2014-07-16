@@ -19,12 +19,11 @@
 
 package org.mapfish.print.map.geotools;
 
-import com.google.common.base.Function;
-
 import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.styling.Style;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
@@ -50,7 +49,7 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
      * @param renderAsSvg           is the layer rendered as SVG?
      */
     public FeatureLayer(final ExecutorService executorService,
-                        final Function<ClientHttpRequestFactory, FeatureSource> featureSourceSupplier,
+                        final FeatureSourceSupplier featureSourceSupplier,
                         final StyleSupplier<FeatureSource> styleSupplier,
                         final boolean renderAsSvg) {
         super(executorService, featureSourceSupplier, styleSupplier, renderAsSvg);
@@ -86,11 +85,13 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
                     param.renderAsSvg);
         }
 
-        private Function<ClientHttpRequestFactory, FeatureSource> createFeatureSourceSupplier(
+        private FeatureSourceSupplier createFeatureSourceSupplier(
                 final SimpleFeatureCollection features) {
-            return new Function<ClientHttpRequestFactory, FeatureSource>() {
+            return new FeatureSourceSupplier() {
                 @Override
-                public FeatureSource apply(final ClientHttpRequestFactory requestFactory) {
+                public FeatureSource load(
+                        final ClientHttpRequestFactory requestFactory,
+                        final MapfishMapContext mapContext) {
                     return new CollectionFeatureSource(features);
                 }
             };
@@ -109,7 +110,8 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
             return new StyleSupplier<FeatureSource>() {
                 @Override
                 public Style load(final ClientHttpRequestFactory requestFactory,
-                                  final FeatureSource featureSource) {
+                                  final FeatureSource featureSource,
+                                  final MapfishMapContext mapContext) {
                     if (featureSource == null) {
                         throw new IllegalArgumentException("Feature source cannot be null");
                     }
@@ -124,10 +126,10 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
                             styleRef = geomType;
                         }
                     }
-                    return template.getStyle(styleRef)
+                    return template.getStyle(styleRef, mapContext)
                             .or(Plugin.this.parser.loadStyle(
                                     template.getConfiguration(),
-                                    requestFactory, styleRef))
+                                    requestFactory, styleRef, mapContext))
                             .or(template.getConfiguration().getDefaultStyle(styleRef));
                 }
             };
