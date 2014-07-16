@@ -1,0 +1,31 @@
+
+templates:
+  #===========================================================================
+  A4 landscape: !template
+  #===========================================================================
+    reportTemplate: simpleReport.jrxml
+    attributes:
+      map: !map
+        maxDpi: 400
+        width: 780
+        height: 330
+      overviewMap: !overviewMap
+        width: 300
+        height: 150
+        maxDpi: 400
+        zoomFactor: 7
+    processors:
+    - !reportBuilder # compile all reports in current directory
+      directory: '.'
+    - !createMap
+      inputMapper: {map: map}
+      outputMapper: {mapSubReport: mapSubReport}
+    - !createOverviewMap
+        inputMapper: {
+            map: map,
+            overviewMap: overviewMap
+        }
+        outputMapper: {
+            overviewMapSubReport: overviewMapSubReport,
+            layerGraphics: dummyLayerGraphics
+        }
