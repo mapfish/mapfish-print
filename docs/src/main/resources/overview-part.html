@@ -1,0 +1,39 @@
+<p>
+    The purpose of Mapfish Print is to create reports that contain maps (and map related components) within them.
+</p>
+<p>
+    The project is a Java based servlet/library/application based on the mature
+    <a href="http://community.jaspersoft.com/project/jasperreports-library">Jasper Reports Library</a>.
+</p>
+<p>
+    Mapfish print has the following distributions:
+    <ul>
+        <li>
+            The most commonly used distribution is the <em>war</em> distribution where Mapfish Print is a servlet and can be ran in a
+            Servlet container like <a href="http://tomcat.apache.org/">Apache Tomcat</a>.
+        </li>
+        <li>
+            Mapfish print is also distributed as a Java <em>jar</em> which allows Mapfish print to be used like a normal Java library, or
+            embedded in an existing Java web application as an addition servlet
+        </li>
+        <li>
+            The Java <em>war</em> is also packaged as a debian package
+        </li>
+        <li>
+            The last distribution is an command-line application where the reports can be generated via command line.  This is useful for
+            debugging configurations and requests.
+        </li>
+    </ul>
+</p>
+
+<h2>Design Philosophy</h2>
+<p>Mapfish Print is structured as follows</p>
+<h2>Jasper Report Integration</h2>
+<p>
+    For Generating reports Mapfish Print uses
+    <a href="http://community.jaspersoft.com/project/jasperreports-library">Jasper Reports</a>. Jasper Reports is a mature library report
+    generating reports. From the website:
+    <blockquote>The JasperReports Library is the world's most popular open source reporting engine. It is entirely written in Java and it is able to use data coming from any kind of data source and produce pixel-perfect documents that can be viewed, printed or exported in a variety of document formats including HTML, PDF, Excel, OpenOffice and Word.</blockquote>
+</p><p>
+    In order to use Jasper reports report template(s) are created.  Typically the reports are
+</p>

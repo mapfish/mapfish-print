@@ -76,7 +76,6 @@
     </div>
     <div class="col-sm-10">
         <h2 class="pageTitle">{{pages[page].title | translate}}</h2>
-        <p class="pageDesc" ng-bind-html="renderHtml(pages[page].desc)"></p>
         <div ng-include="pages[page].html"/>
     </div>
 </div>

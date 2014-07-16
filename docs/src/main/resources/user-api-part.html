@@ -18,6 +18,8 @@
   -->
 
 <accordion close-others="oneAtATime">
+
+    <p class="pageDesc" ng-bind-html="renderHtml(pages[page].desc)"></p>
     <accordion-group ng-repeat="record in records">
         <accordion-heading>
             <h4>{{getTitle(record)}}</h4><p ng-bind-html="renderHtml(record.desc)"></p>

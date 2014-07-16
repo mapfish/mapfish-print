@@ -1,4 +1,5 @@
 import com.google.common.collect.HashMultimap
+import com.google.common.io.Files
 import groovy.json.JsonBuilder
 import org.mapfish.print.attribute.Attribute
 import org.mapfish.print.attribute.ReflectiveAttribute
@@ -74,7 +75,21 @@ class GenerateDocs {
         def siteDirectory = args[0]
         new File(siteDirectory, "generated-data.js").withPrintWriter "UTF-8", { printWriter ->
             new File(siteDirectory, "strings-en.json").withPrintWriter "UTF-8", {strings ->
-                strings.append(GenerateDocs.class.classLoader.getResource("strings-en.json").getText("UTF-8"))
+
+                strings.append(GenerateDocs.class.classLoader.getResource("strings-en.json").getText("UTF-8").trim())
+
+                def file = new File(GenerateDocs.class.getResource("/index.html").toURI())
+                file = new File(file.getParentFile(), "long-strings")
+                Files.fileTreeTraverser().children(file).each {stringsFile ->
+                    def name = Files.getNameWithoutExtension(stringsFile.getName())
+
+                    strings.append(",\n  \"")
+                    strings.append(name)
+                    strings.append("\" : \"")
+                    def text = stringsFile.getText("UTF-8").replaceAll(/\s?(\n|\r)\s?/, " ").replaceAll(/\\|"/) {"\\$it"}
+                    strings.append(text)
+                    strings.append("\"")
+                }
                 plugins.asMap().each {key, value ->
                     write(value as List, printWriter, strings, key)
                 }

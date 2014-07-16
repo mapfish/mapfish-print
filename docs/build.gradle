@@ -53,10 +53,11 @@ task copyJavadocs(type: Copy) {
 import org.apache.tools.ant.filters.ReplaceTokens
 task copySite(type: Copy) {
     from (sourceSets.main.output.resourcesDir) {
-        exclude "strings-en.json", "*.html", "*.js"
+        exclude "strings-en.json", "*.html", "*.js", "long-strings/*", "long-strings"
     }
     from (sourceSets.main.output.resourcesDir) {
         include "*.html", "*.js"
+        exclude "long-strings/*", "long-strings"
         filter(ReplaceTokens, tokens: [version: version])
     }
     into site
