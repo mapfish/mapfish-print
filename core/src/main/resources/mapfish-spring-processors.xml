@@ -82,6 +82,36 @@
     </bean>
 
     <bean class="org.mapfish.print.processor.ProcessorDependency">
+        <constructor-arg name="required" value="org.mapfish.print.processor.map.SetStyleProcessor" />
+        <constructor-arg name="dependent" value="org.mapfish.print.processor.map.CreateOverviewMapProcessor"/>
+        <constructor-arg name="commonInputs">
+            <util:list>
+                <value>map;overviewMap</value>
+            </util:list>
+        </constructor-arg>
+    </bean>
+    
+    <bean class="org.mapfish.print.processor.ProcessorDependency">
+        <constructor-arg name="required" value="org.mapfish.print.processor.map.SetFeaturesProcessor" />
+        <constructor-arg name="dependent" value="org.mapfish.print.processor.map.CreateOverviewMapProcessor"/>
+        <constructor-arg name="commonInputs">
+            <util:list>
+                <value>map;overviewMap</value>
+            </util:list>
+        </constructor-arg>
+    </bean>
+
+    <bean class="org.mapfish.print.processor.ProcessorDependency">
+        <constructor-arg name="required" value="org.mapfish.print.processor.map.SetWmsCustomParamProcessor" />
+        <constructor-arg name="dependent" value="org.mapfish.print.processor.map.CreateOverviewMapProcessor"/>
+        <constructor-arg name="commonInputs">
+            <util:list>
+                <value>map;overviewMap</value>
+            </util:list>
+        </constructor-arg>
+    </bean>
+
+    <bean class="org.mapfish.print.processor.ProcessorDependency">
         <constructor-arg name="required" value="org.mapfish.print.processor.http.UseHttpForHttpsProcessor" />
         <constructor-arg name="dependent" value="org.mapfish.print.processor.map.CreateMapProcessor"/>
         <constructor-arg name="commonInputs">

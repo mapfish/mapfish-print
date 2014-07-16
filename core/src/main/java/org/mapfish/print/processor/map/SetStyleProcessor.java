@@ -21,7 +21,7 @@ package org.mapfish.print.processor.map;
 
 import org.geotools.styling.Style;
 import org.mapfish.print.attribute.StyleAttribute;
-import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
+import org.mapfish.print.attribute.map.GenericMapAttribute;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
@@ -32,7 +32,7 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import java.util.List;
 
 /**
- * Processor to set features to the vector layers.
+ * Processor to set a style on vector layers from the attributes.
  * <p/>
  * Created by Stéphane Brunner on 24/4/14.
  */
@@ -76,7 +76,7 @@ public class SetStyleProcessor extends
     }
 
     /**
-     * The input parameter object for {@link SetFeaturesProcessor}.
+     * The input parameter object for {@link SetStyleProcessor}.
      */
     public static final class Input {
         /**
@@ -87,10 +87,10 @@ public class SetStyleProcessor extends
         /**
          * The map to update.
          */
-        public MapAttributeValues map;
+        public GenericMapAttribute<?>.GenericMapAttributeValues map;
 
         /**
-         * The features.
+         * The style.
          */
         public StyleAttribute.StylesAttributeValues style;
     }

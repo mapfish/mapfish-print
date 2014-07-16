@@ -30,6 +30,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.output.Values;
+import org.mapfish.print.processor.map.CreateOverviewMapProcessor;
+import org.mapfish.print.processor.map.SetStyleProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -137,6 +139,52 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         assertHasOrdering(execution, RootMapOut, NeedsMap);
         assertHasOrdering(execution, RootTableAndWidthOut, NeedsTable);
         assertHasOrdering(execution, StyleNeedsMap, NeedsMap);
+    }
+    
+    /**
+     * This is a test for an external dependency on a common input property,
+     * where the property has a different name for the two nodes.
+     * For example, this is the case for {@link CreateOverviewMapProcessor} and
+     * {@link SetStyleProcessor}. The map property for the overview map is called
+     * `overviewMap` in the `CreateOverviewMapProcessor`, but `map` in the `SetStyleProcessor`.
+     */
+    @Test
+    @DirtiesContext
+    public void testSimpleBuild_ExternalDependency_SameInputWithDifferentName() throws Exception {
+        NeedsOverviewMapAndMap.getInputMapperBiMap().put("map2", "overviewMap");
+        TestProcessor styleNeedsMap2 = new StyleNeedsMapClass("StyleNeedsMap2", Void.class);
+        styleNeedsMap2.getInputMapperBiMap().put("map2", "map");
+        final ArrayList<TestProcessor> processors = Lists.newArrayList(RootNoOutput, NeedsTable, NeedsMap, StyleNeedsMap,
+                RootMapOut, RootTableAndWidthOut, NeedsOverviewMapAndMap, styleNeedsMap2);
+        
+        // external dependency: StyleNeedsMap should run before NeedsMap when they have the same
+        // mapped input for "map"
+        final List<ProcessorDependency> dependencies = Lists.newArrayList(
+                new ProcessorDependency(StyleNeedsMapClass.class, NeedsMapClass.class, Sets.newHashSet("map")));
+        // external dependency: StyleNeedsMap should run before NeedsOverviewMap when they have the same
+        // mapped input for "map" and "overviewMap"
+        dependencies.add(
+                new ProcessorDependency(StyleNeedsMapClass.class, NeedsOverviewMapAndMapClass.class,
+                        Sets.newHashSet("map;overviewMap")));
+        this.processorDependencyGraphFactory.setDependencies(dependencies);
+        
+        ProcessorDependencyGraph graph = this.processorDependencyGraphFactory.build(processors);
+        assertContainsProcessors(graph.getRoots(), RootNoOutput, RootTableAndWidthOut, RootMapOut, styleNeedsMap2);
+        final TestOrderExecution execution = new TestOrderExecution();
+        Values values = new Values();
+        values.put(EXECUTION_TRACKER, execution);
+        values.put("map2", "ov-map");
+        forkJoinPool.invoke(graph.createTask(values));
+
+        assertEquals(execution.testOrderExecution.toString(), 8, execution.testOrderExecution.size());
+        assertHasOrdering(execution, RootMapOut, NeedsMap);
+        assertHasOrdering(execution, RootTableAndWidthOut, NeedsTable);
+        assertHasOrdering(execution, StyleNeedsMap, NeedsMap);
+        assertHasOrdering(execution, styleNeedsMap2, NeedsOverviewMapAndMap);
+        
+        // check that NeedsOverviewMap is not added as dependency to StyleNeedsMap
+        ProcessorGraphNode<Object, Object> styleNode = getNodeForProcessor(graph.getRoots(), styleNeedsMap2);
+        assertEquals(2, styleNode.getAllProcessors().size());
     }
     
     /**
@@ -433,6 +481,29 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     }
     
     private static TestProcessor StyleNeedsMap = new StyleNeedsMapClass("StyleNeedsMap", Void.class);
+    
+    private static class OverviewMapInput extends TrackerContainer {
+        public String overviewMap = "ov-map";
+        public String map = "map";
+    }
+
+    private static class NeedsOverviewMapAndMapClass extends TestProcessor<OverviewMapInput, Void> {
+        protected NeedsOverviewMapAndMapClass(String name, Class<Void> outputType) {
+            super(name, outputType);
+        }
+
+        @Override
+        protected Void getExtras() {
+            return null;
+        }
+
+        @Override
+        public OverviewMapInput createInputParameter() {
+            return new OverviewMapInput();
+        }
+    }
+    
+    private static TestProcessor NeedsOverviewMapAndMap = new NeedsOverviewMapAndMapClass("NeedsOverviewMapAndMap", Void.class);
 
     static class TableInput extends TrackerContainer {
         public String table;

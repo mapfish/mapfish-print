@@ -21,7 +21,7 @@ package org.mapfish.print.processor.map;
 
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.mapfish.print.attribute.FeaturesAttribute.FeaturesAttributeValues;
-import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
+import org.mapfish.print.attribute.map.GenericMapAttribute;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.processor.AbstractProcessor;
@@ -78,7 +78,7 @@ public class SetFeaturesProcessor extends
         /**
          * The map to update.
          */
-        public MapAttributeValues map;
+        public GenericMapAttribute<?>.GenericMapAttributeValues map;
 
         /**
          * The features.

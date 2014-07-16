@@ -144,13 +144,17 @@ public final class ProcessorDependencyGraphFactory {
                             // for example if the input "map" is required, the mapped name for "map" for
                             // processor 1 is retrieved, e.g. "mapDef1". if processor 2 also has a mapped
                             // input with name "mapDef1", we add a dependency.
-                            final Set<String> inputsForDependentNode = inputsForNodes.get(dependentNode);
-                            
                             boolean allRequiredInputsInCommon = true;
                             for (String requiredInput : dependency.getCommonInputs()) {
-                                final String mappedKey = getMappedKey(node, requiredInput);
-                                
-                                if (!inputsForDependentNode.contains(mappedKey)) {
+                                // to make things more complicated: the common input attributes might have
+                                // different names in the two nodes. e.g. for `CreateOverviewMapProcessor`
+                                // the overview map is called `overviewMap`, but on the `SetStyleProcessor`
+                                // the map is simply called `map`.
+                                final String requiredNodeInput = getRequiredNodeInput(requiredInput);
+                                final String dependentNodeInput = getDependentNodeInput(requiredInput);
+
+                                final String mappedKey = getMappedKey(node, requiredNodeInput);
+                                if (!getOriginalKey(dependentNode, mappedKey).equals(dependentNodeInput)) {
                                     allRequiredInputsInCommon = false;
                                     break;
                                 }
@@ -166,10 +170,47 @@ public final class ProcessorDependencyGraphFactory {
         }
     }
 
+    /**
+     * Get the name of the common input attribute for the dependent node.
+     * 
+     * E.g. "map;overviewMap" -> "overviewMap"
+     * or   "map" -> "map"
+     */
+    private String getDependentNodeInput(final String requiredInput) {
+        if (!requiredInput.contains(";")) {
+            return requiredInput;
+        } else {
+            return requiredInput.substring(requiredInput.indexOf(";") + 1);
+        }
+    }
+
+    /**
+     * Get the name of the common input attribute for the required node.
+     * 
+     * E.g. "map;overviewMap" -> "map"
+     * or   "map" -> "map"
+     */
+    private String getRequiredNodeInput(final String requiredInput) {
+        if (!requiredInput.contains(";")) {
+            return requiredInput;
+        } else {
+            return requiredInput.substring(0, requiredInput.indexOf(";"));
+        }
+    }
+
     private String getMappedKey(final ProcessorGraphNode<Object, Object> node, final String requiredInput) {
         String inputName = requiredInput;
         if (node.getInputMapper().containsValue(requiredInput)) {
             inputName = node.getInputMapper().inverse().get(requiredInput);
+        }
+        
+        return inputName;
+    }
+
+    private String getOriginalKey(final ProcessorGraphNode<Object, Object> node, final String mappedKey) {
+        String inputName = mappedKey;
+        if (node.getInputMapper().containsKey(mappedKey)) {
+            inputName = node.getInputMapper().get(mappedKey);
         }
         
         return inputName;
