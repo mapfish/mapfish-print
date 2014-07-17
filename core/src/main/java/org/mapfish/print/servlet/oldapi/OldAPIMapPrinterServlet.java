@@ -29,6 +29,7 @@ import org.mapfish.print.MapPrinterFactory;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
+import org.mapfish.print.attribute.map.ZoomLevels;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.servlet.BaseMapServlet;
@@ -50,6 +51,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.text.DecimalFormat;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -67,6 +70,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
 
     private static final int HALF_SECOND = 500;
 
+    private static final int[] DEFAULT_DPI_VALUES = {72, 120, 200, 254, 300, 600, 1200, 2400};
 
     @Autowired
     private MapPrinterFactory printerFactory;
@@ -277,16 +281,6 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     private void writeInfoJson(final JSONWriter json, final String baseUrl,
                                final MapPrinter printer, final HttpServletRequest req)
             throws JSONException {
-        // TODO scales
-        json.key("scales");
-        json.array();
-        json.endArray();
-
-        // TODO dpis
-        json.key("dpis");
-        json.array();
-        json.endArray();
-
         json.key("outputFormats");
         json.array();
         {
@@ -298,10 +292,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
         }
         json.endArray();
 
-        json.key("layouts");
-        json.array();
         writeInfoLayouts(json, printer.getConfiguration());
-        json.endArray();
 
         String urlToUseInSpec = getBaseUrl(INFO_URL, baseUrl, req);
         json.key("printURL").value(urlToUseInSpec + PRINT_URL);
@@ -309,6 +300,11 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     }
 
     private void writeInfoLayouts(final JSONWriter json, final Configuration configuration) throws JSONException {
+        Double maxDpi = null;
+        ZoomLevels zoomLevels = null;
+
+        json.key("layouts");
+        json.array();
         for (String name : configuration.getTemplates().keySet()) {
             json.object();
             {
@@ -334,18 +330,74 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
                     throw new UnsupportedOperationException("Template '" + name + "' contains "
                                                             + "no map configuration.");
                 }
-
+                
+                MapAttributeValues mapValues = map.createValue(template);
                 json.key("map");
                 json.object();
                 {
-                    MapAttributeValues mapValues = map.createValue(template);
                     json.key("width").value(mapValues.getMapSize().width);
                     json.key("height").value(mapValues.getMapSize().height);
                 }
                 json.endObject();
+                
+                // get the zoom levels and max dpi value from the first template
+                if (maxDpi == null) {
+                    maxDpi = map.getMaxDpi();
+                }
+                if (zoomLevels == null) {
+                    zoomLevels = mapValues.getZoomLevels();
+                }
             }
             json.endObject();
         }
+        json.endArray();
+
+        json.key("dpis");
+        json.array();
+        {
+            if (maxDpi != null) {
+                // output fixed dpis value lower than maxDpi
+                for (int dpi : DEFAULT_DPI_VALUES) {
+                    if (dpi < maxDpi) {
+                        json.object();
+                        {
+                            json.key("name").value(Integer.toString(dpi));
+                            json.key("value").value(Integer.toString(dpi));
+                        }
+                        json.endObject();
+                        
+                    }
+                }
+                json.object();
+                {
+                    json.key("name").value(Integer.toString(maxDpi.intValue()));
+                    json.key("value").value(Integer.toString(maxDpi.intValue()));
+                }
+                json.endObject();
+            }
+        }
+        json.endArray();
+
+        json.key("scales");
+        json.array();
+        {
+            if (zoomLevels != null) {
+                {
+                    for (int i = 0; i < zoomLevels.size(); i++) {
+                        double scale = zoomLevels.get(i);
+                        json.object();
+                        {
+                            String scaleValue = new DecimalFormat("#.##").format(scale);
+                            json.key("name").value("1:" + scaleValue);
+                            json.key("value").value(scaleValue);
+                        }
+                        json.endObject();
+                        
+                    }
+                }
+            }
+        }
+        json.endArray();
     }
 
     private String getBaseUrl(final String suffix, final String baseUrl, final HttpServletRequest req) {
