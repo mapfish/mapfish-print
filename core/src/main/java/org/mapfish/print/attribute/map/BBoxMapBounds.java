@@ -183,8 +183,9 @@ public final class BBoxMapBounds extends MapBounds {
         double destWidth = this.bbox.getWidth() * factor;
         double destHeight = this.bbox.getHeight() * factor;
 
-        double centerX = (this.bbox.getMinX() + this.bbox.getMaxX()) / 2.0f;
-        double centerY = (this.bbox.getMinY() + this.bbox.getMaxY()) / 2.0f;
+        double centerX = this.bbox.centre().x;
+        double centerY = this.bbox.centre().y;
+
         double minGeoX = centerX - destWidth / 2.0f;
         double maxGeoX = centerX + destWidth / 2.0f;
         double minGeoY = centerY - destHeight / 2.0f;

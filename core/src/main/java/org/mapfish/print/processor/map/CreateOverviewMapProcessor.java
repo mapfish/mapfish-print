@@ -22,7 +22,6 @@ package org.mapfish.print.processor.map;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
-
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -31,7 +30,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapAttribute;
-import org.mapfish.print.attribute.map.MapAttribute.OverridenMapAttributeValues;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.OverviewMapAttribute;
 import org.mapfish.print.map.geotools.FeatureLayer;
@@ -42,17 +40,44 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
 /**
  * Processor to create overview maps. Internally {@link CreateMapProcessor} is used.
+ * <p/>
+ * Example Configuration:
+ * <pre><code>
+ * attributes:
+ *    ...
+ *    overviewMapDef: !overviewMap
+ *      width: 300
+ *      height: 200
+ *      maxDpi: 400
+ * processors:
+ *    ...
+ *    - !createOverviewMap
+ *      inputMapper: {
+ *        mapDef: map,
+ *        overviewMapDef: overviewMap
+ *      }
+ *      outputMapper: {
+ *        overviewMapSubReport: overviewMapOut,
+ *        layerGraphics: overviewMapLayerGraphics
+ *      }
+ * </code></pre>
+ * <p/>
+ * <strong>Features:</strong>
+ * <p/>
+ * The attribute overviewMap allows to overwrite all properties of the main map, for example to use different layers.
+ * The overview map can have a different rotation than the main map. For example the main map is rotated and the overview map faces
+ * north. But the overview map can also be rotated.
+ * <p/>
+ * The style of the bbox rectangle can be changed.
  */
 public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverviewMapProcessor.Input, CreateOverviewMapProcessor.Output> {
 
@@ -81,14 +106,15 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
         mapProcessorValues.clientHttpRequestFactory = values.clientHttpRequestFactory;
         mapProcessorValues.tempTaskDirectory = values.tempTaskDirectory;
         
-        MapAttribute.OverridenMapAttributeValues mapParams = values.map.getWithOverrides(values.overviewMap);
+        MapAttribute.OverriddenMapAttributeValues mapParams = values.map.getWithOverrides(values.overviewMap);
         mapProcessorValues.map = mapParams;
 
         // TODO validate parameters (dpi? mapParams.postConstruct())
-        
-        MapBounds originalBounds = mapParams.getOriginalBounds();
-        setZoomedOutBounds(mapParams, originalBounds, values);
-        setOriginalMapExtentLayer(originalBounds, values, mapParams);
+
+        // NOTE: Original map is the map that is the "subject/target" of this overview map
+        MapBounds boundsOfOriginalMap = mapParams.getOriginalBounds();
+        setZoomedOutBounds(mapParams, boundsOfOriginalMap, values);
+        setOriginalMapExtentLayer(boundsOfOriginalMap, values, mapParams);
 
         CreateMapProcessor.Output output = this.mapProcessor.execute(mapProcessorValues, context);
         return new Output(output.layerGraphics, output.mapSubReport);
@@ -96,7 +122,7 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
 
     private void setOriginalMapExtentLayer(final MapBounds originalBounds,
             final Input values,
-            final MapAttribute.OverridenMapAttributeValues mapParams)
+            final MapAttribute.OverriddenMapAttributeValues mapParams)
             throws IOException {
         Rectangle originalPaintArea = new Rectangle(values.map.getMapSize());
         MapBounds adjustedBounds =
@@ -129,11 +155,11 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
     }
 
     private FeatureLayer createOrignalMapExtentLayer(final Geometry mapExtent,
-            final OverridenMapAttributeValues mapParams, final String style,
+            final MapAttribute.OverriddenMapAttributeValues mapParams, final String style,
             final CoordinateReferenceSystem crs) throws IOException {
         FeatureLayerParam layerParams = new FeatureLayerParam();
         layerParams.style = style;
-        layerParams.defaultStyle = Constants.OVERVIEWMAP_STYLE_NAME;
+        layerParams.defaultStyle = Constants.Style.OverviewMap.NAME;
         // TODO make this configurable?
         layerParams.renderAsSvg = false;
         layerParams.features = wrapIntoFeatureCollection(mapExtent, crs);
@@ -156,7 +182,7 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
     }
 
     private void setZoomedOutBounds(
-            final MapAttribute.OverridenMapAttributeValues mapParams,
+            final MapAttribute.OverriddenMapAttributeValues mapParams,
             final MapBounds originalBounds, final Input values) {
         // zoom-out the bounds by the given factor
         MapBounds overviewMapBounds = originalBounds.zoomOut(values.overviewMap.getZoomFactor());
@@ -175,29 +201,12 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
     /**
      * The Input object for the processor.
      */
-    public static final class Input {
-        /**
-         * A factory for making http requests.  This is added to the values by the framework and therefore
-         * does not need to be set in configuration
-         */
-        public ClientHttpRequestFactory clientHttpRequestFactory;
-
-        /**
-         * The required parameters for the main map for which the overview
-         * will be created.
-         */
-        public MapAttribute.MapAttributeValues map;
-
+    public static final class Input extends CreateMapProcessor.Input {
         /**
          * Optional parameters for the overview map which allow to override
          * parameters of the main map.
          */
         public OverviewMapAttribute.OverviewMapAttributeValues overviewMap;
-        
-        /**
-         * The path to the temporary directory for the print task.
-         */
-        public File tempTaskDirectory;
     }
 
     /**

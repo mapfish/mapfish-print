@@ -199,44 +199,43 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
         }
         
         /**
-         * Creates an {@link OverridenMapAttributeValues} instance with the current object
-         * and a given {@link OverviewMapAttributeValues} instance.
+         * Creates an {@link org.mapfish.print.attribute.map.MapAttribute.OverriddenMapAttributeValues} instance with the current object
+         * and a given {@link org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues} instance.
          * 
          * @param paramOverrides Attributes set in this instance will override attributes in
          *  the current instance.
          */
-        public final MapAttribute.OverridenMapAttributeValues getWithOverrides(
-                final OverviewMapAttribute.OverviewMapAttributeValues paramOverrides) {
-            return new OverridenMapAttributeValues(this, paramOverrides, getTemplate(), null);
+        public final OverriddenMapAttributeValues getWithOverrides(
+                final GenericMapAttribute<?>.GenericMapAttributeValues paramOverrides) {
+            return new OverriddenMapAttributeValues(this, paramOverrides, getTemplate());
         }
     }
 
     /**
-     * A wrapper around a {@link MapAttributeValues} instance and an {@link OverviewMapAttributeValues} instance,
+     * A wrapper around a {@link MapAttributeValues} instance and an
+     * {@link org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues} instance,
      * which is used to render the overview map.
      * 
-     * If attributes on the {@link OverviewMapAttributeValues} instance are set, those
+     * If attributes on the {@link org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues} instance are set, those
      * attributes will be returned, otherwise the ones on {@link MapAttributeValues}.
      */
-    public class OverridenMapAttributeValues extends MapAttribute.MapAttributeValues {
+    public class OverriddenMapAttributeValues extends MapAttribute.MapAttributeValues {
         
         private MapAttribute.MapAttributeValues params;
-        private OverviewMapAttribute.OverviewMapAttributeValues paramOverrides;
+        private GenericMapAttribute<?>.GenericMapAttributeValues paramOverrides;
         private MapBounds zoomedOutBounds = null;
         private MapLayer mapExtentLayer = null;
         
         /**
          * Constructor.
-         * 
-         * @param params The fallback parameters.
+         *  @param params The fallback parameters.
          * @param paramOverrides The parameters explicitly defined for the overview map.
          * @param template The template this map is part of.
-         * @param mapSize  The size of the map (ignored, the size of the overview map is used).
          */
-        public OverridenMapAttributeValues(
-                final MapAttribute.MapAttributeValues params,
-                final OverviewMapAttribute.OverviewMapAttributeValues paramOverrides,
-                final Template template, final Dimension mapSize) {
+        public OverriddenMapAttributeValues(
+                final MapAttributeValues params,
+                final GenericMapAttribute<?>.GenericMapAttributeValues paramOverrides,
+                final Template template) {
             super(template, paramOverrides.getMapSize());
             this.params = params;
             this.paramOverrides = paramOverrides;

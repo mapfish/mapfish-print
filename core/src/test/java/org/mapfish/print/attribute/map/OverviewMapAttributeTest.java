@@ -64,7 +64,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
         final MapAttribute.MapAttributeValues mapValue = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
         final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue = 
                 values.getObject("overviewMapDef", OverviewMapAttribute.OverviewMapAttributeValues.class);
-        final MapAttribute.OverridenMapAttributeValues value = mapValue.getWithOverrides(overviewMapValue);
+        final MapAttribute.OverriddenMapAttributeValues value = mapValue.getWithOverrides(overviewMapValue);
         
         assertEquals(300.0, value.getDpi(), 0.1);
         assertNotNull(value.getLayers());
@@ -88,7 +88,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
         final MapAttribute.MapAttributeValues mapValue = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
         final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue = 
                 values.getObject("overviewMapDef", OverviewMapAttribute.OverviewMapAttributeValues.class);
-        final MapAttribute.OverridenMapAttributeValues value = mapValue.getWithOverrides(overviewMapValue);
+        final MapAttribute.OverriddenMapAttributeValues value = mapValue.getWithOverrides(overviewMapValue);
 
         assertEquals(80.0, value.getDpi(), 0.1);
         assertNotNull(value.getLayers());
@@ -113,7 +113,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
         final MapAttribute.MapAttributeValues mapValue = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
         final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue = 
                 values.getObject("overviewMapDef", OverviewMapAttribute.OverviewMapAttributeValues.class);
-        final MapAttribute.OverridenMapAttributeValues value = mapValue.getWithOverrides(overviewMapValue);
+        final MapAttribute.OverriddenMapAttributeValues value = mapValue.getWithOverrides(overviewMapValue);
 
         assertEquals(300.0, value.getDpi(), 0.1);
         assertNotNull(value.getLayers());

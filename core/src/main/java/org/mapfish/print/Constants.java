@@ -61,16 +61,6 @@ public interface Constants {
     double PDF_DPI = 72.0;
 
     /**
-     * The default style name for raster layers.
-     */
-    String RASTER_STYLE_NAME = "raster";
-
-    /**
-     * The default style name for the bbox rectangle in the overview map.
-     */
-    String OVERVIEWMAP_STYLE_NAME = "overview-map";
- 
-    /**
      * The OGC standard dpi. (About 90 dpi)
      */
     double OGC_DPI = 25.4 / 0.28;
@@ -119,6 +109,13 @@ public interface Constants {
              * The default style name for raster layers.
              */
             String NAME = "raster";
+        }
+        interface OverviewMap {
+
+            /**
+             * The default style name for the bbox rectangle in the overview map.
+             */
+            String NAME = "overview-map";
         }
     }
 }

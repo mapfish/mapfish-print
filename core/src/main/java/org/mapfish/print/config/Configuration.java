@@ -79,7 +79,7 @@ public class Configuration {
         map.put(Point.class.getSimpleName().toLowerCase(), Point.class.getSimpleName().toLowerCase());
         map.put("multipoint", Point.class.getSimpleName().toLowerCase());
 
-        map.put(Constants.OVERVIEWMAP_STYLE_NAME, Constants.OVERVIEWMAP_STYLE_NAME);
+        map.put(Constants.Style.OverviewMap.NAME, Constants.Style.OverviewMap.NAME);
         GEOMETRY_NAME_ALIASES = map;
     }
 
@@ -199,7 +199,7 @@ public class Configuration {
                 symbolizer = builder.createRasterSymbolizer();
             } else if (normalizedGeomName.equalsIgnoreCase(Constants.Style.Grid.NAME)) {
                 return createGridStyle(builder);
-            } else if (normalizedGeomName.equalsIgnoreCase(Constants.OVERVIEWMAP_STYLE_NAME)) {
+            } else if (normalizedGeomName.equalsIgnoreCase(Constants.Style.OverviewMap.NAME)) {
                 symbolizer = builder.createPolygonSymbolizer(Color.blue, 2);
             } else {
                 final Style geomStyle = this.defaultStyle.get(Geometry.class.getSimpleName().toLowerCase());

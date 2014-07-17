@@ -282,7 +282,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
     /**
      * The Input object for processor.
      */
-    public static final class Input {
+    public static class Input {
         /**
          * A factory for making http requests.  This is added to the values by the framework and therefore
          * does not need to be set in configuration
