@@ -60,6 +60,9 @@ task copySite(type: Copy) {
         exclude "long-strings/*", "long-strings"
         filter(ReplaceTokens, tokens: [version: version])
     }
+    from (project(':core').webAppDir) {
+        include "favicon.ico", "mapfish_transparent.png"
+    }
     into site
 }
 
