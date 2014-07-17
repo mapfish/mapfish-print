@@ -6,6 +6,8 @@ import org.mapfish.print.attribute.ReflectiveAttribute
 import org.mapfish.print.config.ConfigurationObject
 import org.mapfish.print.config.Template
 import org.mapfish.print.map.MapLayerFactoryPlugin
+import org.mapfish.print.map.style.StyleParserPlugin
+import org.mapfish.print.output.OutputFormat
 import org.mapfish.print.parser.HasDefaultValue
 import org.mapfish.print.parser.ParserUtils
 import org.mapfish.print.processor.Processor
@@ -59,6 +61,12 @@ class GenerateDocs {
         }
         springAppContext.getBeansOfType(Processor.class, true, true).entrySet().each { entry ->
             handleProcessor(entry.getValue(), entry.getKey())
+        }
+        springAppContext.getBeansOfType(StyleParserPlugin.class).entrySet().each { entry ->
+            handleStyle(entry.getValue(), entry.getKey())
+        }
+        springAppContext.getBeansOfType(OutputFormat.class).entrySet().each { entry ->
+            handleOutputFormats(entry.getValue(), entry.getKey())
         }
         springAppContext.getBeansWithAnnotation(Service.class).entrySet().each { entry ->
             handleApi(entry.getValue(), entry.getKey())
@@ -132,6 +140,14 @@ class GenerateDocs {
         }
         def desc = javadocParser.findClassDescription(bean.getClass())
         plugins.put('config', new Record([title:beanName, desc:desc, details: details]))
+    }
+    static void handleStyle(StyleParserPlugin bean, String beanName) {
+        def desc = javadocParser.findClassDescription(bean.getClass())
+        plugins.put('styles', new Record([title:beanName, desc:desc]))
+    }
+    static void handleOutputFormats(OutputFormat bean, String beanName) {
+        def desc = javadocParser.findClassDescription(bean.getClass())
+        plugins.put('outputFormats', new Record([title:bean.contentType, desc:desc]))
     }
     static void handleMapLayerFactoryPlugin(MapLayerFactoryPlugin<?> bean, String beanName) {
         def layerType = bean.class.methods.findAll { it.name == "parse" && it.returnType.simpleName != 'MapLayer'}[0].returnType

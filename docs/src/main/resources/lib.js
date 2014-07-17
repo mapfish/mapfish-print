@@ -29,75 +29,65 @@ docsApp.config(function($translateProvider) {
   $translateProvider.preferredLanguage('en');
 });
 
-docsApp.controller('DocsCtrl', function ($scope, $sce, $translate) {
-  $scope.pages = {
-    'API': {
-      title: 'API',
-      setRecords: function() {$scope.records = docs.api}
-    },
-    'configuration': {
-      title: 'Configuration',
-      setRecords: function() {$scope.records = docs.config}
-    },
-    'attributes': {
-      title: 'Attributes',
-      setRecords: function() {$scope.records = docs.attributes}
-    },
-    'processors': {
-      title: 'Processor',
-      setRecords: function() {$scope.records = docs.processors}
-    },
-    'layer': {
-      title: 'Map Layer',
-      setRecords: function() {$scope.records = docs.mapLayers}
-    }
-  };
-  $scope.page = 'API';
-  $scope.records = docs.api;
-  $scope.select = function (page) {
-    $scope.page = page;
-    $scope.pages[page].setRecords()
-  };
-  $scope.renderHtml = function(html){
-    return $sce.trustAsHtml($translate(html));
-  };
-  $scope.select($scope.page);
-});
-
 docsApp.controller('DocsCtrl', function ($scope, $sce, $translate, $location) {
   $scope.pages = {
+    overview: {
+      order: 0,
+      title: 'tocOverview',
+      html: 'overview-part.html',
+      setRecords: function() {}
+    },
     'API': {
-      title: 'API',
+      order: 1,
+      title: 'tocApiTitle',
       html: 'user-api-part.html',
       setRecords: function() {$scope.records = docs.api},
-      desc: 'apiPageDesc'
+      desc: 'tocApiDesc'
     },
     'configuration': {
-      title: 'Configuration',
+      order: 2,
+      title: 'tocConfigurationTitle',
       html: 'user-api-part.html',
       setRecords: function() {$scope.records = docs.config},
-      desc: 'configurationPageDesc'
+      desc: 'tocConfigurationDesc'
     },
     'attributes': {
-      title: 'Attributes',
+      order: 2,
+      title: 'tocAttributesTitle',
       html: 'user-api-part.html',
       setRecords: function() {$scope.records = docs.attributes},
-      desc: 'attributesPageDesc'
+      desc: 'tocAttributesDesc'
     },
     'processors': {
-      title: 'Processor',
+      order: 2,
+      title: 'tocProcessorTitle',
       html: 'user-api-part.html',
       setRecords: function() {$scope.records = docs.processors}   ,
-      desc: 'processorsPageDesc'
+      desc: 'tocProcessorsDesc'
     },
     'mapLayer': {
-      title: 'Map Layer',
+      order: 2,
+      title: 'tocMapLayerTitle',
       html: 'user-api-part.html',
       setRecords: function() {$scope.records = docs.mapLayers},
-      desc: 'mapLayerPageDesc'
+      desc: 'tocMapLayerDesc'
+    },
+    'styles': {
+      order: 3,
+      title: 'tocStyleTitle',
+      html: 'user-api-part.html',
+      setRecords: function() {$scope.records = docs.styles},
+      desc: 'tocStyleDesc'
+    },
+    'outputFormats': {
+      order: 3,
+      title: 'tocOutputFormatsTitle',
+      html: 'user-api-part.html',
+      setRecords: function() {$scope.records = docs.outputFormats},
+      desc: 'tocOutputFormatsDesc'
     }
   };
-  $scope.page = 'API';
+  $scope.page = 'overview';
   var path = $location.path() || "";
   path = path.substr(1);
   if ($scope.pages[path]) {
@@ -121,5 +111,42 @@ docsApp.controller('DocsCtrl', function ($scope, $sce, $translate, $location) {
   $scope.renderHtml = function(html){
     return $sce.trustAsHtml($translate.instant(html));
   };
+  var translatePages = function() {
+    var toTranslate = [];
+    angular.forEach($scope.pages, function (p){
+      toTranslate.push(p.title)
+    });
+
+    $translate(toTranslate).then(function (translations) {
+      angular.forEach($scope.pages, function (p){
+          var titleKey = p.title;
+          p.title = translations[titleKey];
+      });
+    });
+  };
   $scope.select($scope.page);
+
+  translatePages();
+});
+
+docsApp.filter('sortTableOfContents', function(){
+  return function (items) {
+    var p, item, filtered = [];
+    for (p in items) {
+      if (items.hasOwnProperty(p)) {
+        item = items[p];
+        item.key = p;
+        filtered.push(items[p])
+      }
+    }
+
+    filtered.sort(function(a,b) {
+      if (a.order != b.order) {
+        return a.order < b.order ? -1 : 1;
+      } else {
+        return a.title < b.title ? -1 : 1;
+      }
+    });
+    return filtered;
+  }
 });
