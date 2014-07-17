@@ -1,0 +1,4 @@
+<div class="well well-sm" ng-repeat="record in records">
+    <div><strong>{{getTitle(record)}}</strong></div>
+    <p ng-bind-html="renderHtml(record.desc)"></p>
+</div>

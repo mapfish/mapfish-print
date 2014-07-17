@@ -3,6 +3,7 @@ import com.google.common.io.Files
 import groovy.json.JsonBuilder
 import org.mapfish.print.attribute.Attribute
 import org.mapfish.print.attribute.ReflectiveAttribute
+import org.mapfish.print.attribute.map.GenericMapAttribute
 import org.mapfish.print.config.ConfigurationObject
 import org.mapfish.print.config.Template
 import org.mapfish.print.map.MapLayerFactoryPlugin
@@ -11,6 +12,8 @@ import org.mapfish.print.output.OutputFormat
 import org.mapfish.print.parser.HasDefaultValue
 import org.mapfish.print.parser.ParserUtils
 import org.mapfish.print.processor.Processor
+import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager
+import org.mapfish.print.servlet.fileloader.ConfigFileLoaderPlugin
 import org.springframework.beans.BeanUtils
 import org.springframework.mock.web.MockServletContext
 import org.springframework.stereotype.Service
@@ -63,10 +66,17 @@ class GenerateDocs {
             handleProcessor(entry.getValue(), entry.getKey())
         }
         springAppContext.getBeansOfType(StyleParserPlugin.class).entrySet().each { entry ->
-            handleStyle(entry.getValue(), entry.getKey())
+            handleSimplePlugin(entry.getValue(), 'styles', entry.getKey())
         }
         springAppContext.getBeansOfType(OutputFormat.class).entrySet().each { entry ->
-            handleOutputFormats(entry.getValue(), entry.getKey())
+            OutputFormat bean = entry.getValue()
+            handleSimplePlugin(bean, 'outputFormats', bean.contentType)
+        }
+        springAppContext.getBeansOfType(ConfigFileLoaderPlugin.class).entrySet().each { entry ->
+            ConfigFileLoaderPlugin bean = entry.getValue()
+            if (bean.class != ConfigFileLoaderManager.class) {
+                handleSimplePlugin(bean, 'fileLoaders', bean.uriScheme)
+            }
         }
         springAppContext.getBeansWithAnnotation(Service.class).entrySet().each { entry ->
             handleApi(entry.getValue(), entry.getKey())
@@ -141,14 +151,11 @@ class GenerateDocs {
         def desc = javadocParser.findClassDescription(bean.getClass())
         plugins.put('config', new Record([title:beanName, desc:desc, details: details]))
     }
-    static void handleStyle(StyleParserPlugin bean, String beanName) {
+    static void handleSimplePlugin(Object bean, String javascriptVarName, String title) {
         def desc = javadocParser.findClassDescription(bean.getClass())
-        plugins.put('styles', new Record([title:beanName, desc:desc]))
+        plugins.put(javascriptVarName, new Record([title:title, desc:desc]))
     }
-    static void handleOutputFormats(OutputFormat bean, String beanName) {
-        def desc = javadocParser.findClassDescription(bean.getClass())
-        plugins.put('outputFormats', new Record([title:bean.contentType, desc:desc]))
-    }
+
     static void handleMapLayerFactoryPlugin(MapLayerFactoryPlugin<?> bean, String beanName) {
         def layerType = bean.class.methods.findAll { it.name == "parse" && it.returnType.simpleName != 'MapLayer'}[0].returnType
         def desc = javadocParser.findClassDescription(bean.getClass())
@@ -162,6 +169,10 @@ class GenerateDocs {
     }
     static void handleAttribute(Attribute bean, String beanName) {
         def details = []
+        if (bean instanceof GenericMapAttribute) {
+            bean.width = 1
+            bean.height = 1
+        }
         if (bean instanceof ReflectiveAttribute) {
             details = findAllAttributes(bean.createValue(new Template()).class, beanName)
         }

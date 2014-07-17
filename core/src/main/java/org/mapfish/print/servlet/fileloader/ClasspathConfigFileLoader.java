@@ -34,7 +34,7 @@ import java.util.NoSuchElementException;
 
 /**
  * A plugin that loads the config resources from urls starting with prefix:
- * {@value org.mapfish.print.servlet.fileloader.ClasspathConfigFileLoader#PREFIX}://.
+ * classpath://.
  *
  * @author Jesse on 4/28/2014.
  */

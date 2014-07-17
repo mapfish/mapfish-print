@@ -75,16 +75,23 @@ docsApp.controller('DocsCtrl', function ($scope, $sce, $translate, $location) {
     'styles': {
       order: 3,
       title: 'tocStyleTitle',
-      html: 'user-api-part.html',
+      html: 'user-api-no-details-part.html',
       setRecords: function() {$scope.records = docs.styles},
       desc: 'tocStyleDesc'
     },
     'outputFormats': {
       order: 3,
       title: 'tocOutputFormatsTitle',
-      html: 'user-api-part.html',
+      html: 'user-api-no-details-part.html',
       setRecords: function() {$scope.records = docs.outputFormats},
       desc: 'tocOutputFormatsDesc'
+    },
+    'fileLoaders': {
+      order: 3,
+      title: 'tocFileLoadersTitle',
+      html: 'user-api-no-details-part.html',
+      setRecords: function() {$scope.records = docs.fileLoaders},
+      desc: 'tocFileLoadersDesc'
     }
   };
   $scope.page = 'overview';
