@@ -20,12 +20,14 @@
 package org.mapfish.print.servlet.oldapi;
 
 import com.google.common.collect.Maps;
+
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.servlet.MapPrinterServletTest;
 import org.mapfish.print.servlet.ServletMapPrinterFactory;
 import org.mapfish.print.servlet.job.ThreadPoolJobManager;
+import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +36,13 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+
+import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -75,7 +81,7 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         assertTrue(info.has("printURL"));
         assertTrue(info.has("createURL"));
 
-        assertEquals(7, info.getArray("scales").size());
+        assertEquals(10, info.getArray("scales").size());
         final PObject firstScale = info.getArray("scales").getObject(0);
         assertEquals("1:5000", firstScale.getString("name"));
         assertEquals("5000", firstScale.getString("value"));
@@ -196,6 +202,33 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         
         this.servlet.printReport(loadRequestDataAsString("requestData-old-api.json"), createRequest, createResponse);
         assertEquals(HttpStatus.OK.value(), createResponse.getStatus());
+    }
+    
+    @Test
+    public void testPrintPng() throws Exception {
+        setUpConfigFiles();
+        
+        final MockHttpServletRequest createRequest = new MockHttpServletRequest();
+        createRequest.setContextPath("/print-old");
+        createRequest.setPathInfo("/print.pdf");
+        final MockHttpServletResponse createResponse = new MockHttpServletResponse();
+        
+        this.servlet.printReport(loadRequestDataAsString("requestData-old-api-png.json"), createRequest, createResponse);
+        assertEquals(HttpStatus.OK.value(), createResponse.getStatus());
+        assertCorrectResponse(createResponse);
+    }
+
+    private void assertCorrectResponse(MockHttpServletResponse servletGetReportResponse) throws IOException {
+        byte[] report = servletGetReportResponse.getContentAsByteArray();
+
+        final String contentType = servletGetReportResponse.getHeader("Content-Type");
+        assertEquals("image/png", contentType);
+        String fileName = servletGetReportResponse.getHeader("Content-disposition").split("=")[1];
+        assertEquals("political-boundaries.png", fileName);
+
+        final BufferedImage reportAsImage = ImageIO.read(new ByteArrayInputStream(report));
+
+        new ImageSimilarity(reportAsImage, 2).assertSimilarity(getFile(OldAPIMapPrinterServletTest.class, "expectedSimpleImage.tiff"), 10);
     }
     
     @Test

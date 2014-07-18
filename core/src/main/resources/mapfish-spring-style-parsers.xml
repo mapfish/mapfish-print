@@ -22,4 +22,5 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
     <bean id="fileSLDParser" class="org.mapfish.print.map.style.FileSLDParserPlugin" />
     <bean id="urlSLDParser" class="org.mapfish.print.map.style.URLSLDParserPlugin" />
+    <bean id="stringSLDParser" class="org.mapfish.print.map.style.StringSLDParserPlugin" />
 </beans>

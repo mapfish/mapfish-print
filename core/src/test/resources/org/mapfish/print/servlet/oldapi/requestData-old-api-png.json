@@ -1,0 +1,124 @@
+{
+   "units":"degree",
+   "srs":"CRS:84",
+   "layout":"A4 Portrait",
+   "outputFilename": "political-boundaries",
+   "outputFormat": "png",
+   "dpi":72,
+   "layers":[
+      {
+         "type":"Vector",
+         "styles":{
+         "1": 
+         {
+            "fillColor": "#000080",
+            "strokeColor": "#4C663C",
+            "strokeOpacity": 1,
+            "strokeWidth": 1,
+            "strokeLinecap": "butt",
+            "strokeDashstyle": "solid"
+         },
+
+         "2": 
+         {
+            "fillColor": "#C45239",
+            "strokeColor": "#4C663C",
+            "strokeOpacity": 1,
+            "strokeWidth": 5,
+            "strokeLinecap": "butt",
+            "strokeDashstyle": "solid"
+         },
+
+         "3": 
+         {
+            "fillColor": "#67C431",
+            "strokeColor": "#4C663C",
+            "strokeOpacity": 1,
+            "strokeWidth": 10,
+            "strokeLinecap": "butt",
+            "strokeDashstyle": "solid"
+         }
+         },
+         "styleProperty": "_gx_style",
+         "geoJson":{ "type": "FeatureCollection",
+            "features": [
+              { "type": "Feature",
+                "geometry": {
+                  "type": "Polygon",
+                  "coordinates": [
+                    [ [102.0, 0.0], [103.0, 0.0], [103.0, 1.0],
+                      [102.0, 1.0], [102.0, 0.0] ]
+                  ]
+                },
+                "properties": {
+                  "prop0": "value1",
+                  "prop1": 1.0,
+                  "_gx_style": 1
+                }
+              },
+              { "type": "Feature",
+                "geometry": {
+                  "type": "Polygon",
+                  "coordinates": [
+                    [ [104.0, 0.0], [105.0, 0.0], [105.0, 1.0],
+                      [104.0, 1.0], [104.0, 0.0] ]
+                  ]
+                },
+                "properties": {
+                  "prop0": "value0",
+                  "prop1": 0.0,
+                  "_gx_style": 2
+                }
+              },
+              { "type": "Feature",
+                "geometry": {
+                  "type": "Polygon",
+                  "coordinates": [
+                    [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0],
+                      [100.0, 1.0], [100.0, 0.0] ]
+                  ]
+                },
+                "properties": {
+                  "prop0": "value0",
+                  "prop1": {"this": "that"},
+                  "_gx_style": "3"
+                }
+              }
+            ]
+          },
+         "name":"c2cgeoportal212",
+         "opacity":1,
+         "useNativeAngle":false
+      }
+   ],
+   "pages":[
+      {
+         "bbox": [95, -3.175810473815462, 110, 6.175810473815462],
+         "rotation":0,
+         "table": {
+            "data":[
+               {
+                  "col0":"1",
+                  "col1":"blah",
+                  "col2":"icon_pan"
+               },
+               {
+                  "col0":"2",
+                  "col1":"blip",
+                  "col2":"icon_zoom"
+               },
+               {},
+               {}
+            ],
+            "columns":[
+               "col0",
+               "col1",
+               "col2"
+            ]
+         },
+         "col0":"id",
+         "col1":"name",
+         "col2":"icon"
+      }
+   ]
+}
