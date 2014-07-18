@@ -37,57 +37,63 @@ docsApp.controller('DocsCtrl', function ($scope, $sce, $translate, $location) {
       html: 'overview-part.html',
       setRecords: function() {}
     },
-    'API': {
+    jasperReports: {
       order: 1,
+      title: 'tocJasperReports',
+      html: 'jaspert-reports-part.html',
+      setRecords: function() {}
+    },
+    'API': {
+      order: 10,
       title: 'tocApiTitle',
       html: 'user-api-part.html',
       setRecords: function() {$scope.records = docs.api},
       desc: 'tocApiDesc'
     },
     'configuration': {
-      order: 2,
+      order: 20,
       title: 'tocConfigurationTitle',
       html: 'user-api-part.html',
       setRecords: function() {$scope.records = docs.config},
       desc: 'tocConfigurationDesc'
     },
     'attributes': {
-      order: 2,
+      order: 20,
       title: 'tocAttributesTitle',
       html: 'user-api-part.html',
       setRecords: function() {$scope.records = docs.attributes},
       desc: 'tocAttributesDesc'
     },
     'processors': {
-      order: 2,
+      order: 20,
       title: 'tocProcessorTitle',
       html: 'user-api-part.html',
       setRecords: function() {$scope.records = docs.processors}   ,
       desc: 'tocProcessorsDesc'
     },
     'mapLayer': {
-      order: 2,
+      order: 20,
       title: 'tocMapLayerTitle',
       html: 'user-api-part.html',
       setRecords: function() {$scope.records = docs.mapLayers},
       desc: 'tocMapLayerDesc'
     },
     'styles': {
-      order: 3,
+      order: 30,
       title: 'tocStyleTitle',
       html: 'user-api-no-details-part.html',
       setRecords: function() {$scope.records = docs.styles},
       desc: 'tocStyleDesc'
     },
     'outputFormats': {
-      order: 3,
+      order: 30,
       title: 'tocOutputFormatsTitle',
       html: 'user-api-no-details-part.html',
       setRecords: function() {$scope.records = docs.outputFormats},
       desc: 'tocOutputFormatsDesc'
     },
     'fileLoaders': {
-      order: 3,
+      order: 30,
       title: 'tocFileLoadersTitle',
       html: 'user-api-no-details-part.html',
       setRecords: function() {$scope.records = docs.fileLoaders},
