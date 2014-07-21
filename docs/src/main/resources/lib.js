@@ -62,21 +62,25 @@ docsApp.controller('DocsCtrl', function ($scope, $sce, $translate, $location) {
       title: 'tocAttributesTitle',
       html: 'user-api-part.html',
       setRecords: function() {$scope.records = docs.attributes},
-      desc: 'tocAttributesDesc'
+      desc: 'tocAttributesDesc',
+      inputTitle: 'jsonParamTitle'
     },
     'processors': {
       order: 20,
       title: 'tocProcessorTitle',
       html: 'user-api-part.html',
       setRecords: function() {$scope.records = docs.processors}   ,
-      desc: 'tocProcessorsDesc'
+      desc: 'tocProcessorsDesc',
+      inputTitle: 'inputParamTitle',
+      outputTitle: 'outputParamTitle'
     },
     'mapLayer': {
       order: 20,
       title: 'tocMapLayerTitle',
       html: 'user-api-part.html',
       setRecords: function() {$scope.records = docs.mapLayers},
-      desc: 'tocMapLayerDesc'
+      desc: 'tocMapLayerDesc',
+      inputTitle: 'jsonParamTitle'
     },
     'styles': {
       order: 30,

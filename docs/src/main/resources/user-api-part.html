@@ -7,14 +7,21 @@
         </accordion-heading>
 
         <p ng-bind-html="renderHtml(record.desc)"></p>
-        <h4 ng-if="page === 'processors' && record.details.length">{{'inputParamTitle' | translate}}</h4>
+        <h4 ng-if="record.details.length">{{'configuration' | translate}}</h4>
         <div class="border">
             <div class="well well-sm" ng-repeat="detail in record.details | sortRecords">
                 <div><strong>{{getTitle(detail)}}</strong></div>
                 <p ng-bind-html="renderHtml(detail.desc)"></p>
             </div>
         </div>
-        <h4 ng-if="page === 'processors' && record.output.length">{{'outputParamTitle' | translate}}</h4>
+        <h4 ng-if="pages[page].inputTitle">{{pages[page].inputTitle | translate}}</h4>
+        <div class="border">
+            <div class="well well-sm" ng-repeat="input in record.input | sortRecords">
+                <div><strong>{{getTitle(input)}}</strong></div>
+                <p ng-bind-html="renderHtml(input.desc)"></p>
+            </div>
+        </div>
+        <h4 ng-if="pages[page].outputTitle">{{pages[page].outputTitle | translate}}</h4>
         <div class="border">
             <div class="well well-sm" ng-repeat="output in record.output | sortRecords">
                 <div><strong>{{getTitle(output)}}</strong></div>

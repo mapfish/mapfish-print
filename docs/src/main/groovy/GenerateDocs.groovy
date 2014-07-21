@@ -142,15 +142,21 @@ class GenerateDocs {
         if (bean instanceof Attribute || bean instanceof MapLayerFactoryPlugin) {
             return;
         }
-        def descriptors = BeanUtils.getPropertyDescriptors(bean.getClass())
-        def details = descriptors.findAll{it.writeMethod != null}.collect{desc ->
-            def title = desc.displayName.replaceAll(/([A-Z][a-z])/, ' $1').capitalize()
-            def detailDesc = javadocParser.findMethodDescription(beanName, bean.getClass(), desc.writeMethod)
-            return new Detail([title : title, desc: detailDesc])
-        }
+        List<Detail> details = findAllConfigurationDetails(bean, beanName)
         def desc = javadocParser.findClassDescription(bean.getClass())
         plugins.put('config', new Record([title:beanName, desc:desc, details: details]))
     }
+
+    private static List<Detail> findAllConfigurationDetails(bean, String beanName) {
+        def descriptors = BeanUtils.getPropertyDescriptors(bean.getClass())
+        def details = descriptors.findAll { it.writeMethod != null }.collect { desc ->
+            def title = desc.displayName.replaceAll(/([A-Z][a-z])/, ' $1').capitalize()
+            def detailDesc = javadocParser.findMethodDescription(beanName, bean.getClass(), desc.writeMethod)
+            return new Detail([title: title, desc: detailDesc])
+        }
+        details
+    }
+
     static void handleSimplePlugin(Object bean, String javascriptVarName, String title) {
         def desc = javadocParser.findClassDescription(bean.getClass())
         plugins.put(javascriptVarName, new Record([title:title, desc:desc]))
@@ -158,26 +164,29 @@ class GenerateDocs {
 
     static void handleMapLayerFactoryPlugin(MapLayerFactoryPlugin<?> bean, String beanName) {
         def layerType = bean.class.methods.findAll { it.name == "parse" && it.returnType.simpleName != 'MapLayer'}[0].returnType
+        List<Detail> details = findAllConfigurationDetails(bean, beanName)
         def desc = javadocParser.findClassDescription(bean.getClass())
-        def details = findAllAttributes(bean.createParameter().class, beanName)
+        def input = findAllAttributes(bean.createParameter().class, beanName)
         plugins.put('mapLayers', new Record([
                 title:layerType.simpleName.replaceAll(/([A-Z][a-z])/, ' $1'),
                 desc: desc,
                 details: details,
+                input: input,
                 translateTitle: true
         ]))
     }
     static void handleAttribute(Attribute bean, String beanName) {
-        def details = []
+        def input = []
         if (bean instanceof GenericMapAttribute) {
             bean.width = 1
             bean.height = 1
         }
         if (bean instanceof ReflectiveAttribute) {
-            details = findAllAttributes(bean.createValue(new Template()).class, beanName)
+            input = findAllAttributes(bean.createValue(new Template()).class, beanName)
         }
+        List<Detail> details = findAllConfigurationDetails(bean, beanName)
         def desc = javadocParser.findClassDescription(bean.getClass())
-        plugins.put('attributes', new Record([title:beanName, desc: desc, details: details]))
+        plugins.put('attributes', new Record([title:beanName, desc: desc, details: details, input: input]))
     }
 
     private static Collection<Detail> findAllAttributes(Class cls, String beanName) {
@@ -201,9 +210,10 @@ class GenerateDocs {
 
     static void handleProcessor(Processor bean, String beanName) {
         def desc = javadocParser.findClassDescription(bean.getClass())
-        def details = findAllAttributes(bean.createInputParameter().class, beanName)
+        List<Detail> details = findAllConfigurationDetails(bean, beanName)
+        def input = findAllAttributes(bean.createInputParameter().class, beanName)
         def output = findAllAttributes(bean.outputType, beanName)
-        plugins.put('processors', new Record([title:beanName, desc: desc, details: details, output: output]))
+        plugins.put('processors', new Record([title:beanName, desc: desc, details: details,  input: input, output: output]))
     }
     static void handleApi(Object bean, String beanName) {
         def details = bean.getClass().methods.findAll{it.getAnnotation(RequestMapping.class) != null}.collectAll {apiMethod ->
@@ -234,6 +244,7 @@ class GenerateDocs {
         String title, desc
         boolean translateTitle = false
         List<Detail> details = []
+        List<Detail> input = []
         List<Detail> output = []
         public String json() {
             def record = this
@@ -243,6 +254,7 @@ class GenerateDocs {
                 desc (translationId("desc"))
                 summaryDesc (translationId("summaryDesc"))
                 details (details.collect{it.json(record, "detail")})
+                input (input.collect{it.json(record, "input")})
                 output (output.collect{it.json(record, "output")})
                 translateTitle (translateTitle)
             }
@@ -262,6 +274,7 @@ class GenerateDocs {
             translations[translationId("desc")] = escape(desc)
             translations[translationId("summaryDesc")] = escape(summary())
             details.each {it.translations(record, "detail", translations)}
+            input.each {it.translations(record, "input", translations)}
             output.each {it.translations(record, "output", translations)}
 
             return translations

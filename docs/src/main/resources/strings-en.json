@@ -11,5 +11,7 @@
   "tocJasperReports": "Jasper Reports",
   "inputParamTitle": "Input Parameters:",
   "outputParamTitle": "Output Parameters:",
+  "jsonParamTitle": "Json Paramaters:",
   "headerTitle": "Mapfish Print Documentation",
-  "contentsTitle": "Contents"
+  "contentsTitle": "Contents",
+  "configuration" : "Configuration"
