@@ -101,14 +101,22 @@ docsApp.controller('DocsCtrl', function ($scope, $sce, $translate, $location) {
     }
   };
   $scope.page = 'overview';
-  var path = $location.path() || "";
-  path = path.substr(1);
-  if ($scope.pages[path]) {
-    $scope.page = path;
-  } else {
-    for ($scope.page in $scope.pages) break;
-    $location.path('/' + $scope.page);
-  }
+  var loadStateFromPath = function() {
+    var path = $location.path() || "";
+    path = path.substr(1);
+
+
+
+    if ($scope.pages[path]) {
+      $scope.page = path;
+    } else {
+      for ($scope.page in $scope.pages) break;
+      $location.path('/' + $scope.page);
+    }
+  };
+
+  loadStateFromPath();
+
   $scope.records = docs.api;
   $scope.select = function (page) {
     $scope.page = page;
@@ -161,5 +169,15 @@ docsApp.filter('sortTableOfContents', function(){
       }
     });
     return filtered;
+  }
+});
+docsApp.filter('sortRecords', function($translate){
+  return function (items) {
+
+    items.sort(function(a,b) {
+      return $translate.instant(a.title) < $translate.instant(b.title)  ? -1 : 1;
+    });
+
+    return items;
   }
 });

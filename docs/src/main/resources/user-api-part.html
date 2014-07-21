@@ -1,21 +1,22 @@
 <accordion close-others="oneAtATime">
 
     <p class="pageDesc" ng-bind-html="renderHtml(pages[page].desc)"></p>
-    <accordion-group ng-repeat="record in records">
+    <accordion-group ng-repeat="record in records | sortRecords">
         <accordion-heading>
-            <h4>{{getTitle(record)}}</h4><p ng-bind-html="renderHtml(record.desc)"></p>
+            <h4>{{getTitle(record)}}</h4><p ng-bind-html="renderHtml(record.summaryDesc)"></p>
         </accordion-heading>
 
+        <p ng-bind-html="renderHtml(record.desc)"></p>
         <h4 ng-if="page === 'processors' && record.details.length">{{'inputParamTitle' | translate}}</h4>
         <div class="border">
-            <div class="well well-sm" ng-repeat="detail in record.details">
+            <div class="well well-sm" ng-repeat="detail in record.details | sortRecords">
                 <div><strong>{{getTitle(detail)}}</strong></div>
                 <p ng-bind-html="renderHtml(detail.desc)"></p>
             </div>
         </div>
         <h4 ng-if="page === 'processors' && record.output.length">{{'outputParamTitle' | translate}}</h4>
         <div class="border">
-            <div class="well well-sm" ng-repeat="output in record.output">
+            <div class="well well-sm" ng-repeat="output in record.output | sortRecords">
                 <div><strong>{{getTitle(output)}}</strong></div>
                 <p ng-bind-html="renderHtml(output.desc)"></p>
             </div>

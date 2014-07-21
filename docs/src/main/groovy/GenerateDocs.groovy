@@ -241,6 +241,7 @@ class GenerateDocs {
             builder {
                 title (translateTitle ? translationId("title") : title)
                 desc (translationId("desc"))
+                summaryDesc (translationId("summaryDesc"))
                 details (details.collect{it.json(record, "detail")})
                 output (output.collect{it.json(record, "output")})
                 translateTitle (translateTitle)
@@ -259,10 +260,23 @@ class GenerateDocs {
             }
 
             translations[translationId("desc")] = escape(desc)
+            translations[translationId("summaryDesc")] = escape(summary())
             details.each {it.translations(record, "detail", translations)}
             output.each {it.translations(record, "output", translations)}
 
             return translations
+        }
+
+        private String summary() {
+            def xml = DocsXmlSupport.createHtmlSlurper().parseText(desc).body.div
+            def text = xml.text()
+            def indexOfPeriod = text.indexOf(".")
+
+            if (indexOfPeriod > -1) {
+                return text.substring(0, indexOfPeriod).replaceAll("\n", " ")
+            } else {
+                return text;
+            }
         }
     }
 
@@ -292,6 +306,7 @@ class GenerateDocs {
             }
             translations[translationId(record, type, "desc")] = escape(desc)
         }
+
     }
 
 }

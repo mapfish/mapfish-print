@@ -18,3 +18,4 @@ It creates it from three sources:
   in a format that is easier to write (because JSON has to be a single line).  These files are taken by GenerateDocs and escaped correctly
   so that it is valid json and the result is written to docs/build/site/strings-en.json.
 - The last part is from the parsing of the attributes, processor, output formats, etc... beans as mentioned above.
+

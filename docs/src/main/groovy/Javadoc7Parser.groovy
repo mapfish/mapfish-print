@@ -1,6 +1,3 @@
-import groovy.util.slurpersupport.NoChildren
-import org.ccil.cowan.tagsoup.Parser
-
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 /*
@@ -67,7 +64,7 @@ class Javadoc7Parser {
 
 
             def firstDescriptionDiv = descDiv.div[0]
-            return toXmlString(firstDescriptionDiv)
+            return DocsXmlSupport.toXmlString(firstDescriptionDiv)
         } catch (Exception e) {
             if (cls.getSuperclass() != null) {
                 try {
@@ -85,69 +82,20 @@ class Javadoc7Parser {
         return "Unable to find javadoc for method '$method' in '$objectName'"
     }
 
-    static String toXmlString(node) {
-        def builder = new StringBuilder()
-        appendXmlToBuilder(node, builder)
-        return builder.toString()
-    }
-    static String appendXmlToBuilder(node, StringBuilder stringBuilder) {
-        stringBuilder.append("<").append(node.name())
-
-        if (node instanceof NoChildren) {
-            stringBuilder.append(">")
-        } else {
-            node.attributes().each { name, value ->
-                stringBuilder.append(" ")
-                stringBuilder.append(name)
-                stringBuilder.append('="')
-                stringBuilder.append(value)
-                stringBuilder.append('"')
-            }
-
-            stringBuilder.append(">")
-
-            def children;
-            // need to access inner node because children on this node object only returns children that are nodes.
-            // We also want the text elements.  So we get inner node via reflection and execute children on that.
-            // if for some reason we can't get the inner node then we will just get the local strings and add then before the
-            // nodes.  All the data will be there but possibly in a different order.
-            try {
-                Field nodeField = node.getClass().getDeclaredField("node")
-                nodeField.setAccessible(true)
-                def innerNode = nodeField.get(node)
-                children = innerNode.children()
-            } catch (Throwable) {
-                children = node.childNodes()
-                node.localText().each {
-                    stringBuilder.append("\n").append(it)
-                }
-            }
-            children.each { child ->
-                if (child instanceof String) {
-                    stringBuilder.append(child)
-                } else {
-                    appendXmlToBuilder(child, stringBuilder)
-                }
-            }
-        }
-
-        stringBuilder.append("</").append(node.name).append(">")
-    }
 
     String findClassDescription(Class cls) {
         def html = loadJavadocFile(cls)
 
         def contentContainer = html.depthFirst().find{it.name() == 'div' && it.@class == 'contentContainer'}
         def descriptionEl = contentContainer.depthFirst().find{it.name() == 'div' && it.@class == 'description'}
-        return toXmlString(descriptionEl.ul.li.div[0])
+        return DocsXmlSupport.toXmlString(descriptionEl.ul.li.div[0])
     }
     def xmlCache = [:]
     def loadJavadocFile(Class cls) {
         if (xmlCache.containsKey(cls)) {
             return xmlCache.get(cls)
         }
-        def tagsoupParser = new Parser()
-        def slurper = new XmlSlurper(tagsoupParser)
+        XmlSlurper slurper = DocsXmlSupport.createHtmlSlurper()
         def javadocFile = new File(javadocDir, cls.name.replace(".", File.separator).replace("\$", ".") + ".html")
 
         def xml;
@@ -157,5 +105,6 @@ class Javadoc7Parser {
         xmlCache.put(cls, xml)
         return xml
     }
+
 
 }
