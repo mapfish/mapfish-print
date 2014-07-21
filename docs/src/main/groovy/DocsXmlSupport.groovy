@@ -40,6 +40,15 @@ class DocsXmlSupport {
             stringBuilder.append(">")
         } else {
             node.attributes().each { name, value ->
+
+
+                def hrefPrefixIndicatingJavadocLink = '../../../../../org/mapfish/'
+                if (node.name() == 'a' && name == 'href' && value.startsWith(hrefPrefixIndicatingJavadocLink)) {
+
+                    value = "javadoc/org/mapfish/" + value.substring(hrefPrefixIndicatingJavadocLink.length())
+                    stringBuilder.append(' target="javadocsTab"')
+                }
+
                 stringBuilder.append(" ")
                 stringBuilder.append(name)
                 stringBuilder.append('="')
