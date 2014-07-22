@@ -54,15 +54,10 @@ public class TileCacheLayerInfo {
     protected final double originY;
     protected String extension;
 
-    public TileCacheLayerInfo(String resolutions, int width, int height, double minX, double minY, double maxX, double maxY, String format,
+    public TileCacheLayerInfo(double[] resolutions, int width, int height, double minX, double minY, double maxX, double maxY, String format,
                               double originX, double originY) {
-        String[] resolutionsTxt = RESOLUTIONS_REGEXP.split(resolutions);
-        this.resolutions = new double[resolutionsTxt.length];
-        for (int i = 0; i < resolutionsTxt.length; ++i) {
-            this.resolutions[i] = Double.parseDouble(resolutionsTxt[i]);
-        }
+        this.resolutions = resolutions;
         sortResolutions();
-
         this.width = width;
         this.height = height;
         this.minX = minX;
@@ -83,6 +78,24 @@ public class TileCacheLayerInfo {
                 throw new InvalidValueException("format", format);
             }
         }
+    }
+
+    public TileCacheLayerInfo(double[] resolutions, int width, int height, double minX, double minY, double maxX, double maxY, String format) {
+        this(resolutions, width, height, minX, minY, maxX, maxY, format, minX, minY);
+    }
+
+    private static double[] parseResolutions(String resolutions) {
+        String[] resolutionsTxt = RESOLUTIONS_REGEXP.split(resolutions);
+        double[] resolutionsDouble = new double[resolutionsTxt.length];
+        for (int i = 0; i < resolutionsTxt.length; ++i) {
+            resolutionsDouble[i] = Double.parseDouble(resolutionsTxt[i]);
+        }
+        return resolutionsDouble;
+    }
+
+    public TileCacheLayerInfo(String resolutions, int width, int height, double minX, double minY, double maxX, double maxY, String format,
+                              double originX, double originY) {
+        this(parseResolutions(resolutions), width, height, minX, minY, maxX, maxY, format, originX, originY);
     }
 
     public TileCacheLayerInfo(String resolutions, int width, int height, float minX, float minY, float maxX, float maxY, String format) {
