@@ -29,7 +29,8 @@ docsApp.config(function($translateProvider) {
   $translateProvider.preferredLanguage('en');
 });
 
-docsApp.controller('DocsCtrl', function ($scope, $sce, $translate, $location) {
+docsApp.controller('DocsCtrl', function ($scope, $rootScope, $sce, $translate, $location, $anchorScroll, $timeout) {
+
   $scope.pages = {
     overview: {
       order: 0,
@@ -85,47 +86,52 @@ docsApp.controller('DocsCtrl', function ($scope, $sce, $translate, $location) {
     'styles': {
       order: 30,
       title: 'tocStyleTitle',
-      html: 'user-api-no-details-part.html',
+      html: 'user-api-part.html',
       setRecords: function() {$scope.records = docs.styles},
       desc: 'tocStyleDesc'
     },
     'outputFormats': {
       order: 30,
       title: 'tocOutputFormatsTitle',
-      html: 'user-api-no-details-part.html',
+      html: 'user-api-part.html',
       setRecords: function() {$scope.records = docs.outputFormats},
       desc: 'tocOutputFormatsDesc'
     },
     'fileLoaders': {
       order: 30,
       title: 'tocFileLoadersTitle',
-      html: 'user-api-no-details-part.html',
+      html: 'user-api-part.html',
       setRecords: function() {$scope.records = docs.fileLoaders},
       desc: 'tocFileLoadersDesc'
     }
   };
   $scope.page = 'overview';
-  var loadStateFromPath = function() {
-    var path = $location.path() || "";
-    path = path.substr(1);
-
-
-
-    if ($scope.pages[path]) {
-      $scope.page = path;
-    } else {
-      for ($scope.page in $scope.pages) break;
-      $location.path('/' + $scope.page);
-    }
-  };
-
-  loadStateFromPath();
-
   $scope.records = docs.api;
   $scope.select = function (page) {
     $scope.page = page;
     $scope.pages[page].setRecords()
   };
+
+
+  $rootScope.$on('$locationChangeSuccess', function(event){
+    var page, record, detail;
+    var path = $location.path() || "";
+    page = path.substr(1);
+
+    if (!$scope.pages[page]) {
+      for ($scope.page in $scope.pages) break;
+      $location.path('/' + $scope.page);
+    }
+    $scope.select(page);
+
+    $timeout(function () {
+      // wait until page is rendered then scroll to correct element
+      console.log($location.hash());
+      $anchorScroll();
+    }, 500);
+  });
+
+
   $scope.getTitle = function(record) {
     if (record.translateTitle) {
       return $translate.instant(record.title)
@@ -185,3 +191,27 @@ docsApp.filter('sortRecords', function($translate){
     return items;
   }
 });
+
+docsApp.hashPathSeparator = '__';
+docsApp.controller('RecordCtrl', function ($scope, $location) {
+  var title = $scope.record.title;
+  $scope.expanded = $location.hash() === title || $location.hash().indexOf(title + docsApp.hashPathSeparator) === 0;
+
+  $scope.setLocationHash = function() {
+    $location.hash($scope.record.title);
+  };
+});
+
+
+
+docsApp.controller('DetailCtrl', function ($scope, $location) {
+  $scope.setLocationHash = function(id, $event) {
+    $event.stopPropagation();
+    $location.hash(id);
+  };
+  $scope.anchorId = function (detail, type) {
+    var id = $scope.record.title + docsApp.hashPathSeparator + type + docsApp.hashPathSeparator + detail.title;
+    return id.replace(/[:\/\s\[\]\\]/g, '+');
+  }
+});
+

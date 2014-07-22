@@ -2,10 +2,10 @@
     An Attribute is a value the that a processor requires as its input (if it is not satisfied by the output of another processor) or the
     report template. An attribute represents one or more values. Usually simple values (numbers, strings, etc...) are values required by
     the report template but on occasion they might be required by a processor. Typically a processor will require a specific attribute
-    type, for example the <a href="#/processors/!createMap">!createMap</a> processor requires a <a href="#/attributes/!map">!map</a>
+    type, for example the <a href="#/processors#!createMap">!createMap</a> processor requires a <a href="#/attributes#!map">!map</a>
     attribute, which contains all of the information required to render a map (layers, bbox, projections, etc...)
 </p><p>
-    Attributes are declared in the configuration yaml file in the <a href="#/configuration/!attribute"> !attribute </a> block. The
+    Attributes are declared in the configuration yaml file in the !attribute block. The
     attribute block is a map of name - > attributeType pairs. This means that each attribute consists of a name and a type. Each processor
     has a inputs which must be satisfied by an attribute or the output of another processor. Each input has a name/key that is used to
     look up the attribute (or output). If an input of a processor is not satisfied, an error will be reported to the client detailing the
