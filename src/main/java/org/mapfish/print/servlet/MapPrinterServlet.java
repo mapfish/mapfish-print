@@ -193,6 +193,8 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
 
         final String id = generateId(tempFile);
+        addTempFile(tempFile, id);
+
         httpServletResponse.setContentType("application/json; charset=utf-8");
         PrintWriter writer = null;
         try {
@@ -214,7 +216,6 @@ public class MapPrinterServlet extends BaseMapServlet {
                 writer.close();
             }
         }
-        addTempFile(tempFile, id);
     }
 
     protected void addTempFile(TempFile tempFile, String id) {
