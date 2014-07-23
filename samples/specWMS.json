@@ -1,0 +1,24 @@
+{
+    "layout": "A4 portrait",
+    "title": "A simple example",
+    "srs": "EPSG:4326",
+    "units": "degrees",
+    "layers": [
+        {
+            "type": "WMS",
+            "layers": ["osm"],
+            "baseURL": "http://mapfish-geoportal.demo-camptocamp.com/demo/wsgi/mapserv_proxy",
+            "format": "image/png"
+        }
+    ],
+    "pages": [
+        {
+            "center": [6.56275, 46.51777],
+            "scale": 25000,
+            "dpi": 91,
+            "mapTitle": "First map",
+            "comment": "This is the first page selected by the user.",
+            "rotation": 0
+        }
+    ]
+}

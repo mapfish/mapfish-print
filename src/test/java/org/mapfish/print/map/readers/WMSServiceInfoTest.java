@@ -19,7 +19,12 @@
 
 package org.mapfish.print.map.readers;
 
-import static org.junit.Assert.*;
+import org.json.JSONObject;
+import org.junit.Test;
+import org.mapfish.print.PrintTestCase;
+import org.mapfish.print.utils.PJsonObject;
+import org.xml.sax.SAXException;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,9 +32,9 @@ import java.util.Arrays;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.junit.Test;
-import org.mapfish.print.PrintTestCase;
-import org.xml.sax.SAXException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class WMSServiceInfoTest extends PrintTestCase {
 
@@ -114,7 +119,7 @@ public class WMSServiceInfoTest extends PrintTestCase {
         InputStream stream = new ByteArrayInputStream(response.getBytes("ISO-8859-1"));
         WMSServiceInfo info = new WMSServiceInfo.WMSServiceInfoLoader().parseInfo(stream);
         assertEquals(true, info.isTileCache());
-        TileCacheLayerInfo layerInfo = info.getTileCacheLayer("cn");
+        TileCacheLayerInfo layerInfo = info.getTileCacheLayer("cn", null, new PJsonObject(new JSONObject(), ""));
         assertNotNull(layerInfo);
         assertEquals(256, layerInfo.getWidth());
         assertEquals(256, layerInfo.getHeight());
@@ -231,7 +236,7 @@ public class WMSServiceInfoTest extends PrintTestCase {
         InputStream stream = new ByteArrayInputStream(response.getBytes("ISO-8859-1"));
         WMSServiceInfo info = new WMSServiceInfo.WMSServiceInfoLoader().parseInfo(stream);
         assertEquals(true, info.isTileCache());
-        TileCacheLayerInfo layerInfo = info.getTileCacheLayer("cn");
+        TileCacheLayerInfo layerInfo = info.getTileCacheLayer("cn", null, new PJsonObject(new JSONObject(), ""));
         assertNotNull(layerInfo);
         assertEquals(256, layerInfo.getWidth());
         assertEquals(256, layerInfo.getHeight());

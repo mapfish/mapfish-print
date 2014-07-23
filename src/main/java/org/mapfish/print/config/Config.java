@@ -21,6 +21,7 @@ package org.mapfish.print.config;
 
 //import org.apache.commons.httpclient.HostConfiguration;
 import com.codahale.metrics.MetricRegistry;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -218,6 +219,10 @@ public class Config implements Closeable {
         }
     }
 
+    public TreeSet<Double> getScales() {
+        return this.scales;
+    }
+
     public boolean isScalePresent(double targetScale) {
         for (double scale : scales) {
             if (Math.abs(scale - targetScale) < 0.001) {
@@ -245,7 +250,9 @@ public class Config implements Closeable {
 
     public TreeSet<Key> getKeys() {
         TreeSet<Key> k = keys;
-        if(k == null) k = new TreeSet<Key>();
+        if(k == null) {
+            k = new TreeSet<Key>();
+        }
         return k;
     }
 
@@ -275,18 +282,34 @@ public class Config implements Closeable {
             throw new IllegalStateException("Config was not configured with a threadResources object.  Check spring configuration file " +
                                             "and make sure there is a ThreadResources bean");
         }
-        if (layouts == null) throw new InvalidValueException("layouts", "null");
+        if (layouts == null) {
+            throw new InvalidValueException("layouts", "null");
+        }
         layouts.validate();
 
-        if (dpis == null) throw new InvalidValueException("dpis", "null");
-        if (dpis.size() < 1) throw new InvalidValueException("dpis", "[]");
+        if (dpis == null) {
+            throw new InvalidValueException("dpis", "null");
+        }
+        if (dpis.size() < 1) {
+            throw new InvalidValueException("dpis", "[]");
+        }
 
-        if (scales == null) throw new InvalidValueException("scales", "null");
-        if (scales.size() < 1) throw new InvalidValueException("scales", "[]");
-        if (!(scales.iterator().next() instanceof Double)) throw new Error("scales should be converted to Doubles");
+        if (scales == null) {
+            throw new InvalidValueException("scales", "null");
+        }
+        if (scales.size() < 1) {
+            throw new InvalidValueException("scales", "[]");
+        }
+        if (!(scales.iterator().next() instanceof Double)) {
+            throw new Error("scales should be converted to Doubles");
+        }
 
-        if (hosts == null) throw new InvalidValueException("hosts", "null");
-        if (hosts.size() < 1) throw new InvalidValueException("hosts", "[]");
+        if (hosts == null) {
+            throw new InvalidValueException("hosts", "null");
+        }
+        if (hosts.size() < 1) {
+            throw new InvalidValueException("hosts", "[]");
+        }
 
         if (globalParallelFetches < 1) {
             throw new InvalidValueException("globalParallelFetches", globalParallelFetches);
@@ -334,6 +357,7 @@ public class Config implements Closeable {
     /**
      * Stop all the threads and stuff used for this config.
      */
+    @Override
     public synchronized void close() {
         WMSServiceInfo.clearCache();
     }
@@ -373,10 +397,11 @@ public class Config implements Closeable {
             httpClient.getHostConfiguration().setProxy(hostName, port);
         }
 
-        for(SecurityStrategy sec : security)
-        if(sec.matches(uri)) {
-            sec.configure(uri, httpClient);
-            break;
+        for(SecurityStrategy sec : security) {
+            if(sec.matches(uri)) {
+                sec.configure(uri, httpClient);
+                break;
+            }
         }
         return httpClient;
     }
@@ -430,7 +455,9 @@ public class Config implements Closeable {
     }
 
     public TreeSet<String> getFormats() {
-        if(formats == null) return new TreeSet<String>();
+        if(formats == null) {
+            return new TreeSet<String>();
+        }
         return formats;
     }
 

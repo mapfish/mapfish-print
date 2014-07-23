@@ -19,22 +19,13 @@
 
 package org.mapfish.print.map.readers;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.net.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xerces.util.DOMUtil;
 import org.mapfish.print.RenderingContext;
+import org.mapfish.print.utils.DistanceUnit;
+import org.mapfish.print.utils.PJsonArray;
+import org.mapfish.print.utils.PJsonObject;
 import org.pvalsecc.misc.URIUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -43,6 +34,22 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Use to get information about a WMS server. Caches the results.
@@ -69,7 +76,28 @@ public class WMSServiceInfo extends ServiceInfo {
         return !tileCacheLayers.isEmpty();
     }
 
-    public TileCacheLayerInfo getTileCacheLayer(String layerName) {
+    public TileCacheLayerInfo getTileCacheLayer(String layerName, RenderingContext context, PJsonObject params) {
+        if (params.optBool("isTiled", false)) {
+            int dpi = context.getCurrentPageParams().getInt("dpi");
+            String units = context.getGlobalParams().getString("units");
+            double invDistancePerGeoUnit = 1 / DistanceUnit.fromString(units).convertTo(dpi, DistanceUnit.IN);
+
+            PJsonArray maxExtent = params.getJSONArray("maxExtent");
+            PJsonArray tileSize = params.optJSONArray("tileSize");
+            String format = params.getString("format");
+            List<Double> resolutions = new ArrayList<Double>(context.getConfig().getScales().size());
+            for (Number scale : context.getConfig().getScales()) {
+                resolutions.add(scale.doubleValue() * invDistancePerGeoUnit);
+            }
+            double[] resolutionsArray = new double[resolutions.size()];
+            for (int i = 0; i < resolutions.size(); i++) {
+                resolutionsArray[i] = resolutions.get(i).doubleValue();
+            }
+            return new TileCacheLayerInfo(resolutionsArray,
+                tileSize == null ? 256 : tileSize.getInt(0), tileSize == null ? 256 : tileSize.getInt(1),
+                maxExtent.getFloat(0), maxExtent.getFloat(1), maxExtent.getFloat(2), maxExtent.getFloat(3),
+                format);
+        }
         return tileCacheLayers.get(layerName);
     }
 
@@ -111,6 +139,7 @@ public class WMSServiceInfo extends ServiceInfo {
 
             //we don't want the DTD to be checked and it's the only way I found
             documentBuilder.setEntityResolver(new EntityResolver() {
+                @Override
                 public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
                     return new InputSource(new StringReader(""));
                 }
@@ -144,6 +173,7 @@ public class WMSServiceInfo extends ServiceInfo {
                 }
             }
 
-            return result;        }
+            return result;
+        }
     }
 }

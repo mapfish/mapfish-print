@@ -32,6 +32,9 @@ hosts:
   - !ipMatch
     ip: www.camptocamp.org
   - !dnsMatch
+    host: mapfish-geoportal.demo-camptocamp.com
+    port: 80
+  - !dnsMatch
     host: labs.metacarta.com
     port: 80
   - !dnsMatch

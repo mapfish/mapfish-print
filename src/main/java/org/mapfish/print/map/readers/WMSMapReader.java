@@ -97,7 +97,7 @@ public class WMSMapReader extends TileableMapReader {
         super(context, params);
         layers.add(layer);
         if (!context.getConfig().isIgnoreCapabilities()) {
-            tileCacheLayerInfo = WMSServiceInfo.getInfo(baseUrl, context).getTileCacheLayer(layer);
+            tileCacheLayerInfo = WMSServiceInfo.getInfo(baseUrl, context).getTileCacheLayer(layer, context, params);
         }
         styles.add(style);
         format = params.getString("format");
