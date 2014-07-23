@@ -70,8 +70,6 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
 
     private static final int HALF_SECOND = 500;
 
-    private static final int[] DEFAULT_DPI_VALUES = {72, 120, 200, 254, 300, 600, 1200, 2400};
-
     @Autowired
     private MapPrinterFactory printerFactory;
 
@@ -366,25 +364,6 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
                     }
                     json.endObject();
                 }
-            } else if (maxDpi != null) {
-                // output fixed dpis value lower than maxDpi
-                for (int dpi : DEFAULT_DPI_VALUES) {
-                    if (dpi < maxDpi) {
-                        json.object();
-                        {
-                            json.key("name").value(Integer.toString(dpi));
-                            json.key("value").value(Integer.toString(dpi));
-                        }
-                        json.endObject();
-                        
-                    }
-                }
-                json.object();
-                {
-                    json.key("name").value(Integer.toString(maxDpi.intValue()));
-                    json.key("value").value(Integer.toString(maxDpi.intValue()));
-                }
-                json.endObject();
             }
         }
         json.endArray();
