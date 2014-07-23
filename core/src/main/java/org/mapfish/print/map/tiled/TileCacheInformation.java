@@ -22,6 +22,7 @@ package org.mapfish.print.map.tiled;
 import com.google.common.base.Function;
 import com.google.common.collect.Multimap;
 import com.vividsolutions.jts.geom.Coordinate;
+
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.map.Scale;
@@ -31,10 +32,10 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -96,7 +97,7 @@ public abstract class TileCacheInformation {
                                                      Dimension tileSizeOnScreen,
                                                      int column,
                                                      int row)
-            throws IOException, URISyntaxException;
+            throws Exception;
 
     /**
      * Adds the query parameters common to every tile.
