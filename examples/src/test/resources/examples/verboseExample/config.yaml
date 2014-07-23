@@ -51,6 +51,7 @@ templates:
     attributes:
       map: !map
         maxDpi: 400
+        dpiSuggestions: [90, 200, 300, 400]
         width: 780
         height: 330
     processors:

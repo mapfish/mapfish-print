@@ -103,6 +103,29 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
     }
 
     @Test
+    public void testInfoRequestDpiSuggestions() throws Exception {
+        setUpConfigFilesDpi();
+        
+        final MockHttpServletRequest infoRequest = new MockHttpServletRequest();
+        infoRequest.setContextPath("/print-old");
+        final MockHttpServletResponse infoResponse = new MockHttpServletResponse();
+        this.servlet.getInfo(null, null, infoRequest, infoResponse);
+        assertEquals(HttpStatus.OK.value(), infoResponse.getStatus());
+        
+        final String result = infoResponse.getContentAsString();
+        final PJsonObject info = parseJSONObjectFromString(result);
+        
+        assertTrue(info.has("dpis"));
+        assertEquals(4, info.getArray("dpis").size());
+        final PObject firstDpi = info.getArray("dpis").getObject(0);
+        assertEquals("90", firstDpi.getString("name"));
+        assertEquals("90", firstDpi.getString("value"));
+        final PObject lastDpi = info.getArray("dpis").getObject(3);
+        assertEquals("400", lastDpi.getString("name"));
+        assertEquals("400", lastDpi.getString("value"));
+    }
+
+    @Test
     public void testInfoRequestVarAndUrl() throws Exception {
         setUpConfigFiles();
         
@@ -238,6 +261,12 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
     private void setUpConfigFiles() throws URISyntaxException {
         final HashMap<String, String> configFiles = Maps.newHashMap();
         configFiles.put("default", getFile(OldAPIMapPrinterServletTest.class, "config-old-api.yaml").getAbsolutePath());
+        printerFactory.setConfigurationFiles(configFiles);
+    }
+
+    private void setUpConfigFilesDpi() throws URISyntaxException {
+        final HashMap<String, String> configFiles = Maps.newHashMap();
+        configFiles.put("default", getFile(OldAPIMapPrinterServletTest.class, "config-old-api-dpi.yaml").getAbsolutePath());
         printerFactory.setConfigurationFiles(configFiles);
     }
 

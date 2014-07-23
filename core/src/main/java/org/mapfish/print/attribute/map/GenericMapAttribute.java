@@ -61,6 +61,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
     private MapfishParser mapfishJsonParser;
 
     private Double maxDpi = null;
+    private double[] dpiSuggestions = null;
     private ZoomLevels zoomLevels = null;
     private Double zoomSnapTolerance = null;
     private ZoomLevelSnapStrategy zoomLevelSnapStrategy = null;
@@ -74,6 +75,14 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
 
     public final void setMaxDpi(final Double maxDpi) {
         this.maxDpi = maxDpi;
+    }
+    
+    public final double[] getDpiSuggestions() {
+        return this.dpiSuggestions;
+    }
+
+    public final void setDpiSuggestions(final double[] dpiSuggestions) {
+        this.dpiSuggestions = dpiSuggestions;
     }
 
     public final Integer getWidth() {
@@ -119,6 +128,16 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
         if (this.getMaxDpi() == null || this.getMaxDpi() < 1) {
             validationErrors.add(
                     new ConfigurationException("maxDpi field is not legal: " + this.getMaxDpi() + " in " + getClass().getName()));
+        }
+
+        if (this.getMaxDpi() != null && this.getDpiSuggestions() != null) {
+            for (double dpi : this.getDpiSuggestions()) {
+                if (dpi < 1 || dpi > this.getMaxDpi()) {
+                    validationErrors.add(new ConfigurationException(
+                            "dpiSuggestions contains an invalid value: " + dpi + " in " + getClass().getName()));
+                    
+                }
+            }
         }
     }
 
@@ -344,6 +363,12 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
         public ZoomLevelSnapStrategy getZoomLevelSnapStrategy() {
         //CSON: DesignForExtension
             return GenericMapAttribute.this.zoomLevelSnapStrategy;
+        }
+
+        //CSOFF: DesignForExtension
+        public double[] getDpiSuggestions() {
+        //CSON: DesignForExtension
+            return GenericMapAttribute.this.getDpiSuggestions();
         }
 
         //CSOFF: DesignForExtension
