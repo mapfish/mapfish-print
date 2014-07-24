@@ -50,6 +50,7 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
     private LinkedHashMap<String, ?> clientOptions;
     private Value defaultValue;
 
+    private String configName;
     /**
      * Constructor.
      *
@@ -69,6 +70,11 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
 
     public final Value getDefault() {
         return this.defaultValue;
+    }
+
+    @Override
+    public final void setConfigName(final String configName) {
+        this.configName = configName;
     }
 
     @Override

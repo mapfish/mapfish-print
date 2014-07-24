@@ -21,8 +21,9 @@ package org.mapfish.print.attribute.map;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-
 import org.geotools.referencing.CRS;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.ConfigurationException;
@@ -54,6 +55,22 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
 
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericMapAttribute.class);
+    /**
+     * The json key for the suggested DPI values in the client config.
+     */
+    public static final String JSON_DPI_SUGGESTIONS = "dpiSuggestions";
+    /**
+     * The json key for the max DPI value in the client config.
+     */
+    public static final String JSON_MAX_DPI = "maxDPI";
+    /**
+     * The json key for the width of the map in the client config.
+     */
+    public static final String JSON_MAP_WIDTH = "width";
+    /**
+     * The json key for the height of the map in the client config.
+     */
+    public static final String JSON_MAP_HEIGHT = "height";
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -139,6 +156,22 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
                 }
             }
         }
+    }
+
+    @Override
+    protected final Optional<JSONObject> getClientInfo() throws JSONException {
+        final JSONObject jsonObject = new JSONObject();
+        jsonObject.put(JSON_DPI_SUGGESTIONS, this.dpiSuggestions);
+        jsonObject.put(JSON_MAX_DPI, this.maxDpi);
+        jsonObject.put(JSON_MAP_WIDTH, this.width);
+        jsonObject.put(JSON_MAP_HEIGHT, this.height);
+        return Optional.of(jsonObject);
+    }
+
+    @Override
+    public final void setDefaultsForTesting() {
+        this.width = 1;
+        this.height = 1;
     }
 
     /**

@@ -20,7 +20,6 @@
 package org.mapfish.print.parser;
 
 import com.vividsolutions.jts.util.AssertionFailedException;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;

@@ -19,11 +19,15 @@
 
 package org.mapfish.print.wrapper.yaml;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.mapfish.print.wrapper.ObjectMissingException;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PElement;
 import org.mapfish.print.wrapper.PObject;
+import org.mapfish.print.wrapper.json.PJsonArray;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -102,8 +106,51 @@ public class PYamlArray extends PElement implements PArray {
         return (Boolean) this.array.get(i);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public final Object get(final int i) {
-        return this.array.get(i);
+        final Object o = this.array.get(i);
+        if (o instanceof Map<?, ?>) {
+            Map<String, Object> map = (Map<String, Object>) o;
+            return new PYamlObject(this, map, String.valueOf(i));
+        } else if (o instanceof List<?>) {
+            List<Object> objects = (List<Object>) o;
+            return new PYamlArray(this, objects, String.valueOf(i));
+        } else if (o != null && o.getClass().isArray()) {
+            List<Object> objects = Arrays.asList((Object[]) o);
+            return new PYamlArray(this, objects, String.valueOf(i));
+        }
+        return o;
+    }
+
+    @Override
+    public final String toString() {
+        try {
+            return "PYaml(" + getCurrentPath() + ":" + toJSON().getInternalArray().toString(2) + ")";
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Convert this object to a json array.
+     */
+    public final PJsonArray toJSON() {
+        JSONArray jsonArray = new JSONArray();
+        final int size = this.array.size();
+        for (int i = 0; i < size; i++) {
+            final Object o = get(i);
+            if (o instanceof PYamlObject) {
+                PYamlObject pYamlObject = (PYamlObject) o;
+                jsonArray.put(pYamlObject.toJSON().getInternalObj());
+            } else if (o instanceof PYamlArray) {
+                PYamlArray pYamlArray = (PYamlArray) o;
+                jsonArray.put(pYamlArray.toJSON().getInternalArray());
+            } else {
+                jsonArray.put(o);
+            }
+
+        }
+        return new PJsonArray(null, jsonArray, getContextName());
     }
 }

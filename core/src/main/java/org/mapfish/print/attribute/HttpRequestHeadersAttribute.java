@@ -38,6 +38,11 @@ import java.util.Map;
 public final class HttpRequestHeadersAttribute extends ReflectiveAttribute<HttpRequestHeadersAttribute.Value> {
 
     @Override
+    protected Class<Value> getValueType() {
+        return Value.class;
+    }
+
+    @Override
     public Value createValue(final Template template) {
         return new Value();
     }

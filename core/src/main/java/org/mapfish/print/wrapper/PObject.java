@@ -30,6 +30,13 @@ import java.util.Iterator;
 public interface PObject {
 
     /**
+     * Get the value for the key.
+     *
+     * @param key the key identifying the value to obtain.
+     */
+    Object opt(final String key);
+
+    /**
      * Get a property as a string or throw an exception.
      * @param key the property name
      */

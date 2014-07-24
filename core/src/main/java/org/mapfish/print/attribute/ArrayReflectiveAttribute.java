@@ -39,11 +39,12 @@ public abstract class ArrayReflectiveAttribute<Value> implements Attribute {
 
     private volatile ReflectiveAttribute<Value> delegate;
     private PYamlArray defaults;
+    private String configName;
 
     @PostConstruct
     private void init() {
         if (this.defaults == null) {
-            this.defaults = new PYamlArray(null, Collections.<Object>emptyList(), getAttributeName());
+            this.defaults = new PYamlArray(null, Collections.<Object>emptyList(), this.configName);
         }
     }
 
@@ -57,14 +58,12 @@ public abstract class ArrayReflectiveAttribute<Value> implements Attribute {
     }
 
     public final void setDefault(final List<Object> defaultValue) {
-        this.defaults = new PYamlArray(null, defaultValue, getAttributeName());
+        this.defaults = new PYamlArray(null, defaultValue, this.configName);
     }
 
-    /**
-     * Return a descriptive name of this attribute.
-     */
-    protected final String getAttributeName() {
-        return getClass().getSimpleName().substring(0, 1).toLowerCase() + getClass().getSimpleName().substring(1);
+    @Override
+    public final void setConfigName(final String configName) {
+        this.configName = configName;
     }
 
     /**
@@ -86,6 +85,11 @@ public abstract class ArrayReflectiveAttribute<Value> implements Attribute {
             synchronized (this) {
                 if (this.delegate == null) {
                     this.delegate = new ReflectiveAttribute<Value>() {
+
+                        @Override
+                        protected Class<? extends Value> getValueType() {
+                            return ArrayReflectiveAttribute.this.delegate.getValueType();
+                        }
 
                         @Override
                         public Value createValue(final Template template) {

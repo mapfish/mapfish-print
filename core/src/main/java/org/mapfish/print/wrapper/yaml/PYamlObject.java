@@ -19,11 +19,15 @@
 
 package org.mapfish.print.wrapper.yaml;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.mapfish.print.wrapper.PAbstractObject;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PElement;
 import org.mapfish.print.wrapper.PObject;
+import org.mapfish.print.wrapper.json.PJsonObject;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +44,7 @@ public class PYamlObject extends PAbstractObject {
     /**
      * Constructor.
      *
-     * @param obj the internal json element
+     * @param obj         the internal json element
      * @param contextName the field name of this element in the parent.
      */
     public PYamlObject(final Map<String, Object> obj, final String contextName) {
@@ -50,13 +54,28 @@ public class PYamlObject extends PAbstractObject {
     /**
      * Constructor.
      *
-     * @param parent the parent element
-     * @param obj the internal json element
+     * @param parent      the parent element
+     * @param obj         the internal json element
      * @param contextName the field name of this element in the parent.
      */
     public PYamlObject(final PElement parent, final Map<String, Object> obj, final String contextName) {
         super(parent, contextName);
         this.obj = obj;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public final Object opt(final String key) {
+        final Object value = this.obj.get(key);
+        if (value instanceof Map<?, ?>) {
+            return new PYamlObject(this, (Map<String, Object>) value, key);
+        } else if (value instanceof List<?>) {
+            return new PYamlArray(this, (List<Object>) value, key);
+        } else if (value != null && value.getClass().isArray()) {
+            return new PYamlArray(this, Arrays.asList((Object[]) value), key);
+        } else {
+            return value;
+        }
     }
 
     @Override
@@ -118,5 +137,39 @@ public class PYamlObject extends PAbstractObject {
     @Override
     public final boolean has(final String key) {
         return this.obj.containsKey(key);
+    }
+
+    @Override
+    public final String toString() {
+        try {
+            return "PYaml(" + this.getCurrentPath() + ":" + toJSON().getInternalObj().toString(2) + ")";
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Convert this object to a json object.
+     */
+    public final PJsonObject toJSON() {
+        try {
+            JSONObject json = new JSONObject();
+            for (String key : this.obj.keySet()) {
+                Object opt = opt(key);
+                if (opt instanceof PYamlObject) {
+                    opt = ((PYamlObject) opt).toJSON().getInternalObj();
+                } else if (opt instanceof PYamlArray) {
+                    opt = ((PYamlArray) opt).toJSON().getInternalArray();
+                }
+                json.put(key, opt);
+            }
+            return new PJsonObject(json, this.getContextName());
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Error e) {
+            throw e;
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 }

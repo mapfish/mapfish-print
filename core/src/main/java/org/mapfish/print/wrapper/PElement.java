@@ -54,6 +54,10 @@ public abstract class PElement {
         return result.toString();
     }
 
+    protected final String getContextName() {
+        return this.contextName;
+    }
+
     /**
      * Gets the string representation of the path to the current JSON element.
      */
@@ -84,6 +88,7 @@ public abstract class PElement {
             return val;
         }
     }
+
 
 
     public final PElement getParent() {
