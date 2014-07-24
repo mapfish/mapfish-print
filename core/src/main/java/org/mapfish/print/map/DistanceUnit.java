@@ -71,10 +71,6 @@ public enum DistanceUnit {
     MI(DistanceUnit.FT, 5280.0, 25.4 / 1000.0 * 12.0 * 5280.0, new String[]{"mi", "mile", "miles"}),
 
     /**
-     * Represent a pdf point.  72 dots per inch (dpi).
-     */
-    PT(DistanceUnit.FT, 1 / 12.0 / 72.0, 25.4 / 1000.0 / 72.0, new String[]{"pt", "point"}),
-    /**
      * Represents the lat long degree unit.
      */
     DEGREES(null, 1.0, 40041470.0 / 360.0, new String[]{"\u00B0", "dd", "degree", "degrees"}),
@@ -185,12 +181,11 @@ public enum DistanceUnit {
      */
     public final synchronized DistanceUnit[] getAllUnits() {
         if (this.allUnits == null) {
-            if (this.baseUnit != null) {
+            if (this.baseUnit != this) {
                 this.allUnits = this.baseUnit.getAllUnits();
             } else {
                 final DistanceUnit[] values = DistanceUnit.values();
                 final List<DistanceUnit> list = new ArrayList<DistanceUnit>(values.length);
-                list.add(this);
                 for (int i = 0; i < values.length; ++i) {
                     DistanceUnit value = values[i];
                     if (value.baseUnit == this) {
