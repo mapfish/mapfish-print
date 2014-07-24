@@ -159,7 +159,7 @@ public final class OldAPILayerConverter {
                 }
             }
             
-            // TODO convert styles
+            layer.put("style", OldAPIStyleConverter.convert(oldLayer));
             
             return layer;
         }
