@@ -55,7 +55,7 @@ public class ConfigurationTest {
 
     @Test
     public void testGetDefaultStyle_IsPresentInMap() throws Exception {
-        MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0, 72);
+        MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0, 72, null);
 
         final Configuration configuration = new Configuration();
         Map<String, Style> styles = new HashMap<String, Style>();
@@ -94,7 +94,7 @@ public class ConfigurationTest {
 
     @Test
     public void testGetDefaultStyle_NotInMap() throws Exception {
-        MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0, 72);
+        MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0, 72, null);
         final Configuration configuration = new Configuration();
         Map<String, Style> styles = new HashMap<String, Style>();
         final Style geomStyle = Mockito.mock(Style.class);
@@ -124,7 +124,7 @@ public class ConfigurationTest {
     }
     @Test
     public void testGetDefaultStyle_GeomNotInMap() throws Exception {
-        MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0, 72);
+        MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0, 72, null);
         final Configuration configuration = new Configuration();
 
         assertStyleType(Symbolizer.class, configuration.getDefaultStyle("geom"));
@@ -137,7 +137,7 @@ public class ConfigurationTest {
 
     @Test
     public void testGridStyle() throws Exception {
-        MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0, 72);
+        MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0, 72, null);
         final Configuration configuration = new Configuration();
         final Style gridStyle = configuration.getDefaultStyle(Constants.Style.Grid.NAME);
         final AtomicInteger foundLineSymb = new AtomicInteger(0);

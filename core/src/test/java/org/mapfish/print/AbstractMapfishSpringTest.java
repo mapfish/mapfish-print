@@ -19,21 +19,25 @@
 
 package org.mapfish.print;
 
+import com.google.common.io.Files;
+import org.geotools.referencing.CRS;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.mapfish.print.attribute.map.CenterScaleMapBounds;
+import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.map.Scale;
+import org.mapfish.print.wrapper.json.PJsonObject;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.mapfish.print.wrapper.json.PJsonObject;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import com.google.common.io.Files;
 
 /**
  * Class that loads the normal spring application context from the spring config file.
@@ -104,5 +108,14 @@ public abstract class AbstractMapfishSpringTest {
     
     protected File getTaskDirectory() {
         return this.folder.getRoot();
+    }
+
+    public static MapfishMapContext createTestMapContext() {
+        try {
+            final CenterScaleMapBounds bounds = new CenterScaleMapBounds(CRS.decode("CRS:84"), 0, 0, new Scale(30000));
+            return new MapfishMapContext(bounds, new Dimension(500,500), 0, 72, null);
+        } catch (Throwable e) {
+            throw new Error(e);
+        }
     }
 }

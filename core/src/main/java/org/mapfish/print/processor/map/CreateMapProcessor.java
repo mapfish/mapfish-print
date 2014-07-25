@@ -157,7 +157,8 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         // higher DPI printer
         final double dpiRatio = dpi / dpiOfRequestor;
         paintArea.setBounds(0, 0, (int) (mapSize.getWidth() * dpiRatio), (int) (mapSize.getHeight() * dpiRatio));
-        final MapfishMapContext transformer = new MapfishMapContext(bounds, paintArea.getSize(), mapValues.getRotation(), dpi);
+        final MapfishMapContext transformer = new MapfishMapContext(bounds, paintArea.getSize(),
+                mapValues.getRotation(), dpi, mapValues.longitudeFirst);
         
         // reverse layer list to draw from bottom to top.  normally position 0 is top-most layer.
         final List<MapLayer> layers = Lists.reverse(mapValues.getLayers());
@@ -166,6 +167,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         final List<URI> graphics = new ArrayList<URI>(layers.size());
         int i = 0;
         for (MapLayer layer : layers) {
+            layer.setForceLongitudeFirst(mapValues.longitudeFirst);
             checkCancelState(context);
             boolean isFirstLayer = i == 0;
             

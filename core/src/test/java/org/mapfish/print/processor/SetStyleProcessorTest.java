@@ -1,13 +1,13 @@
 package org.mapfish.print.processor;
 
 import jsr166y.ForkJoinPool;
-import org.geotools.styling.Style;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.attribute.map.MapAttribute;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
@@ -48,8 +48,9 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
 
         final MapAttribute.MapAttributeValues map = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
         final AbstractFeatureSourceLayer layer = (AbstractFeatureSourceLayer) map.getLayers().get(0);
+        final MapfishMapContext mapContext = AbstractMapfishSpringTest.createTestMapContext();
         assertEquals("Default Line",
-                layer.getLayers(httpClientFactory, null, true).get(0).getStyle().getDescription().getTitle().toString());
+                layer.getLayers(httpClientFactory, mapContext, true).get(0).getStyle().getDescription().getTitle().toString());
     }
 
     @Test

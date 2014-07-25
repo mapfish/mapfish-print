@@ -90,7 +90,7 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
                 @Override
                 public FeatureSource load(@Nonnull final ClientHttpRequestFactory requestFactory,
                                           @Nonnull final MapfishMapContext mapContext) {
-                    final FeaturesParser parser = new FeaturesParser(requestFactory);
+                    final FeaturesParser parser = new FeaturesParser(requestFactory, mapContext.isForceLongitudeFirst());
                     SimpleFeatureCollection featureCollection;
                     try {
                         featureCollection = parser.autoTreat(template, geoJsonString);
