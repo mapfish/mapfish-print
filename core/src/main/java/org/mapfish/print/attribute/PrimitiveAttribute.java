@@ -22,7 +22,6 @@ package org.mapfish.print.attribute;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.parser.MapfishParser;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -84,7 +83,7 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
 
     @Override
     public final void printClientConfig(final JSONWriter json, final Template template) throws JSONException {
-        json.key("name").value(MapfishParser.stringRepresentation(this.valueClass));
+        json.key("name").value(this.configName);
         if (this.clientOptions != null) {
             addMapToJSON("clientOptions", this.clientOptions, json);
         }

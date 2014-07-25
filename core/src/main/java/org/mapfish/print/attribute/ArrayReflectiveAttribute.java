@@ -40,6 +40,7 @@ public abstract class ArrayReflectiveAttribute<Value> implements Attribute {
     private volatile ReflectiveAttribute<Value> delegate;
     private PYamlArray defaults;
     private String configName;
+    private boolean isDelegateInitialized = false;
 
     @PostConstruct
     private void init() {
@@ -75,8 +76,17 @@ public abstract class ArrayReflectiveAttribute<Value> implements Attribute {
      */
     public abstract Value createValue(final Template template);
 
+    /**
+     * Return the type created by {@link #createValue(org.mapfish.print.config.Template)}.
+     */
+    protected abstract Class<? extends Value> getValueType();
+
     @Override
-    public final void printClientConfig(final JSONWriter json, final Template template) throws JSONException {
+    public final synchronized void printClientConfig(final JSONWriter json, final Template template) throws JSONException {
+        if (!this.isDelegateInitialized) {
+            getReflectiveAttribute().setConfigName(this.configName);
+            this.isDelegateInitialized = true;
+        }
         getReflectiveAttribute().printClientConfig(json, template);
     }
 
@@ -88,7 +98,7 @@ public abstract class ArrayReflectiveAttribute<Value> implements Attribute {
 
                         @Override
                         protected Class<? extends Value> getValueType() {
-                            return ArrayReflectiveAttribute.this.delegate.getValueType();
+                            return ArrayReflectiveAttribute.this.getValueType();
                         }
 
                         @Override

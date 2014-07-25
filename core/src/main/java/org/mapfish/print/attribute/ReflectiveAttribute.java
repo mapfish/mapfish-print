@@ -341,8 +341,10 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
 
             json.value(valueToAdd);
         }
+        if (type.isArray()) {
+            json.key(JSON_ATTRIBUTE_IS_ARRAY).value(type.isArray());
+        }
 
-        json.key(JSON_ATTRIBUTE_IS_ARRAY).value(type.isArray());
         json.endObject();
     }
 
