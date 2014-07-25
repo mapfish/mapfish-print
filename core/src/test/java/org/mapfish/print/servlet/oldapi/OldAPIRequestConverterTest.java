@@ -103,10 +103,12 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertEquals("geojson", geojsonLayer1.getString("type"));
         JSONObject geoJson = geojsonLayer1.getJSONObject("geoJson");
         assertEquals(1, geoJson.getJSONArray("features").length());
+        assertTrue(geojsonLayer1.getString("style").startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));
         
         JSONObject geojsonLayer2 = layers.getJSONObject(3);
         assertEquals("geojson", geojsonLayer2.getString("type"));
         assertEquals("http://xyz.com/places.json", geojsonLayer2.getString("geoJson"));
+        assertTrue(geojsonLayer2.getString("style").isEmpty());
 
         // table
         assertTrue(attributes.has("entries"));
