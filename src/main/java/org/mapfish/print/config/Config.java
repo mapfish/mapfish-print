@@ -22,6 +22,7 @@ package org.mapfish.print.config;
 //import org.apache.commons.httpclient.HostConfiguration;
 import com.codahale.metrics.MetricRegistry;
 
+import com.vividsolutions.jts.util.Assert;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -86,8 +87,8 @@ public class Config implements Closeable {
 
     private TreeSet<String> fonts = null;
     private List<HostMatcher> hosts = new ArrayList<HostMatcher>();
-    private HashMap localHostForward;
-    private TreeSet<String> headers;
+    private HashMap localHostForward = new HashMap();
+    private TreeSet<String> headers = new TreeSet<String>();
     private TreeSet<Key> keys;
 
     private int globalParallelFetches = 5;
@@ -540,6 +541,7 @@ public class Config implements Closeable {
     }
 
     public void setHeaders(TreeSet<String> headers) {
+        Assert.isTrue(headers != null);
         this.headers = headers;
     }
 
