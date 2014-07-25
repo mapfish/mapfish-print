@@ -101,6 +101,7 @@ public class GenericMapAttributeTest {
     @Test
     public void testPrintClientConfigWithDefaults() throws Exception {
         final TestMapAttribute att = new TestMapAttribute();
+        att.setDefaultsForTesting();
 
         Map<String, Object> defaultValue = Maps.newHashMap();
         defaultValue.put("rotation", 1.0);
@@ -132,14 +133,18 @@ public class GenericMapAttributeTest {
         } else {
             assertFalse(required.toString(2), required.getJSONObject(elemName).has(JSON_ATTRIBUTE_DEFAULT));
         }
-        assertEquals(isArray, required.getJSONObject(elemName).getBoolean(JSON_ATTRIBUTE_IS_ARRAY));
+        if (isArray) {
+            assertTrue(required.getJSONObject(elemName).getBoolean(JSON_ATTRIBUTE_IS_ARRAY));
+        } else {
+            assertFalse(required.getJSONObject(elemName).has(JSON_ATTRIBUTE_IS_ARRAY));
+        }
     }
 
     private void assertEmbedded(JSONObject required, boolean hasDefault, String attName) throws JSONException {
         assertTrue(required.has(attName));
         final JSONObject embedded = required.getJSONObject(attName);
         assertEquals(hasDefault, embedded.has(JSON_ATTRIBUTE_DEFAULT));
-        assertFalse(embedded.getBoolean(JSON_ATTRIBUTE_IS_ARRAY));
+        assertFalse(embedded.has(JSON_ATTRIBUTE_IS_ARRAY));
         if (hasDefault) {
             assertEquals("null", embedded.getString(JSON_ATTRIBUTE_DEFAULT));
         }

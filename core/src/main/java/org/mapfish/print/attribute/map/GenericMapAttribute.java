@@ -55,6 +55,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
 
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericMapAttribute.class);
+    private static final double[] DEFAULT_DPI_VALUES = {72, 120, 200, 254, 300, 600, 1200, 2400};
     /**
      * The json key for the suggested DPI values in the client config.
      */
@@ -93,8 +94,24 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
     public final void setMaxDpi(final Double maxDpi) {
         this.maxDpi = maxDpi;
     }
-    
+
+    /**
+     * Suggestions for dpi to use.  Typically these are used by the client to create a UI for a user.
+     */
     public final double[] getDpiSuggestions() {
+        if (this.dpiSuggestions == null) {
+            List<Double> list = Lists.newArrayList();
+            for (double suggestion : DEFAULT_DPI_VALUES) {
+                if (suggestion <= this.maxDpi) {
+                    list.add(suggestion);
+                }
+            }
+            double[] suggestions = new double[list.size()];
+            for (int i = 0; i < suggestions.length; i++) {
+                suggestions[i] = list.get(i);
+            }
+            return suggestions;
+        }
         return this.dpiSuggestions;
     }
 
@@ -161,7 +178,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
     @Override
     protected final Optional<JSONObject> getClientInfo() throws JSONException {
         final JSONObject jsonObject = new JSONObject();
-        jsonObject.put(JSON_DPI_SUGGESTIONS, this.dpiSuggestions);
+        jsonObject.put(JSON_DPI_SUGGESTIONS, getDpiSuggestions());
         jsonObject.put(JSON_MAX_DPI, this.maxDpi);
         jsonObject.put(JSON_MAP_WIDTH, this.width);
         jsonObject.put(JSON_MAP_HEIGHT, this.height);
@@ -170,8 +187,11 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
 
     @Override
     public final void setDefaultsForTesting() {
+        // CSOFF: MagicNumber
         this.width = 1;
         this.height = 1;
+        this.maxDpi = 400.0;
+        // CSON: MagicNumber
     }
 
     /**
