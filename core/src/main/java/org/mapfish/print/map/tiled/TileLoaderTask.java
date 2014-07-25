@@ -187,6 +187,8 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
             GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapProjection);
             gridEnvelope.setEnvelope(gridCoverageOrigin.x, gridCoverageOrigin.y, gridCoverageMaxX, gridCoverageMaxY);
             return factory.create(commonUri.toString(), coverageImage, gridEnvelope, null, null, null);
+        } catch (RuntimeException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

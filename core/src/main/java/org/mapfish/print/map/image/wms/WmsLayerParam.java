@@ -33,7 +33,7 @@ import java.util.Arrays;
  *
  * @author Jesse on 4/10/2014.
  */
-public final class WmsLayerParam extends AbstractTiledLayerParams {
+public class WmsLayerParam extends AbstractTiledLayerParams {
     /**
      * The base URL for the WMS.  Used for making WMS requests.
      */
@@ -64,14 +64,16 @@ public final class WmsLayerParam extends AbstractTiledLayerParams {
     public boolean useNativeAngle = false;
 
     @Override
-    public URI getBaseUri() throws URISyntaxException {
+    public final URI getBaseUri() throws URISyntaxException {
         return new URI(this.baseURL);
     }
 
     /**
      * Validate some of the properties of this layer.
      */
+    // CSOFF: DesignForExtension
     public void postConstruct() throws URISyntaxException {
+        // CSON: DesignForExtension
         WmsVersion.lookup(this.version);
         getBaseUri();
 

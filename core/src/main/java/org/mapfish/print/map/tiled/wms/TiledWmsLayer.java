@@ -19,20 +19,13 @@
 
 package org.mapfish.print.map.tiled.wms;
 
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-
 import jsr166y.ForkJoinPool;
-
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.data.wms.request.GetMapRequest;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
-import org.mapfish.print.URIUtils;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.map.Scale;
 import org.mapfish.print.map.geotools.StyleSupplier;
-import org.mapfish.print.map.image.wms.WmsVersion;
 import org.mapfish.print.map.tiled.AbstractTiledLayer;
 import org.mapfish.print.map.tiled.TileCacheInformation;
 import org.opengis.referencing.FactoryException;
@@ -45,12 +38,12 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
-
 import javax.annotation.Nonnull;
 
+import static org.mapfish.print.map.image.wms.WmsUtilities.makeWmsGetLayerRequest;
+
 /**
- * Strategy object for rendering WMS based layers.
+ * Strategy object for rendering WMS based layers .
  *
  * @author Stéphane Brunner on 22/07/2014.
  */
@@ -107,26 +100,7 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
                 final int row)
                 throws IOException, URISyntaxException, FactoryException {
 
-            final GetMapRequest getMapRequest = WmsVersion.lookup(TiledWmsLayer.this.param.version).getGetMapRequest(commonUri.toURL());
-            getMapRequest.setBBox(tileBounds);
-            getMapRequest.setDimensions(tileSizeOnScreen.width, tileSizeOnScreen.height);
-            getMapRequest.setFormat(TiledWmsLayer.this.param.imageFormat);
-            getMapRequest.setSRS(CRS.lookupIdentifier(tileBounds.getCoordinateReferenceSystem(), false));
-
-            for (int i = 0; i < TiledWmsLayer.this.param.layers.length; i++) {
-                String layer = TiledWmsLayer.this.param.layers[i];
-                String style = "";
-                if (TiledWmsLayer.this.param.styles != null) {
-                    style = TiledWmsLayer.this.param.styles[i];
-                }
-                getMapRequest.addLayer(layer, style);
-            }
-            final URI getMapUri = getMapRequest.getFinalURL().toURI();
-
-            Multimap<String, String> extraParams = HashMultimap.create();
-            extraParams.putAll(TiledWmsLayer.this.param.getMergeableParams());
-
-            URI uri = URIUtils.addParams(getMapUri, extraParams, Collections.<String>emptySet());
+            URI uri = makeWmsGetLayerRequest(httpRequestFactory, TiledWmsLayer.this.param, commonUri, tileSizeOnScreen, tileBounds);
             return httpRequestFactory.createRequest(uri, HttpMethod.GET);
         }
 
@@ -143,7 +117,7 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
 
         @Override
         public double getLayerDpi() {
-            return TiledWmsLayer.this.param.dpi;
+            return this.dpi;
         }
 
         @Override
