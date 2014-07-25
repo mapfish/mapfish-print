@@ -1,0 +1,538 @@
+/*
+ * Copyright (C) 2014  Camptocamp
+ *
+ * This file is part of MapFish Print
+ *
+ * MapFish Print is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MapFish Print is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package org.mapfish.print.map.style.json;
+
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
+import org.geotools.styling.AnchorPoint;
+import org.geotools.styling.Displacement;
+import org.geotools.styling.ExternalGraphic;
+import org.geotools.styling.Fill;
+import org.geotools.styling.Font;
+import org.geotools.styling.Graphic;
+import org.geotools.styling.Halo;
+import org.geotools.styling.LabelPlacement;
+import org.geotools.styling.LinePlacement;
+import org.geotools.styling.LineSymbolizer;
+import org.geotools.styling.Mark;
+import org.geotools.styling.PointPlacement;
+import org.geotools.styling.PointSymbolizer;
+import org.geotools.styling.PolygonSymbolizer;
+import org.geotools.styling.Stroke;
+import org.geotools.styling.StyleBuilder;
+import org.geotools.styling.TextSymbolizer;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.wrapper.json.PJsonObject;
+import org.opengis.filter.expression.Expression;
+
+import java.awt.Color;
+import java.net.MalformedURLException;
+import java.net.URL;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import static org.mapfish.print.FileUtils.testForLegalFileUrl;
+
+/**
+ * Methods shared by various style versions for creating geotools SLD styles from the json format mapfish supports.
+ *
+ * @author Jesse on 7/25/2014.
+ */
+public final class JsonStyleParserHelper {
+
+    static final String JSON_FONT_FAMILY = "fontFamily";
+    static final String JSON_FONT_SIZE = "fontSize";
+    static final String JSON_FONT_WEIGHT = "fontWeight";
+    static final String JSON_FONT_STYLE = "fontStyle";
+    static final String JSON_LABEL = "label";
+    static final String JSON_LABEL_ANCHOR_POINT_X = "labelAnchorPointX";
+    static final String JSON_LABEL_ANCHOR_POINT_Y = "labelAnchorPointY";
+    static final String JSON_LABEL_ALIGN = "labelAlign";
+    static final String JSON_LABEL_X_OFFSET = "labelXOffset";
+    static final String JSON_LABEL_Y_OFFSET = "labelYOffset";
+    static final String JSON_LABEL_ROTATION = "labelRotation";
+    static final String JSON_LABEL_PERPENDICULAR_OFFSET = "labelPerpendicularOffset";
+    static final String JSON_STROKE = "stroke";
+    static final String JSON_FILL_COLOR = "fillColor";
+    static final String JSON_STROKE_COLOR = "strokeColor";
+    static final String JSON_STROKE_OPACITY = "strokeOpacity";
+    static final String JSON_STROKE_WIDTH = "strokeWidth";
+    static final String JSON_STROKE_DASHSTYLE = "strokeDashstyle";
+    static final String JSON_STROKE_LINECAP = "strokeLinecap";
+    static final String JSON_FILL_OPACITY = "fillOpacity";
+    static final String JSON_EXTERNAL_GRAPHIC = "externalGraphic";
+    static final String JSON_GRAPHIC_NAME = "graphicName";
+    static final String JSON_GRAPHIC_OPACITY = "graphicOpacity";
+    static final String JSON_POINT_RADIUS = "pointRadius";
+    static final String JSON_GRAPHIC_WIDTH = "graphicWidth";
+    static final String JSON_ROTATION = "rotation";
+    static final String JSON_HALO_RADIUS = "haloRadius";
+    static final String JSON_HALO_COLOR = "haloColor";
+    static final String JSON_HALO_OPACITY = "haloOpacity";
+    static final String JSON_FONT_COLOR = "fontColor";
+    static final String JSON_FONT_OPACITY = "fontOpacity";
+    static final String JSON_GRAPHIC_FORMAT = "graphicFormat";
+    static final String STROKE_DASHSTYLE_SOLID = "solid";
+    static final String STROKE_DASHSTYLE_DOT = "dot";
+    static final String STROKE_DASHSTYLE_DASH = "dash";
+    static final String STROKE_DASHSTYLE_DASHDOT = "dashdot";
+    static final String STROKE_DASHSTYLE_LONGDASH = "longdash";
+    static final String STROKE_DASHSTYLE_LONGDASHDOT = "longdashdot";
+
+    private final Configuration configuration;
+    private StyleBuilder styleBuilder;
+    /**
+     * Constructor.
+     *
+     * @param configuration the configuration to use for resolving relative files or other settings.
+     * @param styleBuilder a style builder to use for creating the style objects.
+     */
+    public JsonStyleParserHelper(@Nonnull final Configuration configuration,
+                                 @Nonnull final StyleBuilder styleBuilder) {
+        this.configuration = configuration;
+        this.styleBuilder = styleBuilder;
+    }
+
+    /**
+     * Add a point symbolizer definition to the rule.
+     *
+     * @param styleJson The old style.
+     */
+    @Nullable
+    public PointSymbolizer createPointSymbolizer(final PJsonObject styleJson) {
+
+        if (!(styleJson.has(JSON_EXTERNAL_GRAPHIC) | styleJson.has(JSON_GRAPHIC_NAME))) {
+            return null;
+        }
+
+        final Graphic graphic = this.styleBuilder.createGraphic();
+        graphic.graphicalSymbols().clear();
+        if (styleJson.has(JSON_EXTERNAL_GRAPHIC)) {
+            String externalGraphicUrl = validateURL(styleJson.getString(JSON_EXTERNAL_GRAPHIC));
+            final String graphicFormat = getGraphicFormat(externalGraphicUrl, styleJson);
+            final ExternalGraphic externalGraphic = this.styleBuilder.createExternalGraphic(externalGraphicUrl, graphicFormat);
+
+            graphic.graphicalSymbols().add(externalGraphic);
+        }
+
+        if (styleJson.has(JSON_GRAPHIC_NAME)) {
+            String graphicName = styleJson.getString(JSON_GRAPHIC_NAME);
+            Fill fill = this.styleBuilder.createFill(Color.black);
+            Stroke stroke = this.styleBuilder.createStroke();
+
+            if (styleJson.has(JSON_FILL_COLOR)) {
+                fill = createFill(styleJson);
+            }
+            if (styleJson.optBool(JSON_STROKE, true)) {
+                stroke = createStroke(styleJson, false);
+            }
+
+            final Mark mark = this.styleBuilder.createMark(graphicName, fill, stroke);
+            graphic.graphicalSymbols().add(mark);
+        }
+
+        if (!Strings.isNullOrEmpty(styleJson.optString(JSON_GRAPHIC_OPACITY))) {
+            final String opacityString = styleJson.getString(JSON_GRAPHIC_OPACITY);
+            final Expression opacityExpression = this.styleBuilder.literalExpression(Double.parseDouble(opacityString));
+            graphic.setOpacity(opacityExpression);
+        }
+
+        if (!Strings.isNullOrEmpty(styleJson.optString(JSON_POINT_RADIUS))) {
+            double size = styleJson.getDouble(JSON_POINT_RADIUS) * 2;
+            graphic.setSize(this.styleBuilder.literalExpression(size));
+        } else if (!Strings.isNullOrEmpty(styleJson.optString(JSON_GRAPHIC_WIDTH))) {
+            final String graphicWidth = styleJson.getString(JSON_GRAPHIC_WIDTH);
+            graphic.setSize(this.styleBuilder.literalExpression(Double.parseDouble(graphicWidth)));
+        }
+
+        if (!Strings.isNullOrEmpty(styleJson.optString(JSON_ROTATION))) {
+            final String rotation = styleJson.getString(JSON_ROTATION);
+            graphic.setRotation(this.styleBuilder.literalExpression(Double.parseDouble(rotation)));
+        }
+
+        return this.styleBuilder.createPointSymbolizer(graphic);
+    }
+
+    private String validateURL(final String externalGraphicUrl) {
+        try {
+            new URL(externalGraphicUrl);
+        } catch (MalformedURLException e) {
+            // not a url so assume a file url and verify that it is valid
+            try {
+                final URL fileURL = new URL("file://" + externalGraphicUrl);
+                return testForLegalFileUrl(this.configuration, fileURL).toExternalForm();
+            } catch (MalformedURLException e1) {
+                // unable to convert to file url so give up and throw exception;
+                throw new RuntimeException(e);
+            }
+        }
+        return externalGraphicUrl;
+    }
+
+    /**
+     * Add a line symbolizer definition to the rule.
+     *
+     * @param styleJson The old style.
+     */
+    @VisibleForTesting
+    @Nullable
+    protected LineSymbolizer createLineSymbolizer(final PJsonObject styleJson) {
+        final Stroke stroke = createStroke(styleJson, true);
+        if (stroke == null) {
+            return null;
+        } else {
+            return this.styleBuilder.createLineSymbolizer(stroke);
+        }
+    }
+
+    /**
+     * Add a polygon symbolizer definition to the rule.
+     *
+     * @param styleJson The old style.
+     */
+    @Nullable
+    @VisibleForTesting
+    protected PolygonSymbolizer createPolygonSymbolizer(final PJsonObject styleJson) {
+        if (!styleJson.has(JSON_FILL_COLOR)) {
+            return null;
+        }
+
+        final PolygonSymbolizer symbolizer = this.styleBuilder.createPolygonSymbolizer();
+        symbolizer.setFill(createFill(styleJson));
+
+        symbolizer.setStroke(createStroke(styleJson, false));
+
+        return symbolizer;
+    }
+
+    /**
+     * Add a text symbolizer definition to the rule.
+     *
+     * @param styleJson The old style.
+     */
+    @VisibleForTesting
+    protected TextSymbolizer createTextSymbolizer(final PJsonObject styleJson) {
+        final TextSymbolizer textSymbolizer = this.styleBuilder.createTextSymbolizer();
+
+        if (styleJson.has(JSON_LABEL)) {
+            // note: only simple labels are supported (e.g. "Name: ${name}" does not work)
+            final Expression label;
+
+            String labelValue = styleJson.getString(JSON_LABEL);
+            if (labelValue.startsWith("${")) {
+                label = this.styleBuilder.attributeExpression(labelValue.replace("${", "").replace("}", ""));
+            } else {
+                label = this.styleBuilder.literalExpression(labelValue);
+            }
+            textSymbolizer.setLabel(label);
+        } else {
+            return null;
+        }
+
+        if (styleJson.has(JSON_FONT_FAMILY) && styleJson.has(JSON_FONT_SIZE) &&
+            styleJson.has(JSON_FONT_WEIGHT) && styleJson.has(JSON_FONT_STYLE)) {
+            textSymbolizer.setFont(createFont(styleJson));
+        }
+
+        if (styleJson.has(JSON_LABEL_ANCHOR_POINT_X) ||
+            styleJson.has(JSON_LABEL_ANCHOR_POINT_Y) ||
+            styleJson.has(JSON_LABEL_ALIGN) ||
+            styleJson.has(JSON_LABEL_X_OFFSET) ||
+            styleJson.has(JSON_LABEL_Y_OFFSET) ||
+            styleJson.has(JSON_LABEL_ROTATION) ||
+            styleJson.has(JSON_LABEL_PERPENDICULAR_OFFSET)) {
+            textSymbolizer.setLabelPlacement(createLabelPlacement(styleJson));
+        }
+
+        if (!Strings.isNullOrEmpty(styleJson.optString(JSON_HALO_RADIUS)) ||
+            !Strings.isNullOrEmpty(styleJson.optString(JSON_HALO_COLOR)) ||
+            !Strings.isNullOrEmpty(styleJson.optString(JSON_HALO_OPACITY))) {
+            textSymbolizer.setHalo(createHalo(styleJson));
+        }
+
+        if (!Strings.isNullOrEmpty(styleJson.optString(JSON_FONT_COLOR)) ||
+            !Strings.isNullOrEmpty(styleJson.optString(JSON_FONT_OPACITY))) {
+            textSymbolizer.setFill(addFill(styleJson.optString(JSON_FONT_COLOR, "black"), styleJson.optString(JSON_FONT_OPACITY, "1.0")));
+        }
+
+        return textSymbolizer;
+    }
+
+    private Font createFont(final PJsonObject styleJson) {
+        final String fontFamilyJsonKey = JSON_FONT_FAMILY;
+
+        Expression fontFamily;
+        if (styleJson.has(fontFamilyJsonKey)) {
+            fontFamily = this.styleBuilder.literalExpression(styleJson.getString(fontFamilyJsonKey));
+        } else {
+            return null;
+        }
+
+        Expression fontSize = null;
+        if (styleJson.has(JSON_FONT_SIZE)) {
+            String fontSizeString = styleJson.getString(JSON_FONT_SIZE);
+            if (fontSizeString.endsWith("px")) {
+                fontSizeString = fontSizeString.substring(0, fontSizeString.length() - 2);
+            }
+            fontSize = this.styleBuilder.literalExpression(Integer.parseInt(fontSizeString));
+        }
+
+        Expression fontWeight = null;
+        if (styleJson.has(JSON_FONT_WEIGHT)) {
+            fontWeight = this.styleBuilder.literalExpression(styleJson.getString(JSON_FONT_WEIGHT));
+        }
+
+        Expression fontStyle = null;
+        if (styleJson.has(JSON_FONT_STYLE)) {
+            fontStyle = this.styleBuilder.literalExpression(styleJson.getString(JSON_FONT_STYLE));
+        }
+
+        return this.styleBuilder.createFont(fontFamily, fontStyle, fontWeight, fontSize);
+    }
+
+    private LabelPlacement createLabelPlacement(final PJsonObject styleJson) {
+        if ((styleJson.has(JSON_LABEL_ANCHOR_POINT_X) ||
+             styleJson.has(JSON_LABEL_ANCHOR_POINT_Y) ||
+             styleJson.has(JSON_LABEL_ALIGN) ||
+             styleJson.has(JSON_LABEL_X_OFFSET) ||
+             styleJson.has(JSON_LABEL_Y_OFFSET) ||
+             styleJson.has(JSON_LABEL_ROTATION))
+            && Strings.isNullOrEmpty(styleJson.optString(JSON_LABEL_PERPENDICULAR_OFFSET))) {
+            return createPointPlacement(styleJson);
+        }
+
+        return createLinePlacement(styleJson);
+    }
+
+    private LinePlacement createLinePlacement(final PJsonObject styleJson) {
+        if (styleJson.has(JSON_LABEL_PERPENDICULAR_OFFSET)) {
+            return this.styleBuilder.createLinePlacement(Double.parseDouble(styleJson.getString(JSON_LABEL_PERPENDICULAR_OFFSET)));
+        }
+
+        return null;
+    }
+
+    @Nullable
+    private PointPlacement createPointPlacement(final PJsonObject styleJson) {
+        AnchorPoint anchorPoint = createAnchorPoint(styleJson);
+
+        Displacement displacement = null;
+        if (styleJson.has(JSON_LABEL_X_OFFSET) || styleJson.has(JSON_LABEL_Y_OFFSET)) {
+
+            double xOffset = 0;
+            double yOffset = 0;
+            if (styleJson.has(JSON_LABEL_X_OFFSET)) {
+                xOffset = Double.parseDouble(styleJson.getString(JSON_LABEL_X_OFFSET));
+            }
+            if (styleJson.has(JSON_LABEL_Y_OFFSET)) {
+                yOffset = Double.parseDouble(styleJson.getString(JSON_LABEL_Y_OFFSET));
+            }
+            displacement = this.styleBuilder.createDisplacement(xOffset, yOffset);
+        }
+
+        Expression rotation = null;
+        if (styleJson.has(JSON_LABEL_ROTATION)) {
+            rotation = this.styleBuilder.literalExpression(Double.parseDouble(styleJson.getString(JSON_LABEL_ROTATION)));
+        }
+        if (anchorPoint == null && displacement == null) {
+            return null;
+        }
+
+        return this.styleBuilder.createPointPlacement(anchorPoint, displacement, rotation);
+    }
+
+    private AnchorPoint createAnchorPoint(final PJsonObject styleJson) {
+
+        String x = styleJson.optString(JSON_LABEL_ANCHOR_POINT_X);
+        String y = styleJson.optString(JSON_LABEL_ANCHOR_POINT_Y);
+
+        Double anchorX = null;
+        Double anchorY = null;
+
+        if (!Strings.isNullOrEmpty(x)) {
+            anchorX = Double.parseDouble(x);
+        }
+        if (!Strings.isNullOrEmpty(y)) {
+            anchorY = Double.parseDouble(y);
+        }
+
+        if (Strings.isNullOrEmpty(x) && Strings.isNullOrEmpty(y)) {
+            String labelAlign = styleJson.getString(JSON_LABEL_ALIGN);
+            String xAlign = labelAlign.substring(0, 1);
+            String yAlign = labelAlign.substring(1, 2);
+
+            final double anchorInMiddle = 0.5;
+            if ("l".equals(xAlign)) {
+                anchorX = 0.0;
+            } else if ("c".equals(xAlign)) {
+                anchorX = anchorInMiddle;
+            } else if ("r".equals(xAlign)) {
+                anchorX = 1.0;
+            }
+            if ("b".equals(yAlign)) {
+                anchorY = 0.0;
+            } else if ("m".equals(yAlign)) {
+                anchorY = anchorInMiddle;
+            } else if ("t".equals(yAlign)) {
+                anchorY = 1.0;
+            }
+        }
+        boolean returnNull = true;
+        if (anchorX == null) {
+            anchorX = 0.0;
+        } else {
+            returnNull = false;
+        }
+        if (anchorY == null) {
+            anchorY = 0.0;
+        } else {
+            returnNull = false;
+        }
+
+        if (returnNull) {
+            return null;
+        }
+
+        return this.styleBuilder.createAnchorPoint(anchorX, anchorY);
+    }
+
+    private Halo createHalo(final PJsonObject styleJson) {
+        if (styleJson.has(JSON_HALO_RADIUS)) {
+            double radius = Double.parseDouble(styleJson.getString(JSON_HALO_RADIUS));
+
+            final Fill fill;
+            if (styleJson.has(JSON_HALO_COLOR) && styleJson.has(JSON_HALO_OPACITY)) {
+                fill = addFill(styleJson.optString(JSON_HALO_COLOR), styleJson.optString(JSON_HALO_OPACITY));
+                return this.styleBuilder.createHalo(fill, this.styleBuilder.literalExpression(radius));
+            }
+        }
+
+        return null;
+    }
+
+    private Fill createFill(final PJsonObject styleJson) {
+        final String fillColor = styleJson.optString(JSON_FILL_COLOR);
+        if (Strings.isNullOrEmpty(fillColor)) {
+            return null;
+        }
+        return addFill(fillColor, styleJson.optString(JSON_FILL_OPACITY, "1.0"));
+    }
+
+    private Fill addFill(final String fillColor, final String fillOpacity) {
+        return this.styleBuilder.createFill(ColorParser.toColor(fillColor), Double.parseDouble(fillOpacity));
+    }
+
+    @Nullable
+    @VisibleForTesting
+    Stroke createStroke(final PJsonObject styleJson, final boolean allowNull) {
+        final float solid = 1.0f;
+        final float defaultDashSpacing = 0.1f;
+        final int doubleWidth = 2;
+        final int tripleWidth = 3;
+        final int quadrupleWidth = 4;
+        final int quintupleWidth = 5;
+
+        if (allowNull && !styleJson.has(JSON_STROKE_COLOR)) {
+            return null;
+        }
+        Color strokeColor = Color.black;
+        if (styleJson.has(JSON_STROKE_COLOR)) {
+            strokeColor = ColorParser.toColor(styleJson.getString(JSON_STROKE_COLOR));
+        }
+        double strokeOpacity = 1.0;
+        if (styleJson.has(JSON_STROKE_OPACITY)) {
+            strokeOpacity = Double.parseDouble(styleJson.getString(JSON_STROKE_OPACITY));
+        }
+
+        double width = 1;
+        if (styleJson.has(JSON_STROKE_WIDTH)) {
+            width = Double.parseDouble(styleJson.getString(JSON_STROKE_WIDTH));
+        }
+
+        float[] dashArray = {solid};
+        int dashOffset = 0;
+        if (styleJson.has(JSON_STROKE_DASHSTYLE) && !STROKE_DASHSTYLE_SOLID.equals(styleJson.getString(JSON_STROKE_DASHSTYLE))) {
+            String dashStyle = styleJson.getString(JSON_STROKE_DASHSTYLE);
+            if (dashStyle.equalsIgnoreCase(STROKE_DASHSTYLE_DOT)) {
+                dashArray = new float[]{defaultDashSpacing, (float) (doubleWidth * width)};
+            } else if (dashStyle.equalsIgnoreCase(STROKE_DASHSTYLE_DASH)) {
+                dashArray = new float[]{(float) (doubleWidth * width), (float) (doubleWidth * width)};
+            } else if (dashStyle.equalsIgnoreCase(STROKE_DASHSTYLE_DASHDOT)) {
+                dashArray = new float[]{
+                        (float) (tripleWidth * width),
+                        (float) (doubleWidth * width),
+                        defaultDashSpacing,
+                        (float) (doubleWidth * width)};
+            } else if (dashStyle.equalsIgnoreCase(STROKE_DASHSTYLE_LONGDASH)) {
+                dashArray = new float[]{
+                        (float) (quadrupleWidth * width),
+                        (float) (doubleWidth * width)};
+            } else if (dashStyle.equalsIgnoreCase(STROKE_DASHSTYLE_LONGDASHDOT)) {
+                dashArray = new float[]{
+                        (float) (quintupleWidth * width),
+                        (float) (doubleWidth * width),
+                        defaultDashSpacing,
+                        (float) (doubleWidth * width)};
+            } else if (dashStyle.contains(" ")) {
+                //check for pattern if empty array, throw.
+                try {
+                    String[] x = dashStyle.split(" ");
+                    if (x.length > 1) {
+                        dashArray = new float[x.length];
+                        for (int i = 0; i < x.length; i++) {
+                            dashArray[i] = Float.parseFloat(x[i]);
+                        }
+                    }
+                } catch (NumberFormatException e) {
+                    //assume solid!
+                }
+            } else {
+                throw new IllegalArgumentException("strokeDashstyle does not have a legal value: " + dashStyle);
+            }
+        }
+
+        String lineCap = null;
+        if (styleJson.has(JSON_STROKE_LINECAP)) {
+            lineCap = styleJson.getString(JSON_STROKE_LINECAP);
+        }
+
+        final Stroke stroke = this.styleBuilder.createStroke(strokeColor, width);
+        stroke.setLineCap(this.styleBuilder.literalExpression(lineCap));
+        stroke.setOpacity(this.styleBuilder.literalExpression(strokeOpacity));
+        stroke.setDashArray(dashArray);
+        stroke.setDashOffset(this.styleBuilder.literalExpression(dashOffset));
+        return stroke;
+    }
+
+    private String getGraphicFormat(final String externalGraphicFile, final PJsonObject styleJson) {
+        if (!Strings.isNullOrEmpty(styleJson.optString(JSON_GRAPHIC_FORMAT))) {
+            return styleJson.getString(JSON_GRAPHIC_FORMAT);
+        } else {
+            int seperatorPos = externalGraphicFile.lastIndexOf(".");
+
+            if (seperatorPos >= 0) {
+                return "image/" + externalGraphicFile.substring(seperatorPos + 1);
+            } else {
+                return "";
+            }
+        }
+    }
+
+}

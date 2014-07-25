@@ -39,6 +39,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -103,12 +104,13 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertEquals("geojson", geojsonLayer1.getString("type"));
         JSONObject geoJson = geojsonLayer1.getJSONObject("geoJson");
         assertEquals(1, geoJson.getJSONArray("features").length());
-        assertTrue(geojsonLayer1.getString("style").startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));
-        
+        assertTrue(geojsonLayer1.has("style"));
+        assertEquals("1", geojsonLayer1.getJSONObject("style").getString("version"));
+
         JSONObject geojsonLayer2 = layers.getJSONObject(3);
         assertEquals("geojson", geojsonLayer2.getString("type"));
         assertEquals("http://xyz.com/places.json", geojsonLayer2.getString("geoJson"));
-        assertTrue(geojsonLayer2.getString("style").isEmpty());
+        assertFalse(geojsonLayer2.has("style"));
 
         // table
         assertTrue(attributes.has("entries"));
