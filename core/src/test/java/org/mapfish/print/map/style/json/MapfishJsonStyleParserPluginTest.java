@@ -62,7 +62,7 @@ public class MapfishJsonStyleParserPluginTest extends AbstractMapfishSpringTest 
     final SLDTransformer transformer = new SLDTransformer();
     MapfishJsonStyleParserPlugin parser = new MapfishJsonStyleParserPlugin();
     @Test
-    public void testGetStyleRules() throws Throwable {
+    public void testVersion1() throws Throwable {
         PJsonObject layerJson = loadLayerDataAsJson();
         Optional<Style> style = parser.parseStyle(null, new TestHttpClientFactory(), layerJson.getString("style"),
                 null);

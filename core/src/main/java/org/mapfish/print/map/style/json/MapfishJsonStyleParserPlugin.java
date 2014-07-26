@@ -20,27 +20,15 @@
 package org.mapfish.print.map.style.json;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Predicates;
-import com.google.common.base.Strings;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
-import org.geotools.styling.Symbolizer;
 import org.json.JSONObject;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.style.StyleParserPlugin;
 import org.mapfish.print.wrapper.json.PJsonObject;
-import org.opengis.filter.Filter;
-import org.opengis.filter.expression.Expression;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -85,11 +73,27 @@ import javax.annotation.Nullable;
  */
 public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
 
-    private static final String JSON_STYLE_PROPERTY = "styleProperty";
-    private static final String DEFAULT_STYLE_PROPERTY = "_style";
-    private static final String JSON_VERSION = "version";
+    enum Versions {
+        ONE("1") {
+            @Override
+            Style parseStyle(final PJsonObject json,
+                             final StyleBuilder styleBuilder,
+                             final Configuration configuration) {
+                return new MapfishJsonStyleVersion1(json, styleBuilder, configuration).parseStyle();
+            }
+        };
+        private final String versionNumber;
 
-    private StyleBuilder styleBuilder = new StyleBuilder();
+        Versions(final String versionNumber) {
+            this.versionNumber = versionNumber;
+        }
+
+        abstract Style parseStyle(PJsonObject json, StyleBuilder styleBuilder, Configuration configuration);
+    }
+
+    static final String JSON_VERSION = "version";
+
+    private StyleBuilder sldStyleBuilder = new StyleBuilder();
 
     @Override
     public Optional<Style> parseStyle(@Nullable final Configuration configuration,
@@ -100,70 +104,13 @@ public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
         if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
             final PJsonObject json = new PJsonObject(new JSONObject(styleString), "style");
 
-            if ("1".equals(json.optString(JSON_VERSION, "1"))) {
-                String styleProperty = json.optString(JSON_STYLE_PROPERTY, DEFAULT_STYLE_PROPERTY);
-                List<Rule> styleRules = getStyleRules(json, styleProperty, configuration);
-                final Rule[] rulesArray = styleRules.toArray(new Rule[styleRules.size()]);
-                final FeatureTypeStyle featureTypeStyle = this.styleBuilder.createFeatureTypeStyle(null, rulesArray);
-                final Style style = this.styleBuilder.createStyle();
-                style.featureTypeStyles().add(featureTypeStyle);
-
-                return Optional.of(style);
+            final String jsonVersion = json.optString(JSON_VERSION, "1");
+            for (Versions versions : Versions.values()) {
+                if (versions.versionNumber.equals(jsonVersion)) {
+                    return Optional.of(versions.parseStyle(json, this.sldStyleBuilder, configuration));
+                }
             }
         }
         return Optional.absent();
     }
-
-    /**
-     * Creates SLD rules for each old style.
-     */
-    private List<Rule> getStyleRules(final PJsonObject styleJson, final String styleProperty,
-                                     final Configuration configuration) {
-        final List<Rule> styleRules = Lists.newArrayListWithExpectedSize(styleJson.size());
-        JsonStyleParserHelper parserHelper = new JsonStyleParserHelper(configuration, this.styleBuilder);
-
-        for (Iterator<String> iterator = styleJson.keys(); iterator.hasNext();) {
-            String styleKey = iterator.next();
-            if (styleKey.equals(JSON_STYLE_PROPERTY) || styleKey.equals(JSON_VERSION)) {
-                continue;
-            }
-            PJsonObject oldStyle = styleJson.getJSONObject(styleKey);
-            styleRules.add(createStyleRule(parserHelper, styleKey, oldStyle, styleProperty));
-        }
-
-        return styleRules;
-    }
-
-    private Rule createStyleRule(final JsonStyleParserHelper parserHelper,
-                                 final String styleKey,
-                                 final PJsonObject oldStyle,
-                                 final String styleProperty) {
-
-        Collection<Symbolizer> symbolizers = Collections2.filter(Lists.newArrayList(
-                parserHelper.createPointSymbolizer(oldStyle),
-                parserHelper.createLineSymbolizer(oldStyle),
-                parserHelper.createPolygonSymbolizer(oldStyle),
-                parserHelper.createTextSymbolizer(oldStyle)), Predicates.notNull());
-
-        Rule rule = this.styleBuilder.createRule(symbolizers.toArray(new Symbolizer[symbolizers.size()]));
-        rule.setName(styleKey);
-
-        Filter filter = createFilter(styleKey, styleProperty);
-        if (filter != null) {
-            rule.setFilter(filter);
-        }
-        return rule;
-    }
-
-    @Nullable
-    private org.opengis.filter.Filter createFilter(final String styleKey, final String styleProperty) {
-        if (Strings.isNullOrEmpty(styleProperty) || Strings.isNullOrEmpty(styleKey)) {
-            return null;
-        }
-
-        final Expression attributeExpression = this.styleBuilder.attributeExpression(styleProperty);
-        final Expression valueExpression = this.styleBuilder.literalExpression(styleKey);
-        return this.styleBuilder.getFilterFactory().equals(attributeExpression, valueExpression);
-    }
-
 }
