@@ -1,9 +1,13 @@
   {
-     "type":"Vector",
-     "styles":{
-        "1":{
-           "fillColor":"#000000",
+     "type":"geojson",
+     "style": {
+        "version" : "1",
+        "styleProperty":"_gx_style",
+        "1": {
+           "fillColor":"#FF0000",
            "fillOpacity":0,
+           "rotation" : "30",
+           "graphicName": "square",
            "hoverFillColor":"white",
            "hoverFillOpacity":0.8,
            "strokeColor":"#FFA829",
@@ -20,12 +24,12 @@
            "pointerEvents":"visiblePainted",
            "cursor":"inherit",
            "fontColor":"#000000",
+           "label":"${label}",
            "labelAlign":"cm",
            "labelOutlineColor":"white",
            "labelOutlineWidth":3
         }
      },
-     "styleProperty":"_gx_style",
      "geoJson":{
         "type":"FeatureCollection",
         "features":[

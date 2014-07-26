@@ -20,7 +20,6 @@
 package org.mapfish.print.servlet.oldapi;
 
 import com.google.common.collect.Maps;
-
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.servlet.MapPrinterServlet;
@@ -41,7 +40,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-
 import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;

@@ -80,7 +80,7 @@ public class CreateMapProcessorFlexibleScaleBBoxGeoJsonTest extends AbstractMapf
         assertEquals(1, layerGraphics.size());
 
         //Files.copy(new File(layerGraphics.get(0)), new File("/tmp/"+getClass().getSimpleName()+".tiff"));
-        new ImageSimilarity(new File(layerGraphics.get(0)), 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 0);
+        new ImageSimilarity(new File(layerGraphics.get(0)), 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 30);
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {

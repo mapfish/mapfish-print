@@ -23,4 +23,5 @@
     <bean id="fileSLDParser" class="org.mapfish.print.map.style.FileSLDParserPlugin" />
     <bean id="urlSLDParser" class="org.mapfish.print.map.style.URLSLDParserPlugin" />
     <bean id="stringSLDParser" class="org.mapfish.print.map.style.StringSLDParserPlugin" />
+    <bean id="mapfishJsonParser" class="org.mapfish.print.map.style.json.MapfishJsonStyleParserPlugin" />
 </beans>
