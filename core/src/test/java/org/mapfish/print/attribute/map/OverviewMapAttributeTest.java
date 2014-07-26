@@ -19,12 +19,6 @@
 
 package org.mapfish.print.attribute.map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-
 import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +32,12 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
+
+import java.io.File;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
 
@@ -62,7 +62,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
         
         final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory);
         final MapAttribute.MapAttributeValues mapValue = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
-        final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue = 
+        final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue =
                 values.getObject("overviewMapDef", OverviewMapAttribute.OverviewMapAttributeValues.class);
         final MapAttribute.OverriddenMapAttributeValues value = mapValue.getWithOverrides(overviewMapValue);
         
@@ -86,7 +86,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
         
         final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory);
         final MapAttribute.MapAttributeValues mapValue = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
-        final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue = 
+        final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue =
                 values.getObject("overviewMapDef", OverviewMapAttribute.OverviewMapAttributeValues.class);
         final MapAttribute.OverriddenMapAttributeValues value = mapValue.getWithOverrides(overviewMapValue);
 
@@ -111,7 +111,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
         
         final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory);
         final MapAttribute.MapAttributeValues mapValue = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
-        final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue = 
+        final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue =
                 values.getObject("overviewMapDef", OverviewMapAttribute.OverviewMapAttributeValues.class);
         final MapAttribute.OverriddenMapAttributeValues value = mapValue.getWithOverrides(overviewMapValue);
 

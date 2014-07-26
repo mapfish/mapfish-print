@@ -86,7 +86,7 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals("1:5000", firstScale.getString("name"));
         assertEquals("5000", firstScale.getString("value"));
 
-        assertEquals(0, info.getArray("dpis").size());
+        assertEquals(5, info.getArray("dpis").size());
         
         assertTrue(info.getArray("outputFormats").size() > 0);
         assertTrue(info.getArray("outputFormats").getObject(0).has("name"));

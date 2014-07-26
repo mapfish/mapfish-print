@@ -35,6 +35,12 @@ public final class TableListAttribute extends ArrayReflectiveAttribute<TableList
     public TableListAttributeValue createValue(final Template template) {
         return new TableListAttributeValue();
     }
+
+    @Override
+    protected Class<? extends TableListAttributeValue> getValueType() {
+        return TableListAttributeValue.class;
+    }
+
     @Override
     public void validate(final List<Throwable> validationErrors) {
         // no checks required

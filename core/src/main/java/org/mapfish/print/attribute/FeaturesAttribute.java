@@ -33,10 +33,14 @@ import java.util.List;
  * <p/>
  * Created by Stéphane Brunner on 16/4/14.
  */
-public class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribute.FeaturesAttributeValues> {
+public final class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribute.FeaturesAttributeValues> {
+    @Override
+    protected Class<FeaturesAttributeValues> getValueType() {
+        return FeaturesAttributeValues.class;
+    }
 
     @Override
-    public final FeaturesAttributeValues createValue(final Template template) {
+    public FeaturesAttributeValues createValue(final Template template) {
         return new FeaturesAttributeValues(template);
     }
 
@@ -49,7 +53,7 @@ public class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribute.Fea
     /**
      * The value of {@link FeaturesAttribute}.
      */
-    public final class FeaturesAttributeValues {
+    public static final class FeaturesAttributeValues {
         private final Template template;
         private SimpleFeatureCollection featuresCollection;
 

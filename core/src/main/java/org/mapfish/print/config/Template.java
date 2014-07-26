@@ -112,6 +112,8 @@ public class Template implements ConfigurationObject, HasConfiguration {
                 final String msg = "Attribute: '" + entry.getKey() + "' is not an attribute. It is a: " + attribute;
                 LOGGER.error("Error setting the Attributes: " + msg);
                 throw new IllegalArgumentException(msg);
+            } else {
+                ((Attribute) attribute).setConfigName(entry.getKey());
             }
         }
         this.attributes = attributes;
