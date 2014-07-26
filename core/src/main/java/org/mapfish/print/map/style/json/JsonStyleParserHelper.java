@@ -118,7 +118,7 @@ public final class JsonStyleParserHelper {
     @Nullable
     public PointSymbolizer createPointSymbolizer(final PJsonObject styleJson) {
 
-        if (!(styleJson.has(JSON_EXTERNAL_GRAPHIC) | styleJson.has(JSON_GRAPHIC_NAME))) {
+        if (!(styleJson.has(JSON_EXTERNAL_GRAPHIC) || styleJson.has(JSON_GRAPHIC_NAME))) {
             return null;
         }
 
