@@ -6,4 +6,4 @@ jdk:
 - openjdk7
 
 script:
-- ./gradlew --no-color build
+- ./gradlew --no-color --info build
