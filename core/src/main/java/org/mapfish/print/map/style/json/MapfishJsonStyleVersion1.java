@@ -38,6 +38,8 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import static org.mapfish.print.map.style.json.MapfishJsonStyleParserPlugin.Versions;
+
 /**
  * The strategy for parsing the Mapfish json style version 1.
  *
@@ -57,7 +59,7 @@ public final class MapfishJsonStyleVersion1 {
                              @Nonnull final Configuration configuration) {
         this.json = json;
         this.sldStyleBuilder = styleBuilder;
-        this.parserHelper = new JsonStyleParserHelper(configuration, this.sldStyleBuilder, true);
+        this.parserHelper = new JsonStyleParserHelper(configuration, this.sldStyleBuilder, true, Versions.ONE);
     }
 
     Style parseStyle() {

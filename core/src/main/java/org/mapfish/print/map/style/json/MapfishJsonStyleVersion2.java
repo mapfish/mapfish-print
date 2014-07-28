@@ -42,6 +42,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 
+import static org.mapfish.print.map.style.json.MapfishJsonStyleParserPlugin.Versions;
+
 /**
  * Support a more flexible json styling that supported by version 1.
  *
@@ -90,7 +92,7 @@ public final class MapfishJsonStyleVersion2 {
                              @Nonnull final Configuration configuration) {
         this.json = json;
         this.styleBuilder = styleBuilder;
-        this.parserHelper = new JsonStyleParserHelper(configuration, styleBuilder, false);
+        this.parserHelper = new JsonStyleParserHelper(configuration, styleBuilder, false, Versions.TWO);
     }
 
     Style parseStyle() {
