@@ -92,7 +92,7 @@ import javax.annotation.Nullable;
  *   "val1" : "FFA829",
  *   // default values for properties can be defined here
  *   " strokeDashstyle" : "dot"
- *   "[ECQL filter statement]" : {
+ *   "[population > 300]" : {
  *     // default values for current rule can be defined here
  *     // they will override default values defined at
  *     // higher level
@@ -145,7 +145,7 @@ import javax.annotation.Nullable;
  *       "haloColor": "#123456",
  *       "haloOpacity": "0.7",
  *       "haloRadius": "3.0",
- *       "label": "${name}",
+ *       "label": "[name]",
  *       "labelAlign": "cm",
  *       "labelRotation": "45",
  *       "labelXOffset": "-25.0",
@@ -235,8 +235,9 @@ import javax.annotation.Nullable;
  *         configuration directory (or subdirectory).  Only files in the configuration directory (or subdirectory) will be allowed.
  *     </li>
  *     <li>
- *         <strong>graphicName</strong> - (point) one of the two options for declaring the point graphic to use.  This is the default and will be a
- *         square if not specified. The option are any of the Geotools Marks.  Geotools has by default 3 types of marks:
+ *         <strong>graphicName</strong> - (point) one of the two options for declaring the point graphic to use.  This is the
+ *         default and will be a square if not specified. The option are any of the Geotools Marks.
+ *         <p>Geotools has by default 3 types of marks:</p>
  *         <ul>
  *             <li>WellKnownMarks: cross, star, triangle, arrow, X, hatch, square</li>
  *             <li>ShapeMarks: shape://vertline, shape://horline, shape://slash, shape://backslash, shape://dot, shape://plus,
