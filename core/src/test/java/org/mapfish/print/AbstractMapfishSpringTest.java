@@ -19,21 +19,22 @@
 
 package org.mapfish.print;
 
+import com.google.common.io.Files;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.mapfish.print.attribute.Attribute;
+import org.mapfish.print.attribute.map.GenericMapAttribute;
+import org.mapfish.print.wrapper.json.PJsonObject;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.mapfish.print.wrapper.json.PJsonObject;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import com.google.common.io.Files;
 
 /**
  * Class that loads the normal spring application context from the spring config file.
@@ -104,5 +105,19 @@ public abstract class AbstractMapfishSpringTest {
     
     protected File getTaskDirectory() {
         return this.folder.getRoot();
+    }
+
+    /**
+     * A few attributes will throw exceptions if not initialized this method can be called when an attribute
+     * needs testing but the test is generic and does not necessarily want or need to know the specific
+     * type of attribute and its properties.
+     */
+    public static void configureAttributeForTesting(Attribute att) {
+        if (att instanceof GenericMapAttribute) {
+            GenericMapAttribute<?> genericMapAttribute = (GenericMapAttribute<?>) att;
+            genericMapAttribute.setWidth(500);
+            genericMapAttribute.setHeight(500);
+            genericMapAttribute.setMaxDpi(400.0);
+        }
     }
 }
