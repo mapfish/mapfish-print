@@ -69,7 +69,7 @@ public class JsonStyleParserHelperTest {
         Configuration configuration = new Configuration();
         final File file = getFile(MapfishJsonStyleParserPluginTest.class, REQUEST_DATA_STYLE_JSON_V1_STYLE_JSON);
         configuration.setConfigurationFile(file);
-        helper = new JsonStyleParserHelper(configuration, new StyleBuilder());
+        helper = new JsonStyleParserHelper(configuration, new StyleBuilder(), true);
     }
 
     private File getFile(Class<?> base, String fileName) throws URISyntaxException {
@@ -262,7 +262,7 @@ public class JsonStyleParserHelperTest {
         assertArrayEquals(Arrays.toString(stroke.getDashArray()), expectedDashArray, stroke.getDashArray(), 0.00001f);
     }
 
-    private void assertStroke(double stokeOpacity, String lineCap, Stroke stroke, String strokeColor, float[] dashArray,
+    static void assertStroke(double stokeOpacity, String lineCap, Stroke stroke, String strokeColor, float[] dashArray,
                               double strokeWidth) {
         assertEquals(stokeOpacity, valueOf(stroke.getOpacity()));
         assertEquals(strokeColor, valueOf(stroke.getColor()));
@@ -271,11 +271,11 @@ public class JsonStyleParserHelperTest {
         assertEquals(lineCap, valueOf(stroke.getLineCap()));
     }
 
-    private Object valueOf(Expression expr) {
+    static Object valueOf(Expression expr) {
         return ((Literal) expr).getValue();
     }
 
-    private void assertFill(double fillOpacity, String fillColor, Fill fill) {
+    static void assertFill(double fillOpacity, String fillColor, Fill fill) {
         assertEquals(fillColor, valueOf(fill.getColor()));
         assertEquals(fillOpacity, valueOf(fill.getOpacity()));
     }

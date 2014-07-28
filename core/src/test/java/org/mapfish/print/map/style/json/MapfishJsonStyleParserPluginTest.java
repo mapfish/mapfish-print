@@ -33,14 +33,10 @@ import org.geotools.styling.TextSymbolizer;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
-import org.mapfish.print.servlet.MapPrinterServletTest;
-import org.mapfish.print.servlet.ServletMapPrinterFactory;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.opengis.filter.PropertyIsEqualTo;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
 
 import java.io.IOException;
 import java.util.List;
@@ -51,13 +47,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@ContextConfiguration(locations = {
-        MapPrinterServletTest.PRINT_CONTEXT,
-})
-public class MapfishJsonStyleParserPluginTest extends AbstractMapfishSpringTest {
+public class MapfishJsonStyleParserPluginTest {
     static final String REQUEST_DATA_STYLE_JSON_V1_STYLE_JSON = "requestData-style-json-v1-style.json";
-    @Autowired
-    private ServletMapPrinterFactory printerFactory;
 
     final SLDTransformer transformer = new SLDTransformer();
     MapfishJsonStyleParserPlugin parser = new MapfishJsonStyleParserPlugin();

@@ -23,7 +23,6 @@ import com.google.common.base.Predicates;
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
-import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
@@ -58,18 +57,13 @@ public final class MapfishJsonStyleVersion1 {
                              @Nonnull final Configuration configuration) {
         this.json = json;
         this.sldStyleBuilder = styleBuilder;
-        this.parserHelper = new JsonStyleParserHelper(configuration, this.sldStyleBuilder);
+        this.parserHelper = new JsonStyleParserHelper(configuration, this.sldStyleBuilder, true);
     }
 
     Style parseStyle() {
         String styleProperty = this.json.optString(JSON_STYLE_PROPERTY, DEFAULT_STYLE_PROPERTY);
         List<Rule> styleRules = getStyleRules(styleProperty);
-        final Rule[] rulesArray = styleRules.toArray(new Rule[styleRules.size()]);
-        final FeatureTypeStyle featureTypeStyle = this.sldStyleBuilder.createFeatureTypeStyle(null, rulesArray);
-        final Style style = this.sldStyleBuilder.createStyle();
-        style.featureTypeStyles().add(featureTypeStyle);
-
-        return style;
+        return this.parserHelper.createStyle(styleRules);
     }
 
 

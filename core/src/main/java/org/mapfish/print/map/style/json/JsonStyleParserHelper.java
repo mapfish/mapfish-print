@@ -24,6 +24,7 @@ import com.google.common.base.Strings;
 import org.geotools.styling.AnchorPoint;
 import org.geotools.styling.Displacement;
 import org.geotools.styling.ExternalGraphic;
+import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Fill;
 import org.geotools.styling.Font;
 import org.geotools.styling.Graphic;
@@ -35,7 +36,9 @@ import org.geotools.styling.Mark;
 import org.geotools.styling.PointPlacement;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.PolygonSymbolizer;
+import org.geotools.styling.Rule;
 import org.geotools.styling.Stroke;
+import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.TextSymbolizer;
 import org.mapfish.print.config.Configuration;
@@ -45,6 +48,7 @@ import org.opengis.filter.expression.Expression;
 import java.awt.Color;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -97,17 +101,34 @@ public final class JsonStyleParserHelper {
     static final String STROKE_DASHSTYLE_LONGDASHDOT = "longdashdot";
 
     private final Configuration configuration;
+    private final boolean allowNullSymbolizer;
     private StyleBuilder styleBuilder;
     /**
      * Constructor.
      *
      * @param configuration the configuration to use for resolving relative files or other settings.
      * @param styleBuilder a style builder to use for creating the style objects.
+     * @param allowNullSymbolizer If true then create*Symbolizer() methods can return null if expected params are missing.
+     *                   Otherwise it will use defaults.
      */
     public JsonStyleParserHelper(@Nonnull final Configuration configuration,
-                                 @Nonnull final StyleBuilder styleBuilder) {
+                                 @Nonnull final StyleBuilder styleBuilder,
+                                 final boolean allowNullSymbolizer) {
         this.configuration = configuration;
         this.styleBuilder = styleBuilder;
+        this.allowNullSymbolizer = allowNullSymbolizer;
+    }
+
+    /**
+     * Create a style from a list of rules.
+     * @param styleRules the rules
+     */
+    public Style createStyle(final List<Rule> styleRules) {
+        final Rule[] rulesArray = styleRules.toArray(new Rule[styleRules.size()]);
+        final FeatureTypeStyle featureTypeStyle = this.styleBuilder.createFeatureTypeStyle(null, rulesArray);
+        final Style style = this.styleBuilder.createStyle();
+        style.featureTypeStyles().add(featureTypeStyle);
+        return style;
     }
 
     /**
@@ -118,7 +139,7 @@ public final class JsonStyleParserHelper {
     @Nullable
     public PointSymbolizer createPointSymbolizer(final PJsonObject styleJson) {
 
-        if (!(styleJson.has(JSON_EXTERNAL_GRAPHIC) || styleJson.has(JSON_GRAPHIC_NAME))) {
+        if (this.allowNullSymbolizer && !(styleJson.has(JSON_EXTERNAL_GRAPHIC) || styleJson.has(JSON_GRAPHIC_NAME))) {
             return null;
         }
 
@@ -195,7 +216,7 @@ public final class JsonStyleParserHelper {
     @Nullable
     protected LineSymbolizer createLineSymbolizer(final PJsonObject styleJson) {
         final Stroke stroke = createStroke(styleJson, true);
-        if (stroke == null) {
+        if (this.allowNullSymbolizer && stroke == null) {
             return null;
         } else {
             return this.styleBuilder.createLineSymbolizer(stroke);
@@ -210,7 +231,7 @@ public final class JsonStyleParserHelper {
     @Nullable
     @VisibleForTesting
     protected PolygonSymbolizer createPolygonSymbolizer(final PJsonObject styleJson) {
-        if (!styleJson.has(JSON_FILL_COLOR)) {
+        if (this.allowNullSymbolizer && !styleJson.has(JSON_FILL_COLOR)) {
             return null;
         }
 
