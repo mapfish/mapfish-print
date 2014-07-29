@@ -81,7 +81,13 @@ public enum DistanceUnit {
     /**
      * Represents the lat long second unit.
      */
-    SECOND(DistanceUnit.DEGREES, 1.0 / 3600.0, 40041470.0 / 360.0, new String[]{"sec", "second", "seconds"});
+    SECOND(DistanceUnit.DEGREES, 1.0 / 3600.0, 40041470.0 / 360.0, new String[]{"sec", "second", "seconds"}),
+
+    /**
+     * Represents the pixel unit.
+     * The conversion factor is the one used by JasperReports (1 inch = 72 pixel).
+     */
+    PX(null, 1.0, 1 / 72.0 * (25.4 / 1000.0), new String[]{"px", "pixel"});
 
     /**
      * If null means that this is a base unit. Otherwise, point to the base unit.
