@@ -117,7 +117,7 @@ import static org.mapfish.print.Constants.DEFAULT_CHARSET;
  *       "fillOpacity":0,
  *       "rotation" : "30",
  *
- *       "externalGraphic" : "mark.png"
+ *       "externalGraphic" : "mark.png",
  *       "graphicName": "circle",
  *       "graphicOpacity": 0.4,
  *       "pointRadius": 5,
@@ -234,17 +234,28 @@ import static org.mapfish.print.Constants.DEFAULT_CHARSET;
  * </p>
  *
  * <h2>Configuration Elements</h2>
+ * The items in the list below are the properties that can be set on the different symbolizers.  In brackets list the symbolizers
+ * the values can apply to.
+ * <p>
+ *     Most properties can be static values or ECQL expressions.  If the property has <code>[ ]</code> around the property value
+ *     then it will be interpreted as an ECQL expression.  Otherwise it is assumed to be static text.  If you need static text
+ *     that start and ends with <code>[ ]</code> then you will have to enter: <code>['propertyValue']</code> (where propertyValue
+ *     start and ends with <code>[ ]</code>.
+ * </p>
+ * <p>
+ *     The items below with (ECQL) can have ECQL expressions.
+ * </p>
  * <ul>
- *     <li><strong>fillColor</strong> - (polygon, point) The color used to fill the point graphic, polygon or text.</li>
- *     <li><strong>fillOpacity</strong> - (polygon,  point) The opacity used when fill the point graphic, polygon or text.</li>
- *     <li><strong>rotation</strong> - (point) The rotation of the point graphic</li>
+ *     <li><strong>fillColor</strong>(ECQL) - (polygon, point) The color used to fill the point graphic, polygon or text.</li>
+ *     <li><strong>fillOpacity</strong>(ECQL) - (polygon,  point) The opacity used when fill the point graphic, polygon or text.</li>
+ *     <li><strong>rotation</strong>(ECQL) - (point) The rotation of the point graphic</li>
  *     <li>
  *         <strong>externalGraphic</strong> - (point) one of the two options for declaring the point graphic to use.  This can
  *         be a URL to the icon to use or, if just a string it will be assumed to refer to a file in the
  *         configuration directory (or subdirectory).  Only files in the configuration directory (or subdirectory) will be allowed.
  *     </li>
  *     <li>
- *         <strong>graphicName</strong> - (point) one of the two options for declaring the point graphic to use.  This is the
+ *         <strong>graphicName</strong>(ECQL) - (point) one of the two options for declaring the point graphic to use.  This is the
  *         default and will be a square if not specified. The option are any of the Geotools Marks.
  *         <p>Geotools has by default 3 types of marks:</p>
  *         <ul>
@@ -255,16 +266,16 @@ import static org.mapfish.print.Constants.DEFAULT_CHARSET;
  *             character to render for the point.</li>
  *         </ul>
  *     </li>
- *     <li><strong>graphicOpacity</strong> - (point) the opacity to use when drawing the point graphic</li>
- *     <li><strong>pointRadius</strong> - (point) the size at which to draw the point graphic</li>
+ *     <li><strong>graphicOpacity</strong>(ECQL) - (point) the opacity to use when drawing the point graphic</li>
+ *     <li><strong>pointRadius</strong>(ECQL) - (point) the size at which to draw the point graphic</li>
  *     <li>
- *         <strong>strokeColor</strong> - (line, point, polygon) the color to use when drawing a line or the outline of a
+ *         <strong>strokeColor</strong>(ECQL) - (line, point, polygon) the color to use when drawing a line or the outline of a
  *         polygon or point graphic
  *     </li>
- *     <li><strong>strokeOpacity</strong> - (line, point, polygon) the opacity to use when drawing the line/stroke</li>
- *     <li><strong>strokeWidth</strong> - (line, point, polygon) the widh of the line/stroke</li>
+ *     <li><strong>strokeOpacity</strong>(ECQL) - (line, point, polygon) the opacity to use when drawing the line/stroke</li>
+ *     <li><strong>strokeWidth</strong>(ECQL) - (line, point, polygon) the widh of the line/stroke</li>
  *     <li>
- *         <strong>strokeLinecap</strong> - (line, point, polygon) the style used when drawing the end of a line.
+ *         <strong>strokeLinecap</strong>(ECQL) - (line, point, polygon) the style used when drawing the end of a line.
  *         <p>
  *             Options:  butt (sharp square edge), round (rounded edge), and square (slightly elongated square edge). Default is butt
  *         </p>
@@ -281,16 +292,16 @@ import static org.mapfish.print.Constants.DEFAULT_CHARSET;
  *             <li>{string containing spaces to delimit array elements} - Example: [1 2 3 1 2]</li>
  *         </ul>
  *     </li>
- *     <li><strong>fontColor</strong> - (text) the color of the text drawn</li>
- *     <li><strong>fontFamily</strong> - (text) the font of the text drawn</li>
- *     <li><strong>fontSize</strong> - (text) the font size of the text drawn</li>
- *     <li><strong>fontStyle</strong> - (text) the font style of the text drawn</li>
- *     <li><strong>fontWeight</strong> - (text) the font weight of the text drawn</li>
- *     <li><strong>haloColor</strong> - (text) the color of the halo around the text</li>
- *     <li><strong>haloOpacity</strong> - (text) the opacity of the halo around the text</li>
- *     <li><strong>haloRadius</strong> - (text) the radius of the halo around the text</li>
+ *     <li><strong>fontColor</strong>(ECQL) - (text) the color of the text drawn</li>
+ *     <li><strong>fontFamily</strong>(ECQL) - (text) the font of the text drawn</li>
+ *     <li><strong>fontSize</strong>(ECQL) - (text) the font size of the text drawn</li>
+ *     <li><strong>fontStyle</strong>(ECQL) - (text) the font style of the text drawn</li>
+ *     <li><strong>fontWeight</strong>(ECQL) - (text) the font weight of the text drawn</li>
+ *     <li><strong>haloColor</strong>(ECQL) - (text) the color of the halo around the text</li>
+ *     <li><strong>haloOpacity</strong>(ECQL) - (text) the opacity of the halo around the text</li>
+ *     <li><strong>haloRadius</strong>(ECQL) - (text) the radius of the halo around the text</li>
  *     <li>
- *         <strong>label</strong> - (text) the expression used to create the label e.  The value is either a string which will
+ *         <strong>label</strong>(ECQL) - (text) the expression used to create the label e.  The value is either a string which will
  *         be the hardcoded label or a string surrounded by [] which indicates that it is an ECQL Expression.  Examples:
  *         <ul>
  *             <li>Static label</li>
@@ -323,7 +334,7 @@ import static org.mapfish.print.Constants.DEFAULT_CHARSET;
  *         </p>
  *     </li>
 
- *     <li><strong>labelRotation</strong> - the rotation of the label</li>
+ *     <li><strong>labelRotation</strong>(ECQL) - the rotation of the label</li>
  *     <li><strong>labelXOffset</strong> - the amount to offset the label along the x axis.  negative number offset to the left</li>
  *     <li><strong>labelYOffset</strong> - the amount to offset the label along the y axis.  negative number offset to the top
  *     of the printing</li>

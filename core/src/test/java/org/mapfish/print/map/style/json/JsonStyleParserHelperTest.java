@@ -19,6 +19,7 @@
 
 package org.mapfish.print.map.style.json;
 
+import com.google.common.io.Files;
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.Fill;
 import org.geotools.styling.Font;
@@ -38,7 +39,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.mapfish.print.Constants;
+import org.mapfish.print.MapPrinter;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Function;
@@ -409,6 +413,65 @@ public class JsonStyleParserHelperTest {
         json.put(JsonStyleParserHelper.JSON_LABEL, "[centroid(geomAtt)]");
         textSymbolizer = this.helper.createTextSymbolizer(pJson);
         assertTrue(textSymbolizer.getLabel() instanceof Function);
+    }
+
+    @Test
+    public void testExpressionProperties() throws Exception {
+        String jsonString = Files.toString(getFile("v2-style-all-properies-as-expressions.json"), Constants.DEFAULT_CHARSET);
+        PJsonObject json = MapPrinter.parseSpec(jsonString).getJSONObject("*");
+
+        final PJsonArray symb = json.getJSONArray(MapfishJsonStyleVersion2.JSON_SYMB);
+        final PointSymbolizer pointSymbolizer = this.helper.createPointSymbolizer(symb.getJSONObject(0));
+        final LineSymbolizer lineSymbolizer = this.helper.createLineSymbolizer(symb.getJSONObject(1));
+        final PolygonSymbolizer polygonSymbolizer = this.helper.createPolygonSymbolizer(symb.getJSONObject(2));
+        final TextSymbolizer textSymbolizer = this.helper.createTextSymbolizer(symb.getJSONObject(3));
+
+        final Graphic graphic = pointSymbolizer.getGraphic();
+        assertEquals("rotation", propertyName(graphic.getRotation()));
+        assertEquals("graphicOpacity", propertyName(graphic.getOpacity()));
+        assertEquals("pointRadius", propertyName(graphic.getSize()));
+
+        Mark mark = (Mark) graphic.graphicalSymbols().get(0);
+        assertEquals("graphicName", propertyName(mark.getWellKnownName()));
+
+        assertEquals("fillOpacity", propertyName(mark.getFill().getOpacity()));
+        assertEquals("fillColor", propertyName(mark.getFill().getColor()));
+
+        assertEquals("strokeColor", propertyName(mark.getStroke().getColor()));
+        assertEquals("strokeOpacity", propertyName(mark.getStroke().getOpacity()));
+        assertEquals("strokeWidth", propertyName(mark.getStroke().getWidth()));
+        assertEquals("strokeLinecap", propertyName(mark.getStroke().getLineCap()));
+
+        assertEquals("lineStrokeColor", propertyName(lineSymbolizer.getStroke().getColor()));
+        assertEquals("lineStrokeOpacity", propertyName(lineSymbolizer.getStroke().getOpacity()));
+        assertEquals("lineStrokeWidth", propertyName(lineSymbolizer.getStroke().getWidth()));
+        assertEquals("lineStrokeLinecap", propertyName(lineSymbolizer.getStroke().getLineCap()));
+
+        assertEquals("PolyStrokeColor", propertyName(polygonSymbolizer.getStroke().getColor()));
+        assertEquals("PolyStrokeOpacity", propertyName(polygonSymbolizer.getStroke().getOpacity()));
+        assertEquals("PolyStrokeWidth", propertyName(polygonSymbolizer.getStroke().getWidth()));
+        assertEquals("PolyStrokeLinecap", propertyName(polygonSymbolizer.getStroke().getLineCap()));
+
+        assertEquals("PolyFillOpacity", propertyName(polygonSymbolizer.getFill().getOpacity()));
+        assertEquals("PolyFillColor", propertyName(polygonSymbolizer.getFill().getColor()));
+
+        assertEquals("fontColor", propertyName(textSymbolizer.getFill().getColor()));
+        assertEquals("fontFamily", propertyName(textSymbolizer.getFont().getFamily().get(0)));
+        assertEquals("fontSize", propertyName(textSymbolizer.getFont().getSize()));
+        assertEquals("fontStyle", propertyName(textSymbolizer.getFont().getStyle()));
+        assertEquals("fontWeight", propertyName(textSymbolizer.getFont().getWeight()));
+        final Halo halo = textSymbolizer.getHalo();
+        assertEquals("haloColor", propertyName(halo.getFill().getColor()));
+        assertEquals("haloOpacity", propertyName(halo.getFill().getOpacity()));
+        assertEquals("haloRadius", propertyName(halo.getRadius()));
+        assertEquals("label", propertyName(textSymbolizer.getLabel()));
+        assertEquals("labelRotation", propertyName(((PointPlacement)textSymbolizer.getLabelPlacement()).getRotation()));
+
+
+    }
+
+    private String propertyName(Expression rotation) {
+        return ((PropertyName)rotation).getPropertyName();
     }
 
     private void assertDashStyle(String dashStyle, float[] expectedDashArray) throws JSONException {

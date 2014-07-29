@@ -21,6 +21,7 @@ templates:
       length: !float {}
       map: !map
         maxDpi: 400
+        dpiSuggestions: [72, 91, 128, 254, 300, 400]
         width: 400
         height: 200
       legend: !legend {}

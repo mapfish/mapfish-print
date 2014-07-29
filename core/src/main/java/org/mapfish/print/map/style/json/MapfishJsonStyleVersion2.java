@@ -50,7 +50,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleParserPlugin.Vers
  * @author Jesse on 7/26/2014.
  */
 public final class MapfishJsonStyleVersion2 {
-    private static final String JSON_SYMB = "symb";
+    static final String JSON_SYMB = "symb";
     private static final String JSON_TYPE = "type";
     private static final Pattern VALUE_EXPR_PATTERN = Pattern.compile("\\$\\{([\\w\\d_-]+)\\}");
     private static final String JSON_MIN_SCALE = "minScale";
