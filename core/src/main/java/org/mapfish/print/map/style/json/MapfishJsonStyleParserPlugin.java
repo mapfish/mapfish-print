@@ -20,17 +20,26 @@
 package org.mapfish.print.map.style.json;
 
 import com.google.common.base.Optional;
+import com.google.common.io.ByteStreams;
+import com.google.common.io.Closer;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.style.StyleParserPlugin;
 import org.mapfish.print.wrapper.json.PJsonObject;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpResponse;
 
+import java.net.URI;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import static org.mapfish.print.Constants.DEFAULT_CHARSET;
 
 /**
  * Supports a JSON based style format.
@@ -333,7 +342,6 @@ import javax.annotation.Nullable;
  * </ul>
  */
 public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
-
     enum Versions {
         ONE("1") {
             @Override
@@ -363,11 +371,43 @@ public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
 
     private StyleBuilder sldStyleBuilder = new StyleBuilder();
 
+
+
     @Override
     public Optional<Style> parseStyle(@Nullable final Configuration configuration,
                                       @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
                                       @Nonnull final String styleString,
                                       @Nonnull final MapfishMapContext mapContext) throws Throwable {
+        final Optional<Style> styleOptional = tryLoadJson(configuration, styleString);
+
+        if (styleOptional.isPresent()) {
+            return styleOptional;
+        }
+
+        if (configuration != null && configuration.isAccessible(styleString)) {
+            Optional<Style> style = tryLoadJson(configuration, new String(configuration.loadFile(styleString), DEFAULT_CHARSET));
+            if (style.isPresent()) {
+                return style;
+            }
+        }
+
+        Closer closer = Closer.create();
+        try {
+            final URI uri = new URI(styleString);
+
+            final ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
+            final ClientHttpResponse response = closer.register(request.execute());
+            final byte[] bytes = ByteStreams.toByteArray(response.getBody());
+
+            return tryLoadJson(configuration, new String(bytes, DEFAULT_CHARSET));
+        } catch (Exception e) {
+            return Optional.absent();
+        } finally {
+            closer.close();
+        }
+    }
+
+    private Optional<Style> tryLoadJson(final Configuration configuration, final String styleString) throws JSONException {
         String trimmed = styleString.trim();
         if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
             final PJsonObject json = new PJsonObject(new JSONObject(styleString), "style");
@@ -379,6 +419,7 @@ public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
                 }
             }
         }
+
         return Optional.absent();
     }
 }

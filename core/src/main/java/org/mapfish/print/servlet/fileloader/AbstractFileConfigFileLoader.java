@@ -104,7 +104,9 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
         try {
             final Optional<File> childFile = resolveChildFile(configFileUri, pathToSubResource);
             return childFile.isPresent() && childFile.get().exists();
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalFileAccessException e) {
+            return false;
+        } catch (NoSuchElementException nsee) {
             return false;
         }
     }
@@ -131,7 +133,7 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
 
     private Optional<File> resolveChildFile(final URI configFileUri, final String pathToSubResource) throws IOException {
         final Optional<File> configFileOptional = findFile(resolveFiles(configFileUri));
-        if (!configFileOptional.isPresent()) {
+            if (!configFileOptional.isPresent()) {
             throw new NoSuchElementException("No configuration file found at: " + configFileUri);
         }
         File configFile = configFileOptional.get();
@@ -139,12 +141,25 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
             final URI uri = new URI(pathToSubResource);
 
             if (pathToSubResource.startsWith(getUriScheme())) {
-                final Iterator<File> fileIterator = resolveFiles(uri);
-                while (fileIterator.hasNext()) {
-                    File next = fileIterator.next();
-                    if (next.exists()) {
-                        verifyChildInConfigDir(pathToSubResource, configFile, next);
-                        return Optional.of(next);
+                try {
+                    final Iterator<File> fileIterator = resolveFiles(uri);
+
+                    while (fileIterator.hasNext()) {
+                        File next = fileIterator.next();
+                        if (next.exists()) {
+                            verifyChildInConfigDir(pathToSubResource, configFile, next);
+                            return Optional.of(next);
+                        }
+                    }
+                } catch (IllegalArgumentException iae) {
+                    // See if the file is a relative file and see if we can load that.
+                    String relativePart = pathToSubResource.substring((getUriScheme() + ":/").length());
+                    final File file = new File(configFile.getParentFile(), relativePart);
+
+                    if (file.exists()) {
+                        return Optional.of(file);
+                    } else {
+                        return Optional.absent();
                     }
                 }
             }
@@ -186,7 +201,7 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
 
     private void verifyChildInConfigDir(final String pathToSubResource, final File configFile, final File childFile) throws IOException {
         if (childFile.exists() && !childFile.getCanonicalPath().startsWith(configFile.getParentFile().getCanonicalPath())) {
-            throw new IllegalArgumentException("'" + pathToSubResource + "' identifies a file that is not within the configuration " +
+            throw new IllegalFileAccessException("'" + pathToSubResource + "' identifies a file that is not within the configuration " +
                                                "directory: " + configFile.getParentFile().getCanonicalPath());
         }
     }

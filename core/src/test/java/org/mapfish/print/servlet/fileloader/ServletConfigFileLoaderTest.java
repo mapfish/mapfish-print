@@ -108,7 +108,7 @@ public class ServletConfigFileLoaderTest extends AbstractMapfishSpringTest {
                                                                      resourceFileName));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalFileAccessException.class)
     public void testLoadFileChildResource_NotInConfigDir() throws Exception {
         final URI configFileUri = new URI(configFileUriString);
 
@@ -116,7 +116,7 @@ public class ServletConfigFileLoaderTest extends AbstractMapfishSpringTest {
                 .getAbsolutePath());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalFileAccessException.class)
     public void testLoadFileChildResource_NotInConfigDir_ServletURI() throws Exception {
         final URI configFileUri = new URI(configFileUriString);
 

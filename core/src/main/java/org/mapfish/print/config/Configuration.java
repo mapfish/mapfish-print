@@ -38,12 +38,14 @@ import org.json.JSONWriter;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.map.style.StyleParser;
+import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
 import org.opengis.filter.expression.Expression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +95,8 @@ public class Configuration {
     private StyleParser styleParser;
     @Autowired
     private ClientHttpRequestFactory clientHttpRequestFactory;
+    @Autowired
+    private ConfigFileLoaderManager fileLoaderManager;
 
     /**
      * Print out the configuration that the client needs to make a request.
@@ -292,5 +296,36 @@ public class Configuration {
         }
 
         return validationErrors;
+    }
+
+    /**
+     * check if the file exists and can be accessed by the user/template/config/etc...
+     *
+     * @param pathToSubResource a string representing a file that is accessible for use in printing templates within
+     *                          the configuration file.  In the case of a file based URI the path could be a relative path (relative
+     *                          to the configuration file) or an absolute path, but it must be an allowed file (you can't allow access
+     *                          to any file on the file system).
+     */
+    public final boolean isAccessible(final String pathToSubResource) throws IOException {
+        return this.fileLoaderManager.isAccessible(this.configurationFile.toURI(), pathToSubResource);
+    }
+    /**
+     * Load the file related to the configuration file.
+     *
+     * @param pathToSubResource a string representing a file that is accessible for use in printing templates within
+     *                          the configuration file.  In the case of a file based URI the path could be a relative path (relative
+     *                          to the configuration file) or an absolute path, but it must be an allowed file (you can't allow access
+     *                          to any file on the file system).
+     */
+    public final byte[] loadFile(final String pathToSubResource) throws IOException {
+        return this.fileLoaderManager.loadFile(this.configurationFile.toURI(), pathToSubResource);
+    }
+
+    /**
+     * Set file loader manager.
+     * @param fileLoaderManager new manager.
+     */
+    public final void setFileLoaderManager(final ConfigFileLoaderManager fileLoaderManager) {
+        this.fileLoaderManager = fileLoaderManager;
     }
 }

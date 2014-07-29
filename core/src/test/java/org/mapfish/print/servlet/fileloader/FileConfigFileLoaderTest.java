@@ -110,7 +110,7 @@ public class FileConfigFileLoaderTest extends AbstractMapfishSpringTest {
         assertArrayEquals(bytes, this.loader.loadFile(configFileUri, getFile(FileConfigFileLoader.class, resourceFileName).getPath()));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalFileAccessException.class)
     public void testLoadFileChildResource_NotInConfigDir() throws Exception {
         final URI configFileUri = CONFIG_FILE.toURI();
 

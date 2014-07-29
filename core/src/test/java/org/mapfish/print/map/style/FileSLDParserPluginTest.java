@@ -27,12 +27,14 @@ import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.attribute.map.BBoxMapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.Dimension;
 import java.io.File;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -42,9 +44,12 @@ import static org.junit.Assert.assertTrue;
  */
 public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
     @Autowired
-    private FileSLDParserPlugin parser;
+    private SLDParserPlugin parser;
     @Autowired
     private TestHttpClientFactory clientHttpRequestFactory;
+    @Autowired
+    private ConfigFileLoaderManager fileLoaderManager;
+
     private MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0, 72);
 
     @Test
@@ -52,6 +57,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         File file = getFile(FileSLDParserPluginTest.class, "singleStyle.sld");
         Configuration config = new Configuration();
         config.setConfigurationFile(file);
+        config.setFileLoaderManager(this.fileLoaderManager);
 
         final Optional<Style> styleOptional = this.parser.parseStyle(config, clientHttpRequestFactory, file.getName(), mapContext);
         assertTrue (styleOptional.isPresent());
@@ -67,6 +73,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         File file = getFile(FileSLDParserPluginTest.class, "singleStyle.sld");
         Configuration config = new Configuration();
         config.setConfigurationFile(file);
+        config.setFileLoaderManager(this.fileLoaderManager);
 
         final Optional<Style> styleOptional = this.parser.parseStyle(config, clientHttpRequestFactory, file.getName()+"##1", mapContext);
         assertTrue (styleOptional.isPresent());
@@ -82,6 +89,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         File file = getFile(FileSLDParserPluginTest.class, "singleStyle.sld");
         Configuration config = new Configuration();
         config.setConfigurationFile(file);
+        config.setFileLoaderManager(this.fileLoaderManager);
 
         final Optional<Style> styleOptional = this.parser.parseStyle(config, clientHttpRequestFactory, file.getAbsolutePath(), mapContext);
         assertTrue (styleOptional.isPresent());
@@ -97,6 +105,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         File file = getFile(FileSLDParserPluginTest.class, "multipleStyles.sld");
         Configuration config = new Configuration();
         config.setConfigurationFile(file);
+        config.setFileLoaderManager(this.fileLoaderManager);
 
         this.parser.parseStyle(config, clientHttpRequestFactory, file.getName(), mapContext);
     }
@@ -106,6 +115,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         File file = getFile(FileSLDParserPluginTest.class, "multipleStyles.sld");
         Configuration config = new Configuration();
         config.setConfigurationFile(file);
+        config.setFileLoaderManager(this.fileLoaderManager);
 
         Optional<Style> styleOptional = this.parser.parseStyle(config, clientHttpRequestFactory, file.getName()+"##1", mapContext);
         assertTrue (styleOptional.isPresent());
@@ -130,6 +140,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         File file = getFile(FileSLDParserPluginTest.class, "singleStyle.sld");
         Configuration config = new Configuration();
         config.setConfigurationFile(file);
+        config.setFileLoaderManager(this.fileLoaderManager);
 
         this.parser.parseStyle(config, clientHttpRequestFactory, file.getName()+"##3", mapContext);
     }
@@ -139,17 +150,18 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         File file = getFile(FileSLDParserPluginTest.class, "singleStyle.sld");
         Configuration config = new Configuration();
         config.setConfigurationFile(file);
+        config.setFileLoaderManager(this.fileLoaderManager);
 
         this.parser.parseStyle(config, clientHttpRequestFactory, file.getName()+"##-1", mapContext);
     }
 
-    @Test(expected = Exception.class)
     public void testFileNotInConfigDir() throws Throwable {
         final File tempFile = File.createTempFile("config", ".yaml");
         File file = getFile(FileSLDParserPluginTest.class, "singleStyle.sld");
         Configuration config = new Configuration();
         config.setConfigurationFile(tempFile);
+        config.setFileLoaderManager(this.fileLoaderManager);
 
-        this.parser.parseStyle(config, clientHttpRequestFactory, file.getAbsolutePath(), mapContext);
+        assertFalse(this.parser.parseStyle(config, clientHttpRequestFactory, file.getAbsolutePath(), mapContext).isPresent());
     }
 }
