@@ -295,7 +295,7 @@ public final class ColorParser {
             if (i == 0) {
                 return Optional.of(0f);
             }
-            return Optional.of(MAX_INT_COLOR / i);
+            return Optional.of(i / MAX_INT_COLOR);
         } catch (NumberFormatException e) {
             return Optional.absent();
         }
