@@ -21,6 +21,8 @@ package org.mapfish.print.servlet.fileloader;
 
 import com.google.common.base.Optional;
 import com.google.common.io.Files;
+import org.mapfish.print.FileUtils;
+import org.mapfish.print.IllegalFileAccessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -147,7 +149,7 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
                     while (fileIterator.hasNext()) {
                         File next = fileIterator.next();
                         if (next.exists()) {
-                            verifyChildInConfigDir(pathToSubResource, configFile, next);
+                            FileUtils.assertIsSubDirectory("configuration", configFile.getParentFile(), next);
                             return Optional.of(next);
                         }
                     }
@@ -166,9 +168,9 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
 
             try {
                 final File childFile = new File(uri);
-                verifyChildInConfigDir(pathToSubResource, configFile, childFile);
 
                 if (childFile.exists()) {
+                    FileUtils.assertIsSubDirectory("configuration", configFile.getParentFile(), childFile);
                     return Optional.of(childFile);
                 } else {
                     return Optional.absent();
@@ -190,20 +192,12 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
             return Optional.of(childFile);
         } else {
             childFile = new File(pathToSubResource);
-            verifyChildInConfigDir(pathToSubResource, configFile, childFile);
             if (childFile.exists()) {
+                FileUtils.assertIsSubDirectory("configuration", configFile.getParentFile(), childFile);
                 return Optional.of(childFile);
             }
         }
 
         return Optional.absent();
     }
-
-    private void verifyChildInConfigDir(final String pathToSubResource, final File configFile, final File childFile) throws IOException {
-        if (childFile.exists() && !childFile.getCanonicalPath().startsWith(configFile.getParentFile().getCanonicalPath())) {
-            throw new IllegalFileAccessException("'" + pathToSubResource + "' identifies a file that is not within the configuration " +
-                                               "directory: " + configFile.getParentFile().getCanonicalPath());
-        }
-    }
-
 }

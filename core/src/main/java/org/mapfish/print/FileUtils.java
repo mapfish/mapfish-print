@@ -22,6 +22,7 @@ package org.mapfish.print;
 import org.mapfish.print.config.Configuration;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -79,10 +80,43 @@ public final class FileUtils {
      * @param file the file to test
      */
     public static void assertFileIsInConfigDir(final Configuration configuration, final File file) {
-        final String configurationDir = configuration.getDirectory().getAbsolutePath();
-        if (!file.getAbsolutePath().startsWith(configurationDir)) {
-            throw new IllegalArgumentException("The url is a file url but indicates a file that is not within the" +
-                                               " configurationDirectory: " + file.getAbsolutePath());
-        }
+        assertIsSubDirectory("configuration", configuration.getDirectory(), file);
     }
+
+
+    /**
+     * Verify that the file is within the base directory. {@link org.mapfish.print.IllegalFileAccessException} will be thrown
+     * if the assertion does not hold.
+     *
+     * @param descriptorOfBase a simple description of the base file, for example: configuration
+     * @param base the directory that should contain the child.
+     * @param child the file to test that is is a child of base.
+     */
+    public static boolean assertIsSubDirectory(final String descriptorOfBase, final File base, final File child) {
+        File canonicalBase;
+        try {
+            canonicalBase = base.getCanonicalFile();
+        } catch (IOException e) {
+            throw new Error("Unable to get the canonical file of '" + base + "'.  Therefore it is not possible to verify if '" + child
+                            + "' is a child of it.");
+        }
+        File canonicalChild = null;
+        try {
+            canonicalChild = child.getCanonicalFile();
+        } catch (IOException e) {
+            throw new Error("Unable to get the canonical file of '" + child + "'.  Therefore it is not possible to verify if it is a " +
+                            "child of '" + base + "'.");
+        }
+        File parentFile = canonicalChild;
+        while (parentFile != null) {
+            if (canonicalBase.equals(parentFile)) {
+                return true;
+            }
+            parentFile = parentFile.getParentFile();
+        }
+        throw new IllegalFileAccessException("'" + canonicalChild + "' identifies a file that is not within the '" + descriptorOfBase +
+                                             "' directory: " + canonicalBase);
+    }
+
+
 }

@@ -17,7 +17,7 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.servlet.fileloader;
+package org.mapfish.print;
 
 /**
  * Indicates there was an attempt to load a file that was not in the configuration directory.

@@ -155,6 +155,8 @@ import static org.mapfish.print.Constants.DEFAULT_CHARSET;
  *       "haloOpacity": "0.7",
  *       "haloRadius": "3.0",
  *       "label": "[name]",
+ *       "fillColor":"#FF0000",
+ *       "fillOpacity":0,
  *       "labelAlign": "cm",
  *       "labelRotation": "45",
  *       "labelXOffset": "-25.0",
@@ -235,8 +237,8 @@ import static org.mapfish.print.Constants.DEFAULT_CHARSET;
  *
  * <h2>Configuration Elements</h2>
  * <ul>
- *     <li><strong>fillColor</strong> - (polygon, point) The color used to fill the point graphic, polygon or text.</li>
- *     <li><strong>fillOpacity</strong> - (polygon,  point) The opacity used when fill the point graphic, polygon or text.</li>
+ *     <li><strong>fillColor</strong> - (polygon, point, text) The color used to fill the point graphic, polygon or text.</li>
+ *     <li><strong>fillOpacity</strong> - (polygon,  point, text) The opacity used when fill the point graphic, polygon or text.</li>
  *     <li><strong>rotation</strong> - (point) The rotation of the point graphic</li>
  *     <li>
  *         <strong>externalGraphic</strong> - (point) one of the two options for declaring the point graphic to use.  This can

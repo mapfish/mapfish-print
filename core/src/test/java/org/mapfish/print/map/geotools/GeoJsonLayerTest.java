@@ -26,6 +26,7 @@ import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.IllegalFileAccessException;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
@@ -93,7 +94,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
         assertEquals(true, layer.shouldRenderAsSvg());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalFileAccessException.class)
     public void testGeoIllegalFileUrl() throws Exception {
         final File file = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "geojson.json");
         final PJsonObject requestData = parseJSONObjectFromString("{type:\"geojson\";style:\"polygon\";geoJson:\""
