@@ -1,0 +1,13 @@
+{
+  "version" : "2",
+  "*" : {
+    "minScale" : 10000,
+    "maxScale" : 1000000,
+    "symbolizers" : [
+      {"type" : "point"},
+      {"type" : "line"},
+      {"type" : "polygon"},
+      {"type" : "text", "label" : "label"}
+    ]
+  }
+}

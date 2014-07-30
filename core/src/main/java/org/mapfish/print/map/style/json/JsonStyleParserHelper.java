@@ -21,9 +21,12 @@ package org.mapfish.print.map.style.json;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
+import org.geotools.filter.text.cql2.CQLException;
+import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.styling.AnchorPoint;
 import org.geotools.styling.Displacement;
 import org.geotools.styling.ExternalGraphic;
+import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Fill;
 import org.geotools.styling.Font;
 import org.geotools.styling.Graphic;
@@ -35,7 +38,9 @@ import org.geotools.styling.Mark;
 import org.geotools.styling.PointPlacement;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.PolygonSymbolizer;
+import org.geotools.styling.Rule;
 import org.geotools.styling.Stroke;
+import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.TextSymbolizer;
 import org.mapfish.print.config.Configuration;
@@ -45,10 +50,12 @@ import org.opengis.filter.expression.Expression;
 import java.awt.Color;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static org.mapfish.print.FileUtils.testForLegalFileUrl;
+import static org.mapfish.print.map.style.json.MapfishJsonStyleParserPlugin.Versions;
 
 /**
  * Methods shared by various style versions for creating geotools SLD styles from the json format mapfish supports.
@@ -97,17 +104,41 @@ public final class JsonStyleParserHelper {
     static final String STROKE_DASHSTYLE_LONGDASHDOT = "longdashdot";
 
     private final Configuration configuration;
+    private boolean allowNullSymbolizer;
     private StyleBuilder styleBuilder;
+    private Versions version;
+
     /**
      * Constructor.
-     *
-     * @param configuration the configuration to use for resolving relative files or other settings.
+     *  @param configuration the configuration to use for resolving relative files or other settings.
      * @param styleBuilder a style builder to use for creating the style objects.
+     * @param allowNullSymbolizer If true then create*Symbolizer() methods can return null if expected params are missing.
+     * @param version the version being parsed.
      */
     public JsonStyleParserHelper(@Nonnull final Configuration configuration,
-                                 @Nonnull final StyleBuilder styleBuilder) {
+                                 @Nonnull final StyleBuilder styleBuilder,
+                                 final boolean allowNullSymbolizer,
+                                 final Versions version) {
         this.configuration = configuration;
         this.styleBuilder = styleBuilder;
+        this.allowNullSymbolizer = allowNullSymbolizer;
+        this.version = version;
+    }
+
+    void setAllowNullSymbolizer(final boolean allowNullSymbolizer) {
+        this.allowNullSymbolizer = allowNullSymbolizer;
+    }
+
+    /**
+     * Create a style from a list of rules.
+     * @param styleRules the rules
+     */
+    public Style createStyle(final List<Rule> styleRules) {
+        final Rule[] rulesArray = styleRules.toArray(new Rule[styleRules.size()]);
+        final FeatureTypeStyle featureTypeStyle = this.styleBuilder.createFeatureTypeStyle(null, rulesArray);
+        final Style style = this.styleBuilder.createStyle();
+        style.featureTypeStyles().add(featureTypeStyle);
+        return style;
     }
 
     /**
@@ -118,11 +149,11 @@ public final class JsonStyleParserHelper {
     @Nullable
     public PointSymbolizer createPointSymbolizer(final PJsonObject styleJson) {
 
-        if (!(styleJson.has(JSON_EXTERNAL_GRAPHIC) || styleJson.has(JSON_GRAPHIC_NAME))) {
+        if (this.allowNullSymbolizer && !(styleJson.has(JSON_EXTERNAL_GRAPHIC) || styleJson.has(JSON_GRAPHIC_NAME))) {
             return null;
         }
 
-        final Graphic graphic = this.styleBuilder.createGraphic();
+        Graphic graphic = this.styleBuilder.createGraphic();
         graphic.graphicalSymbols().clear();
         if (styleJson.has(JSON_EXTERNAL_GRAPHIC)) {
             String externalGraphicUrl = validateURL(styleJson.getString(JSON_EXTERNAL_GRAPHIC));
@@ -134,18 +165,20 @@ public final class JsonStyleParserHelper {
 
         if (styleJson.has(JSON_GRAPHIC_NAME)) {
             String graphicName = styleJson.getString(JSON_GRAPHIC_NAME);
-            Fill fill = this.styleBuilder.createFill(Color.black);
-            Stroke stroke = this.styleBuilder.createStroke();
-
-            if (styleJson.has(JSON_FILL_COLOR)) {
-                fill = createFill(styleJson);
-            }
-            if (styleJson.optBool(JSON_STROKE, true)) {
-                stroke = createStroke(styleJson, false);
-            }
+            Fill fill = createFill(styleJson);
+            Stroke stroke = createStroke(styleJson, false);
 
             final Mark mark = this.styleBuilder.createMark(graphicName, fill, stroke);
             graphic.graphicalSymbols().add(mark);
+        }
+
+        if (graphic.graphicalSymbols().isEmpty()) {
+            graphic = this.styleBuilder.createGraphic();
+            Fill fill = createFill(styleJson);
+            Stroke stroke = createStroke(styleJson, false);
+            final Mark mark = (Mark) graphic.graphicalSymbols().get(0);
+            mark.setStroke(stroke);
+            mark.setFill(fill);
         }
 
         if (!Strings.isNullOrEmpty(styleJson.optString(JSON_GRAPHIC_OPACITY))) {
@@ -210,7 +243,7 @@ public final class JsonStyleParserHelper {
     @Nullable
     @VisibleForTesting
     protected PolygonSymbolizer createPolygonSymbolizer(final PJsonObject styleJson) {
-        if (!styleJson.has(JSON_FILL_COLOR)) {
+        if (this.allowNullSymbolizer && !styleJson.has(JSON_FILL_COLOR)) {
             return null;
         }
 
@@ -235,11 +268,15 @@ public final class JsonStyleParserHelper {
             // note: only simple labels are supported (e.g. "Name: ${name}" does not work)
             final Expression label;
 
-            String labelValue = styleJson.getString(JSON_LABEL);
-            if (labelValue.startsWith("${")) {
-                label = this.styleBuilder.attributeExpression(labelValue.replace("${", "").replace("}", ""));
+            String labelValue = styleJson.getString(JSON_LABEL).trim();
+            if (labelValue.startsWith("[") && labelValue.endsWith("]")) {
+                try {
+                    label = ECQL.toExpression(labelValue);
+                } catch (CQLException e) {
+                    throw new RuntimeException("Invalid CQL: " + e, e);
+                }
             } else {
-                label = this.styleBuilder.literalExpression(labelValue);
+                label = this.styleBuilder.literalExpression(labelValue.replace("${", "").replace("}", ""));
             }
             textSymbolizer.setLabel(label);
         } else {
@@ -428,10 +465,10 @@ public final class JsonStyleParserHelper {
     }
 
     private Fill createFill(final PJsonObject styleJson) {
-        final String fillColor = styleJson.optString(JSON_FILL_COLOR);
-        if (Strings.isNullOrEmpty(fillColor)) {
+        if (this.allowNullSymbolizer && !styleJson.has(JSON_FILL_COLOR)) {
             return null;
         }
+        final String fillColor = styleJson.optString(JSON_FILL_COLOR, "black");
         return addFill(fillColor, styleJson.optString(JSON_FILL_OPACITY, "1.0"));
     }
 
@@ -449,7 +486,7 @@ public final class JsonStyleParserHelper {
         final int quadrupleWidth = 4;
         final int quintupleWidth = 5;
 
-        if (allowNull && !styleJson.has(JSON_STROKE_COLOR)) {
+        if (this.allowNullSymbolizer && allowNull && !styleJson.has(JSON_STROKE_COLOR)) {
             return null;
         }
         Color strokeColor = Color.black;
@@ -533,6 +570,10 @@ public final class JsonStyleParserHelper {
                 return "";
             }
         }
+    }
+
+    public void setVersion(final Versions version) {
+        this.version = version;
     }
 
 }
