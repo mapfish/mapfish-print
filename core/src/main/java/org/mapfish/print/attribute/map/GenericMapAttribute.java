@@ -21,8 +21,9 @@ package org.mapfish.print.attribute.map;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-
 import org.geotools.referencing.CRS;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.ConfigurationException;
@@ -54,6 +55,23 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
 
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericMapAttribute.class);
+    private static final double[] DEFAULT_DPI_VALUES = {72, 120, 200, 254, 300, 600, 1200, 2400};
+    /**
+     * The json key for the suggested DPI values in the client config.
+     */
+    public static final String JSON_DPI_SUGGESTIONS = "dpiSuggestions";
+    /**
+     * The json key for the max DPI value in the client config.
+     */
+    public static final String JSON_MAX_DPI = "maxDPI";
+    /**
+     * The json key for the width of the map in the client config.
+     */
+    public static final String JSON_MAP_WIDTH = "width";
+    /**
+     * The json key for the height of the map in the client config.
+     */
+    public static final String JSON_MAP_HEIGHT = "height";
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -76,8 +94,24 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
     public final void setMaxDpi(final Double maxDpi) {
         this.maxDpi = maxDpi;
     }
-    
+
+    /**
+     * Suggestions for dpi to use.  Typically these are used by the client to create a UI for a user.
+     */
     public final double[] getDpiSuggestions() {
+        if (this.dpiSuggestions == null) {
+            List<Double> list = Lists.newArrayList();
+            for (double suggestion : DEFAULT_DPI_VALUES) {
+                if (suggestion <= this.maxDpi) {
+                    list.add(suggestion);
+                }
+            }
+            double[] suggestions = new double[list.size()];
+            for (int i = 0; i < suggestions.length; i++) {
+                suggestions[i] = list.get(i);
+            }
+            return suggestions;
+        }
         return this.dpiSuggestions;
     }
 
@@ -139,6 +173,16 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
                 }
             }
         }
+    }
+
+    @Override
+    protected final Optional<JSONObject> getClientInfo() throws JSONException {
+        final JSONObject jsonObject = new JSONObject();
+        jsonObject.put(JSON_DPI_SUGGESTIONS, getDpiSuggestions());
+        jsonObject.put(JSON_MAX_DPI, this.maxDpi);
+        jsonObject.put(JSON_MAP_WIDTH, this.width);
+        jsonObject.put(JSON_MAP_HEIGHT, this.height);
+        return Optional.of(jsonObject);
     }
 
     /**

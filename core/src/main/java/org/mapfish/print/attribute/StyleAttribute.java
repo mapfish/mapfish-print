@@ -37,13 +37,18 @@ import javax.annotation.Nonnull;
  * <p/>
  * Created by Stéphane Brunner on 24/4/14.
  */
-public class StyleAttribute extends ReflectiveAttribute<StylesAttributeValues> {
+public final class StyleAttribute extends ReflectiveAttribute<StylesAttributeValues> {
 
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LoggerFactory.getLogger(StyleAttribute.class);
 
     @Override
-    public final StylesAttributeValues createValue(final Template template) {
+    protected Class<StylesAttributeValues> getValueType() {
+        return StylesAttributeValues.class;
+    }
+
+    @Override
+    public StylesAttributeValues createValue(final Template template) {
         StylesAttributeValues result = new StylesAttributeValues();
         return result;
     }
@@ -56,7 +61,7 @@ public class StyleAttribute extends ReflectiveAttribute<StylesAttributeValues> {
     /**
      * The value of {@link StyleAttribute}.
      */
-    public final class StylesAttributeValues {
+    public static final class StylesAttributeValues {
         /**
          * The SDL string.
          */
@@ -80,7 +85,7 @@ public class StyleAttribute extends ReflectiveAttribute<StylesAttributeValues> {
          */
         public synchronized Style getStyle(@Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
                                            @Nonnull final MapfishMapContext mapContext) throws Exception {
-            if (this.styleObject == null) {
+            if (this.styleObject == null && this.style != null) {
                 final StyleParserPlugin parser = new StringSLDParserPlugin();
                 try {
                     this.styleObject = parser.parseStyle(null, clientHttpRequestFactory, this.style, mapContext).get();

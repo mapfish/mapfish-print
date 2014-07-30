@@ -167,7 +167,6 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         final List<URI> graphics = new ArrayList<URI>(layers.size());
         int i = 0;
         for (MapLayer layer : layers) {
-            layer.setForceLongitudeFirst(mapValues.longitudeFirst);
             checkCancelState(context);
             boolean isFirstLayer = i == 0;
             

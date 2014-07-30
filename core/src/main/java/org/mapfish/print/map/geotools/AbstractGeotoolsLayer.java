@@ -45,7 +45,6 @@ import java.util.concurrent.ExecutorService;
 public abstract class AbstractGeotoolsLayer implements MapLayer {
 
     private final ExecutorService executorService;
-    private Boolean forceLongitudeFirst = null;
 
     /**
      * Constructor.
@@ -78,7 +77,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
             graphics2D.setTransform(transformer.getTransform());
             Dimension mapSize = new Dimension(paintArea.width, paintArea.height);
             layerTransformer = new MapfishMapContext(bounds, mapSize, transformer.getRotation(), transformer.getDPI(),
-                    this.forceLongitudeFirst);
+                    transformer.isForceLongitudeFirst());
         }
 
 
@@ -112,8 +111,8 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
             graphics2D.addRenderingHints(hints);
             renderer.setJava2DHints(hints);
             Map<String, Object> renderHints = Maps.newHashMap();
-            if (this.forceLongitudeFirst != null) {
-                renderHints.put(StreamingRenderer.FORCE_EPSG_AXIS_ORDER_KEY, this.forceLongitudeFirst);
+            if (transformer.isForceLongitudeFirst() != null) {
+                renderHints.put(StreamingRenderer.FORCE_EPSG_AXIS_ORDER_KEY, transformer.isForceLongitudeFirst());
             }
             renderer.setRendererHints(renderHints);
 
@@ -147,10 +146,4 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
         return false;
     }
     //CHECKSTYLE:ON
-
-
-    @Override
-    public final void setForceLongitudeFirst(final Boolean longitudeFirst) {
-        this.forceLongitudeFirst = longitudeFirst;
-    }
 }

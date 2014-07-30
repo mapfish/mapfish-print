@@ -23,7 +23,7 @@ import com.google.common.collect.Maps;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.mapfish.print.attribute.TableAttribute.TableAttributeValue;
 import org.mapfish.print.processor.AbstractProcessor;
-import org.mapfish.print.wrapper.json.PJsonArray;
+import org.mapfish.print.wrapper.PArray;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,8 +69,8 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         final Collection<Map<String, ?>> table = new ArrayList<Map<String, ?>>();
 
         final String[] jsonColumns = jsonTable.columns;
-        final PJsonArray[] jsonData = jsonTable.data;
-        for (final PJsonArray jsonRow : jsonData) {
+        final PArray[] jsonData = jsonTable.data;
+        for (final PArray jsonRow : jsonData) {
             checkCancelState(context);
             final Map<String, Object> row = new HashMap<String, Object>();
             for (int j = 0; j < jsonRow.size(); j++) {

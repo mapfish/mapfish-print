@@ -57,6 +57,11 @@ public class PJsonObject extends PAbstractObject {
         this.obj = obj;
     }
 
+    @Override
+    public final Object opt(final String key) {
+        return this.obj.opt(key);
+    }
+
     /**
      * Get a property as a string or null.
      * @param key the property name

@@ -62,11 +62,4 @@ public interface MapLayer {
      * @return True if the layer itself takes care of rotating.
      */
     boolean supportsNativeRotation();
-
-    /**
-     * If true then force longitude coordinates as the first coordinate.
-     *
-     * @param longitudeFirst If true then force longitude coordinates as the first coordinate.
-     */
-    void setForceLongitudeFirst(Boolean longitudeFirst);
 }

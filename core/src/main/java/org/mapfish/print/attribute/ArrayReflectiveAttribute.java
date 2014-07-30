@@ -39,11 +39,13 @@ public abstract class ArrayReflectiveAttribute<Value> implements Attribute {
 
     private volatile ReflectiveAttribute<Value> delegate;
     private PYamlArray defaults;
+    private String configName;
+    private boolean isDelegateInitialized = false;
 
     @PostConstruct
     private void init() {
         if (this.defaults == null) {
-            this.defaults = new PYamlArray(null, Collections.<Object>emptyList(), getAttributeName());
+            this.defaults = new PYamlArray(null, Collections.<Object>emptyList(), this.configName);
         }
     }
 
@@ -57,14 +59,12 @@ public abstract class ArrayReflectiveAttribute<Value> implements Attribute {
     }
 
     public final void setDefault(final List<Object> defaultValue) {
-        this.defaults = new PYamlArray(null, defaultValue, getAttributeName());
+        this.defaults = new PYamlArray(null, defaultValue, this.configName);
     }
 
-    /**
-     * Return a descriptive name of this attribute.
-     */
-    protected final String getAttributeName() {
-        return getClass().getSimpleName().substring(0, 1).toLowerCase() + getClass().getSimpleName().substring(1);
+    @Override
+    public final void setConfigName(final String configName) {
+        this.configName = configName;
     }
 
     /**
@@ -76,8 +76,17 @@ public abstract class ArrayReflectiveAttribute<Value> implements Attribute {
      */
     public abstract Value createValue(final Template template);
 
+    /**
+     * Return the type created by {@link #createValue(org.mapfish.print.config.Template)}.
+     */
+    protected abstract Class<? extends Value> getValueType();
+
     @Override
-    public final void printClientConfig(final JSONWriter json, final Template template) throws JSONException {
+    public final synchronized void printClientConfig(final JSONWriter json, final Template template) throws JSONException {
+        if (!this.isDelegateInitialized) {
+            getReflectiveAttribute().setConfigName(this.configName);
+            this.isDelegateInitialized = true;
+        }
         getReflectiveAttribute().printClientConfig(json, template);
     }
 
@@ -86,6 +95,11 @@ public abstract class ArrayReflectiveAttribute<Value> implements Attribute {
             synchronized (this) {
                 if (this.delegate == null) {
                     this.delegate = new ReflectiveAttribute<Value>() {
+
+                        @Override
+                        protected Class<? extends Value> getValueType() {
+                            return ArrayReflectiveAttribute.this.getValueType();
+                        }
 
                         @Override
                         public Value createValue(final Template template) {

@@ -19,17 +19,31 @@
 
 package org.mapfish.print.attribute;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
+import com.google.common.collect.Sets;
+import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jts.util.AssertionFailedException;
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.ParserUtils;
+import org.mapfish.print.wrapper.PArray;
+import org.mapfish.print.wrapper.PElement;
 import org.mapfish.print.wrapper.PObject;
+import org.mapfish.print.wrapper.json.PJsonArray;
+import org.mapfish.print.wrapper.json.PJsonObject;
+import org.mapfish.print.wrapper.yaml.PYamlArray;
 import org.mapfish.print.wrapper.yaml.PYamlObject;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.PostConstruct;
 
 import static org.mapfish.print.parser.MapfishParser.stringRepresentation;
@@ -41,14 +55,90 @@ import static org.mapfish.print.parser.MapfishParser.stringRepresentation;
  * @author sbrunner
  */
 public abstract class ReflectiveAttribute<Value> implements Attribute {
-    private PYamlObject defaults;
+    private static final HashSet<Class<? extends Object>> VALUE_OBJ_FIELD_TYPE_THAT_SHOULD_BE_P_TYPE =
+            Sets.newHashSet(PJsonArray.class, PJsonObject.class,
+                    JSONObject.class, JSONArray.class);
+    private static final HashSet<Class<? extends Object>> VALUE_OBJ_FIELD_NON_RECURSIVE_TYPE =
+            Sets.newHashSet(PElement.class, PArray.class, PObject.class);
+    /**
+     * Name of attribute in the client config json.
+     *
+     * @see #printClientConfig(org.json.JSONWriter, org.mapfish.print.config.Template)
+     */
+    public static final String JSON_NAME = "name";
+    /**
+     * Name of the required parameters object in the client config json.
+     *
+     * @see #printClientConfig(org.json.JSONWriter, org.mapfish.print.config.Template)
+     */
+    public static final String JSON_CLIENT_PARAMS = "clientParams";
+    /**
+     * Name of the value suggestions object in the client config json.
+     *
+     * @see #printClientConfig(org.json.JSONWriter, org.mapfish.print.config.Template)
+     */
+    public static final String JSON_CLIENT_INFO = "clientInfo";
+    /**
+     * A string describing the type of the attribute param in the clientConfig.
+     */
+    public static final String JSON_ATTRIBUTE_TYPE = "type";
+    /**
+     * If the parameter in the value object is another value object (and not a PObject or PArray) then
+     * this will be a json object describing the embedded param in the same way as each object in clientParams.
+     */
+    public static final String JSON_ATTRIBUTE_EMBEDDED_TYPE = "embeddedType";
+    /**
+     * The default value of the attribute param in the optional params.
+     */
+    public static final String JSON_ATTRIBUTE_DEFAULT = "default";
+    /**
+     * Json field that declares if the param is an array.
+     */
+    public static final String JSON_ATTRIBUTE_IS_ARRAY = "isArray";
 
+    private PYamlObject defaults;
+    private String configName;
+
+    private void validateParamObject(final Class<?> typeToTest, final Set<Class> tested) {
+        if (!tested.contains(typeToTest)) {
+            final Collection<Field> allAttributes = ParserUtils.getAllAttributes(typeToTest);
+            Assert.isTrue(allAttributes.size() > 0, "An attribute value object must have at least on public field.");
+            for (Field attribute : allAttributes) {
+                Class<?> type = attribute.getType();
+                if (type.isArray()) {
+                    type = type.getComponentType();
+                }
+                if (VALUE_OBJ_FIELD_NON_RECURSIVE_TYPE.contains(type) || isJavaType(type)) {
+                    continue;
+                }
+                if (VALUE_OBJ_FIELD_TYPE_THAT_SHOULD_BE_P_TYPE.contains(type)) {
+                    throw new AssertionFailedException(typeToTest.getName() + "#" + attribute.getName() + " should not be a field in a" +
+                                                       " value object.  Instead use the more general " + PArray.class.getName() + " or " +
+                                                       PObject.class.getName());
+                }
+                tested.add(type);
+                validateParamObject(type, tested);
+            }
+        }
+    }
+
+    private boolean isJavaType(final Class<?> type) {
+        return type.getPackage() == null || type.getPackage().getName().startsWith("java.");
+    }
+
+    @VisibleForTesting
     @PostConstruct
-    private void init() {
+    final void init() {
         if (this.defaults == null) {
             this.defaults = new PYamlObject(Collections.<String, Object>emptyMap(), getAttributeName());
         }
+        validateParamObject(getValueType(), Sets.<Class>newHashSet());
     }
+
+    /**
+     * Return the type created by {@link #createValue(org.mapfish.print.config.Template)}.
+     */
+    protected abstract Class<? extends Value> getValueType();
 
     /**
      * The YAML config default values.
@@ -61,6 +151,11 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
 
     public final void setDefault(final Map<String, Object> defaultValue) {
         this.defaults = new PYamlObject(defaultValue, getAttributeName());
+    }
+
+    @Override
+    public final void setConfigName(final String configName) {
+        this.configName = configName;
     }
 
     /**
@@ -133,45 +228,148 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
     @Override
     public final void printClientConfig(final JSONWriter json, final Template template) throws JSONException {
         try {
+            Set<Class> printed = Sets.newHashSet();
             final Value exampleValue = createValue(template);
-            json.key("name").value(stringRepresentation(exampleValue.getClass()));
-            final Collection<Field> finalFields = ParserUtils.getAttributes(exampleValue.getClass(),
-                    ParserUtils.FILTER_FINAL_FIELDS);
-            if (!finalFields.isEmpty()) {
-                json.object();
-                for (Field attribute : finalFields) {
-                    json.key(attribute.getName()).value(attribute.get(exampleValue));
-                }
-                json.endObject();
-            }
+            json.key(JSON_NAME).value(this.configName);
+            final Class<?> valueType = exampleValue.getClass();
 
-            json.key("clientParams");
+            json.key(JSON_CLIENT_PARAMS);
             json.object();
-            final Collection<Field> mutableFields = ParserUtils.getAttributes(exampleValue.getClass(),
-                    ParserUtils.FILTER_ONLY_REQUIRED_ATTRIBUTES);
-            if (!mutableFields.isEmpty()) {
-                for (Field attribute : mutableFields) {
-                    json.key(attribute.getName()).value(stringRepresentation(attribute.getType()));
-                }
-            }
+            printClientConfigForType(json, exampleValue, valueType, this.defaults, printed);
             json.endObject();
 
-            json.key("clientOptions");
-            json.object();
-            final Collection<Field> hasDefaultFields = ParserUtils.getAttributes(exampleValue.getClass(),
-                    ParserUtils.FILTER_HAS_DEFAULT_ATTRIBUTES);
-            if (!hasDefaultFields.isEmpty()) {
-                for (Field attribute : hasDefaultFields) {
-                    json.key(attribute.getName());
-                    json.object();
-                    json.key("type").value(stringRepresentation(attribute.getType()));
-                    json.key("default").value(attribute.get(exampleValue));
-                    json.endObject();
-                }
+            Optional<JSONObject> clientOptions = getClientInfo();
+            if (clientOptions.isPresent()) {
+                json.key(JSON_CLIENT_INFO).value(clientOptions.get());
             }
-            json.endObject();
-        } catch (IllegalAccessException e) {
-            throw new Error(e);
+        } catch (Throwable e) {
+            throw new Error("Error printing the clientConfig of: " + getValueType().getName(), e);
         }
     }
+
+    /**
+     * Return an object that will be added to the client config with the key <em>clientInfo</em>.
+     * CSOFF: DesignForExtension
+     */
+    protected Optional<JSONObject> getClientInfo() throws JSONException {
+        // CSON: DesignForExtension
+        return Optional.absent();
+    }
+
+    private void printClientConfigForType(final JSONWriter json,
+                                          final Object exampleValue,
+                                          final Class<?> valueType,
+                                          final PObject defaultValue,
+                                          final Set<Class> printed) throws JSONException, IllegalAccessException {
+
+        final Collection<Field> mutableFields = ParserUtils.getAttributes(valueType,
+                ParserUtils.FILTER_ONLY_REQUIRED_ATTRIBUTES);
+        if (!mutableFields.isEmpty()) {
+            for (Field attribute : mutableFields) {
+                encodeAttributeValue(true, json, exampleValue, getDefaultValue(defaultValue, attribute), attribute, printed);
+            }
+        }
+        final Collection<Field> hasDefaultFields = ParserUtils.getAttributes(valueType,
+                ParserUtils.FILTER_HAS_DEFAULT_ATTRIBUTES);
+        if (!hasDefaultFields.isEmpty()) {
+            for (Field attribute : hasDefaultFields) {
+                encodeAttributeValue(false, json, exampleValue, getDefaultValue(defaultValue, attribute), attribute, printed);
+            }
+        }
+    }
+
+    private Object getDefaultValue(final PObject defaultValue, final Field attribute) {
+        if (defaultValue == null) {
+            return null;
+        }
+        return defaultValue.opt(attribute.getName());
+    }
+
+    private void encodeAttributeValue(final boolean required,
+                                      final JSONWriter json,
+                                      final Object exampleValue,
+                                      final Object defaultValue,
+                                      final Field attribute,
+                                      final Set<Class> printed) throws JSONException, IllegalAccessException {
+        json.key(attribute.getName());
+        json.object();
+        final Class<?> type = attribute.getType();
+        final Class<?> typeOrComponentType = type.isArray() ? type.getComponentType() : type;
+
+        if (!VALUE_OBJ_FIELD_NON_RECURSIVE_TYPE.contains(typeOrComponentType) && !isJavaType(typeOrComponentType)) {
+            if (printed.contains(typeOrComponentType)) {
+                json.key(JSON_ATTRIBUTE_TYPE).value("recursiveDefinition");
+            } else {
+                Set<Class> printedForSubTree = Sets.newHashSet(printed);
+                printedForSubTree.add(typeOrComponentType);
+
+                json.key(JSON_ATTRIBUTE_TYPE).value(stringRepresentation(type));
+                json.key(JSON_ATTRIBUTE_EMBEDDED_TYPE);
+                json.object();
+                Object value = attribute.get(exampleValue);
+                if (value == null) {
+                    try {
+                        value = typeOrComponentType.newInstance();
+                    } catch (InstantiationException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                final Object childDefaultValue = getDefaultValue(((PObject) defaultValue), attribute);
+                printClientConfigForType(json, value, typeOrComponentType, (PObject) childDefaultValue, printedForSubTree);
+                json.endObject();
+            }
+        } else {
+            final String typeDescription = getTypeDescription(typeOrComponentType);
+            json.key(JSON_ATTRIBUTE_TYPE).value(typeDescription);
+        }
+        if (!required || defaultValue != null) {
+            json.key(JSON_ATTRIBUTE_DEFAULT);
+            Object valueToAdd = defaultValue;
+            if (defaultValue == null) {
+                valueToAdd = attribute.get(exampleValue);
+            }
+
+            if (valueToAdd instanceof PJsonArray) {
+                valueToAdd = ((PJsonArray) valueToAdd).getInternalArray();
+            } else if (valueToAdd instanceof PJsonObject) {
+                valueToAdd = ((PJsonObject) valueToAdd).getInternalObj();
+            } else if (valueToAdd instanceof PYamlObject) {
+                valueToAdd = ((PYamlObject) valueToAdd).toJSON().getInternalObj();
+            } else if (valueToAdd instanceof PYamlArray) {
+                valueToAdd = ((PYamlArray) valueToAdd).toJSON().getInternalArray();
+            }
+
+            json.value(valueToAdd);
+        }
+        if (type.isArray()) {
+            json.key(JSON_ATTRIBUTE_IS_ARRAY).value(type.isArray());
+        }
+
+        json.endObject();
+    }
+
+    private String getTypeDescription(final Class<?> type) {
+        final String typeDescription;
+        if (PArray.class.isAssignableFrom(type)) {
+            typeDescription = "array";
+        } else if (PObject.class.isAssignableFrom(type)) {
+            typeDescription = "object";
+        } else if (Double.class.isAssignableFrom(type)) {
+            typeDescription = "double";
+        } else if (Integer.class.isAssignableFrom(type)) {
+            typeDescription = "int";
+        } else if (Boolean.class.isAssignableFrom(type)) {
+            typeDescription = "boolean";
+        } else if (Byte.class.isAssignableFrom(type)) {
+            typeDescription = "byte";
+        } else if (Long.class.isAssignableFrom(type)) {
+            typeDescription = "long";
+        } else if (Float.class.isAssignableFrom(type)) {
+            typeDescription = "float";
+        } else {
+            typeDescription = stringRepresentation(type);
+        }
+        return typeDescription;
+    }
+
 }

@@ -53,6 +53,12 @@ public final class OverviewMapAttribute extends GenericMapAttribute<OverviewMapA
         this.style = style;
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    protected Class<OverviewMapAttributeValues> getValueType() {
+        return OverviewMapAttributeValues.class;
+    }
+
     @Override
     public OverviewMapAttributeValues createValue(final Template template) {
         return new OverviewMapAttributeValues(template, new Dimension(this.getWidth(), this.getHeight()));

@@ -20,7 +20,6 @@
 package org.mapfish.print.servlet.oldapi;
 
 import com.google.common.collect.Maps;
-
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.servlet.MapPrinterServlet;
@@ -41,7 +40,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-
 import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
@@ -86,7 +84,7 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals("1:5000", firstScale.getString("name"));
         assertEquals("5000", firstScale.getString("value"));
 
-        assertEquals(0, info.getArray("dpis").size());
+        assertEquals(5, info.getArray("dpis").size());
         
         assertTrue(info.getArray("outputFormats").size() > 0);
         assertTrue(info.getArray("outputFormats").getObject(0).has("name"));

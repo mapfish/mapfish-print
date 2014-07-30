@@ -21,17 +21,20 @@ package org.mapfish.print;
 
 import com.google.common.io.Files;
 import org.geotools.referencing.CRS;
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
 import org.mapfish.print.attribute.map.CenterScaleMapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.map.Scale;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.mapfish.print.attribute.Attribute;
+import org.mapfish.print.attribute.map.GenericMapAttribute;
+
+import java.awt.Dimension;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -116,6 +119,20 @@ public abstract class AbstractMapfishSpringTest {
             return new MapfishMapContext(bounds, new Dimension(500,500), 0, 72, null);
         } catch (Throwable e) {
             throw new Error(e);
+        }
+    }
+
+    /**
+     * A few attributes will throw exceptions if not initialized this method can be called when an attribute
+     * needs testing but the test is generic and does not necessarily want or need to know the specific
+     * type of attribute and its properties.
+     */
+    public static void configureAttributeForTesting(Attribute att) {
+        if (att instanceof GenericMapAttribute) {
+            GenericMapAttribute<?> genericMapAttribute = (GenericMapAttribute<?>) att;
+            genericMapAttribute.setWidth(500);
+            genericMapAttribute.setHeight(500);
+            genericMapAttribute.setMaxDpi(400.0);
         }
     }
 }
