@@ -20,11 +20,17 @@
 package org.mapfish.print;
 
 import com.google.common.io.Files;
+import org.geotools.referencing.CRS;
+import org.mapfish.print.attribute.map.CenterScaleMapBounds;
+import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.map.Scale;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.attribute.map.GenericMapAttribute;
+
+import java.awt.Dimension;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -105,6 +111,15 @@ public abstract class AbstractMapfishSpringTest {
     
     protected File getTaskDirectory() {
         return this.folder.getRoot();
+    }
+
+    public static MapfishMapContext createTestMapContext() {
+        try {
+            final CenterScaleMapBounds bounds = new CenterScaleMapBounds(CRS.decode("CRS:84"), 0, 0, new Scale(30000));
+            return new MapfishMapContext(bounds, new Dimension(500,500), 0, 72, null);
+        } catch (Throwable e) {
+            throw new Error(e);
+        }
     }
 
     /**

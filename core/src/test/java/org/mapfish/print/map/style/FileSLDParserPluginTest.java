@@ -45,7 +45,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
     private FileSLDParserPlugin parser;
     @Autowired
     private TestHttpClientFactory clientHttpRequestFactory;
-    private MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0, 72);
+    private MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0, 72, null);
 
     @Test
     public void testParseStyle_SingleStyleRelativeToConfig() throws Throwable {
