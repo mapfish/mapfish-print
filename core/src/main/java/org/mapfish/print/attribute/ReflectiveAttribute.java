@@ -372,11 +372,4 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
         return typeDescription;
     }
 
-    /**
-     * Used by testing so that when calling methods like createValue or printClientConfig no null
-     * pointer exceptions are thrown.  This should only be called by tests.
-     */
-    public void setDefaultsForTesting() {
-        // do nothing.
-    }
 }

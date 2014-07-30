@@ -22,6 +22,7 @@ package org.mapfish.print.attribute;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.geotools.FeaturesParser;
+import org.mapfish.print.parser.HasDefaultValue;
 import org.opengis.referencing.FactoryException;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
@@ -63,6 +64,13 @@ public final class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribu
         public String features;
 
         /**
+         * By default the normal axis order as specified in EPSG code will be used when parsing projections.  However
+         * the requestor can override this by explicitly declaring that longitude axis is first.
+         */
+        @HasDefaultValue
+        public Boolean longitudeFirst = null;
+
+        /**
          * Constructor.
          *
          * @param template the template this map is part of.
@@ -79,11 +87,11 @@ public final class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribu
         public synchronized SimpleFeatureCollection getFeatures(final ClientHttpRequestFactory httpRequestFactory) throws
                 FactoryException, IOException {
             if (this.featuresCollection == null) {
-                final FeaturesParser parser = new FeaturesParser(httpRequestFactory);
+                final boolean forceLongitudeFirst = this.longitudeFirst == null ? false : this.longitudeFirst;
+                final FeaturesParser parser = new FeaturesParser(httpRequestFactory, forceLongitudeFirst);
                 this.featuresCollection = parser.autoTreat(this.template, this.features);
             }
             return this.featuresCollection;
-
         }
     }
 }

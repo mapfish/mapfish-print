@@ -85,7 +85,7 @@ public final class StyleAttribute extends ReflectiveAttribute<StylesAttributeVal
          */
         public synchronized Style getStyle(@Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
                                            @Nonnull final MapfishMapContext mapContext) throws Exception {
-            if (this.styleObject == null) {
+            if (this.styleObject == null && this.style != null) {
                 final StyleParserPlugin parser = new StringSLDParserPlugin();
                 try {
                     this.styleObject = parser.parseStyle(null, clientHttpRequestFactory, this.style, mapContext).get();

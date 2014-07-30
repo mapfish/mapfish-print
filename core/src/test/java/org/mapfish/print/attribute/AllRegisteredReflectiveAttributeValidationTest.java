@@ -64,7 +64,8 @@ public class AllRegisteredReflectiveAttributeValidationTest extends AbstractMapf
             template.setAttributes(attMap);
             if (attribute instanceof ReflectiveAttribute<?>) {
                 ReflectiveAttribute<?> reflectiveAttribute = (ReflectiveAttribute<?>) attribute;
-                reflectiveAttribute.setDefaultsForTesting();
+
+                AbstractMapfishSpringTest.configureAttributeForTesting(reflectiveAttribute);
             }
 
             final StringWriter w = new StringWriter();
