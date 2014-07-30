@@ -10,6 +10,7 @@ import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.attribute.map.BBoxMapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
@@ -27,9 +28,11 @@ import static org.junit.Assert.assertTrue;
 public class URLSLDParserPluginTest extends AbstractMapfishSpringTest {
 
     @Autowired
-    private URLSLDParserPlugin parserPlugin;
+    private SLDParserPlugin parserPlugin;
     @Autowired
     private TestHttpClientFactory clientHttpRequestFactory;
+    @Autowired
+    private ConfigFileLoaderManager fileLoaderManager;
     private MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0, 72, null);
 
     @Test
@@ -55,6 +58,7 @@ public class URLSLDParserPluginTest extends AbstractMapfishSpringTest {
         );
 
         Configuration configuration = new Configuration();
+        configuration.setFileLoaderManager(this.fileLoaderManager);
         configuration.setConfigurationFile(getFile("/org/mapfish/print/processor/map/center_wmts_fixedscale/thinline.sld"));
         final Optional<Style> styleOptional = parserPlugin.parseStyle(configuration,
                 clientHttpRequestFactory, "http://" + host + "/org/mapfish/print/processor/map/center_wmts_fixedscale/thinline.sld", mapContext);

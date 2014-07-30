@@ -72,6 +72,7 @@ public class MapfishJsonStyleParserPluginTest {
 
     final SLDTransformer transformer = new SLDTransformer();
     MapfishJsonStyleParserPlugin parser = new MapfishJsonStyleParserPlugin();
+
     @Test
     public void testVersion1() throws Throwable {
         PJsonObject layerJson = AbstractMapfishSpringTest.parseJSONObjectFromFile(MapfishJsonStyleParserPluginTest.class,

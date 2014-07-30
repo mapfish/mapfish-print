@@ -19,12 +19,17 @@
 
 package org.mapfish.print.map.style.json;
 
+import com.google.common.base.Function;
+
 import com.google.common.base.Optional;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.map.style.ParserPluginUtils;
 import org.mapfish.print.map.style.StyleParserPlugin;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -51,18 +56,18 @@ import javax.annotation.Nullable;
  *     "fillColor":"#FF0000",
  *     "fillOpacity":0,
  *     "rotation" : "30",
- *
+ * <p/>
  *     "externalGraphic" : "mark.png"
  *     "graphicName": "circle",
  *     "graphicOpacity": 0.4,
  *     "pointRadius": 5,
- *
+ * <p/>
  *     "strokeColor":"#FFA829",
  *     "strokeOpacity":1,
  *     "strokeWidth":5,
  *     "strokeLinecap":"round",
  *     "strokeDashstyle":"dot",
- *
+ * <p/>
  *     "fontColor":"#000000",
  *     "fontFamily": "sans-serif",
  *     "fontSize": "12px",
@@ -79,7 +84,7 @@ import javax.annotation.Nullable;
  *    }
  * }
  * </code></pre>
- *
+ * <p/>
  * <h2>Mapfish JSON Style Version 2</h2>
  * <p>
  *     Version 2 uses the same property names as version 1 but has a different structure.  The layout is as follows:
@@ -97,7 +102,7 @@ import javax.annotation.Nullable;
  *     // they will override default values defined at
  *     // higher level
  *     "rotation" : "30",
- *
+ * <p/>
  *     //min and max scale denominator are optional
  *     "maxScale" : 1000000,
  *     "minScale" : 100000,
@@ -107,12 +112,12 @@ import javax.annotation.Nullable;
  *       "fillColor":"#FF0000",
  *       "fillOpacity":0,
  *       "rotation" : "30",
- *
+ * <p/>
  *       "externalGraphic" : "mark.png"
  *       "graphicName": "circle",
  *       "graphicOpacity": 0.4,
  *       "pointRadius": 5,
- *
+ * <p/>
  *       "strokeColor":"${val1}",
  *       "strokeOpacity":1,
  *       "strokeWidth":5,
@@ -129,7 +134,7 @@ import javax.annotation.Nullable;
  *       "type" : "polygon",
  *       "fillColor":"#FF0000",
  *       "fillOpacity":0,
- *
+ * <p/>
  *       "strokeColor":"${val1}",
  *       "strokeOpacity":1,
  *       "strokeWidth":5,
@@ -146,6 +151,8 @@ import javax.annotation.Nullable;
  *       "haloOpacity": "0.7",
  *       "haloRadius": "3.0",
  *       "label": "[name]",
+ *       "fillColor":"#FF0000",
+ *       "fillOpacity":0,
  *       "labelAlign": "cm",
  *       "labelRotation": "45",
  *       "labelXOffset": "-25.0",
@@ -164,75 +171,70 @@ import javax.annotation.Nullable;
  *             <p>Value names can only contain numbers, characters, _ or -</p>
  *             <p>
  *                 Values do not have to be the full property they will be interpolated.  For example:
+ *                 <code>The value is ${val}</code>
+ *             </p>
+ *         </li>
+ *         <li>
+ *             Defaults property definitions(optional):
+ *             <p>
+ *                 In order to reduce duplication and keep the style definitions small, default values can be specified.  The
+ *                 default values in the root (style level) will be used in all symbolizers if the value is not defined.  The
+ *                 style level default will apply to all symbolizers defined in the system.
+ *             </p>
+ *             <p>
+ *                 The only difference between a value and a default is that the default has a well known name, therefore defaults
+ *                 can also be used as values.
+ *             </p>
+ *         </li>
+ *         <li>
+ *             All the styling rules (At least one is required)
+ *             <p>
+ *                 A styling rule has a key which is the filter which selects the features that the rule will be used to draw and the
+ *                 rule definition object.
+ *             <p>The filter is either <code>*</code> or an
+ *                 <a href="http://docs.geoserver.org/stable/en/user/filter/ecql_reference.html#filter-ecql-reference">
+ *                 ECQL Expression</a>) surrounded by square brackets.  For example: [att < 23].</p>
+ *                 The rule definition is as follows:
  *                 <ul>
- *                     <li>Suppose there is a value defined as: <code>"val" = "red"</code></li>
- *                     <li>If there is a property later: <code>"someProperty": "The value is ${val}"</code></li>
- *                     <li>Then the final value of <code>someProperty</code> will be: <code>The value is red</code></li>
+ *                     <li>
+ *                         Default property values (optional):
+ *                         <p>
+ *                             Each rule can also have defaults.  If the style and the rule have a default for the same property
+ *                             the rule will override the style default.  All defaults can be (of course) overridden by a value
+ *                             in a symbolizer.
+ *                         </p>
+ *                     </li>
+ *                     <li>
+ *                         minScale (optional)
+ *                         <p>
+ *                             The minimum scale that the rule should evaluate to true
+ *                         </p>
+ *                     </li>
+ *                     <li>
+ *                         maxScale (optional)
+ *                         <p>
+ *                             The maximum scale that the rule should evaluate to true
+ *                         </p>
+ *                     </li>
+ *                     <li>
+ *                         An array of symbolizers. (at least one required).
+ *                         <p>
+ *                             A symbolizer must have a type property (point, line, polygon, text) which indicates the type of
+ *                             symbolizer and it has the attributes for that type of symbolizer.  All values have defaults
+ *                             so it is possible to define a symbolizer as with only the type property. The only exception is
+ *                             that the "text" symbolizer needs a label property.
+ *                         </p>
+ *                     </li>
  *                 </ul>
  *             </p>
-*          </li>
- *          <li>
- *              Defaults property definitions(optional):
- *              <p>
- *                  In order to reduce duplication and keep the style definitions small, default values can be specified.  The
- *                  default values in the root (style level) will be used in all symbolizers if the value is not defined.  The
- *                  style level default will apply to all symbolizers defined in the system.
- *              </p>
- *              <p>
- *                  The only difference between a value and a default is that the default has a well known name, therefore defaults
- *                  can also be used as values.  In other words, if you define a default for strokeColor you can later write:
- *                  <code>fillColor: "${strokeColor}"</code>
- *              </p>
- *          </li>
- *          <li>
- *              All the styling rules (At least one is required)
- *              <p>
- *                  A styling rule has a key which is the filter which selects the features that the rule will be used to draw and the
- *                  rule definition object.
- *                  <p>The filter is either <code>*</code> or an
- *                  <a href="http://docs.geoserver.org/stable/en/user/filter/ecql_reference.html#filter-ecql-reference">
- *                      ECQL Expression</a>) surrounded by square brackets.  For example: [att < 23].</p>
- *                      The rule definition is as follows:
- *                      <ul>
- *                          <li>
- *                              Default property values (optional):
- *                              <p>
- *                                  Each rule can also have defaults.  If the style and the rule have a default for the same property
- *                                  the rule will override the style default.  All defaults can be (of course) overridden by a value
- *                                  in a symbolizer.
- *                              </p>
- *                          </li>
- *                          <li>
- *                              minScale (optional)
- *                              <p>
- *                                  The minimum scale that the rule should evaluate to true
- *                              </p>
- *                          </li>
- *                          <li>
- *                              maxScale (optional)
- *                              <p>
- *                                  The maximum scale that the rule should evaluate to true
- *                              </p>
- *                          </li>
- *                          <li>
- *                              An array of symbolizers. (at least one required).
- *                              <p>
- *                                  A symbolizer must have a type property (point, line, polygon, text) which indicates the type of
- *                                  symbolizer and it has the attributes for that type of symbolizer.  All values have defaults
- *                                  so it is possible to define a symbolizer as with only the type property. The only exception is
- *                                  that the "text" symbolizer needs a label property.
- *                              </p>
- *                          </li>
- *                      </ul>
- *              </p>
- *          </li>
+ *         </li>
  *     </ul>
  * </p>
- *
+ * <p/>
  * <h2>Configuration Elements</h2>
  * <ul>
- *     <li><strong>fillColor</strong> - (polygon, point) The color used to fill the point graphic, polygon or text.</li>
- *     <li><strong>fillOpacity</strong> - (polygon,  point) The opacity used when fill the point graphic, polygon or text.</li>
+ *     <li><strong>fillColor</strong> - (polygon, point, text) The color used to fill the point graphic, polygon or text.</li>
+ *     <li><strong>fillOpacity</strong> - (polygon,  point, text) The opacity used when fill the point graphic, polygon or text.</li>
  *     <li><strong>rotation</strong> - (point) The rotation of the point graphic</li>
  *     <li>
  *         <strong>externalGraphic</strong> - (point) one of the two options for declaring the point graphic to use.  This can
@@ -246,9 +248,9 @@ import javax.annotation.Nullable;
  *         <ul>
  *             <li>WellKnownMarks: cross, star, triangle, arrow, X, hatch, square</li>
  *             <li>ShapeMarks: shape://vertline, shape://horline, shape://slash, shape://backslash, shape://dot, shape://plus,
- *             shape://times, shape://oarrow, shape://carrow, shape://coarrow, shape://ccarrow</li>
+ *                 shape://times, shape://oarrow, shape://carrow, shape://coarrow, shape://ccarrow</li>
  *             <li>TTFMarkFactory: ttf://fontName#code (where fontName is a TrueType font and the code is the code number of the
- *             character to render for the point.</li>
+ *                 character to render for the point.</li>
  *         </ul>
  *     </li>
  *     <li><strong>graphicOpacity</strong> - (point) the opacity to use when drawing the point graphic</li>
@@ -304,27 +306,27 @@ import javax.annotation.Nullable;
  *         <p>
  *             X-Align options:
  *             <ul>
- *                <li>l - align to the left of the geometric center</li>
- *                <li>c - align on the center of the geometric center</li>
- *                <li>r - align to the right of the geometric center</li>
+ *                 <li>l - align to the left of the geometric center</li>
+ *                 <li>c - align on the center of the geometric center</li>
+ *                 <li>r - align to the right of the geometric center</li>
  *             </ul>
  *         </p>
  *         <p>
  *             Y-Align options:
  *             <ul>
- *                <li>b - align to the bottom of the geometric center</li>
- *                <li>m - align on the middle of the geometric center</li>
- *                <li>t - align to the top of the geometric center</li>
+ *                 <li>b - align to the bottom of the geometric center</li>
+ *                 <li>m - align on the middle of the geometric center</li>
+ *                 <li>t - align to the top of the geometric center</li>
  *             </ul>
  *         </p>
  *     </li>
-
+ *     <p/>
  *     <li><strong>labelRotation</strong> - the rotation of the label</li>
  *     <li><strong>labelXOffset</strong> - the amount to offset the label along the x axis.  negative number offset to the left</li>
  *     <li><strong>labelYOffset</strong> - the amount to offset the label along the y axis.  negative number offset to the top
- *     of the printing</li>
+ *         of the printing</li>
  * </ul>
- *
+ * <p/>
  * <h2>ECQL references:</h2>
  * <ul>
  *     <li><a href="http://docs.geoserver.org/stable/en/user/filter/ecql_reference.html#ecql-expr">
@@ -338,7 +340,6 @@ import javax.annotation.Nullable;
  * </ul>
  */
 public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
-
     enum Versions {
         ONE("1") {
             @Override
@@ -368,11 +369,31 @@ public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
 
     private StyleBuilder sldStyleBuilder = new StyleBuilder();
 
+
     @Override
     public Optional<Style> parseStyle(@Nullable final Configuration configuration,
                                       @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
                                       @Nonnull final String styleString,
                                       @Nonnull final MapfishMapContext mapContext) throws Throwable {
+        final Optional<Style> styleOptional = tryLoadJson(configuration, styleString);
+
+        if (styleOptional.isPresent()) {
+            return styleOptional;
+        }
+        return ParserPluginUtils.loadStyleAsURI(configuration, clientHttpRequestFactory, styleString, new Function<byte[],
+                Optional<Style>>() {
+            @Override
+            public Optional<Style> apply(final byte[] input) {
+                try {
+                    return tryLoadJson(configuration, new String(input, Constants.DEFAULT_CHARSET));
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+    }
+
+    private Optional<Style> tryLoadJson(final Configuration configuration, final String styleString) throws JSONException {
         String trimmed = styleString.trim();
         if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
             final PJsonObject json = new PJsonObject(new JSONObject(styleString), "style");
@@ -384,6 +405,7 @@ public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
                 }
             }
         }
+
         return Optional.absent();
     }
 }

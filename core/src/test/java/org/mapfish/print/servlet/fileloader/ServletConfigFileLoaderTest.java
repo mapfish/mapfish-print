@@ -23,6 +23,7 @@ import com.google.common.base.Optional;
 import com.google.common.io.Files;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.IllegalFileAccessException;
 import org.mapfish.print.servlet.MapPrinterServletTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -108,7 +109,7 @@ public class ServletConfigFileLoaderTest extends AbstractMapfishSpringTest {
                                                                      resourceFileName));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalFileAccessException.class)
     public void testLoadFileChildResource_NotInConfigDir() throws Exception {
         final URI configFileUri = new URI(configFileUriString);
 
@@ -116,7 +117,7 @@ public class ServletConfigFileLoaderTest extends AbstractMapfishSpringTest {
                 .getAbsolutePath());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalFileAccessException.class)
     public void testLoadFileChildResource_NotInConfigDir_ServletURI() throws Exception {
         final URI configFileUri = new URI(configFileUriString);
 

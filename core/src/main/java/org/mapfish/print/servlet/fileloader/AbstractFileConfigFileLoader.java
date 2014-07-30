@@ -21,6 +21,8 @@ package org.mapfish.print.servlet.fileloader;
 
 import com.google.common.base.Optional;
 import com.google.common.io.Files;
+import org.mapfish.print.FileUtils;
+import org.mapfish.print.IllegalFileAccessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,7 +106,9 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
         try {
             final Optional<File> childFile = resolveChildFile(configFileUri, pathToSubResource);
             return childFile.isPresent() && childFile.get().exists();
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalFileAccessException e) {
+            return false;
+        } catch (NoSuchElementException nsee) {
             return false;
         }
     }
@@ -139,26 +143,39 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
             final URI uri = new URI(pathToSubResource);
 
             if (pathToSubResource.startsWith(getUriScheme())) {
-                final Iterator<File> fileIterator = resolveFiles(uri);
-                while (fileIterator.hasNext()) {
-                    File next = fileIterator.next();
-                    if (next.exists()) {
-                        verifyChildInConfigDir(pathToSubResource, configFile, next);
-                        return Optional.of(next);
+                try {
+                    final Iterator<File> fileIterator = resolveFiles(uri);
+
+                    while (fileIterator.hasNext()) {
+                        File next = fileIterator.next();
+                        if (next.exists()) {
+                            FileUtils.assertIsSubDirectory("configuration", configFile.getParentFile(), next);
+                            return Optional.of(next);
+                        }
+                    }
+                } catch (IllegalArgumentException iae) {
+                    // See if the file is a relative file and see if we can load that.
+                    String relativePart = pathToSubResource.substring((getUriScheme() + ":/").length());
+                    final File file = new File(configFile.getParentFile(), relativePart);
+
+                    if (file.exists()) {
+                        return Optional.of(file);
+                    } else {
+                        return Optional.absent();
                     }
                 }
             }
 
             try {
                 final File childFile = new File(uri);
-                verifyChildInConfigDir(pathToSubResource, configFile, childFile);
 
                 if (childFile.exists()) {
+                    FileUtils.assertIsSubDirectory("configuration", configFile.getParentFile(), childFile);
                     return Optional.of(childFile);
                 } else {
                     return Optional.absent();
                 }
-            }  catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 return resolveFileAssumingPathIsFile(pathToSubResource, configFile);
             }
 
@@ -175,20 +192,12 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
             return Optional.of(childFile);
         } else {
             childFile = new File(pathToSubResource);
-            verifyChildInConfigDir(pathToSubResource, configFile, childFile);
             if (childFile.exists()) {
+                FileUtils.assertIsSubDirectory("configuration", configFile.getParentFile(), childFile);
                 return Optional.of(childFile);
             }
         }
 
         return Optional.absent();
     }
-
-    private void verifyChildInConfigDir(final String pathToSubResource, final File configFile, final File childFile) throws IOException {
-        if (childFile.exists() && !childFile.getCanonicalPath().startsWith(configFile.getParentFile().getCanonicalPath())) {
-            throw new IllegalArgumentException("'" + pathToSubResource + "' identifies a file that is not within the configuration " +
-                                               "directory: " + configFile.getParentFile().getCanonicalPath());
-        }
-    }
-
 }

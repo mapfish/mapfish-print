@@ -26,12 +26,14 @@ import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.IllegalFileAccessException;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.MapfishParserTest;
 import org.mapfish.print.processor.map.CreateMapProcessorFixedScaleBBoxGeoJsonTest;
 import org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest;
+import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -57,6 +59,9 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
     private GeoJsonLayer.Plugin geojsonLayerParser;
     @Autowired
     private TestHttpClientFactory httpRequestFactory;
+    @Autowired
+    private ConfigFileLoaderManager fileLoaderManager;
+
 
 
     @Test
@@ -68,6 +73,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
         final Configuration configuration = new Configuration();
         configuration.setConfigurationFile(new File("."));
+        configuration.setFileLoaderManager(this.fileLoaderManager);
 
         Template template = new Template();
         template.setConfiguration(configuration);
@@ -88,7 +94,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
         assertEquals(true, layer.shouldRenderAsSvg());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalFileAccessException.class)
     public void testGeoIllegalFileUrl() throws Exception {
         final File file = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "geojson.json");
         final PJsonObject requestData = parseJSONObjectFromString("{type:\"geojson\";style:\"polygon\";geoJson:\""
@@ -96,6 +102,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
         final Configuration configuration = new Configuration();
         configuration.setConfigurationFile(File.createTempFile("xyz", ".yaml"));
+        configuration.setFileLoaderManager(this.fileLoaderManager);
 
         Template template = new Template();
         template.setConfiguration(configuration);
@@ -111,6 +118,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
     public void testGeoIllegalFileUrl2() throws Exception {
         final Configuration configuration = new Configuration();
         configuration.setConfigurationFile(File.createTempFile("xyz", ".yaml"));
+        configuration.setFileLoaderManager(this.fileLoaderManager);
 
         Template template = new Template();
         template.setConfiguration(configuration);
@@ -127,6 +135,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
         final Configuration configuration = new Configuration();
         configuration.setConfigurationFile(file);
+        configuration.setFileLoaderManager(this.fileLoaderManager);
 
         Template template = new Template();
         template.setConfiguration(configuration);
@@ -165,6 +174,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
         final File file = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "geojson.json");
         final Configuration configuration = new Configuration();
         configuration.setConfigurationFile(file);
+        configuration.setFileLoaderManager(this.fileLoaderManager);
 
         Template template = new Template();
         template.setConfiguration(configuration);
@@ -192,6 +202,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
         final Configuration configuration = new Configuration();
         configuration.setConfigurationFile(file);
+        configuration.setFileLoaderManager(this.fileLoaderManager);
 
         Template template = new Template();
         template.setConfiguration(configuration);

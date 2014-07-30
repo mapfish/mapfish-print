@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -107,6 +108,8 @@ public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
             return child.isPresent();
         } catch (IllegalArgumentException e) {
             return false;
+        } catch (NoSuchElementException e) {
+            return false;
         }
     }
 
@@ -168,7 +171,33 @@ public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
     }
 
     private Optional<URL> loadResources(final URI fileURI) {
+        if (fileURI == null) {
+            return Optional.absent();
+        }
+        if (fileURI.getScheme() != null && fileURI.getScheme().equals("file")) {
+            File file;
+            try {
+                file = new File(fileURI);
+            } catch (IllegalArgumentException e) {
+                file = new File(fileURI.toString().substring("file://".length()));
+            }
+            if (file.exists()) {
+                try {
+                    return Optional.of(file.toURI().toURL());
+                } catch (MalformedURLException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                return Optional.absent();
+            }
+        }
+        if (!fileURI.toString().startsWith(PREFIX)) {
+            return Optional.absent();
+        }
         String path = fileURI.toString().substring(PREFIX_LENGTH);
+        if (path.charAt(0) == '/') {
+            path = path.substring(1);
+        }
         try {
             final Enumeration<URL> resources = FileConfigFileLoader.class.getClassLoader().getResources(path);
             if (resources.hasMoreElements()) {

@@ -19,6 +19,7 @@
 
 package org.mapfish.print.map.style;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.io.ByteSource;
 import com.google.common.io.CharSource;
@@ -34,7 +35,6 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -43,8 +43,7 @@ import javax.annotation.Nullable;
  *
  * @author Jesse on 4/8/2014.
  */
-public abstract class AbstractSLDParserPlugin implements StyleParserPlugin {
-
+public class SLDParserPlugin implements StyleParserPlugin {
     /**
      * The separator between the path or url segment for loading the sld and an index of the style to obtain.
      *
@@ -53,21 +52,36 @@ public abstract class AbstractSLDParserPlugin implements StyleParserPlugin {
      */
     public static final String STYLE_INDEX_REF_SEPARATOR = "##";
 
+
     @Override
     public final Optional<Style> parseStyle(@Nullable final Configuration configuration,
                                             @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
                                             @Nonnull final String styleString,
                                             @Nonnull final MapfishMapContext mapContext) throws Throwable {
-        Integer styleIndex = lookupStyleIndex(styleString).orNull();
-        String styleStringWithoutIndexReference = removeIndexReference(styleString);
-        List<ByteSource> inputStream = getInputStreamSuppliers(configuration, clientHttpRequestFactory, styleStringWithoutIndexReference);
-        for (ByteSource source : inputStream) {
-            Optional<Style> style = tryLoadSLD(source, styleIndex);
-            if (style.isPresent()) {
-                return style;
-            }
+
+        // try to load xml
+        final ByteSource straightByteSource = ByteSource.wrap(styleString.getBytes(Constants.DEFAULT_CHARSET));
+        final Optional<Style> styleOptional = tryLoadSLD(straightByteSource, null);
+
+        if (styleOptional.isPresent()) {
+            return styleOptional;
         }
-        return Optional.absent();
+
+        final Integer styleIndex = lookupStyleIndex(styleString).orNull();
+        final String styleStringWithoutIndexReference = removeIndexReference(styleString);
+        Function<byte[], Optional<Style>> loadFunction = new Function<byte[], Optional<Style>>() {
+            @Override
+            public Optional<Style> apply(final byte[] input) {
+                final ByteSource bytes = ByteSource.wrap(input);
+                try {
+                    return tryLoadSLD(bytes, styleIndex);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+
+        return ParserPluginUtils.loadStyleAsURI(configuration, clientHttpRequestFactory, styleStringWithoutIndexReference, loadFunction);
     }
 
     private String removeIndexReference(final String styleString) {
@@ -85,16 +99,6 @@ public abstract class AbstractSLDParserPlugin implements StyleParserPlugin {
         }
         return Optional.absent();
     }
-
-    /**
-     * Return a ByteSource for each known interpretation of the style string.
-     *  @param configuration the configuration object being used.
-     * @param clientHttpRequestFactory a factory for making http requests
-     * @param styleString   the string (url, file, etc...) representing the style or the location to load the style from.
-     */
-    protected abstract List<ByteSource> getInputStreamSuppliers(@Nullable Configuration configuration,
-                                                                @Nonnull ClientHttpRequestFactory clientHttpRequestFactory,
-                                                                @Nonnull String styleString);
 
     private Optional<Style> tryLoadSLD(final ByteSource byteSource, final Integer styleIndex) throws IOException {
         Assert.isTrue(styleIndex == null || styleIndex > -1, "styleIndex must be > -1 but was: " + styleIndex);
@@ -120,9 +124,8 @@ public abstract class AbstractSLDParserPlugin implements StyleParserPlugin {
                                                       (styleIndex + 1));
         } else {
             Assert.isTrue(styles.length < 2, "There are " + styles.length + " therefore the styleRef must contain an index " +
-                                             "identifying" +
-
-                                             " the style.  The index starts at 1 for the first style.\n\tExample: thinline.sld##1");
+                                             "identifying the style.  The index starts at 1 for the first style." +
+                                             "\n\tExample: thinline.sld##1");
         }
 
         if (styleIndex == null) {

@@ -21,6 +21,7 @@ package org.mapfish.print.map.geotools;
 
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.IllegalFileAccessException;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest;
@@ -33,7 +34,7 @@ import java.io.File;
  */
 public class GeotiffLayerFactoryPluginTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalFileAccessException.class)
     public void testGeoIllegalFileUrl() throws Exception {
         final File file = AbstractMapfishSpringTest.
                 getFile(CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest.class, CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest
