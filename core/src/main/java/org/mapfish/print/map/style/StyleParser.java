@@ -21,9 +21,16 @@ package org.mapfish.print.map.style;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.styling.SLDTransformer;
 import org.geotools.styling.Style;
+import org.geotools.styling.StyleFactory;
+import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.styling.UserLayer;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
@@ -36,6 +43,7 @@ import javax.annotation.Nonnull;
  * @author Jesse on 3/26/14.
  */
 public final class StyleParser {
+    private static final Logger LOGGER = LoggerFactory.getLogger(StyleParser.class);
     @Autowired
     private List<StyleParserPlugin> plugins = Lists.newArrayList();
 
@@ -54,6 +62,19 @@ public final class StyleParser {
             try {
                 Optional<? extends Style> style = plugin.parseStyle(configuration, clientHttpRequestFactory, styleString, mapContext);
                 if (style.isPresent()) {
+                    if (LOGGER.isDebugEnabled()) {
+                        try {
+                            final SLDTransformer transformer = new SLDTransformer();
+                            final StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory();
+                            final UserLayer userLayer = styleFactory.createUserLayer();
+                            userLayer.addUserStyle(style.get());
+                            final StyledLayerDescriptor sld = styleFactory.createStyledLayerDescriptor();
+                            sld.addStyledLayer(userLayer);
+                            LOGGER.debug("Loaded style from: \n\n '" + styleString + "': \n\n" + transformer.transform(sld));
+                        } catch (Exception e) {
+                            LOGGER.debug("Loaded style from: \n\n '" + styleString + "' \n\n<Unable to transform it to xml>: " + e, e);
+                        }
+                    }
                     return style;
                 }
             } catch (Throwable t) {

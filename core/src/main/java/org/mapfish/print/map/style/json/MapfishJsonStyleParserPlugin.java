@@ -344,6 +344,8 @@ import static org.mapfish.print.Constants.DEFAULT_CHARSET;
  * <ul>
  *     <li><a href="http://docs.geoserver.org/stable/en/user/filter/ecql_reference.html#ecql-expr">
  *         http://docs.geoserver.org/stable/en/user/filter/ecql_reference.html#ecql-expr</a></li>
+ *     <li><a href="http://udig.refractions.net/files/docs/latest/user/Constraint%20Query%20Language.html">
+ *         http://udig.refractions.net/files/docs/latest/user/Constraint%20Query%20Language.html</a></li>
  *     <li><a href="http://docs.geoserver.org/stable/en/user/filter/function_reference.html#filter-function-reference">
  *         http://docs.geoserver.org/stable/en/user/filter/function_reference.html#filter-function-reference</a></li>
  *     <li><a href="http://docs.geotools.org/stable/userguide/library/cql/ecql.html">

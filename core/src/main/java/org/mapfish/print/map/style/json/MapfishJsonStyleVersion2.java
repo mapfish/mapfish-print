@@ -247,6 +247,6 @@ public final class MapfishJsonStyleVersion2 {
     }
 
     private boolean isRule(final String jsonKey) {
-        return jsonKey.equals(JSON_FILTER_INCLUDE) || (jsonKey.startsWith("[") && jsonKey.endsWith("]"));
+        return this.json.optJSONObject(jsonKey) != null;
     }
 }
