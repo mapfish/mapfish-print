@@ -19,12 +19,11 @@
 
 package org.mapfish.print.map.style;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.io.ByteSource;
-import com.google.common.io.ByteStreams;
 import com.google.common.io.CharSource;
 import com.google.common.io.Closeables;
-import com.google.common.io.Closer;
 import com.vividsolutions.jts.util.Assert;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.SLDParser;
@@ -32,14 +31,10 @@ import org.geotools.styling.Style;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpResponse;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URI;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -72,31 +67,21 @@ public class SLDParserPlugin implements StyleParserPlugin {
             return styleOptional;
         }
 
-        Integer styleIndex = lookupStyleIndex(styleString).orNull();
-        String styleStringWithoutIndexReference = removeIndexReference(styleString);
-
-        if (configuration != null && configuration.isAccessible(styleStringWithoutIndexReference)) {
-            final ByteSource bytes = ByteSource.wrap(configuration.loadFile(styleStringWithoutIndexReference));
-            Optional<Style> style = tryLoadSLD(bytes, styleIndex);
-            if (style.isPresent()) {
-                return style;
+        final Integer styleIndex = lookupStyleIndex(styleString).orNull();
+        final String styleStringWithoutIndexReference = removeIndexReference(styleString);
+        Function<byte[], Optional<Style>> loadFunction = new Function<byte[], Optional<Style>>() {
+            @Override
+            public Optional<Style> apply(final byte[] input) {
+                final ByteSource bytes = ByteSource.wrap(input);
+                try {
+                    return tryLoadSLD(bytes, styleIndex);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        }
+        };
 
-        Closer closer = Closer.create();
-        try {
-            final URI uri = new URI(styleStringWithoutIndexReference);
-
-            final ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
-            final ClientHttpResponse response = closer.register(request.execute());
-            final ByteSource byteSource = ByteSource.wrap(ByteStreams.toByteArray(response.getBody()));
-
-            return tryLoadSLD(byteSource, styleIndex);
-        } catch (Exception e) {
-            return Optional.absent();
-        } finally {
-            closer.close();
-        }
+        return ParserPluginUtils.loadStyleAsURI(configuration, clientHttpRequestFactory, styleStringWithoutIndexReference, loadFunction);
     }
 
     private String removeIndexReference(final String styleString) {

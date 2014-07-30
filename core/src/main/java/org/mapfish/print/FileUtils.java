@@ -20,6 +20,8 @@
 package org.mapfish.print;
 
 import org.mapfish.print.config.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +35,8 @@ import java.net.URL;
  * @author Jesse on 4/8/2014.
  */
 public final class FileUtils {
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileUtils.class);
+
     private FileUtils() {
         // intentionally empty
     }
@@ -114,6 +118,8 @@ public final class FileUtils {
             }
             parentFile = parentFile.getParentFile();
         }
+        LOGGER.warn("A user attempted to access a file not within the '" + descriptorOfBase + "' directory (" + canonicalBase + "). " +
+                    "Attempted access to :" + canonicalChild);
         throw new IllegalFileAccessException("'" + canonicalChild + "' identifies a file that is not within the '" + descriptorOfBase +
                                              "' directory: " + canonicalBase);
     }
