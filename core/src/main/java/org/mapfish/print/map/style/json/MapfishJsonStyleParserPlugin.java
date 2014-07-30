@@ -41,7 +41,7 @@ import javax.annotation.Nullable;
  * </p>
  * <h2>Mapfish JSON Style Version 1</h2>
  * <p>
- *     Version 1 is compatible with mapfish print <= v2 and is based on the open layers v2 styling.  The layout is as follows:
+ *     Version 1 is compatible with mapfish print <= v2 and is based on the OpenLayers v2 styling.  The layout is as follows:
  * </p>
  * <pre><code>
  * {
@@ -89,7 +89,7 @@ import javax.annotation.Nullable;
  *   "version" : "2",
  *   // shared values can be declared here (at top level)
  *   // and used in form ${constName} later in json
- *   "val1" : "FFA829",
+ *   "val1" : "#FFA829",
  *   // default values for properties can be defined here
  *   " strokeDashstyle" : "dot"
  *   "[population > 300]" : {
@@ -101,7 +101,7 @@ import javax.annotation.Nullable;
  *     //min and max scale denominator are optional
  *     "maxScale" : 1000000,
  *     "minScale" : 100000,
- *     "symb" : [{
+ *     "symbolizers" : [{
  *       // values defined in symbolizer will override defaults
  *       "type" : "point",
  *       "fillColor":"#FF0000",
@@ -164,7 +164,11 @@ import javax.annotation.Nullable;
  *             <p>Value names can only contain numbers, characters, _ or -</p>
  *             <p>
  *                 Values do not have to be the full property they will be interpolated.  For example:
- *                 <code>The value is ${val}</code>
+ *                 <ul>
+ *                     <li>Suppose there is a value defined as: <code>"val" = "red"</code></li>
+ *                     <li>If there is a property later: <code>"someProperty": "The value is ${val}"</code></li>
+ *                     <li>Then the final value of <code>someProperty</code> will be: <code>The value is red</code></li>
+ *                 </ul>
  *             </p>
 *          </li>
  *          <li>
@@ -176,7 +180,8 @@ import javax.annotation.Nullable;
  *              </p>
  *              <p>
  *                  The only difference between a value and a default is that the default has a well known name, therefore defaults
- *                  can also be used as values.
+ *                  can also be used as values.  In other words, if you define a default for strokeColor you can later write:
+ *                  <code>fillColor: "${strokeColor}"</code>
  *              </p>
  *          </li>
  *          <li>
