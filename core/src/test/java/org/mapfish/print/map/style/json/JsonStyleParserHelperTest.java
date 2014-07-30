@@ -261,7 +261,7 @@ public class JsonStyleParserHelperTest {
     public void testDefaultPointSymbolizer() throws Exception {
         helper.setAllowNullSymbolizer(false);
         JSONObject json = new JSONObject();
-        PJsonObject pJson = new PJsonObject(json, "symb");
+        PJsonObject pJson = new PJsonObject(json, "symbolizers");
         final PointSymbolizer pointSymbolizer = this.helper.createPointSymbolizer(pJson);
         assertNotNull(pointSymbolizer);
 
@@ -281,7 +281,7 @@ public class JsonStyleParserHelperTest {
         JSONObject json = new JSONObject();
         json.put(JsonStyleParserHelper.JSON_STROKE_DASHSTYLE, "5 4");
 
-        PJsonObject pJson = new PJsonObject(json, "symb");
+        PJsonObject pJson = new PJsonObject(json, "symbolizers");
         final PointSymbolizer pointSymbolizer = this.helper.createPointSymbolizer(pJson);
         assertNotNull(pointSymbolizer);
 
@@ -295,7 +295,7 @@ public class JsonStyleParserHelperTest {
     public void testDefaultLineSymbolizer() throws Exception {
         helper.setAllowNullSymbolizer(false);
         JSONObject json = new JSONObject();
-        PJsonObject pJson = new PJsonObject(json, "symb");
+        PJsonObject pJson = new PJsonObject(json, "symbolizers");
         final LineSymbolizer lineSymbolizer = this.helper.createLineSymbolizer(pJson);
         assertNotNull(lineSymbolizer);
 
@@ -312,7 +312,7 @@ public class JsonStyleParserHelperTest {
         JSONObject json = new JSONObject();
         json.put(JsonStyleParserHelper.JSON_STROKE_DASHSTYLE, "5 4");
 
-        PJsonObject pJson = new PJsonObject(json, "symb");
+        PJsonObject pJson = new PJsonObject(json, "symbolizers");
         final LineSymbolizer lineSymbolizer = this.helper.createLineSymbolizer(pJson);
         assertNotNull(lineSymbolizer);
 
@@ -324,7 +324,7 @@ public class JsonStyleParserHelperTest {
     public void testDefaultPolygonSymbolizer() throws Exception {
         helper.setAllowNullSymbolizer(false);
         JSONObject json = new JSONObject();
-        PJsonObject pJson = new PJsonObject(json, "symb");
+        PJsonObject pJson = new PJsonObject(json, "symbolizers");
         final PolygonSymbolizer polygonSymbolizer = this.helper.createPolygonSymbolizer(pJson);
         assertNotNull(polygonSymbolizer);
 
@@ -342,7 +342,7 @@ public class JsonStyleParserHelperTest {
         JSONObject json = new JSONObject();
         json.put(JsonStyleParserHelper.JSON_STROKE_DASHSTYLE, "5 4");
 
-        PJsonObject pJson = new PJsonObject(json, "symb");
+        PJsonObject pJson = new PJsonObject(json, "symbolizers");
         final PolygonSymbolizer polygonSymbolizer = this.helper.createPolygonSymbolizer(pJson);
         assertNotNull(polygonSymbolizer);
 
@@ -360,7 +360,7 @@ public class JsonStyleParserHelperTest {
         helper.setVersion(Versions.TWO);
         JSONObject json = new JSONObject();
         json.put(JsonStyleParserHelper.JSON_LABEL, label);
-        PJsonObject pJson = new PJsonObject(json, "symb");
+        PJsonObject pJson = new PJsonObject(json, "symbolizers");
         final TextSymbolizer textSymbolizer = this.helper.createTextSymbolizer(pJson);
         assertNotNull(textSymbolizer);
 
@@ -377,7 +377,7 @@ public class JsonStyleParserHelperTest {
         json.put(JsonStyleParserHelper.JSON_LABEL, label);
         json.put(JsonStyleParserHelper.JSON_FONT_COLOR, "red");
 
-        PJsonObject pJson = new PJsonObject(json, "symb");
+        PJsonObject pJson = new PJsonObject(json, "symbolizers");
         final TextSymbolizer textSymbolizer = this.helper.createTextSymbolizer(pJson);
         assertNotNull(textSymbolizer);
 
@@ -388,7 +388,7 @@ public class JsonStyleParserHelperTest {
     @Test
     public void testLabelAttributes() throws Exception {
         JSONObject json = new JSONObject();
-        PJsonObject pJson = new PJsonObject(json, "symb");
+        PJsonObject pJson = new PJsonObject(json, "symbolizers");
 
         json.put(JsonStyleParserHelper.JSON_LABEL, "att");
         TextSymbolizer textSymbolizer = this.helper.createTextSymbolizer(pJson);

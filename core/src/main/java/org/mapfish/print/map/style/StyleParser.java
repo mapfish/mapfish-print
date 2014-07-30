@@ -50,14 +50,16 @@ public final class StyleParser {
                                                @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
                                                final String styleString,
                                                final MapfishMapContext mapContext) {
-        for (StyleParserPlugin plugin : this.plugins) {
-            try {
-                Optional<? extends Style> style = plugin.parseStyle(configuration, clientHttpRequestFactory, styleString, mapContext);
-                if (style.isPresent()) {
-                    return style;
+        if (styleString != null) {
+            for (StyleParserPlugin plugin : this.plugins) {
+                try {
+                    Optional<? extends Style> style = plugin.parseStyle(configuration, clientHttpRequestFactory, styleString, mapContext);
+                    if (style.isPresent()) {
+                        return style;
+                    }
+                } catch (Throwable t) {
+                    throw new RuntimeException(t);
                 }
-            } catch (Throwable t) {
-                throw new RuntimeException(t);
             }
         }
         return Optional.absent();

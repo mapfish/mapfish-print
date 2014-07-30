@@ -1,0 +1,30 @@
+{
+    "layout": "A4 landscape",
+    "outputFormat": "pdf",
+    "attributes": {
+        "map": {
+            "projection": "CRS:84",
+            "dpi": 72,
+            "rotation": 0,
+            "center": [-95, 35],
+            "longitudeFirst": true,
+            "scale": 30000000,
+            "layers": [{
+              "type": "geojson",
+              "renderAsSvg": false,
+              "style": "thinline.sld",
+              "geojson": "http://center_tiledwms_flexiblescale.json/geojson/states.json"
+            },{
+                "type": "tiledwms",
+                "layers": ["topp:states"],
+                "baseURL": "http://center_tiledwms_flexiblescale.wms/",
+                "imageFormat": "image/png",
+                "version": "1.1.1",
+                "customParams": {
+                    "TRANSPARENT": "true"
+                },
+                "tileSize": [256, 256]
+            }]
+        }
+    }
+}
