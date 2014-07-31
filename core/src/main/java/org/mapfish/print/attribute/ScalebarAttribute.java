@@ -91,7 +91,6 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
         private static final String DEFAULT_COLOR = "black";
         private static final String DEFAULT_BAR_BG_COLOR = "white";
         private static final String DEFAULT_BACKGROUND_COLOR = "rgba(255, 255, 255, 0)";
-        private static final int DEFAULT_PADDING = 4;
 
         private final Dimension size;
 
@@ -159,10 +158,10 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
         public Integer labelDistance = null;
 
         /**
-         * The padding in pixel around the scalebar (default: 4).
+         * The padding around the scalebar (in pixel).
          */
         @HasDefaultValue
-        public Integer padding = DEFAULT_PADDING;
+        public Integer padding = null;
 
         /**
          * The font used for the labels (default: Helvetica).
