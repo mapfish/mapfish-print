@@ -8,7 +8,7 @@
     "maxScale" : 1000000,
     "rotation" : "30",
     "graphicOpacity": 0.6,
-    "symb" : [
+    "symbolizers" : [
       {
         "type" : "point",
         "graphicName": "circle",

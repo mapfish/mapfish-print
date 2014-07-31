@@ -35,18 +35,23 @@ public class MapfishMapContext {
     private final Dimension mapSize;
     private final double rotation;
     private final double dpi;
+    private final boolean forceLongitudeFirst;
 
     /**
+     * Constructor.
      * @param bounds the map bounds
      * @param mapSize the map size
      * @param rotationInDegree the rotation in degree
      * @param dpi the dpi of the printed map
+     * @param forceLongitudeFirst If true then force longitude coordinates as the first coordinate.
      */
-    public MapfishMapContext(final MapBounds bounds, final Dimension mapSize, final double rotationInDegree, final double dpi) {
+    public MapfishMapContext(final MapBounds bounds, final Dimension mapSize, final double rotationInDegree, final double dpi,
+                             final Boolean forceLongitudeFirst) {
         this.bounds = bounds;
         this.mapSize = mapSize;
         this.rotation = Math.toRadians(rotationInDegree);
         this.dpi = dpi;
+        this.forceLongitudeFirst = forceLongitudeFirst == null ? false : forceLongitudeFirst;
     }
 
     /**
@@ -136,6 +141,10 @@ public class MapfishMapContext {
 
     public final Rectangle getPaintArea() {
         return new Rectangle(this.mapSize);
+    }
+
+    public final Boolean isForceLongitudeFirst() {
+        return this.forceLongitudeFirst;
     }
 
     /**

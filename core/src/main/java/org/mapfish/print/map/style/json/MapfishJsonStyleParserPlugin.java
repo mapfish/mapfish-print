@@ -19,27 +19,23 @@
 
 package org.mapfish.print.map.style.json;
 
+import com.google.common.base.Function;
+
 import com.google.common.base.Optional;
-import com.google.common.io.ByteStreams;
-import com.google.common.io.Closer;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.map.style.ParserPluginUtils;
 import org.mapfish.print.map.style.StyleParserPlugin;
 import org.mapfish.print.wrapper.json.PJsonObject;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpResponse;
 
-import java.net.URI;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import static org.mapfish.print.Constants.DEFAULT_CHARSET;
 
 /**
  * Supports a JSON based style format.
@@ -50,7 +46,7 @@ import static org.mapfish.print.Constants.DEFAULT_CHARSET;
  * </p>
  * <h2>Mapfish JSON Style Version 1</h2>
  * <p>
- *     Version 1 is compatible with mapfish print <= v2 and is based on the open layers v2 styling.  The layout is as follows:
+ *     Version 1 is compatible with mapfish print <= v2 and is based on the OpenLayers v2 styling.  The layout is as follows:
  * </p>
  * <pre><code>
  * {
@@ -60,18 +56,18 @@ import static org.mapfish.print.Constants.DEFAULT_CHARSET;
  *     "fillColor":"#FF0000",
  *     "fillOpacity":0,
  *     "rotation" : "30",
- *
+ * <p/>
  *     "externalGraphic" : "mark.png"
  *     "graphicName": "circle",
  *     "graphicOpacity": 0.4,
  *     "pointRadius": 5,
- *
+ * <p/>
  *     "strokeColor":"#FFA829",
  *     "strokeOpacity":1,
  *     "strokeWidth":5,
  *     "strokeLinecap":"round",
  *     "strokeDashstyle":"dot",
- *
+ * <p/>
  *     "fontColor":"#000000",
  *     "fontFamily": "sans-serif",
  *     "fontSize": "12px",
@@ -88,7 +84,7 @@ import static org.mapfish.print.Constants.DEFAULT_CHARSET;
  *    }
  * }
  * </code></pre>
- *
+ * <p/>
  * <h2>Mapfish JSON Style Version 2</h2>
  * <p>
  *     Version 2 uses the same property names as version 1 but has a different structure.  The layout is as follows:
@@ -98,7 +94,7 @@ import static org.mapfish.print.Constants.DEFAULT_CHARSET;
  *   "version" : "2",
  *   // shared values can be declared here (at top level)
  *   // and used in form ${constName} later in json
- *   "val1" : "FFA829",
+ *   "val1" : "#FFA829",
  *   // default values for properties can be defined here
  *   " strokeDashstyle" : "dot"
  *   "[population > 300]" : {
@@ -106,22 +102,22 @@ import static org.mapfish.print.Constants.DEFAULT_CHARSET;
  *     // they will override default values defined at
  *     // higher level
  *     "rotation" : "30",
- *
+ * <p/>
  *     //min and max scale denominator are optional
  *     "maxScale" : 1000000,
  *     "minScale" : 100000,
- *     "symb" : [{
+ *     "symbolizers" : [{
  *       // values defined in symbolizer will override defaults
  *       "type" : "point",
  *       "fillColor":"#FF0000",
  *       "fillOpacity":0,
  *       "rotation" : "30",
- *
  *       "externalGraphic" : "mark.png",
+ * <p/>
  *       "graphicName": "circle",
  *       "graphicOpacity": 0.4,
  *       "pointRadius": 5,
- *
+ * <p/>
  *       "strokeColor":"${val1}",
  *       "strokeOpacity":1,
  *       "strokeWidth":5,
@@ -138,7 +134,7 @@ import static org.mapfish.print.Constants.DEFAULT_CHARSET;
  *       "type" : "polygon",
  *       "fillColor":"#FF0000",
  *       "fillOpacity":0,
- *
+ * <p/>
  *       "strokeColor":"${val1}",
  *       "strokeOpacity":1,
  *       "strokeWidth":5,
@@ -155,6 +151,8 @@ import static org.mapfish.print.Constants.DEFAULT_CHARSET;
  *       "haloOpacity": "0.7",
  *       "haloRadius": "3.0",
  *       "label": "[name]",
+ *       "fillColor":"#FF0000",
+ *       "fillOpacity":0,
  *       "labelAlign": "cm",
  *       "labelRotation": "45",
  *       "labelXOffset": "-25.0",
@@ -175,64 +173,64 @@ import static org.mapfish.print.Constants.DEFAULT_CHARSET;
  *                 Values do not have to be the full property they will be interpolated.  For example:
  *                 <code>The value is ${val}</code>
  *             </p>
-*          </li>
- *          <li>
- *              Defaults property definitions(optional):
- *              <p>
- *                  In order to reduce duplication and keep the style definitions small, default values can be specified.  The
- *                  default values in the root (style level) will be used in all symbolizers if the value is not defined.  The
- *                  style level default will apply to all symbolizers defined in the system.
- *              </p>
- *              <p>
- *                  The only difference between a value and a default is that the default has a well known name, therefore defaults
- *                  can also be used as values.
- *              </p>
- *          </li>
- *          <li>
- *              All the styling rules (At least one is required)
- *              <p>
- *                  A styling rule has a key which is the filter which selects the features that the rule will be used to draw and the
- *                  rule definition object.
- *                  <p>The filter is either <code>*</code> or an
- *                  <a href="http://docs.geoserver.org/stable/en/user/filter/ecql_reference.html#filter-ecql-reference">
- *                      ECQL Expression</a>) surrounded by square brackets.  For example: [att < 23].</p>
- *                      The rule definition is as follows:
- *                      <ul>
- *                          <li>
- *                              Default property values (optional):
- *                              <p>
- *                                  Each rule can also have defaults.  If the style and the rule have a default for the same property
- *                                  the rule will override the style default.  All defaults can be (of course) overridden by a value
- *                                  in a symbolizer.
- *                              </p>
- *                          </li>
- *                          <li>
- *                              minScale (optional)
- *                              <p>
- *                                  The minimum scale that the rule should evaluate to true
- *                              </p>
- *                          </li>
- *                          <li>
- *                              maxScale (optional)
- *                              <p>
- *                                  The maximum scale that the rule should evaluate to true
- *                              </p>
- *                          </li>
- *                          <li>
- *                              An array of symbolizers. (at least one required).
- *                              <p>
- *                                  A symbolizer must have a type property (point, line, polygon, text) which indicates the type of
- *                                  symbolizer and it has the attributes for that type of symbolizer.  All values have defaults
- *                                  so it is possible to define a symbolizer as with only the type property. The only exception is
- *                                  that the "text" symbolizer needs a label property.
- *                              </p>
- *                          </li>
- *                      </ul>
- *              </p>
- *          </li>
+ *         </li>
+ *         <li>
+ *             Defaults property definitions(optional):
+ *             <p>
+ *                 In order to reduce duplication and keep the style definitions small, default values can be specified.  The
+ *                 default values in the root (style level) will be used in all symbolizers if the value is not defined.  The
+ *                 style level default will apply to all symbolizers defined in the system.
+ *             </p>
+ *             <p>
+ *                 The only difference between a value and a default is that the default has a well known name, therefore defaults
+ *                 can also be used as values.
+ *             </p>
+ *         </li>
+ *         <li>
+ *             All the styling rules (At least one is required)
+ *             <p>
+ *                 A styling rule has a key which is the filter which selects the features that the rule will be used to draw and the
+ *                 rule definition object.
+ *             <p>The filter is either <code>*</code> or an
+ *                 <a href="http://docs.geoserver.org/stable/en/user/filter/ecql_reference.html#filter-ecql-reference">
+ *                 ECQL Expression</a>) surrounded by square brackets.  For example: [att < 23].</p>
+ *                 The rule definition is as follows:
+ *                 <ul>
+ *                     <li>
+ *                         Default property values (optional):
+ *                         <p>
+ *                             Each rule can also have defaults.  If the style and the rule have a default for the same property
+ *                             the rule will override the style default.  All defaults can be (of course) overridden by a value
+ *                             in a symbolizer.
+ *                         </p>
+ *                     </li>
+ *                     <li>
+ *                         minScale (optional)
+ *                         <p>
+ *                             The minimum scale that the rule should evaluate to true
+ *                         </p>
+ *                     </li>
+ *                     <li>
+ *                         maxScale (optional)
+ *                         <p>
+ *                             The maximum scale that the rule should evaluate to true
+ *                         </p>
+ *                     </li>
+ *                     <li>
+ *                         An array of symbolizers. (at least one required).
+ *                         <p>
+ *                             A symbolizer must have a type property (point, line, polygon, text) which indicates the type of
+ *                             symbolizer and it has the attributes for that type of symbolizer.  All values have defaults
+ *                             so it is possible to define a symbolizer as with only the type property. The only exception is
+ *                             that the "text" symbolizer needs a label property.
+ *                         </p>
+ *                     </li>
+ *                 </ul>
+ *             </p>
+ *         </li>
  *     </ul>
  * </p>
- *
+ * <p/>
  * <h2>Configuration Elements</h2>
  * The items in the list below are the properties that can be set on the different symbolizers.  In brackets list the symbolizers
  * the values can apply to.
@@ -246,8 +244,8 @@ import static org.mapfish.print.Constants.DEFAULT_CHARSET;
  *     The items below with (ECQL) can have ECQL expressions.
  * </p>
  * <ul>
- *     <li><strong>fillColor</strong>(ECQL) - (polygon, point) The color used to fill the point graphic, polygon or text.</li>
- *     <li><strong>fillOpacity</strong>(ECQL) - (polygon,  point) The opacity used when fill the point graphic, polygon or text.</li>
+ *     <li><strong>fillColor</strong>(ECQL) - (polygon, point, text) The color used to fill the point graphic, polygon or text.</li>
+ *     <li><strong>fillOpacity</strong>(ECQL) - (polygon,  point, text) The opacity used when fill the point graphic, polygon or text.</li>
  *     <li><strong>rotation</strong>(ECQL) - (point) The rotation of the point graphic</li>
  *     <li>
  *         <strong>externalGraphic</strong> - (point) one of the two options for declaring the point graphic to use.  This can
@@ -261,9 +259,9 @@ import static org.mapfish.print.Constants.DEFAULT_CHARSET;
  *         <ul>
  *             <li>WellKnownMarks: cross, star, triangle, arrow, X, hatch, square</li>
  *             <li>ShapeMarks: shape://vertline, shape://horline, shape://slash, shape://backslash, shape://dot, shape://plus,
- *             shape://times, shape://oarrow, shape://carrow, shape://coarrow, shape://ccarrow</li>
+ *                 shape://times, shape://oarrow, shape://carrow, shape://coarrow, shape://ccarrow</li>
  *             <li>TTFMarkFactory: ttf://fontName#code (where fontName is a TrueType font and the code is the code number of the
- *             character to render for the point.</li>
+ *                 character to render for the point.</li>
  *         </ul>
  *     </li>
  *     <li><strong>graphicOpacity</strong>(ECQL) - (point) the opacity to use when drawing the point graphic</li>
@@ -319,27 +317,27 @@ import static org.mapfish.print.Constants.DEFAULT_CHARSET;
  *         <p>
  *             X-Align options:
  *             <ul>
- *                <li>l - align to the left of the geometric center</li>
- *                <li>c - align on the center of the geometric center</li>
- *                <li>r - align to the right of the geometric center</li>
+ *                 <li>l - align to the left of the geometric center</li>
+ *                 <li>c - align on the center of the geometric center</li>
+ *                 <li>r - align to the right of the geometric center</li>
  *             </ul>
  *         </p>
  *         <p>
  *             Y-Align options:
  *             <ul>
- *                <li>b - align to the bottom of the geometric center</li>
- *                <li>m - align on the middle of the geometric center</li>
- *                <li>t - align to the top of the geometric center</li>
+ *                 <li>b - align to the bottom of the geometric center</li>
+ *                 <li>m - align on the middle of the geometric center</li>
+ *                 <li>t - align to the top of the geometric center</li>
  *             </ul>
  *         </p>
  *     </li>
-
+ *     <p/>
  *     <li><strong>labelRotation</strong>(ECQL) - the rotation of the label</li>
  *     <li><strong>labelXOffset</strong> - the amount to offset the label along the x axis.  negative number offset to the left</li>
  *     <li><strong>labelYOffset</strong> - the amount to offset the label along the y axis.  negative number offset to the top
- *     of the printing</li>
+ *         of the printing</li>
  * </ul>
- *
+ * <p/>
  * <h2>ECQL references:</h2>
  * <ul>
  *     <li><a href="http://docs.geoserver.org/stable/en/user/filter/ecql_reference.html#ecql-expr">
@@ -385,7 +383,6 @@ public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
     private StyleBuilder sldStyleBuilder = new StyleBuilder();
 
 
-
     @Override
     public Optional<Style> parseStyle(@Nullable final Configuration configuration,
                                       @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
@@ -396,28 +393,17 @@ public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
         if (styleOptional.isPresent()) {
             return styleOptional;
         }
-
-        if (configuration != null && configuration.isAccessible(styleString)) {
-            Optional<Style> style = tryLoadJson(configuration, new String(configuration.loadFile(styleString), DEFAULT_CHARSET));
-            if (style.isPresent()) {
-                return style;
+        return ParserPluginUtils.loadStyleAsURI(configuration, clientHttpRequestFactory, styleString, new Function<byte[],
+                Optional<Style>>() {
+            @Override
+            public Optional<Style> apply(final byte[] input) {
+                try {
+                    return tryLoadJson(configuration, new String(input, Constants.DEFAULT_CHARSET));
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        }
-
-        Closer closer = Closer.create();
-        try {
-            final URI uri = new URI(styleString);
-
-            final ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
-            final ClientHttpResponse response = closer.register(request.execute());
-            final byte[] bytes = ByteStreams.toByteArray(response.getBody());
-
-            return tryLoadJson(configuration, new String(bytes, DEFAULT_CHARSET));
-        } catch (Exception e) {
-            return Optional.absent();
-        } finally {
-            closer.close();
-        }
+        });
     }
 
     private Optional<Style> tryLoadJson(final Configuration configuration, final String styleString) throws JSONException {

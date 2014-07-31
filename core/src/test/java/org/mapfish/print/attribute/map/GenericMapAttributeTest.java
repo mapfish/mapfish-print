@@ -24,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.junit.Test;
+import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.MapfishParser;
@@ -101,7 +102,7 @@ public class GenericMapAttributeTest {
     @Test
     public void testPrintClientConfigWithDefaults() throws Exception {
         final TestMapAttribute att = new TestMapAttribute();
-        att.setDefaultsForTesting();
+        AbstractMapfishSpringTest.configureAttributeForTesting(att);
 
         Map<String, Object> defaultValue = Maps.newHashMap();
         defaultValue.put("rotation", 1.0);

@@ -23,6 +23,7 @@ import com.google.common.base.Optional;
 import com.google.common.io.Files;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.IllegalFileAccessException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;

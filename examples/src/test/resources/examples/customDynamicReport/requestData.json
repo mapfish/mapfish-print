@@ -42,7 +42,7 @@
                 {
                   "type": "geojson",
                   "style": "polygon",
-                  "geoJson":   "file://../verboseExample/resources/geojson.json"
+                  "geoJson":   "http://localhost:9876/e2egeoserver/www/test-data/simple-squares-geojson.json"
                 }
             ]
         }

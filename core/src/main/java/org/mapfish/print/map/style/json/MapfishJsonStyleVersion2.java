@@ -45,12 +45,12 @@ import javax.annotation.Nonnull;
 import static org.mapfish.print.map.style.json.MapfishJsonStyleParserPlugin.Versions;
 
 /**
- * Support a more flexible json styling that supported by version 1.
+ * Support a more flexible json styling than that which is supported by version 1.
  *
  * @author Jesse on 7/26/2014.
  */
 public final class MapfishJsonStyleVersion2 {
-    static final String JSON_SYMB = "symb";
+    static final String JSON_SYMB = "symbolizers";
     private static final String JSON_TYPE = "type";
     private static final Pattern VALUE_EXPR_PATTERN = Pattern.compile("\\$\\{([\\w\\d_-]+)\\}");
     private static final String JSON_MIN_SCALE = "minScale";
@@ -135,7 +135,7 @@ public final class MapfishJsonStyleVersion2 {
             SymbolizerType type = SymbolizerType.valueOf(symbolizerJson.getString(JSON_TYPE).toUpperCase());
             symbolizers[i] = type.parseJson(this.parserHelper, symbolizerJson);
             if (symbolizers[i] == null) {
-                throw new Error("symbolizer was not created as it should have been");
+                throw new RuntimeException("Error creating symbolizer " + symbolizerJson.getString(JSON_TYPE) + " in rule " + jsonKey);
             }
         }
 

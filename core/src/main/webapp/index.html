@@ -31,6 +31,11 @@
             var url = $('#capabilities').attr('url');
             window.open(url, '_capabilities')
         }
+        function openOldApiCapabilities() {
+            var url = $('#old-api-capabilities').attr('url');
+            url = url + "app=" + $('#selectSpec').val();
+            window.open(url, '_info')
+        }
         function copyRequestToTextArea() {
             var att = $('#selectExample').val();
             $('#specText').val(requestExamples[att]);
@@ -203,6 +208,13 @@
                     type="button"
                     url="print/capabilities.json?pretty=true"
                     onclick="openCapabilities()">Capabilities</button>
+        </p>
+        <p>
+
+            <button id="old-api-capabilities"
+                    type="button"
+                    url="print/dep/info.json?"
+                    onclick="openOldApiCapabilities()">Old API Info (Capabilities)</button>
         </p>
     </form>
     <h2>Performance and Health Metrics:</h2>

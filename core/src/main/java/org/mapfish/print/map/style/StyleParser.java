@@ -44,8 +44,8 @@ import javax.annotation.Nonnull;
  */
 public final class StyleParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(StyleParser.class);
-    @Autowired
-    private List<StyleParserPlugin> plugins = Lists.newArrayList();
+ @Autowired
+ private List<StyleParserPlugin> plugins = Lists.newArrayList();
 
     /**
      * Load style using one of the plugins or return Optional.absent().
@@ -58,6 +58,7 @@ public final class StyleParser {
                                                @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
                                                final String styleString,
                                                final MapfishMapContext mapContext) {
+        if (styleString != null) {
         for (StyleParserPlugin plugin : this.plugins) {
             try {
                 Optional<? extends Style> style = plugin.parseStyle(configuration, clientHttpRequestFactory, styleString, mapContext);
@@ -80,6 +81,7 @@ public final class StyleParser {
             } catch (Throwable t) {
                 throw new RuntimeException(t);
             }
+        }
         }
         return Optional.absent();
     }

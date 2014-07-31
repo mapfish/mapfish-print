@@ -185,15 +185,6 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
         return Optional.of(jsonObject);
     }
 
-    @Override
-    public final void setDefaultsForTesting() {
-        // CSOFF: MagicNumber
-        this.width = 1;
-        this.height = 1;
-        this.maxDpi = 400.0;
-        // CSON: MagicNumber
-    }
-
     /**
      * The value of {@link GenericMapAttribute}.
      */

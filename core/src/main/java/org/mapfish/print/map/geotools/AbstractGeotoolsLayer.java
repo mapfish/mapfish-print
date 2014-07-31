@@ -20,6 +20,7 @@
 package org.mapfish.print.map.geotools;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
@@ -35,6 +36,7 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -74,7 +76,8 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
             bounds = transformer.getRotatedBounds();
             graphics2D.setTransform(transformer.getTransform());
             Dimension mapSize = new Dimension(paintArea.width, paintArea.height);
-            layerTransformer = new MapfishMapContext(bounds, mapSize, transformer.getRotation(), transformer.getDPI());
+            layerTransformer = new MapfishMapContext(bounds, mapSize, transformer.getRotation(), transformer.getDPI(),
+                    transformer.isForceLongitudeFirst());
         }
 
 
@@ -107,6 +110,11 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
 
             graphics2D.addRenderingHints(hints);
             renderer.setJava2DHints(hints);
+            Map<String, Object> renderHints = Maps.newHashMap();
+            if (transformer.isForceLongitudeFirst() != null) {
+                renderHints.put(StreamingRenderer.FORCE_EPSG_AXIS_ORDER_KEY, transformer.isForceLongitudeFirst());
+            }
+            renderer.setRendererHints(renderHints);
 
             renderer.setMapContent(content);
             renderer.setThreadPool(this.executorService);
@@ -138,5 +146,4 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
         return false;
     }
     //CHECKSTYLE:ON
-
 }

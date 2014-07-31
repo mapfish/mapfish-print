@@ -15,7 +15,7 @@
             "strokeLinecap": "round",
             "strokeOpacity": 0.6,
             "[CFCC = 'A41']": {
-              "symb": [
+              "symbolizers": [
                 {
                   "strokeDashstyle": "solid",
                   "strokeWidth": 1,
@@ -24,7 +24,7 @@
               ]
             },
             "[INTERSECTS(geometry, buffer(LINESTRING (-8237836.106659006 4981782.764585206, -8227702.8850873355 4978038.297951255), 2000))]": {
-              "symb": [
+              "symbolizers": [
                 {
                   "strokeColor": "green",
                   "strokeWidth": 2,
@@ -33,7 +33,7 @@
               ]
             },
             "[DWITHIN(geometry, POINT (-8232452.51674783 4982702.811457594), 2000, kilometers)]": {
-              "symb": [
+              "symbolizers": [
                 {
                   "strokeColor": "blue",
                   "strokeWidth": 4,
@@ -42,7 +42,7 @@
               ]
             },
             "[NAME ilike '% st %' or NAME ilike '% ave%']": {
-              "symb": [
+              "symbolizers": [
                 {
                   "strokeColor": "red",
                   "strokeDashstyle": "solid",
@@ -58,7 +58,7 @@
               ]
             },
             "[NAME = 'Shubert Aly']": {
-              "symb": [
+              "symbolizers": [
                 {
                   "externalGraphic": "http://localhost:9876/e2egeoserver/www/icons/men-at-work.jpg",
                   "graphicWidth": 32,
