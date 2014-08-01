@@ -3,7 +3,7 @@
   "*": {
     "minScale": 10000,
     "maxScale": 1000000,
-    "symb": [
+    "symbolizers": [
       {
         "type": "point",
         "fillColor": "[fillColor]",

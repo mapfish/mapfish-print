@@ -532,7 +532,7 @@ public final class JsonStyleParserHelper {
             @Nullable
             @Override
             public Object apply(final String fillColor) {
-                return ColorParser.toColor(fillColor);
+                return toColorExpression(fillColor);
             }
         });
         final Expression opacity = parseProperty(fillOpacity, new Function<String, Object>() {
@@ -543,6 +543,10 @@ public final class JsonStyleParserHelper {
             }
         });
         return this.styleBuilder.createFill(finalFillColor, opacity);
+    }
+
+    private Object toColorExpression(final String color) {
+        return ((Literal) JsonStyleParserHelper.this.styleBuilder.colorExpression(ColorParser.toColor(color))).getValue();
     }
 
     @Nullable
@@ -562,7 +566,7 @@ public final class JsonStyleParserHelper {
             @Nullable
             @Override
             public Object apply(final String input) {
-                return ColorParser.toColor(input);
+                return toColorExpression(input);
             }
         });
         Expression strokeOpacity = parseExpression(1.0, styleJson, JSON_STROKE_OPACITY, new Function<String, Object>() {
@@ -585,7 +589,7 @@ public final class JsonStyleParserHelper {
             Double width = 1.0;
             if (widthExpression instanceof Literal) {
                 Literal expression = (Literal) widthExpression;
-                width = (Double) expression.getValue();
+                width = ((Number) expression.getValue()).doubleValue();
             }
             String dashStyle = styleJson.getString(JSON_STROKE_DASHSTYLE);
             if (dashStyle.equalsIgnoreCase(STROKE_DASHSTYLE_DOT)) {
