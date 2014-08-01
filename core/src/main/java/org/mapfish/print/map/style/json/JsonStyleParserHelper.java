@@ -82,7 +82,6 @@ public final class JsonStyleParserHelper {
     static final String JSON_LABEL_Y_OFFSET = "labelYOffset";
     static final String JSON_LABEL_ROTATION = "labelRotation";
     static final String JSON_LABEL_PERPENDICULAR_OFFSET = "labelPerpendicularOffset";
-    static final String JSON_STROKE = "stroke";
     static final String JSON_FILL_COLOR = "fillColor";
     static final String JSON_STROKE_COLOR = "strokeColor";
     static final String JSON_STROKE_OPACITY = "strokeOpacity";
@@ -400,10 +399,17 @@ public final class JsonStyleParserHelper {
     }
 
     private LinePlacement createLinePlacement(final PJsonObject styleJson) {
-        if (styleJson.has(JSON_LABEL_PERPENDICULAR_OFFSET)) {
-            return this.styleBuilder.createLinePlacement(Double.parseDouble(styleJson.getString(JSON_LABEL_PERPENDICULAR_OFFSET)));
-        }
+        Expression linePlacement = parseExpression(null, styleJson, JSON_LABEL_PERPENDICULAR_OFFSET, new Function<String, Object>() {
+            @Nullable
+            @Override
+            public Object apply(final String input) {
+                return Double.parseDouble(input);
+            }
+        });
 
+        if (linePlacement != null) {
+            return this.styleBuilder.createLinePlacement(linePlacement);
+        }
         return null;
     }
 
@@ -414,14 +420,21 @@ public final class JsonStyleParserHelper {
         Displacement displacement = null;
         if (styleJson.has(JSON_LABEL_X_OFFSET) || styleJson.has(JSON_LABEL_Y_OFFSET)) {
 
-            double xOffset = 0;
-            double yOffset = 0;
-            if (styleJson.has(JSON_LABEL_X_OFFSET)) {
-                xOffset = Double.parseDouble(styleJson.getString(JSON_LABEL_X_OFFSET));
-            }
-            if (styleJson.has(JSON_LABEL_Y_OFFSET)) {
-                yOffset = Double.parseDouble(styleJson.getString(JSON_LABEL_Y_OFFSET));
-            }
+            Expression xOffset = parseExpression(0.0, styleJson, JSON_LABEL_X_OFFSET, new Function<String, Double>() {
+                @Nullable
+                @Override
+                public Double apply(final String input) {
+                    return Double.parseDouble(input);
+                }
+            });
+            Expression yOffset = parseExpression(0.0, styleJson, JSON_LABEL_Y_OFFSET, new Function<String, Double>() {
+                @Nullable
+                @Override
+                public Double apply(final String input) {
+                    return Double.parseDouble(input);
+                }
+            });
+
             displacement = this.styleBuilder.createDisplacement(xOffset, yOffset);
         }
 
@@ -445,49 +458,50 @@ public final class JsonStyleParserHelper {
     }
 
     private AnchorPoint createAnchorPoint(final PJsonObject styleJson) {
+        Expression anchorX = parseExpression(null, styleJson, JSON_LABEL_ANCHOR_POINT_X, new Function<String, Double>() {
+            @Nullable
+            @Override
+            public Double apply(final String input) {
+                return Double.parseDouble(input);
+            }
+        });
+        Expression anchorY = parseExpression(null, styleJson, JSON_LABEL_ANCHOR_POINT_Y, new Function<String, Double>() {
+            @Nullable
+            @Override
+            public Double apply(final String input) {
+                return Double.parseDouble(input);
+            }
+        });
 
-        String x = styleJson.optString(JSON_LABEL_ANCHOR_POINT_X);
-        String y = styleJson.optString(JSON_LABEL_ANCHOR_POINT_Y);
-
-        Double anchorX = null;
-        Double anchorY = null;
-
-        if (!Strings.isNullOrEmpty(x)) {
-            anchorX = Double.parseDouble(x);
-        }
-        if (!Strings.isNullOrEmpty(y)) {
-            anchorY = Double.parseDouble(y);
-        }
-
-        if (Strings.isNullOrEmpty(x) && Strings.isNullOrEmpty(y)) {
+        if (anchorX == null && anchorY == null) {
             String labelAlign = styleJson.getString(JSON_LABEL_ALIGN);
             String xAlign = labelAlign.substring(0, 1);
             String yAlign = labelAlign.substring(1, 2);
 
             final double anchorInMiddle = 0.5;
             if ("l".equals(xAlign)) {
-                anchorX = 0.0;
+                anchorX = this.styleBuilder.literalExpression(0.0);
             } else if ("c".equals(xAlign)) {
-                anchorX = anchorInMiddle;
+                anchorX = this.styleBuilder.literalExpression(anchorInMiddle);
             } else if ("r".equals(xAlign)) {
-                anchorX = 1.0;
+                anchorX = this.styleBuilder.literalExpression(1.0);
             }
             if ("b".equals(yAlign)) {
-                anchorY = 0.0;
+                anchorY = this.styleBuilder.literalExpression(0.0);
             } else if ("m".equals(yAlign)) {
-                anchorY = anchorInMiddle;
+                anchorY = this.styleBuilder.literalExpression(anchorInMiddle);
             } else if ("t".equals(yAlign)) {
-                anchorY = 1.0;
+                anchorY = this.styleBuilder.literalExpression(1.0);
             }
         }
         boolean returnNull = true;
         if (anchorX == null) {
-            anchorX = 0.0;
+            anchorX = this.styleBuilder.literalExpression(0.0);
         } else {
             returnNull = false;
         }
         if (anchorY == null) {
-            anchorY = 0.0;
+            anchorY = this.styleBuilder.literalExpression(0.0);
         } else {
             returnNull = false;
         }
