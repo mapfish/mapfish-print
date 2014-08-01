@@ -194,6 +194,10 @@ import javax.annotation.Nullable;
  *             <p>The filter is either <code>*</code> or an
  *                 <a href="http://docs.geoserver.org/stable/en/user/filter/ecql_reference.html#filter-ecql-reference">
  *                 ECQL Expression</a>) surrounded by square brackets.  For example: [att < 23].</p>
+ *                 <p>
+ *                     <em>WARNING:</em> At the moment DWITHIN and BEYOND spatial functions take a unit parameter.  However it
+ *                     is ignored by geotools and the distance is always in the crs of the geometry projection.
+ *                 </p>
  *                 The rule definition is as follows:
  *                 <ul>
  *                     <li>

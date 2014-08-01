@@ -19,6 +19,8 @@
 
 package org.mapfish.print.map.style.json;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.Fill;
@@ -34,7 +36,6 @@ import org.geotools.styling.SLDTransformer;
 import org.geotools.styling.Stroke;
 import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.TextSymbolizer;
-import org.jdom.Namespace;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -55,6 +56,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+
+import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -65,8 +69,6 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleParserPluginTest.
 
 public class JsonStyleParserHelperTest {
 
-    private static final Namespace OGC = Namespace.getNamespace("ogc", "http://www.opengis.net/ogc");
-    private static final Namespace XLINK = Namespace.getNamespace("xlink", "http://www.w3.org/1999/xlink");
     private static final float FLOAT_DELTA = 0.00001f;
 
     final SLDTransformer transformer = new SLDTransformer();
@@ -388,6 +390,36 @@ public class JsonStyleParserHelperTest {
         assertNotNull(textSymbolizer.getFill());
         assertEquals("#FF0000", valueOf(textSymbolizer.getFill().getColor()));
     }
+
+    @Test
+    public void testGetGraphicFormatDetect() throws Exception {
+        // geotools only accepts formats that are supported by ImageIO. so we can have a problem if the format is image/jpg but
+        // ImageIO supports image/jpeg.  The two don't match so the image won't be loaded (even if it could).
+        final List<String> strings = Arrays.asList(ImageIO.getReaderMIMETypes());
+        PJsonObject styleJson = new PJsonObject(new JSONObject(), "style");
+        for (String supportedMimetype : strings) {
+            Set<String> compatibleMimetypes = findCompatibleMimeTypes(supportedMimetype);
+            for (String mimeType : compatibleMimetypes) {
+                if (Strings.isNullOrEmpty(mimeType)) {
+                    continue;
+                }
+                styleJson.getInternalObj().put(JsonStyleParserHelper.JSON_GRAPHIC_FORMAT, mimeType);
+                final String graphicFormat = helper.getGraphicFormat("http://somefile.com/file.jpg", styleJson);
+                assertTrue(graphicFormat + " is not supported", strings.contains(graphicFormat));
+            }
+        }
+    }
+
+    private Set<String> findCompatibleMimeTypes(String mimeType) {
+        for (Set<String> compatibleMimetypes : helper.COMPATIBLE_MIMETYPES) {
+            if (compatibleMimetypes.contains(mimeType)) {
+                return compatibleMimetypes;
+            }
+        }
+
+        return Sets.newHashSet(mimeType);
+    }
+
 
     @Test
     public void testLabelAttributes() throws Exception {

@@ -23,6 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.styling.AnchorPoint;
@@ -54,8 +55,10 @@ import java.awt.Color;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
 
 import static org.mapfish.print.FileUtils.testForLegalFileUrl;
 import static org.mapfish.print.map.style.json.MapfishJsonStyleParserPlugin.Versions;
@@ -105,6 +108,15 @@ public final class JsonStyleParserHelper {
     static final String STROKE_DASHSTYLE_DASHDOT = "dashdot";
     static final String STROKE_DASHSTYLE_LONGDASH = "longdash";
     static final String STROKE_DASHSTYLE_LONGDASHDOT = "longdashdot";
+    static final Set<Set<String>> COMPATIBLE_MIMETYPES = Sets.newIdentityHashSet();
+    static {
+        COMPATIBLE_MIMETYPES.add(Sets.newHashSet("image/jpeg", "image/jpg"));
+        COMPATIBLE_MIMETYPES.add(Sets.newHashSet("image/jpeg1000", "image/jpg2000"));
+        COMPATIBLE_MIMETYPES.add(Sets.newHashSet("image/tiff", "image/tif"));
+    }
+
+    private static final String[] SUPPORTED_MIME_TYPES = ImageIO.getReaderMIMETypes();
+
 
     private final Configuration configuration;
     private boolean allowNullSymbolizer;
@@ -623,18 +635,45 @@ public final class JsonStyleParserHelper {
         return stroke;
     }
 
-    private String getGraphicFormat(final String externalGraphicFile, final PJsonObject styleJson) {
+    @VisibleForTesting
+    String getGraphicFormat(final String externalGraphicFile, final PJsonObject styleJson) {
+        String mimeType = null;
         if (!Strings.isNullOrEmpty(styleJson.optString(JSON_GRAPHIC_FORMAT))) {
-            return styleJson.getString(JSON_GRAPHIC_FORMAT);
+            mimeType = styleJson.getString(JSON_GRAPHIC_FORMAT);
         } else {
-            int seperatorPos = externalGraphicFile.lastIndexOf(".");
+            int separatorPos = externalGraphicFile.lastIndexOf(".");
 
-            if (seperatorPos >= 0) {
-                return "image/" + externalGraphicFile.substring(seperatorPos + 1);
+            if (separatorPos >= 0) {
+                mimeType = "image/" + externalGraphicFile.substring(separatorPos + 1).toLowerCase();
             } else {
-                return "";
+                mimeType = "";
             }
         }
+        mimeType = toSupportedMimeType(mimeType);
+        return mimeType;
+    }
+
+    private String toSupportedMimeType(final String mimeType) {
+        for (Set<String> compatibleMimeType : COMPATIBLE_MIMETYPES) {
+            if (compatibleMimeType.contains(mimeType.toLowerCase())) {
+                for (String compatible : compatibleMimeType) {
+                    if (isSupportedMimetype(compatible)) {
+                        return compatible;
+                    }
+                }
+            }
+        }
+        return mimeType;
+    }
+
+    private boolean isSupportedMimetype(final String mimeType) {
+        for (String supported : SUPPORTED_MIME_TYPES) {
+            if (supported.equalsIgnoreCase(mimeType)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void setVersion(final Versions version) {
