@@ -303,21 +303,12 @@ import javax.annotation.Nullable;
  *     <li><strong>haloOpacity</strong>(ECQL) - (text) the opacity of the halo around the text</li>
  *     <li><strong>haloRadius</strong>(ECQL) - (text) the radius of the halo around the text</li>
  *     <li>
- *         <strong>label</strong>(ECQL) - (text) the expression used to create the label e.  The value is either a string which will
- *         be the hardcoded label or a string surrounded by [] which indicates that it is an ECQL Expression.  Examples:
- *         <ul>
- *             <li>Static label</li>
- *             <li>[attributeName]</li>
- *             <li>['Static Label Again']</li>
- *             <li>[5]</li>
- *             <li>5</li>
- *             <li>env('java.home')</li>
- *             <li>centroid(geomAtt)</li>
- *         </ul>
+ *         <strong>label</strong>(ECQL) - (text) the expression used to create the label e.  See the section on labelling for more
+ *         details
  *     </li>
  *     <li>
- *         <strong>labelAlign</strong> - the indicator of how to align the text with respect to the geometry.  This property
- *         must have 2 characters, the x-align and the y-align.
+ *         <strong>labelAlign</strong> - (Point Placement) the indicator of how to align the text with respect to the geometry.
+ *         This property must have 2 characters, the x-align and the y-align.
  *         <p>
  *             X-Align options:
  *             <ul>
@@ -336,11 +327,85 @@ import javax.annotation.Nullable;
  *         </p>
  *     </li>
  *     <p/>
- *     <li><strong>labelRotation</strong>(ECQL) - the rotation of the label</li>
- *     <li><strong>labelXOffset</strong> - the amount to offset the label along the x axis.  negative number offset to the left</li>
- *     <li><strong>labelYOffset</strong> - the amount to offset the label along the y axis.  negative number offset to the top
- *         of the printing</li>
+ *     <li><strong>labelRotation</strong>(ECQL) - (Point Placement) the rotation of the label</li>
+ *     <li><strong>labelXOffset</strong>(ECQL) - (Point Placement) the amount to offset the label along the x axis.  negative number
+ *     offset to the left</li>
+ *     <li><strong>labelYOffset</strong>(ECQL) - (Point Placement) the amount to offset the label along the y axis.  negative number
+ *     offset to the top of the printing</li>
+ *     <li><strong>labelAnchorPointX</strong>(ECQL) - (Point Placement) The point along the x axis that the label is started at
+ *     anchored). Offset and rotation is relative to this point.  Only one of labelAnchorPointX/Y or labelAlign will be respected,
+ *     since they are both ways of defining the anchor Point</li>
+ *     <li><strong>labelAnchorPointY</strong>(ECQL) - (Point Placement) The point along the y axis that the label is started at
+ *     (anchored). Offset and rotation is relative to this point.  Only one of labelAnchorPointX/Y or labelAlign will be respected,
+ *     since they are both ways of defining the anchor Point</li>
+ *     <li><strong>labelPerpendicularOffset</strong>(ECQL) - (Line Placement) If this property is defined it will be assumed that the
+ *     geometry is a line and this property defines how far from the center of the line the label should be drawn.</li>
  * </ul>
+ * <p/>
+ * <h2>Labelling:</h2>
+ * <p>
+ *     Labelling in this style format is done by defining a text symbolizer ("type":"text").  All text sybmolizers consist of:
+ *     <ul>
+ *         <li>Label Property</li>
+ *         <li>Halo Properties</li>
+ *         <li>Font/weight/style/color/opacity</li>
+ *         <li>Placement Properties</li>
+ *     </ul>
+ * </p>
+ * <p>
+ *     <h4>Label Property</h4>
+ *     The label property defines what label will be drawn for a given feature.  The value is either a string which will
+ *     be the static label for all features that the symbolizer will be drawn on or a string surrounded by [] which
+ *     indicates that it is an ECQL Expression.  Examples:
+ *     <ul>
+ *         <li>Static label</li>
+ *         <li>[attributeName]</li>
+ *         <li>['Static Label Again']</li>
+ *         <li>[5]</li>
+ *         <li>5</li>
+ *         <li>env('java.home')</li>
+ *         <li>centroid(geomAtt)</li>
+ *     </ul>
+ * </p>
+ * <p>
+ *     <h4>Halo Properties</h4>
+ *     A halo is a space around the drawn label text that is color (using the halo properties).  A label with a halo is like
+ *     the drawn label text with a buffer around the label text drawn using the halo properties.  This allows the label to
+ *     be clearly visible regardless of the background.  For example if the text is black and the halo is with, then the text will
+ *     always be readable thanks to the white buffer around the label text.
+ * </p>
+ * <p>
+ *     <h4>Font/weight/style/color/opacity</h4>
+ *     The Font/weight/style/color/opacity properties define how the label text is drawn.  They are for the most part equivalent to
+ *     the similarly named css and SLD properties.
+ * </p>
+ * <p>
+ *     <h4>Placement Properties</h4>
+ *     An important part of defining a text symbolizer is defining where the text/label will be drawn.  The placement properties
+ *     are used for this purpose.  There are two types of placements, Point and Line placement and <em>only one</em> type of placement
+ *     can be used. The type of placement is determined by inspecting the properties in the text symbolizer and if the
+ *     <em>labelPerpendicularOffset</em> property is defined then a line placement will be created for the text symbolizer.
+ * </p>
+ * <p>
+ *     It is important to realize that since only one type of placement can be used, an error will be reported if
+ *     <em>labelPerpendicularOffset</em> is defined in the text symbolizer along with <em>any</em> of the point placement properties.
+ * </p>
+ * <p><strong>Point Placement</strong></p>
+ * <p>
+ *     Point placement defines an <em>anchor point</em> which is the point to draw the text relative to.  For example an
+ *     anchor point of 0.5, 0.5 ("labelAnchorPointX" : "0.5", "labelAnchorPointY" : "0.5") would position the start of the label
+ *     at the center of the geometry.
+ * </p>
+ * <p>
+ *     After <em>anchor point</em>, comes <em>displacement</em> displacement defines the distance
+ *     from the anchor point to start the label.  The combination of the two values determines the final location of the
+ *     label.
+ * </p>
+ * <p>Lastly, there is a label rotation which defines the orientation of the label.</p>
+ * <p>
+ *     There are two ways to define the anchor point, either the <em>labelAnchorPointX/Y</em> properties are set or the
+ *     <em>labelAlign</em> property is set.  If both are defined then the <em>labelAlign</em> will be ignored.
+ * </p>
  * <p/>
  * <h2>ECQL references:</h2>
  * <ul>
