@@ -58,9 +58,7 @@ public class GenericMapAttributeTest {
         att.setMaxDpi(300.0);
         att.setWidth(128);
         att.setHeight(60);
-        final ZoomLevels zoomLevels = new ZoomLevels();
-        zoomLevels.setScales(new double[]{1000, 2000, 3000, 4000});
-        att.setZoomLevels(zoomLevels);
+        att.setZoomLevels(new ZoomLevels(1000, 2000, 3000, 4000));
 
         StringWriter stringWriter = new StringWriter();
         JSONWriter jsonWriter = new JSONWriter(stringWriter);
@@ -91,9 +89,10 @@ public class GenericMapAttributeTest {
 
 
         final JSONObject suggestions = json.getJSONObject(JSON_CLIENT_INFO);
-        assertEquals(4, suggestions.length());
+        assertEquals(5, suggestions.length());
 
         assertEquals("[72,92.2,128,200.5]", suggestions.getString(GenericMapAttribute.JSON_DPI_SUGGESTIONS).replaceAll("\\s+", ""));
+        assertEquals("[4000,3000,2000,1000]", suggestions.getString(GenericMapAttribute.JSON_ZOOM_LEVEL_SUGGESTIONS).replaceAll("\\s+", ""));
         assertEquals("300", suggestions.getString(GenericMapAttribute.JSON_MAX_DPI));
         assertEquals("128", suggestions.getString(GenericMapAttribute.JSON_MAP_WIDTH));
         assertEquals("60", suggestions.getString(GenericMapAttribute.JSON_MAP_HEIGHT));
