@@ -27,6 +27,7 @@
     <bean id="!setFeatures" class="org.mapfish.print.processor.map.SetFeaturesProcessor" scope="prototype" />
     <bean id="!setWmsCustomParam" class="org.mapfish.print.processor.map.SetWmsCustomParamProcessor" scope="prototype" />
     <bean id="!createOverviewMap" class="org.mapfish.print.processor.map.CreateOverviewMapProcessor" scope="prototype" />
+    <bean id="!createScalebar" class="org.mapfish.print.processor.map.scalebar.CreateScalebarProcessor" scope="prototype" />
 
     <bean id="!prepareLegend" class="org.mapfish.print.processor.jasper.LegendProcessor" scope="prototype" />
     <bean id="!prepareTable" class="org.mapfish.print.processor.jasper.TableProcessor" scope="prototype" />
@@ -50,7 +51,7 @@
             </util:list>
         </constructor-arg>
     </bean>
-    
+
     <bean class="org.mapfish.print.processor.ProcessorDependency">
         <constructor-arg name="required" value="org.mapfish.print.processor.map.SetFeaturesProcessor" />
         <constructor-arg name="dependent" value="org.mapfish.print.processor.map.CreateMapProcessor"/>
