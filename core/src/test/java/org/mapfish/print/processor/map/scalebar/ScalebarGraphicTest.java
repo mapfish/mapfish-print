@@ -118,6 +118,7 @@ public class ScalebarGraphicTest {
         scalebarAttibute.setWidth(300);
         scalebarAttibute.setHeight(40);
         ScalebarAttributeValues scalebarParams = scalebarAttibute.createValue(null);
+        scalebarParams.verticalAlign = VerticalAlign.TOP.getLabel();
 
         ScalebarGraphic scalebar = new ScalebarGraphic();
         BufferedImage scalebarImage = scalebar.render(mapParams, scalebarParams);

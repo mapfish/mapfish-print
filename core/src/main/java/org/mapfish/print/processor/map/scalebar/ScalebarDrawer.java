@@ -77,12 +77,15 @@ public abstract class ScalebarDrawer {
      * Start the rendering of the scalebar.
      */
     public final void draw() {
+        final AffineTransform transform = getAlignmentTransform();
+
         // draw the background box
+        this.graphics2d.setTransform(transform);
         this.graphics2d.setColor(this.params.getBackgroundColor());
         this.graphics2d.fillRect(0, 0, this.settings.getSize().width, this.settings.getSize().height);
 
         //sets the transformation for drawing the labels and do it
-        final AffineTransform labelTransform = AffineTransform.getTranslateInstance(0, 0);
+        final AffineTransform labelTransform = new AffineTransform(transform);
         setLabelTranslate(labelTransform);
 
         this.graphics2d.setTransform(labelTransform);
@@ -90,7 +93,7 @@ public abstract class ScalebarDrawer {
         drawLabels(this.params.getOrientation());
 
         //sets the transformation for drawing the bar and do it
-        final AffineTransform lineTransform = AffineTransform.getTranslateInstance(0, 0);
+        final AffineTransform lineTransform = new AffineTransform(transform);
         setLineTranslate(lineTransform);
 
         if (this.params.getOrientation() == Orientation.VERTICAL_LABELS_LEFT ||
@@ -103,6 +106,41 @@ public abstract class ScalebarDrawer {
         this.graphics2d.setStroke(new BasicStroke(this.settings.getLineWidth()));
         this.graphics2d.setColor(this.params.getColor());
         drawBar();
+    }
+
+    /**
+     * Create a transformation which takes the alignment settings into account.
+     */
+    private AffineTransform getAlignmentTransform() {
+        final int offsetX;
+        switch (this.settings.getParams().getAlign()) {
+        case LEFT:
+            offsetX = 0;
+            break;
+        case RIGHT:
+            offsetX = this.settings.getMaxSize().width - this.settings.getSize().width;
+            break;
+        case CENTER:
+        default:
+            offsetX = (int) Math.floor(this.settings.getMaxSize().width / 2.0 - this.settings.getSize().width / 2.0);
+            break;
+        }
+
+        final int offsetY;
+        switch (this.settings.getParams().getVerticalAlign()) {
+        case TOP:
+            offsetY = 0;
+            break;
+        case BOTTOM:
+            offsetY = this.settings.getMaxSize().height - this.settings.getSize().height;
+            break;
+        case MIDDLE:
+        default:
+            offsetY = (int) Math.floor(this.settings.getMaxSize().height / 2.0 - this.settings.getSize().height / 2.0);
+            break;
+        }
+
+        return AffineTransform.getTranslateInstance(offsetX, offsetY);
     }
 
     private void setLineTranslate(final AffineTransform lineTransform) {

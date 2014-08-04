@@ -27,8 +27,10 @@ import org.mapfish.print.config.Template;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.style.json.ColorParser;
 import org.mapfish.print.parser.HasDefaultValue;
+import org.mapfish.print.processor.map.scalebar.HorizontalAlign;
 import org.mapfish.print.processor.map.scalebar.Orientation;
 import org.mapfish.print.processor.map.scalebar.Type;
+import org.mapfish.print.processor.map.scalebar.VerticalAlign;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -214,6 +216,18 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
         public String orientation = Orientation.HORIZONTAL_LABELS_BELOW.getLabel();
 
         /**
+         * The horizontal alignment of the scalebar inside the scalebar graphic (default: left).
+         */
+        @HasDefaultValue
+        public String align = HorizontalAlign.LEFT.getLabel();
+
+        /**
+         * The vertical alignment of the scalebar inside the scalebar graphic (default: bottom).
+         */
+        @HasDefaultValue
+        public String verticalAlign = VerticalAlign.BOTTOM.getLabel();
+
+        /**
          * Constructor.
          *
          * @param size The size of the scalebar graphic in the Jasper report (in pixels).
@@ -249,6 +263,12 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
             }
             if (getOrientation() == null) {
                 throw new IllegalArgumentException("invalid scalebar orientation: " + this.orientation);
+            }
+            if (getAlign() == null) {
+                throw new IllegalArgumentException("invalid align: " + this.align);
+            }
+            if (getVerticalAlign() == null) {
+                throw new IllegalArgumentException("invalid verticalAlign: " + this.verticalAlign);
             }
         }
 
@@ -310,6 +330,28 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
                 return null;
             } else {
                 return Orientation.fromString(this.orientation);
+            }
+        }
+
+        /**
+         * @return Return the horizontal alignment.
+         */
+        public final HorizontalAlign getAlign() {
+            if (Strings.isNullOrEmpty(this.align)) {
+                return null;
+            } else {
+                return HorizontalAlign.fromString(this.align);
+            }
+        }
+
+        /**
+         * @return Return the vertical alignment.
+         */
+        public final VerticalAlign getVerticalAlign() {
+            if (Strings.isNullOrEmpty(this.verticalAlign)) {
+                return null;
+            } else {
+                return VerticalAlign.fromString(this.verticalAlign);
             }
         }
     }

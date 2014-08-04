@@ -143,6 +143,7 @@ public class ScalebarDrawerTest {
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
         settings.getParams().getSize().width = 80;
         settings.getParams().getSize().height = 180;
+        settings.setMaxSize(new Dimension(80, 180));
         settings.getParams().backgroundColor = "rgb(214, 214, 214)";
         settings.getParams().orientation = Orientation.VERTICAL_LABELS_LEFT.getLabel();
         settings.setSize(ScalebarGraphic.getSize(settings.getParams(), settings, settings.getMaxLabelSize()));
@@ -161,6 +162,7 @@ public class ScalebarDrawerTest {
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
         settings.getParams().getSize().width = 80;
         settings.getParams().getSize().height = 180;
+        settings.setMaxSize(new Dimension(80, 180));
         settings.getParams().backgroundColor = "rgb(214, 214, 214)";
         settings.getParams().orientation = Orientation.VERTICAL_LABELS_RIGHT.getLabel();
         settings.setSize(ScalebarGraphic.getSize(settings.getParams(), settings, settings.getMaxLabelSize()));
@@ -169,6 +171,38 @@ public class ScalebarDrawerTest {
 
 //        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-bar-vertical-text-right.tiff");
         new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-bar-vertical-text-right.tiff"), 44);
+    }
+
+    @Test
+    public void testDrawBarTopRight() throws Exception {
+        final BufferedImage bufferedImage = new BufferedImage(180, 40, BufferedImage.TYPE_4BYTE_ABGR);
+        final Graphics2D graphics2d = bufferedImage.createGraphics();
+
+        ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
+        settings.getParams().backgroundColor = "rgb(214, 214, 214)";
+        settings.getParams().align = HorizontalAlign.RIGHT.getLabel();
+        settings.getParams().verticalAlign = VerticalAlign.TOP.getLabel();
+        ScalebarDrawer drawer = ScalebarDrawer.create(Type.BAR, graphics2d, settings);
+        drawer.draw();
+
+//        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-top-right.tiff");
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-top-right.tiff"), 25);
+    }
+
+    @Test
+    public void testDrawBarMiddleCenter() throws Exception {
+        final BufferedImage bufferedImage = new BufferedImage(180, 40, BufferedImage.TYPE_4BYTE_ABGR);
+        final Graphics2D graphics2d = bufferedImage.createGraphics();
+
+        ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
+        settings.getParams().backgroundColor = "rgb(214, 214, 214)";
+        settings.getParams().align = HorizontalAlign.CENTER.getLabel();
+        settings.getParams().verticalAlign = VerticalAlign.MIDDLE.getLabel();
+        ScalebarDrawer drawer = ScalebarDrawer.create(Type.BAR, graphics2d, settings);
+        drawer.draw();
+
+//        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-middle-center.tiff");
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-middle-center.tiff"), 40);
     }
 
     private ScaleBarRenderSettings getSettings(final Graphics2D graphics2d, int numSubIntervals) {
@@ -194,6 +228,7 @@ public class ScalebarDrawerTest {
         settings.setDpiRatio(1.0);
 
         final Dimension maxLabelSize = ScalebarGraphic.getMaxLabelSize(settings);
+        settings.setMaxSize(new Dimension(180, 40));
         settings.setSize(ScalebarGraphic.getSize(params, settings, maxLabelSize));
         settings.setMaxLabelSize(maxLabelSize);
         return settings;
