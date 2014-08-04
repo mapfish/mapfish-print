@@ -26,12 +26,18 @@ templates:
       legend: !legend {}
       table: !table {}
       tableList: !tableList {}
+      scalebarDef: !scalebar
+        width: 230
+        height: 40
     processors:
     - !reportBuilder # compile all reports in current directory
       directory: '.'
     - !createMap
       inputMapper: {map: map}
-      outputMapper: {mapSubReport: map}
+      outputMapper: {mapSubReport: mapSubReport}
+    - !createScalebar
+      inputMapper: {map: map, scalebarDef: scalebar}
+      outputMapper: {subReport: scalebarSubReport}
     - !prepareLegend # create a datasource for the report with the 'legend' attribute
       inputMapper: {legend: legend}
       outputMapper: {legend: legend}
