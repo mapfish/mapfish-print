@@ -30,13 +30,12 @@ import org.mapfish.print.processor.jasper.JasperReportBuilder;
 import org.mapfish.print.processor.jasper.MapSubReport;
 
 import java.awt.Dimension;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
-import javax.imageio.ImageIO;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Processor to create a scalebar for a map.
@@ -73,15 +72,9 @@ public class CreateScalebarProcessor extends AbstractProcessor<CreateScalebarPro
         return new Output(scalebarGraphicFile, scalebarSubReport.toString());
     }
 
-    private URI createScalebarGraphic(final Input values) throws IOException {
+    private URI createScalebarGraphic(final Input values) throws IOException, ParserConfigurationException {
         final ScalebarGraphic scalebar = new ScalebarGraphic();
-        final BufferedImage graphic = scalebar.render(values.map, values.scalebar);
-
-        final File path = File.createTempFile("scalebar-graphic-",
-                ".tiff", values.tempTaskDirectory);
-        ImageIO.write(graphic, "tiff", path);
-
-        return path.toURI();
+        return scalebar.render(values.map, values.scalebar, values.tempTaskDirectory);
     }
 
     private URI createScalebarSubReport(final File printDirectory,

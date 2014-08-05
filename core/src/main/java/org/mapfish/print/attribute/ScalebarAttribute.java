@@ -228,6 +228,12 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
         public String verticalAlign = VerticalAlign.BOTTOM.getLabel();
 
         /**
+         * Indicates if the scalebar graphic is rendered as SVG (default: false).
+         */
+        @HasDefaultValue
+        public boolean renderAsSvg = false;
+
+        /**
          * Constructor.
          *
          * @param size The size of the scalebar graphic in the Jasper report (in pixels).

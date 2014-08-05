@@ -21,6 +21,7 @@ package org.mapfish.print.processor.map.scalebar;
 
 import com.google.common.annotations.VisibleForTesting;
 
+import org.apache.batik.svggen.SVGGraphics2D;
 import org.geotools.referencing.GeodeticCalculator;
 import org.mapfish.print.attribute.ScalebarAttribute.ScalebarAttributeValues;
 import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
@@ -36,8 +37,14 @@ import java.awt.Rectangle;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Creates a scalebar graphic.
@@ -51,8 +58,10 @@ public class ScalebarGraphic {
      *
      * @param mapParams         The parameters of the map for which the scalebar is created.
      * @param scalebarParams    The scalebar parameters.
+     * @param tempFolder        The directory in which the graphic file is created.
      */
-    public final BufferedImage render(final MapAttributeValues mapParams, final ScalebarAttributeValues scalebarParams) {
+    public final URI render(final MapAttributeValues mapParams, final ScalebarAttributeValues scalebarParams, final File tempFolder)
+            throws IOException, ParserConfigurationException {
         final double dpi = mapParams.getDpi();
         final double dpiRatio = dpi / mapParams.getRequestorDPI();
 
@@ -88,15 +97,38 @@ public class ScalebarGraphic {
         settings.setDpiRatio(dpiRatio);
         settings.setPadding(getPadding(settings));
 
-        final BufferedImage bufferedImage = new BufferedImage(maxWidthInPixelAdjusted,
-                maxHeightInPixelAdjusted, BufferedImage.TYPE_4BYTE_ABGR);
-        final Graphics2D graphics2D = bufferedImage.createGraphics();
-        try {
-            tryLayout(graphics2D, scaleUnit, scale, niceIntervalLengthInWorldUnits, settings, 0);
-            return bufferedImage;
-        } finally {
-            graphics2D.dispose();
+        // start the rendering
+        File path = null;
+        if (scalebarParams.renderAsSvg) {
+            // render scalebar as SVG
+            final SVGGraphics2D graphics2D = CreateMapProcessor.getSvgGraphics(
+                    new Dimension(maxWidthInPixelAdjusted, maxHeightInPixelAdjusted));
+
+            try {
+                tryLayout(graphics2D, scaleUnit, scale, niceIntervalLengthInWorldUnits, settings, 0);
+
+                path = File.createTempFile("scalebar-graphic-", ".svg", tempFolder);
+                CreateMapProcessor.saveSvgFile(graphics2D, path);
+            } finally {
+                graphics2D.dispose();
+            }
+        } else {
+            // render scalebar as raster graphic
+            final BufferedImage bufferedImage = new BufferedImage(maxWidthInPixelAdjusted, maxHeightInPixelAdjusted,
+                    BufferedImage.TYPE_4BYTE_ABGR);
+            final Graphics2D graphics2D = bufferedImage.createGraphics();
+
+            try {
+                tryLayout(graphics2D, scaleUnit, scale, niceIntervalLengthInWorldUnits, settings, 0);
+
+                path = File.createTempFile("scalebar-graphic-", ".tiff", tempFolder);
+                ImageIO.write(bufferedImage, "tiff", path);
+            } finally {
+                graphics2D.dispose();
+            }
         }
+
+        return path.toURI();
     }
 
     private DistanceUnit getUnit(final MapBounds bounds) {
