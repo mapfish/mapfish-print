@@ -36,8 +36,6 @@ import org.mapfish.print.wrapper.PObject;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
@@ -53,8 +51,6 @@ import java.util.Map;
 public abstract class GenericMapAttribute<GenericMapAttributeValues>
         extends ReflectiveAttribute<GenericMapAttribute<?>.GenericMapAttributeValues> {
 
-    @SuppressWarnings("unused")
-    private static final Logger LOGGER = LoggerFactory.getLogger(GenericMapAttribute.class);
     private static final double[] DEFAULT_DPI_VALUES = {72, 120, 200, 254, 300, 600, 1200, 2400};
     /**
      * The json key for the suggested DPI values in the client config.
@@ -72,6 +68,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
      * The json key for the height of the map in the client config.
      */
     public static final String JSON_MAP_HEIGHT = "height";
+    static final String JSON_ZOOM_LEVEL_SUGGESTIONS = "scales";
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -179,6 +176,9 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
     protected final Optional<JSONObject> getClientInfo() throws JSONException {
         final JSONObject jsonObject = new JSONObject();
         jsonObject.put(JSON_DPI_SUGGESTIONS, getDpiSuggestions());
+        if (this.zoomLevels != null) {
+            jsonObject.put(JSON_ZOOM_LEVEL_SUGGESTIONS, this.zoomLevels.getScales());
+        }
         jsonObject.put(JSON_MAX_DPI, this.maxDpi);
         jsonObject.put(JSON_MAP_WIDTH, this.width);
         jsonObject.put(JSON_MAP_HEIGHT, this.height);
