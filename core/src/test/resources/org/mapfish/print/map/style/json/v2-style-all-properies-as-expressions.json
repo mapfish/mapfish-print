@@ -1,0 +1,59 @@
+{
+  "version": "2",
+  "*": {
+    "minScale": 10000,
+    "maxScale": 1000000,
+    "symbolizers": [
+      {
+        "type": "point",
+        "fillColor": "[fillColor]",
+        "fillOpacity": "[fillOpacity]",
+        "rotation": "[rotation]",
+
+        "graphicName": "[graphicName]",
+        "graphicOpacity": "[graphicOpacity]",
+        "pointRadius": "[pointRadius]",
+
+        "strokeColor": "[strokeColor]",
+        "strokeOpacity": "[strokeOpacity]",
+        "strokeWidth": "[strokeWidth]",
+        "strokeLinecap": "[strokeLinecap]"
+      },
+      {
+        "type": "line",
+        "strokeColor": "[lineStrokeColor]",
+        "strokeOpacity": "[lineStrokeOpacity]",
+        "strokeWidth": "[lineStrokeWidth]",
+        "strokeLinecap": "[lineStrokeLinecap]",
+        "strokeDashstyle": "dot"
+      },
+      {
+        "type": "polygon",
+        "fillColor": "[PolyFillColor]",
+        "fillOpacity": "[PolyFillOpacity]",
+
+        "strokeColor": "[PolyStrokeColor]",
+        "strokeOpacity": "[PolyStrokeOpacity]",
+        "strokeWidth": "[PolyStrokeWidth]",
+        "strokeLinecap": "[PolyStrokeLinecap]",
+        "strokeDashstyle": "solid"
+      },
+      {
+        "type": "text",
+        "fontColor": "[fontColor]",
+        "fontFamily": "[fontFamily]",
+        "fontSize": "[fontSize]",
+        "fontStyle": "[fontStyle]",
+        "fontWeight": "[fontWeight]",
+        "haloColor": "[haloColor]",
+        "haloOpacity": "[haloOpacity]",
+        "haloRadius": "[haloRadius]",
+        "label": "[label]",
+        "labelAlign": "cm",
+        "labelRotation": "[labelRotation]",
+        "labelXOffset": "5",
+        "labelYOffset": "5"
+      }
+    ]
+  }
+}

@@ -112,8 +112,8 @@ import javax.annotation.Nullable;
  *       "fillColor":"#FF0000",
  *       "fillOpacity":0,
  *       "rotation" : "30",
+ *       "externalGraphic" : "mark.png",
  * <p/>
- *       "externalGraphic" : "mark.png"
  *       "graphicName": "circle",
  *       "graphicOpacity": 0.4,
  *       "pointRadius": 5,
@@ -194,6 +194,10 @@ import javax.annotation.Nullable;
  *             <p>The filter is either <code>*</code> or an
  *                 <a href="http://docs.geoserver.org/stable/en/user/filter/ecql_reference.html#filter-ecql-reference">
  *                 ECQL Expression</a>) surrounded by square brackets.  For example: [att < 23].</p>
+ *                 <p>
+ *                     <em>WARNING:</em> At the moment DWITHIN and BEYOND spatial functions take a unit parameter.  However it
+ *                     is ignored by geotools and the distance is always in the crs of the geometry projection.
+ *                 </p>
  *                 The rule definition is as follows:
  *                 <ul>
  *                     <li>
@@ -232,17 +236,28 @@ import javax.annotation.Nullable;
  * </p>
  * <p/>
  * <h2>Configuration Elements</h2>
+ * The items in the list below are the properties that can be set on the different symbolizers.  In brackets list the symbolizers
+ * the values can apply to.
+ * <p>
+ *     Most properties can be static values or ECQL expressions.  If the property has <code>[ ]</code> around the property value
+ *     then it will be interpreted as an ECQL expression.  Otherwise it is assumed to be static text.  If you need static text
+ *     that start and ends with <code>[ ]</code> then you will have to enter: <code>['propertyValue']</code> (where propertyValue
+ *     start and ends with <code>[ ]</code>.
+ * </p>
+ * <p>
+ *     The items below with (ECQL) can have ECQL expressions.
+ * </p>
  * <ul>
- *     <li><strong>fillColor</strong> - (polygon, point, text) The color used to fill the point graphic, polygon or text.</li>
- *     <li><strong>fillOpacity</strong> - (polygon,  point, text) The opacity used when fill the point graphic, polygon or text.</li>
- *     <li><strong>rotation</strong> - (point) The rotation of the point graphic</li>
+ *     <li><strong>fillColor</strong>(ECQL) - (polygon, point, text) The color used to fill the point graphic, polygon or text.</li>
+ *     <li><strong>fillOpacity</strong>(ECQL) - (polygon,  point, text) The opacity used when fill the point graphic, polygon or text.</li>
+ *     <li><strong>rotation</strong>(ECQL) - (point) The rotation of the point graphic</li>
  *     <li>
  *         <strong>externalGraphic</strong> - (point) one of the two options for declaring the point graphic to use.  This can
  *         be a URL to the icon to use or, if just a string it will be assumed to refer to a file in the
  *         configuration directory (or subdirectory).  Only files in the configuration directory (or subdirectory) will be allowed.
  *     </li>
  *     <li>
- *         <strong>graphicName</strong> - (point) one of the two options for declaring the point graphic to use.  This is the
+ *         <strong>graphicName</strong>(ECQL) - (point) one of the two options for declaring the point graphic to use.  This is the
  *         default and will be a square if not specified. The option are any of the Geotools Marks.
  *         <p>Geotools has by default 3 types of marks:</p>
  *         <ul>
@@ -253,16 +268,16 @@ import javax.annotation.Nullable;
  *                 character to render for the point.</li>
  *         </ul>
  *     </li>
- *     <li><strong>graphicOpacity</strong> - (point) the opacity to use when drawing the point graphic</li>
- *     <li><strong>pointRadius</strong> - (point) the size at which to draw the point graphic</li>
+ *     <li><strong>graphicOpacity</strong>(ECQL) - (point) the opacity to use when drawing the point graphic</li>
+ *     <li><strong>pointRadius</strong>(ECQL) - (point) the size at which to draw the point graphic</li>
  *     <li>
- *         <strong>strokeColor</strong> - (line, point, polygon) the color to use when drawing a line or the outline of a
+ *         <strong>strokeColor</strong>(ECQL) - (line, point, polygon) the color to use when drawing a line or the outline of a
  *         polygon or point graphic
  *     </li>
- *     <li><strong>strokeOpacity</strong> - (line, point, polygon) the opacity to use when drawing the line/stroke</li>
- *     <li><strong>strokeWidth</strong> - (line, point, polygon) the widh of the line/stroke</li>
+ *     <li><strong>strokeOpacity</strong>(ECQL) - (line, point, polygon) the opacity to use when drawing the line/stroke</li>
+ *     <li><strong>strokeWidth</strong>(ECQL) - (line, point, polygon) the widh of the line/stroke</li>
  *     <li>
- *         <strong>strokeLinecap</strong> - (line, point, polygon) the style used when drawing the end of a line.
+ *         <strong>strokeLinecap</strong>(ECQL) - (line, point, polygon) the style used when drawing the end of a line.
  *         <p>
  *             Options:  butt (sharp square edge), round (rounded edge), and square (slightly elongated square edge). Default is butt
  *         </p>
@@ -279,30 +294,21 @@ import javax.annotation.Nullable;
  *             <li>{string containing spaces to delimit array elements} - Example: [1 2 3 1 2]</li>
  *         </ul>
  *     </li>
- *     <li><strong>fontColor</strong> - (text) the color of the text drawn</li>
- *     <li><strong>fontFamily</strong> - (text) the font of the text drawn</li>
- *     <li><strong>fontSize</strong> - (text) the font size of the text drawn</li>
- *     <li><strong>fontStyle</strong> - (text) the font style of the text drawn</li>
- *     <li><strong>fontWeight</strong> - (text) the font weight of the text drawn</li>
- *     <li><strong>haloColor</strong> - (text) the color of the halo around the text</li>
- *     <li><strong>haloOpacity</strong> - (text) the opacity of the halo around the text</li>
- *     <li><strong>haloRadius</strong> - (text) the radius of the halo around the text</li>
+ *     <li><strong>fontColor</strong>(ECQL) - (text) the color of the text drawn</li>
+ *     <li><strong>fontFamily</strong>(ECQL) - (text) the font of the text drawn</li>
+ *     <li><strong>fontSize</strong>(ECQL) - (text) the font size of the text drawn</li>
+ *     <li><strong>fontStyle</strong>(ECQL) - (text) the font style of the text drawn</li>
+ *     <li><strong>fontWeight</strong>(ECQL) - (text) the font weight of the text drawn</li>
+ *     <li><strong>haloColor</strong>(ECQL) - (text) the color of the halo around the text</li>
+ *     <li><strong>haloOpacity</strong>(ECQL) - (text) the opacity of the halo around the text</li>
+ *     <li><strong>haloRadius</strong>(ECQL) - (text) the radius of the halo around the text</li>
  *     <li>
- *         <strong>label</strong> - (text) the expression used to create the label e.  The value is either a string which will
- *         be the hardcoded label or a string surrounded by [] which indicates that it is an ECQL Expression.  Examples:
- *         <ul>
- *             <li>Static label</li>
- *             <li>[attributeName]</li>
- *             <li>['Static Label Again']</li>
- *             <li>[5]</li>
- *             <li>5</li>
- *             <li>env('java.home')</li>
- *             <li>centroid(geomAtt)</li>
- *         </ul>
+ *         <strong>label</strong>(ECQL) - (text) the expression used to create the label e.  See the section on labelling for more
+ *         details
  *     </li>
  *     <li>
- *         <strong>labelAlign</strong> - the indicator of how to align the text with respect to the geometry.  This property
- *         must have 2 characters, the x-align and the y-align.
+ *         <strong>labelAlign</strong> - (Point Placement) the indicator of how to align the text with respect to the geometry.
+ *         This property must have 2 characters, the x-align and the y-align.
  *         <p>
  *             X-Align options:
  *             <ul>
@@ -321,16 +327,92 @@ import javax.annotation.Nullable;
  *         </p>
  *     </li>
  *     <p/>
- *     <li><strong>labelRotation</strong> - the rotation of the label</li>
- *     <li><strong>labelXOffset</strong> - the amount to offset the label along the x axis.  negative number offset to the left</li>
- *     <li><strong>labelYOffset</strong> - the amount to offset the label along the y axis.  negative number offset to the top
- *         of the printing</li>
+ *     <li><strong>labelRotation</strong>(ECQL) - (Point Placement) the rotation of the label</li>
+ *     <li><strong>labelXOffset</strong>(ECQL) - (Point Placement) the amount to offset the label along the x axis.  negative number
+ *     offset to the left</li>
+ *     <li><strong>labelYOffset</strong>(ECQL) - (Point Placement) the amount to offset the label along the y axis.  negative number
+ *     offset to the top of the printing</li>
+ *     <li><strong>labelAnchorPointX</strong>(ECQL) - (Point Placement) The point along the x axis that the label is started at
+ *     anchored). Offset and rotation is relative to this point.  Only one of labelAnchorPointX/Y or labelAlign will be respected,
+ *     since they are both ways of defining the anchor Point</li>
+ *     <li><strong>labelAnchorPointY</strong>(ECQL) - (Point Placement) The point along the y axis that the label is started at
+ *     (anchored). Offset and rotation is relative to this point.  Only one of labelAnchorPointX/Y or labelAlign will be respected,
+ *     since they are both ways of defining the anchor Point</li>
+ *     <li><strong>labelPerpendicularOffset</strong>(ECQL) - (Line Placement) If this property is defined it will be assumed that the
+ *     geometry is a line and this property defines how far from the center of the line the label should be drawn.</li>
  * </ul>
+ * <p/>
+ * <h2>Labelling:</h2>
+ * <p>
+ *     Labelling in this style format is done by defining a text symbolizer ("type":"text").  All text sybmolizers consist of:
+ *     <ul>
+ *         <li>Label Property</li>
+ *         <li>Halo Properties</li>
+ *         <li>Font/weight/style/color/opacity</li>
+ *         <li>Placement Properties</li>
+ *     </ul>
+ * </p>
+ * <p>
+ *     <h4>Label Property</h4>
+ *     The label property defines what label will be drawn for a given feature.  The value is either a string which will
+ *     be the static label for all features that the symbolizer will be drawn on or a string surrounded by [] which
+ *     indicates that it is an ECQL Expression.  Examples:
+ *     <ul>
+ *         <li>Static label</li>
+ *         <li>[attributeName]</li>
+ *         <li>['Static Label Again']</li>
+ *         <li>[5]</li>
+ *         <li>5</li>
+ *         <li>env('java.home')</li>
+ *         <li>centroid(geomAtt)</li>
+ *     </ul>
+ * </p>
+ * <p>
+ *     <h4>Halo Properties</h4>
+ *     A halo is a space around the drawn label text that is color (using the halo properties).  A label with a halo is like
+ *     the drawn label text with a buffer around the label text drawn using the halo properties.  This allows the label to
+ *     be clearly visible regardless of the background.  For example if the text is black and the halo is with, then the text will
+ *     always be readable thanks to the white buffer around the label text.
+ * </p>
+ * <p>
+ *     <h4>Font/weight/style/color/opacity</h4>
+ *     The Font/weight/style/color/opacity properties define how the label text is drawn.  They are for the most part equivalent to
+ *     the similarly named css and SLD properties.
+ * </p>
+ * <p>
+ *     <h4>Placement Properties</h4>
+ *     An important part of defining a text symbolizer is defining where the text/label will be drawn.  The placement properties
+ *     are used for this purpose.  There are two types of placements, Point and Line placement and <em>only one</em> type of placement
+ *     can be used. The type of placement is determined by inspecting the properties in the text symbolizer and if the
+ *     <em>labelPerpendicularOffset</em> property is defined then a line placement will be created for the text symbolizer.
+ * </p>
+ * <p>
+ *     It is important to realize that since only one type of placement can be used, an error will be reported if
+ *     <em>labelPerpendicularOffset</em> is defined in the text symbolizer along with <em>any</em> of the point placement properties.
+ * </p>
+ * <p><strong>Point Placement</strong></p>
+ * <p>
+ *     Point placement defines an <em>anchor point</em> which is the point to draw the text relative to.  For example an
+ *     anchor point of 0.5, 0.5 ("labelAnchorPointX" : "0.5", "labelAnchorPointY" : "0.5") would position the start of the label
+ *     at the center of the geometry.
+ * </p>
+ * <p>
+ *     After <em>anchor point</em>, comes <em>displacement</em> displacement defines the distance
+ *     from the anchor point to start the label.  The combination of the two values determines the final location of the
+ *     label.
+ * </p>
+ * <p>Lastly, there is a label rotation which defines the orientation of the label.</p>
+ * <p>
+ *     There are two ways to define the anchor point, either the <em>labelAnchorPointX/Y</em> properties are set or the
+ *     <em>labelAlign</em> property is set.  If both are defined then the <em>labelAlign</em> will be ignored.
+ * </p>
  * <p/>
  * <h2>ECQL references:</h2>
  * <ul>
  *     <li><a href="http://docs.geoserver.org/stable/en/user/filter/ecql_reference.html#ecql-expr">
  *         http://docs.geoserver.org/stable/en/user/filter/ecql_reference.html#ecql-expr</a></li>
+ *     <li><a href="http://udig.refractions.net/files/docs/latest/user/Constraint%20Query%20Language.html">
+ *         http://udig.refractions.net/files/docs/latest/user/Constraint%20Query%20Language.html</a></li>
  *     <li><a href="http://docs.geoserver.org/stable/en/user/filter/function_reference.html#filter-function-reference">
  *         http://docs.geoserver.org/stable/en/user/filter/function_reference.html#filter-function-reference</a></li>
  *     <li><a href="http://docs.geotools.org/stable/userguide/library/cql/ecql.html">
