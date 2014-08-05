@@ -231,6 +231,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
             Set<Class> printed = Sets.newHashSet();
             final Value exampleValue = createValue(template);
             json.key(JSON_NAME).value(this.configName);
+            json.key(JSON_ATTRIBUTE_TYPE).value(getValueType().getSimpleName());
             final Class<?> valueType = exampleValue.getClass();
 
             json.key(JSON_CLIENT_PARAMS);

@@ -1,6 +1,6 @@
 @echo off
 
-set GRADLE_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=23111
+set GRADLE_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=23111
 
 set CMD_LINE_ARGS=
 

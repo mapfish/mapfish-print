@@ -20,16 +20,18 @@
 package org.mapfish.print.attribute;
 
 import com.google.common.collect.Lists;
+import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.junit.Test;
 import org.mapfish.print.config.Template;
 import org.mockito.Mockito;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
+import static org.mapfish.print.attribute.ReflectiveAttribute.JSON_ATTRIBUTE_TYPE;
+import static org.mapfish.print.attribute.ReflectiveAttribute.JSON_NAME;
 
 /**
  * Common base class for testing attributes.
@@ -40,13 +42,17 @@ public abstract class AbstractAttributeTest {
 
     @Test
     public void testPrintClientConfig() throws Exception {
-        JSONWriter json = new JSONWriter(new OutputStreamWriter(new ByteArrayOutputStream()));
+        final StringWriter jsonOutput = new StringWriter();
+        JSONWriter json = new JSONWriter(jsonOutput);
         Template template = Mockito.mock(Template.class);
         // verify there is no error
         json.object();
         final Attribute attribute = createAttribute();
         attribute.printClientConfig(json, template);
         json.endObject();
+        JSONObject capabilities = new JSONObject(jsonOutput.toString());
+        assertTrue("Missing " + JSON_NAME + " in: \n" + capabilities.toString(2), capabilities.has(JSON_NAME));
+        assertTrue("Missing " + JSON_ATTRIBUTE_TYPE + " in: \n" + capabilities.toString(2), capabilities.has(JSON_ATTRIBUTE_TYPE));
     }
 
     @Test
