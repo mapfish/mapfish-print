@@ -95,7 +95,6 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
      * Json field that declares if the param is an array.
      */
     public static final String JSON_ATTRIBUTE_IS_ARRAY = "isArray";
-    private static final String VALUE_TYPE = "Composite";
 
     private PYamlObject defaults;
     private String configName;
@@ -232,7 +231,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
             Set<Class> printed = Sets.newHashSet();
             final Value exampleValue = createValue(template);
             json.key(JSON_NAME).value(this.configName);
-            json.key(JSON_ATTRIBUTE_TYPE).value(VALUE_TYPE);
+            json.key(JSON_ATTRIBUTE_TYPE).value(getValueType().getSimpleName());
             final Class<?> valueType = exampleValue.getClass();
 
             json.key(JSON_CLIENT_PARAMS);
