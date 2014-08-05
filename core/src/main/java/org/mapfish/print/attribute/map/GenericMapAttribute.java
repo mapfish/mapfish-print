@@ -68,7 +68,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
      * The json key for the height of the map in the client config.
      */
     public static final String JSON_MAP_HEIGHT = "height";
-    static final String JSON_ZOOM_LEVEL_SUGGESTIONS = "zoomLevels";
+    static final String JSON_ZOOM_LEVEL_SUGGESTIONS = "scales";
 
     @Autowired
     private ApplicationContext applicationContext;
