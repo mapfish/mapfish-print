@@ -29,6 +29,8 @@ import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.Scale;
 import org.mapfish.print.processor.map.CreateMapProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -50,6 +52,7 @@ import javax.xml.parsers.ParserConfigurationException;
  * Creates a scalebar graphic.
  */
 public class ScalebarGraphic {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScalebarGraphic.class);
 
     private static final int MAX_NUMBER_LAYOUTING_TRIES = 3;
 
@@ -142,7 +145,10 @@ public class ScalebarGraphic {
     private void tryLayout(final Graphics2D graphics2D, final DistanceUnit scaleUnit, final Scale scale,
             final double intervalLengthInWorldUnits, final ScaleBarRenderSettings settings, final int tryNumber) {
         if (tryNumber > MAX_NUMBER_LAYOUTING_TRIES) {
-            throw new RuntimeException("layouting scalebar failed");
+            // if no good layout can be found, stop. an empty scalebar graphic will be shown.
+            LOGGER.error("layouting the scalebar failed (unit: " + scaleUnit.toString()
+                    + ", scale: " + scale.getDenominator() + ")");
+            return;
         }
 
         final ScalebarAttributeValues scalebarParams = settings.getParams();
