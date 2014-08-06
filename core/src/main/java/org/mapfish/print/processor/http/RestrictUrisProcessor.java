@@ -40,10 +40,9 @@ import java.util.List;
  * <pre><code>
  * - !restrictUris
  *   matchers:
- *     - !localMatch
- *       dummy: true
+ *     - !localMatch {}
  *     - !ipMatch
- *     ip: www.camptocamp.org
+ *       ip: www.camptocamp.org
  *     - !dnsMatch
  *       host: mapfish-geoportal.demo-camptocamp.com
  *       port: 80
@@ -62,7 +61,7 @@ import java.util.List;
  * </code></pre>
  *
  * <p>
- *     <strong>Note:</strong> if this class is part of a CompositeClientHttpRequestFactoryProcessor (!requestFactory) then
+ *     <strong>Note:</strong> if this class is part of a CompositeClientHttpRequestFactoryProcessor (!configureHttpRequests) then
  *     it should be the last one so that the checks are done after all changes to the URIs
  * </p>
  * @author Jesse on 8/6/2014.

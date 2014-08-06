@@ -3,4 +3,5 @@ templates:
   main: !template
     processors:
       - !createMap {}
-      - !requestFactory {}
+      - !configureHttpRequests
+        httpProcessors : [!restrictUris {}]
