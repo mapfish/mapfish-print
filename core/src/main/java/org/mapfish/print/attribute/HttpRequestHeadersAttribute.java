@@ -32,10 +32,19 @@ import java.util.Map;
 /**
  * Attribute representing the headers from the request.
  *
+ * This is an internal attribute and is added to the system automatically.  It does not need to
+ * be added in the config.yaml file.
+ *
  * @author Jesse on 6/26/2014.
  */
 @InternalAttribute
 public final class HttpRequestHeadersAttribute extends ReflectiveAttribute<HttpRequestHeadersAttribute.Value> {
+    /**
+     * Constructor that calls init.
+     */
+    public HttpRequestHeadersAttribute() {
+        init();
+    }
 
     @Override
     protected Class<Value> getValueType() {
@@ -70,11 +79,16 @@ public final class HttpRequestHeadersAttribute extends ReflectiveAttribute<HttpR
             final Iterator<String> keys = this.requestHeaders.keys();
 
             while (keys.hasNext()) {
-                String headerName = keys.next();
-                final PArray values = this.requestHeaders.getArray(headerName);
                 List<String> valuesAsList = Lists.newArrayList();
-                for (int i = 0; i < values.size(); i++) {
-                    valuesAsList.add(values.getString(i));
+
+                String headerName = keys.next();
+                final PArray values = this.requestHeaders.optArray(headerName);
+                if (values != null) {
+                    for (int i = 0; i < values.size(); i++) {
+                        valuesAsList.add(values.getString(i));
+                    }
+                } else {
+                    valuesAsList.add(this.requestHeaders.getString(headerName));
                 }
 
                 headerMap.put(headerName, valuesAsList);

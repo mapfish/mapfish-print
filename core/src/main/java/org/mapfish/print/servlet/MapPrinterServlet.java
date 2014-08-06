@@ -169,7 +169,13 @@ public class MapPrinterServlet extends BaseMapServlet {
      * The json tag referring to the attributes.
      */
     public static final String JSON_ATTRIBUTES = "attributes";
-    private static final String JSON_REQUEST_HEADERS = "requestHeaders";
+    /**
+     * The json property to add the request headers from the print request.
+     *
+     * The request headers from the print request are needed by certain processors,
+     * the headers are added to the request JSON data for those processors.
+     */
+    public static final String JSON_REQUEST_HEADERS = "requestHeaders";
 
     @Autowired
     private JobManager jobManager;
@@ -830,7 +836,10 @@ public class MapPrinterServlet extends BaseMapServlet {
         specJson.getInternalObj().put(JSON_OUTPUT_FORMAT, format);
         specJson.getInternalObj().remove(JSON_APP);
         specJson.getInternalObj().put(JSON_APP, appId);
-        specJson.getInternalObj().getJSONObject(JSON_ATTRIBUTES).put(JSON_REQUEST_HEADERS, getHeaders(httpServletRequest));
+        final JSONObject requestHeaders = getHeaders(httpServletRequest);
+        if (requestHeaders.length() > 0) {
+            specJson.getInternalObj().getJSONObject(JSON_ATTRIBUTES).put(JSON_REQUEST_HEADERS, requestHeaders);
+        }
         String ref = UUID.randomUUID().toString() + "@" + this.servletInfo.getServletId();
 
         PrintJob job = this.context.getBean(PrintJob.class);
