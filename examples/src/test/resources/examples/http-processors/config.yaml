@@ -1,0 +1,38 @@
+
+templates:
+  #===========================================================================
+  A4 landscape: !template
+  #===========================================================================
+    reportTemplate: simpleReport.jrxml
+    attributes:
+      map: !map
+        maxDpi: 400
+        width: 780
+        height: 330
+    processors:
+    - !reportBuilder # compile all reports in current directory
+      directory: '.'
+    - !configureHttpRequests
+      httpProcessors:
+        # change all https requests to http requests for localhost and www.camptocamp.com
+        - !useHttpForHttps
+          hosts: [localhost, www.camptocamp.com]
+          portMapping:
+            443 : 80
+            8443 : 8443
+        # change myhost.com urls to localhost.com
+        # !mapUri can have multiple mappings but this only shows a single example
+        - !mapUri
+          mapping:
+            (http)://myhost.com(.*) : "$1://localhost$2"
+        # Take the Cookie and Referrer headers from the print request and add them to all http requests of the associated print job
+        - !forwardHeaders
+          headers: [Cookie, Referrer]
+        # Add a static header to all http requests
+        - !addHeaders
+          headers:
+            newHeader : 'headerValue'
+        # only allow localhost requests, any other requests will be rejected
+        - !restrictUris
+          matchers: [!localMatch {}]
+    - !createMap {}
