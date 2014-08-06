@@ -54,26 +54,6 @@ public abstract class ScalebarDrawer {
     }
 
     /**
-     * Create a {@link ScalebarDrawer} instance for the given type.
-     *
-     * @param type          The scalebar type.
-     * @param graphics2d    The graphics context.
-     * @param settings      Parameters for rendering the scalebar.
-     */
-    public static ScalebarDrawer create(final Type type, final Graphics2D graphics2d, final ScaleBarRenderSettings settings) {
-        switch (type) {
-            case BAR:
-                return new BarScalebarDrawer(graphics2d, settings);
-            case BAR_SUB:
-                return new BarSubScalebarDrawer(graphics2d, settings);
-            case LINE:
-                return new LineScalebarDrawer(graphics2d, settings);
-            default:
-                throw new RuntimeException("Unknown scalebar type: " + type);
-        }
-    }
-
-    /**
      * Start the rendering of the scalebar.
      */
     public final void draw() {

@@ -23,9 +23,9 @@ public class ScalebarDrawerTest {
 
     @Test
     public void testCreate() {
-        assertNotNull(ScalebarDrawer.create(Type.LINE, null, new ScaleBarRenderSettings()));
-        assertNotNull(ScalebarDrawer.create(Type.BAR, null, new ScaleBarRenderSettings()));
-        assertNotNull(ScalebarDrawer.create(Type.BAR_SUB, null, new ScaleBarRenderSettings()));
+        assertNotNull(Type.LINE.createDrawer(null, new ScaleBarRenderSettings()));
+        assertNotNull(Type.BAR.createDrawer(null, new ScaleBarRenderSettings()));
+        assertNotNull(Type.BAR_SUB.createDrawer(null, new ScaleBarRenderSettings()));
     }
 
     @Test
@@ -34,7 +34,7 @@ public class ScalebarDrawerTest {
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
-        ScalebarDrawer drawer = ScalebarDrawer.create(Type.LINE, graphics2d, settings);
+        ScalebarDrawer drawer = Type.LINE.createDrawer(graphics2d, settings);
         drawer.draw();
 
 //        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-line.tiff");
@@ -47,7 +47,7 @@ public class ScalebarDrawerTest {
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 2);
-        ScalebarDrawer drawer = ScalebarDrawer.create(Type.LINE, graphics2d, settings);
+        ScalebarDrawer drawer = Type.LINE.createDrawer(graphics2d, settings);
         drawer.draw();
 
 //        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-line-subs.tiff");
@@ -60,7 +60,7 @@ public class ScalebarDrawerTest {
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
-        ScalebarDrawer drawer = ScalebarDrawer.create(Type.BAR, graphics2d, settings);
+        ScalebarDrawer drawer = Type.BAR.createDrawer(graphics2d, settings);
         drawer.draw();
 
 //        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-bar.tiff");
@@ -73,7 +73,7 @@ public class ScalebarDrawerTest {
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 2);
-        ScalebarDrawer drawer = ScalebarDrawer.create(Type.BAR, graphics2d, settings);
+        ScalebarDrawer drawer = Type.BAR.createDrawer(graphics2d, settings);
         drawer.draw();
 
 //        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-bar-subs.tiff");
@@ -87,7 +87,7 @@ public class ScalebarDrawerTest {
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
         settings.getParams().backgroundColor = "rgb(214, 214, 214)";
-        ScalebarDrawer drawer = ScalebarDrawer.create(Type.BAR, graphics2d, settings);
+        ScalebarDrawer drawer = Type.BAR.createDrawer(graphics2d, settings);
         drawer.draw();
 
 //        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-bar-bg.tiff");
@@ -100,7 +100,7 @@ public class ScalebarDrawerTest {
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
-        ScalebarDrawer drawer = ScalebarDrawer.create(Type.BAR_SUB, graphics2d, settings);
+        ScalebarDrawer drawer = Type.BAR_SUB.createDrawer(graphics2d, settings);
         drawer.draw();
 
 //        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-barsub.tiff");
@@ -113,7 +113,7 @@ public class ScalebarDrawerTest {
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 2);
-        ScalebarDrawer drawer = ScalebarDrawer.create(Type.BAR_SUB, graphics2d, settings);
+        ScalebarDrawer drawer = Type.BAR_SUB.createDrawer(graphics2d, settings);
         drawer.draw();
 
 //        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-barsub-subs.tiff");
@@ -128,7 +128,7 @@ public class ScalebarDrawerTest {
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
         settings.getParams().backgroundColor = "rgb(214, 214, 214)";
         settings.getParams().orientation = Orientation.HORIZONTAL_LABELS_ABOVE.getLabel();
-        ScalebarDrawer drawer = ScalebarDrawer.create(Type.BAR, graphics2d, settings);
+        ScalebarDrawer drawer = Type.BAR.createDrawer(graphics2d, settings);
         drawer.draw();
 
 //        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-bar-text-above.tiff");
@@ -147,7 +147,7 @@ public class ScalebarDrawerTest {
         settings.getParams().backgroundColor = "rgb(214, 214, 214)";
         settings.getParams().orientation = Orientation.VERTICAL_LABELS_LEFT.getLabel();
         settings.setSize(ScalebarGraphic.getSize(settings.getParams(), settings, settings.getMaxLabelSize()));
-        ScalebarDrawer drawer = ScalebarDrawer.create(Type.BAR, graphics2d, settings);
+        ScalebarDrawer drawer = Type.BAR.createDrawer(graphics2d, settings);
         drawer.draw();
 
 //        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-bar-vertical-text-left.tiff");
@@ -166,7 +166,7 @@ public class ScalebarDrawerTest {
         settings.getParams().backgroundColor = "rgb(214, 214, 214)";
         settings.getParams().orientation = Orientation.VERTICAL_LABELS_RIGHT.getLabel();
         settings.setSize(ScalebarGraphic.getSize(settings.getParams(), settings, settings.getMaxLabelSize()));
-        ScalebarDrawer drawer = ScalebarDrawer.create(Type.BAR, graphics2d, settings);
+        ScalebarDrawer drawer = Type.BAR.createDrawer(graphics2d, settings);
         drawer.draw();
 
 //        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-bar-vertical-text-right.tiff");
@@ -182,7 +182,7 @@ public class ScalebarDrawerTest {
         settings.getParams().backgroundColor = "rgb(214, 214, 214)";
         settings.getParams().align = HorizontalAlign.RIGHT.getLabel();
         settings.getParams().verticalAlign = VerticalAlign.TOP.getLabel();
-        ScalebarDrawer drawer = ScalebarDrawer.create(Type.BAR, graphics2d, settings);
+        ScalebarDrawer drawer = Type.BAR.createDrawer(graphics2d, settings);
         drawer.draw();
 
 //        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-top-right.tiff");
@@ -198,7 +198,7 @@ public class ScalebarDrawerTest {
         settings.getParams().backgroundColor = "rgb(214, 214, 214)";
         settings.getParams().align = HorizontalAlign.CENTER.getLabel();
         settings.getParams().verticalAlign = VerticalAlign.MIDDLE.getLabel();
-        ScalebarDrawer drawer = ScalebarDrawer.create(Type.BAR, graphics2d, settings);
+        ScalebarDrawer drawer = Type.BAR.createDrawer(graphics2d, settings);
         drawer.draw();
 
 //        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-middle-center.tiff");

@@ -252,7 +252,7 @@ public class ScalebarGraphic {
         settings.setMaxLabelSize(maxLabelSize);
         settings.setNumSubIntervals(numSubIntervals);
 
-        ScalebarDrawer drawer = ScalebarDrawer.create(scalebarParams.getType(), graphics2d, settings);
+        ScalebarDrawer drawer = scalebarParams.getType().createDrawer(graphics2d, settings);
         drawer.draw();
     }
 
