@@ -44,7 +44,7 @@ public final class AcceptAllMatcher implements URIMatcher {
     }
 
     @Override
-    public boolean accepts(final URI uri, HttpMethod httpMethod) throws UnknownHostException, SocketException, MalformedURLException {
+    public boolean accepts(final URI uri, final HttpMethod httpMethod) throws UnknownHostException, SocketException, MalformedURLException {
         return true;
     }
 }

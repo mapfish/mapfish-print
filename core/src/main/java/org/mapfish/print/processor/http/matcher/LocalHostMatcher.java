@@ -32,16 +32,16 @@ import java.util.List;
  * interface or one of its aliases.
  * <p>Example 1: Accept any localhost url</p>
  * <pre><code>
- *     - !localhostMatch
+ *     - localMatch {}
  * </code></pre>
  * <p>Example 2: Accept any localhost url (port == -1 accepts any port)</p>
  * <pre><code>
- *     - !localhostMatch
+ *     - localMatch
  *       port : -1
  * </code></pre>
  * <p>Example 3: Accept any localhost url on port 80 only</p>
  * <pre><code>
- *     - !localhostMatch
+ *     - localMatch
  *       port : 80
  * </code></pre>
  * <p>
@@ -51,7 +51,7 @@ import java.util.List;
  *     </p>
  * </p>
  * <pre><code>
- *     - !localhostMatch
+ *     - localMatch
  *       pathRegex : /print/.+
  * </code></pre>
  */
