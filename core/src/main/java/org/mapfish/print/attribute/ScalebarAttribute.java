@@ -97,7 +97,16 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
         private final Dimension size;
 
         /**
-         * The scalebar type. Available types: "line", "bar" (default) and "bar_sub". 
+         * The scalebar type.
+         * 
+         * <p>Available types:</p>
+         * <ul>
+         *      <li>"line": A simple line with graduations.</li>
+         *      <li>"bar" (default): A thick bar with alternating black and white zones marking the intervals.
+         *          The colors can be customized by changing the properties `color` and `barBgColor`.
+         *      </li>
+         *      <li>"bar_sub": Like "bar", but with little ticks for the labels.</li>
+         * </ul>
          */
         @HasDefaultValue
         public String type = Type.BAR.getLabel();
@@ -130,13 +139,15 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
 
         /**
          * The number of intervals (default: 3).
+         * There must be at least two intervals.
          */
         @HasDefaultValue
         public Integer intervals = DEFAULT_INTERVALS;
 
         /**
          * Should sub-intervals be shown? Default: false
-         * The number of sub-intervals depends on the length of an interval.
+         * <p>The main intervals are divided into additional sub-intervals to provide
+         * visual guidance. The number of sub-intervals depends on the length of an interval.</p>
          */
         @HasDefaultValue
         public Boolean subIntervals = false;
