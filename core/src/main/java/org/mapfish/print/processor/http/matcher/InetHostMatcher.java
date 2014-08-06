@@ -17,7 +17,7 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.config;
+package org.mapfish.print.processor.http.matcher;
 
 import com.google.common.base.Optional;
 import org.slf4j.Logger;

@@ -21,10 +21,11 @@
 <beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="!localMatch" class="org.mapfish.print.config.AcceptAllMatcher" scope="prototype" />
-    <bean id="!ipMatch" class="org.mapfish.print.config.AddressHostMatcher" scope="prototype" />
-    <bean id="!dnsMatch" class="org.mapfish.print.config.DnsHostMatcher" scope="prototype" />
-    <bean id="!acceptAll" class="org.mapfish.print.config.AcceptAllMatcher" scope="prototype" />
+    <bean id="!localMatch" class="org.mapfish.print.processor.http.matcher.AcceptAllMatcher" scope="prototype" />
+    <bean id="!ipMatch" class="org.mapfish.print.processor.http.matcher.AddressHostMatcher" scope="prototype" />
+    <bean id="!dnsMatch" class="org.mapfish.print.processor.http.matcher.DnsHostMatcher" scope="prototype" />
+    <bean id="!localhostMatch" class="org.mapfish.print.processor.http.matcher.LocalHostMatcher" scope="prototype" />
+    <bean id="!acceptAll" class="org.mapfish.print.processor.http.matcher.AcceptAllMatcher" scope="prototype" />
 
     <bean id="!template" class="org.mapfish.print.config.Template" scope="prototype" />
 

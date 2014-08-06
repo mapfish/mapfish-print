@@ -17,21 +17,23 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.config;
+package org.mapfish.print.processor.http.matcher;
 
 import com.google.common.base.Optional;
+import org.springframework.http.HttpMethod;
 
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Used to validate the access to a map service host.
  */
-public abstract class HostMatcher implements ConfigurationObject {
+public abstract class HostMatcher implements URIMatcher {
     /**
      * The request port.  -1 is the unset/default number
      * CSOFF: VisibilityModifier
@@ -43,13 +45,8 @@ public abstract class HostMatcher implements ConfigurationObject {
     protected String pathRegex = null;
     // CSON: VisibilityModifier
 
-    /**
-     * Check that the uri matches the criteria of this matcher.
-     *
-     * @param uri uri to check.
-     * @return false if the uri is not permitted to be accessed.
-     */
-    public final boolean validate(final URI uri) throws UnknownHostException, SocketException, MalformedURLException {
+    @Override
+    public final boolean accepts(final URI uri, final HttpMethod httpMethod) throws UnknownHostException, SocketException, MalformedURLException {
         Optional<Boolean> overridden = tryOverrideValidation(uri);
         if (overridden.isPresent()) {
             return overridden.get();
@@ -84,8 +81,24 @@ public abstract class HostMatcher implements ConfigurationObject {
         this.port = port;
     }
 
+    /**
+     * The regular expression used to verify the path of the uri as is expected.  A / will be added to the beginning of path if
+     * it is missing because all paths start with /.
+     * <p>
+     *     The regular expression used are the ones supported by java:
+     *     <a href="http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html">
+     *         http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
+     *     </a>
+     * </p>
+     *
+     * @param pathRegex the regular expression.
+     */
     public final void setPathRegex(final String pathRegex) {
-        this.pathRegex = pathRegex;
+        if (pathRegex.startsWith("/")) {
+            this.pathRegex = pathRegex;
+        } else {
+            this.pathRegex = "/" + pathRegex;
+        }
     }
 
     @Override

@@ -27,6 +27,11 @@ templates:
       table: !table {}
       tableList: !tableList {}
     processors:
+    - !restrictUris
+      matchers:
+        - !localhostMatch
+          port : 9876
+          pathRegex : /print-servlet/.+
     - !reportBuilder # compile all reports in current directory
       directory: '.'
     - !createMap
@@ -55,6 +60,11 @@ templates:
         width: 780
         height: 330
     processors:
+    - !restrictUris
+      matchers:
+        - !localhostMatch
+          port : 9876
+          pathRegex : /print-servlet/.+
     - !reportBuilder # compile all reports in current directory
       directory: '.'
     - !createMap
