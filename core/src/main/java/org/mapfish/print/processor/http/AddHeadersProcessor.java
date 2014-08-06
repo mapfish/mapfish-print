@@ -20,6 +20,7 @@
 package org.mapfish.print.processor.http;
 
 import com.google.common.collect.Maps;
+import com.vividsolutions.jts.util.Assert;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequest;
@@ -27,21 +28,47 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 /**
  * This processor allows adding static headers to an http request.
- *
+ * <p>Example: add a Cookie header with multiple header values and add header2 with only one value</p>
+ * <pre><code>
+ * - !addHeaders
+ *   headers:
+ *     Cookie : [cookie-value, cookie-value2]
+ *     Header2 : header2-value
+ * </code></pre>
  * @author Jesse on 6/26/2014.
  */
 public final class AddHeadersProcessor extends AbstractClientHttpRequestFactoryProcessor {
-    private Map<String, List<String>> headers = Maps.newHashMap();
+    private final Map<String, List<String>> headers = Maps.newHashMap();
 
-    public void setHeaders(final Map<String, List<String>> headers) {
-        this.headers = headers;
+    /**
+     * A map of the header key value pairs.  Keys are strings and values are either list of strings or a string.
+     * @param headers the header map
+     */
+    @SuppressWarnings("unchecked")
+    public void setHeaders(final Map<String, Object> headers) {
+        this.headers.clear();
+        for (Map.Entry<String, Object> entry : headers.entrySet()) {
+            if (entry.getValue() instanceof List) {
+                List value = (List) entry.getValue();
+                // verify they are all strings
+                for (Object o : value) {
+                    Assert.isTrue(o instanceof String, o + " is not a string it is a: '" + o.getClass() + "'");
+                }
+                this.headers.put(entry.getKey(), (List<String>) entry.getValue());
+            } else if (entry.getValue() instanceof String) {
+                final List<String> value = Collections.singletonList((String) entry.getValue());
+                this.headers.put(entry.getKey(), value);
+            } else {
+                throw new IllegalArgumentException("Only strings and list of strings may be headers");
+            }
+        }
     }
-
 
     @Override
     protected void extraValidation(final List<Throwable> validationErrors) {
