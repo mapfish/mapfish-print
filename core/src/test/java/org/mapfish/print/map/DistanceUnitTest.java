@@ -21,6 +21,7 @@ package org.mapfish.print.map;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -31,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 public class DistanceUnitTest {
     @Test
     public void testConvertTo() throws Exception {
-        final double delta = 0.000000000000001;
+        final double delta = 0.000001;
         assertEquals(100, DistanceUnit.M.convertTo(1, DistanceUnit.CM), delta);
         assertEquals(1000, DistanceUnit.M.convertTo(1, DistanceUnit.MM), delta);
         assertEquals(10, DistanceUnit.CM.convertTo(1000, DistanceUnit.M), delta);
@@ -44,6 +45,8 @@ public class DistanceUnitTest {
         assertEquals(1, DistanceUnit.IN.convertTo(36, DistanceUnit.YD), delta);
         assertEquals(1, DistanceUnit.FT.convertTo(3, DistanceUnit.YD), delta);
         assertEquals(3, DistanceUnit.YD.convertTo(1, DistanceUnit.FT), delta);
+        assertEquals(72.0, DistanceUnit.IN.convertTo(1, DistanceUnit.PX), delta);
+        assertEquals(2834.645669, DistanceUnit.M.convertTo(1, DistanceUnit.PX), delta);
     }
 
     @Test
@@ -81,5 +84,34 @@ public class DistanceUnitTest {
         assertTrue(DistanceUnit.MINUTE.isSameBaseUnit(DistanceUnit.DEGREES));
         assertTrue(DistanceUnit.SECOND.isSameBaseUnit(DistanceUnit.MINUTE));
         assertTrue(DistanceUnit.SECOND.isSameBaseUnit(DistanceUnit.SECOND));
+    }
+
+    @Test
+    public void testGetAllUnits() throws Exception {
+        assertArrayEquals(
+                new DistanceUnit[] {DistanceUnit.MM, DistanceUnit.CM, DistanceUnit.M, DistanceUnit.KM},
+                DistanceUnit.CM.getAllUnits());
+        assertArrayEquals(
+                new DistanceUnit[] {DistanceUnit.MM, DistanceUnit.CM, DistanceUnit.M, DistanceUnit.KM},
+                DistanceUnit.M.getAllUnits());
+        assertArrayEquals(
+                new DistanceUnit[] {DistanceUnit.IN, DistanceUnit.FT, DistanceUnit.YD, DistanceUnit.MI},
+                DistanceUnit.FT.getAllUnits());
+        assertArrayEquals(
+                new DistanceUnit[] {DistanceUnit.IN, DistanceUnit.FT, DistanceUnit.YD, DistanceUnit.MI},
+                DistanceUnit.MI.getAllUnits());
+        assertArrayEquals(
+                new DistanceUnit[] {DistanceUnit.SECOND, DistanceUnit.MINUTE, DistanceUnit.DEGREES},
+                DistanceUnit.DEGREES.getAllUnits());
+        assertArrayEquals(
+                new DistanceUnit[] {DistanceUnit.SECOND, DistanceUnit.MINUTE, DistanceUnit.DEGREES},
+                DistanceUnit.SECOND.getAllUnits());
+    }
+
+    @Test
+    public void testGetBestUnit() throws Exception {
+        assertEquals(DistanceUnit.CM, DistanceUnit.getBestUnit(0.01, DistanceUnit.M));
+        assertEquals(DistanceUnit.M, DistanceUnit.getBestUnit(0.01, DistanceUnit.KM));
+        assertEquals(DistanceUnit.KM, DistanceUnit.getBestUnit(300, DistanceUnit.KM));
     }
 }

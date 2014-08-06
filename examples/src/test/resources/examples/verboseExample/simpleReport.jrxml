@@ -3,7 +3,8 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="9a3e59f5-6675-48cf-ad74-9c42b5a5b290">
 	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
 	<parameter name="SUBREPORT_TABLE_DIR" class="java.lang.String"/>
-	<parameter name="map" class="java.lang.String"/>
+	<parameter name="mapSubReport" class="java.lang.String"/>
+	<parameter name="scalebarSubReport" class="java.lang.String"/>
 	<parameter name="name" class="java.lang.String"/>
 	<parameter name="description" class="java.lang.String"/>
 	<parameter name="number" class="java.lang.Integer"/>
@@ -24,7 +25,11 @@
 			</staticText>
 			<subreport>
 				<reportElement x="0" y="51" width="555" height="230" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d"/>
-				<subreportExpression><![CDATA[$P{map}]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{mapSubReport}]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="240" width="230" height="40" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d"/>
+				<subreportExpression><![CDATA[$P{scalebarSubReport}]]></subreportExpression>
 			</subreport>
 			<textField>
 				<reportElement x="0" y="280" width="555" height="23" uuid="245a4b0e-d6e2-4c82-a5ec-072b3cc182e4"/>

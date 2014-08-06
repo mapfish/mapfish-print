@@ -13,4 +13,5 @@
     <suppress files=".*LayerParams?\.java" checks="VisibilityModifier"/>
     <suppress files=".*AttributeValue?\.java" checks="VisibilityModifier"/>
     <suppress files=".*Attribute?\.java" checks="VisibilityModifier"/>
+    <suppress files=".*Test\.java" checks="[a-zA-Z0-9]*"/>
 </suppressions>

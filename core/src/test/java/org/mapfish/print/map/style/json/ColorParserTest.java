@@ -41,6 +41,7 @@ public class ColorParserTest {
         assertEquals(Color.red, ColorParser.toColor("#FF0000 "));
         assertEquals(Color.red, ColorParser.toColor("rgb(255, 0, 0)"));
         assertEquals(Color.red, ColorParser.toColor("rgb(255, 0, 0) "));
+        assertEquals(Color.gray, ColorParser.toColor("rgb(128, 128, 128) "));
         assertEquals(Color.red, ColorParser.toColor("rgb(100%, 0%, 0%)"));
         assertEquals(Color.red, ColorParser.toColor("rgb(100%, 0%, 0%) "));
         assertEquals(new Color(1.0f, 0.0f, 0.0f, 0.5f), ColorParser.toColor("rgba(255, 0, 0, 0.5)"));

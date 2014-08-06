@@ -9,9 +9,18 @@ templates:
         maxDpi: 400
         width: 780
         height: 330
+      scalebarDef: !scalebar
+        width: 240
+        height: 40
+        default:
+          backgroundColor: "rgba(214, 214, 214, 200)"
+          align: "right"
     processors:
     - !reportBuilder # compile all reports in current directory
       directory: '.'
     - !createMap
       inputMapper: {map: map}
-      outputMapper: {mapSubReport: map}
+      outputMapper: {mapSubReport: mapSubReport}
+    - !createScalebar
+      inputMapper: {map: map, scalebarDef: scalebar}
+      outputMapper: {subReport: scalebarSubReport}

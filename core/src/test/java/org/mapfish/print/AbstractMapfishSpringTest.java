@@ -20,14 +20,17 @@
 package org.mapfish.print;
 
 import com.google.common.io.Files;
+
 import org.geotools.referencing.CRS;
 import org.mapfish.print.attribute.map.CenterScaleMapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.map.Scale;
+
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mapfish.print.attribute.Attribute;
+import org.mapfish.print.attribute.ScalebarAttribute;
 import org.mapfish.print.attribute.map.GenericMapAttribute;
 
 import java.awt.Dimension;
@@ -133,6 +136,10 @@ public abstract class AbstractMapfishSpringTest {
             genericMapAttribute.setWidth(500);
             genericMapAttribute.setHeight(500);
             genericMapAttribute.setMaxDpi(400.0);
+        } else if (att instanceof ScalebarAttribute) {
+            ScalebarAttribute scalebarAttribute = (ScalebarAttribute) att;
+            scalebarAttribute.setWidth(300);
+            scalebarAttribute.setHeight(120);
         }
     }
 }
