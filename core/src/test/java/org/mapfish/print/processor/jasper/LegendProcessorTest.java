@@ -19,10 +19,12 @@
 
 package org.mapfish.print.processor.jasper;
 
+import com.google.common.base.Predicate;
 import jsr166y.ForkJoinPool;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
@@ -30,9 +32,15 @@ import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.mock.http.client.MockClientHttpRequest;
+import org.springframework.mock.http.client.MockClientHttpResponse;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.io.IOException;
+import java.net.URI;
+import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
 
@@ -49,14 +57,25 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
     @Autowired
     private ForkJoinPool forkJoinPool;
     @Autowired
-    private ClientHttpRequestFactory httpRequestFactory;
+    private TestHttpClientFactory httpRequestFactory;
 
 
     @Test
+    @DirtiesContext
     public void testBasicLegendProperties() throws Exception {
-        // register "legends:" protocol
-        System.setProperty("java.protocol.handler.pkgs", "org.mapfish.print.processor.jasper");
-        
+        httpRequestFactory.registerHandler(new Predicate<URI>() {
+            @Override
+            public boolean apply(@Nullable URI input) {
+                return input != null && input.getHost().equals("legend.com");
+            }
+        }, new TestHttpClientFactory.Handler() {
+            @Override
+            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)  {
+                final MockClientHttpRequest request = new MockClientHttpRequest();
+                request.setResponse(new MockClientHttpResponse(new byte[0],HttpStatus.OK));
+                return request;
+            }
+        });
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
