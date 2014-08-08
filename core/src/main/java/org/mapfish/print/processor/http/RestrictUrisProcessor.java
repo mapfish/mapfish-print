@@ -64,6 +64,11 @@ import java.util.List;
  *     <strong>Note:</strong> if this class is part of a CompositeClientHttpRequestFactoryProcessor (!configureHttpRequests) then
  *     it should be the last one so that the checks are done after all changes to the URIs
  * </p>
+ * @see org.mapfish.print.processor.http.matcher.AcceptAllMatcher
+ * @see org.mapfish.print.processor.http.matcher.AddressHostMatcher
+ * @see org.mapfish.print.processor.http.matcher.DnsHostMatcher
+ * @see org.mapfish.print.processor.http.matcher.LocalHostMatcher
+ *
  * @author Jesse on 8/6/2014.
  */
 public final class RestrictUrisProcessor extends AbstractClientHttpRequestFactoryProcessor {
