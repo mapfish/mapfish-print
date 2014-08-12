@@ -21,6 +21,10 @@ import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGElement;
 
 import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -29,6 +33,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import javax.imageio.ImageIO;
 
 public class NorthArrowGraphic {
 
@@ -76,10 +82,54 @@ public class NorthArrowGraphic {
         return input;
     }
 
+    /**
+     * Renders a given graphic into a new image, scaled to fit the new size and rotated.
+     */
     private static URI createRaster(final Dimension targetSize, final InputStream inputStream,
-            final Double rotation, final File workingDir, final ClientHttpRequestFactory clientHttpRequestFactory) {
-        // TODO Auto-generated method stub
-        return null;
+            final Double rotation, final File workingDir, final ClientHttpRequestFactory clientHttpRequestFactory) throws IOException {
+        final File path = File.createTempFile("north-arrow-", ".tiff", workingDir);
+
+        // TODO apply DPI value?
+        final BufferedImage newImage = new BufferedImage(targetSize.width, targetSize.height, BufferedImage.TYPE_4BYTE_ABGR);
+        Graphics2D graphics2d = null;
+        try {
+            graphics2d = newImage.createGraphics();
+            BufferedImage originalImage = ImageIO.read(inputStream);
+
+            // scale the original image to fit the new size
+            int newWidth, newHeight;
+            if (originalImage.getWidth() > originalImage.getHeight()) {
+                newWidth = targetSize.width;
+                newHeight = Math.min(
+                                targetSize.height,
+                                (int) Math.ceil(newWidth / (originalImage.getWidth() / (double) originalImage.getHeight())));
+            } else {
+                newHeight = targetSize.height;
+                newWidth = Math.min(
+                                targetSize.width,
+                                (int) Math.ceil(newHeight / (originalImage.getHeight() / (double) originalImage.getWidth())));
+            }
+
+            // position the original image in the center of the new
+            int deltaX = (int) Math.floor((targetSize.width - newWidth) / 2.0);
+            int deltaY = (int) Math.floor((targetSize.height - newHeight) / 2.0);
+
+            if (rotation != 0.0) {
+                final AffineTransform rotate = AffineTransform.getRotateInstance(
+                        Math.toRadians(rotation), targetSize.width / 2, targetSize.height / 2);
+                graphics2d.setTransform(rotate);
+            }
+
+            graphics2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+            graphics2d.drawImage(originalImage, deltaX, deltaY, newWidth, newHeight, null);
+
+            ImageIO.write(newImage, "tiff", path);
+        } finally {
+            if (graphics2d != null) {
+                graphics2d.dispose();
+            }
+        }
+        return path.toURI();
     }
 
     /**
