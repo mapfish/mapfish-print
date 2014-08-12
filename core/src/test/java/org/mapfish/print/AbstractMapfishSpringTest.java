@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mapfish.print.attribute.Attribute;
+import org.mapfish.print.attribute.NorthArrowAttribute;
 import org.mapfish.print.attribute.ScalebarAttribute;
 import org.mapfish.print.attribute.map.GenericMapAttribute;
 
@@ -140,6 +141,9 @@ public abstract class AbstractMapfishSpringTest {
             ScalebarAttribute scalebarAttribute = (ScalebarAttribute) att;
             scalebarAttribute.setWidth(300);
             scalebarAttribute.setHeight(120);
+        } else if (att instanceof NorthArrowAttribute) {
+            NorthArrowAttribute northArrowAttribute = (NorthArrowAttribute) att;
+            northArrowAttribute.setSize(50);
         }
     }
 }

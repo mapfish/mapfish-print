@@ -32,7 +32,6 @@ import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.attribute.NorthArrowAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
-import org.mapfish.print.processor.map.NorthArrowGraphic;
 import org.mapfish.print.processor.map.NorthArrowGraphic.GraphicLoader;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,7 +161,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
         BufferedImage referenceImage = ImageSimilarity.convertFromSvg(file, 200, 200);
 //        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow_10.svg"));
 //        ImageSimilarity.writeUncompressedImage(referenceImage, "/tmp/expected-north-arrow_10.tiff");
-        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + "expected-north-arrow_10.tiff"), 0);
+        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + "expected-north-arrow_10.tiff"), 75);
     }
 
     private GraphicLoader getGraphicLoader() {

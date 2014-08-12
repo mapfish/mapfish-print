@@ -13,7 +13,7 @@ templates:
       northArrowDef: !northArrow
         size: 200
         default:
-          graphic: "file://NorthArrow_10.png"
+          graphic: "file://NorthArrow_10.svg"
     processors:
     - !createMap
         inputMapper: {mapDef: map}

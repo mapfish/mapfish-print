@@ -35,6 +35,7 @@
     <bean id="!features" class="org.mapfish.print.attribute.FeaturesAttribute" scope="prototype" />
     <bean id="!map" class="org.mapfish.print.attribute.map.MapAttribute" scope="prototype" />
     <bean id="!overviewMap" class="org.mapfish.print.attribute.map.OverviewMapAttribute" scope="prototype" />
+    <bean id="!northArrow" class="org.mapfish.print.attribute.NorthArrowAttribute" scope="prototype" />
     <bean id="!legend" class="org.mapfish.print.attribute.LegendAttribute" scope="prototype" />
     <bean id="!table" class="org.mapfish.print.attribute.TableAttribute" scope="prototype" />
     <bean id="!tableList" class="org.mapfish.print.attribute.TableListAttribute" scope="prototype" />

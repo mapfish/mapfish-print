@@ -244,6 +244,8 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
                 json.key(JSON_CLIENT_INFO).value(clientOptions.get());
             }
         } catch (Throwable e) {
+            // Note: If this test fails and you just added a new attribute, make
+            // sure to set defaults in AbstractMapfishSpringTest.configureAttributeForTesting
             throw new Error("Error printing the clientConfig of: " + getValueType().getName(), e);
         }
     }
