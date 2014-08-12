@@ -15,6 +15,10 @@ templates:
         default:
           backgroundColor: "rgba(214, 214, 214, 200)"
           align: "right"
+      northArrowDef: !northArrow
+        size: 50
+        default:
+          graphic: "file://NorthArrow_10.svg"
     processors:
     - !reportBuilder # compile all reports in current directory
       directory: '.'
@@ -24,3 +28,6 @@ templates:
     - !createScalebar
       inputMapper: {map: map, scalebarDef: scalebar}
       outputMapper: {subReport: scalebarSubReport}
+    - !createNorthArrow
+        inputMapper: {map: map, northArrowDef: northArrow}
+        outputMapper: {subReport: northArrowSubReport, graphic: dummyGraphic}
