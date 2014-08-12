@@ -104,9 +104,10 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
         /**
          * The path to a graphic to use for the north-arrow.
          * <p>It can either be an URL ("http://xyx.com/img/north-arrow.png") or
-         * a file in the configuration folder ("file://NorthArrow.svg").</p>
-         * <p>Both SVG graphics and raster graphics (png, jpeg, tiff, ...) are
+         * a file in the configuration folder ("file://NorthArrow.svg").
+         * Both SVG graphics and raster graphics (png, jpeg, tiff, ...) are
          * supported.</p>
+         * <p>If no graphic is given, a default north-arrow is used.</p>
          */
         @HasDefaultValue
         public String graphic = null;

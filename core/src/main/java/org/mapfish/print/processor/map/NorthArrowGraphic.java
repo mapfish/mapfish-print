@@ -46,11 +46,13 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
 
@@ -59,6 +61,7 @@ import javax.imageio.ImageIO;
  */
 public final class NorthArrowGraphic {
 
+    private static final String DEFAULT_GRAPHIC = "NorthArrow_10.svg";
     private static final String SVG_NS = SVGDOMImplementation.SVG_NAMESPACE_URI;
 
     private NorthArrowGraphic() { }
@@ -87,7 +90,7 @@ public final class NorthArrowGraphic {
         final Closer closer = Closer.create();
         try {
             final InputStream input = loadGraphic(graphicFile, graphicLoader, clientHttpRequestFactory, closer);
-            if (graphicFile.toLowerCase().trim().endsWith("svg")) {
+            if (graphicFile == null || graphicFile.toLowerCase().trim().endsWith("svg")) {
                 return createSvg(targetSize, input, rotation, workingDir, clientHttpRequestFactory);
             } else {
                 return createRaster(targetSize, input, rotation, workingDir, clientHttpRequestFactory);
@@ -101,6 +104,13 @@ public final class NorthArrowGraphic {
             final GraphicLoader graphicLoader,
             final ClientHttpRequestFactory clientHttpRequestFactory,
             final Closer closer) throws IOException, URISyntaxException {
+        if (Strings.isNullOrEmpty(graphicFile)) {
+            // if no graphic is set, take a default graphic
+            URL file = NorthArrowGraphic.class.getResource(DEFAULT_GRAPHIC);
+            InputStream inputStream = new BufferedInputStream(new FileInputStream(new File(file.toURI())));
+            return closer.register(inputStream);
+        }
+
         // try to load graphic from configuration directory
         Optional<InputStream> input = graphicLoader.load(graphicFile, clientHttpRequestFactory);
         if (input.isPresent()) {

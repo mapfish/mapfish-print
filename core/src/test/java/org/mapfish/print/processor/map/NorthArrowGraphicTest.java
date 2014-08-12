@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -162,6 +163,18 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
 //        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow_10.svg"));
 //        ImageSimilarity.writeUncompressedImage(referenceImage, "/tmp/expected-north-arrow_10.tiff");
         new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + "expected-north-arrow_10.tiff"), 75);
+    }
+
+    @Test
+    public void testCreateDefaultGraphic() throws Exception {
+        URI file = NorthArrowGraphic.create(
+                new Dimension(200, 200), null, 90.0,
+                getTaskDirectory(), getGraphicLoader(), requestFactory);
+
+        BufferedImage referenceImage = ImageSimilarity.convertFromSvg(file, 200, 200);
+//        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow_10-default.svg"));
+//        ImageSimilarity.writeUncompressedImage(referenceImage, "/tmp/expected-north-arrow_10-default.tiff");
+        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + "expected-north-arrow_10-default.tiff"), 75);
     }
 
     private GraphicLoader getGraphicLoader() {
