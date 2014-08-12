@@ -37,9 +37,9 @@ import javax.annotation.Nullable;
  * <p>
  *     Consider the case where you need to:
  *     <ul>
- *         <li>Restrict allows URIS using the !restrictUris processor</li>
- *         <li>Forward all headers from print request to all requests using !forwardHeaders</li>
- *         <li>change the url using the !mapUri processor</li>
+ *     <li>Restrict allowed URIS using the !restrictUris processor</li>
+ *     <li>Forward all headers from print request to all requests using !forwardHeaders</li>
+ *     <li>Change the url using the !mapUri processor</li>
  *     </ul>
  *     In this case the !mapUri processor must execute before the !restrictUris processor but it is difficult to enforce this, the
  *     inputMapping and outputMapping must be carefully designed in order to do it.  The following should work but compare it with
@@ -51,7 +51,7 @@ import javax.annotation.Nullable;
  *   outputMapper: {clientHttpRequestFactory: clientHttpRequestFactoryMapped}
  * - !forwardHeaders
  *   all: true
- *   inputMapper: {clientHttpRequestFactory: clientHttpRequestFactoryMapped}
+ *   inputMapper: {clientHttpRequestFactoryMapped :clientHttpRequestFactory}
  *   outputMapper: {clientHttpRequestFactory: clientHttpRequestFactoryWithHeaders}
  * - !restrictUris
  *   matchers: [!localMatch {}]
@@ -59,13 +59,8 @@ import javax.annotation.Nullable;
  *     </code></pre>
  * </p>
  * <p>
- *     Example:
+ *     The recommended way to write the above configuration is as follows:
  * </p>
- * <ul>
- *     <li>Restrict allows URIS using the !restrictUris processor</li>
- *     <li>Forward all headers from print request to all requests using !forwardHeaders</li>
- *     <li>change the url using the !mapUri processor</li>
- * </ul>
  * <pre><code>
  * - !configureHttpRequests
  *   httpProcessors:

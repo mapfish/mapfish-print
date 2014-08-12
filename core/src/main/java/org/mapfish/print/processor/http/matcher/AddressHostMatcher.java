@@ -39,21 +39,21 @@ import java.util.List;
  *       ip : 192.1.0.0
  *       mask : 255.255.0.0
  * </code></pre>
- * <p>Example 2: accept any uri whose host ip starts with 192.1 and restricts to port 80</p>
+ * <p>Example 3: accept any uri whose host ip starts with 192.1 and restricts to port 80</p>
  * <pre><code>
  *     - !ipMatch
  *       ip : 192.1.0.0
  *       mask : 255.255.0.0
  *       port : 80
  * </code></pre>
- * <p>Example 3: accept any uri whose host ip starts with 192.1 and and allows any port (-1 is any port)</p>
+ * <p>Example 4: accept any uri whose host ip starts with 192.1 and and allows any port (-1 is any port)</p>
  * <pre><code>
  *     - !ipMatch
  *       ip : 192.1.0.0
  *       mask : 255.255.0.0
  *       port : -1
  * </code></pre>
- * <p>Example 2: accept any uri whose host ip starts with 192.1 and restricts to paths that start with /print/</p>
+ * <p>Example 5: accept any uri whose host ip starts with 192.1 and restricts to paths that start with /print/</p>
  * <pre><code>
  *     - !ipMatch
  *       ip : 192.1.0.0
