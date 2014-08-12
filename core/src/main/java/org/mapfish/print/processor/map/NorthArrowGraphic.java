@@ -1,5 +1,25 @@
+/*
+ * Copyright (C) 2014  Camptocamp
+ *
+ * This file is part of MapFish Print
+ *
+ * MapFish Print is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MapFish Print is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.mapfish.print.processor.map;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.io.Closer;
 
@@ -8,7 +28,6 @@ import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.dom.util.DOMUtilities;
 import org.apache.batik.util.SVGConstants;
 import org.apache.batik.util.XMLResourceDescriptor;
-import org.mapfish.print.config.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -26,7 +45,6 @@ import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -36,50 +54,64 @@ import java.net.URISyntaxException;
 
 import javax.imageio.ImageIO;
 
-public class NorthArrowGraphic {
+/**
+ * Takes care of scaling and rotating a graphic for the north-arrow.
+ */
+public final class NorthArrowGraphic {
 
     private static final String SVG_NS = SVGDOMImplementation.SVG_NAMESPACE_URI;
 
     private NorthArrowGraphic() { }
 
+    /**
+     * Creates the north-arrow graphic.
+     *
+     * Scales the given graphic to the given size and applies the given
+     * rotation.
+     *
+     * @param targetSize                The size of the graphic to create.
+     * @param graphicFile               The graphic to use as north-arrow.
+     * @param rotation                  The rotation to apply.
+     * @param workingDir                The directory in which the graphic is created.
+     * @param graphicLoader             The graphic loader.
+     * @param clientHttpRequestFactory  The request factory.
+     * @return                          The path to the created graphic.
+     */
     public static URI create(
             final Dimension targetSize,
             final String graphicFile,
             final Double rotation,
             final File workingDir,
-            final Configuration configuration,
+            final GraphicLoader graphicLoader,
             final ClientHttpRequestFactory clientHttpRequestFactory) throws Exception {
         final Closer closer = Closer.create();
         try {
-            final InputStream input = loadGraphic(graphicFile, configuration, clientHttpRequestFactory, closer);
+            final InputStream input = loadGraphic(graphicFile, graphicLoader, clientHttpRequestFactory, closer);
             if (graphicFile.toLowerCase().trim().endsWith("svg")) {
                 return createSvg(targetSize, input, rotation, workingDir, clientHttpRequestFactory);
             } else {
                 return createRaster(targetSize, input, rotation, workingDir, clientHttpRequestFactory);
             }
-        } catch (Exception e) {
-            throw e;
         } finally {
             closer.close();
         }
     }
 
     private static InputStream loadGraphic(final String graphicFile,
-            final Configuration configuration,
+            final GraphicLoader graphicLoader,
             final ClientHttpRequestFactory clientHttpRequestFactory,
             final Closer closer) throws IOException, URISyntaxException {
-        final InputStream input;
-        if (configuration != null && configuration.isAccessible(graphicFile)) {
-            // load graphic from configuration directory
-            input = new ByteArrayInputStream(configuration.loadFile(graphicFile));
+        // try to load graphic from configuration directory
+        Optional<InputStream> input = graphicLoader.load(graphicFile, clientHttpRequestFactory);
+        if (input.isPresent()) {
+            return closer.register(input.get());
         } else {
             // load graphic from URL
             final URI uri = new URI(graphicFile);
             final ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
             final ClientHttpResponse response = closer.register(request.execute());
-            input = new BufferedInputStream(response.getBody());
+            return new BufferedInputStream(response.getBody());
         }
-        return input;
     }
 
     /**
@@ -269,4 +301,15 @@ public class NorthArrowGraphic {
         return path;
     }
 
+    /**
+     * Graphic loader to load a graphic from the configuration directory.
+     */
+    public interface GraphicLoader {
+        /**
+         * Load the graphic.
+         * @param graphicFile               The graphic file name.
+         * @param clientHttpRequestFactory  The request factory.
+         */
+        Optional<InputStream> load(final String graphicFile, final ClientHttpRequestFactory clientHttpRequestFactory) throws IOException;
+    }
 }
