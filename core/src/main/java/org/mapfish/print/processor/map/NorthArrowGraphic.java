@@ -28,6 +28,7 @@ import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.dom.util.DOMUtilities;
 import org.apache.batik.util.SVGConstants;
 import org.apache.batik.util.XMLResourceDescriptor;
+import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.mapfish.print.map.style.json.ColorParser;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
@@ -49,12 +50,12 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
 
 import javax.imageio.ImageIO;
 
@@ -166,7 +167,7 @@ public final class NorthArrowGraphic {
 
             if (rotation != 0.0) {
                 final AffineTransform rotate = AffineTransform.getRotateInstance(
-                        Math.toRadians(rotation), targetSize.width / 2, targetSize.height / 2);
+                        Math.toRadians(rotation), targetSize.width / 2.0, targetSize.height / 2.0);
                 graphics2d.setTransform(rotate);
             }
 
@@ -323,9 +324,9 @@ public final class NorthArrowGraphic {
     private static File writeSvgToFile(final Document document,
             final File workingDir) throws IOException {
         final File path = File.createTempFile("north-arrow-", ".svg", workingDir);
-        FileWriter fw = null;
+        FileWriterWithEncoding fw = null;
         try {
-            fw = new FileWriter(path);
+            fw = new FileWriterWithEncoding(path, Charset.forName("UTF-8").newEncoder());
             DOMUtilities.writeDocument(document, fw);
             fw.flush();
         } finally {
