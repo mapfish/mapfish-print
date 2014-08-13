@@ -380,7 +380,7 @@ public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
         if (styleOptional.isPresent()) {
             return styleOptional;
         }
-        return ParserPluginUtils.loadStyleAsURI(configuration, clientHttpRequestFactory, styleString, new Function<byte[],
+        return ParserPluginUtils.loadStyleAsURI(clientHttpRequestFactory, styleString, new Function<byte[],
                 Optional<Style>>() {
             @Override
             public Optional<Style> apply(final byte[] input) {
