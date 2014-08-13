@@ -22,7 +22,6 @@ package org.mapfish.print.servlet.fileloader;
 import com.google.common.base.Optional;
 import com.google.common.io.Files;
 import org.mapfish.print.FileUtils;
-import org.mapfish.print.IllegalFileAccessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,8 +105,6 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
         try {
             final Optional<File> childFile = resolveChildFile(configFileUri, pathToSubResource);
             return childFile.isPresent() && childFile.get().exists();
-        } catch (IllegalFileAccessException e) {
-            return false;
         } catch (NoSuchElementException nsee) {
             return false;
         }
