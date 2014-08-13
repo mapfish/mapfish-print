@@ -28,6 +28,7 @@ import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.dom.util.DOMUtilities;
 import org.apache.batik.util.SVGConstants;
 import org.apache.batik.util.XMLResourceDescriptor;
+import org.mapfish.print.map.style.json.ColorParser;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -39,6 +40,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGElement;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -74,6 +76,7 @@ public final class NorthArrowGraphic {
      *
      * @param targetSize                The size of the graphic to create.
      * @param graphicFile               The graphic to use as north-arrow.
+     * @param backgroundColor           The background color.
      * @param rotation                  The rotation to apply.
      * @param workingDir                The directory in which the graphic is created.
      * @param graphicLoader             The graphic loader.
@@ -83,6 +86,7 @@ public final class NorthArrowGraphic {
     public static URI create(
             final Dimension targetSize,
             final String graphicFile,
+            final Color backgroundColor, 
             final Double rotation,
             final File workingDir,
             final GraphicLoader graphicLoader,
@@ -91,9 +95,9 @@ public final class NorthArrowGraphic {
         try {
             final InputStream input = loadGraphic(graphicFile, graphicLoader, clientHttpRequestFactory, closer);
             if (graphicFile == null || graphicFile.toLowerCase().trim().endsWith("svg")) {
-                return createSvg(targetSize, input, rotation, workingDir, clientHttpRequestFactory);
+                return createSvg(targetSize, input, rotation, backgroundColor, workingDir, clientHttpRequestFactory);
             } else {
-                return createRaster(targetSize, input, rotation, workingDir, clientHttpRequestFactory);
+                return createRaster(targetSize, input, rotation, backgroundColor, workingDir, clientHttpRequestFactory);
             }
         } finally {
             closer.close();
@@ -128,7 +132,8 @@ public final class NorthArrowGraphic {
      * Renders a given graphic into a new image, scaled to fit the new size and rotated.
      */
     private static URI createRaster(final Dimension targetSize, final InputStream inputStream,
-            final Double rotation, final File workingDir, final ClientHttpRequestFactory clientHttpRequestFactory) throws IOException {
+            final Double rotation, final Color backgroundColor,
+            final File workingDir, final ClientHttpRequestFactory clientHttpRequestFactory) throws IOException {
         final File path = File.createTempFile("north-arrow-", ".tiff", workingDir);
 
         // TODO apply DPI value?
@@ -137,6 +142,10 @@ public final class NorthArrowGraphic {
         try {
             graphics2d = newImage.createGraphics();
             BufferedImage originalImage = ImageIO.read(inputStream);
+
+            // set background color
+            graphics2d.setColor(backgroundColor);
+            graphics2d.fillRect(0, 0, targetSize.width, targetSize.height);
 
             // scale the original image to fit the new size
             int newWidth, newHeight;
@@ -181,7 +190,7 @@ public final class NorthArrowGraphic {
      */
     private static URI createSvg(final Dimension targetSize,
             final InputStream inputStream, final Double rotation,
-            final File workingDir,
+            final Color backgroundColor, final File workingDir,
             final ClientHttpRequestFactory clientHttpRequestFactory)
             throws IOException {
         // load SVG graphic
@@ -194,10 +203,27 @@ public final class NorthArrowGraphic {
         newSvgRoot.setAttributeNS(null, "width", Integer.toString(targetSize.width));
         newSvgRoot.setAttributeNS(null, "height", Integer.toString(targetSize.height));
 
+        setSvgBackground(backgroundColor, targetSize, newDocument, newSvgRoot);
         embedSvgGraphic(svgRoot, newSvgRoot, newDocument, targetSize, rotation);
         File path = writeSvgToFile(newDocument, workingDir);
 
         return path.toURI();
+    }
+
+    private static void setSvgBackground(final Color backgroundColor,  final Dimension targetSize,
+            final Document newDocument, final SVGElement newSvgRoot) {
+        final Element rect = newDocument.createElementNS(SVG_NS, "rect");
+        rect.setAttributeNS(null, "x", "0");
+        rect.setAttributeNS(null, "y", "0");
+        rect.setAttributeNS(null, "width", Integer.toString(targetSize.width));
+        rect.setAttributeNS(null, "height", Integer.toString(targetSize.height));
+        String bgColor = ColorParser.toRGB(backgroundColor);
+        rect.setAttributeNS(null, "fill", bgColor);
+        // CSOFF: MagicNumber
+        String opacity = Double.toString(backgroundColor.getAlpha() / 255.0);
+        // CSON: MagicNumber
+        rect.setAttributeNS(null, "fill-opacity", opacity);
+        newSvgRoot.appendChild(rect);
     }
 
     /**

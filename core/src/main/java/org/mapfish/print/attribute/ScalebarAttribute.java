@@ -266,16 +266,16 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
             if (this.intervals < 2) {
                 throw new IllegalArgumentException("invalid number of intervals: " + this.intervals);
             }
-            if (this.color != null && !tryParseColor(this.color)) {
+            if (this.color != null && !ColorParser.canParseColor(this.color)) {
                 throw new IllegalArgumentException("invalid color: " + this.color);
             }
-            if (this.fontColor != null && !tryParseColor(this.fontColor)) {
+            if (this.fontColor != null && !ColorParser.canParseColor(this.fontColor)) {
                 throw new IllegalArgumentException("invalid font color: " + this.fontColor);
             }
-            if (this.barBgColor != null && !tryParseColor(this.barBgColor)) {
+            if (this.barBgColor != null && !ColorParser.canParseColor(this.barBgColor)) {
                 throw new IllegalArgumentException("invalid bar background color: " + this.barBgColor);
             }
-            if (this.backgroundColor != null && !tryParseColor(this.backgroundColor)) {
+            if (this.backgroundColor != null && !ColorParser.canParseColor(this.backgroundColor)) {
                 throw new IllegalArgumentException("invalid background color: " + this.backgroundColor);
             }
             if (getOrientation() == null) {
@@ -286,14 +286,6 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
             }
             if (getVerticalAlign() == null) {
                 throw new IllegalArgumentException("invalid verticalAlign: " + this.verticalAlign);
-            }
-        }
-
-        private boolean tryParseColor(final String colorString) {
-            try {
-                return ColorParser.toColor(colorString) != null;
-            } catch (Exception exc) {
-                return false;
             }
         }
 

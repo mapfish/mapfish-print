@@ -90,6 +90,7 @@ public class CreateNorthArrowProcessor extends AbstractProcessor<CreateNorthArro
         final URI northArrowGraphicFile = NorthArrowGraphic.create(
                 values.northArrow.getSize(),
                 values.northArrow.getGraphic(),
+                values.northArrow.getBackgroundColor(),
                 values.map.getRotation(),
                 values.tempTaskDirectory,
                 values.northArrow.getGraphicLoader(),

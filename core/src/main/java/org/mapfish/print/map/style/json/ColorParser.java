@@ -300,4 +300,27 @@ public final class ColorParser {
             return Optional.absent();
         }
     }
+
+    /**
+     * Check if the given color string can be parsed.
+     * @param colorString The color to parse.
+     */
+    public static boolean canParseColor(final String colorString) {
+        try {
+            return ColorParser.toColor(colorString) != null;
+        } catch (Exception exc) {
+            return false;
+        }
+    }
+
+    /**
+     * Get the "rgb(...)" representation for a color.
+     * @param color The color.
+     */
+    public static String toRGB(final Color color) {
+        return "rgb("
+                + color.getRed() + ", "
+                + color.getGreen() + ", "
+                + color.getBlue() + ")";
+    }
 }

@@ -19,13 +19,13 @@
 
 package org.mapfish.print.processor.map;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -33,6 +33,7 @@ import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.attribute.NorthArrowAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
+import org.mapfish.print.map.style.json.ColorParser;
 import org.mapfish.print.processor.map.NorthArrowGraphic.GraphicLoader;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,17 +48,19 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
     private TestHttpClientFactory requestFactory;
 
     private Configuration config;
+    private Color bgColor;
 
     @Before
     public void setup() throws IOException {
         this.config = this.configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
+        this.bgColor = ColorParser.toColor("rgba(255, 255, 255, 0)");
     }
 
     @Test
     public void testCreatePngSquareDownScaled() throws Exception {
         URI file = NorthArrowGraphic.create(
-                new Dimension(200, 200), "file://" + getFile(BASE_DIR + "NorthArrow.png").toString(), 0.0,
-                getTaskDirectory(), getGraphicLoader(), requestFactory);
+                new Dimension(200, 200), "file://" + getFile(BASE_DIR + "NorthArrow.png").toString(),
+                this.bgColor, 0.0, getTaskDirectory(), getGraphicLoader(), requestFactory);
 
 //        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow.tiff"));
 //        ImageSimilarity.writeUncompressedImage(ImageIO.read(new File(file)), "/tmp/expected-north-arrow-png-square-down.tiff");
@@ -67,8 +70,8 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
     @Test
     public void testCreatePngSquareUpScaled() throws Exception {
         URI file = NorthArrowGraphic.create(
-                new Dimension(50, 50), "file://" + getFile(BASE_DIR + "NorthArrow.png").toString(), 0.0,
-                getTaskDirectory(), getGraphicLoader(), requestFactory);
+                new Dimension(50, 50), "file://" + getFile(BASE_DIR + "NorthArrow.png").toString(),
+                this.bgColor, 0.0, getTaskDirectory(), getGraphicLoader(), requestFactory);
 
 //        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow.tiff"));
 //        ImageSimilarity.writeUncompressedImage(ImageIO.read(new File(file)), "/tmp/expected-north-arrow-png-square-up.tiff");
@@ -78,8 +81,8 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
     @Test
     public void testCreatePngSquareRotatedDownScaled() throws Exception {
         URI file = NorthArrowGraphic.create(
-                new Dimension(200, 200), "file://" + getFile(BASE_DIR + "NorthArrow.png").toString(), 45.0,
-                getTaskDirectory(), getGraphicLoader(), requestFactory);
+                new Dimension(200, 200), "file://" + getFile(BASE_DIR + "NorthArrow.png").toString(),
+                this.bgColor, 45.0, getTaskDirectory(), getGraphicLoader(), requestFactory);
 
 //        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow.tiff"));
 //        ImageSimilarity.writeUncompressedImage(ImageIO.read(new File(file)), "/tmp/expected-north-arrow-png-square-45-down.tiff");
@@ -89,8 +92,8 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
     @Test
     public void testCreatePngSquareRotatedUpScaled() throws Exception {
         URI file = NorthArrowGraphic.create(
-                new Dimension(50, 50), "file://" + getFile(BASE_DIR + "NorthArrow.png").toString(), 45.0,
-                getTaskDirectory(), getGraphicLoader(), requestFactory);
+                new Dimension(50, 50), "file://" + getFile(BASE_DIR + "NorthArrow.png").toString(),
+                this.bgColor, 45.0, getTaskDirectory(), getGraphicLoader(), requestFactory);
 
 //        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow.tiff"));
 //        ImageSimilarity.writeUncompressedImage(ImageIO.read(new File(file)), "/tmp/expected-north-arrow-png-square-45-up.tiff");
@@ -100,8 +103,8 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
     @Test
     public void testCreatePngNoSquareDownScaled() throws Exception {
         URI file = NorthArrowGraphic.create(
-                new Dimension(200, 200), "file://" + getFile(BASE_DIR + "NorthArrow_10.png").toString(), 0.0,
-                getTaskDirectory(), getGraphicLoader(), requestFactory);
+                new Dimension(200, 200), "file://" + getFile(BASE_DIR + "NorthArrow_10.png").toString(),
+                this.bgColor, 0.0, getTaskDirectory(), getGraphicLoader(), requestFactory);
 
 //        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow.tiff"));
 //        ImageSimilarity.writeUncompressedImage(ImageIO.read(new File(file)), "/tmp/expected-north-arrow_10-png-nosquare-down.tiff");
@@ -111,8 +114,8 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
     @Test
     public void testCreatePngNoSquareUpScaled() throws Exception {
         URI file = NorthArrowGraphic.create(
-                new Dimension(50, 50), "file://" + getFile(BASE_DIR + "NorthArrow_10.png").toString(), 0.0,
-                getTaskDirectory(), getGraphicLoader(), requestFactory);
+                new Dimension(50, 50), "file://" + getFile(BASE_DIR + "NorthArrow_10.png").toString(),
+                this.bgColor, 0.0, getTaskDirectory(), getGraphicLoader(), requestFactory);
 
 //        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow.tiff"));
 //        ImageSimilarity.writeUncompressedImage(ImageIO.read(new File(file)), "/tmp/expected-north-arrow_10-png-nosquare-up.tiff");
@@ -122,8 +125,8 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
     @Test
     public void testCreatePngNoSquareRotatedDownScaled() throws Exception {
         URI file = NorthArrowGraphic.create(
-                new Dimension(200, 200), "file://" + getFile(BASE_DIR + "NorthArrow_10.png").toString(), 45.0,
-                getTaskDirectory(), getGraphicLoader(), requestFactory);
+                new Dimension(200, 200), "file://" + getFile(BASE_DIR + "NorthArrow_10.png").toString(),
+                this.bgColor, 45.0, getTaskDirectory(), getGraphicLoader(), requestFactory);
 
 //        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow.tiff"));
 //        ImageSimilarity.writeUncompressedImage(ImageIO.read(new File(file)), "/tmp/expected-north-arrow_10-png-nosquare-45-down.tiff");
@@ -133,8 +136,8 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
     @Test
     public void testCreatePngNoSquareRotatedUpScaled() throws Exception {
         URI file = NorthArrowGraphic.create(
-                new Dimension(50, 50), "file://" + getFile(BASE_DIR + "NorthArrow_10.png").toString(), 45.0,
-                getTaskDirectory(), getGraphicLoader(), requestFactory);
+                new Dimension(50, 50), "file://" + getFile(BASE_DIR + "NorthArrow_10.png").toString(),
+                this.bgColor, 45.0, getTaskDirectory(), getGraphicLoader(), requestFactory);
 
 //        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow.tiff"));
 //        ImageSimilarity.writeUncompressedImage(ImageIO.read(new File(file)), "/tmp/expected-north-arrow_10-png-nosquare-45-up.tiff");
@@ -142,10 +145,22 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
     }
 
     @Test
+    public void testCreatePngSquareBgDownScaled() throws Exception {
+        Color backgroundColor = ColorParser.toColor("rgba(214, 214, 214, 200)");
+        URI file = NorthArrowGraphic.create(
+                new Dimension(200, 200), "file://" + getFile(BASE_DIR + "NorthArrow.png").toString(),
+                backgroundColor, 0.0, getTaskDirectory(), getGraphicLoader(), requestFactory);
+
+//        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow.tiff"));
+//        ImageSimilarity.writeUncompressedImage(ImageIO.read(new File(file)), "/tmp/expected-north-arrow-png-bg-square-down.tiff");
+        new ImageSimilarity(new File(file), 2).assertSimilarity(getFile(BASE_DIR + "expected-north-arrow-png-bg-square-down.tiff"), 0);
+    }
+
+    @Test
     public void testCreateSvgWidthAndHeightSet() throws Exception {
         URI file = NorthArrowGraphic.create(
-                new Dimension(200, 200), "file://" + getFile(BASE_DIR + "NorthArrow.svg").toString(), 90.0,
-                getTaskDirectory(), getGraphicLoader(), requestFactory);
+                new Dimension(200, 200), "file://" + getFile(BASE_DIR + "NorthArrow.svg").toString(),
+                this.bgColor, 90.0, getTaskDirectory(), getGraphicLoader(), requestFactory);
 
         BufferedImage referenceImage = ImageSimilarity.convertFromSvg(file, 200, 200);
 //        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow.svg"));
@@ -156,8 +171,8 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
     @Test
     public void testCreateSvgWidthAndHeightNotSet() throws Exception {
         URI file = NorthArrowGraphic.create(
-                new Dimension(200, 200), "file://" + getFile(BASE_DIR + "NorthArrow_10.svg").toString(), 90.0,
-                getTaskDirectory(), getGraphicLoader(), requestFactory);
+                new Dimension(200, 200), "file://" + getFile(BASE_DIR + "NorthArrow_10.svg").toString(),
+                this.bgColor, 90.0, getTaskDirectory(), getGraphicLoader(), requestFactory);
 
         BufferedImage referenceImage = ImageSimilarity.convertFromSvg(file, 200, 200);
 //        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow_10.svg"));
@@ -166,10 +181,36 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
     }
 
     @Test
+    public void testCreateSvgWidthAndHeightSetBg() throws Exception {
+        Color backgroundColor = ColorParser.toColor("rgba(214, 214, 214, 200)");
+        URI file = NorthArrowGraphic.create(
+                new Dimension(200, 200), "file://" + getFile(BASE_DIR + "NorthArrow.svg").toString(),
+                backgroundColor, 90.0, getTaskDirectory(), getGraphicLoader(), requestFactory);
+
+        BufferedImage referenceImage = ImageSimilarity.convertFromSvg(file, 200, 200);
+//        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow.svg"));
+//        ImageSimilarity.writeUncompressedImage(referenceImage, "/tmp/expected-north-arrow-bg.tiff");
+        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + "expected-north-arrow-bg.tiff"), 0);
+    }
+
+    @Test
+    public void testCreateSvgWidthAndHeightNotSetBg() throws Exception {
+        Color backgroundColor = ColorParser.toColor("rgba(214, 214, 214, 200)");
+        URI file = NorthArrowGraphic.create(
+                new Dimension(200, 200), "file://" + getFile(BASE_DIR + "NorthArrow_10.svg").toString(),
+                backgroundColor, 90.0, getTaskDirectory(), getGraphicLoader(), requestFactory);
+
+        BufferedImage referenceImage = ImageSimilarity.convertFromSvg(file, 200, 200);
+//        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow_10.svg"));
+//        ImageSimilarity.writeUncompressedImage(referenceImage, "/tmp/expected-north-arrow_10-bg.tiff");
+        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + "expected-north-arrow_10-bg.tiff"), 75);
+    }
+
+    @Test
     public void testCreateDefaultGraphic() throws Exception {
         URI file = NorthArrowGraphic.create(
-                new Dimension(200, 200), null, 90.0,
-                getTaskDirectory(), getGraphicLoader(), requestFactory);
+                new Dimension(200, 200), null,
+                this.bgColor, 90.0, getTaskDirectory(), getGraphicLoader(), requestFactory);
 
         BufferedImage referenceImage = ImageSimilarity.convertFromSvg(file, 200, 200);
 //        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow_10-default.svg"));

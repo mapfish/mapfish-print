@@ -25,10 +25,12 @@ import com.google.common.base.Optional;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.map.style.json.ColorParser;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.processor.map.NorthArrowGraphic.GraphicLoader;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -98,6 +100,8 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
      */
     public class NorthArrowAttributeValues {
 
+        private static final String DEFAULT_BACKGROUND_COLOR = "rgba(255, 255, 255, 0)";
+
         private final Dimension size;
         private GraphicLoader graphicLoader;
 
@@ -111,6 +115,12 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
          */
         @HasDefaultValue
         public String graphic = null;
+
+        /**
+         * The background color for the north-arrow graphic (default: rgba(255, 255, 255, 0)).
+         */
+        @HasDefaultValue
+        public String backgroundColor = DEFAULT_BACKGROUND_COLOR;
 
         /**
          * Constructor.
@@ -127,6 +137,9 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
          * Initialize default values and validate that the config is correct.
          */
         public final void postConstruct() {
+            if (this.backgroundColor != null && !ColorParser.canParseColor(this.backgroundColor)) {
+                throw new IllegalArgumentException("invalid background color: " + this.backgroundColor);
+            }
         }
 
         public final Dimension getSize() {
@@ -139,6 +152,10 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
 
         public final GraphicLoader getGraphicLoader() {
             return this.graphicLoader;
+        }
+
+        public final Color getBackgroundColor() {
+            return ColorParser.toColor(this.backgroundColor);
         }
     }
 }
