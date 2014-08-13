@@ -4,7 +4,7 @@
       "center": [-8235878.4938425, 4979784.7605681],
       "scale": 26000,
       "projection": "EPSG:900913",
-      "dpi": 72,
+      "dpi": 144,
       "rotation": 135,
       "layers": [
         {

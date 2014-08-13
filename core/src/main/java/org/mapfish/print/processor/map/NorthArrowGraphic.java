@@ -136,7 +136,6 @@ public final class NorthArrowGraphic {
             final File workingDir, final ClientHttpRequestFactory clientHttpRequestFactory) throws IOException {
         final File path = File.createTempFile("north-arrow-", ".tiff", workingDir);
 
-        // TODO apply DPI value?
         final BufferedImage newImage = new BufferedImage(targetSize.width, targetSize.height, BufferedImage.TYPE_4BYTE_ABGR);
         Graphics2D graphics2d = null;
         try {

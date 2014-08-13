@@ -87,8 +87,13 @@ public class CreateNorthArrowProcessor extends AbstractProcessor<CreateNorthArro
     public final Output execute(final Input values, final ExecutionContext context) throws Exception {
         checkCancelState(context);
 
+        final double dpiRatio = values.map.getDpi() / values.map.getRequestorDPI();
+        final Dimension size = new Dimension(
+                (int) (values.northArrow.getSize().getWidth() * dpiRatio),
+                (int) (values.northArrow.getSize().getHeight() * dpiRatio));
+
         final URI northArrowGraphicFile = NorthArrowGraphic.create(
-                values.northArrow.getSize(),
+                size,
                 values.northArrow.getGraphic(),
                 values.northArrow.getBackgroundColor(),
                 values.map.getRotation(),
