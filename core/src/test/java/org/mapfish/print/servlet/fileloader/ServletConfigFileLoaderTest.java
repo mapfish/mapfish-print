@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.util.NoSuchElementException;
 
@@ -36,6 +37,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @ContextConfiguration(locations = {
         MapPrinterServletTest.PRINT_CONTEXT
@@ -46,11 +48,11 @@ public class ServletConfigFileLoaderTest extends AbstractMapfishSpringTest {
     @Autowired
     private ServletConfigFileLoader loader;
 
-    private String configFileUriString = "servlet:///org/mapfish/print/servlet/fileloader/config.yaml";
+    public static final String CONFIG_FILE_URI_STRING = "servlet:///org/mapfish/print/servlet/fileloader/config.yaml";
     @Test
     public void testToFile() throws Exception {
         assertFalse(loader.toFile(new URI("file://blahblahblah")).isPresent());
-        assertTrue(loader.toFile(new URI(configFileUriString)).isPresent());
+        assertTrue(loader.toFile(new URI(CONFIG_FILE_URI_STRING)).isPresent());
         assertTrue(loader.toFile(new URI("servlet:///org/mapfish/print/servlet/fileloader/")).isPresent());
     }
 
@@ -58,28 +60,28 @@ public class ServletConfigFileLoaderTest extends AbstractMapfishSpringTest {
     public void testLastModified() throws Exception {
         final File file = CONFIG_FILE;
 
-        Optional<Long> lastModified = this.loader.lastModified(new URI(this.configFileUriString));
+        Optional<Long> lastModified = this.loader.lastModified(new URI(this.CONFIG_FILE_URI_STRING));
         assertTrue(lastModified.isPresent());
         assertEquals(file.lastModified(), lastModified.get().longValue());
     }
 
     @Test
     public void testAccessible() throws Exception {
-        assertTrue(loader.isAccessible(new URI(configFileUriString)));
-        assertFalse(loader.isAccessible(new URI(configFileUriString + "xzy")));
+        assertTrue(loader.isAccessible(new URI(CONFIG_FILE_URI_STRING)));
+        assertFalse(loader.isAccessible(new URI(CONFIG_FILE_URI_STRING + "xzy")));
     }
 
     @Test
     public void testLoadFile() throws Exception {
         final File file = CONFIG_FILE;
 
-        byte[] loaded = this.loader.loadFile(new URI(configFileUriString));
+        byte[] loaded = this.loader.loadFile(new URI(CONFIG_FILE_URI_STRING));
         assertArrayEquals(Files.toByteArray(file), loaded);
     }
 
     @Test
     public void testAccessibleChildResource() throws Exception {
-        final URI configFileUri = new URI(configFileUriString);
+        final URI configFileUri = new URI(CONFIG_FILE_URI_STRING);
         final String resourceFileName = "resourceFile.txt";
         assertTrue(this.loader.isAccessible(configFileUri, "servlet:///org/mapfish/print/servlet/fileloader/" + resourceFileName));
         assertTrue(this.loader.isAccessible(configFileUri, resourceFileName));
@@ -87,17 +89,18 @@ public class ServletConfigFileLoaderTest extends AbstractMapfishSpringTest {
         assertTrue(this.loader.isAccessible(configFileUri, getFile(FileConfigFileLoader.class, resourceFileName).getAbsolutePath()));
         assertTrue(this.loader.isAccessible(configFileUri, getFile(FileConfigFileLoader.class, resourceFileName).getPath()));
 
-        assertFalse(this.loader.isAccessible(configFileUri, getFile(FileConfigFileLoader.class,
-                "/test-http-request-factory-application-context.xml")
-                .getAbsolutePath()));
-        assertFalse(this.loader.isAccessible(configFileUri, getFile(FileConfigFileLoader.class,
-                "../../../../../test-http-request-factory-application-context.xml").getAbsolutePath()));
-        assertFalse(this.loader.isAccessible(configFileUri, "servlet:///test-http-request-factory-application-context.xml"));
+        File file = getFile(FileConfigFileLoader.class,
+                "/test-http-request-factory-application-context.xml");
+        assertFileAccessException(configFileUri, file.getAbsolutePath());
+        file = getFile(FileConfigFileLoader.class,
+                "../../../../../test-http-request-factory-application-context.xml");
+        assertFileAccessException(configFileUri, file.getAbsolutePath());
+        assertFileAccessException(configFileUri,"servlet:///test-http-request-factory-application-context.xml");
     }
 
     @Test
     public void testLoadFileChildResource() throws Exception {
-        final URI configFileUri = new URI(configFileUriString);
+        final URI configFileUri = new URI(CONFIG_FILE_URI_STRING);
         final String resourceFileName = "resourceFile.txt";
         final byte[] bytes = Files.toByteArray(getFile(FileConfigFileLoader.class, resourceFileName));
 
@@ -111,7 +114,7 @@ public class ServletConfigFileLoaderTest extends AbstractMapfishSpringTest {
 
     @Test(expected = IllegalFileAccessException.class)
     public void testLoadFileChildResource_NotInConfigDir() throws Exception {
-        final URI configFileUri = new URI(configFileUriString);
+        final URI configFileUri = new URI(CONFIG_FILE_URI_STRING);
 
         this.loader.loadFile(configFileUri, getFile(FileConfigFileLoader.class, "/test-http-request-factory-application-context.xml")
                 .getAbsolutePath());
@@ -119,15 +122,24 @@ public class ServletConfigFileLoaderTest extends AbstractMapfishSpringTest {
 
     @Test(expected = IllegalFileAccessException.class)
     public void testLoadFileChildResource_NotInConfigDir_ServletURI() throws Exception {
-        final URI configFileUri = new URI(configFileUriString);
+        final URI configFileUri = new URI(CONFIG_FILE_URI_STRING);
 
         this.loader.loadFile(configFileUri, "servlet:///test-http-request-factory-application-context.xml");
     }
 
     @Test(expected = NoSuchElementException.class)
     public void testLoadFileChildResource_DoesNotExist() throws Exception {
-        final URI configFileUri = new URI(configFileUriString);
+        final URI configFileUri = new URI(CONFIG_FILE_URI_STRING);
 
         this.loader.loadFile(configFileUri, "doesNotExist");
+    }
+
+    private void assertFileAccessException(URI configFileUri, String resource) throws IOException {
+        try {
+            this.loader.isAccessible(configFileUri, resource);
+            fail("Expected " + IllegalFileAccessException.class.getSimpleName());
+        } catch (IllegalFileAccessException e) {
+            // good
+        }
     }
 }
