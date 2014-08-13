@@ -119,9 +119,9 @@ public class CreateScaleBarProcessorFixedScaleCenterOsmTest extends AbstractMapf
                 .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 30);
 
         URI scalebarGraphic = values.getObject("graphic", URI.class);
-        Files.copy(new File(scalebarGraphic), new File("e:/tmp/expectedScalebar_" + getClass().getSimpleName() + ".tiff"));
+//        Files.copy(new File(scalebarGraphic), new File("e:/tmp/expectedScalebar_" + getClass().getSimpleName() + ".tiff"));
 
-        new ImageSimilarity(new File(scalebarGraphic), 4).assertSimilarity(getFile(BASE_DIR + "expectedScalebar.tiff"), 5);
+        new ImageSimilarity(new File(scalebarGraphic), 4).assertSimilarity(getFile(BASE_DIR + ScalebarDrawerTest.expectedDir + "expectedScalebar.tiff"), 5);
 
     }
 
