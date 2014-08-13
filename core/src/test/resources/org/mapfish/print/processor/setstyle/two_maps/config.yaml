@@ -30,14 +30,14 @@ templates:
     processors:
     - !createMap
       inputMapper: {mapDef1: map}
-      outputMapper: {mapSubReport: map1, layerGraphics: layerGraphics1}
+      outputMapper: {mapSubReport: map1}
     - !setStyle
       inputMapper:
         mapDef1: map
         styleDef: style
     - !createMap
       inputMapper: {mapDef2: map}
-      outputMapper: {mapSubReport: map2, layerGraphics: layerGraphics2}
+      outputMapper: {mapSubReport: map2}
     - !setStyle
       inputMapper:
         mapDef2: map

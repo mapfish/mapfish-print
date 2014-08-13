@@ -26,6 +26,5 @@ templates:
             overviewMap: overviewMap
         }
         outputMapper: {
-            overviewMapSubReport: overviewMapSubReport,
-            layerGraphics: dummyLayerGraphics
+            overviewMapSubReport: overviewMapSubReport
         }

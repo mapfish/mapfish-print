@@ -17,7 +17,7 @@ templates:
         directory: '.'
     - !createMap
         inputMapper: {geojsonMap: map}
-        outputMapper: {mapSubReport: geojsonMap, layerGraphics: geojsonGraphics}
+        outputMapper: {mapSubReport: geojsonMap}
     - !prepareTable
       inputMapper: {entries: table}
       outputMapper: {table: table}

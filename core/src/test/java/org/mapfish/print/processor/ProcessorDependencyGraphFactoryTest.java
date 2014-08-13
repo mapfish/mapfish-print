@@ -263,7 +263,18 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
                 NeedsMapAndWidthOutputsMap, RootTableAndWidthOut);
 
         ProcessorDependencyGraph graph = this.processorDependencyGraphFactory.build(processors);
-        assertContainsProcessors(graph.getRoots(), RootMapOut, RootTableAndWidthOut);
+    }
+
+    /**
+     * This test checks that when there are 2 or more processors that produce the same output, and this
+     * output is annotated with @DebugOutput, that no exception is thrown.
+     */
+    @Test
+    public void testBuildDebugOutput() throws Exception {
+        final ArrayList<TestProcessor> processors = Lists.newArrayList(RootDebugMapOut1, RootDebugMapOut2);
+
+        ProcessorDependencyGraph graph = this.processorDependencyGraphFactory.build(processors);
+        assertContainsProcessors(graph.getRoots(), RootDebugMapOut1, RootDebugMapOut2);
     }
 
     /**
@@ -397,7 +408,6 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         public String map = "map";
 
     }
-    
 
     private static class RootMapOutClass extends TestProcessor<TrackerContainer, MapOutput> {
         
@@ -410,9 +420,29 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
             return new MapOutput();
         }
     }
-    
+
     private static TestProcessor RootMapOut = new RootMapOutClass("RootMapOut", MapOutput.class);
-    
+
+    private static class DebugMapOutput {
+        @DebugValue
+        public String map = "map";
+    }
+
+    private static class RootDebugMapOutClass extends TestProcessor<TrackerContainer, DebugMapOutput> {
+
+        protected RootDebugMapOutClass(String name, Class<DebugMapOutput> outputType) {
+            super(name, outputType);
+        }
+
+        @Override
+        protected DebugMapOutput getExtras() {
+            return new DebugMapOutput();
+        }
+    }
+
+    private static TestProcessor RootDebugMapOut1 = new RootDebugMapOutClass("RootDebugMapOut1", DebugMapOutput.class);
+    private static TestProcessor RootDebugMapOut2 = new RootDebugMapOutClass("RootDebugMapOut2", DebugMapOutput.class);
+
     private static class TableAndWidth {
 
         public String table = "tableData";

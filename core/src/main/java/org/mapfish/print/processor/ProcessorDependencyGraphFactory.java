@@ -20,8 +20,10 @@
 package org.mapfish.print.processor;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.base.Function;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 import com.vividsolutions.jts.util.Assert;
@@ -35,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.mapfish.print.parser.ParserUtils.getAllAttributes;
 
@@ -79,15 +82,22 @@ public final class ProcessorDependencyGraphFactory {
 
         for (Processor<Object, Object> processor : processors) {
             final ProcessorGraphNode<Object, Object> node = new ProcessorGraphNode<Object, Object>(processor, this.metricRegistry);
-            for (String value : getOutputValues(node)) {
-                if (provideBy.containsKey(value)) {
-                    throw new IllegalArgumentException("Multiple processors provide the same output mapping: '" + processor + "' and '" +
-                                                       provideBy.get(value) + "' both provide: '" + value +
-                                                       "'.  You have to rename one of the outputs and the corresponding input so that" +
-                                                       " there is no ambiguity with regards to the input a processor consumes.");
+            for (OutputValue value : getOutputValues(node)) {
+                String outputName = value.name;
+                if (provideBy.containsKey(outputName)) {
+                    // there is already an output with the same name
+                    if (value.canBeRenamed) {
+                        // if this is just a debug output, we can simply rename it
+                        outputName = outputName + "_" + UUID.randomUUID().toString();
+                    } else {
+                        throw new IllegalArgumentException("Multiple processors provide the same output mapping: '" +
+                                processor + "' and '" + provideBy.get(outputName) + "' both provide: '" + outputName +
+                                "'.  You have to rename one of the outputs and the corresponding input so that" +
+                                " there is no ambiguity with regards to the input a processor consumes.");
+                    }
                 }
 
-                provideBy.put(value, node);
+                provideBy.put(outputName, node);
             }
             nodes.add(node);
         }
@@ -261,9 +271,15 @@ public final class ProcessorDependencyGraphFactory {
         return inputs;
     }
 
-    private static Collection<String> getOutputValues(final ProcessorGraphNode<Object, Object> node) {
+    private static Collection<OutputValue> getOutputValues(final ProcessorGraphNode<Object, Object> node) {
         final Map<String, String> outputMapper = node.getOutputMapper();
-        final Set<String> values = Sets.newHashSet(outputMapper.values());
+        final Iterable<OutputValue> outputValues = Iterables.transform(outputMapper.values(), new Function<String, OutputValue>() {
+            @Override
+            public OutputValue apply(final String output) {
+                return new OutputValue(output, false);
+            }
+        });
+        final Set<OutputValue> values = Sets.newHashSet(outputValues);
 
         final Set<String> mappings = outputMapper.keySet();
         final Class<?> paramType = node.getProcessor().getOutputType();
@@ -272,7 +288,10 @@ public final class ProcessorDependencyGraphFactory {
         final Collection<Field> allProperties = getAllAttributes(paramType);
         for (Field field : allProperties) {
             if (!outputMapper.containsKey(field.getName())) {
-                values.add(field.getName());
+                // if the field is annotated with @DebugValue, it can be renamed automatically in a
+                // mapping in case of a conflict.
+                final boolean canBeRenamed = field.getAnnotation(DebugValue.class) != null;
+                values.add(new OutputValue(field.getName(), canBeRenamed));
             }
         }
 
@@ -301,4 +320,13 @@ public final class ProcessorDependencyGraphFactory {
         return msg.toString();
     }
 
+    private static final class OutputValue {
+        private final String name;
+        private final boolean canBeRenamed;
+
+        private OutputValue(final String name, final boolean canBeRenamed) {
+            this.name = name;
+            this.canBeRenamed = canBeRenamed;
+        }
+    }
 }
