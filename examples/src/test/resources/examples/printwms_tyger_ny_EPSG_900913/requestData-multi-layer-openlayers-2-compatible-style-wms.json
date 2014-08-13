@@ -1,0 +1,32 @@
+{
+  "layout": "A4 landscape",
+  "outputFormat": "pdf",
+  "attributes": {
+    "map": {
+      "projection": "EPSG:900913",
+      "dpi": 72,
+      "rotation": 0,
+      "center": [-8240656,4969880, -8235548,4973782],
+      "scale": 25000,
+      "layers": [
+        {
+          "baseURL": "http://localhost:9876/e2egeoserver/wms",
+          "opacity": 1,
+          "type": "WMS",
+          "layers": [
+            "tiger:poi",
+            "tiger:tiger_roads",
+            "tiger:poly_landmarks"
+          ],
+
+          "imageFormat": "image/png",
+          "styles": [""],
+
+          "customParams": {
+            "TRANSPARENT": "true"
+          }
+        }
+      ]
+    }
+  }
+}

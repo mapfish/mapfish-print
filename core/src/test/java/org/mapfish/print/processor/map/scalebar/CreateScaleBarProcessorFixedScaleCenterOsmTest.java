@@ -19,16 +19,9 @@
 
 package org.mapfish.print.processor.map.scalebar;
 
-import static org.junit.Assert.assertEquals;
-
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-
+import com.google.common.base.Predicate;
+import com.google.common.io.Files;
 import jsr166y.ForkJoinPool;
-
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -44,8 +37,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
-import com.google.common.base.Predicate;
-import com.google.common.io.Files;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Basic test of the Scalebar processor.
@@ -116,13 +114,14 @@ public class CreateScaleBarProcessorFixedScaleCenterOsmTest extends AbstractMapf
 //        Files.copy(new File(layerGraphics.get(1)), new File("/tmp/1_" + getClass().getSimpleName() + ".tiff"));
 
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
+
         new ImageSimilarity(referenceImage, 2)
                 .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 30);
 
         URI scalebarGraphic = values.getObject("graphic", URI.class);
-//        Files.copy(new File(scalebarGraphic), new File("/tmp/expectedScalebar_" + getClass().getSimpleName() + ".tiff"));
-        new ImageSimilarity(new File(scalebarGraphic), 4)
-                .assertSimilarity(getFile(BASE_DIR + "expectedScalebar.tiff"), 5);
+        Files.copy(new File(scalebarGraphic), new File("e:/tmp/expectedScalebar_" + getClass().getSimpleName() + ".tiff"));
+
+        new ImageSimilarity(new File(scalebarGraphic), 4).assertSimilarity(getFile(BASE_DIR + "expectedScalebar.tiff"), 5);
 
     }
 
