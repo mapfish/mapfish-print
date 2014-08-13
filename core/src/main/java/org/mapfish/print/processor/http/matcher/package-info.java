@@ -17,30 +17,9 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.config;
-
-import com.google.common.base.Optional;
-
-import java.net.URI;
-import java.util.List;
-
 /**
- * A matcher that always returns true.
+ * Contains classes for performing matches on urls.
  *
- * @author jesseeichar on 1/20/14.
+ * @author Jesse on 8/6/2014.
  */
-public class AcceptAllMatcher extends HostMatcher {
-    @Override
-    public final Optional<Boolean> tryOverrideValidation(final URI uri) {
-        return Optional.of(true);
-    }
-    @Override
-    public void validate(final List<Throwable> validationErrors) {
-        // no checks required
-    }
-
-    @Override
-    public final String toString() {
-        return "Accept All";
-    }
-}
+package org.mapfish.print.processor.http.matcher;

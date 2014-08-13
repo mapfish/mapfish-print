@@ -12,7 +12,6 @@ templates:
         width: 802
         height: 500
         maxDpi: 400
-      requestHeaders: !requestHeaders {}
     processors:
     - !forwardHeaders
       headers: ['Cookies']

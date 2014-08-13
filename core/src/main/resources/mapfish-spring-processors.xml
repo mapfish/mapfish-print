@@ -35,9 +35,10 @@
     <bean id="!reportBuilder" class="org.mapfish.print.processor.jasper.JasperReportBuilder" scope="prototype" />
     <bean id="!useHttpForHttps" class="org.mapfish.print.processor.http.UseHttpForHttpsProcessor" scope="prototype" />
     <bean id="!mapUri" class="org.mapfish.print.processor.http.MapUriProcessor" scope="prototype" />
-    <bean id="!requestFactory" class="org.mapfish.print.processor.http.CompositeClientHttpRequestFactoryProcessor" scope="prototype" />
+    <bean id="!configureHttpRequests" class="org.mapfish.print.processor.http.CompositeClientHttpRequestFactoryProcessor" scope="prototype" />
     <bean id="!addHeaders" class="org.mapfish.print.processor.http.AddHeadersProcessor" scope="prototype" />
     <bean id="!forwardHeaders" class="org.mapfish.print.processor.http.ForwardHeadersProcessor" scope="prototype" />
+    <bean id="!restrictUris" class="org.mapfish.print.processor.http.RestrictUrisProcessor" scope="prototype" />
 
     <bean id="!urlImage" class="org.mapfish.print.processor.jasper.HttpImageResolver" scope="prototype" />
 

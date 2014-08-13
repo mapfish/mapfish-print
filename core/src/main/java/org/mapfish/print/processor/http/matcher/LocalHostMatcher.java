@@ -17,7 +17,7 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.config;
+package org.mapfish.print.processor.http.matcher;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -29,7 +29,31 @@ import java.util.List;
 
 /**
  * Allows to check that a given URL is served by one of the local network
- * interface or one of its alias.
+ * interface or one of its aliases.
+ * <p>Example 1: Accept any localhost url</p>
+ * <pre><code>
+ *     - localMatch {}
+ * </code></pre>
+ * <p>Example 2: Accept any localhost url (port == -1 accepts any port)</p>
+ * <pre><code>
+ *     - localMatch
+ *       port : -1
+ * </code></pre>
+ * <p>Example 3: Accept any localhost url on port 80 only</p>
+ * <pre><code>
+ *     - localMatch
+ *       port : 80
+ * </code></pre>
+ * <p>
+ *     Example 4: Accept localhost urls with paths that start with /print/.
+ *     <p>
+ *         If the regular expression give does not start with / then it will be added because all paths start with /
+ *     </p>
+ * </p>
+ * <pre><code>
+ *     - localMatch
+ *       pathRegex : /print/.+
+ * </code></pre>
  */
 public class LocalHostMatcher extends InetHostMatcher {
 

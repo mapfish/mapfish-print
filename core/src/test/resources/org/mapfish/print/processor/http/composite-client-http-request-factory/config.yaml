@@ -3,8 +3,8 @@ templates:
   main: !template
     processors:
       - !compositeRequestFactoryTestProcessor {}
-      - !requestFactory
-        parts:
+      - !configureHttpRequests
+        httpProcessors:
           - !mapUri
             mapping:
               (.+?)://localhost(.*) : "$1://127.0.0.1$2"

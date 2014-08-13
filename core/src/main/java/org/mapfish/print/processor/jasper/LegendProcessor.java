@@ -19,17 +19,21 @@
 
 package org.mapfish.print.processor.jasper;
 
+import com.google.common.io.Closer;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
-
 import org.mapfish.print.attribute.LegendAttribute.LegendAttributeValue;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpResponse;
 
 import java.awt.Image;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.imageio.ImageIO;
 
 /**
@@ -61,7 +65,7 @@ public class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, Le
         final List<Object[]> legendList = new ArrayList<Object[]>();
         final String[] legendColumns = {NAME_COLUMN, ICON_COLUMN, LEVEL_COLUMN};
         final LegendAttributeValue legendAttributes = values.legend;
-        fillLegend(legendAttributes, legendList, 0, context);
+        fillLegend(values.clientHttpRequestFactory, legendAttributes, legendList, 0, context);
         final Object[][] legend = new Object[legendList.size()][];
 
         final JRTableModelDataSource dataSource = new JRTableModelDataSource(new TableDataSource(legendColumns,
@@ -69,24 +73,35 @@ public class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, Le
         return new Output(dataSource);
     }
 
-    private void fillLegend(final LegendAttributeValue legendAttributes, final List<Object[]> legendList,
-                            final int level, final ExecutionContext context) throws IOException {
+    private void fillLegend(final ClientHttpRequestFactory clientHttpRequestFactory,
+                            final LegendAttributeValue legendAttributes,
+                            final List<Object[]> legendList,
+                            final int level,
+                            final ExecutionContext context) throws IOException, URISyntaxException {
         final Object[] row = {legendAttributes.name, null, level};
         legendList.add(row);
 
         final URL[] icons = legendAttributes.icons;
         if (icons != null) {
             for (URL icon : icons) {
-                checkCancelState(context);
-                final Image image = ImageIO.read(icon);
-                final Object[] iconRow = {null, image, level};
-                legendList.add(iconRow);
+                Closer closer = Closer.create();
+                try {
+                    checkCancelState(context);
+                    final ClientHttpRequest request = clientHttpRequestFactory.createRequest(icon.toURI(), HttpMethod.GET);
+                    final ClientHttpResponse httpResponse = closer.register(request.execute());
+
+                    final Image image = ImageIO.read(httpResponse.getBody());
+                    final Object[] iconRow = {null, image, level};
+                    legendList.add(iconRow);
+                } finally {
+                    closer.close();
+                }
             }
         }
 
         if (legendAttributes.classes != null) {
             for (LegendAttributeValue value : legendAttributes.classes) {
-                fillLegend(value, legendList, level + 1, context);
+                fillLegend(clientHttpRequestFactory, value, legendList, level + 1, context);
             }
         }
     }
@@ -100,6 +115,11 @@ public class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, Le
      * The Input Parameter object for {@link org.mapfish.print.processor.jasper.LegendProcessor}.
      */
     public static final class Input {
+        /**
+         * A factory for making http requests.  This is added to the values by the framework and therefore
+         * does not need to be set in configuration
+         */
+        public ClientHttpRequestFactory clientHttpRequestFactory;
         /**
          * The data required for creating the legend.
          */

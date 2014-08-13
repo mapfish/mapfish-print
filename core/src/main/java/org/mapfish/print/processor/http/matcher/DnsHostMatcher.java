@@ -17,15 +17,44 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.config;
+package org.mapfish.print.processor.http.matcher;
 
 import com.google.common.base.Optional;
+import org.mapfish.print.config.ConfigurationException;
 
 import java.net.URI;
 import java.util.List;
 
 /**
  * Allows to check that a given URL matches a DNS address (textual format).
+ * <p>Example 1: Accept any www.camptocamp.com url</p>
+ * <pre><code>
+ *     - !dnsMatch
+ *       host : www.camptocamp.com
+ * </code></pre>
+ * <p>Example 2: Accept any www.camptocamp.com url (port == -1 accepts any port)</p>
+ * <pre><code>
+ *     - !dnsMatch
+ *       host : www.camptocamp.com
+ *       port : -1
+ * </code></pre>
+ * <p>Example 3: Accept any www.camptocamp.com url on port 80 only</p>
+ * <pre><code>
+ *     - !dnsMatch
+ *       host : www.camptocamp.com
+ *       port : 80
+ * </code></pre>
+ * <p>
+ *     Example 4: Accept www.camptocamp.com urls with paths that start with /print/.
+ *     <p>
+ *         If the regular expression give does not start with / then it will be added because all paths start with /
+ *     </p>
+ * </p>
+ * <pre><code>
+ *     - !dnsMatch
+ *       host : www.camptocamp.com
+ *       pathRegex : /print/.+
+ * </code></pre>
  */
 public class DnsHostMatcher extends HostMatcher {
     private String host = null;

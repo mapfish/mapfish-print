@@ -21,6 +21,7 @@ package org.mapfish.print;
 
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapfish.print.servlet.MapPrinterServlet;
@@ -41,6 +42,8 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 import static org.junit.Assert.fail;
+import static org.mapfish.print.servlet.MapPrinterServlet.JSON_ATTRIBUTES;
+import static org.mapfish.print.servlet.MapPrinterServlet.JSON_REQUEST_HEADERS;
 
 /**
  * To run this test make sure that the test GeoServer is running:
@@ -129,6 +132,20 @@ public class ExamplesTest {
                         jsonSpec.getInternalObj().put("outputFormat", "png");
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
+                        JSONObject headers = new JSONObject();
+                        headers.append("Cookie", "examplesTestCookie=value");
+                        headers.append("Referer", "http://localhost:9876/print-servlet");
+                        headers.append("Host","localhost");
+                        headers.append("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0");
+                        headers.append("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+                        headers.append("Accept-Language", "en-US,en;q=0.5");
+                        headers.append("Accept-Encoding", "gzip, deflate");
+                        headers.append("Connection", "keep-alive");
+                        headers.append("Cache-Control", "max-age=0");
+                        JSONObject headersAttribute = new JSONObject();
+                        headersAttribute.put(JSON_REQUEST_HEADERS, headers);
+
+                        jsonSpec.getJSONObject(JSON_ATTRIBUTES).getInternalObj().put(JSON_REQUEST_HEADERS, headersAttribute);
                         this.mapPrinter.print(jsonSpec, out);
 
                         BufferedImage image = ImageIO.read(new ByteArrayInputStream(out.toByteArray()));

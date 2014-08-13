@@ -17,7 +17,9 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.config;
+package org.mapfish.print.processor.http.matcher;
+
+import org.mapfish.print.config.ConfigurationException;
 
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -26,6 +28,38 @@ import java.util.List;
 
 /**
  * Compares ip address string and mask string by using {@link java.net.InetAddress} comparison.
+ * <p>Example 1: accept any uri whose host matches the ip of www.camptocamp.com</p>
+ * <pre><code>
+ *     - !ipMatch
+ *       ip : www.camptocamp.com
+ * </code></pre>
+ * <p>Example 2: accept any uri whose host ip starts with 192.1</p>
+ * <pre><code>
+ *     - !ipMatch
+ *       ip : 192.1.0.0
+ *       mask : 255.255.0.0
+ * </code></pre>
+ * <p>Example 3: accept any uri whose host ip starts with 192.1 and restricts to port 80</p>
+ * <pre><code>
+ *     - !ipMatch
+ *       ip : 192.1.0.0
+ *       mask : 255.255.0.0
+ *       port : 80
+ * </code></pre>
+ * <p>Example 4: accept any uri whose host ip starts with 192.1 and and allows any port (-1 is any port)</p>
+ * <pre><code>
+ *     - !ipMatch
+ *       ip : 192.1.0.0
+ *       mask : 255.255.0.0
+ *       port : -1
+ * </code></pre>
+ * <p>Example 5: accept any uri whose host ip starts with 192.1 and restricts to paths that start with /print/</p>
+ * <pre><code>
+ *     - !ipMatch
+ *       ip : 192.1.0.0
+ *       mask : 255.255.0.0
+ *       pathRegex : /print/.+
+ * </code></pre>
  */
 public class AddressHostMatcher extends InetHostMatcher {
     private String ip = null;
@@ -57,12 +91,22 @@ public class AddressHostMatcher extends InetHostMatcher {
         }
     }
 
-
+    /**
+     * Set the allowed ip address for this matcher.
+     * @param ip the ip address.
+     */
     public final void setIp(final String ip) {
+        this.authorizedIPs = null;
         this.ip = ip;
     }
 
+    /**
+     * Set the Mask to apply to the ip address obtained from the URI that is being tested.
+     *
+     * @param mask the mask ip address.
+     */
     public final void setMask(final String mask) {
+        this.maskAddress = null;
         this.mask = mask;
     }
 
