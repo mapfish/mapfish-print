@@ -27,6 +27,7 @@ import org.mapfish.print.IllegalFileAccessException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.util.NoSuchElementException;
 
@@ -34,6 +35,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class FileConfigFileLoaderTest extends AbstractMapfishSpringTest {
     private static final File CONFIG_FILE = getFile(FileConfigFileLoaderTest.class, "config.yaml");
@@ -92,11 +94,11 @@ public class FileConfigFileLoaderTest extends AbstractMapfishSpringTest {
         assertTrue(this.loader.isAccessible(configFileUri, getFile(FileConfigFileLoader.class, resourceFileName).getAbsolutePath()));
         assertTrue(this.loader.isAccessible(configFileUri, getFile(FileConfigFileLoader.class, resourceFileName).getPath()));
 
-        assertFalse(this.loader.isAccessible(configFileUri, getFile(FileConfigFileLoader.class,
+        assertFileAccessException(configFileUri, getFile(FileConfigFileLoader.class,
                 "/test-http-request-factory-application-context.xml")
-                .getAbsolutePath()));
-        assertFalse(this.loader.isAccessible(configFileUri, getFile(FileConfigFileLoader.class,
-                "../../../../../test-http-request-factory-application-context.xml").getAbsolutePath()));
+                .getAbsolutePath());
+        assertFileAccessException(configFileUri, getFile(FileConfigFileLoader.class,
+                "../../../../../test-http-request-factory-application-context.xml").getAbsolutePath());
     }
 
     @Test
@@ -125,4 +127,12 @@ public class FileConfigFileLoaderTest extends AbstractMapfishSpringTest {
 
         this.loader.loadFile(configFileUri, "doesNotExist");
     }
-}
+
+    private void assertFileAccessException(URI configFileUri, String resource) throws IOException {
+        try {
+            this.loader.isAccessible(configFileUri, resource);
+            fail("Expected " + IllegalFileAccessException.class.getSimpleName());
+        } catch (IllegalFileAccessException e) {
+            // good
+        }
+    }}

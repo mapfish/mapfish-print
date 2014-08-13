@@ -81,7 +81,7 @@ public class SLDParserPlugin implements StyleParserPlugin {
             }
         };
 
-        return ParserPluginUtils.loadStyleAsURI(configuration, clientHttpRequestFactory, styleStringWithoutIndexReference, loadFunction);
+        return ParserPluginUtils.loadStyleAsURI(clientHttpRequestFactory, styleStringWithoutIndexReference, loadFunction);
     }
 
     private String removeIndexReference(final String styleString) {

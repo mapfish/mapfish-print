@@ -104,7 +104,7 @@ public final class FileUtils {
             throw new Error("Unable to get the canonical file of '" + base + "'.  Therefore it is not possible to verify if '" + child
                             + "' is a child of it.");
         }
-        File canonicalChild = null;
+        File canonicalChild;
         try {
             canonicalChild = child.getCanonicalFile();
         } catch (IOException e) {
