@@ -278,6 +278,18 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     }
 
     /**
+     * Check that an exception is thrown when one processor provides an output value and
+     * another processor expects an input value of the same name, but with a different type.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testBuildValuesWithSameNameAndDifferentType() throws Exception {
+        final ArrayList<TestProcessor> processors = Lists.newArrayList(NeedsMap, RootMapOut,
+                NeedsMapList);
+
+        ProcessorDependencyGraph graph = this.processorDependencyGraphFactory.build(processors);
+    }
+
+    /**
      * This test addresses the case where the processors have the same input and output and therefore could be dependent on itself.
      */
     @Test
@@ -491,8 +503,30 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
             return new MapInput();
         }
     }
-    
+
     private static TestProcessor NeedsMap = new NeedsMapClass("NeedsMap", Void.class);
+
+    private static class MapListInput extends TrackerContainer {
+        public List<String> map = Lists.newArrayList();
+    }
+
+    private static class NeedsMapListClass extends TestProcessor<MapListInput, Void> {
+        protected NeedsMapListClass(String name, Class<Void> outputType) {
+            super(name, outputType);
+        }
+
+        @Override
+        protected Void getExtras() {
+            return null;
+        }
+
+        @Override
+        public MapListInput createInputParameter() {
+            return new MapListInput();
+        }
+    }
+
+    private static TestProcessor NeedsMapList = new NeedsMapListClass("NeedsMapList", Void.class);
 
     private static class StyleNeedsMapClass extends TestProcessor<MapInput, Void> {
         protected StyleNeedsMapClass(String name, Class<Void> outputType) {
