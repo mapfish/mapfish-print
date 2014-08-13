@@ -19,22 +19,13 @@
 
 package org.mapfish.print.attribute;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Optional;
-
-import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.style.json.ColorParser;
 import org.mapfish.print.parser.HasDefaultValue;
-import org.mapfish.print.processor.map.NorthArrowGraphic.GraphicLoader;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -53,27 +44,7 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
 
     @Override
     public final NorthArrowAttributeValues createValue(final Template template) {
-        return new NorthArrowAttributeValues(new Dimension(this.size, this.size), getGraphicLoader(template.getConfiguration()));
-    }
-
-    /**
-     * Create a graphic loader which allows to load files from the configuration directory.
-     * @param configuration The configuration.
-     */
-    @VisibleForTesting
-    public final GraphicLoader getGraphicLoader(final Configuration configuration) {
-        return new GraphicLoader() {
-            @Override
-            public Optional<InputStream> load(final String graphicFile,
-                    final ClientHttpRequestFactory clientHttpRequestFactory) throws IOException {
-                if (configuration != null && configuration.isAccessible(graphicFile)) {
-                    final InputStream input = new ByteArrayInputStream(configuration.loadFile(graphicFile));
-                    return Optional.of(input);
-                } else {
-                    return Optional.absent();
-                }
-            }
-        };
+        return new NorthArrowAttributeValues(new Dimension(this.size, this.size));
     }
 
     @Override
@@ -103,7 +74,6 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
         private static final String DEFAULT_BACKGROUND_COLOR = "rgba(255, 255, 255, 0)";
 
         private final Dimension size;
-        private GraphicLoader graphicLoader;
 
         /**
          * The path to a graphic to use for the north-arrow.
@@ -126,11 +96,9 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
          * Constructor.
          *
          * @param size The size of the scalebar graphic in the Jasper report (in pixels).
-         * @param graphicLoader The graphic loader.
          */
-        public NorthArrowAttributeValues(final Dimension size, final GraphicLoader graphicLoader) {
+        public NorthArrowAttributeValues(final Dimension size) {
             this.size = size;
-            this.graphicLoader = graphicLoader;
         }
 
         /**
@@ -148,10 +116,6 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
 
         public final String getGraphic() {
             return this.graphic;
-        }
-
-        public final GraphicLoader getGraphicLoader() {
-            return this.graphicLoader;
         }
 
         public final Color getBackgroundColor() {

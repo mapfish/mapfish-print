@@ -98,7 +98,6 @@ public class CreateNorthArrowProcessor extends AbstractProcessor<CreateNorthArro
                 values.northArrow.getBackgroundColor(),
                 values.map.getRotation(),
                 values.tempTaskDirectory,
-                values.northArrow.getGraphicLoader(),
                 values.clientHttpRequestFactory);
 
         checkCancelState(context);

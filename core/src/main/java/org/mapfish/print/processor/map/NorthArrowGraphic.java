@@ -19,7 +19,6 @@
 
 package org.mapfish.print.processor.map;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.io.Closer;
 
@@ -80,7 +79,6 @@ public final class NorthArrowGraphic {
      * @param backgroundColor           The background color.
      * @param rotation                  The rotation to apply.
      * @param workingDir                The directory in which the graphic is created.
-     * @param graphicLoader             The graphic loader.
      * @param clientHttpRequestFactory  The request factory.
      * @return                          The path to the created graphic.
      */
@@ -90,11 +88,10 @@ public final class NorthArrowGraphic {
             final Color backgroundColor, 
             final Double rotation,
             final File workingDir,
-            final GraphicLoader graphicLoader,
             final ClientHttpRequestFactory clientHttpRequestFactory) throws Exception {
         final Closer closer = Closer.create();
         try {
-            final InputStream input = loadGraphic(graphicFile, graphicLoader, clientHttpRequestFactory, closer);
+            final InputStream input = loadGraphic(graphicFile, clientHttpRequestFactory, closer);
             if (graphicFile == null || graphicFile.toLowerCase().trim().endsWith("svg")) {
                 return createSvg(targetSize, input, rotation, backgroundColor, workingDir, clientHttpRequestFactory);
             } else {
@@ -106,7 +103,6 @@ public final class NorthArrowGraphic {
     }
 
     private static InputStream loadGraphic(final String graphicFile,
-            final GraphicLoader graphicLoader,
             final ClientHttpRequestFactory clientHttpRequestFactory,
             final Closer closer) throws IOException, URISyntaxException {
         if (Strings.isNullOrEmpty(graphicFile)) {
@@ -116,17 +112,11 @@ public final class NorthArrowGraphic {
             return closer.register(inputStream);
         }
 
-        // try to load graphic from configuration directory
-        Optional<InputStream> input = graphicLoader.load(graphicFile, clientHttpRequestFactory);
-        if (input.isPresent()) {
-            return closer.register(input.get());
-        } else {
-            // load graphic from URL
-            final URI uri = new URI(graphicFile);
-            final ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
-            final ClientHttpResponse response = closer.register(request.execute());
-            return new BufferedInputStream(response.getBody());
-        }
+        // try to load the given graphic
+        final URI uri = new URI(graphicFile);
+        final ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
+        final ClientHttpResponse response = closer.register(request.execute());
+        return new BufferedInputStream(response.getBody());
     }
 
     /**
@@ -335,17 +325,5 @@ public final class NorthArrowGraphic {
             }
         }
         return path;
-    }
-
-    /**
-     * Graphic loader to load a graphic from the configuration directory.
-     */
-    public interface GraphicLoader {
-        /**
-         * Load the graphic.
-         * @param graphicFile               The graphic file name.
-         * @param clientHttpRequestFactory  The request factory.
-         */
-        Optional<InputStream> load(final String graphicFile, final ClientHttpRequestFactory clientHttpRequestFactory) throws IOException;
     }
 }
