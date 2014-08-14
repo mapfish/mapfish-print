@@ -36,7 +36,7 @@ public final class FileConfigFileLoader extends AbstractFileConfigFileLoader {
 
     @Override
     protected Iterator<File> resolveFiles(final URI fileURI) {
-        final File file = new File(fileURI);
+        File file = platformIndependentUriToFile(fileURI);
 
         return Iterators.singletonIterator(file);
     }

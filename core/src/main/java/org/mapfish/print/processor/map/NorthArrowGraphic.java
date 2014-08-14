@@ -113,7 +113,12 @@ public final class NorthArrowGraphic {
         }
 
         // try to load the given graphic
-        final URI uri = new URI(graphicFile);
+        final URI uri;
+        if (graphicFile.startsWith("file:")) {
+            uri = new URI(graphicFile.replace("\\", "/"));
+        } else {
+            uri = new URI(graphicFile);
+        }
         final ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
         final ClientHttpResponse response = closer.register(request.execute());
         return new BufferedInputStream(response.getBody());

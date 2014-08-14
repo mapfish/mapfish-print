@@ -63,10 +63,10 @@ public class FileConfigFileLoaderTest extends AbstractMapfishSpringTest {
         assertFalse(loader.isAccessible(new URI(CONFIG_FILE.toURI() + "xzy")));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testAccessible_RelativePath() throws Exception {
         final URI fileURI = new URI("file://relativePath/config.yaml");
-        loader.isAccessible(fileURI);
+        assertFalse(loader.isAccessible(fileURI));
     }
 
     @Test

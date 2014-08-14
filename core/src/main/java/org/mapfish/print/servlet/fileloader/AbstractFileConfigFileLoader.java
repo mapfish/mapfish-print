@@ -139,35 +139,30 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
         try {
             final URI uri = new URI(pathToSubResource);
 
+            final File configDir = configFile.getParentFile();
             if (pathToSubResource.startsWith(getUriScheme())) {
-                try {
-                    final Iterator<File> fileIterator = resolveFiles(uri);
+                final Iterator<File> fileIterator = resolveFiles(uri);
 
-                    while (fileIterator.hasNext()) {
-                        File next = fileIterator.next();
-                        if (next.exists()) {
-                            FileUtils.assertIsSubDirectory("configuration", configFile.getParentFile(), next);
-                            return Optional.of(next);
-                        }
+                while (fileIterator.hasNext()) {
+                    File next = fileIterator.next();
+                    if (next.exists()) {
+                        FileUtils.assertIsSubDirectory("configuration", configDir, next);
+                        return Optional.of(next);
                     }
-                } catch (IllegalArgumentException iae) {
-                    // See if the file is a relative file and see if we can load that.
-                    String relativePart = pathToSubResource.substring((getUriScheme() + ":/").length());
-                    final File file = new File(configFile.getParentFile(), relativePart);
+                }
 
-                    if (file.exists()) {
-                        return Optional.of(file);
-                    } else {
-                        return Optional.absent();
-                    }
+                final File childFile = new File(configDir, platformIndependentUriToFile(uri).getPath());
+                if (childFile.exists()) {
+                    FileUtils.assertIsSubDirectory("configuration", configDir, childFile);
+                    return Optional.of(childFile);
                 }
             }
 
             try {
-                final File childFile = new File(uri);
+                final File childFile = platformIndependentUriToFile(uri);
 
                 if (childFile.exists()) {
-                    FileUtils.assertIsSubDirectory("configuration", configFile.getParentFile(), childFile);
+                    FileUtils.assertIsSubDirectory("configuration", configDir, childFile);
                     return Optional.of(childFile);
                 } else {
                     return Optional.absent();
@@ -196,5 +191,24 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
         }
 
         return Optional.absent();
+    }
+
+    /**
+     * Convert a url to a file object.  No checks are made to see if file exists but there are some hacks that are needed
+     * to convert uris to files across platforms.
+     * @param fileURI the uri to convert
+     */
+    protected static File platformIndependentUriToFile(final URI fileURI) {
+        File file;
+        try {
+            file = new File(fileURI);
+        } catch (IllegalArgumentException e) {
+            if (fileURI.toString().startsWith("file://")) {
+                file = new File(fileURI.toString().substring("file://".length()));
+            } else {
+                throw e;
+            }
+        }
+        return file;
     }
 }
