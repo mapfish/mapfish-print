@@ -31,6 +31,7 @@ import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.DebugValue;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
 import org.mapfish.print.processor.jasper.MapSubReport;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -318,8 +319,9 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         /**
          * The paths to a graphic for each layer.
          */
+        @DebugValue
         public final List<URI> layerGraphics;
-        
+
         /**
          * The path to the compiled sub-report for the map.
          */
