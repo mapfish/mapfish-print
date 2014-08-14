@@ -5,11 +5,8 @@ apply plugin: 'application'
 apply plugin: 'jetty'
 
 defaultTasks 'build'
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.10'
-}
 
-tasks.withType(Compile) {
+tasks.withType(JavaCompile) {
     options.encoding = "utf-8"
 }
 tasks.withType(Javadoc) {
