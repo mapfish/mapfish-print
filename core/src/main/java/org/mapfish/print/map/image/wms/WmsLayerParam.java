@@ -79,7 +79,7 @@ public class WmsLayerParam extends AbstractTiledLayerParams {
 
         Assert.isTrue(this.layers.length > 0, "There must be at least one layer defined for a WMS request to make sense");
 
-        // OpenLayers 2 compatibility.  It will post a single style empty style no matter how many layers there are
+        // OpenLayers 2 compatibility.  It will post a single empty style no matter how many layers there are
 
         if (this.styles != null && this.styles.length != this.layers.length && this.styles.length == 1 && this.styles[0].trim().isEmpty()) {
             this.styles = null;
