@@ -22,11 +22,16 @@ package org.mapfish.print.map.geotools;
 import com.google.common.io.CharSource;
 import com.google.common.io.Closer;
 import com.google.common.io.Files;
+import org.geotools.data.crs.ForceCoordinateSystemFeatureResults;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.feature.SchemaException;
 import org.geotools.geojson.feature.FeatureJSON;
+import org.geotools.referencing.CRS;
 import org.mapfish.print.Constants;
 import org.mapfish.print.FileUtils;
 import org.mapfish.print.config.Template;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
@@ -47,20 +52,23 @@ import java.net.URL;
  * Created by Stéphane Brunner on 16/4/14.
  */
 public class FeaturesParser {
-
-    private final FeatureJSON geoJsonReader = new FeatureJSON();
     private final ClientHttpRequestFactory httpRequestFactory;
+    private final boolean forceLongitudeFirst;
 
     /**
      * Construct.
-     * @param httpRequestFactory the HTTP request factory
+     *
+     * @param httpRequestFactory  the HTTP request factory
+     * @param forceLongitudeFirst if true then force longitude coordinate as first coordinate
      */
-    public FeaturesParser(final ClientHttpRequestFactory httpRequestFactory) {
+    public FeaturesParser(final ClientHttpRequestFactory httpRequestFactory, final boolean forceLongitudeFirst) {
         this.httpRequestFactory = httpRequestFactory;
+        this.forceLongitudeFirst = forceLongitudeFirst;
     }
 
     /**
      * Get the features collection from a GeoJson inline string or URL.
+     *
      * @param template the template
      * @param features what to parse
      * @return the feature collection
@@ -76,7 +84,8 @@ public class FeaturesParser {
 
     /**
      * Get the features collection from a GeoJson URL.
-     * @param template the template
+     *
+     * @param template   the template
      * @param geoJsonUrl what to parse
      * @return the feature collection
      */
@@ -100,7 +109,8 @@ public class FeaturesParser {
 
                 input = closer.register(new BufferedReader(new InputStreamReader(response.getBody(), Constants.DEFAULT_CHARSET)));
             }
-            return (SimpleFeatureCollection) this.geoJsonReader.readFeatureCollection(input);
+
+            return readFeatureCollection(input);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         } finally {
@@ -110,6 +120,7 @@ public class FeaturesParser {
 
     /**
      * Get the features collection from a GeoJson inline string.
+     *
      * @param geoJsonString what to parse
      * @return the feature collection
      * @throws IOException
@@ -119,11 +130,35 @@ public class FeaturesParser {
         ByteArrayInputStream input = null;
         try {
             input = new ByteArrayInputStream(bytes);
-            return (SimpleFeatureCollection) this.geoJsonReader.readFeatureCollection(input);
+            return readFeatureCollection(input);
         } finally {
             if (input != null) {
                 input.close();
             }
         }
+    }
+
+    private SimpleFeatureCollection readFeatureCollection(final Object input) throws IOException {
+        FeatureJSON geoJsonReader = new FeatureJSON();
+        SimpleFeatureCollection simpleFeatureCollection = (SimpleFeatureCollection) geoJsonReader.readFeatureCollection(input);
+        if (this.forceLongitudeFirst) {
+            CoordinateReferenceSystem crs = simpleFeatureCollection.getSchema().getCoordinateReferenceSystem();
+
+            final String code;
+            try {
+                code = CRS.lookupIdentifier(crs, false);
+
+                if (code != null) {
+                    crs = CRS.decode(code, true);
+                    simpleFeatureCollection = new ForceCoordinateSystemFeatureResults(simpleFeatureCollection, crs);
+                }
+            } catch (FactoryException e) {
+                throw new RuntimeException(e);
+            } catch (SchemaException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return simpleFeatureCollection;
     }
 }

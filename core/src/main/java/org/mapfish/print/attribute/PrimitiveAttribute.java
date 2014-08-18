@@ -22,10 +22,7 @@ package org.mapfish.print.attribute;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.parser.MapfishParser;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -47,9 +44,9 @@ import java.util.List;
  */
 public abstract class PrimitiveAttribute<Value> implements Attribute {
     private Class<Value> valueClass;
-    private LinkedHashMap<String, ?> clientOptions;
     private Value defaultValue;
 
+    private String configName;
     /**
      * Constructor.
      *
@@ -72,64 +69,28 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
     }
 
     @Override
+    public final void setConfigName(final String configName) {
+        this.configName = configName;
+    }
+
+    @Override
     public void validate(final List<Throwable> validationErrors) {
         // no checks required
     }
 
     @Override
     public final void printClientConfig(final JSONWriter json, final Template template) throws JSONException {
-        json.key("name").value(MapfishParser.stringRepresentation(this.valueClass));
-        if (this.clientOptions != null) {
-            addMapToJSON("clientOptions", this.clientOptions, json);
-        }
+        json.key(ReflectiveAttribute.JSON_NAME).value(this.configName);
+        json.key(ReflectiveAttribute.JSON_ATTRIBUTE_TYPE).value(clientConfigTypeDescription());
     }
 
     /**
-     * Setter called by the yaml parser.   Client options provides extra, non-standard information for the client.  These
-     * should be kept to a minimum.
-     *
-     * @param clientOptions the options.
+     * Returns a string that is a technical description of the type.  In other words, a string that the client software
+     * (user of the capabilities response) can use to create a request or UI.
+     * CSOFF: DesignForExtension
      */
-    public final void setClientOptions(final LinkedHashMap<String, ?> clientOptions) {
-        this.clientOptions = clientOptions;
+    protected String clientConfigTypeDescription() {
+        //CSON: DesignForExtension
+        return this.valueClass.getSimpleName();
     }
-
-
-    /**
-     * Utility method for adding a map of data to the json.
-     *
-     * @param jsonKey the json key of the object to be added
-     * @param map     the map of data to add to the json writer.
-     * @param json    writer to write to.
-     * @throws JSONException
-     */
-    @SuppressWarnings("unchecked")
-    protected final void addMapToJSON(final String jsonKey, final LinkedHashMap<String, ?> map, final JSONWriter json)
-            throws JSONException {
-        json.key(jsonKey);
-        json.object();
-        if (map != null) {
-            for (String key : map.keySet()) {
-                Object value = map.get(key);
-                if (value instanceof LinkedHashMap) {
-                    addMapToJSON(key, (LinkedHashMap<String, ?>) value, json);
-                } else if (value instanceof Collection<?>) {
-                    json.key(key);
-                    json.array();
-                    for (Object av : (Collection<?>) value) {
-                        json.value(av);
-                    }
-                    json.endArray();
-                } else if (value instanceof Integer) {
-                    json.key(key).value(((Integer) value).intValue());
-                } else if (value instanceof Double) {
-                    json.key(key).value(((Double) value).doubleValue());
-                } else {
-                    json.key(key).value(value);
-                }
-            }
-        }
-        json.endObject();
-    }
-
 }

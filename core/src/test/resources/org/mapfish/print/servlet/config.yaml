@@ -12,7 +12,6 @@ templates:
         width: 802
         height: 500
         maxDpi: 400
-      requestHeaders: !requestHeaders {}
     processors:
     - !forwardHeaders
       headers: ['Cookies']
@@ -20,8 +19,8 @@ templates:
         directory: '.'
     - !createMap
         inputMapper: {geojsonMap: map}
-        outputMapper: {mapSubReport: geojsonMap, layerGraphics: geojsonGraphics}
+        outputMapper: {mapSubReport: geojsonMap}
     - !createMap
         inputMapper: {imageMap: map}
-        outputMapper: {mapSubReport: imageMap, layerGraphics: imageGraphics}
+        outputMapper: {mapSubReport: imageMap}
 

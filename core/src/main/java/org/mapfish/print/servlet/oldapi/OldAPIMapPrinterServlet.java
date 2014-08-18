@@ -70,8 +70,6 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
 
     private static final int HALF_SECOND = 500;
 
-    private static final int[] DEFAULT_DPI_VALUES = {72, 120, 200, 254, 300, 600, 1200, 2400};
-
     @Autowired
     private MapPrinterFactory printerFactory;
 
@@ -301,6 +299,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
 
     private void writeInfoLayouts(final JSONWriter json, final Configuration configuration) throws JSONException {
         Double maxDpi = null;
+        double[] dpiSuggestions = null;
         ZoomLevels zoomLevels = null;
 
         json.key("layouts");
@@ -340,9 +339,10 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
                 }
                 json.endObject();
                 
-                // get the zoom levels and max dpi value from the first template
+                // get the zoom levels and dpi values from the first template
                 if (maxDpi == null) {
                     maxDpi = map.getMaxDpi();
+                    dpiSuggestions = map.getDpiSuggestions();
                 }
                 if (zoomLevels == null) {
                     zoomLevels = mapValues.getZoomLevels();
@@ -355,25 +355,15 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
         json.key("dpis");
         json.array();
         {
-            if (maxDpi != null) {
-                // output fixed dpis value lower than maxDpi
-                for (int dpi : DEFAULT_DPI_VALUES) {
-                    if (dpi < maxDpi) {
-                        json.object();
-                        {
-                            json.key("name").value(Integer.toString(dpi));
-                            json.key("value").value(Integer.toString(dpi));
-                        }
-                        json.endObject();
-                        
+            if (dpiSuggestions != null) {
+                for (Double dpi : dpiSuggestions) {
+                    json.object();
+                    {
+                        json.key("name").value(Integer.toString(dpi.intValue()));
+                        json.key("value").value(Integer.toString(dpi.intValue()));
                     }
+                    json.endObject();
                 }
-                json.object();
-                {
-                    json.key("name").value(Integer.toString(maxDpi.intValue()));
-                    json.key("value").value(Integer.toString(maxDpi.intValue()));
-                }
-                json.endObject();
             }
         }
         json.endArray();

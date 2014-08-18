@@ -23,9 +23,11 @@ import com.google.common.base.Optional;
 import com.google.common.io.Files;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.IllegalFileAccessException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.util.NoSuchElementException;
 
@@ -33,6 +35,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class FileConfigFileLoaderTest extends AbstractMapfishSpringTest {
     private static final File CONFIG_FILE = getFile(FileConfigFileLoaderTest.class, "config.yaml");
@@ -60,10 +63,10 @@ public class FileConfigFileLoaderTest extends AbstractMapfishSpringTest {
         assertFalse(loader.isAccessible(new URI(CONFIG_FILE.toURI() + "xzy")));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testAccessible_RelativePath() throws Exception {
         final URI fileURI = new URI("file://relativePath/config.yaml");
-        loader.isAccessible(fileURI);
+        assertFalse(loader.isAccessible(fileURI));
     }
 
     @Test
@@ -91,11 +94,11 @@ public class FileConfigFileLoaderTest extends AbstractMapfishSpringTest {
         assertTrue(this.loader.isAccessible(configFileUri, getFile(FileConfigFileLoader.class, resourceFileName).getAbsolutePath()));
         assertTrue(this.loader.isAccessible(configFileUri, getFile(FileConfigFileLoader.class, resourceFileName).getPath()));
 
-        assertFalse(this.loader.isAccessible(configFileUri, getFile(FileConfigFileLoader.class,
+        assertFileAccessException(configFileUri, getFile(FileConfigFileLoader.class,
                 "/test-http-request-factory-application-context.xml")
-                .getAbsolutePath()));
-        assertFalse(this.loader.isAccessible(configFileUri, getFile(FileConfigFileLoader.class,
-                "../../../../../test-http-request-factory-application-context.xml").getAbsolutePath()));
+                .getAbsolutePath());
+        assertFileAccessException(configFileUri, getFile(FileConfigFileLoader.class,
+                "../../../../../test-http-request-factory-application-context.xml").getAbsolutePath());
     }
 
     @Test
@@ -110,7 +113,7 @@ public class FileConfigFileLoaderTest extends AbstractMapfishSpringTest {
         assertArrayEquals(bytes, this.loader.loadFile(configFileUri, getFile(FileConfigFileLoader.class, resourceFileName).getPath()));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalFileAccessException.class)
     public void testLoadFileChildResource_NotInConfigDir() throws Exception {
         final URI configFileUri = CONFIG_FILE.toURI();
 
@@ -124,4 +127,12 @@ public class FileConfigFileLoaderTest extends AbstractMapfishSpringTest {
 
         this.loader.loadFile(configFileUri, "doesNotExist");
     }
-}
+
+    private void assertFileAccessException(URI configFileUri, String resource) throws IOException {
+        try {
+            this.loader.isAccessible(configFileUri, resource);
+            fail("Expected " + IllegalFileAccessException.class.getSimpleName());
+        } catch (IllegalFileAccessException e) {
+            // good
+        }
+    }}

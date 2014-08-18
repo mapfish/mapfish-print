@@ -7,9 +7,7 @@ templates:
     attributes:
       number: !integer {}
       name: !string {}
-      description: !string
-        clientOptions:
-          multilines: true
+      description: !string {}
       length: !float {}
       map: !map
         maxDpi: 400

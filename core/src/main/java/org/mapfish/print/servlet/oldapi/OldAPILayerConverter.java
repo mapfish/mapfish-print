@@ -158,8 +158,16 @@ public final class OldAPILayerConverter {
                     layer.put("geoJson", oldLayer.getString("geoJson"));
                 }
             }
-            
-            // TODO convert styles
+
+            if (oldLayer.has("styles")) {
+                final JSONObject styles = oldLayer.getInternalObj().getJSONObject("styles");
+                if (oldLayer.has("styleProperty")) {
+                    styles.put("styleProperty", oldLayer.getString("styleProperty"));
+                }
+                styles.put("version", "1");
+                layer.put("style", styles);
+                oldLayer.getInternalObj().remove("styles");
+            }
             
             return layer;
         }

@@ -19,7 +19,6 @@
 
 package org.mapfish.print.processor.http;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.mapfish.print.attribute.HttpRequestHeadersAttribute;
@@ -32,7 +31,19 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 /**
- * This processor forwarding allows adding static headers to an http request.
+ * This processor forwards all the headers from the print request (from the mapfish-print client) to each http request made for
+ * the particular print job.  All headers can be forwarded (if forwardAll is set to true) or the specific headers to forward
+ * can be specified.
+ * <p>Example 1: Forward all headers from print request</p>
+ * <pre><code>
+ * - !forwardHeaders
+ *   all: true
+ * </code></pre>
+ * <p>Example 1: Forward specific headers (header1 and header2 will be forwarded)</p>
+ * <pre><code>
+ * - !forwardHeaders
+ *   headers: [header1, header2]
+ * </code></pre>
  *
  * @author Jesse on 6/26/2014.
  */
@@ -50,7 +61,7 @@ public final class ForwardHeadersProcessor
     }
 
     /**
-     * Set the header names to forward from the request.
+     * Set the header names to forward from the request.  Should not be defined if all is set to true
      *
      * @param names the header names.
      */
@@ -59,7 +70,7 @@ public final class ForwardHeadersProcessor
     }
 
     /**
-     * If set to true the headers is ignored and all headers are forwarded.
+     * If set to true then all headers are forwarded.  If this is true headers should be empty (or undefined)
      *
      * @param all if true forward all headers
      */
@@ -69,22 +80,25 @@ public final class ForwardHeadersProcessor
 
     @Override
     protected void extraValidation(final List<Throwable> validationErrors) {
-        if (this.headerNames.isEmpty()) {
-            validationErrors.add(new IllegalStateException("No header names defined"));
+        if (!this.forwardAll && this.headerNames.isEmpty()) {
+            validationErrors.add(new IllegalStateException("all is false and no headers are defined"));
+        }
+        if (this.forwardAll && !this.headerNames.isEmpty()) {
+            validationErrors.add(new IllegalStateException("all is true but headers is defined. Either all is true " +
+                                                           "OR headers is specified"));
         }
     }
 
     @Override
     public ClientHttpRequestFactory createFactoryWrapper(final Param param,
                                                          final ClientHttpRequestFactory requestFactory) {
+        Map<String, Object> headers = Maps.newHashMap();
 
-        Map<String, List<String>> headers = Maps.filterKeys(param.requestHeaders.getHeaders(), new Predicate<String>() {
-            @Override
-            public boolean apply(@Nullable final String input) {
-                return input != null &&
-                       (ForwardHeadersProcessor.this.forwardAll || ForwardHeadersProcessor.this.headerNames.contains(input));
+        for (Map.Entry<String, List<String>> entry : param.requestHeaders.getHeaders().entrySet()) {
+            if (ForwardHeadersProcessor.this.forwardAll || ForwardHeadersProcessor.this.headerNames.contains(entry.getKey())) {
+                headers.put(entry.getKey(), entry.getValue());
             }
-        });
+        }
 
         final AddHeadersProcessor addHeadersProcessor = new AddHeadersProcessor();
         addHeadersProcessor.setHeaders(headers);

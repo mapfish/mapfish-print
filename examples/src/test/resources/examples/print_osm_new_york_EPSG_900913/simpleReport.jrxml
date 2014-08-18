@@ -11,7 +11,9 @@
 	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
-	<parameter name="map" class="java.lang.String"/>
+	<parameter name="mapSubReport" class="java.lang.String"/>
+	<parameter name="scalebarSubReport" class="java.lang.String"/>
+	<parameter name="northArrowSubReport" class="java.lang.String"/>
 	<title>
 		<band height="390" splitType="Stretch">
 			<staticText>
@@ -22,13 +24,21 @@
 				<text><![CDATA[Map]]></text>
 			</staticText>
 			<subreport>
-				<reportElement x="0" y="51" width="780" height="330" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d">
+				<reportElement x="0" y="51" width="780" height="330" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d"/>
+				<subreportExpression><![CDATA[$P{mapSubReport}]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="540" y="341" width="240" height="40" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d"/>
+				<subreportExpression><![CDATA[$P{scalebarSubReport}]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="51" width="50" height="50" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d">
 					<property name="local_mesure_unitwidth" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="local_mesure_unitheight" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<subreportExpression><![CDATA[$P{map}]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{northArrowSubReport}]]></subreportExpression>
 			</subreport>
 		</band>
 	</title>

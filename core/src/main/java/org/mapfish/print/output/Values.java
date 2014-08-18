@@ -23,8 +23,10 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.mapfish.print.ConfigFileResolvingHttpRequestFactory;
 import org.mapfish.print.attribute.ArrayReflectiveAttribute;
 import org.mapfish.print.attribute.Attribute;
+import org.mapfish.print.attribute.HttpRequestHeadersAttribute;
 import org.mapfish.print.attribute.PrimitiveAttribute;
 import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.Template;
@@ -42,6 +44,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import static org.mapfish.print.servlet.MapPrinterServlet.JSON_REQUEST_HEADERS;
 
 /**
  * Values that go into a processor from previous processors in the processor processing graph.
@@ -91,11 +95,17 @@ public final class Values {
                   final ClientHttpRequestFactory httpRequestFactory) throws JSONException {
         // add task dir. to values so that all processors can access it
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
-        this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY, httpRequestFactory);
+        this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY, new ConfigFileResolvingHttpRequestFactory(httpRequestFactory, template));
 
         final PJsonObject jsonAttributes = requestData.getJSONObject(MapPrinterServlet.JSON_ATTRIBUTES);
 
-        Map<String, Attribute> attributes = template.getAttributes();
+        Map<String, Attribute> attributes = Maps.newHashMap(template.getAttributes());
+        if (jsonAttributes.has(JSON_REQUEST_HEADERS) &&
+            jsonAttributes.getJSONObject(JSON_REQUEST_HEADERS).has(JSON_REQUEST_HEADERS)) {
+            if (!attributes.containsKey(MapPrinterServlet.JSON_REQUEST_HEADERS)) {
+                attributes.put(MapPrinterServlet.JSON_REQUEST_HEADERS, new HttpRequestHeadersAttribute());
+            }
+        }
         for (String attributeName : attributes.keySet()) {
             final Attribute attribute = attributes.get(attributeName);
             final Object value;

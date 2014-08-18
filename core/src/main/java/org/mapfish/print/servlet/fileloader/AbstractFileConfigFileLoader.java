@@ -21,6 +21,7 @@ package org.mapfish.print.servlet.fileloader;
 
 import com.google.common.base.Optional;
 import com.google.common.io.Files;
+import org.mapfish.print.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,7 +105,7 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
         try {
             final Optional<File> childFile = resolveChildFile(configFileUri, pathToSubResource);
             return childFile.isPresent() && childFile.get().exists();
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException nsee) {
             return false;
         }
     }
@@ -138,27 +139,35 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
         try {
             final URI uri = new URI(pathToSubResource);
 
+            final File configDir = configFile.getParentFile();
             if (pathToSubResource.startsWith(getUriScheme())) {
                 final Iterator<File> fileIterator = resolveFiles(uri);
+
                 while (fileIterator.hasNext()) {
                     File next = fileIterator.next();
                     if (next.exists()) {
-                        verifyChildInConfigDir(pathToSubResource, configFile, next);
+                        FileUtils.assertIsSubDirectory("configuration", configDir, next);
                         return Optional.of(next);
                     }
+                }
+
+                final File childFile = new File(configDir, platformIndependentUriToFile(uri).getPath());
+                if (childFile.exists()) {
+                    FileUtils.assertIsSubDirectory("configuration", configDir, childFile);
+                    return Optional.of(childFile);
                 }
             }
 
             try {
-                final File childFile = new File(uri);
-                verifyChildInConfigDir(pathToSubResource, configFile, childFile);
+                final File childFile = platformIndependentUriToFile(uri);
 
                 if (childFile.exists()) {
+                    FileUtils.assertIsSubDirectory("configuration", configDir, childFile);
                     return Optional.of(childFile);
                 } else {
                     return Optional.absent();
                 }
-            }  catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 return resolveFileAssumingPathIsFile(pathToSubResource, configFile);
             }
 
@@ -175,8 +184,8 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
             return Optional.of(childFile);
         } else {
             childFile = new File(pathToSubResource);
-            verifyChildInConfigDir(pathToSubResource, configFile, childFile);
             if (childFile.exists()) {
+                FileUtils.assertIsSubDirectory("configuration", configFile.getParentFile(), childFile);
                 return Optional.of(childFile);
             }
         }
@@ -184,11 +193,22 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
         return Optional.absent();
     }
 
-    private void verifyChildInConfigDir(final String pathToSubResource, final File configFile, final File childFile) throws IOException {
-        if (childFile.exists() && !childFile.getCanonicalPath().startsWith(configFile.getParentFile().getCanonicalPath())) {
-            throw new IllegalArgumentException("'" + pathToSubResource + "' identifies a file that is not within the configuration " +
-                                               "directory: " + configFile.getParentFile().getCanonicalPath());
+    /**
+     * Convert a url to a file object.  No checks are made to see if file exists but there are some hacks that are needed
+     * to convert uris to files across platforms.
+     * @param fileURI the uri to convert
+     */
+    protected static File platformIndependentUriToFile(final URI fileURI) {
+        File file;
+        try {
+            file = new File(fileURI);
+        } catch (IllegalArgumentException e) {
+            if (fileURI.toString().startsWith("file://")) {
+                file = new File(fileURI.toString().substring("file://".length()));
+            } else {
+                throw e;
+            }
         }
+        return file;
     }
-
 }

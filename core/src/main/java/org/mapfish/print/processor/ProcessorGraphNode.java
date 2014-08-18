@@ -165,6 +165,10 @@ public final class ProcessorGraphNode<In, Out> {
         return builder.toString();
     }
 
+    public String getName() {
+        return this.processor.toString();
+    }
+
     /**
      * Create a set containing all the processor at the current node and the entire subgraph.
      */

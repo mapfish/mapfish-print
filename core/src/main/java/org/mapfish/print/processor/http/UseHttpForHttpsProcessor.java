@@ -36,6 +36,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * This processor maps https requests to http requests for certain hosts. The port number can also be mapped since that is usually
+ * required.
+ * <p>Example: </p>
+ * <pre><code>
+ * - !useHttpForHttps
+ *   hosts: [localhost, www.camptocamp.com]
+ *   portMapping:
+ *     443 : 80
+ *     8443 : 8443
+ * </code></pre>
+ *
  * @author Jesse on 6/25/2014.
  */
 public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFactoryProcessor {

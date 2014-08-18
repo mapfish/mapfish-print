@@ -24,7 +24,9 @@ import com.google.common.collect.Lists;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+
 import jsr166y.RecursiveTask;
+
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
@@ -51,10 +53,9 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
+
 import javax.imageio.ImageIO;
 
 /**
@@ -186,11 +187,9 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
             GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapProjection);
             gridEnvelope.setEnvelope(gridCoverageOrigin.x, gridCoverageOrigin.y, gridCoverageMaxX, gridCoverageMaxY);
             return factory.create(commonUri.toString(), coverageImage, gridEnvelope, null, null, null);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -292,12 +291,12 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
                 if (statusCode != HttpStatus.OK) {
                     LOGGER.error("Error making tile request: " + this.tileRequest.getURI() + "\n\tStatus: " + statusCode +
                                  "\n\tMessage: " + response.getStatusText());
-                    return new Tile(this.errorImage, this.getTileIndexX(), this.getTileIndexY());
+                    return new Tile(this.errorImage, getTileIndexX(), getTileIndexY());
                 }
 
                 BufferedImage image = ImageIO.read(response.getBody());
 
-                return new Tile(image, this.getTileIndexX(), this.getTileIndexY());
+                return new Tile(image, getTileIndexX(), getTileIndexY());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } finally {
@@ -319,7 +318,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
 
         @Override
         protected Tile compute() {
-            return new Tile(this.placeholderImage, this.getTileIndexX(), this.getTileIndexY());
+            return new Tile(this.placeholderImage, getTileIndexX(), getTileIndexY());
         }
     }
 

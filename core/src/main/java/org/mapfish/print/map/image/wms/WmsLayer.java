@@ -19,15 +19,10 @@
 
 package org.mapfish.print.map.image.wms;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import com.google.common.io.Closer;
 import com.vividsolutions.jts.util.Assert;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.data.wms.request.GetMapRequest;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
-import org.mapfish.print.URIUtils;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.image.AbstractSingleImageLayer;
@@ -39,7 +34,6 @@ import org.springframework.http.client.ClientHttpResponse;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.net.URI;
-import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import javax.imageio.ImageIO;
 
@@ -70,30 +64,12 @@ public final class WmsLayer extends AbstractSingleImageLayer {
     protected BufferedImage loadImage(final ClientHttpRequestFactory requestFactory,
                                       final MapfishMapContext transformer,
                                       final boolean isFirstLayer) throws Throwable {
-        final URI commonURI = this.params.getBaseUri();
+        final WmsLayerParam wmsLayerParam = this.params;
+        final URI commonURI = wmsLayerParam.getBaseUri();
 
         final Rectangle paintArea = transformer.getPaintArea();
         ReferencedEnvelope envelope = transformer.getBounds().toReferencedEnvelope(paintArea, transformer.getDPI());
-        final GetMapRequest getMapRequest = WmsVersion.lookup(this.params.version).getGetMapRequest(commonURI.toURL());
-        getMapRequest.setBBox(envelope);
-        getMapRequest.setDimensions(paintArea.width, paintArea.height);
-        getMapRequest.setFormat(this.params.imageFormat);
-        getMapRequest.setSRS(CRS.lookupIdentifier(envelope.getCoordinateReferenceSystem(), false));
-
-        for (int i = 0; i < this.params.layers.length; i++) {
-            String layer = this.params.layers[i];
-            String style = "";
-            if (this.params.styles != null) {
-                style = this.params.styles[i];
-            }
-            getMapRequest.addLayer(layer, style);
-        }
-        final URI getMapUri = getMapRequest.getFinalURL().toURI();
-
-        Multimap<String, String> extraParams = HashMultimap.create();
-        extraParams.putAll(this.params.getMergeableParams());
-        extraParams.putAll(this.params.getCustomParams());
-        final URI uri = URIUtils.addParams(getMapUri, extraParams, Collections.<String>emptySet());
+        URI uri = WmsUtilities.makeWmsGetLayerRequest(requestFactory, wmsLayerParam, commonURI, paintArea.getSize(), envelope);
 
         Closer closer = Closer.create();
         try {

@@ -1,0 +1,25 @@
+templates:
+  main: !template
+    reportTemplate: "dummy.jxml"
+    attributes:
+      mapDef: !map
+        width: 780
+        height: 330
+        maxDpi: 400
+        zoomSnapTolerance: 0.025
+        zoomLevelSnapStrategy: CLOSEST_LOWER_SCALE_ON_TIE
+        zoomLevels: !zoomLevels
+          scales: [5000, 10000, 25000, 50000, 110000, 500000, 1000000]
+      northArrowDef: !northArrow
+        size: 200
+        default:
+          graphic: "file://NorthArrow_10.svg"
+    processors:
+    - !createMap
+        inputMapper: {mapDef: map}
+        outputMapper: {mapSubReport: mapOut}
+    - !createNorthArrow
+        inputMapper: {mapDef: map, northArrowDef: northArrow}
+        outputMapper: {subReport: northArrowOut}
+
+

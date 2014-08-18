@@ -4,16 +4,16 @@
             "name": "",
             "classes": [{
                 "name": "Arbres",
-                "icons": ["legends:/arbres.png"]
+                "icons": ["http://legend.com/arbres.png"]
             }, {
                 "name": "Peturbations",
-                "icons": ["legends:/perturbations.png"]
+                "icons": ["http://legend.com/perturbations.png"]
             }, {
                 "name": "Points de vente",
-                "icons": ["legends:/points-de-vente.png"]
+                "icons": ["http://legend.com/points-de-vente.png"]
             }, {
                 "name": "Stationement",
-                "icons": ["legends:/stationement.png"]
+                "icons": ["http://legend.com/stationement.png"]
             }]
         }
     }

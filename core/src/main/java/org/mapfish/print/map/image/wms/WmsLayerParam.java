@@ -33,7 +33,7 @@ import java.util.Arrays;
  *
  * @author Jesse on 4/10/2014.
  */
-public final class WmsLayerParam extends AbstractTiledLayerParams {
+public class WmsLayerParam extends AbstractTiledLayerParams {
     /**
      * The base URL for the WMS.  Used for making WMS requests.
      */
@@ -64,23 +64,30 @@ public final class WmsLayerParam extends AbstractTiledLayerParams {
     public boolean useNativeAngle = false;
 
     @Override
-    public URI getBaseUri() throws URISyntaxException {
+    public final URI getBaseUri() throws URISyntaxException {
         return new URI(this.baseURL);
     }
 
     /**
      * Validate some of the properties of this layer.
      */
+    // CSOFF: DesignForExtension
     public void postConstruct() throws URISyntaxException {
+        // CSON: DesignForExtension
         WmsVersion.lookup(this.version);
         getBaseUri();
 
         Assert.isTrue(this.layers.length > 0, "There must be at least one layer defined for a WMS request to make sense");
 
-        Assert.isTrue(this.styles == null || this.layers.length == this.styles.length,
-                "If styles are defined then there must be one for each layer.  Number of layers: " + this.layers.length + "\nStyles: "
-                + Arrays.toString(this.styles));
+        // OpenLayers 2 compatibility.  It will post a single empty style no matter how many layers there are
 
+        if (this.styles != null && this.styles.length != this.layers.length && this.styles.length == 1 && this.styles[0].trim().isEmpty()) {
+            this.styles = null;
+        } else {
+            Assert.isTrue(this.styles == null || this.layers.length == this.styles.length,
+                    "If styles are defined then there must be one for each layer.  Number of layers: " + this.layers.length + "\nStyles: "
+                    + Arrays.toString(this.styles));
+        }
         if (!this.imageFormat.startsWith("image/")) {
             this.imageFormat = "image/" + this.imageFormat;
         }

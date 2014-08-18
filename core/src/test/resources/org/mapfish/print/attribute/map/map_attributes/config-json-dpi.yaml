@@ -1,0 +1,9 @@
+
+templates:
+  main: !template
+    attributes:
+      mapDef: !map
+        width: 500
+        height: 100
+        maxDpi: 400
+        dpiSuggestions: [90, 200, 300, 500]

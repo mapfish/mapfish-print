@@ -36,9 +36,14 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
-import java.io.File;
+import com.google.common.collect.Lists;
 
+import java.io.File;
+import java.util.List;
+
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.BASE_DIR;
@@ -83,6 +88,19 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
     }
 
     @Test
+    public void testDpiSuggestions() throws Exception {
+        final File configFile = getFile(MapAttributeTest.class, "map_attributes/config-json-dpi.yaml");
+        final Configuration config = configurationFactory.getConfig(configFile);
+        final Template template = config.getTemplate("main");
+
+        final MapAttribute mapAttribute = (MapAttribute) template.getAttributes().get("mapDef");
+        List<Throwable> errors = Lists.newArrayList();
+        mapAttribute.validate(errors);
+
+        assertFalse(errors.isEmpty());
+    }
+
+    @Test
     public void testAttributesFromJson() throws Exception {
         final File configFile = getFile(MapAttributeTest.class, "map_attributes/config-json.yaml");
         final Configuration config = configurationFactory.getConfig(configFile);
@@ -97,6 +115,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         CoordinateReferenceSystem expected = CRS.decode("CRS:84");
         assertTrue(CRS.equalsIgnoreMetadata(expected, proj));
         assertEquals(0.0, value.rotation, 0.1);
+        assertArrayEquals(new double[]{90, 200, 300, 400}, value.getDpiSuggestions(), 0.1);
     }
 
 
@@ -116,6 +135,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         CoordinateReferenceSystem expected = CRS.decode("CRS:84");
         assertTrue(CRS.equalsIgnoreMetadata(expected, proj));
         assertEquals(10.0, value.rotation, 0.1);
+        assertArrayEquals(new double[]{90, 200, 300, 400}, value.getDpiSuggestions(), 0.1);
     }
 
     @Test
@@ -134,5 +154,6 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         CoordinateReferenceSystem expected = CRS.decode("CRS:84");
         assertTrue(CRS.equalsIgnoreMetadata(expected, proj));
         assertEquals(0.0, value.rotation, 0.1);
+        assertArrayEquals(new double[]{90, 200, 300, 400}, value.getDpiSuggestions(), 0.1);
     }
 }

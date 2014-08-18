@@ -22,6 +22,7 @@ package org.mapfish.print.attribute;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.geotools.FeaturesParser;
+import org.mapfish.print.parser.HasDefaultValue;
 import org.opengis.referencing.FactoryException;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
@@ -33,10 +34,14 @@ import java.util.List;
  * <p/>
  * Created by Stéphane Brunner on 16/4/14.
  */
-public class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribute.FeaturesAttributeValues> {
+public final class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribute.FeaturesAttributeValues> {
+    @Override
+    protected Class<FeaturesAttributeValues> getValueType() {
+        return FeaturesAttributeValues.class;
+    }
 
     @Override
-    public final FeaturesAttributeValues createValue(final Template template) {
+    public FeaturesAttributeValues createValue(final Template template) {
         return new FeaturesAttributeValues(template);
     }
 
@@ -49,7 +54,7 @@ public class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribute.Fea
     /**
      * The value of {@link FeaturesAttribute}.
      */
-    public final class FeaturesAttributeValues {
+    public static final class FeaturesAttributeValues {
         private final Template template;
         private SimpleFeatureCollection featuresCollection;
 
@@ -57,6 +62,13 @@ public class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribute.Fea
          * The geojson features.
          */
         public String features;
+
+        /**
+         * By default the normal axis order as specified in EPSG code will be used when parsing projections.  However
+         * the requestor can override this by explicitly declaring that longitude axis is first.
+         */
+        @HasDefaultValue
+        public Boolean longitudeFirst = null;
 
         /**
          * Constructor.
@@ -75,11 +87,11 @@ public class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribute.Fea
         public synchronized SimpleFeatureCollection getFeatures(final ClientHttpRequestFactory httpRequestFactory) throws
                 FactoryException, IOException {
             if (this.featuresCollection == null) {
-                final FeaturesParser parser = new FeaturesParser(httpRequestFactory);
+                final boolean forceLongitudeFirst = this.longitudeFirst == null ? false : this.longitudeFirst;
+                final FeaturesParser parser = new FeaturesParser(httpRequestFactory, forceLongitudeFirst);
                 this.featuresCollection = parser.autoTreat(this.template, this.features);
             }
             return this.featuresCollection;
-
         }
     }
 }

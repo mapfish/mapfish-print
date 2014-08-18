@@ -239,7 +239,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
                     // make a 2nd request, but ignore the result
                     final MockHttpServletResponse dummyResponse = new MockHttpServletResponse();
                     servlet.createReport("png", requestData, servletCreateRequest, dummyResponse);
-                    
+
                     return servletCreateResponse;
                 } catch (Exception e) {
                     throw new AssertionError(e);
@@ -302,6 +302,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest("POST", "http://localhost:9834/context/print/report.png");
         servletCreateRequest.setContextPath("/print");
+        addHeaders(servletCreateRequest);
         final MockHttpServletResponse servletCreateResponse = createReport.apply(servletCreateRequest);
 
         final PJsonObject createResponseJson = parseJSONObjectFromString(servletCreateResponse.getContentAsString());
@@ -322,6 +323,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         while (!reportReady) {
             MockHttpServletRequest servletStatusRequest = new MockHttpServletRequest("GET", statusURL);
+            addHeaders(servletStatusRequest);
             MockHttpServletResponse servletStatusResponse = new MockHttpServletResponse();
             final String jsonp = (checkJsonp) ? "getStatus" : "";
             servlet.getStatus(ref, jsonp, servletStatusRequest, servletStatusResponse);
@@ -356,6 +358,11 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         
         return ref;
 
+    }
+
+    private void addHeaders(MockHttpServletRequest servletStatusRequest) {
+        servletStatusRequest.addHeader("Cookie", "cookie=value");
+        servletStatusRequest.addHeader("Referer", "http://localhost:8080/print/");
     }
 
     @Test(timeout = 60000)
@@ -715,7 +722,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals("A4 Landscape", mainLayout.getString("name"));
         assertTrue(mainLayout.has("attributes"));
         assertEquals(2, mainLayout.getArray("attributes").size());
-        assertEquals("MapAttributeValues", mainLayout.getArray("attributes").getObject(1).getString("name"));
+        assertEquals("imageMap", mainLayout.getArray("attributes").getObject(1).getString("name"));
         assertTrue(getInfoJson.has("formats"));
         final PJsonArray formats = getInfoJson.getJSONArray("formats");
         assertCapabilitiesFormats(formats);
@@ -750,7 +757,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals("A4 Landscape", mainLayout.getString("name"));
         assertTrue(mainLayout.has("attributes"));
         assertEquals(2, mainLayout.getArray("attributes").size());
-        assertEquals("MapAttributeValues", mainLayout.getArray("attributes").getObject(1).getString("name"));
+        assertEquals("imageMap", mainLayout.getArray("attributes").getObject(1).getString("name"));
         assertTrue(getInfoJson.has("formats"));
         final PJsonArray formats = getInfoJson.getJSONArray("formats");
         assertCapabilitiesFormats(formats);

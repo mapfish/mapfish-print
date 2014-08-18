@@ -26,6 +26,7 @@ import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.servlet.MapPrinterServletTest;
 import org.mapfish.print.servlet.ServletMapPrinterFactory;
 import org.mapfish.print.servlet.job.ThreadPoolJobManager;
+import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +35,12 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -75,18 +79,12 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         assertTrue(info.has("printURL"));
         assertTrue(info.has("createURL"));
 
-        assertEquals(7, info.getArray("scales").size());
+        assertEquals(10, info.getArray("scales").size());
         final PObject firstScale = info.getArray("scales").getObject(0);
         assertEquals("1:5000", firstScale.getString("name"));
         assertEquals("5000", firstScale.getString("value"));
 
-        assertEquals(6, info.getArray("dpis").size());
-        final PObject firstDpi = info.getArray("dpis").getObject(0);
-        assertEquals("72", firstDpi.getString("name"));
-        assertEquals("72", firstDpi.getString("value"));
-        final PObject lastDpi = info.getArray("dpis").getObject(5);
-        assertEquals("400", lastDpi.getString("name"));
-        assertEquals("400", lastDpi.getString("value"));
+        assertEquals(5, info.getArray("dpis").size());
         
         assertTrue(info.getArray("outputFormats").size() > 0);
         assertTrue(info.getArray("outputFormats").getObject(0).has("name"));
@@ -100,6 +98,29 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         
         assertEquals("/print-old/dep/print.pdf", info.getString("printURL"));
         assertEquals("/print-old/dep/create.json", info.getString("createURL"));
+    }
+
+    @Test
+    public void testInfoRequestDpiSuggestions() throws Exception {
+        setUpConfigFilesDpi();
+        
+        final MockHttpServletRequest infoRequest = new MockHttpServletRequest();
+        infoRequest.setContextPath("/print-old");
+        final MockHttpServletResponse infoResponse = new MockHttpServletResponse();
+        this.servlet.getInfo(null, null, infoRequest, infoResponse);
+        assertEquals(HttpStatus.OK.value(), infoResponse.getStatus());
+        
+        final String result = infoResponse.getContentAsString();
+        final PJsonObject info = parseJSONObjectFromString(result);
+        
+        assertTrue(info.has("dpis"));
+        assertEquals(4, info.getArray("dpis").size());
+        final PObject firstDpi = info.getArray("dpis").getObject(0);
+        assertEquals("90", firstDpi.getString("name"));
+        assertEquals("90", firstDpi.getString("value"));
+        final PObject lastDpi = info.getArray("dpis").getObject(3);
+        assertEquals("400", lastDpi.getString("name"));
+        assertEquals("400", lastDpi.getString("value"));
     }
 
     @Test
@@ -199,6 +220,33 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
     }
     
     @Test
+    public void testPrintPng() throws Exception {
+        setUpConfigFiles();
+        
+        final MockHttpServletRequest createRequest = new MockHttpServletRequest();
+        createRequest.setContextPath("/print-old");
+        createRequest.setPathInfo("/print.pdf");
+        final MockHttpServletResponse createResponse = new MockHttpServletResponse();
+        
+        this.servlet.printReport(loadRequestDataAsString("requestData-old-api-png.json"), createRequest, createResponse);
+        assertEquals(HttpStatus.OK.value(), createResponse.getStatus());
+        assertCorrectResponse(createResponse);
+    }
+
+    private void assertCorrectResponse(MockHttpServletResponse servletGetReportResponse) throws IOException {
+        byte[] report = servletGetReportResponse.getContentAsByteArray();
+
+        final String contentType = servletGetReportResponse.getHeader("Content-Type");
+        assertEquals("image/png", contentType);
+        String fileName = servletGetReportResponse.getHeader("Content-disposition").split("=")[1];
+        assertEquals("political-boundaries.png", fileName);
+
+        final BufferedImage reportAsImage = ImageIO.read(new ByteArrayInputStream(report));
+
+        new ImageSimilarity(reportAsImage, 2).assertSimilarity(getFile(OldAPIMapPrinterServletTest.class, "expectedSimpleImage.tiff"), 10);
+    }
+    
+    @Test
     public void testPrintFromPostBody() throws Exception {
         setUpConfigFiles();
         
@@ -238,6 +286,12 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
     private void setUpConfigFiles() throws URISyntaxException {
         final HashMap<String, String> configFiles = Maps.newHashMap();
         configFiles.put("default", getFile(OldAPIMapPrinterServletTest.class, "config-old-api.yaml").getAbsolutePath());
+        printerFactory.setConfigurationFiles(configFiles);
+    }
+
+    private void setUpConfigFilesDpi() throws URISyntaxException {
+        final HashMap<String, String> configFiles = Maps.newHashMap();
+        configFiles.put("default", getFile(OldAPIMapPrinterServletTest.class, "config-old-api-dpi.yaml").getAbsolutePath());
         printerFactory.setConfigurationFiles(configFiles);
     }
 

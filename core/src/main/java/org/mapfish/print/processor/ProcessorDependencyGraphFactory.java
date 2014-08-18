@@ -20,6 +20,7 @@
 package org.mapfish.print.processor;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.base.Objects;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
@@ -35,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.mapfish.print.parser.ParserUtils.getAllAttributes;
 
@@ -75,39 +77,59 @@ public final class ProcessorDependencyGraphFactory {
         ProcessorDependencyGraph graph = new ProcessorDependencyGraph();
 
         final Map<String, ProcessorGraphNode<Object, Object>> provideBy = new HashMap<String, ProcessorGraphNode<Object, Object>>();
+        final Map<String, Class<?>> outputTypes = new HashMap<String, Class<?>>();
         final List<ProcessorGraphNode<Object, Object>> nodes = new ArrayList<ProcessorGraphNode<Object, Object>>(processors.size());
 
         for (Processor<Object, Object> processor : processors) {
             final ProcessorGraphNode<Object, Object> node = new ProcessorGraphNode<Object, Object>(processor, this.metricRegistry);
-            for (String value : getOutputValues(node)) {
-                if (provideBy.containsKey(value)) {
-                    throw new IllegalArgumentException("Multiple processors provide the same output mapping: '" + processor + "' and '" +
-                                                       provideBy.get(value) + "' both provide: '" + value +
-                                                       "'.  You have to rename one of the outputs and the corresponding input so that" +
-                                                       " there is no ambiguity with regards to the input a processor consumes.");
+            for (OutputValue value : getOutputValues(node)) {
+                String outputName = value.getName();
+                if (provideBy.containsKey(outputName)) {
+                    // there is already an output with the same name
+                    if (value.canBeRenamed()) {
+                        // if this is just a debug output, we can simply rename it
+                        outputName = outputName + "_" + UUID.randomUUID().toString();
+                    } else {
+                        throw new IllegalArgumentException("Multiple processors provide the same output mapping: '" +
+                                processor + "' and '" + provideBy.get(outputName) + "' both provide: '" + outputName +
+                                "'.  You have to rename one of the outputs and the corresponding input so that" +
+                                " there is no ambiguity with regards to the input a processor consumes.");
+                    }
                 }
 
-                provideBy.put(value, node);
+                provideBy.put(outputName, node);
+                outputTypes.put(outputName, value.getType());
             }
             nodes.add(node);
         }
-        
-        final SetMultimap<ProcessorGraphNode<Object, Object>, String> inputsForNodes = cacheInputsForNodes(nodes);
+
+        final SetMultimap<ProcessorGraphNode<Object, Object>, InputValue> inputsForNodes = cacheInputsForNodes(nodes);
         for (ProcessorGraphNode<Object, Object> node : nodes) {
-            final Set<String> inputs = inputsForNodes.get(node);
+            final Set<InputValue> inputs = inputsForNodes.get(node);
 
             // check explicit, external dependencies between nodes
-            checkExternalDependencies(node, nodes, inputsForNodes);
-            
+            checkExternalDependencies(node, nodes);
+
             // check input/output value dependencies
-            for (String requiredKey : inputs) {
-                final ProcessorGraphNode<Object, Object> solution = provideBy.get(requiredKey);
+            for (InputValue input : inputs) {
+                final ProcessorGraphNode<Object, Object> solution = provideBy.get(input.getName());
                 if (solution != null && solution != node) {
-                    solution.addDependency(node);
+                    // check that the provided output has the same type
+                    final Class<?> inputType = input.getType();
+                    final Class<?> outputType = outputTypes.get(input.getName());
+                    if (inputType.equals(outputType)) {
+                        solution.addDependency(node);
+                    } else {
+                        throw new IllegalArgumentException(
+                                "Type conflict: Processor '" + solution.getName() + "' provides an output with name '"
+                                + input.getName() + "' and of type '" + outputType + " ', while "
+                                + "processor '" + node.getName() + "' expects an input of that name with type '"
+                                + inputType + "'! Please rename one of the attributes in the mappings of the processors.");
+                    }
                 }
             }
         }
-        
+
         // once all dependencies are discovered, select the root nodes
         for (ProcessorGraphNode<Object, Object> node : nodes) {
             // a root node is a node that has no requirements (that is no other node
@@ -126,8 +148,7 @@ public final class ProcessorDependencyGraphFactory {
 
     private void checkExternalDependencies(
             final ProcessorGraphNode<Object, Object> node,
-            final List<ProcessorGraphNode<Object, Object>> nodes,
-            final SetMultimap<ProcessorGraphNode<Object, Object>, String> inputsForNodes) {
+            final List<ProcessorGraphNode<Object, Object>> nodes) {
         for (ProcessorDependency dependency : this.dependencies) {
             if (dependency.getRequired().equals(node.getProcessor().getClass())) {
                 // this node is required by another processor type, let's see if there
@@ -216,24 +237,24 @@ public final class ProcessorDependencyGraphFactory {
         return inputName;
     }
 
-    private SetMultimap<ProcessorGraphNode<Object, Object>, String> cacheInputsForNodes(
+    private SetMultimap<ProcessorGraphNode<Object, Object>, InputValue> cacheInputsForNodes(
             final List<ProcessorGraphNode<Object, Object>> nodes) {
-        final SetMultimap<ProcessorGraphNode<Object, Object>, String> inputsForNodes = HashMultimap.create();
+        final SetMultimap<ProcessorGraphNode<Object, Object>, InputValue> inputsForNodes = HashMultimap.create();
         for (ProcessorGraphNode<Object, Object> node : nodes) {
-            final Set<String> inputs = getInputs(node);
+            final Set<InputValue> inputs = getInputs(node);
             inputsForNodes.putAll(node, inputs);
         }
         return inputsForNodes;
     }
 
-    private boolean hasNoneOrOnlyExternalInput(final ProcessorGraphNode<Object, Object> node, final Set<String> inputs,
+    private boolean hasNoneOrOnlyExternalInput(final ProcessorGraphNode<Object, Object> node, final Set<InputValue> inputs,
             final Map<String, ProcessorGraphNode<Object, Object>> provideBy) {
         if (inputs.isEmpty()) {
             return true;
         }
-        
-        for (String input : inputs) {
-            final ProcessorGraphNode<Object, Object> provider = provideBy.get(input);
+
+        for (InputValue input : inputs) {
+            final ProcessorGraphNode<Object, Object> provider = provideBy.get(input.getName());
             if (provider != null && provider != node) {
                 return false;
             }
@@ -241,9 +262,9 @@ public final class ProcessorDependencyGraphFactory {
         return true;
     }
 
-    private static Set<String> getInputs(final ProcessorGraphNode<Object, Object> node) {
+    private static Set<InputValue> getInputs(final ProcessorGraphNode<Object, Object> node) {
         final BiMap<String, String> inputMapper = node.getInputMapper();
-        final Set<String> inputs = Sets.newHashSet(inputMapper.keySet());
+        final Set<InputValue> inputs = Sets.newHashSet();
 
         final Object inputParameter = node.getProcessor().createInputParameter();
         if (inputParameter != null) {
@@ -251,9 +272,11 @@ public final class ProcessorDependencyGraphFactory {
                     "One or more of the input mapping values of '" + node + "'  do not match an input parameter.  The bad mappings are");
 
             final Collection<Field> allProperties = getAllAttributes(inputParameter.getClass());
-            for (Field descriptor : allProperties) {
-                if (!inputMapper.containsValue(descriptor.getName())) {
-                    inputs.add(descriptor.getName());
+            for (Field field : allProperties) {
+                if (!inputMapper.containsValue(field.getName())) {
+                    inputs.add(new InputValue(field.getName(), field.getType()));
+                } else {
+                    inputs.add(new InputValue(inputMapper.get(field.getName()), field.getType()));
                 }
             }
         }
@@ -261,9 +284,9 @@ public final class ProcessorDependencyGraphFactory {
         return inputs;
     }
 
-    private static Collection<String> getOutputValues(final ProcessorGraphNode<Object, Object> node) {
+    private static Collection<OutputValue> getOutputValues(final ProcessorGraphNode<Object, Object> node) {
         final Map<String, String> outputMapper = node.getOutputMapper();
-        final Set<String> values = Sets.newHashSet(outputMapper.values());
+        final Set<OutputValue> values = Sets.newHashSet();
 
         final Set<String> mappings = outputMapper.keySet();
         final Class<?> paramType = node.getProcessor().getOutputType();
@@ -271,8 +294,13 @@ public final class ProcessorDependencyGraphFactory {
                                                              "output parameter.  The bad mappings are: ");
         final Collection<Field> allProperties = getAllAttributes(paramType);
         for (Field field : allProperties) {
+            // if the field is annotated with @DebugValue, it can be renamed automatically in a
+            // mapping in case of a conflict.
+            final boolean canBeRenamed = field.getAnnotation(DebugValue.class) != null;
             if (!outputMapper.containsKey(field.getName())) {
-                values.add(field.getName());
+                values.add(new OutputValue(field.getName(), canBeRenamed, field.getType()));
+            } else {
+                values.add(new OutputValue(outputMapper.get(field.getName()), canBeRenamed, field.getType()));
             }
         }
 
@@ -301,4 +329,44 @@ public final class ProcessorDependencyGraphFactory {
         return msg.toString();
     }
 
+    private static class InputValue {
+        private final String name;
+        private Class<?> type;
+
+        public InputValue(final String name, final Class<?> type) {
+            this.name = name;
+            this.type = type;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(this.name);
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            return Objects.equal(this.name, ((InputValue) obj).name);
+        }
+
+        public final String getName() {
+            return this.name;
+        }
+
+        public final Class<?> getType() {
+            return this.type;
+        }
+    }
+
+    private static final class OutputValue extends InputValue {
+        private final boolean canBeRenamed;
+
+        private OutputValue(final String name, final boolean canBeRenamed, final Class<?> type) {
+            super(name, type);
+            this.canBeRenamed = canBeRenamed;
+        }
+
+        public boolean canBeRenamed() {
+            return this.canBeRenamed;
+        }
+    }
 }

@@ -25,6 +25,7 @@
     <bean id="geotiffLayerParser" class="org.mapfish.print.map.geotools.GeotiffLayer$Plugin" />
     <bean id="wmtsLayerParser" class="org.mapfish.print.map.tiled.wmts.WmtsLayerParserPlugin" />
     <bean id="wmsLayerParser" class="org.mapfish.print.map.image.wms.WmsLayerFactoryPlugin" />
+    <bean id="tiledWmsLayerParser" class="org.mapfish.print.map.tiled.wms.TiledWmsLayerParserPlugin" />
     <bean id="osmLayerParser" class="org.mapfish.print.map.tiled.osm.OsmLayerParserPlugin" />
     <bean id="gridLayerParser" class="org.mapfish.print.map.geotools.grid.GridLayerPlugin" />
     <bean id="featureLayerParser" class="org.mapfish.print.map.geotools.FeatureLayer$Plugin" />

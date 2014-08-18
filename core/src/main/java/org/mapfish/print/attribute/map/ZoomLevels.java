@@ -111,5 +111,14 @@ public final class ZoomLevels implements ConfigurationObject {
         }
     }
 
+    /**
+     * Return a copy of the zoom level scale denominators. Scales are sorted greatest to least.
+     */
+    public double[] getScales() {
+        double[] dest = new double[this.scales.length];
+        System.arraycopy(this.scales, 0, dest, 0, this.scales.length);
+        return dest;
+    }
+
     // CHECKSTYLE:ON
 }

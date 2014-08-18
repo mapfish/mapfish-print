@@ -40,11 +40,15 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
     private static final double DEFAULT_SNAP_TOLERANCE = 0.05;
     private static final ZoomLevelSnapStrategy DEFAULT_SNAP_STRATEGY = ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE;
 
+    @SuppressWarnings("unchecked")
+    @Override
+    protected Class<MapAttributeValues> getValueType() {
+        return MapAttributeValues.class;
+    }
 
     @Override
     public MapAttributeValues createValue(final Template template) {
-        MapAttributeValues result = new MapAttributeValues(template, new Dimension(this.getWidth(), this.getHeight()));
-        return result;
+        return new MapAttributeValues(template, new Dimension(this.getWidth(), this.getHeight()));
     }
 
     /**

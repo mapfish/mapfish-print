@@ -15,23 +15,33 @@ templates:
     attributes:
       number: !integer {}
       name: !string {}
-      description: !string
-        clientOptions:
-          multilines: true
+      description: !string {}
       length: !float {}
       map: !map
         maxDpi: 400
+        dpiSuggestions: [72, 91, 128, 254, 300, 400]
         width: 400
         height: 200
       legend: !legend {}
       table: !table {}
       tableList: !tableList {}
+      scalebarDef: !scalebar
+        width: 230
+        height: 40
     processors:
+    - !restrictUris
+      matchers:
+        - !localMatch
+          port : 9876
+          pathRegex : /.+
     - !reportBuilder # compile all reports in current directory
       directory: '.'
     - !createMap
       inputMapper: {map: map}
-      outputMapper: {mapSubReport: map}
+      outputMapper: {mapSubReport: mapSubReport}
+    - !createScalebar
+      inputMapper: {map: map, scalebarDef: scalebar}
+      outputMapper: {subReport: scalebarSubReport}
     - !prepareLegend # create a datasource for the report with the 'legend' attribute
       inputMapper: {legend: legend}
       outputMapper: {legend: legend}
@@ -51,9 +61,15 @@ templates:
     attributes:
       map: !map
         maxDpi: 400
+        dpiSuggestions: [90, 200, 300, 400]
         width: 780
         height: 330
     processors:
+    - !restrictUris
+      matchers:
+        - !localMatch
+          port : 9876
+          pathRegex : .+
     - !reportBuilder # compile all reports in current directory
       directory: '.'
     - !createMap

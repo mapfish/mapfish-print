@@ -1,0 +1,81 @@
+{
+  "attributes": {
+    "map": {
+      "center": [
+        -8233518.5005945,
+        4980320.4059228
+      ],
+      "dpi": 128,
+      "layers": [
+        {
+          "geoJson": "http://localhost:9876/e2egeoserver/tiger/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=tiger:tiger_roads&maxFeatures=1000000&outputFormat=application%2Fjson&srsName=EPSG:900913",
+          "style": {
+            "version": "2",
+            "strokeColor": "gray",
+            "strokeLinecap": "round",
+            "strokeOpacity": 0.6,
+            "[CFCC = 'A41']": {
+              "symbolizers": [
+                {
+                  "strokeDashstyle": "solid",
+                  "strokeWidth": 1,
+                  "type": "line"
+                }
+              ]
+            },
+            "[INTERSECTS(geometry, buffer(LINESTRING (-8237836.106659006 4981782.764585206, -8227702.8850873355 4978038.297951255), 2000))]": {
+              "symbolizers": [
+                {
+                  "strokeColor": "green",
+                  "strokeWidth": 2,
+                  "type": "line"
+                }
+              ]
+            },
+            "[DWITHIN(geometry, POINT (-8232452.51674783 4982702.811457594), 2000, kilometers)]": {
+              "symbolizers": [
+                {
+                  "strokeColor": "blue",
+                  "strokeWidth": 4,
+                  "type": "line"
+                }
+              ]
+            },
+            "[NAME ilike '% st %' or NAME ilike '% ave%']": {
+              "symbolizers": [
+                {
+                  "strokeColor": "red",
+                  "strokeDashstyle": "solid",
+                  "strokeOpacity": 1,
+                  "strokeWidth": 1.5,
+                  "type": "line"
+                },
+                {
+                  "type": "text",
+                  "label": "[NAME]",
+                  "haloRadius" : "3"
+                }
+              ]
+            },
+            "[NAME = 'Shubert Aly']": {
+              "symbolizers": [
+                {
+                  "externalGraphic": "http://localhost:9876/e2egeoserver/www/icons/men-at-work.jpg",
+                  "graphicWidth": 32,
+                  "graphicOpacity" : 1.0,
+                  "graphicFormat" : "image/jpeg",
+                  "type": "point"
+                }
+              ]
+            }
+          },
+          "type": "geojson"
+        }
+      ],
+      "projection": "EPSG:900913",
+      "rotation": 0,
+      "scale": 100000
+    }
+  },
+  "layout": "A4 landscape"
+}

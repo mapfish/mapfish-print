@@ -23,6 +23,7 @@ import org.mapfish.print.attribute.map.GenericMapAttribute;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.map.image.wms.WmsLayer;
+import org.mapfish.print.map.tiled.wms.TiledWmsLayer;
 import org.mapfish.print.processor.AbstractProcessor;
 
 import java.util.List;
@@ -58,6 +59,8 @@ public class SetWmsCustomParamProcessor extends AbstractProcessor<SetWmsCustomPa
             checkCancelState(context);
             if (layer instanceof WmsLayer) {
                 ((WmsLayer) layer).getParams().setCustomParam(this.paramName, values.value);
+            } else if (layer instanceof TiledWmsLayer) {
+                ((TiledWmsLayer) layer).getParams().setCustomParam(this.paramName, values.value);
             }
         }
         return null;

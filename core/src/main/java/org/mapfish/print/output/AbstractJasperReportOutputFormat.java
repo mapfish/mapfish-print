@@ -155,24 +155,27 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             }
 
             final Object iterator = values.getObject(template.getIterValue(), Object.class);
-            if (!(iterator instanceof Iterable)) {
-                throw new IllegalArgumentException(template.getIterValue() + " is supposed to be an iterable but was a "
-                                                   + iterator.getClass());
-            }
-            
-            final ForkJoinTask<List<Map<String, ?>>> iterTaskFuture =
-                    this.forkJoinPool.submit(new ExecuteIterProcessorsTask(values, template));
 
-            List<Map<String, ?>> dataSource;
-            try {
-                dataSource = iterTaskFuture.get();
-            } catch (InterruptedException exc) {
-                iterTaskFuture.cancel(true);
-                Thread.currentThread().interrupt();
-                throw new CancellationException();
-            }
+            final JRDataSource jrDataSource;
+            if (iterator instanceof Iterable) {
+                Iterable iterable = (Iterable) iterator;
 
-            final JRDataSource jrDataSource = new JRMapCollectionDataSource(dataSource);
+                final ForkJoinTask<List<Map<String, ?>>> iterTaskFuture =
+                        this.forkJoinPool.submit(new ExecuteIterProcessorsTask(values, template));
+
+                List<Map<String, ?>> dataSource;
+                try {
+                    dataSource = iterTaskFuture.get();
+                } catch (InterruptedException exc) {
+                    iterTaskFuture.cancel(true);
+                    Thread.currentThread().interrupt();
+                    throw new CancellationException();
+                }
+
+                jrDataSource = new JRMapCollectionDataSource(dataSource);
+            } else {
+                jrDataSource = new JREmptyDataSource();
+            }
             print = JasperFillManager.fillReport(
                     jasperTemplateBuild.getAbsolutePath(),
                     values.getParameters(),

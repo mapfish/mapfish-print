@@ -21,8 +21,9 @@ package org.mapfish.print.attribute.map;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-
 import org.geotools.referencing.CRS;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.ConfigurationException;
@@ -35,8 +36,6 @@ import org.mapfish.print.wrapper.PObject;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
@@ -52,8 +51,24 @@ import java.util.Map;
 public abstract class GenericMapAttribute<GenericMapAttributeValues>
         extends ReflectiveAttribute<GenericMapAttribute<?>.GenericMapAttributeValues> {
 
-    @SuppressWarnings("unused")
-    private static final Logger LOGGER = LoggerFactory.getLogger(GenericMapAttribute.class);
+    private static final double[] DEFAULT_DPI_VALUES = {72, 120, 200, 254, 300, 600, 1200, 2400};
+    /**
+     * The json key for the suggested DPI values in the client config.
+     */
+    public static final String JSON_DPI_SUGGESTIONS = "dpiSuggestions";
+    /**
+     * The json key for the max DPI value in the client config.
+     */
+    public static final String JSON_MAX_DPI = "maxDPI";
+    /**
+     * The json key for the width of the map in the client config.
+     */
+    public static final String JSON_MAP_WIDTH = "width";
+    /**
+     * The json key for the height of the map in the client config.
+     */
+    public static final String JSON_MAP_HEIGHT = "height";
+    static final String JSON_ZOOM_LEVEL_SUGGESTIONS = "scales";
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -61,6 +76,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
     private MapfishParser mapfishJsonParser;
 
     private Double maxDpi = null;
+    private double[] dpiSuggestions = null;
     private ZoomLevels zoomLevels = null;
     private Double zoomSnapTolerance = null;
     private ZoomLevelSnapStrategy zoomLevelSnapStrategy = null;
@@ -74,6 +90,30 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
 
     public final void setMaxDpi(final Double maxDpi) {
         this.maxDpi = maxDpi;
+    }
+
+    /**
+     * Suggestions for dpi to use.  Typically these are used by the client to create a UI for a user.
+     */
+    public final double[] getDpiSuggestions() {
+        if (this.dpiSuggestions == null) {
+            List<Double> list = Lists.newArrayList();
+            for (double suggestion : DEFAULT_DPI_VALUES) {
+                if (suggestion <= this.maxDpi) {
+                    list.add(suggestion);
+                }
+            }
+            double[] suggestions = new double[list.size()];
+            for (int i = 0; i < suggestions.length; i++) {
+                suggestions[i] = list.get(i);
+            }
+            return suggestions;
+        }
+        return this.dpiSuggestions;
+    }
+
+    public final void setDpiSuggestions(final double[] dpiSuggestions) {
+        this.dpiSuggestions = dpiSuggestions;
     }
 
     public final Integer getWidth() {
@@ -120,6 +160,29 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
             validationErrors.add(
                     new ConfigurationException("maxDpi field is not legal: " + this.getMaxDpi() + " in " + getClass().getName()));
         }
+
+        if (this.getMaxDpi() != null && this.getDpiSuggestions() != null) {
+            for (double dpi : this.getDpiSuggestions()) {
+                if (dpi < 1 || dpi > this.getMaxDpi()) {
+                    validationErrors.add(new ConfigurationException(
+                            "dpiSuggestions contains an invalid value: " + dpi + " in " + getClass().getName()));
+                    
+                }
+            }
+        }
+    }
+
+    @Override
+    protected final Optional<JSONObject> getClientInfo() throws JSONException {
+        final JSONObject jsonObject = new JSONObject();
+        jsonObject.put(JSON_DPI_SUGGESTIONS, getDpiSuggestions());
+        if (this.zoomLevels != null) {
+            jsonObject.put(JSON_ZOOM_LEVEL_SUGGESTIONS, this.zoomLevels.getScales());
+        }
+        jsonObject.put(JSON_MAX_DPI, this.maxDpi);
+        jsonObject.put(JSON_MAP_WIDTH, this.width);
+        jsonObject.put(JSON_MAP_HEIGHT, this.height);
+        return Optional.of(jsonObject);
     }
 
     /**
@@ -344,6 +407,12 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
         public ZoomLevelSnapStrategy getZoomLevelSnapStrategy() {
         //CSON: DesignForExtension
             return GenericMapAttribute.this.zoomLevelSnapStrategy;
+        }
+
+        //CSOFF: DesignForExtension
+        public double[] getDpiSuggestions() {
+        //CSON: DesignForExtension
+            return GenericMapAttribute.this.getDpiSuggestions();
         }
 
         //CSOFF: DesignForExtension

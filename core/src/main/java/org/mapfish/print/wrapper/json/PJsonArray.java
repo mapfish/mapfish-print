@@ -150,9 +150,8 @@ public class PJsonArray extends PElement implements PArray {
     }
 
     /**
-     * @deprecated Use only if you know what you are doing!
+     * Get access to underlying array.
      */
-    @Deprecated
     public final JSONArray getInternalArray() {
         return this.array;
     }

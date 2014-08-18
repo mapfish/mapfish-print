@@ -9,14 +9,14 @@ templates:
         height: 500
         maxDpi: 400
         zoomLevels: !zoomLevels
-          scales: [5000, 10000, 25000, 50000, 100000, 500000, 1000000]
+          scales: [5000, 10000, 25000, 50000, 100000, 500000, 1000000, 2000000, 5000000, 10000000]
       entries: !table {}
     processors:
     - !reportBuilder # compile all reports in current directory
         directory: '.'
     - !createMap
         inputMapper: {geojsonMap: map}
-        outputMapper: {mapSubReport: geojsonMap, layerGraphics: geojsonGraphics}
+        outputMapper: {mapSubReport: geojsonMap}
     - !prepareTable
       inputMapper: {entries: table}
       outputMapper: {table: table}

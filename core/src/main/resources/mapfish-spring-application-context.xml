@@ -71,7 +71,7 @@
     <bean id="metricNameStrategy" class="org.mapfish.print.metrics.MetricsNameStrategyFactory" factory-method="hostAndMethod" />
     <bean id="loggingMetricsConfigurator" class="org.mapfish.print.metrics.LoggingMetricsConfigurator" lazy-init="false"/>
     <bean id="jvmMetricsConfigurator" class="org.mapfish.print.metrics.JvmMetricsConfigurator" lazy-init="false"/>
-    <bean id="jmlMetricsReporter" class="org.mapfish.print.metrics.JmxMetricsReporter" lazy-init="false"/>
+    <bean id="jmxMetricsReporter" class="org.mapfish.print.metrics.JmxMetricsReporter" lazy-init="false"/>
 
     <bean id="forkJoinPool" class="jsr166y.ForkJoinPool" destroy-method="shutdownNow">
         <!--

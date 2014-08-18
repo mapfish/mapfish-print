@@ -43,16 +43,26 @@ public final class ServletConfigFileLoader extends AbstractFileConfigFileLoader 
 
     @Override
     protected Iterator<File> resolveFiles(final URI fileURI) {
-        String path = fileURI.toString().substring(PREFIX_LENGTH);
-        final String realPath = this.servletContext.getRealPath(path);
-        if (realPath == null) {
-            return Iterators.emptyIterator();
+        if (fileURI.getScheme() != null && fileURI.getScheme().equals("file") && new File(fileURI).exists()) {
+            return Iterators.singletonIterator(new File(fileURI));
         }
-        return Iterators.singletonIterator(new File(realPath));
+        if (fileURI.toString().startsWith(PREFIX)) {
+            String path = fileURI.toString().substring(PREFIX_LENGTH);
+            final String realPath = this.servletContext.getRealPath(path);
+            if (realPath == null) {
+                return Iterators.emptyIterator();
+            }
+            return Iterators.singletonIterator(new File(realPath));
+        }
+        return Iterators.emptyIterator();
     }
 
     @Override
     public String getUriScheme() {
         return PREFIX;
+    }
+
+    public void setServletContext(final ServletContext servletContext) {
+        this.servletContext = servletContext;
     }
 }
