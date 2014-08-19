@@ -76,7 +76,8 @@ public class ScalebarGraphic {
         paintArea.setBounds(0, 0, (int) (paintArea.width * dpiRatio), (int) (paintArea.height * dpiRatio));
 
         final DistanceUnit mapUnit = getUnit(bounds);
-        final Scale scale = bounds.getScaleDenominator(paintArea, dpi);
+        // to calculate the scale the requestor DPI is used , because the paint area is already adjusted
+        final Scale scale = bounds.getScaleDenominator(paintArea, mapParams.getRequestorDPI());
 
         DistanceUnit scaleUnit = scalebarParams.getUnit();
         if (scaleUnit == null) {
