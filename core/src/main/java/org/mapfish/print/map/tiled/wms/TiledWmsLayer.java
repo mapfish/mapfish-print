@@ -116,7 +116,7 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
         }
 
         @Override
-        public double getLayerDpi() {
+        public Double getLayerDpi() {
             return this.dpi;
         }
 

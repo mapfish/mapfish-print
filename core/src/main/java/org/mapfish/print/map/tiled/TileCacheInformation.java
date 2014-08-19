@@ -119,7 +119,7 @@ public abstract class TileCacheInformation {
      * requires.  Depending on the server and the protocol mapfish print might be able to request a certain DPI.  But since
      * that might not be the case, then the layer must be able to report the correct DPI.
      */
-    public abstract double getLayerDpi();
+    public abstract Double getLayerDpi();
 
     /**
      * Obtain the image tile size of the tiles that will be loaded from the server.
