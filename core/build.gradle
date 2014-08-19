@@ -105,7 +105,7 @@ def gitRevision() {
     try {
         def cmd = "git rev-parse HEAD"
         def proc = cmd.execute()
-        return proc.getText()
+        return proc.getText().trim()
     } catch (Exception e) {
         return "Error occurred while trying to execute git commandline tool: "+e
     }
@@ -116,22 +116,28 @@ targetCompatibility = 1.6
 
 compileJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
 
+def addManifestAttribute(manifest) {
+    manifest.mainAttributes(
+            'Mapfish-Print-Version': version,
+            'Git-Revision': gitRevision(),
+            'Build-Time': new Date().getDateTimeString(),
+            'Build-By': System.getProperty('user.name', "unknown"),
+            'Build-Java-Runtime-Name': System.getProperty('java.runtime.name', "unknown"),
+            'Build-Java-Version': System.getProperty('java.version', "unknown"),
+            'Build-OS-Arch': System.getProperty('os.arch', "unknown"),
+            'Build-OS-Name': System.getProperty('os.name', "unknown")
+    )
+}
 jar {
     enabled = true
     baseName = "print-lib"
-    manifest.mainAttributes(
-        'Build-Time': new Date().getDateTimeString(),
-        'git-revision': gitRevision()
-    )
+    addManifestAttribute(manifest)
 }
 
 def examplesDir = "${project(':examples').projectDir}/src/test/resources/examples"
 war {
     baseName = "print-servlet"
-    manifest.mainAttributes(
-            'Build-Time': new Date().getDateTimeString(),
-            'git-revision': gitRevision())
-
+    addManifestAttribute(manifest)
 
     from (fileTree(dir: examplesDir)) {
         into 'print-apps'
