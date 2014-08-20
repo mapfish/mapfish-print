@@ -110,18 +110,19 @@ public class WMTSLayer extends AbstractTiledLayer {
         @Override
         @Nonnull
         public ClientHttpRequest getTileRequest(final ClientHttpRequestFactory httpRequestFactory,
-                                                final URI commonURI,
+                                                final String commonUrl,
                                                 final ReferencedEnvelope tileBounds,
                                                 final Dimension tileSizeOnScreen,
                                                 final int column,
                                                 final int row)
                 throws URISyntaxException, IOException {
+            URI commonUri = new URI(commonUrl);
             URI uri;
             final WMTSLayerParam layerParam = WMTSLayer.this.param;
             if (RequestEncoding.REST == layerParam.requestEncoding) {
-                uri = createRestURI(commonURI, row, column, layerParam);
+                uri = createRestURI(commonUri, row, column, layerParam);
             } else {
-                uri = createKVPUri(commonURI, row, column, layerParam);
+                uri = createKVPUri(commonUri, row, column, layerParam);
             }
             return httpRequestFactory.createRequest(uri, HttpMethod.GET);
         }

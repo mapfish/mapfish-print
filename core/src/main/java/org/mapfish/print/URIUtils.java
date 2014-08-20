@@ -98,6 +98,20 @@ public final class URIUtils {
     /**
      * Add the given params to the query.
      *
+     * @param url            The query
+     * @param params         The params to add
+     * @param overrideParams A set of parameter names that must be overridden and not added
+     * @return The new query
+     * @throws URISyntaxException 
+     */
+    public static String addParams(final String url, final Multimap<String, String> params, final Set<String> overrideParams)
+            throws URISyntaxException {
+        return addParams(new URI(url), params, overrideParams).toString();
+    }
+
+    /**
+     * Add the given params to the query.
+     *
      * @param uri            The query
      * @param params         The params to add
      * @param overrideParams A set of parameter names that must be overridden and not added
