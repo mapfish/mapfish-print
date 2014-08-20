@@ -566,7 +566,6 @@ public final class JsonStyleParserHelper {
     @Nullable
     @VisibleForTesting
     Stroke createStroke(final PJsonObject styleJson, final boolean allowNull) {
-        final float solid = 1.0f;
         final float defaultDashSpacing = 0.1f;
         final int doubleWidth = 2;
         final int tripleWidth = 3;
@@ -598,7 +597,7 @@ public final class JsonStyleParserHelper {
             }
         });
 
-        float[] dashArray = {solid};
+        float[] dashArray = null;
         if (styleJson.has(JSON_STROKE_DASHSTYLE) && !STROKE_DASHSTYLE_SOLID.equals(styleJson.getString(JSON_STROKE_DASHSTYLE))) {
             Double width = 1.0;
             if (widthExpression instanceof Literal) {
