@@ -180,7 +180,7 @@ public class WMTSLayer extends AbstractTiledLayer {
         }
 
         @Override
-        public double getLayerDpi() {
+        public Double getLayerDpi() {
             return WMTSLayer.this.param.dpi;
         }
     }

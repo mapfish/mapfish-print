@@ -23,7 +23,6 @@ import com.google.common.collect.Ordering;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.util.Assert;
 
-import org.mapfish.print.Constants;
 import org.mapfish.print.map.tiled.AbstractTiledLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
 
@@ -66,7 +65,7 @@ public final class OsmLayerParam extends AbstractTiledLayerParams {
      * The DPI of the OSM tiles.
      */
     @HasDefaultValue
-    public double dpi = Constants.PDF_DPI;
+    public Double dpi = null;
 
     /**
      * Validate the properties have the correct values.
