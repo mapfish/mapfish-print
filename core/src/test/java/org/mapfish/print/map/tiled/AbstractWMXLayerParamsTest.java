@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
  * Test param methods.
  * @author Jesse on 4/4/14.
  */
-public class AbstractTiledLayerParamsTest {
+public class AbstractWMXLayerParamsTest {
     private static final String CUSTOM_PARAMS = "{\"key\": \"value\", \"key2\":[\"value1\", \"value2\"], \"key3\": null}";
     @Test
     public void testCustomParams() throws Exception {
