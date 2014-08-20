@@ -3,7 +3,6 @@ import com.google.common.io.Files
 import groovy.json.JsonBuilder
 import org.mapfish.print.attribute.Attribute
 import org.mapfish.print.attribute.ReflectiveAttribute
-import org.mapfish.print.attribute.map.GenericMapAttribute
 import org.mapfish.print.config.ConfigurationObject
 import org.mapfish.print.config.Template
 import org.mapfish.print.map.MapLayerFactoryPlugin
@@ -14,6 +13,7 @@ import org.mapfish.print.parser.ParserUtils
 import org.mapfish.print.processor.Processor
 import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager
 import org.mapfish.print.servlet.fileloader.ConfigFileLoaderPlugin
+import org.mapfish.print.test.util.AttributeTesting
 import org.springframework.beans.BeanUtils
 import org.springframework.mock.web.MockServletContext
 import org.springframework.stereotype.Service
@@ -163,7 +163,11 @@ class GenerateDocs {
     }
 
     static void handleMapLayerFactoryPlugin(MapLayerFactoryPlugin<?> bean, String beanName) {
-        def layerType = bean.class.methods.findAll { it.name == "parse" && it.returnType.simpleName != 'MapLayer'}[0].returnType
+        def parseMethod = bean.class.methods.findAll { it.name == "parse" && it.returnType.simpleName != 'MapLayer' }[0]
+        if (parseMethod == null) {
+            throw new AssertionError("\nBean " + beanName + " needs to have the return type of the parse method be the specific type, not the generic MapLayer type.")
+        }
+        def layerType = parseMethod.returnType
         List<Detail> details = findAllConfigurationDetails(bean, beanName)
         def desc = javadocParser.findClassDescription(bean.getClass())
         def input = findAllAttributes(bean.createParameter().class, beanName)
@@ -177,10 +181,7 @@ class GenerateDocs {
     }
     static void handleAttribute(Attribute bean, String beanName) {
         def input = []
-        if (bean instanceof GenericMapAttribute) {
-            bean.width = 1
-            bean.height = 1
-        }
+        AttributeTesting.configureAttributeForTesting(bean);
         if (bean instanceof ReflectiveAttribute) {
             input = findAllAttributes(bean.createValue(new Template()).class, beanName)
         }
@@ -304,7 +305,7 @@ class GenerateDocs {
                 desc : translationId(record, type, "desc"),
                 required : required,
                 translateTitle: translateTitle,
-                annotations : annotations.collectAll {'"' + escape(it) + '"'}.join(',')
+                annotations : annotations.collectAll {escape(it)}
             ]
             return jsonObj
         }

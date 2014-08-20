@@ -41,6 +41,7 @@ dependencies {
 def site = new File(buildDir, "site").path
 
 jettyRun {
+    dependsOn ':docs:buildDocs'
     webAppSourceDirectory = file(site)
 }
 

@@ -120,7 +120,7 @@ compileJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
 def addManifestAttribute(manifest) {
     manifest.mainAttributes(
             'Mapfish-Print-Version': version,
-            'Git-Revision': gitRevision() + "\n",
+            'Git-Revision': gitRevision(),
             'Build-Time': new Date().getDateTimeString(),
             'Build-By': System.getProperty('user.name', "unknown"),
             'Build-Java-Runtime-Name': System.getProperty('java.runtime.name', "unknown"),

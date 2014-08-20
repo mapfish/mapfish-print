@@ -13,6 +13,7 @@
         <p ng-bind-html="renderHtml(record.desc)"></p>
         <a id="{{record.title + '__config'}}"></a>
         <h4 ng-if="record.details.length">{{'configuration' | translate}}</h4>
+        <div>{{'configurationDescription' | translate}}</div>
         <div class="well well-sm link"
              ng-repeat="detail in record.details | sortRecords"
              ng-controller="DetailCtrl"
@@ -29,7 +30,10 @@
              ng-controller="DetailCtrl"
              ng-click="setLocationHash(anchorId(input, 'input'), $event)">
             <a id="{{anchorId(input, 'input')}}"></a>
-            <div><strong>{{getTitle(input)}}</strong></div>
+            <div>
+                <i  x-ng-if="input.required" style="color: red;font-size: 15">*&nbsp;</i>
+                <strong>{{getTitle(input)}}</strong>
+            </div>
             <p ng-bind-html="renderHtml(input.desc)"></p>
         </div>
 

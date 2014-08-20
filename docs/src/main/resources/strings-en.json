@@ -14,4 +14,5 @@
   "jsonParamTitle": "Json Paramaters:",
   "headerTitle": "Mapfish Print Documentation",
   "contentsTitle": "Contents",
-  "configuration" : "Configuration"
+  "configuration" : "Configuration",
+  "configurationDescription": "Configuration elements are to be put in the config.yaml"
