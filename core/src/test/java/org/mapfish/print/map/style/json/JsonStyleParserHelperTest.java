@@ -63,6 +63,7 @@ import javax.imageio.ImageIO;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mapfish.print.map.style.json.MapfishJsonStyleParserPlugin.Versions;
 import static org.mapfish.print.map.style.json.MapfishJsonStyleParserPluginTest.REQUEST_DATA_STYLE_JSON_V1_STYLE_JSON;
@@ -255,7 +256,7 @@ public class JsonStyleParserHelperTest {
     public void testCreateStroke_DashStyle() throws Exception {
 
         assertDashStyle("5 4 3 4", new float[]{5f, 4f, 3f, 4f});
-        assertDashStyle(JsonStyleParserHelper.STROKE_DASHSTYLE_SOLID, new float[]{1f});
+        assertDashStyle(JsonStyleParserHelper.STROKE_DASHSTYLE_SOLID, null);
         assertDashStyle(JsonStyleParserHelper.STROKE_DASHSTYLE_DASH, new float[]{2f, 2f});
         assertDashStyle(JsonStyleParserHelper.STROKE_DASHSTYLE_DASHDOT, new float[]{3f, 2f, 0.1f, 2f});
         assertDashStyle(JsonStyleParserHelper.STROKE_DASHSTYLE_DOT, new float[]{0.1f, 2f});
@@ -308,7 +309,7 @@ public class JsonStyleParserHelperTest {
         final Stroke stroke = lineSymbolizer.getStroke();
         assertNotNull(stroke);
 
-        assertArrayEquals(Arrays.toString(stroke.getDashArray()), new float[]{1f}, stroke.getDashArray(), FLOAT_DELTA);
+        assertNull(stroke.getDashArray());
     }
 
     @Test
@@ -336,7 +337,7 @@ public class JsonStyleParserHelperTest {
 
         final Stroke stroke = polygonSymbolizer.getStroke();
         assertNotNull(stroke);
-        assertArrayEquals(Arrays.toString(stroke.getDashArray()), new float[]{1f}, stroke.getDashArray(), FLOAT_DELTA);
+        assertNull(stroke.getDashArray());
 
         assertNotNull(polygonSymbolizer.getFill());
     }
