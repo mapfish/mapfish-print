@@ -19,18 +19,17 @@
 
 package org.mapfish.print.map.tiled.wmts;
 
+import com.vividsolutions.jts.util.Assert;
+
 import org.mapfish.print.Constants;
-import org.mapfish.print.map.tiled.AbstractTiledLayerParams;
+import org.mapfish.print.map.tiled.AbstractWMXLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.wrapper.json.PJsonObject;
-
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * The parameters for configuration a WMTS layer.
  */
-public final class WMTSLayerParam extends AbstractTiledLayerParams {
+public final class WMTSLayerParam extends AbstractWMXLayerParams {
     /**
      * the ‘ResourceURL’ available in the WMTS capabilities.
      */
@@ -98,7 +97,14 @@ public final class WMTSLayerParam extends AbstractTiledLayerParams {
     public Matrix[] matrices;
 
     @Override
-    public URI getBaseUri() throws URISyntaxException {
-        return new URI(this.baseURL);
+    public String getBaseUrl() {
+        return this.baseURL;
+    }
+
+    /**
+     * Validate some of the properties of this layer.
+     */
+    public void postConstruct() {
+        Assert.isTrue(validateBaseUrl(), "invalid baseURL");
     }
 }

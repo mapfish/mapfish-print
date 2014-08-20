@@ -21,10 +21,9 @@ package org.mapfish.print.map.image.wms;
 
 import com.vividsolutions.jts.util.Assert;
 
-import org.mapfish.print.map.tiled.AbstractTiledLayerParams;
+import org.mapfish.print.map.tiled.AbstractWMXLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 
@@ -33,7 +32,7 @@ import java.util.Arrays;
  *
  * @author Jesse on 4/10/2014.
  */
-public class WmsLayerParam extends AbstractTiledLayerParams {
+public class WmsLayerParam extends AbstractWMXLayerParams {
     /**
      * The base URL for the WMS.  Used for making WMS requests.
      */
@@ -64,8 +63,8 @@ public class WmsLayerParam extends AbstractTiledLayerParams {
     public boolean useNativeAngle = false;
 
     @Override
-    public final URI getBaseUri() throws URISyntaxException {
-        return new URI(this.baseURL);
+    public final String getBaseUrl() {
+        return this.baseURL;
     }
 
     /**
@@ -75,7 +74,7 @@ public class WmsLayerParam extends AbstractTiledLayerParams {
     public void postConstruct() throws URISyntaxException {
         // CSON: DesignForExtension
         WmsVersion.lookup(this.version);
-        getBaseUri();
+        Assert.isTrue(validateBaseUrl(), "invalid baseURL");
 
         Assert.isTrue(this.layers.length > 0, "There must be at least one layer defined for a WMS request to make sense");
 

@@ -12,7 +12,7 @@
           "geojson": "http://center_osm_fixedscale.json/geojson/ny-roads-3857.json"
         },{
           "type": "osm",
-          "baseURL": "http://center_osm_fixedscale.osm:1234",
+          "baseURL": "http://center_osm_fixedscale.osm:1234/{z}/{x}/{y}.tiff",
           "opacity": 1.0,
           "tileSize": [256, 256],
           "imageFormat": "tiff",

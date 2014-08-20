@@ -23,8 +23,6 @@ import com.google.common.collect.Multimap;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 
-import java.net.URI;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -36,7 +34,7 @@ public class AbstractTiledLayerParamsTest {
     private static final String CUSTOM_PARAMS = "{\"key\": \"value\", \"key2\":[\"value1\", \"value2\"], \"key3\": null}";
     @Test
     public void testCustomParams() throws Exception {
-        final AbstractTiledLayerParams params = new TestParams();
+        final AbstractWMXLayerParams params = new TestParams();
 
         assertEquals(0, params.getCustomParams().size());
 
@@ -49,7 +47,7 @@ public class AbstractTiledLayerParamsTest {
 
     @Test
     public void testMergeableParams() throws Exception {
-        final AbstractTiledLayerParams params = new TestParams();
+        final AbstractWMXLayerParams params = new TestParams();
         assertEquals(0, params.getMergeableParams().size());
         params.customParams = AbstractMapfishSpringTest.parseJSONObjectFromString(CUSTOM_PARAMS);
 
@@ -67,9 +65,9 @@ public class AbstractTiledLayerParamsTest {
         assertTrue(paramMap.containsEntry("key3", "null"));
     }
 
-    private static class TestParams extends AbstractTiledLayerParams {
+    private static class TestParams extends AbstractWMXLayerParams {
         @Override
-        public URI getBaseUri() {
+        public String getBaseUrl() {
             return null;
         }
     }

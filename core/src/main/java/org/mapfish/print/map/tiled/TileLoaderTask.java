@@ -53,7 +53,6 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -117,7 +116,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
             // The minX minY of the first (minY,minY) tile
             Coordinate gridCoverageOrigin = this.tiledLayer.getMinGeoCoordinate(mapGeoBounds, tileSizeInWorld);
 
-            URI commonUri = this.tiledLayer.createCommonURI();
+            final String commonUrl = this.tiledLayer.createCommonUrl();
 
             ReferencedEnvelope tileCacheBounds = this.tiledLayer.getTileCacheBounds();
             final double resolution = this.tiledLayer.getScale().toResolution(this.bounds.getProjection(), this.tiledLayer.getLayerDpi());
@@ -152,7 +151,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
                     int row = (int) Math.round((tileCacheBounds.getMaxY() - tileBounds.getMaxY()) * rowFactor);
                     int column = (int) Math.round((tileBounds.getMinX() - tileCacheBounds.getMinX()) * columnFactor);
 
-                    ClientHttpRequest tileRequest = this.tiledLayer.getTileRequest(this.httpRequestFactory, commonUri, tileBounds,
+                    ClientHttpRequest tileRequest = this.tiledLayer.getTileRequest(this.httpRequestFactory, commonUrl, tileBounds,
                             tileSizeOnScreen, column, row);
 
                     if (isInTileCacheBounds(tileCacheBounds, tileBounds)) {
@@ -186,7 +185,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
             GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
             GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapProjection);
             gridEnvelope.setEnvelope(gridCoverageOrigin.x, gridCoverageOrigin.y, gridCoverageMaxX, gridCoverageMaxY);
-            return factory.create(commonUri.toString(), coverageImage, gridEnvelope, null, null, null);
+            return factory.create(commonUrl.toString(), coverageImage, gridEnvelope, null, null, null);
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {

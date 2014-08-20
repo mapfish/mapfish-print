@@ -19,6 +19,9 @@
 
 package org.mapfish.print.map.tiled.osm;
 
+import com.google.common.base.Function;
+import com.google.common.base.Strings;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.util.Assert;
@@ -39,7 +42,16 @@ public final class OsmLayerParam extends AbstractTiledLayerParams {
     private static final int NUMBER_OF_EXTENT_COORDS = 4;
     private static final double DEFAULT_RESOLUTION_TOLERANCE = 1.9;
     /**
-     * the ‘ResourceURL’ available in the WMTS capabilities.
+     * The URL used for the tile requests.
+     * <p>Supported formats:</p>
+     * <ul>
+     *  <li>The base part of the URL, for example 'http://tile.openstreetmap.org'. This results in an URL
+     *  like 'http://tile.openstreetmap.org/12/123/456.png'.</li>
+     *  <li>An URL template with the placeholders '{x}', '{y}' or '{-y}', and '{z}'. For example:
+     *  'http://tile.openstreetmap.org/{z}/{x}/{y}.png'. <br>
+     *  The placeholder '{-y}' provides support for OSGeo TMS tiles.
+     *  </li>
+     * </ul>
      */
     public String baseURL;
     /**
@@ -70,8 +82,9 @@ public final class OsmLayerParam extends AbstractTiledLayerParams {
 
     /**
      * Validate the properties have the correct values.
+     * @throws URISyntaxException 
      */
-    public void postConstruct() {
+    public void postConstruct() throws URISyntaxException {
         Assert.equals(NUMBER_OF_EXTENT_COORDS, this.maxExtent.length, "maxExtent must have exactly 4 elements to the array.  Was: " +
                                                                       Arrays.toString(this
                 .maxExtent));
@@ -80,6 +93,7 @@ public final class OsmLayerParam extends AbstractTiledLayerParams {
         Assert.isTrue(this.resolutions.length > 0, "resolutions must have at least one value");
 
         Arrays.sort(this.resolutions, Ordering.<Double>natural().reverse());
+        Assert.isTrue(validateBaseUrl(), "invalid baseURL");
     }
 
     /**
@@ -94,11 +108,38 @@ public final class OsmLayerParam extends AbstractTiledLayerParams {
     }
 
     @Override
-    public URI getBaseUri() throws URISyntaxException {
-        return new URI(this.baseURL);
+    public String getBaseUrl() {
+        return this.baseURL;
     }
 
     public Dimension getTileSize() {
         return new Dimension(this.tileSize[0], this.tileSize[1]);
+    }
+
+    @Override
+    public String createCommonUrl(
+            final Function<Multimap<String, String>, Multimap<String, String>> function) {
+        return getBaseUrl();
+    }
+
+    @Override
+    public boolean validateBaseUrl() {
+        String url = getBaseUrl();
+        if (Strings.isNullOrEmpty(url)) {
+            return false;
+        }
+
+        // replace placeholders with dummy values, then check if an URI can be created
+        url = url
+                .replace("{z}", "0")
+                .replace("{x}", "0")
+                .replace("{y}", "0")
+                .replace("{-y}", "0");
+
+        try {
+            return new URI(url) != null;
+        } catch (URISyntaxException exc) {
+            return false;
+        }
     }
 }

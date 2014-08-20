@@ -65,11 +65,11 @@ public final class WmsLayer extends AbstractSingleImageLayer {
                                       final MapfishMapContext transformer,
                                       final boolean isFirstLayer) throws Throwable {
         final WmsLayerParam wmsLayerParam = this.params;
-        final URI commonURI = wmsLayerParam.getBaseUri();
+        final URI commonUri = new URI(wmsLayerParam.getBaseUrl());
 
         final Rectangle paintArea = transformer.getPaintArea();
         ReferencedEnvelope envelope = transformer.getBounds().toReferencedEnvelope(paintArea, transformer.getDPI());
-        URI uri = WmsUtilities.makeWmsGetLayerRequest(requestFactory, wmsLayerParam, commonURI, paintArea.getSize(), envelope);
+        URI uri = WmsUtilities.makeWmsGetLayerRequest(requestFactory, wmsLayerParam, commonUri, paintArea.getSize(), envelope);
 
         Closer closer = Closer.create();
         try {
