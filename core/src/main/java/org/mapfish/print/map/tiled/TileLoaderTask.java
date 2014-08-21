@@ -34,6 +34,7 @@ import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -187,10 +188,8 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
             GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapProjection);
             gridEnvelope.setEnvelope(gridCoverageOrigin.x, gridCoverageOrigin.y, gridCoverageMaxX, gridCoverageMaxY);
             return factory.create(commonUrl.toString(), coverageImage, gridEnvelope, null, null, null);
-        } catch (RuntimeException e) {
-            throw e;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.getRuntimeException(e);
         }
     }
 
@@ -298,7 +297,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
 
                 return new Tile(image, getTileIndexX(), getTileIndexY());
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw ExceptionUtils.getRuntimeException(e);
             } finally {
                 if (response != null) {
                     response.close();

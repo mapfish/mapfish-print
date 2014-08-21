@@ -20,6 +20,7 @@ package org.mapfish.print.map;
 
 import org.geotools.factory.Hints;
 import org.geotools.referencing.factory.epsg.FactoryUsingWKT;
+import org.mapfish.print.ExceptionUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -72,7 +73,7 @@ public final class CustomEPSGCodes extends FactoryUsingWKT {
                 try {
                     stream.close();
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    throw ExceptionUtils.getRuntimeException(e);
                 }
             }
         }

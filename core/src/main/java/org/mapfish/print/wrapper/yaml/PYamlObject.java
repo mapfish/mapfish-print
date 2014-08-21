@@ -21,6 +21,7 @@ package org.mapfish.print.wrapper.yaml;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.wrapper.PAbstractObject;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PElement;
@@ -144,7 +145,7 @@ public class PYamlObject extends PAbstractObject {
         try {
             return "PYaml(" + this.getCurrentPath() + ":" + toJSON().getInternalObj().toString(2) + ")";
         } catch (JSONException e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.getRuntimeException(e);
         }
     }
 
@@ -164,12 +165,8 @@ public class PYamlObject extends PAbstractObject {
                 json.put(key, opt);
             }
             return new PJsonObject(json, this.getContextName());
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Error e) {
-            throw e;
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.getRuntimeException(e);
         }
     }
 }

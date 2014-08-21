@@ -24,6 +24,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.GeodeticCalculator;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.Scale;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -153,7 +154,7 @@ public final class CenterScaleMapBounds extends MapBounds {
                     rollLongitude(minGeoX), rollLongitude(maxGeoX),
                     rollLatitude(minGeoY), rollLatitude(maxGeoY), crs);
         } catch (TransformException e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.getRuntimeException(e);
         }
     }
 

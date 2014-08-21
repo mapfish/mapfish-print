@@ -21,10 +21,12 @@ package org.mapfish.print.attribute.map;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+
 import org.geotools.referencing.CRS;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.Constants;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.Template;
@@ -257,7 +259,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
                     PObject layer = this.getRawLayers().getObject(i);
                     parseSingleLayer(layerList, layer);
                 } catch (Throwable throwable) {
-                    throw new RuntimeException(throwable);
+                    throw ExceptionUtils.getRuntimeException(throwable);
                 }
             }
 

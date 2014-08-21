@@ -21,6 +21,8 @@ package org.mapfish.print.servlet.fileloader;
 
 import com.google.common.base.Optional;
 import com.google.common.io.Resources;
+
+import org.mapfish.print.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +75,7 @@ public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
                 try {
                     return Optional.of(new File(url.toURI()).lastModified());
                 } catch (URISyntaxException e) {
-                    throw new RuntimeException(e);
+                    throw ExceptionUtils.getRuntimeException(e);
                 }
             } else {
                 return Optional.absent();
@@ -185,7 +187,7 @@ public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
                 try {
                     return Optional.of(file.toURI().toURL());
                 } catch (MalformedURLException e) {
-                    throw new RuntimeException(e);
+                    throw ExceptionUtils.getRuntimeException(e);
                 }
             } else {
                 return Optional.absent();

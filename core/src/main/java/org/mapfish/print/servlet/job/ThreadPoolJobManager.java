@@ -20,7 +20,9 @@
 package org.mapfish.print.servlet.job;
 
 import com.google.common.base.Optional;
+
 import org.json.JSONException;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.servlet.registry.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +43,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
@@ -224,7 +227,7 @@ public class ThreadPoolJobManager implements JobManager {
             new PendingPrintJob(job.getReferenceId(), job.getAppId()).store(this.registry);
             this.registry.put(LAST_POLL + job.getReferenceId(), new Date().getTime());
         } catch (JSONException e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.getRuntimeException(e);
         } finally {
             this.runningTasksFutures.put(job.getReferenceId(), new SubmittedPrintJob(future, job.getReferenceId(), job.getAppId()));
         }
@@ -251,7 +254,7 @@ public class ThreadPoolJobManager implements JobManager {
             // check if the reference id is valid
             jobStatus = PrintJobStatus.load(referenceId, this.registry);
         } catch (JSONException e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.getRuntimeException(e);
         }
         synchronized (this.runningTasksFutures) {
             if (this.runningTasksFutures.containsKey(referenceId)) {
@@ -273,7 +276,7 @@ public class ThreadPoolJobManager implements JobManager {
         try {
             failedJob.store(this.registry);
         } catch (JSONException e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.getRuntimeException(e);
         }
     }
 
@@ -304,7 +307,7 @@ public class ThreadPoolJobManager implements JobManager {
                 return jobStatus;
             }
         } catch (JSONException e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.getRuntimeException(e);
         }
     }
 

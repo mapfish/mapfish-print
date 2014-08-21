@@ -20,6 +20,8 @@
 package org.mapfish.print.processor;
 
 import com.google.common.collect.BiMap;
+
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.HasDefaultValue;
 
@@ -77,7 +79,7 @@ public final class ProcessorUtils {
                     try {
                         field.set(inputObject, value);
                     } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
+                        throw ExceptionUtils.getRuntimeException(e);
                     }
                 } else {
                     if (field.getAnnotation(HasDefaultValue.class) == null) {
@@ -120,7 +122,7 @@ public final class ProcessorUtils {
                     values.remove(name);
                 }
             } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+                throw ExceptionUtils.getRuntimeException(e);
             }
         }
     }

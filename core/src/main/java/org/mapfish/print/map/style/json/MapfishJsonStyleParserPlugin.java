@@ -20,13 +20,14 @@
 package org.mapfish.print.map.style.json;
 
 import com.google.common.base.Function;
-
 import com.google.common.base.Optional;
+
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.Constants;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.style.ParserPluginUtils;
@@ -469,7 +470,7 @@ public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
                 try {
                     return tryLoadJson(configuration, new String(input, Constants.DEFAULT_CHARSET));
                 } catch (JSONException e) {
-                    throw new RuntimeException(e);
+                    throw ExceptionUtils.getRuntimeException(e);
                 }
             }
         });

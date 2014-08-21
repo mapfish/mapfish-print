@@ -23,6 +23,7 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.ExtraPropertyException;
 import org.mapfish.print.MissingPropertyException;
 import org.mapfish.print.wrapper.ObjectMissingException;
@@ -113,7 +114,7 @@ public final class MapfishParser {
                     requiresTracker.markAsVisited(property);
                     property.set(objectToPopulate, value);
                 } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
+                    throw ExceptionUtils.getRuntimeException(e);
                 }
             } catch (ObjectMissingException e) {
                 final HasDefaultValue hasDefaultValue = property.getAnnotation(HasDefaultValue.class);
@@ -212,7 +213,7 @@ public final class MapfishParser {
             try {
                 value = new URL(layer.getString(name));
             } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
+                throw ExceptionUtils.getRuntimeException(e);
             }
         } else if (type.isArray()) {
             final PArray array = layer.getArray(name);
@@ -236,7 +237,7 @@ public final class MapfishParser {
             } catch (InstantiationException e) {
                 throw new UnsupportedTypeException(type, e);
             } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+                throw ExceptionUtils.getRuntimeException(e);
             }
         }
         return value;
@@ -292,7 +293,7 @@ public final class MapfishParser {
             try {
                 value = new URL(array.getString(i));
             } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
+                throw ExceptionUtils.getRuntimeException(e);
             }
         } else if (type.isEnum()) {
             value = parseEnum(type, array.getPath("" + i), array.getString(i));
@@ -304,7 +305,7 @@ public final class MapfishParser {
             } catch (InstantiationException e) {
                 throw new UnsupportedTypeException(type, e);
             } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+                throw ExceptionUtils.getRuntimeException(e);
             }
         }
 

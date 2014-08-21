@@ -21,6 +21,7 @@ package org.mapfish.print.servlet.job;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.mapfish.print.ExceptionUtils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -89,7 +90,7 @@ public final class SuccessfulPrintJob extends PrintJobStatus {
             String mimeType = metadata.getString(JSON_MIME_TYPE);
             return new SuccessfulPrintJob(referenceId, reportURI, appId, completionDate, fileName, mimeType, fileExt);
         } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.getRuntimeException(e);
         }
     }
 

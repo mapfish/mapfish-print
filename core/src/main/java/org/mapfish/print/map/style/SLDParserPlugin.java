@@ -25,16 +25,19 @@ import com.google.common.io.ByteSource;
 import com.google.common.io.CharSource;
 import com.google.common.io.Closeables;
 import com.vividsolutions.jts.util.Assert;
+
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.mapfish.print.Constants;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -76,7 +79,7 @@ public class SLDParserPlugin implements StyleParserPlugin {
                 try {
                     return tryLoadSLD(bytes, styleIndex);
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    throw ExceptionUtils.getRuntimeException(e);
                 }
             }
         };
