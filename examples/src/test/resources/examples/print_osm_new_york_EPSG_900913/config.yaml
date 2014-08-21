@@ -31,4 +31,4 @@ templates:
       outputMapper: {subReport: scalebarSubReport}
     - !createNorthArrow
         inputMapper: {map: map, northArrowDef: northArrow}
-        outputMapper: {subReport: northArrowSubReport, graphic: dummyGraphic}
+        outputMapper: {subReport: northArrowSubReport}
