@@ -388,6 +388,37 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         waitForFailure(ref);
     }
 
+    @Test(timeout = 60000)
+    public void testCreateReport_FailureInvalidUrl() throws Exception {
+        setUpConfigFiles();
+
+        final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
+        final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+
+        final PJsonObject requestJson = parseJSONObjectFromFile(MapPrinterServletTest.class, "requestDataError.json");
+        String requestData = requestJson.getInternalObj().toString();
+        servlet.createReport("png", requestData, servletCreateRequest, servletCreateResponse);
+        final PJsonObject createResponseJson = parseJSONObjectFromString(servletCreateResponse.getContentAsString());
+        assertTrue(createResponseJson.has(MapPrinterServlet.JSON_PRINT_JOB_REF));
+        assertEquals(HttpStatus.OK.value(), servletCreateResponse.getStatus());
+
+        String ref = createResponseJson.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
+
+        final String atHostRefSegment = "@" + this.servletInfo.getServletId();
+        assertTrue(ref.endsWith(atHostRefSegment));
+        assertTrue(ref.indexOf(atHostRefSegment) > 0);
+        waitForFailure(ref);
+
+        final MockHttpServletRequest statusRequest = new MockHttpServletRequest();
+        final MockHttpServletResponse statusResponse = new MockHttpServletResponse();
+        servlet.getStatus(ref, "", statusRequest, statusResponse);
+
+        final PJsonObject statusJson = parseJSONObjectFromString(statusResponse.getContentAsString());
+        assertEquals("true", statusJson.getString(MapPrinterServlet.JSON_DONE));
+        assertTrue(statusJson.getString(MapPrinterServlet.JSON_ERROR).startsWith(
+                "java.lang.IllegalArgumentException: http://invald-url.com/sampleGeoTiff.tif not registered with"));
+    }
+
     private void waitForFailure(String ref) throws IOException,
             ServletException, InterruptedException,
             UnsupportedEncodingException {
