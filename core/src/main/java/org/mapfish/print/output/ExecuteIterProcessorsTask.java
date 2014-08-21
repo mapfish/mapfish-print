@@ -21,10 +21,13 @@ package org.mapfish.print.output;
 
 import jsr166y.ForkJoinTask;
 import jsr166y.RecursiveTask;
+
 import org.mapfish.print.config.Template;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.ProcessorDependencyGraph.ProcessorGraphForkJoinTask;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,19 +41,26 @@ public class ExecuteIterProcessorsTask extends RecursiveTask<List<Map<String, ?>
     private final Values values;
     private final Template template;
     private final List<ProcessorGraphForkJoinTask> forkedTasks;
-    
+    private final ClientHttpRequestFactory httpRequestFactory;
+    private final File taskDirectory;
+
     /**
      * Constructor.
      *
      * @param values the values after normal processor have ran
      * @param template the current template
+     * @param httpRequestFactory a factory for making http requests.
+     * @param taskDirectory the temporary directory for this printing task.
      */
-    public ExecuteIterProcessorsTask(final Values values, final Template template) {
+    public ExecuteIterProcessorsTask(final Values values, final Template template,
+            final ClientHttpRequestFactory httpRequestFactory, final File taskDirectory) {
         this.values = values;
         this.template = template;
         this.forkedTasks = new LinkedList<ProcessorDependencyGraph.ProcessorGraphForkJoinTask>();
-    }        
-    
+        this.httpRequestFactory = httpRequestFactory;
+        this.taskDirectory = taskDirectory;
+    }
+
     @Override
     public final boolean cancel(final boolean mayInterruptIfRunning) {
         synchronized (this.forkedTasks) {
@@ -72,15 +82,17 @@ public class ExecuteIterProcessorsTask extends RecursiveTask<List<Map<String, ?>
         synchronized (this.forkedTasks) {
             checkCancelState();
             for (Values v : iterValues) {
+                v.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, this.httpRequestFactory);
+                v.put(Values.TASK_DIRECTORY_KEY, this.taskDirectory);
                 this.forkedTasks.add(processorGraph.createTask(v));
             }
         }
-        
+
         // only when all tasks are created, fork them
         for (ForkJoinTask<Values> fork : this.forkedTasks) {
             fork.fork();
         }
-        
+
         // then wait until all graphs are processed
         for (ForkJoinTask<Values> fork : this.forkedTasks) {
             checkCancelState();

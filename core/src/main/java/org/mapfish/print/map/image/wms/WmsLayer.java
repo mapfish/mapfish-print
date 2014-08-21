@@ -21,6 +21,7 @@ package org.mapfish.print.map.image.wms;
 
 import com.google.common.io.Closer;
 import com.vividsolutions.jts.util.Assert;
+
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.attribute.map.MapfishMapContext;
@@ -35,6 +36,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.util.concurrent.ExecutorService;
+
 import javax.imageio.ImageIO;
 
 /**

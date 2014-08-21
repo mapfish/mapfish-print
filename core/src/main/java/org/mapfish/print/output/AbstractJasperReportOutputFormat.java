@@ -21,8 +21,10 @@ package org.mapfish.print.output;
 
 
 import com.google.common.annotations.VisibleForTesting;
+
 import jsr166y.ForkJoinPool;
 import jsr166y.ForkJoinTask;
+
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -30,6 +32,7 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.Renderable;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+
 import org.json.JSONException;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapAttribute;
@@ -89,11 +92,11 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                             final File taskDirectory, final OutputStream outputStream)
             throws Exception {
         final Print print = getJasperPrint(requestData, config, configDir, taskDirectory);
-        
+
         if (Thread.currentThread().isInterrupted()) {
             throw new CancellationException();
         }
-        
+
         doExport(outputStream, print);
     }
 
@@ -136,7 +139,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         values.put(SUBREPORT_TABLE_DIR, taskDirectory.getAbsolutePath());
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(template.getProcessorGraph().createTask(values));
-        
+
         try {
             taskFuture.get();
         } catch (InterruptedException exc) {
@@ -161,21 +164,29 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                 Iterable iterable = (Iterable) iterator;
 
                 final ForkJoinTask<List<Map<String, ?>>> iterTaskFuture =
-                        this.forkJoinPool.submit(new ExecuteIterProcessorsTask(values, template));
+                        this.forkJoinPool.submit(new ExecuteIterProcessorsTask(values, template,
+                                values.getObject(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, ClientHttpRequestFactory.class),
+                                values.getObject(Values.TASK_DIRECTORY_KEY, File.class)));
 
                 List<Map<String, ?>> dataSource;
                 try {
                     dataSource = iterTaskFuture.get();
                 } catch (InterruptedException exc) {
+                    exc.printStackTrace();
                     iterTaskFuture.cancel(true);
                     Thread.currentThread().interrupt();
                     throw new CancellationException();
                 }
 
+                if (dataSource.size() > 0) {
+                    LOGGER.info("Generate with fields: " + dataSource.get(0).keySet());
+                }
                 jrDataSource = new JRMapCollectionDataSource(dataSource);
             } else {
                 jrDataSource = new JREmptyDataSource();
             }
+
+            LOGGER.info("Generate with parameters: " + values.getParameters().keySet());
             print = JasperFillManager.fillReport(
                     jasperTemplateBuild.getAbsolutePath(),
                     values.getParameters(),

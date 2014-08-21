@@ -22,6 +22,7 @@ package org.mapfish.print;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
+
 import org.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -45,6 +46,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.regex.Pattern;
+
 import javax.imageio.ImageIO;
 
 import static org.junit.Assert.fail;

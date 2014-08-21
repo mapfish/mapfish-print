@@ -20,6 +20,7 @@
 package org.mapfish.print.attribute.map;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -40,7 +41,6 @@ import java.awt.Rectangle;
 public final class CenterScaleMapBounds extends MapBounds {
     private final Coordinate center;
     private final Scale scale;
-
     /**
      * Constructor.
      *
@@ -167,6 +167,11 @@ public final class CenterScaleMapBounds extends MapBounds {
         return y - (((int) (y + Math.signum(y) * 90)) / 180) * 180.0;
     }
     // CSON: MagicNumber
+
+    @Override
+    public Geometry getZone() {
+        throw new RuntimeException("CenterScale MapBounds don't support getZone");
+    }
 
     // CHECKSTYLE:OFF
 

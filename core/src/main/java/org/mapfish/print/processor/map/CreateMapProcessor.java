@@ -20,7 +20,9 @@
 package org.mapfish.print.processor.map;
 
 import com.google.common.collect.Lists;
+
 import net.sf.jasperreports.engine.JRException;
+
 import org.apache.batik.svggen.SVGGeneratorContext;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.mapfish.print.attribute.map.BBoxMapBounds;
@@ -51,6 +53,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
 import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -132,11 +135,11 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                                    final List<URI> graphics,
                                    final double dpi) throws IOException, JRException {
         final MapSubReport subReport = new MapSubReport(graphics, mapSize, dpi);
-        
+
         final File compiledReport = File.createTempFile("map-",
                 JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT, printDirectory);
         subReport.compile(compiledReport);
-        
+
         return compiledReport.toURI();
     }
 
@@ -160,7 +163,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         paintArea.setBounds(0, 0, (int) (mapSize.getWidth() * dpiRatio), (int) (mapSize.getHeight() * dpiRatio));
         final MapfishMapContext transformer = new MapfishMapContext(bounds, paintArea.getSize(),
                 mapValues.getRotation(), dpi, mapValues.longitudeFirst);
-        
+
         // reverse layer list to draw from bottom to top.  normally position 0 is top-most layer.
         final List<MapLayer> layers = Lists.reverse(mapValues.getLayers());
 
@@ -170,7 +173,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         for (MapLayer layer : layers) {
             checkCancelState(context);
             boolean isFirstLayer = i == 0;
-            
+
             File path = null;
             if (renderAsSvg(layer)) {
                 // render layer as SVG
@@ -178,7 +181,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
 
                 try {
                     layer.render(graphics2D, clientHttpRequestFactory, transformer, isFirstLayer);
-                    
+
                     path = new File(printDirectory, mapKey + "_layer_" + i + ".svg");
                     saveSvgFile(graphics2D, path);
                 } finally {
@@ -189,10 +192,10 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 final BufferedImage bufferedImage = new BufferedImage((int) paintArea.getWidth(),
                         (int) paintArea.getHeight(), this.imageType.value);
                 final Graphics2D graphics2D = bufferedImage.createGraphics();
-                
+
                 try {
                     layer.render(graphics2D, clientHttpRequestFactory, transformer, isFirstLayer);
-                    
+
                     path = new File(printDirectory, mapKey + "_layer_" + i + ".tiff");
                     ImageIO.write(bufferedImage, "tiff", path);
                 } finally {
@@ -202,13 +205,13 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             graphics.add(path.toURI());
             i++;
         }
-        
+
         return graphics;
     }
 
     /**
      * If requested, adjust the bounds to the nearest scale and the map size.
-     * 
+     *
      * @param mapValues         Map parameters
      * @param dpiOfRequestor    The DPI.
      * @param paintArea         The size of the painting area.
@@ -224,15 +227,15 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                         mapValues.getZoomSnapTolerance(),
                         mapValues.getZoomLevelSnapStrategy(), paintArea, dpiOfRequestor);
         }
-        
+
         newBounds = new BBoxMapBounds(newBounds.toReferencedEnvelope(paintArea, dpiOfRequestor));
-        
+
         if (mapValues.isUseAdjustBounds()) {
             newBounds = newBounds.adjustedEnvelope(paintArea);
         }
         return newBounds;
     }
-    
+
     private boolean renderAsSvg(final MapLayer layer) {
         if (layer instanceof AbstractFeatureSourceLayer) {
             AbstractFeatureSourceLayer featureLayer = (AbstractFeatureSourceLayer) layer;
@@ -304,7 +307,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
          * The required parameters for the map.
          */
         public MapAttribute.MapAttributeValues map;
-        
+
         /**
          * The path to the temporary directory for the print task.
          */

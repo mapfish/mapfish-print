@@ -21,6 +21,7 @@ package org.mapfish.print.output;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.ConfigFileResolvingHttpRequestFactory;
@@ -42,6 +43,7 @@ import java.io.File;
 import java.lang.reflect.Array;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -161,11 +163,11 @@ public final class Values {
      * @param value the value.
      */
     public void put(final String key, final Object value) {
-        if (TASK_DIRECTORY_KEY.equals(key)) {
-            // ensure that no one overwrites the task directory 
+        if (TASK_DIRECTORY_KEY.equals(key) && this.values.keySet().contains(TASK_DIRECTORY_KEY)) {
+            // ensure that no one overwrites the task directory
             throw new IllegalArgumentException("Invalid key: " + key);
         }
-        
+
         this.values.put(key, value);
     }
 

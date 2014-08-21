@@ -168,7 +168,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
                 if (dpi < 1 || dpi > this.getMaxDpi()) {
                     validationErrors.add(new ConfigurationException(
                             "dpiSuggestions contains an invalid value: " + dpi + " in " + getClass().getName()));
-                    
+
                 }
             }
         }
@@ -241,7 +241,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
             this.template = template;
             this.mapSize = mapSize;
         }
-        
+
         /**
          * Validate the values provided by the request data and construct MapBounds and parse the layers.
          */
@@ -342,7 +342,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
          * with a @HasDefaultValue annotation.
          */
         public abstract Double getDpi();
-        
+
         /**
          * Return the JSON layer definiton.
          * This method is abstract is abstract for the same reasons as {@link #getDpi()}.
@@ -426,6 +426,9 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
             // For the moment we require the client to convert their bounds to 72 DPI
             return Constants.PDF_DPI;
         }
-        
+
+        public final GenericMapAttribute getAttribute() {
+            return GenericMapAttribute.this;
+        }
     }
 }

@@ -23,6 +23,7 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
     <bean id="!createMap" class="org.mapfish.print.processor.map.CreateMapProcessor" scope="prototype" />
+    <bean id="!paging" class="org.mapfish.print.processor.map.PagingProcessor" scope="prototype" />
     <bean id="!setStyle" class="org.mapfish.print.processor.map.SetStyleProcessor" scope="prototype" />
     <bean id="!setFeatures" class="org.mapfish.print.processor.map.SetFeaturesProcessor" scope="prototype" />
     <bean id="!setWmsCustomParam" class="org.mapfish.print.processor.map.SetWmsCustomParamProcessor" scope="prototype" />

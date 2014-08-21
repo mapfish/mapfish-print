@@ -21,7 +21,11 @@ package org.mapfish.print.attribute.map;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LinearRing;
 
+import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.GeodeticCalculator;
 import org.mapfish.print.map.DistanceUnit;
@@ -35,8 +39,19 @@ import java.awt.Rectangle;
  * <p/>
  * Created by Jesse on 3/26/14.
  */
-public final class BBoxMapBounds extends MapBounds {
+public class BBoxMapBounds extends MapBounds {
     private final Envelope bbox;
+
+    /**
+     * Constructor.
+     *
+     * @param projection the projection these bounds are defined in.
+     * @param envelope   the bounds
+     */
+    public BBoxMapBounds(final CoordinateReferenceSystem projection, final Envelope envelope) {
+        super(projection);
+        this.bbox = envelope;
+    }
 
     /**
      * Constructor.
@@ -49,8 +64,7 @@ public final class BBoxMapBounds extends MapBounds {
      */
     public BBoxMapBounds(final CoordinateReferenceSystem projection, final double minX, final double minY,
                          final double maxX, final double maxY) {
-        super(projection);
-        this.bbox = new Envelope(minX, maxX, minY, maxY);
+        this(projection, new Envelope(minX, maxX, minY, maxY));
     }
 
     /**
@@ -64,12 +78,12 @@ public final class BBoxMapBounds extends MapBounds {
     }
 
     @Override
-    public ReferencedEnvelope toReferencedEnvelope(final Rectangle paintArea, final double dpi) {
+    public final ReferencedEnvelope toReferencedEnvelope(final Rectangle paintArea, final double dpi) {
         return new ReferencedEnvelope(this.bbox, getProjection());
     }
 
     @Override
-    public MapBounds adjustedEnvelope(final Rectangle paintArea) {
+    public final MapBounds adjustedEnvelope(final Rectangle paintArea) {
         final double paintAreaAspectRatio = paintArea.getWidth() / paintArea.getHeight();
         final double bboxAspectRatio = this.bbox.getWidth() / this.bbox.getHeight();
         if (paintAreaAspectRatio > bboxAspectRatio) {
@@ -91,7 +105,7 @@ public final class BBoxMapBounds extends MapBounds {
     }
 
     @Override
-    public MapBounds adjustBoundsToNearestScale(final ZoomLevels zoomLevels, final double tolerance,
+    public final MapBounds adjustBoundsToNearestScale(final ZoomLevels zoomLevels, final double tolerance,
                                                 final ZoomLevelSnapStrategy zoomLevelSnapStrategy, final Rectangle paintArea,
                                                 final double dpi) {
         final Scale scale = getScaleDenominator(paintArea, dpi);
@@ -104,7 +118,7 @@ public final class BBoxMapBounds extends MapBounds {
     }
 
     @Override
-    public Scale getScaleDenominator(final Rectangle paintArea, final double dpi) {
+    public final Scale getScaleDenominator(final Rectangle paintArea, final double dpi) {
         final ReferencedEnvelope bboxAdjustedToScreen = toReferencedEnvelope(paintArea, dpi);
 
         DistanceUnit projUnit = DistanceUnit.fromProjection(getProjection());
@@ -129,11 +143,11 @@ public final class BBoxMapBounds extends MapBounds {
     }
 
     @Override
-    public MapBounds adjustBoundsToRotation(final double rotation) {
+    public final MapBounds adjustBoundsToRotation(final double rotation) {
         if (rotation == 0.0) {
             return this;
         }
-        
+
         /**
          * When a rotation is set, the map is rotated around the center of the
          * original bbox. This means that the bbox might has to be expanded, so
@@ -141,16 +155,16 @@ public final class BBoxMapBounds extends MapBounds {
          */
         final double rotatedWidth = getRotatedWidth(rotation);
         final double rotatedHeight = getRotatedHeight(rotation);
-        
+
         final double widthDifference = (rotatedWidth - this.bbox.getWidth()) / 2.0;
         final double rotatedMinX = this.bbox.getMinX() - widthDifference;
         final double rotatedMaxX = this.bbox.getMaxX() + widthDifference;
-        
+
         final double heightDifference = (rotatedHeight - this.bbox.getHeight()) / 2.0;
         final double rotatedMinY = this.bbox.getMinY() - heightDifference;
         final double rotatedMaxY = this.bbox.getMaxY() + heightDifference;
-        
-        return new BBoxMapBounds(getProjection(), 
+
+        return new BBoxMapBounds(getProjection(),
                 rotatedMinX, rotatedMinY, rotatedMaxX, rotatedMaxY);
     }
 
@@ -158,7 +172,7 @@ public final class BBoxMapBounds extends MapBounds {
         double width = this.bbox.getWidth();
         if (rotation != 0.0) {
             double height = this.bbox.getHeight();
-            width = (float) (Math.abs(width * Math.cos(rotation)) + 
+            width = (float) (Math.abs(width * Math.cos(rotation)) +
                     Math.abs(height * Math.sin(rotation)));
         }
         return width;
@@ -168,14 +182,14 @@ public final class BBoxMapBounds extends MapBounds {
         double height = this.bbox.getHeight();
         if (rotation != 0.0) {
             double width = this.bbox.getWidth();
-            height = (float) (Math.abs(height * Math.cos(rotation)) + 
+            height = (float) (Math.abs(height * Math.cos(rotation)) +
                     Math.abs(width * Math.sin(rotation)));
         }
         return height;
     }
 
     @Override
-    public MapBounds zoomOut(final double factor) {
+    public final MapBounds zoomOut(final double factor) {
         if (factor == 1.0) {
             return this;
         }
@@ -190,10 +204,28 @@ public final class BBoxMapBounds extends MapBounds {
         double maxGeoX = centerX + destWidth / 2.0f;
         double minGeoY = centerY - destHeight / 2.0f;
         double maxGeoY = centerY + destHeight / 2.0f;
-        
-        return new BBoxMapBounds(getProjection(), 
+
+        return new BBoxMapBounds(getProjection(),
                 minGeoX, minGeoY, maxGeoX, maxGeoY);
     }
+
+    // CSOFF: DesignForExtension
+
+    @Override
+    public Geometry getZone() {
+        Coordinate[] coords  = new Coordinate[] {
+            new Coordinate(this.bbox.getMinX(), this.bbox.getMinY()),
+            new Coordinate(this.bbox.getMinX(), this.bbox.getMaxY()),
+            new Coordinate(this.bbox.getMaxX(), this.bbox.getMaxY()),
+            new Coordinate(this.bbox.getMaxX(), this.bbox.getMinY()),
+            new Coordinate(this.bbox.getMinX(), this.bbox.getMinY()),
+        };
+        GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
+        LinearRing ring = geometryFactory.createLinearRing(coords);
+        return geometryFactory.createPolygon(ring);
+    }
+
+    // CSON: DesignForExtension
 
     // CHECKSTYLE:OFF
     @Override
