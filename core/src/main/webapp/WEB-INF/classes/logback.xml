@@ -36,15 +36,17 @@
             <maxHistory>30</maxHistory>
         </rollingPolicy>
 
-        <encoder>
-            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
-        </encoder>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
+        </layout>
     </appender>
 
     <logger name="org.mapfish" level="INFO" />
     <logger name="org.springframework" level="OFF" />
     <!-- Set spec logger to INFO to log all print spec json data -->
     <logger name="org.mapfish.print.servlet.BaseMapServlet.spec" level="OFF" />
+    <logger name="com.codahale.metrics" level="INFO" />
+    <logger name="com.codahale.metrics.JmxReporter" level="INFO" />
 
 
     <root level="ALL">
