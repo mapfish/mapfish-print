@@ -33,7 +33,6 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.annotation.Nonnull;
@@ -84,7 +83,7 @@ public abstract class TileCacheInformation {
      * Create the http request for loading the image at the indicated area and the indicated size.
      *
      * @param httpRequestFactory the factory to use for making http requests
-     * @param commonURI          the uri that is common to all tiles.  See {@link #createCommonURI()}
+     * @param commonUrl          the uri that is common to all tiles.  See {@link #createCommonUrl()}
      * @param tileBounds         the bounds of the image in world coordinates
      * @param tileSizeOnScreen   the size of the tile on the screen or on the image.
      * @param column             the column index of the tile from the origin of the tile cache.
@@ -92,7 +91,7 @@ public abstract class TileCacheInformation {
      */
     @Nonnull
     public abstract ClientHttpRequest getTileRequest(ClientHttpRequestFactory httpRequestFactory,
-                                                     URI commonURI,
+                                                     String commonUrl,
                                                      ReferencedEnvelope tileBounds,
                                                      Dimension tileSizeOnScreen,
                                                      int column,
@@ -119,7 +118,7 @@ public abstract class TileCacheInformation {
      * requires.  Depending on the server and the protocol mapfish print might be able to request a certain DPI.  But since
      * that might not be the case, then the layer must be able to report the correct DPI.
      */
-    public abstract double getLayerDpi();
+    public abstract Double getLayerDpi();
 
     /**
      * Obtain the image tile size of the tiles that will be loaded from the server.
@@ -170,14 +169,14 @@ public abstract class TileCacheInformation {
     }
 
     /**
-     * Create a URI that is common to all tiles for this layer.  It may have placeholder like ({matrixId}) if the layer desires.
-     * That is up to the layer implementation because the layer is responsible for taking the commonURI and transforming it to
+     * Create a URL that is common to all tiles for this layer.  It may have placeholder like ({matrixId}) if the layer desires.
+     * That is up to the layer implementation because the layer is responsible for taking the commonUrl and transforming it to
      * a final tile URI.
      */
     // CSOFF:DesignForExtension
-    protected URI createCommonURI() throws URISyntaxException, UnsupportedEncodingException {
+    protected String createCommonUrl() throws URISyntaxException, UnsupportedEncodingException {
         // CSOFF:DesignForExtension
-        return this.params.createCommonURI(new Function<Multimap<String, String>, Multimap<String, String>>() {
+        return this.params.createCommonUrl(new Function<Multimap<String, String>, Multimap<String, String>>() {
             @Nullable
             @Override
             public Multimap<String, String> apply(@Nullable final Multimap<String, String> input) {

@@ -23,7 +23,6 @@ import com.google.common.collect.Multimap;
 import jsr166y.ForkJoinPool;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.mapfish.print.URIUtils;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.map.Scale;
 import org.mapfish.print.map.geotools.StyleSupplier;
@@ -96,24 +95,38 @@ public final class OsmLayer extends AbstractTiledLayer {
         @Nonnull
         @Override
         public ClientHttpRequest getTileRequest(final ClientHttpRequestFactory httpRequestFactory,
-                                                final URI commonUri,
+                                                final String commonUrl,
                                                 final ReferencedEnvelope tileBounds,
                                                 final Dimension tileSizeOnScreen,
                                                 final int column,
                                                 final int row)
                 throws IOException, URISyntaxException {
 
-            StringBuilder path = new StringBuilder();
-            if (!commonUri.getPath().endsWith("/")) {
-                path.append('/');
+            final URI uri;
+            if (commonUrl.contains("{x}") && commonUrl.contains("{z}") 
+                    && (commonUrl.contains("{y}") || commonUrl.contains("{-y}"))) {
+                String url = commonUrl
+                        .replace("{z}", String.format("%02d", this.resolutionIndex))
+                        .replace("{x}", Integer.toString(column))
+                        .replace("{y}", Integer.toString(row));
+                if (commonUrl.contains("{-y}")) {
+                    // {-y} is for  OSGeo TMS layers, see also: https://josm.openstreetmap.de/wiki/Maps#TileMapServicesTMS
+                    url = url.replace("{-y}", Integer.toString((int) Math.pow(2, this.resolutionIndex) - 1 - row));
+                }
+                uri  = new URI(url);
+            } else {
+                StringBuilder path = new StringBuilder();
+                if (!commonUrl.endsWith("/")) {
+                    path.append('/');
+                }
+                path.append(String.format("%02d", this.resolutionIndex));
+                path.append('/').append(column);
+                path.append('/').append(row);
+                path.append('.').append(OsmLayer.this.param.imageFormat);
+
+                uri  = new URI(commonUrl + path.toString());
             }
-            path.append(String.format("%02d", this.resolutionIndex));
-            path.append('/').append(column);
-            path.append('/').append(row);
-            path.append('.').append(OsmLayer.this.param.imageFormat);
 
-
-            final URI uri = URIUtils.setPath(commonUri, commonUri.getPath() + path.toString());
             return httpRequestFactory.createRequest(uri, HttpMethod.GET);
         }
 
@@ -128,7 +141,7 @@ public final class OsmLayer extends AbstractTiledLayer {
         }
 
         @Override
-        public double getLayerDpi() {
+        public Double getLayerDpi() {
             return OsmLayer.this.param.dpi;
         }
 

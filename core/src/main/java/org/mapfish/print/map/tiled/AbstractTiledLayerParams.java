@@ -20,21 +20,12 @@
 package org.mapfish.print.map.tiled;
 
 import com.google.common.base.Function;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
-import org.mapfish.print.URIUtils;
 import org.mapfish.print.parser.HasDefaultValue;
-import org.mapfish.print.wrapper.PArray;
-import org.mapfish.print.wrapper.PObject;
-import org.mapfish.print.wrapper.json.PJsonObject;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Iterator;
-
-import javax.annotation.Nullable;
 
 /**
  * Contains the standard parameters for tiled layers.
@@ -55,44 +46,6 @@ public abstract class AbstractTiledLayerParams {
     @HasDefaultValue
     public String rasterStyle = "raster";
     /**
-     * Custom query parameters to use when making http requests.  These are related to {@link #mergeableParams} except they
-     * are the parameters that will prevent two layers from the same server from being merged into a single request with both
-     * layers. See {@link #mergeableParams} for a more detailed example of the difference between {@link #mergeableParams} and
-     * {@link #customParams}.
-     * <p/>
-     * The json should look something like:
-     * <pre><code>
-     * {
-     *     "param1Name": "value",
-     *     "param2Name": ["value1", "value2"]
-     * }
-     * </code></pre>
-     */
-    @HasDefaultValue
-    public PObject customParams;
-    private final Multimap<String, String> additionalCustomParam = HashMultimap.create();
-
-    /**
-     * Custom query parameters that can be merged if multiple layers are merged together into a single request.
-     * <p/>
-     * The json should look something like:
-     * <pre><code>
-     * {
-     *     "param1Name": "value",
-     *     "param2Name": ["value1", "value2"]
-     * }
-     * </code></pre>
-     * <p/>
-     * For example in WMS the style parameter can be merged.  If there are several wms layers that can be merged
-     * except they have different style parameters they can be merged because the style parameter can be merged.
-     * <p/>
-     * Compare that to DPI parameter (for QGIS wms mapserver).  if two layers have different DPI then the layers
-     * cannot be merged.  In this case the DPI should <em>NOT</em> be one of the {@link #mergeableParams} it should
-     * be one of the {@link #customParams}.
-     */
-    @HasDefaultValue
-    public PJsonObject mergeableParams;
-    /**
      * The format of the image.  It is not a mimetype just the part after the image.  for example png, gif, tiff, tif, bmp, etc...
      * <p/>
      * If a protocol needs a mimetype it can add the prefix
@@ -101,77 +54,24 @@ public abstract class AbstractTiledLayerParams {
     public String imageFormat = "png";
 
     /**
-     * Get the base url for all tile requests.  For example it might be http://server.com/geoserver/gwc/service/wmts
+     * Get the base url for all tile requests.  For example it might be 'http://server.com/geoserver/gwc/service/wmts'.
      */
-    public abstract URI getBaseUri() throws URISyntaxException;
+    public abstract String getBaseUrl();
 
     /**
-     * Read the {@link #customParams} into a Multimap.
+     * Validates the provided base url.
+     * @return True, if the url is valid.
      */
-    public final Multimap<String, String> getCustomParams() {
-        Multimap<String, String> result = convertToMultiMap(this.customParams);
-        result.putAll(this.additionalCustomParam);
-        return result;
-    }
+    public abstract boolean validateBaseUrl();
 
     /**
-     * Read the {@link #mergeableParams} into a Multimap.
-     */
-    public final Multimap<String, String> getMergeableParams() {
-        return convertToMultiMap(this.mergeableParams);
-    }
-
-    private Multimap<String, String> convertToMultiMap(final PObject objectParams) {
-        Multimap<String, String> params = HashMultimap.create();
-        if (objectParams != null) {
-            Iterator<String> customParamsIter = objectParams.keys();
-            while (customParamsIter.hasNext()) {
-                String key = customParamsIter.next();
-                if (objectParams.isArray(key)) {
-                    final PArray array = objectParams.optArray(key);
-                    for (int i = 0; i < array.size(); i++) {
-                        params.put(key, array.getString(i));
-                    }
-                } else {
-                    params.put(key, objectParams.optString(key, ""));
-                }
-            }
-        }
-
-        return params;
-    }
-
-    /**
-     * Create a URI that is common to all image requests for this layer.  It will take the base url and append all mergeable and
+     * Create a URL that is common to all image requests for this layer.  It will take the base url and append all mergeable and
      * custom params to the base url.
      *
      * @param queryParamCustomization a function that can optionally modify the Multimap passed into the function and returns the
      *                                Multimap that will contain all the query params that will be part of the URI.  If the function
      *                                returns null then the original map will be used as the params.
      */
-    public final URI createCommonURI(@Nullable final Function<Multimap<String, String>, Multimap<String, String>> queryParamCustomization)
-            throws URISyntaxException, UnsupportedEncodingException {
-        Multimap<String, String> queryParams = HashMultimap.create();
-
-        queryParams.putAll(getCustomParams());
-        queryParams.putAll(getMergeableParams());
-
-        if (queryParamCustomization != null) {
-            Multimap<String, String> result = queryParamCustomization.apply(queryParams);
-            if (result != null) {
-                queryParams = result;
-            }
-        }
-        final URI baseUri = getBaseUri();
-        return URIUtils.addParams(baseUri, queryParams, URIUtils.getParameters(baseUri).keySet());
-    }
-
-    /**
-     * Set a custom parameter.
-     * @param name the parameter name
-     * @param value the parameter value
-     */
-    public final void setCustomParam(final String name, final String value) {
-        this.additionalCustomParam.put(name, value);
-    }
+    public abstract String createCommonUrl(Function<Multimap<String, String>, Multimap<String, String>> queryParamCustomization)
+            throws URISyntaxException, UnsupportedEncodingException;
 }

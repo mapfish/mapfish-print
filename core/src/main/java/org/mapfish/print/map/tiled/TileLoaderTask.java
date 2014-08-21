@@ -53,7 +53,6 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -110,17 +109,18 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
             final CoordinateReferenceSystem mapProjection = mapGeoBounds.getCoordinateReferenceSystem();
             Dimension tileSizeOnScreen = this.tiledLayer.getTileSize();
 
-            final double layerResolution = this.tiledLayer.getScale().toResolution(mapProjection, this.tiledLayer.getLayerDpi());
+            final double layerDpi = (this.tiledLayer.getLayerDpi() != null) ? this.tiledLayer.getLayerDpi() : this.dpi;
+            final double layerResolution = this.tiledLayer.getScale().toResolution(mapProjection, layerDpi);
             Coordinate tileSizeInWorld = new Coordinate(tileSizeOnScreen.width * layerResolution,
                     tileSizeOnScreen.height * layerResolution);
 
             // The minX minY of the first (minY,minY) tile
             Coordinate gridCoverageOrigin = this.tiledLayer.getMinGeoCoordinate(mapGeoBounds, tileSizeInWorld);
 
-            URI commonUri = this.tiledLayer.createCommonURI();
+            final String commonUrl = this.tiledLayer.createCommonUrl();
 
             ReferencedEnvelope tileCacheBounds = this.tiledLayer.getTileCacheBounds();
-            final double resolution = this.tiledLayer.getScale().toResolution(this.bounds.getProjection(), this.tiledLayer.getLayerDpi());
+            final double resolution = this.tiledLayer.getScale().toResolution(this.bounds.getProjection(), layerDpi);
             double rowFactor = 1 / (resolution * tileSizeOnScreen.height);
             double columnFactor = 1 / (resolution * tileSizeOnScreen.width);
 
@@ -152,7 +152,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
                     int row = (int) Math.round((tileCacheBounds.getMaxY() - tileBounds.getMaxY()) * rowFactor);
                     int column = (int) Math.round((tileBounds.getMinX() - tileCacheBounds.getMinX()) * columnFactor);
 
-                    ClientHttpRequest tileRequest = this.tiledLayer.getTileRequest(this.httpRequestFactory, commonUri, tileBounds,
+                    ClientHttpRequest tileRequest = this.tiledLayer.getTileRequest(this.httpRequestFactory, commonUrl, tileBounds,
                             tileSizeOnScreen, column, row);
 
                     if (isInTileCacheBounds(tileCacheBounds, tileBounds)) {
@@ -186,7 +186,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
             GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
             GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapProjection);
             gridEnvelope.setEnvelope(gridCoverageOrigin.x, gridCoverageOrigin.y, gridCoverageMaxX, gridCoverageMaxY);
-            return factory.create(commonUri.toString(), coverageImage, gridEnvelope, null, null, null);
+            return factory.create(commonUrl.toString(), coverageImage, gridEnvelope, null, null, null);
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
