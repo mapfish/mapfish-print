@@ -288,7 +288,7 @@ public final class NorthArrowGraphic {
 
             Node svgRootImported = newDocument.importNode(svgRoot, true);
             wrapperSvg.appendChild(svgRootImported);
-        } else {
+        } else if (Strings.isNullOrEmpty(originalWidth) && Strings.isNullOrEmpty(originalHeight)) {
             Element wrapperContainer = newDocument.createElementNS(SVG_NS, "g");
             wrapperContainer.setAttributeNS(
                     null,
@@ -298,6 +298,10 @@ public final class NorthArrowGraphic {
 
             Node svgRootImported = newDocument.importNode(svgRoot, true);
             wrapperContainer.appendChild(svgRootImported);
+        } else {
+            throw new IllegalArgumentException(
+                    "Unsupported or invalid north-arrow SVG graphic: The same unit (px, em, %, ...) must be " +
+                    "used for `width` and `height`.");
         }
     }
 
