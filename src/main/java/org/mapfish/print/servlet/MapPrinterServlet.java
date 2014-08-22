@@ -21,15 +21,17 @@ package org.mapfish.print.servlet;
 
 import com.google.common.io.CharStreams;
 import com.google.common.io.Closer;
+import com.google.common.io.Files;
+import com.itextpdf.text.DocumentException;
 import org.apache.log4j.Logger;
-import org.pvalsecc.misc.FileUtilities;
-import org.mapfish.print.utils.PJsonObject;
-import org.mapfish.print.output.OutputFormat;
-import org.mapfish.print.MapPrinter;
-import org.mapfish.print.Constants;
-import org.json.JSONWriter;
-
 import org.json.JSONException;
+import org.json.JSONWriter;
+import org.mapfish.print.Constants;
+import org.mapfish.print.MapPrinter;
+import org.mapfish.print.output.OutputFormat;
+import org.mapfish.print.utils.PJsonObject;
+import org.pvalsecc.misc.FileUtilities;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -45,17 +47,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.itextpdf.text.DocumentException;
 
 /**
  * Main print servlet.
@@ -77,6 +77,10 @@ public class MapPrinterServlet extends BaseMapServlet {
 
     private File tempDir = null;
     private String encoding = null;
+
+    @Autowired
+    private List<OutputFormat> outputFormats;
+
     /**
      * Tells if a thread is alread purging the old temporary files or not.
      */
@@ -119,8 +123,10 @@ public class MapPrinterServlet extends BaseMapServlet {
         //get rid of the temporary files that were present before the servlet was started.
         File dir = getTempDir();
         File[] files = dir.listFiles();
-        for (File file : files) {
-            deleteFile(file);
+        if (files != null) {
+            for (File file : files) {
+                deleteFile(file);
+            }
         }
     }
 
@@ -218,6 +224,43 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
     }
 
+    private String generateId(TempFile tempFile) {
+        String name = tempFile.getName();
+        name = name.substring(0, name.indexOf(MapPrinterServlet.TEMP_FILE_SUFFIX));
+
+        name = replaceLast(name, ".", "_");
+
+        return name;
+    }
+
+    private String replaceLast(String name, String toReplace, String replaceWith) {
+        final int i = name.lastIndexOf(toReplace);
+        name = name.substring(0, i) + replaceWith + name.substring(i - 1);
+        return name;
+    }
+
+    private TempFile generateFileNameFromId(String id) {
+        String fileName = replaceLast(id, "_", ".") + MapPrinterServlet.TEMP_FILE_SUFFIX;
+
+        final File file = new File(getTempDir(), fileName);
+
+        if (file.exists()) {
+            OutputFormat format = findFormat(Files.getFileExtension(id));
+            return new TempFile(file, format);
+        }
+
+        return null;
+    }
+
+    private OutputFormat findFormat(String fileExtension) {
+        for (OutputFormat outputFormat : outputFormats) {
+            if (outputFormat.getFileSuffix().equals(fileExtension)) {
+                return outputFormat;
+            }
+        }
+        return null;
+    }
+
     protected void addTempFile(TempFile tempFile, String id) {
         synchronized (tempFiles) {
             tempFiles.put(id, tempFile);
@@ -259,13 +302,16 @@ public class MapPrinterServlet extends BaseMapServlet {
      * To get the PDF created previously.
      */
     protected void getFile(HttpServletRequest req, HttpServletResponse httpServletResponse, String id) throws IOException, ServletException {
-        final TempFile file;
+        TempFile file;
         synchronized (tempFiles) {
             file = tempFiles.get(id);
         }
         if (file == null) {
-            error(httpServletResponse, "File with id=" + id + " unknown", 404);
-            return;
+            file = generateFileNameFromId(id);
+            if (file == null) {
+                error(httpServletResponse, "File with id=" + id + " cannot be found", 404);
+                return;
+            }
         }
         sendPdfFile(httpServletResponse, file, Boolean.parseBoolean(req.getParameter("inline")));
     }
@@ -357,9 +403,20 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
 
         final OutputFormat outputFormat = mapPrinter.getOutputFormat(specJson);
+        String outputFileName = specJson.optString(Constants.OUTPUT_FILENAME_KEY);
+        String printedLayoutName = specJson.optString(Constants.JSON_LAYOUT_KEY, null);
+
+        String fileName;
+
+        if (outputFileName != null) {
+            fileName = TempFile.formatFileName(outputFileName, new Date());
+        } else {
+            fileName = mapPrinter.getOutputFilename(printedLayoutName, TEMP_FILE_PREFIX);
+        }
+
         //create a temporary file that will contain the PDF
-        final File tempJavaFile = File.createTempFile(TEMP_FILE_PREFIX, "."+outputFormat.getFileSuffix()+TEMP_FILE_SUFFIX, getTempDir());
-        TempFile tempFile = new TempFile(tempJavaFile, specJson, outputFormat);
+        final File tempJavaFile = File.createTempFile(fileName, "."+outputFormat.getFileSuffix()+TEMP_FILE_SUFFIX, getTempDir());
+        TempFile tempFile = new TempFile(tempJavaFile, outputFormat);
 
         FileOutputStream out = null;
         try {
@@ -389,11 +446,10 @@ public class MapPrinterServlet extends BaseMapServlet {
     protected void sendPdfFile(HttpServletResponse httpServletResponse, TempFile tempFile, boolean inline) throws IOException, ServletException {
         FileInputStream pdf = new FileInputStream(tempFile);
         final OutputStream response = httpServletResponse.getOutputStream();
-        MapPrinter mapPrinter = getMapPrinter(app);
         try {
             httpServletResponse.setContentType(tempFile.contentType());
             if (!inline) {
-                final String fileName = tempFile.getOutputFileName(mapPrinter);
+                final String fileName = tempFile.getOutputFileName();
                 httpServletResponse.setHeader("Content-disposition", "attachment; filename=" + fileName);
             }
             FileUtilities.copyStream(pdf, response);
@@ -402,9 +458,6 @@ public class MapPrinterServlet extends BaseMapServlet {
                 pdf.close();
             } finally{
                 response.close();
-            }
-            if(app == null && mapPrinter != null) {
-                mapPrinter.stop();
             }
         }
     }
@@ -487,16 +540,6 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
     }
 
-    /**
-     * Get the ID to use in function of the filename (filename without the prefix and the extension).
-     */
-    protected String generateId(File tempFile) {
-        final String name = tempFile.getName();
-        return name.substring(
-                TEMP_FILE_PREFIX.length(),
-                name.length() - TEMP_FILE_SUFFIX.length());
-    }
-
     protected String getBaseUrl(HttpServletRequest httpServletRequest) {
         final String additionalPath = httpServletRequest.getPathInfo();
         String fullUrl = httpServletRequest.getParameter("url");
@@ -530,31 +573,19 @@ public class MapPrinterServlet extends BaseMapServlet {
     static class TempFile extends File {
         private static final long serialVersionUID = 455104129549002361L;
         private final long creationTime;
-        public final String printedLayoutName;
-        public final String outputFileName;
         private final String contentType;
-        private String suffix;
 
-        public TempFile(File tempFile, PJsonObject jsonSpec, OutputFormat format) {
+        public TempFile(File tempFile, OutputFormat format) {
             super(tempFile.getAbsolutePath());
             creationTime = System.currentTimeMillis();
-            this.outputFileName = jsonSpec.optString(Constants.OUTPUT_FILENAME_KEY);
-            this.printedLayoutName = jsonSpec.optString(Constants.JSON_LAYOUT_KEY, null);
-
-            this.suffix = format.getFileSuffix();
             this.contentType = format.getContentType();
         }
 
-        public String getOutputFileName(MapPrinter mapPrinter) {
-            if(outputFileName != null) {
-                return formatFileName(suffix, outputFileName, new Date());
-            } else {
-                return formatFileName(suffix, mapPrinter.getOutputFilename(printedLayoutName, getName()), new Date());
-            }
+        public String getOutputFileName() {
+            return Files.getNameWithoutExtension(getName());
         }
 
-
-        public static String formatFileName(String suffix, String startingName, Date date) {
+        public static String formatFileName(String startingName, Date date) {
             Matcher matcher = Pattern.compile("\\$\\{(.+?)\\}").matcher(startingName);
             HashMap<String,String> replacements = new HashMap<String,String>();
             while(matcher.find()) {
@@ -567,14 +598,7 @@ public class MapPrinterServlet extends BaseMapServlet {
                 result = result.replace(entry.getKey(), entry.getValue());
             }
 
-            while(suffix.startsWith(".")) {
-                suffix = suffix.substring(1);
-            }
-            if(suffix.isEmpty() || result.toLowerCase().endsWith("."+suffix.toLowerCase())) {
-                return result;
-            } else {
-                return result+"."+suffix;
-            }
+            return result;
         }
 
         public static String cleanUpName(String original) {

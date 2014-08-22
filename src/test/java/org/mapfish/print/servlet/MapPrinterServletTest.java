@@ -1,13 +1,13 @@
 package org.mapfish.print.servlet;
 
-import static org.junit.Assert.assertEquals;
-import static org.mapfish.print.servlet.MapPrinterServlet.TempFile.cleanUpName;
+import org.junit.Test;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.mapfish.print.servlet.MapPrinterServlet.TempFile.cleanUpName;
 
 public class MapPrinterServletTest {
 
@@ -35,18 +35,12 @@ public class MapPrinterServletTest {
         assertExpectedFormat(date, "|"+custom+"|"+custom2+"|"+timeString, "|${"+customPattern+"}|${"+customPattern2+"}|${time}", "");
     }
 
-    @Test
-    public void addSuffixTest() {
-        Date date = new Date();
-
-        assertExpectedFormat(date, "filename.pdf", "filename", "pdf");
-        assertExpectedFormat(date, "filename.pdf", "filename", ".pdf");
-        assertExpectedFormat(date, "filename.pdf", "filename.pdf", ".pdf");
-        assertExpectedFormat(date, "filename.tif.pdf", "filename.tif", ".pdf");
-    }
-
     private void assertExpectedFormat(Date date, String expected, String fileName, String suffix) {
-        assertEquals(expected, MapPrinterServlet.TempFile.formatFileName(suffix, fileName, date));
+        String actual = MapPrinterServlet.TempFile.formatFileName(fileName, date);
+        if (!suffix.isEmpty()) {
+            actual += "." + suffix;
+        }
+        assertEquals(expected, actual);
     }
 
 }

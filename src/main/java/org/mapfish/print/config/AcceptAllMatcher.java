@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.UnknownHostException;
 
 /**
+ * Accepts all urls.
 * Created by Jesse on 1/20/14.
 */
 public class AcceptAllMatcher extends HostMatcher {
