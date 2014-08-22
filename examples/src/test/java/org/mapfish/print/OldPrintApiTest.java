@@ -84,6 +84,26 @@ public class OldPrintApiTest extends AbstractApiTest {
     }
 
     @Test
+    public void testInfoUrl2() throws Exception {
+        ClientHttpRequest request = getPrintRequest(
+                "info.json?var=printConfig&url=http%3A%2F%2Fref.geoview.bl.ch%2Fprint3%2Fwsgi%2Fprintproxy", HttpMethod.GET);
+        response = request.execute();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
+
+        final String result = getBodyAsText(response);
+        assertTrue(result.startsWith("var printConfig="));
+        assertTrue(result.endsWith(";"));
+
+        final JSONObject info = new JSONObject(
+                result.replace("var printConfig=", "").replace(";", ""));
+
+        assertTrue(info.has("scales"));
+        assertEquals("http://ref.geoview.bl.ch/print3/wsgi/printproxy/print.pdf", info.getString("printURL"));
+        assertEquals("http://ref.geoview.bl.ch/print3/wsgi/printproxy/create.json", info.getString("createURL"));
+    }
+
+    @Test
     public void testCreate() throws Exception {
         ClientHttpRequest request = getPrintRequest("create.json", HttpMethod.POST);
         setPrintSpec(getPrintSpec("examples/verboseExample/old-api-requestData.json"), request);
@@ -95,7 +115,9 @@ public class OldPrintApiTest extends AbstractApiTest {
         response.close();
         
         String getUrl = result.getString("getURL");
-        assertTrue(getUrl.startsWith("/print-servlet/print/report/"));
+        final String prefix = "/print-servlet/print/dep/";
+        assertTrue(String.format("Start of url is not as expected: \n'%s'\n'%s'", prefix, getUrl), getUrl.startsWith(prefix));
+        assertTrue("Report url should end with .printout: " + getUrl, getUrl.endsWith(".printout"));
           
         ClientHttpRequest requestGetPdf = getRequest(getUrl.replace("/print-servlet/", ""), HttpMethod.GET);
         response = requestGetPdf.execute();
@@ -133,7 +155,9 @@ public class OldPrintApiTest extends AbstractApiTest {
         response.close();
         
         String getUrl = result.getString("getURL");
-        assertTrue(getUrl.startsWith("http://localhost:8080/print-servlet/print/report/"));
+        final String prefix = "http://localhost:8080/print-servlet/print/dep/";
+        assertTrue(String.format("Start of url is not as expected: \n'%s'\n'%s'", prefix, getUrl), getUrl.startsWith(prefix));
+        assertTrue("Report url should end with .printout: " + getUrl, getUrl.endsWith(".printout"));
 
         ClientHttpRequest requestGetPdf = httpRequestFactory.createRequest(new URI(getUrl), HttpMethod.GET);
         response = requestGetPdf.execute();
@@ -197,7 +221,7 @@ public class OldPrintApiTest extends AbstractApiTest {
     }
 
     @Test
-    public void testPrint_InvlidSpecAsGetParameter() throws Exception {
+    public void testPrint_InvalidSpecAsGetParameter() throws Exception {
         String url = "print.pdf?spec=" + URLEncoder.encode("{}", Constants.DEFAULT_ENCODING);
         ClientHttpRequest request = getPrintRequest(url, HttpMethod.GET);
         response = request.execute();
@@ -209,6 +233,31 @@ public class OldPrintApiTest extends AbstractApiTest {
         ClientHttpRequest request = getPrintRequest("invalid-key.pdf.printout", HttpMethod.GET);
         response = request.execute();
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+
+    @Test
+    public void testCreate_Url2() throws Exception {
+        String url = "create.json?url=" +
+                     URLEncoder.encode("http://localhost:8080/print-servlet/print/dep", Constants.DEFAULT_ENCODING);
+        ClientHttpRequest request = getPrintRequest(url, HttpMethod.POST);
+        setPrintSpec(getPrintSpec("examples/verboseExample/old-api-requestData.json"), request);
+        response = request.execute();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
+
+        final JSONObject result = new JSONObject(getBodyAsText(response));
+        response.close();
+
+        String getUrl = result.getString("getURL");
+        assertTrue(getUrl.startsWith("http://localhost:8080/print-servlet/print/dep/"));
+        assertTrue("Report url should end with .printout: " + getUrl, getUrl.endsWith(".printout"));
+
+        ClientHttpRequest requestGetPdf = httpRequestFactory.createRequest(new URI(getUrl), HttpMethod.GET);
+        response = requestGetPdf.execute();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(new MediaType("application", "pdf"), response.getHeaders().getContentType());
+        assertTrue(response.getBody().read() >= 0);
     }
 
     protected ClientHttpRequest getPrintRequest(String path, HttpMethod method) throws IOException,

@@ -64,11 +64,18 @@ import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGU
  */
 @Controller
 public class OldAPIMapPrinterServlet extends BaseMapServlet {
-    private static final String INFO_URL = "/dep/info.json";
-    private static final String PRINT_URL = "/dep/print.pdf";
-    private static final String CREATE_URL = "/dep/create.json";
+    static final String REPORT_SUFFIX = ".printout";
+    private static final String DEP_SEG = "/dep";
+    private static final String INFO_URL = "/info.json";
+    private static final String DEP_INFO_URL = DEP_SEG + INFO_URL;
+    private static final String PRINT_URL = "/print.pdf";
+    private static final String DEP_PRINT_URL = DEP_SEG + PRINT_URL;
+    private static final String CREATE_URL = "/create.json";
+    private static final String DEP_CREATE_URL = DEP_SEG + CREATE_URL;
 
     private static final int HALF_SECOND = 500;
+    static final String JSON_PRINT_URL = "printURL";
+    static final String JSON_CREATE_URL = "createURL";
 
     @Autowired
     private MapPrinterFactory printerFactory;
@@ -78,7 +85,6 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     @Autowired
     private JobManager jobManager;
 
-
     /**
      * Print the report from a POST request.
      *
@@ -86,7 +92,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
      * @param httpServletRequest  the request object
      * @param httpServletResponse the response object
      */
-    @RequestMapping(value = PRINT_URL, method = RequestMethod.POST)
+    @RequestMapping(value = DEP_PRINT_URL, method = RequestMethod.POST)
     public final void printReportPost(
             @RequestBody final String requestData,
             final HttpServletRequest httpServletRequest,
@@ -107,7 +113,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
      * @param httpServletRequest  the request object
      * @param httpServletResponse the response object
      */
-    @RequestMapping(value = PRINT_URL, method = RequestMethod.GET)
+    @RequestMapping(value = DEP_PRINT_URL, method = RequestMethod.GET)
     public final void printReport(
             @RequestParam(value = "spec", defaultValue = "") final String spec,
             final HttpServletRequest httpServletRequest,
@@ -128,7 +134,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
      * @param httpServletRequest  the request object
      * @param httpServletResponse the response object
      */
-    @RequestMapping(value = CREATE_URL + "**", method = RequestMethod.POST)
+    @RequestMapping(value = DEP_CREATE_URL + "**", method = RequestMethod.POST)
     public final void createReportPost(
             @RequestParam(value = "url", defaultValue = "") final String baseUrl,
             @RequestParam(value = "spec", required = false) final String spec,
@@ -140,7 +146,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
             error(httpServletResponse, "Missing 'spec' parameter", HttpStatus.INTERNAL_SERVER_ERROR);
             return;
         }
-        String baseUrlPath = getBaseUrl(CREATE_URL,
+        String baseUrlPath = getBaseUrl(DEP_CREATE_URL,
                 URLDecoder.decode(baseUrl, Constants.DEFAULT_ENCODING), httpServletRequest);
         String specData = spec == null ? requestData : spec;
         createPDF(httpServletRequest, httpServletResponse, baseUrlPath, specData);
@@ -192,7 +198,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
                     JSONWriter json = new JSONWriter(writer);
                     json.object();
                     {
-                        json.key("getURL").value(basePath + MapPrinterServlet.REPORT_URL + "/" + jobRef);
+                        json.key("getURL").value(basePath + "/" + jobRef + REPORT_SUFFIX);
                     }
                     json.endObject();
                 } finally {
@@ -218,7 +224,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
      * @param response the http response
      * @param id       the id for the file
      */
-    @RequestMapping("/{id}")
+    @RequestMapping(DEP_SEG + "/{id:.+}" + REPORT_SUFFIX)
     public final void getFile(@PathVariable final String id,
                               @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
                               final HttpServletResponse response)
@@ -234,7 +240,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
      * @param req      the http request
      * @param resp     the http response
      */
-    @RequestMapping(INFO_URL)
+    @RequestMapping(DEP_INFO_URL)
     public final void getInfo(
             @RequestParam(value = "url", defaultValue = "") final String baseUrl,
             @RequestParam(value = "var", defaultValue = "") final String jsonpVar,
@@ -292,9 +298,9 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
 
         writeInfoLayouts(json, printer.getConfiguration());
 
-        String urlToUseInSpec = getBaseUrl(INFO_URL, baseUrl, req);
-        json.key("printURL").value(urlToUseInSpec + PRINT_URL);
-        json.key("createURL").value(urlToUseInSpec + CREATE_URL);
+        String urlToUseInSpec = getBaseUrl(DEP_INFO_URL, baseUrl, req);
+        json.key(JSON_PRINT_URL).value(urlToUseInSpec + PRINT_URL);
+        json.key(JSON_CREATE_URL).value(urlToUseInSpec + CREATE_URL);
     }
 
     private void writeInfoLayouts(final JSONWriter json, final Configuration configuration) throws JSONException {
@@ -393,12 +399,20 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     private String getBaseUrl(final String suffix, final String baseUrl, final HttpServletRequest req) {
         String urlToUseInSpec;
         if (!Strings.isNullOrEmpty(baseUrl) && baseUrl.endsWith(suffix)) {
-            urlToUseInSpec = baseUrl.replace(suffix, "");
+            urlToUseInSpec = baseUrl.replace(suffix, DEP_SEG);
+        } else if (!Strings.isNullOrEmpty(baseUrl)) {
+            urlToUseInSpec = removeLastSlash(baseUrl);
         } else {
-            urlToUseInSpec = super.getBaseUrl(req).toString();
+            urlToUseInSpec = removeLastSlash(super.getBaseUrl(req).toString()) + DEP_SEG;
         }
+
+        urlToUseInSpec = removeLastSlash(urlToUseInSpec);
+        return urlToUseInSpec;
+    }
+
+    private String removeLastSlash(final String urlToUseInSpec) {
         if (urlToUseInSpec.endsWith("/")) {
-            urlToUseInSpec = urlToUseInSpec.substring(1);
+            return urlToUseInSpec.substring(1);
         }
         return urlToUseInSpec;
     }
