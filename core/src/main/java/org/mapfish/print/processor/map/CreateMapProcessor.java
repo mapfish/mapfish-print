@@ -189,12 +189,12 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 final BufferedImage bufferedImage = new BufferedImage((int) paintArea.getWidth(),
                         (int) paintArea.getHeight(), this.imageType.value);
                 final Graphics2D graphics2D = bufferedImage.createGraphics();
-                
+
                 try {
                     layer.render(graphics2D, clientHttpRequestFactory, transformer, isFirstLayer);
                     
-                    path = new File(printDirectory, mapKey + "_layer_" + i + ".tiff");
-                    ImageIO.write(bufferedImage, "tiff", path);
+                    path = new File(printDirectory, mapKey + "_layer_" + i + ".png");
+                    ImageIO.write(bufferedImage, "png", path);
                 } finally {
                     graphics2D.dispose();
                 }
