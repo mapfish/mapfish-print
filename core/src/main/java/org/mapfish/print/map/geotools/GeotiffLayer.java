@@ -23,10 +23,13 @@ import com.google.common.base.Function;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closer;
+
 import jsr166y.ForkJoinPool;
+
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.mapfish.print.Constants;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FileUtils;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.Template;
@@ -44,6 +47,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -127,7 +131,7 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
 
                         return new GeoTiffFormat().getReader(geotiffFile);
                     } catch (Throwable t) {
-                        throw new RuntimeException(t);
+                        throw ExceptionUtils.getRuntimeException(t);
                     }
 
                 }

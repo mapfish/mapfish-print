@@ -86,7 +86,7 @@ public final class URIUtils {
                     key = URLDecoder.decode(pair.substring(0, pos), "UTF-8");
                     value = URLDecoder.decode(pair.substring(pos + 1, pair.length()), "UTF-8");
                 } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e);
+                    throw ExceptionUtils.getRuntimeException(e);
                 }
             }
 
@@ -160,7 +160,7 @@ public final class URIUtils {
         try {
             return new URI(result.toString());
         } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.getRuntimeException(e);
         }
     }
 
@@ -179,7 +179,7 @@ public final class URIUtils {
                 result.append("=");
                 result.append(URLEncoder.encode(val, Constants.DEFAULT_ENCODING));
             } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
+                throw ExceptionUtils.getRuntimeException(e);
             }
         }
         return first;
@@ -234,7 +234,7 @@ public final class URIUtils {
                         queryString.toString(), initialUri.getFragment());
             }
         } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.getRuntimeException(e);
         }
     }
 
@@ -271,7 +271,7 @@ public final class URIUtils {
         try {
             return toString(requestFactory, url.toURI());
         } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.getRuntimeException(e);
         }
     }
 
@@ -295,7 +295,7 @@ public final class URIUtils {
                         finalPath, initialUri.getQuery(), initialUri.getFragment());
             }
         } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.getRuntimeException(e);
         }
     }
 }

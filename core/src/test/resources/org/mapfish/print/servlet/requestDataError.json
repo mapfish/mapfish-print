@@ -1,0 +1,72 @@
+{
+  "layout" : "A4 Landscape",
+  "outputFilename": "test\nreport-${yyyy}",
+  "attributes": {
+    "imageMap" : {
+      "scale" : 7500000,
+      "center": [676984.536,332646.513],
+      "projection": "EPSG:21781",
+      "dpi": 72,
+      "layers": [
+        {
+          "type": "geotiff",
+          "url":   "http://invald-url.com/sampleGeoTiff.tif"
+        }
+      ]
+    },
+    "geojsonMap": {
+      "bbox": [95, -3.175810473815462, 110, 6.175810473815462],
+      "projection": "CRS:84",
+      "dpi": 72,
+      "layers": [
+        {
+          "type": "geojson",
+          "style": "polygon",
+          "geoJson":   { "type": "FeatureCollection",
+            "features": [
+              { "type": "Feature",
+                "geometry": {
+                  "type": "Polygon",
+                  "coordinates": [
+                    [ [102.0, 0.0], [103.0, 0.0], [103.0, 1.0],
+                      [102.0, 1.0], [102.0, 0.0] ]
+                  ]
+                },
+                "properties": {
+                  "prop0": "value1",
+                  "prop1": 1.0
+                }
+              },
+              { "type": "Feature",
+                "geometry": {
+                  "type": "Polygon",
+                  "coordinates": [
+                    [ [104.0, 0.0], [105.0, 0.0], [105.0, 1.0],
+                      [104.0, 1.0], [104.0, 0.0] ]
+                  ]
+                },
+                "properties": {
+                  "prop0": "value0",
+                  "prop1": 0.0
+                }
+              },
+              { "type": "Feature",
+                "geometry": {
+                  "type": "Polygon",
+                  "coordinates": [
+                    [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0],
+                      [100.0, 1.0], [100.0, 0.0] ]
+                  ]
+                },
+                "properties": {
+                  "prop0": "value0",
+                  "prop1": {"this": "that"}
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

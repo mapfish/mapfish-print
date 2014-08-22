@@ -71,7 +71,7 @@ public final class FileUtils {
                     }
                 }
             } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
+                throw ExceptionUtils.getRuntimeException(e);
             }
         }
         return url;

@@ -22,11 +22,13 @@ package org.mapfish.print.servlet;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
+
 import org.jfree.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
 import org.mapfish.print.servlet.job.FailedPrintJob;
@@ -66,6 +68,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -233,10 +236,10 @@ public class MapPrinterServlet extends BaseMapServlet {
             appendJsonpCallbackEnd(jsonpCallback, writer);
         } catch (JSONException e) {
             LOGGER.error("Error obtaining status", e);
-            throw new RuntimeException(e);
+            throw ExceptionUtils.getRuntimeException(e);
         } catch (IOException e) {
             LOGGER.error("Error obtaining status", e);
-            throw new RuntimeException(e);
+            throw ExceptionUtils.getRuntimeException(e);
         } catch (NoSuchReferenceException e) {
             error(statusResponse, e.getMessage(), HttpStatus.NOT_FOUND);
         } finally {
@@ -788,7 +791,7 @@ public class MapPrinterServlet extends BaseMapServlet {
                 try {
                     requestData = URLDecoder.decode(requestData, Constants.DEFAULT_ENCODING);
                 } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e);
+                    throw ExceptionUtils.getRuntimeException(e);
                 }
             }
             if (requestData.startsWith("spec=")) {
@@ -802,7 +805,7 @@ public class MapPrinterServlet extends BaseMapServlet {
                 try {
                     return MapPrinter.parseSpec(URLDecoder.decode(requestData, Constants.DEFAULT_ENCODING));
                 } catch (UnsupportedEncodingException uee) {
-                    throw new RuntimeException(e);
+                    throw ExceptionUtils.getRuntimeException(e);
                 }
             }
         } catch (RuntimeException e) {

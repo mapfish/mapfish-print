@@ -21,9 +21,11 @@ package org.mapfish.print.servlet.oldapi;
 
 
 import com.google.common.base.Strings;
+
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
 import org.mapfish.print.attribute.Attribute;
@@ -158,7 +160,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
         try {
             httpServletRequest.setCharacterEncoding("UTF-8");
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.getRuntimeException(e);
         }
 
         try {
@@ -442,7 +444,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
 
             return jobReferenceId;
         } catch (JSONException e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.getRuntimeException(e);
         }
 
     }

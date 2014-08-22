@@ -21,12 +21,14 @@ package org.mapfish.print.map.style;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.SLDTransformer;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.styling.UserLayer;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.slf4j.Logger;
@@ -35,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.List;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -79,7 +82,7 @@ public final class StyleParser {
                     return style;
                 }
             } catch (Throwable t) {
-                throw new RuntimeException(t);
+                throw ExceptionUtils.getRuntimeException(t);
             }
         }
         }

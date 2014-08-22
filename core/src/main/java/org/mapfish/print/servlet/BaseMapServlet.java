@@ -19,6 +19,7 @@
 
 package org.mapfish.print.servlet;
 
+import org.mapfish.print.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -92,7 +93,7 @@ public abstract class BaseMapServlet {
 
             LOGGER.error("Error while processing request: " + message);
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            throw ExceptionUtils.getRuntimeException(ex);
         } finally {
             if (out != null) {
                 out.close();
@@ -117,7 +118,7 @@ public abstract class BaseMapServlet {
 
             BaseMapServlet.LOGGER.error("Error while processing request", e);
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            throw ExceptionUtils.getRuntimeException(ex);
         } finally {
             if (out != null) {
                 out.close();

@@ -21,10 +21,12 @@ package org.mapfish.print.map.geotools;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
 import org.geotools.renderer.lite.StreamingRenderer;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.attribute.map.MapfishMapContext;
@@ -121,10 +123,8 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
 
             final ReferencedEnvelope mapArea = bounds.toReferencedEnvelope(paintArea, transformer.getDPI());
             renderer.paint(graphics2D, paintArea, mapArea);
-        } catch (RuntimeException e) {
-            throw e;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.getRuntimeException(e);
         } finally {
             content.dispose();
         }

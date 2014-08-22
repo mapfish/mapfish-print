@@ -22,6 +22,8 @@ package org.mapfish.print.map.geotools.grid;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Envelope;
+
+import org.mapfish.print.ExceptionUtils;
 import org.opengis.referencing.cs.AxisDirection;
 
 /**
@@ -221,7 +223,7 @@ public final class LinearCoordinateSequence implements CoordinateSequence {
             clone.spacing = this.spacing;
             return clone;
         } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.getRuntimeException(e);
         }
 
     }

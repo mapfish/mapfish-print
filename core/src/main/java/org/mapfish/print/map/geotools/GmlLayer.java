@@ -24,6 +24,7 @@ import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.gml2.GMLConfiguration;
 import org.geotools.xml.Parser;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FileUtils;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.attribute.map.MapfishMapContext;
@@ -37,6 +38,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
+
 import javax.annotation.Nonnull;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
@@ -109,7 +111,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
                     try {
                         featureCollection = createFeatureSource(template, requestFactory, url);
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        throw ExceptionUtils.getRuntimeException(e);
                     }
                     if (featureCollection == null) {
                         throw new IllegalArgumentException(url + " does not reference a GML file");
@@ -135,7 +137,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
                         return parseGml3(gmlData);
                     }
                 } catch (URISyntaxException e) {
-                    throw new RuntimeException(e);
+                    throw ExceptionUtils.getRuntimeException(e);
                 }
             } catch (MalformedURLException e) {
                 return null;
@@ -190,9 +192,9 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
                 }
 
             } catch (SAXException e) {
-                throw new RuntimeException(e);
+                throw ExceptionUtils.getRuntimeException(e);
             } catch (ParserConfigurationException e) {
-                throw new RuntimeException(e);
+                throw ExceptionUtils.getRuntimeException(e);
             }
         }
     }

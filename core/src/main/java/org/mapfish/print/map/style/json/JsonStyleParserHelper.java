@@ -24,6 +24,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.styling.AnchorPoint;
@@ -46,6 +47,7 @@ import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.TextSymbolizer;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.opengis.filter.expression.Expression;
@@ -56,6 +58,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Set;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
@@ -253,7 +256,7 @@ public final class JsonStyleParserHelper {
                 return testForLegalFileUrl(this.configuration, fileURL).toExternalForm();
             } catch (MalformedURLException e1) {
                 // unable to convert to file url so give up and throw exception;
-                throw new RuntimeException(e);
+                throw ExceptionUtils.getRuntimeException(e);
             }
         }
         return externalGraphicUrl;
@@ -728,7 +731,7 @@ public final class JsonStyleParserHelper {
         try {
             return ECQL.toExpression(property, this.styleBuilder.getFilterFactory());
         } catch (CQLException e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.getRuntimeException(e);
         }
     }
 

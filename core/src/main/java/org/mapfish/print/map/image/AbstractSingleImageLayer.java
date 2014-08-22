@@ -27,6 +27,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.map.geotools.AbstractGeotoolsLayer;
@@ -66,12 +67,8 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
         BufferedImage image;
         try {
             image = loadImage(httpRequestFactory, mapContext, isFirstLayer);
-        } catch (RuntimeException throwable) {
-            throw throwable;
-        } catch (Error e) {
-            throw e;
         } catch (Throwable t) {
-            throw new RuntimeException(t);
+            throw ExceptionUtils.getRuntimeException(t);
         }
         
         final MapBounds bounds = mapContext.getBounds();
