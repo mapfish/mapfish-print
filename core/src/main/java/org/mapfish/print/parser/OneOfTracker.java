@@ -90,8 +90,9 @@ final class OneOfTracker {
 
     /**
      * Check that each group is satisfied by one and only one field.
+     * @param currentPath the json path to the element being checked
      */
-    public void checkAllGroupsSatisfied() {
+    public void checkAllGroupsSatisfied(final String currentPath) {
         StringBuilder errors = new StringBuilder();
 
         for (OneOfGroup group : this.mapping.values()) {
@@ -115,7 +116,8 @@ final class OneOfTracker {
             }
         }
 
-        Assert.equals(0, errors.length(), "\nErrors were detected when analysing the @OneOf dependencies: \n" + errors);
+        Assert.equals(0, errors.length(), "\nErrors were detected when analysing the @OneOf dependencies of '" + currentPath +
+                                          "': \n" + errors);
     }
 
     private Collection<Field> toFields(final Set<OneOfSatisfier> satisfiedBy) {

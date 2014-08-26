@@ -19,8 +19,6 @@
 
 package org.mapfish.print.attribute.map;
 
-import com.vividsolutions.jts.geom.Geometry;
-
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.map.Scale;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -107,11 +105,6 @@ public abstract class MapBounds {
      * @return Bounds adjusted to the zoom factor.
      */
     public abstract MapBounds zoomOut(final double factor);
-
-    /**
-     * Gets the zone who we want to print.
-     */
-    public abstract Geometry getZone();
 
     // CHECKSTYLE:OFF
     @Override

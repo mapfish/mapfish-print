@@ -26,6 +26,8 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 
 import org.geotools.geometry.jts.JTSFactoryFinder;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.mapfish.print.attribute.map.AreaOfInterest;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.map.DistanceUnit;
@@ -51,6 +53,7 @@ public class PagingProcessor extends AbstractProcessor<PagingProcessor.Input, Pa
     private static final Logger LOGGER = LoggerFactory.getLogger(PagingProcessor.class);
     private static final char DO_NOT_RENDER_BBOX_CHAR = ' ';
 
+    private GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
     private Scale scale;
     private double overlap;
 
@@ -90,26 +93,37 @@ public class PagingProcessor extends AbstractProcessor<PagingProcessor.Input, Pa
 
     @Override
     public final Output execute(final Input values, final ExecutionContext context) throws Exception {
+
         CoordinateReferenceSystem projection = values.map.getMapBounds().getProjection();
         final Rectangle paintArea = new Rectangle(values.map.getMapSize());
         final double dpi = values.map.getRequestorDPI();
         final DistanceUnit projectionUnit = DistanceUnit.fromProjection(projection);
 
-        final Envelope mapBounds = values.map.getMapBounds().getZone().getEnvelopeInternal();
+        AreaOfInterest areaOfInterest = values.map.areaOfInterest;
+        if (areaOfInterest == null) {
+            areaOfInterest = new AreaOfInterest();
+            areaOfInterest.display = AreaOfInterest.AoiDisplay.NONE;
+            ReferencedEnvelope mapBBox = values.map.getMapBounds().toReferencedEnvelope(paintArea, dpi);
+
+            areaOfInterest.setPolygon((Polygon) this.geometryFactory.toGeometry(mapBBox));
+        }
+
+        Envelope aoiBBox = areaOfInterest.getArea().getEnvelopeInternal();
 
         final double paintAreaWidthIn = paintArea.getWidth() * this.scale.getDenominator() / dpi;
         final double paintAreaHeightIn = paintArea.getHeight() * this.scale.getDenominator() / dpi;
+
         final double paintAreaWidth = DistanceUnit.IN.convertTo(paintAreaWidthIn, projectionUnit);
         final double paintAreaHeight = DistanceUnit.IN.convertTo(paintAreaHeightIn, projectionUnit);
 
-        final int nbWidth = (int) Math.ceil(mapBounds.getWidth() / (paintAreaWidth - this.overlap));
-        final int nbHeight = (int) Math.ceil(mapBounds.getHeight() / (paintAreaHeight - this.overlap));
+        final int nbWidth = (int) Math.ceil(aoiBBox.getWidth() / (paintAreaWidth - this.overlap));
+        final int nbHeight = (int) Math.ceil(aoiBBox.getHeight() / (paintAreaHeight - this.overlap));
 
-        final double marginWidth = (paintAreaWidth * nbWidth - mapBounds.getWidth()) / 2;
-        final double marginHeight = (paintAreaHeight * nbHeight - mapBounds.getHeight()) / 2;
+        final double marginWidth = (paintAreaWidth * nbWidth - aoiBBox.getWidth()) / 2;
+        final double marginHeight = (paintAreaHeight * nbHeight - aoiBBox.getHeight()) / 2;
 
-        final double minX = mapBounds.getMinX() - marginWidth - this.overlap / 2;
-        final double minY = mapBounds.getMinY() - marginHeight - this.overlap / 2;
+        final double minX = aoiBBox.getMinX() - marginWidth - this.overlap / 2;
+        final double minY = aoiBBox.getMinY() - marginHeight - this.overlap / 2;
 
         LOGGER.info("Paging generate a grid of " + nbWidth + "x" + nbHeight + " potential maps.");
         final char[][] names = new char[nbWidth][nbHeight];
@@ -129,10 +143,11 @@ public class PagingProcessor extends AbstractProcessor<PagingProcessor.Input, Pa
                         new Coordinate(x2, y1),
                         new Coordinate(x1, y1)
                 };
-                GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
-                LinearRing ring = geometryFactory.createLinearRing(coords);
-                final Polygon bbox = geometryFactory.createPolygon(ring);
-                if (values.map.getMapBounds().getZone().intersects(bbox)) {
+
+                LinearRing ring = this.geometryFactory.createLinearRing(coords);
+                final Polygon bbox = this.geometryFactory.createPolygon(ring);
+
+                if (areaOfInterest.getArea().intersects(bbox)) {
                     mapsBounds[i][j] = bbox.getEnvelopeInternal();
                     names[i][j] = mapName;
                     mapName++;
@@ -160,6 +175,7 @@ public class PagingProcessor extends AbstractProcessor<PagingProcessor.Input, Pa
                     Coordinate center = mapsBounds[i][j].centre();
                     theMap.center = new double[]{center.x, center.y};
                     theMap.scale = this.scale.getDenominator();
+                    theMap.areaOfInterest = areaOfInterest.copy();
                     theMap.layers = values.map.layers;
                     theMap.dpi = dpi;
                     theMap.longitudeFirst = true;

@@ -21,11 +21,6 @@ package org.mapfish.print.attribute.map;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
-
-import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.GeodeticCalculator;
 import org.mapfish.print.map.DistanceUnit;
@@ -39,7 +34,7 @@ import java.awt.Rectangle;
  * <p/>
  * Created by Jesse on 3/26/14.
  */
-public class BBoxMapBounds extends MapBounds {
+public final class BBoxMapBounds extends MapBounds {
     private final Envelope bbox;
 
     /**
@@ -78,12 +73,12 @@ public class BBoxMapBounds extends MapBounds {
     }
 
     @Override
-    public final ReferencedEnvelope toReferencedEnvelope(final Rectangle paintArea, final double dpi) {
+    public ReferencedEnvelope toReferencedEnvelope(final Rectangle paintArea, final double dpi) {
         return new ReferencedEnvelope(this.bbox, getProjection());
     }
 
     @Override
-    public final MapBounds adjustedEnvelope(final Rectangle paintArea) {
+    public MapBounds adjustedEnvelope(final Rectangle paintArea) {
         final double paintAreaAspectRatio = paintArea.getWidth() / paintArea.getHeight();
         final double bboxAspectRatio = this.bbox.getWidth() / this.bbox.getHeight();
         if (paintAreaAspectRatio > bboxAspectRatio) {
@@ -105,7 +100,7 @@ public class BBoxMapBounds extends MapBounds {
     }
 
     @Override
-    public final MapBounds adjustBoundsToNearestScale(final ZoomLevels zoomLevels, final double tolerance,
+    public MapBounds adjustBoundsToNearestScale(final ZoomLevels zoomLevels, final double tolerance,
                                                 final ZoomLevelSnapStrategy zoomLevelSnapStrategy, final Rectangle paintArea,
                                                 final double dpi) {
         final Scale scale = getScaleDenominator(paintArea, dpi);
@@ -118,7 +113,7 @@ public class BBoxMapBounds extends MapBounds {
     }
 
     @Override
-    public final Scale getScaleDenominator(final Rectangle paintArea, final double dpi) {
+    public Scale getScaleDenominator(final Rectangle paintArea, final double dpi) {
         final ReferencedEnvelope bboxAdjustedToScreen = toReferencedEnvelope(paintArea, dpi);
 
         DistanceUnit projUnit = DistanceUnit.fromProjection(getProjection());
@@ -143,7 +138,7 @@ public class BBoxMapBounds extends MapBounds {
     }
 
     @Override
-    public final MapBounds adjustBoundsToRotation(final double rotation) {
+    public MapBounds adjustBoundsToRotation(final double rotation) {
         if (rotation == 0.0) {
             return this;
         }
@@ -189,7 +184,7 @@ public class BBoxMapBounds extends MapBounds {
     }
 
     @Override
-    public final MapBounds zoomOut(final double factor) {
+    public MapBounds zoomOut(final double factor) {
         if (factor == 1.0) {
             return this;
         }
@@ -208,24 +203,6 @@ public class BBoxMapBounds extends MapBounds {
         return new BBoxMapBounds(getProjection(),
                 minGeoX, minGeoY, maxGeoX, maxGeoY);
     }
-
-    // CSOFF: DesignForExtension
-
-    @Override
-    public Geometry getZone() {
-        Coordinate[] coords  = new Coordinate[] {
-            new Coordinate(this.bbox.getMinX(), this.bbox.getMinY()),
-            new Coordinate(this.bbox.getMinX(), this.bbox.getMaxY()),
-            new Coordinate(this.bbox.getMaxX(), this.bbox.getMaxY()),
-            new Coordinate(this.bbox.getMaxX(), this.bbox.getMinY()),
-            new Coordinate(this.bbox.getMinX(), this.bbox.getMinY()),
-        };
-        GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
-        LinearRing ring = geometryFactory.createLinearRing(coords);
-        return geometryFactory.createPolygon(ring);
-    }
-
-    // CSON: DesignForExtension
 
     // CHECKSTYLE:OFF
     @Override

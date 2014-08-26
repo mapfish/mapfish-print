@@ -126,8 +126,8 @@ public final class MapfishParser {
             }
         }
 
-        oneOfTracker.checkAllGroupsSatisfied();
-        requiresTracker.checkAllRequirementsSatisfied();
+        oneOfTracker.checkAllGroupsSatisfied(requestData.getCurrentPath());
+        requiresTracker.checkAllRequirementsSatisfied(requestData.getCurrentPath());
 
         if (!missingProperties.isEmpty()) {
             String message = "Request Json is missing some required attributes at: '" + requestData.getCurrentPath() + "': ";

@@ -20,6 +20,7 @@
 package org.mapfish.print.attribute.map;
 
 import com.google.common.collect.Lists;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.util.Assert;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -112,6 +113,22 @@ public final class AreaOfInterest {
         final DefaultFeatureCollection features = new DefaultFeatureCollection();
         features.add(feature);
         return features;
+    }
+
+    public void setPolygon(final Polygon polygon) {
+        this.polygon = polygon;
+    }
+
+    /**
+     * Make a copy of this Area of Interest.
+     */
+    public AreaOfInterest copy() {
+        AreaOfInterest aoi = new AreaOfInterest();
+        aoi.display = this.display;
+        aoi.area = this.area;
+        aoi.polygon = this.polygon;
+        aoi.style = this.style;
+        return aoi;
     }
 
     /**

@@ -1,0 +1,31 @@
+
+templates:
+  #===========================================================================
+  main: !template
+  #===========================================================================
+    reportTemplate: simpleReport.jrxml
+    attributes:
+      map: !map
+        maxDpi: 400
+        width: 780
+        height: 330
+        zoomSnapTolerance: 0.025
+        zoomLevelSnapStrategy: CLOSEST_LOWER_SCALE_ON_TIE
+        zoomLevels: !zoomLevels
+          scales: [5000, 10000, 50000, 110000, 500000, 1000000]
+    processors:
+    - !reportBuilder # compile all reports in current directory
+      directory: '.'
+    - !paging
+      scale: 1000
+      inputMapper: {map: map}
+      outputMapper: {maps: maps}
+    - !createMap
+      inputMapper: {map: map}
+      outputMapper: {mapSubReport: mapSubReport}
+    iterValue: maps
+    iterProcessors:
+    - !createMap
+      inputMapper: {map: map}
+      outputMapper: {mapSubReport: mapSubReport}
+    
