@@ -110,6 +110,10 @@ public interface Constants {
              */
             String NAME = "raster";
         }
+
+        /**
+         * Default Style for the Overview Map and Area of interest
+         */
         interface OverviewMap {
 
             /**

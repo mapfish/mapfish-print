@@ -19,8 +19,6 @@
 
 package org.mapfish.print.attribute.map;
 
-import org.geotools.geojson.geom.GeometryJSON;
-import org.mapfish.print.Constants;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.Scale;
 import org.mapfish.print.parser.CanSatisfyOneOf;
@@ -32,10 +30,6 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.awt.Dimension;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,7 +76,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
          * <p/>
          */
         @CanSatisfyOneOf("MapBounds")
-        public String zone;
+        public AreaOfInterest areaOfInterest;
         /**
          * An array of 2 doubles, (x, y).  The center of the map.
          */
@@ -159,18 +153,6 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
                 double maxX = this.bbox[2];
                 double maxY = this.bbox[maxYIndex];
                 bounds = new BBoxMapBounds(crs, minX, minY, maxX, maxY);
-            } else if (this.zone != null) {
-                GeometryJSON json = new GeometryJSON();
-                byte[] bytes;
-                try {
-                    bytes = this.zone.getBytes(Constants.DEFAULT_ENCODING);
-                    final InputStream input = new ByteArrayInputStream(bytes);
-                    bounds = new ZoneMapBounds(crs, json.read(input));
-                } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
             } else {
                 throw new IllegalArgumentException("Expected either center and scale or bbox for the map bounds");
             }

@@ -247,24 +247,26 @@ public final class MapfishParser {
     @SuppressWarnings("unchecked")
     private Object parseEnum(final Class<?> type, final String path, final String enumString) {
         Object value;
+        // not the name, maybe the ordinal;
         try {
-            value = Enum.valueOf((Class<Enum>) type, enumString);
-        } catch (IllegalArgumentException e) {
-            // not the name, maybe the ordinal;
-
-            try {
-                int ordinal = Integer.parseInt(enumString);
-                final Object[] enumConstants = type.getEnumConstants();
-                if (ordinal < enumConstants.length) {
-                    value = enumConstants[ordinal];
-                } else {
-                    throw enumError(enumConstants, path, enumString);
-                }
-            } catch (NumberFormatException ne) {
-                throw enumError(type.getEnumConstants(), path, enumString);
+            int ordinal = Integer.parseInt(enumString);
+            final Object[] enumConstants = type.getEnumConstants();
+            if (ordinal < enumConstants.length) {
+                return enumConstants[ordinal];
+            } else {
+                throw enumError(enumConstants, path, enumString);
             }
+        } catch (NumberFormatException ne) {
+            final Object[] enumConstants = type.getEnumConstants();
+
+            for (Object enumConstant : enumConstants) {
+                if (enumConstant.toString().equalsIgnoreCase(enumString) ||
+                    ((Enum) enumConstant).name().equalsIgnoreCase(enumString)) {
+                    return enumConstant;
+                }
+            }
+            throw enumError(type.getEnumConstants(), path, enumString);
         }
-        return value;
     }
 
     private IllegalArgumentException enumError(final Object[] enumConstants, final String path, final String enumString) {
