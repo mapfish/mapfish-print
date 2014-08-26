@@ -49,6 +49,7 @@ import java.util.Map;
  */
 public class PagingProcessor extends AbstractProcessor<PagingProcessor.Input, PagingProcessor.Output> {
     private static final Logger LOGGER = LoggerFactory.getLogger(PagingProcessor.class);
+    private static final char DO_NOT_RENDER_BBOX_CHAR = ' ';
 
     private Scale scale;
     private double overlap;
@@ -136,7 +137,7 @@ public class PagingProcessor extends AbstractProcessor<PagingProcessor.Input, Pa
                     names[i][j] = mapName;
                     mapName++;
                 } else {
-                    names[i][j] = ' ';
+                    names[i][j] = DO_NOT_RENDER_BBOX_CHAR;
                 }
             }
         }
@@ -146,13 +147,13 @@ public class PagingProcessor extends AbstractProcessor<PagingProcessor.Input, Pa
 
         for (int j = 0; j < nbHeight; j++) {
             for (int i = 0; i < nbWidth; i++) {
-                if (names[i][j] != ' ') {
+                if (names[i][j] != DO_NOT_RENDER_BBOX_CHAR) {
                     Map<String, Object> mapValues = new HashMap<String, Object>();
                     mapValues.put("name", "" + names[i][j]);
-                    mapValues.put("left", "" + (i != 0 ? names[i - 1][j] : ' '));
-                    mapValues.put("bottom", "" + (j != 0 ? names[i][j - 1] : ' '));
-                    mapValues.put("right", "" + (i != nbWidth - 1 ? names[i + 1][j] : ' '));
-                    mapValues.put("top", "" + (j != nbHeight - 1 ? names[i][j + 1] : ' '));
+                    mapValues.put("left", "" + (i != 0 ? names[i - 1][j] : DO_NOT_RENDER_BBOX_CHAR));
+                    mapValues.put("bottom", "" + (j != 0 ? names[i][j - 1] : DO_NOT_RENDER_BBOX_CHAR));
+                    mapValues.put("right", "" + (i != nbWidth - 1 ? names[i + 1][j] : DO_NOT_RENDER_BBOX_CHAR));
+                    mapValues.put("top", "" + (j != nbHeight - 1 ? names[i][j + 1] : DO_NOT_RENDER_BBOX_CHAR));
 
                     MapAttributeValues theMap = mapAttribute.new MapAttributeValues(
                             values.map.getTemplate(), values.map.getMapSize());

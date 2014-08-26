@@ -25,7 +25,7 @@
 				<textElement textAlignment="Center">
 					<font size="36"/>
 				</textElement>
-				<text><![CDATA[Map]]></text>
+				<text><![CDATA[Full Map]]></text>
 			</staticText>
 			<subreport>
 				<reportElement x="0" y="51" width="780" height="330" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d">

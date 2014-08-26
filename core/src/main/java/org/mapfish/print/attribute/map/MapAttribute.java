@@ -62,7 +62,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
      */
     public class MapAttributeValues extends GenericMapAttribute<?>.GenericMapAttributeValues {
 
-        private static final boolean DEFAULT_USEADJUSTBOUNDS = false;
+        private static final boolean DEFAULT_ADJUST_BOUNDS = false;
         private static final double DEFAULT_ROTATION = 0.0;
         private static final String DEFAULT_PROJECTION = "EPSG:3857";
 
@@ -77,7 +77,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
         @OneOf("MapBounds")
         public double[] bbox;
         /**
-         * A GeoJSON geometry.  To be printed on the map.
+         * A GeoJSON geometry that is essentially the area of the area to draw on the map.
          * <p/>
          */
         @OneOf("MapBounds")
@@ -223,7 +223,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
         @Override
         public Boolean isUseAdjustBounds() {
         //CSON: DesignForExtension
-            return MapAttribute.getValueOr(super.isUseAdjustBounds(), DEFAULT_USEADJUSTBOUNDS);
+            return MapAttribute.getValueOr(super.isUseAdjustBounds(), DEFAULT_ADJUST_BOUNDS);
         }
 
         /**
