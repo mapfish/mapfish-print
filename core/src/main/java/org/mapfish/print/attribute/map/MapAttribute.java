@@ -23,6 +23,7 @@ import org.geotools.geojson.geom.GeometryJSON;
 import org.mapfish.print.Constants;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.Scale;
+import org.mapfish.print.parser.CanSatisfyOneOf;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.OneOf;
 import org.mapfish.print.parser.Requires;
@@ -80,7 +81,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
          * A GeoJSON geometry that is essentially the area of the area to draw on the map.
          * <p/>
          */
-        @OneOf("MapBounds")
+        @CanSatisfyOneOf("MapBounds")
         public String zone;
         /**
          * An array of 2 doubles, (x, y).  The center of the map.
@@ -118,7 +119,6 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
         //CSOFF: DesignForExtension
         @Override
         public Double getDpi() {
-        //CSON: DesignForExtension
             return this.dpi;
         }
 
@@ -177,54 +177,41 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
             return bounds;
         }
 
-        //CSOFF: DesignForExtension
         public MapBounds getMapBounds() {
-        //CSON: DesignForExtension
             return this.mapBounds;
         }
 
-        //CSOFF: DesignForExtension
         @Override
         public String getProjection() {
-        //CSON: DesignForExtension
             return MapAttribute.getValueOr(super.getProjection(), DEFAULT_PROJECTION);
         }
 
-        //CSOFF: DesignForExtension
         @Override
         public Double getZoomSnapTolerance() {
-        //CSON: DesignForExtension
             return MapAttribute.getValueOr(super.getZoomSnapTolerance(), DEFAULT_SNAP_TOLERANCE);
         }
 
-        //CSOFF: DesignForExtension
         @Override
         public ZoomLevelSnapStrategy getZoomLevelSnapStrategy() {
-        //CSON: DesignForExtension
             return MapAttribute.getValueOr(super.getZoomLevelSnapStrategy(), DEFAULT_SNAP_STRATEGY);
         }
 
-        //CSOFF: DesignForExtension
         @Override
         public Double getRotation() {
-        //CSON: DesignForExtension
             return MapAttribute.getValueOr(super.getRotation(), DEFAULT_ROTATION);
         }
 
-        //CSOFF: DesignForExtension
         @Override
         public Boolean isUseNearestScale() {
-        //CSON: DesignForExtension
             return (this.useNearestScale == null || this.useNearestScale)
                         && getZoomLevels() != null;
         }
 
-        //CSOFF: DesignForExtension
         @Override
         public Boolean isUseAdjustBounds() {
-        //CSON: DesignForExtension
             return MapAttribute.getValueOr(super.isUseAdjustBounds(), DEFAULT_ADJUST_BOUNDS);
         }
+        //CSON: DesignForExtension
 
         /**
          * Creates an {@link org.mapfish.print.attribute.map.MapAttribute.OverriddenMapAttributeValues} instance with the current object

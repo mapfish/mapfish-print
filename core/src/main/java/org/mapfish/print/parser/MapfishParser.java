@@ -119,7 +119,8 @@ public final class MapfishParser {
             } catch (ObjectMissingException e) {
                 final HasDefaultValue hasDefaultValue = property.getAnnotation(HasDefaultValue.class);
                 final OneOf oneOf = property.getAnnotation(OneOf.class);
-                if (hasDefaultValue == null && oneOf == null) {
+                final CanSatisfyOneOf canSatisfyOneOf = property.getAnnotation(CanSatisfyOneOf.class);
+                if (hasDefaultValue == null && oneOf == null && canSatisfyOneOf == null) {
                     missingProperties.put(property.getName(), property.getType());
                 }
             }
