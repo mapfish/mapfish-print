@@ -15,6 +15,7 @@ templates:
         width: 300
         height: 200
         maxDpi: 400
+        zoomFactor: 2
     processors:
     - !createMap
         inputMapper: {mapDef: map}

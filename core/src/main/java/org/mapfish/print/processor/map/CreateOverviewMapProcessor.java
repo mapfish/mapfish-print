@@ -114,8 +114,8 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
 
         // NOTE: Original map is the map that is the "subject/target" of this overview map
         MapBounds boundsOfOriginalMap = mapParams.getOriginalBounds();
-        setZoomedOutBounds(mapParams, boundsOfOriginalMap, values);
         setOriginalMapExtentLayer(boundsOfOriginalMap, values, mapParams);
+        setZoomedOutBounds(mapParams, boundsOfOriginalMap, values);
 
         CreateMapProcessor.Output output = this.mapProcessor.execute(mapProcessorValues, context);
         return new Output(output.layerGraphics, output.mapSubReport);

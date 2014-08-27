@@ -39,6 +39,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -90,7 +91,7 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
         PJsonObject requestData = loadJsonRequestData();
 
         final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
-//        testPrint(config, requestData, "default-aoi", format);
+        testPrint(config, requestData, "default-aoi", format);
 
         getAreaOfInterest(requestData).put("display", "CLIP");
         testPrint(config, requestData, "clip-full-aoi", format);
@@ -150,12 +151,12 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
         for (int i = 0; i < print.getPages().size(); i++) {
             BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, i);
 
-//            final File output = new File("e:/tmp/" + testName + "/expected-page-" + i + ".png");
+//            final File output = new File("/tmp/test/paging" + testName + "/expected-page-" + i + ".png");
 //            output.getParentFile().mkdirs();
 //            ImageIO.write(reportImage, "png", output);
 
             File expectedImage = getFile(BASE_DIR + "output/"+testName+"/expected-page-" + i + ".png");
-            new ImageSimilarity(reportImage, 5).assertSimilarity(expectedImage, 10);
+            new ImageSimilarity(reportImage, 2).assertSimilarity(expectedImage, 50);
         }
     }
 

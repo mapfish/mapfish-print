@@ -37,7 +37,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
@@ -111,7 +113,8 @@ public class CreateOverviewMapProcessorCustomLayerTest extends AbstractMapfishSp
         assertEquals(2, layerGraphics.size());
 
         final BufferedImage actualImage = ImageSimilarity.mergeImages(layerGraphics, 300, 200);
-//        ImageIO.write(actualImage, "tiff", new File("e:/tmp/expectedSimpleImage.tiff"));
+        ImageSimilarity.writeUncompressedImage(actualImage, "/tmp/expectedSimpleImage.tiff");
+//        ImageIO.write(actualImage, "tiff", new File("/tmp/expectedSimpleImage.tiff"));
         new ImageSimilarity(actualImage, 2)
                 .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 50);
 

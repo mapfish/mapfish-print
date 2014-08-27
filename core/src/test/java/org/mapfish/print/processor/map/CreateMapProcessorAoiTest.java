@@ -181,7 +181,7 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
         final BufferedImage actualImage = ImageSimilarity.mergeImages(layerGraphics, 630, 294);
 //        ImageIO.write(actualImage, "png", new File("e:/tmp/" + expectedImageName));
         File expectedImage = getFile(BASE_DIR + "/output/" + expectedImageName);
-        new ImageSimilarity(actualImage, 2).assertSimilarity(expectedImage, 10);
+        new ImageSimilarity(actualImage, 2).assertSimilarity(expectedImage, 50);
     }
 
     private PJsonObject getMapAttributes(PJsonObject requestData) {
