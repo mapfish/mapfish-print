@@ -19,12 +19,8 @@
 
 package org.mapfish.print.processor.map;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-
+import com.google.common.base.Predicate;
+import com.google.common.io.Files;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -40,8 +36,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
-import com.google.common.base.Predicate;
-import com.google.common.io.Files;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test for the CreateOverviewMap processor, where the main map is rotated
@@ -107,11 +107,9 @@ public class CreateOverviewMapProcessorRotateTest extends AbstractMapfishSpringT
         List<URI> layerGraphics = (List<URI>) values.getObject("overviewMapLayerGraphics", List.class);
         assertEquals(3, layerGraphics.size());
 
-//        Files.copy(new File(layerGraphics.get(0)), new File("/tmp/0_ov_"+getClass().getSimpleName()+".tiff"));
-//        Files.copy(new File(layerGraphics.get(1)), new File("/tmp/1_ov_"+getClass().getSimpleName()+".tiff"));
-//        Files.copy(new File(layerGraphics.get(2)), new File("/tmp/2_ov_"+getClass().getSimpleName()+".tiff"));
-        
-        new ImageSimilarity(ImageSimilarity.mergeImages(layerGraphics, 300, 200), 2)
+        final BufferedImage actualImage = ImageSimilarity.mergeImages(layerGraphics, 300, 200);
+//        ImageIO.write(actualImage, "tiff", new File("e:/tmp/expectedSimpleImage.tiff"));
+        new ImageSimilarity(actualImage, 2)
                 .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 50);
 
     }
