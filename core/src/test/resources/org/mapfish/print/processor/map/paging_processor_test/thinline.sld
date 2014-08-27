@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright (C) 2014  Camptocamp
   ~
@@ -20,32 +20,58 @@
 
 <StyledLayerDescriptor version="1.0.0"
     xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"
-    xmlns="http://www.opengis.net/sld"
-    xmlns:ogc="http://www.opengis.net/ogc"
+    xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <!-- a Named Layer is the basic building block of an SLD document -->
-    <NamedLayer>
-        <Name>default_line</Name>
+    <NamedLayer> <Name> area landmarks </Name>
         <UserStyle>
-            <!-- Styles can have names, titles and abstracts -->
-            <Title>Default Line</Title>
-            <Abstract>A sample style that draws a line</Abstract>
-            <!-- FeatureTypeStyles describe how to render different features -->
-            <!-- A FeatureTypeStyle for rendering lines -->
             <FeatureTypeStyle>
+                <FeatureTypeName>Feature</FeatureTypeName>
                 <Rule>
-                    <Name>rule1</Name>
-                    <Title>White Line</Title>
-                    <Abstract>A solid white line with a 1 pixel width</Abstract>
+                    <MinScaleDenominator>32000</MinScaleDenominator>
                     <LineSymbolizer>
                         <Stroke>
-                            <CssParameter name="stroke">#D95F02</CssParameter>
+                            <CssParameter name="stroke">
+                                <ogc:Literal>#666666</ogc:Literal>
+                            </CssParameter>
+                            <CssParameter name="stroke-width">
+                                <ogc:Literal>2</ogc:Literal>
+                            </CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+
+                <Rule>  <!-- thick line drawn first-->
+                    <MaxScaleDenominator>32000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">
+                                <ogc:Literal>#666666</ogc:Literal>
+                            </CssParameter>
+                            <CssParameter name="stroke-width">
+                                <ogc:Literal>7</ogc:Literal>
+                            </CssParameter>
                         </Stroke>
                     </LineSymbolizer>
                 </Rule>
             </FeatureTypeStyle>
+            <FeatureTypeStyle>
+                <FeatureTypeName>Feature</FeatureTypeName>
+                <Rule>  <!-- thin line drawn second -->
+                    <MaxScaleDenominator>32000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">
+                                <ogc:Literal>#FFFFFF</ogc:Literal>
+                            </CssParameter>
+                            <CssParameter name="stroke-width">
+                                <ogc:Literal>4</ogc:Literal>
+                            </CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+
         </UserStyle>
     </NamedLayer>
 </StyledLayerDescriptor>
-

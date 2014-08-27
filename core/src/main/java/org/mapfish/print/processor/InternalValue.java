@@ -29,5 +29,5 @@ import java.lang.annotation.Target;
  */
 @Target(value = ElementType.FIELD)
 @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
-public @interface DebugValue {
+public @interface InternalValue {
 }

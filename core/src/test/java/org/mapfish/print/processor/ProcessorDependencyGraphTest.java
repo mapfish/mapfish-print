@@ -19,6 +19,7 @@
 
 package org.mapfish.print.processor;
 
+import com.codahale.metrics.MetricRegistry;
 import org.junit.Test;
 import org.mapfish.print.output.Values;
 
@@ -26,6 +27,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author jesseeichar on 3/25/14.
@@ -64,10 +66,16 @@ public class ProcessorDependencyGraphTest {
         processor.getInputMapperBiMap().put("pp", "prop");
 
         final ProcessorDependencyGraph graph = new ProcessorDependencyGraph();
-        graph.addRoot(new ProcessorGraphNode(processor, null));
-        graph.createTask(values);
+        MetricRegistry registry = new MetricRegistry();
+        graph.addRoot(new ProcessorGraphNode(processor, registry));
+        final ProcessorDependencyGraph.ProcessorGraphForkJoinTask task = graph.createTask(values);
 
         // no exception ... good
+
+        task.compute();
+
+        // no exceptions? good.
+        // processor execute method has the assertion checks and is called by compute
 
     }
 
@@ -87,6 +95,7 @@ public class ProcessorDependencyGraphTest {
 
     static class TestIn {
         public String prop;
+        public Values values;
     }
     private static class TestProcessor extends AbstractProcessor<TestIn, Void> {
         private final String name;
@@ -114,6 +123,10 @@ public class ProcessorDependencyGraphTest {
         @Nullable
         @Override
         public Void execute(TestIn values, ExecutionContext context) throws Exception {
+            assertNotNull(values);
+            assertNotNull(values.prop);
+            assertNotNull(values.values);
+
             return null;
         }
     }

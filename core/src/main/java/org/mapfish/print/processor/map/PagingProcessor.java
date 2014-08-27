@@ -19,6 +19,7 @@
 
 package org.mapfish.print.processor.map;
 
+import com.google.common.base.Function;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -43,6 +44,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Processor used to display a geometry on multiple pages.
@@ -158,7 +161,6 @@ public class PagingProcessor extends AbstractProcessor<PagingProcessor.Input, Pa
         }
 
         final List<Values> mapList = new ArrayList<Values>();
-        MapAttribute mapAttribute = (MapAttribute) values.map.getAttribute();
 
         for (int j = 0; j < nbHeight; j++) {
             for (int i = 0; i < nbWidth; i++) {
@@ -170,16 +172,17 @@ public class PagingProcessor extends AbstractProcessor<PagingProcessor.Input, Pa
                     mapValues.put("right", "" + (i != nbWidth - 1 ? names[i + 1][j] : DO_NOT_RENDER_BBOX_CHAR));
                     mapValues.put("top", "" + (j != nbHeight - 1 ? names[i][j + 1] : DO_NOT_RENDER_BBOX_CHAR));
 
-                    MapAttributeValues theMap = mapAttribute.new MapAttributeValues(
-                            values.map.getTemplate(), values.map.getMapSize());
-                    Coordinate center = mapsBounds[i][j].centre();
-                    theMap.center = new double[]{center.x, center.y};
-                    theMap.scale = this.scale.getDenominator();
-                    theMap.areaOfInterest = areaOfInterest.copy();
-                    theMap.layers = values.map.layers;
-                    theMap.dpi = dpi;
-                    theMap.longitudeFirst = true;
-                    theMap.postConstruct();
+                    final Coordinate center = mapsBounds[i][j].centre();
+                    MapAttributeValues theMap = values.map.copy(values.map.getMapSize(), new Function<MapAttributeValues, Void>() {
+                        @Nullable
+                        @Override
+                        public Void apply(@Nonnull final MapAttributeValues input) {
+                            input.center = new double[]{center.x, center.y};
+                            input.scale = PagingProcessor.this.scale.getDenominator();
+                            input.dpi = dpi;
+                            return null;
+                        }
+                    });
                     mapValues.put("map", theMap);
 
                     mapList.add(new Values(mapValues));

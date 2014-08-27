@@ -26,7 +26,7 @@ import net.sf.jasperreports.engine.JRException;
 import org.mapfish.print.attribute.ScalebarAttribute;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.processor.AbstractProcessor;
-import org.mapfish.print.processor.DebugValue;
+import org.mapfish.print.processor.InternalValue;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
 import org.mapfish.print.processor.jasper.MapSubReport;
 
@@ -119,7 +119,7 @@ public class CreateScalebarProcessor extends AbstractProcessor<CreateScalebarPro
         /**
          * The path to the scalebar graphic (for testing purposes).
          */
-        @DebugValue
+        @InternalValue
         public final URI graphic;
 
         /**

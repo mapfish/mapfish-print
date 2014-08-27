@@ -19,6 +19,7 @@
 
 package org.mapfish.print.attribute.map;
 
+import com.google.common.base.Function;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.Scale;
 import org.mapfish.print.parser.CanSatisfyOneOf;
@@ -32,6 +33,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 /**
  * The attributes for {@link org.mapfish.print.processor.map.CreateMapProcessor}.
@@ -206,6 +208,37 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
                 final GenericMapAttribute<?>.GenericMapAttributeValues paramOverrides) {
             return new OverriddenMapAttributeValues(this, paramOverrides, getTemplate());
         }
+
+        /**
+         * create a copy of this instance. should be overridded for each subclass
+         * @param newMapSize the size of the new map attribute values to create
+         * @param updater a function which will be called after copy is made but before postConstruct is called in order
+         *                to do other configuration changes.
+         */
+        // CSOFF: DesignForExtension
+        public MapAttribute.MapAttributeValues copy(@Nonnull final Dimension newMapSize,
+                                                    @Nonnull final Function<MapAttributeValues, Void> updater) {
+            // CSON: DesignForExtension
+            MapAttributeValues copy = new MapAttributeValues(getTemplate(), newMapSize);
+            copy.areaOfInterest = this.areaOfInterest.copy();
+            copy.bbox = this.bbox;
+            copy.center = this.center;
+            copy.scale = this.scale;
+            copy.layers = this.layers;
+            copy.dpi = this.getDpi();
+            copy.projection = this.getProjection();
+            copy.rotation = this.getRotation();
+            copy.useNearestScale = this.isUseNearestScale();
+            copy.useAdjustBounds = this.useAdjustBounds;
+            copy.longitudeFirst = this.longitudeFirst;
+            updater.apply(copy);
+            try {
+                copy.postConstruct();
+            } catch (FactoryException e) {
+                throw new RuntimeException(e);
+            }
+            return copy;
+        }
     }
 
     /**
@@ -216,9 +249,9 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
      * If attributes on the {@link org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues} instance are set, those
      * attributes will be returned, otherwise the ones on {@link MapAttributeValues}.
      */
-    public class OverriddenMapAttributeValues extends MapAttribute.MapAttributeValues {
+    public class OverriddenMapAttributeValues extends MapAttributeValues {
 
-        private final MapAttribute.MapAttributeValues params;
+        private final MapAttributeValues params;
         private final GenericMapAttribute<?>.GenericMapAttributeValues paramOverrides;
         private MapBounds zoomedOutBounds = null;
         private MapLayer mapExtentLayer = null;

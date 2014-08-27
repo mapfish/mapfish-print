@@ -117,7 +117,7 @@ public final class ProcessorDependencyGraphFactory {
                     // check that the provided output has the same type
                     final Class<?> inputType = input.getType();
                     final Class<?> outputType = outputTypes.get(input.getName());
-                    if (inputType.equals(outputType)) {
+                    if (inputType.isAssignableFrom(outputType)) {
                         solution.addDependency(node);
                     } else {
                         throw new IllegalArgumentException(
@@ -276,7 +276,7 @@ public final class ProcessorDependencyGraphFactory {
                 if (!inputMapper.containsValue(field.getName())) {
                     inputs.add(new InputValue(field.getName(), field.getType()));
                 } else {
-                    inputs.add(new InputValue(inputMapper.get(field.getName()), field.getType()));
+                    inputs.add(new InputValue(inputMapper.inverse().get(field.getName()), field.getType()));
                 }
             }
         }
@@ -296,7 +296,7 @@ public final class ProcessorDependencyGraphFactory {
         for (Field field : allProperties) {
             // if the field is annotated with @DebugValue, it can be renamed automatically in a
             // mapping in case of a conflict.
-            final boolean canBeRenamed = field.getAnnotation(DebugValue.class) != null;
+            final boolean canBeRenamed = field.getAnnotation(InternalValue.class) != null;
             if (!outputMapper.containsKey(field.getName())) {
                 values.add(new OutputValue(field.getName(), canBeRenamed, field.getType()));
             } else {
@@ -354,6 +354,14 @@ public final class ProcessorDependencyGraphFactory {
 
         public final Class<?> getType() {
             return this.type;
+        }
+
+        @Override
+        public String toString() {
+            return "InputValue{" +
+                   "name='" + this.name + '\'' +
+                   ", type=" + this.type.getSimpleName() +
+                   '}';
         }
     }
 

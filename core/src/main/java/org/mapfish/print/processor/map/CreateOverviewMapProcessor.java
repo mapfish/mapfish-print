@@ -35,7 +35,7 @@ import org.mapfish.print.attribute.map.OverviewMapAttribute;
 import org.mapfish.print.map.geotools.FeatureLayer;
 import org.mapfish.print.map.geotools.FeatureLayer.FeatureLayerParam;
 import org.mapfish.print.processor.AbstractProcessor;
-import org.mapfish.print.processor.DebugValue;
+import org.mapfish.print.processor.InternalValue;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
@@ -218,7 +218,7 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
         /**
          * The paths to a graphic for each layer.
          */
-        @DebugValue
+        @InternalValue
         public final List<URI> layerGraphics;
 
         /**

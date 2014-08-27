@@ -1,4 +1,7 @@
+
 {
+
+  "layout": "main",
   "attributes": {
     "map": {
       "center": [-8234690, 4978853],
@@ -30,14 +33,7 @@
           "type": "geojson",
           "style": "file://thinline.sld",
           "geojson": "http://paging_processor_test.json/geojson/ny-roads-3857.json"
-        },{
-          "type": "wms",
-          "baseURL": "http://paging_processor_test.wms:1234/wms",
-          "layers": ["tiger-ny"],
-          "version": "1.0.0",
-          "imageFormat": "tiff"
         }
-
       ]
     }
   }

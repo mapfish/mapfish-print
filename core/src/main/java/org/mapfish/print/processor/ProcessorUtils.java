@@ -74,7 +74,12 @@ public final class ProcessorUtils {
                 if (name == null) {
                     name = field.getName();
                 }
-                Object value = values.getObject(name, Object.class);
+                Object value;
+                if (field.getType() == Values.class) {
+                    value = values;
+                } else {
+                    value = values.getObject(name, Object.class);
+                }
                 if (value != null) {
                     try {
                         field.set(inputObject, value);

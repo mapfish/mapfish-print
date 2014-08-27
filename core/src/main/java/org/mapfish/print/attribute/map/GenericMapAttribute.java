@@ -21,7 +21,6 @@ package org.mapfish.print.attribute.map;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-
 import org.geotools.referencing.CRS;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -425,10 +424,6 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
             // specify the DPI they are using for creating the bounds.
             // For the moment we require the client to convert their bounds to 72 DPI
             return Constants.PDF_DPI;
-        }
-
-        public final GenericMapAttribute getAttribute() {
-            return GenericMapAttribute.this;
         }
     }
 }

@@ -39,7 +39,7 @@ import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.map.geotools.FeatureLayer;
 import org.mapfish.print.processor.AbstractProcessor;
-import org.mapfish.print.processor.DebugValue;
+import org.mapfish.print.processor.InternalValue;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
 import org.mapfish.print.processor.jasper.MapSubReport;
 import org.opengis.referencing.operation.MathTransform;
@@ -389,7 +389,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         /**
          * The paths to a graphic for each layer.
          */
-        @DebugValue
+        @InternalValue
         public final List<URI> layerGraphics;
 
         /**

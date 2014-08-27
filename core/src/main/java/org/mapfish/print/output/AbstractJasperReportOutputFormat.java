@@ -21,18 +21,14 @@ package org.mapfish.print.output;
 
 
 import com.google.common.annotations.VisibleForTesting;
-
 import jsr166y.ForkJoinPool;
 import jsr166y.ForkJoinTask;
-
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.Renderable;
-import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
-
 import org.json.JSONException;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapAttribute;
@@ -53,7 +49,6 @@ import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -151,47 +146,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         }
 
         final JasperPrint print;
-        if (template.getIterValue() != null) {
-            if (!values.containsKey(template.getIterValue())) {
-                throw new IllegalArgumentException(template.getIterValue() + " is missing.  It must either an attribute or a processor " +
-                                                   "output");
-            }
-
-            final Object iterator = values.getObject(template.getIterValue(), Object.class);
-
-            final JRDataSource jrDataSource;
-            if (iterator instanceof Iterable) {
-                Iterable iterable = (Iterable) iterator;
-
-                final ForkJoinTask<List<Map<String, ?>>> iterTaskFuture =
-                        this.forkJoinPool.submit(new ExecuteIterProcessorsTask(values, template,
-                                values.getObject(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, ClientHttpRequestFactory.class),
-                                values.getObject(Values.TASK_DIRECTORY_KEY, File.class)));
-
-                List<Map<String, ?>> dataSource;
-                try {
-                    dataSource = iterTaskFuture.get();
-                } catch (InterruptedException exc) {
-                    exc.printStackTrace();
-                    iterTaskFuture.cancel(true);
-                    Thread.currentThread().interrupt();
-                    throw new CancellationException();
-                }
-
-                if (dataSource.size() > 0) {
-                    LOGGER.info("Generate with fields: " + dataSource.get(0).keySet());
-                }
-                jrDataSource = new JRMapCollectionDataSource(dataSource);
-            } else {
-                jrDataSource = new JREmptyDataSource();
-            }
-
-            LOGGER.info("Generate with parameters: " + values.getParameters().keySet());
-            print = JasperFillManager.fillReport(
-                    jasperTemplateBuild.getAbsolutePath(),
-                    values.getParameters(),
-                    jrDataSource);
-        } else if (template.getJdbcUrl() != null) {
+        if (template.getJdbcUrl() != null) {
             Connection connection;
             if (template.getJdbcUser() != null) {
                 connection = DriverManager.getConnection(template.getJdbcUrl(), template.getJdbcUser(), template.getJdbcPassword());
@@ -200,18 +155,18 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             }
             print = JasperFillManager.fillReport(
                     jasperTemplateBuild.getAbsolutePath(),
-                    values.getParameters(),
+                    values.asMap(),
                     connection);
         } else if (template.getTableDataKey() != null) {
             final JRDataSource dataSource = values.getObject(template.getTableDataKey(), JRDataSource.class);
             print = JasperFillManager.fillReport(
                     jasperTemplateBuild.getAbsolutePath(),
-                    values.getParameters(),
+                    values.asMap(),
                     dataSource);
         } else {
             print = JasperFillManager.fillReport(
                     jasperTemplateBuild.getAbsolutePath(),
-                    values.getParameters(),
+                    values.asMap(),
                     new JREmptyDataSource());
         }
         print.setProperty(Renderable.PROPERTY_IMAGE_DPI, String.valueOf(Math.round(maxDpi[0])));

@@ -157,6 +157,28 @@ public final class Values {
     }
 
     /**
+     * Create a new instance and copy the required elements from the other values object.
+     * (IE working directory, http client factory, etc...)
+     *
+     * @param values the values containing the required elements
+     */
+    public Values(@Nonnull final Values values) {
+        addRequiredValues(values);
+    }
+
+    /**
+     * Add the elements that all values objects require from the provided values object.
+     *
+     * @param values the values object containing the required elements
+     */
+    public void addRequiredValues(@Nonnull final Values values) {
+        Object taskDirectory = values.getObject(TASK_DIRECTORY_KEY, Object.class);
+        ClientHttpRequestFactory requestFactory = values.getObject(CLIENT_HTTP_REQUEST_FACTORY_KEY, ClientHttpRequestFactory.class);
+        this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
+        this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY, requestFactory);
+    }
+
+    /**
      * Put a new value in map.
      *
      * @param key id of the value for looking up.
@@ -174,7 +196,7 @@ public final class Values {
     /**
      * Get all parameters.
      */
-    protected Map<String, Object> getParameters() {
+    public Map<String, Object> asMap() {
         return this.values;
     }
 
@@ -216,16 +238,6 @@ public final class Values {
     public <V> V getObject(final String key, final Class<V> type) {
         final Object obj = this.values.get(key);
         return type.cast(obj);
-    }
-
-    /**
-     * Get an a value as an iterator of values.
-     *
-     * @param key the key
-     */
-    @SuppressWarnings("unchecked")
-    public Iterable<Values> getIterator(final String key) {
-        return (Iterable<Values>) this.values.get(key);
     }
 
     /**
@@ -274,4 +286,5 @@ public final class Values {
 
         return (Map<String, T>) filtered;
     }
+
 }

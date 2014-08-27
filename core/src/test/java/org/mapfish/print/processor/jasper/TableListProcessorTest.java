@@ -59,7 +59,8 @@ public class TableListProcessorTest  extends AbstractMapfishSpringTest {
         Values values = new Values(requestData, template, parser, getTaskDirectory(), this.httpRequestFactory);
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
-        final Iterator<Values> tablelist = values.getIterator("tableList").iterator();
+        @SuppressWarnings("unchecked")
+        final Iterator<Values> tablelist = values.getObject("tableList", Iterable.class).iterator();
 
         int count = 0;
         while (tablelist.hasNext()) {
