@@ -27,4 +27,4 @@ templates:
       outputMapper: {tableList: tableList}
     - !reportBuilder  # compile all jasper report templates in subreports directory
       directory: "subreports"
-    iterValue: tableList
+    tableData: tableList

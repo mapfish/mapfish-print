@@ -54,7 +54,7 @@ templates:
       outputMapper: {tableList: tableList}
     - !reportBuilder  # compile all jasper report templates in subreports directory
       directory: "subreports"
-    iterValue: tableList
+    tableData: tableList
 
   A4 portrait old api: !template
     reportTemplate: simpleReport-old-api.jrxml

@@ -20,19 +20,26 @@
 package org.mapfish.print.processor.jasper;
 
 import jsr166y.ForkJoinPool;
+import net.sf.jasperreports.engine.JasperPrint;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.output.AbstractJasperReportOutputFormat;
+import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.MapfishParser;
+import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -49,7 +56,9 @@ public class TableListProcessorTest  extends AbstractMapfishSpringTest {
     @Autowired
     private ForkJoinPool forkJoinPool;
     @Autowired
-    private ClientHttpRequestFactory httpRequestFactory;
+    private TestHttpClientFactory httpRequestFactory;
+    @Autowired
+    private Map<String, OutputFormat> outputFormat;
 
     @Test
     public void testBasicTableProperties() throws Exception {
@@ -69,6 +78,27 @@ public class TableListProcessorTest  extends AbstractMapfishSpringTest {
         }
 
         assertEquals(2, count);
+    }
+
+    @Test
+    public void testRenderTable() throws Exception {
+        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
+
+        PJsonObject requestData = loadJsonRequestData();
+
+        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
+        JasperPrint print = format.getJasperPrint(requestData, config, config.getDirectory(), getTaskDirectory()).print;
+
+        assertEquals(1, print.getPages().size());
+            BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
+
+//            final File output = new File("e:/tmp/expected-page.png");
+//            output.getParentFile().mkdirs();
+//            ImageIO.write(reportImage, "png", output);
+
+            File expectedImage = getFile(BASE_DIR + "expected-page.png");
+            new ImageSimilarity(reportImage, 5).assertSimilarity(expectedImage, 10);
+
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

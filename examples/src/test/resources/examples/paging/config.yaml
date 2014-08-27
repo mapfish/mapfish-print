@@ -4,6 +4,7 @@ templates:
   A4 landscape: !template
   #===========================================================================
     reportTemplate: simpleReport.jrxml
+    tableData: datasource
     attributes:
       map: !map
         maxDpi: 400

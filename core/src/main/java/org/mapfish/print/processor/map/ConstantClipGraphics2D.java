@@ -455,16 +455,6 @@ final class ConstantClipGraphics2D extends Graphics2D {
     }
 
     @Override
-    public void finalize() {
-        wrapped.finalize();
-    }
-
-    @Override
-    public String toString() {
-        return wrapped.toString();
-    }
-
-    @Override
     @Deprecated
     public Rectangle getClipRect() {
         return wrapped.getClipRect();

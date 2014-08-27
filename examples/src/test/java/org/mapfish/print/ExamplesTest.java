@@ -231,7 +231,7 @@ public class ExamplesTest {
     public static void main(String[] args) {
         JUnitCore junit = new JUnitCore();
         if (args.length < 1) {
-            System.err.println("This main is expected to have one parameter, it is a regular expression for selecting the examples to run");
+            System.err.println("This main is expected to have at least one parameter, it is a regular expression for selecting the examples to run");
             System.exit(1);
         }
         if (args.length > 2) {

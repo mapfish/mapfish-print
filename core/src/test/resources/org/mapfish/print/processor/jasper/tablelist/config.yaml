@@ -2,9 +2,12 @@ throwErrorOnExtraParameters: true
 templates:
   main: !template
     reportTemplate: simpleReport.jrxml
+    tableData: tableList
     attributes:
       tableList: !tableList {}
     processors:
+    - !reportBuilder # compile all reports in current directory
+      directory: '.'
     - !prepareTableList
       inputMapper: {tableList: tableList}
       dynamicReport: {}

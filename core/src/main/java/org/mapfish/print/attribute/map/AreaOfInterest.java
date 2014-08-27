@@ -29,11 +29,13 @@ import org.geotools.geojson.geom.GeometryJSON;
 import org.mapfish.print.Constants;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import javax.annotation.Nonnull;
 
 /**
  * Represents an area on the map which is of particular interest for some reason.  It consists of polygon geojson and a method
@@ -112,11 +114,16 @@ public final class AreaOfInterest {
 
     /**
      * Return the area polygon as the only feature in the feature collection.
+     *
+     * @param mapAttributes the attributes that this aoi is part of.
      */
-    public SimpleFeatureCollection areaToFeatureCollection() {
+    public SimpleFeatureCollection areaToFeatureCollection(@Nonnull final MapAttribute.MapAttributeValues mapAttributes) {
+        Assert.isTrue(mapAttributes.areaOfInterest == this, "map attributes passed in does not contain this area of interest object");
+
         final SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
         typeBuilder.setName("aoi");
-        typeBuilder.add("geom", this.polygon.getClass());
+        CoordinateReferenceSystem crs = mapAttributes.getMapBounds().getProjection();
+        typeBuilder.add("geom", this.polygon.getClass(), crs);
         final SimpleFeature feature = SimpleFeatureBuilder.build(typeBuilder.buildFeatureType(), new Object[]{this.polygon}, "aoi");
         final DefaultFeatureCollection features = new DefaultFeatureCollection();
         features.add(feature);

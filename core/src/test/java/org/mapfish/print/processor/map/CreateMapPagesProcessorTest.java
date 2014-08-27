@@ -32,7 +32,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.output.AbstractJasperReportOutputFormat;
 import org.mapfish.print.output.OutputFormat;
-import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,8 +59,6 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
     private ConfigurationFactory configurationFactory;
     @Autowired
     private TestHttpClientFactory requestFactory;
-    @Autowired
-    private MapfishParser parser;
     @Autowired
     private Map<String, OutputFormat> outputFormat;
     @Autowired

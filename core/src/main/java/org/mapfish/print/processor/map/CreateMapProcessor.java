@@ -237,7 +237,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             param.defaultStyle = Constants.Style.OverviewMap.NAME;
             param.style = areaOfInterest.style;
             param.renderAsSvg = areaOfInterest.renderAsSvg;
-            param.features = areaOfInterest.areaToFeatureCollection();
+            param.features = areaOfInterest.areaToFeatureCollection(mapValues);
             final FeatureLayer featureLayer = this.featureLayerPlugin.parse(mapValues.getTemplate(), param);
 
             layers.add(featureLayer);
