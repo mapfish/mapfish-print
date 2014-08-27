@@ -77,6 +77,16 @@ public final class AreaOfInterest {
      * Tests that the area is valid geojson, the style ref is valid or null and the display is non-null.
      */
     public void postConstruct() {
+        parseGeometry();
+
+        Assert.isTrue(this.polygon != null, "Polygon is null. 'area' string is: '" + this.area + "'");
+        Assert.isTrue(this.display != null, "'display' is null");
+
+        Assert.isTrue(this.style == null || this.display == AoiDisplay.RENDER,
+                "'style' does not make sense unless 'display' == RENDER.  In this case 'display' == " + this.display);
+    }
+
+    private void parseGeometry() {
         GeometryJSON json = new GeometryJSON();
         byte[] bytes;
         try {
@@ -88,15 +98,15 @@ public final class AreaOfInterest {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        Assert.isTrue(this.polygon != null, "Polygon is null. 'area' string is: '" + this.area + "'");
-        Assert.isTrue(this.display != null, "'display' is null");
-
-        Assert.isTrue(this.style == null || this.display == AoiDisplay.RENDER,
-                "'style' does not make sense unless 'display' == RENDER.  In this case 'display' == " + this.display);
     }
 
-    public Polygon getArea() {
+    /**
+     * Get the area polygon.  It will parse the polygon string representation in the polygon field.
+     */
+    public synchronized Polygon getArea() {
+        if (this.polygon == null) {
+            parseGeometry();
+        }
         return this.polygon;
     }
 

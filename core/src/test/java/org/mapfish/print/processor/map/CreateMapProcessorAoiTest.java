@@ -19,6 +19,7 @@
 
 package org.mapfish.print.processor.map;
 
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
 import org.apache.batik.transcoder.TranscoderException;
@@ -46,6 +47,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
 import static org.mapfish.print.attribute.map.AreaOfInterest.AoiDisplay.RENDER;
@@ -108,17 +111,32 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
 
-        createMap(template, "expectedSimpleImage-default.png", RENDER, null, false);
-        createMap(template, "expectedSimpleImage-render-thinline.png", RENDER, "file://thinline.sld", false);
-        createMap(template, "expectedSimpleImage-render-jsonStyle.png", RENDER, createJsonStyle().toString(), false);
-        createMap(template, "expectedSimpleImage-render-polygon.png", RENDER, "polygon",
-                false);
-        createMap(template, "expectedSimpleImage-none.png", AreaOfInterest.AoiDisplay.NONE, null, false);
-        createMap(template, "expectedSimpleImage-clip.png", AreaOfInterest.AoiDisplay.CLIP, null, false);
+//        createMap(template, "expectedSimpleImage-default.png", RENDER, null, false, null);
+//        createMap(template, "expectedSimpleImage-render-thinline.png", RENDER, "file://thinline.sld", false, null);
+//        createMap(template, "expectedSimpleImage-render-jsonStyle.png", RENDER, createJsonStyle().toString(), false, null);
+//        createMap(template, "expectedSimpleImage-render-polygon.png", RENDER, "polygon",
+//                false, null);
+//        createMap(template, "expectedSimpleImage-none.png", AreaOfInterest.AoiDisplay.NONE, null, false, null);
+//        createMap(template, "expectedSimpleImage-clip.png", AreaOfInterest.AoiDisplay.CLIP, null, false, null);
+//
+//        // Test when SVG is used for vector layers
+//        createMap(template, "expectedSimpleImage-render-polygon-svg.png", RENDER, createJsonStyle().toString(), true, null);
+//        createMap(template, "expectedSimpleImage-clip-svg.png", AreaOfInterest.AoiDisplay.CLIP, null, true, null);
+        Function<PJsonObject, Void> setRotationUpdater = new Function<PJsonObject, Void>() {
 
-        // Test when SVG is used for vector layers
-        createMap(template, "expectedSimpleImage-render-polygon-svg.png", RENDER, createJsonStyle().toString(), true);
-        createMap(template, "expectedSimpleImage-clip-svg.png", AreaOfInterest.AoiDisplay.CLIP, null, true);
+            @Nullable
+            @Override
+            public Void apply(@Nonnull PJsonObject input) {
+                try {
+                    getMapAttributes(input).getInternalObj().put("rotation", 90);
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+                return null;
+            }
+        };
+        createMap(template, "expectedSimpleImage-rotate-clip-svg.png", AreaOfInterest.AoiDisplay.CLIP, null, true, setRotationUpdater);
+        createMap(template, "expectedSimpleImage-rotate-render-svg.png", AreaOfInterest.AoiDisplay.RENDER, null, true, setRotationUpdater);
     }
 
     private JSONObject createJsonStyle() throws JSONException {
@@ -139,15 +157,19 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
     }
 
     private void createMap(Template template, String expectedImageName, AreaOfInterest.AoiDisplay aoiDisplay, String styleRef,
-                           boolean useSVG) throws IOException, JSONException, TranscoderException {
+                           boolean useSVG, Function<PJsonObject, Void> requestUpdater) throws IOException, JSONException, TranscoderException {
         PJsonObject requestData = loadJsonRequestData();
-        final PJsonObject mapAttribute = requestData.getJSONObject("attributes").getJSONObject("mapDef");
+        final PJsonObject mapAttribute = getMapAttributes(requestData);
         mapAttribute.getJSONArray("layers").getJSONObject(0).getInternalObj().put("renderAsSvg", useSVG);
 
         final PJsonObject areaOfInterest = mapAttribute.getJSONObject("areaOfInterest");
         areaOfInterest.getInternalObj().put("display", aoiDisplay.name().toLowerCase()); // doesn't have to be lowercase,
         // this is to make things more interesting
         areaOfInterest.getInternalObj().put("style", styleRef);
+
+        if (requestUpdater != null) {
+            requestUpdater.apply(requestData);
+        }
 
         Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory);
         template.getProcessorGraph().createTask(values).invoke();
@@ -160,6 +182,10 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
 //        ImageIO.write(actualImage, "png", new File("e:/tmp/" + expectedImageName));
         File expectedImage = getFile(BASE_DIR + "/output/" + expectedImageName);
         new ImageSimilarity(actualImage, 2).assertSimilarity(expectedImage, 10);
+    }
+
+    private PJsonObject getMapAttributes(PJsonObject requestData) {
+        return requestData.getJSONObject("attributes").getJSONObject("mapDef");
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

@@ -20,6 +20,7 @@
 package org.mapfish.print.attribute.map;
 
 import com.google.common.base.Function;
+import com.vividsolutions.jts.geom.Envelope;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.Scale;
 import org.mapfish.print.parser.CanSatisfyOneOf;
@@ -155,8 +156,12 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
                 double maxX = this.bbox[2];
                 double maxY = this.bbox[maxYIndex];
                 bounds = new BBoxMapBounds(crs, minX, minY, maxX, maxY);
+            } else if (this.areaOfInterest != null) {
+                Envelope area = this.areaOfInterest.getArea().getEnvelopeInternal();
+                bounds = new BBoxMapBounds(crs, area);
             } else {
-                throw new IllegalArgumentException("Expected either center and scale or bbox for the map bounds");
+                throw new IllegalArgumentException("Expected either: center and scale, bbox, or an areaOfInterest defined in order to " +
+                                                   "calculate the map bounds");
             }
             return bounds;
         }
