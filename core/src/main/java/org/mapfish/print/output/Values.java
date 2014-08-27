@@ -169,11 +169,11 @@ public final class Values {
     /**
      * Add the elements that all values objects require from the provided values object.
      *
-     * @param values the values object containing the required elements
+     * @param sourceValues the values object containing the required elements
      */
-    public void addRequiredValues(@Nonnull final Values values) {
-        Object taskDirectory = values.getObject(TASK_DIRECTORY_KEY, Object.class);
-        ClientHttpRequestFactory requestFactory = values.getObject(CLIENT_HTTP_REQUEST_FACTORY_KEY, ClientHttpRequestFactory.class);
+    public void addRequiredValues(@Nonnull final Values sourceValues) {
+        Object taskDirectory = sourceValues.getObject(TASK_DIRECTORY_KEY, Object.class);
+        ClientHttpRequestFactory requestFactory = sourceValues.getObject(CLIENT_HTTP_REQUEST_FACTORY_KEY, ClientHttpRequestFactory.class);
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
         this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY, requestFactory);
     }

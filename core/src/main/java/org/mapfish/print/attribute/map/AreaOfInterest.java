@@ -19,8 +19,6 @@
 
 package org.mapfish.print.attribute.map;
 
-import com.google.common.collect.Lists;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.util.Assert;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -103,7 +101,7 @@ public final class AreaOfInterest {
     }
 
     /**
-     * Return the area polygon as the only feature in the feature collection
+     * Return the area polygon as the only feature in the feature collection.
      */
     public SimpleFeatureCollection areaToFeatureCollection() {
         final SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
@@ -136,13 +134,13 @@ public final class AreaOfInterest {
      */
     public static enum AoiDisplay {
         /**
-         * Set a clip for the area (IE only show the area of interest)
-         */
-        CLIP,
-        /**
-         * Draw the entire map and render the AOI polygon on the map. This is the default
+         * Draw the entire map and render the AOI polygon on the map. This is the default.
          */
         RENDER,
+        /**
+        * Set a clip for the area (IE only show the area of interest).
+        */
+        CLIP,
         /**
          * Do not show the Area of interest on the map.  In this case another processor will likely make use of the AOI.
          */

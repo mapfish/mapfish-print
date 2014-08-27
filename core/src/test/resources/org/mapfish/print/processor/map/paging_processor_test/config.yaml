@@ -14,11 +14,14 @@ templates:
         zoomLevelSnapStrategy: CLOSEST_LOWER_SCALE_ON_TIE
         zoomLevels: !zoomLevels
           scales: [5000, 10000, 50000, 110000, 500000, 1000000]
+      paging: !paging
+        default:
+          scale: 10000
+          overlap: 0
     processors:
     - !reportBuilder # compile all reports in current directory
       directory: '.'
-    - !paging # creates the iterable<Values> consumed by dataSource
-      scale: 10000
+    - !createMapPages {} # creates the iterable<Values> consumed by dataSource
     - !createMap {}
     - !dataSource
       inputMapper: {maps: source}

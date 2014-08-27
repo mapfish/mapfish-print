@@ -25,14 +25,13 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
-
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.attribute.map.AreaOfInterest;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
+import org.mapfish.print.attribute.map.PagingAttribute;
 import org.mapfish.print.map.DistanceUnit;
-import org.mapfish.print.map.Scale;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -48,22 +47,44 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Processor used to display a geometry on multiple pages.
+ * Processor used to display a map on multiple pages.
+ * <p>
+ *     This processor will take the defined <a href="#/attributes#!map">map attribute</a> and using the geometry defined in the
+ *     <a href="#/attributes#!map">map attribute's</a> area of interest, will create an Iterable&lt;Values> each of which contains:
+ *     <ul>
+ *         <li>a new definition of a <a href="#/attributes#!map">map attribute</a></li>
+ *         <li>name value which is a string that roughly describes which part of the main map this sub-map is</li>
+ *         <li>left value which is the name of the sub-map to the left of the current map</li>
+ *         <li>right value which is the name of the sub-map to the right of the current map</li>
+ *         <li>top value which is the name of the sub-map to the top of the current map</li>
+ *         <li>bottom value which is the name of the sub-map to the bottom of the current map</li>
+ *     </ul>
  *
+ *     The iterable of values can be consumed by a <a href="#/processors#!dataSource">DataSource Processor</a> and as a result be put in the
+ *     report (or one of the sub-reports) table.  One must be careful as this can result in truly giant reports.
+ * </p>
+ * Example Configuration:
+ * <pre><code>
+ *
+ * </code></pre>
+ *
+ * Example Request:
+ * <pre><code>
+ *
+ * </code></pre>
  * @author Stéphane Brunner
  */
-public class PagingProcessor extends AbstractProcessor<PagingProcessor.Input, PagingProcessor.Output> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PagingProcessor.class);
+public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesProcessor.Input, CreateMapPagesProcessor.Output> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CreateMapPagesProcessor.class);
     private static final char DO_NOT_RENDER_BBOX_CHAR = ' ';
 
     private GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
-    private Scale scale;
-    private double overlap;
+
 
     /**
      * Constructor.
      */
-    protected PagingProcessor() {
+    protected CreateMapPagesProcessor() {
         super(Output.class);
     }
 
@@ -76,57 +97,41 @@ public class PagingProcessor extends AbstractProcessor<PagingProcessor.Input, Pa
         return new Input();
     }
 
-    /**
-     * Set the destination scale.
-     *
-     * @param scale the scale
-     */
-    public final void setScale(final double scale) {
-        this.scale = new Scale(scale);
-    }
-
-    /**
-     * Set the pages overlap.
-     *
-     * @param overlap the pages overlap [projection unit]
-     */
-    public final void setOverlap(final double overlap) {
-        this.overlap = overlap;
-    }
-
     @Override
     public final Output execute(final Input values, final ExecutionContext context) throws Exception {
 
-        CoordinateReferenceSystem projection = values.map.getMapBounds().getProjection();
-        final Rectangle paintArea = new Rectangle(values.map.getMapSize());
-        final double dpi = values.map.getRequestorDPI();
+        final MapAttributeValues map = values.map;
+        final PagingAttribute.PagingProcessorValues paging = values.paging;
+        CoordinateReferenceSystem projection = map.getMapBounds().getProjection();
+        final Rectangle paintArea = new Rectangle(map.getMapSize());
+        final double dpi = map.getRequestorDPI();
         final DistanceUnit projectionUnit = DistanceUnit.fromProjection(projection);
 
-        AreaOfInterest areaOfInterest = values.map.areaOfInterest;
+        AreaOfInterest areaOfInterest = map.areaOfInterest;
         if (areaOfInterest == null) {
             areaOfInterest = new AreaOfInterest();
             areaOfInterest.display = AreaOfInterest.AoiDisplay.NONE;
-            ReferencedEnvelope mapBBox = values.map.getMapBounds().toReferencedEnvelope(paintArea, dpi);
+            ReferencedEnvelope mapBBox = map.getMapBounds().toReferencedEnvelope(paintArea, dpi);
 
             areaOfInterest.setPolygon((Polygon) this.geometryFactory.toGeometry(mapBBox));
         }
 
         Envelope aoiBBox = areaOfInterest.getArea().getEnvelopeInternal();
 
-        final double paintAreaWidthIn = paintArea.getWidth() * this.scale.getDenominator() / dpi;
-        final double paintAreaHeightIn = paintArea.getHeight() * this.scale.getDenominator() / dpi;
+        final double paintAreaWidthIn = paintArea.getWidth() * paging.scale / dpi;
+        final double paintAreaHeightIn = paintArea.getHeight() * paging.scale / dpi;
 
         final double paintAreaWidth = DistanceUnit.IN.convertTo(paintAreaWidthIn, projectionUnit);
         final double paintAreaHeight = DistanceUnit.IN.convertTo(paintAreaHeightIn, projectionUnit);
 
-        final int nbWidth = (int) Math.ceil(aoiBBox.getWidth() / (paintAreaWidth - this.overlap));
-        final int nbHeight = (int) Math.ceil(aoiBBox.getHeight() / (paintAreaHeight - this.overlap));
+        final int nbWidth = (int) Math.ceil(aoiBBox.getWidth() / (paintAreaWidth - paging.overlap));
+        final int nbHeight = (int) Math.ceil(aoiBBox.getHeight() / (paintAreaHeight - paging.overlap));
 
         final double marginWidth = (paintAreaWidth * nbWidth - aoiBBox.getWidth()) / 2;
         final double marginHeight = (paintAreaHeight * nbHeight - aoiBBox.getHeight()) / 2;
 
-        final double minX = aoiBBox.getMinX() - marginWidth - this.overlap / 2;
-        final double minY = aoiBBox.getMinY() - marginHeight - this.overlap / 2;
+        final double minX = aoiBBox.getMinX() - marginWidth - paging.overlap / 2;
+        final double minY = aoiBBox.getMinY() - marginHeight - paging.overlap / 2;
 
         LOGGER.info("Paging generate a grid of " + nbWidth + "x" + nbHeight + " potential maps.");
         final char[][] names = new char[nbWidth][nbHeight];
@@ -135,9 +140,9 @@ public class PagingProcessor extends AbstractProcessor<PagingProcessor.Input, Pa
 
         for (int j = 0; j < nbHeight; j++) {
             for (int i = 0; i < nbWidth; i++) {
-                final double x1 = minX + i * (paintAreaWidth - this.overlap);
+                final double x1 = minX + i * (paintAreaWidth - paging.overlap);
                 final double x2 = x1 + paintAreaWidth;
-                final double y1 = minY + j * (paintAreaHeight - this.overlap);
+                final double y1 = minY + j * (paintAreaHeight - paging.overlap);
                 final double y2 = y1 + paintAreaHeight;
                 Coordinate[] coords  = new Coordinate[] {
                         new Coordinate(x1, y1),
@@ -173,13 +178,19 @@ public class PagingProcessor extends AbstractProcessor<PagingProcessor.Input, Pa
                     mapValues.put("top", "" + (j != nbHeight - 1 ? names[i][j + 1] : DO_NOT_RENDER_BBOX_CHAR));
 
                     final Coordinate center = mapsBounds[i][j].centre();
-                    MapAttributeValues theMap = values.map.copy(values.map.getMapSize(), new Function<MapAttributeValues, Void>() {
+                    MapAttributeValues theMap = map.copy(map.getMapSize(), new Function<MapAttributeValues, Void>() {
                         @Nullable
                         @Override
                         public Void apply(@Nonnull final MapAttributeValues input) {
                             input.center = new double[]{center.x, center.y};
-                            input.scale = PagingProcessor.this.scale.getDenominator();
+                            input.scale = paging.scale;
                             input.dpi = dpi;
+                            if (paging.aoiDisplay != null) {
+                                input.areaOfInterest.display = paging.aoiDisplay;
+                            }
+                            if (paging.aoiStyle != null) {
+                                input.areaOfInterest.style = paging.aoiStyle;
+                            }
                             return null;
                         }
                     });
@@ -201,6 +212,12 @@ public class PagingProcessor extends AbstractProcessor<PagingProcessor.Input, Pa
          * The required parameters for the map.
          */
         public MapAttribute.MapAttributeValues map;
+
+        /**
+         * Attributes that define how each page/sub-map will be generated.  It defines the scale and how to render the area of interest,
+         * etc...
+         */
+        public PagingAttribute.PagingProcessorValues paging;
     }
 
     /**

@@ -112,7 +112,7 @@ public interface Constants {
         }
 
         /**
-         * Default Style for the Overview Map and Area of interest
+         * Default Style for the Overview Map and Area of interest.
          */
         interface OverviewMap {
 

@@ -314,10 +314,16 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
                 json.object();
                 Object value = attribute.get(exampleValue);
                 if (value == null) {
-                    try {
-                        value = typeOrComponentType.newInstance();
-                    } catch (InstantiationException e) {
-                        throw ExceptionUtils.getRuntimeException(e);
+                    if (typeOrComponentType.isEnum()) {
+                        if (typeOrComponentType.getEnumConstants().length > 0) {
+                            value = typeOrComponentType.getEnumConstants()[0];
+                        }
+                    } else {
+                        try {
+                            value = typeOrComponentType.newInstance();
+                        } catch (InstantiationException e) {
+                            throw ExceptionUtils.getRuntimeException(e);
+                        }
                     }
                 }
                 final Object childDefaultValue = getDefaultValue(((PObject) defaultValue), attribute);

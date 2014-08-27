@@ -23,6 +23,8 @@ import com.google.common.base.Predicate;
 import com.google.common.io.Files;
 import jsr166y.ForkJoinPool;
 import net.sf.jasperreports.engine.JasperPrint;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -43,7 +45,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
-import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
 
@@ -52,7 +53,7 @@ import static org.junit.Assert.assertEquals;
  * <p/>
  * Created by Jesse on 3/26/14.
  */
-public class PagingProcessorTest extends AbstractMapfishSpringTest {
+public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
     public static final String BASE_DIR = "paging_processor_test/";
 
     @Autowired
@@ -89,23 +90,79 @@ public class PagingProcessorTest extends AbstractMapfishSpringTest {
                 }
         );
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
-
         PJsonObject requestData = loadJsonRequestData();
 
         final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
+//        testPrint(config, requestData, "default-aoi", format);
+
+        getAreaOfInterest(requestData).put("display", "CLIP");
+        testPrint(config, requestData, "clip-full-aoi", format);
+        getAreaOfInterest(requestData).remove("display");
+
+        requestData = loadJsonRequestData();
+
+        getPagingAttributes(requestData).put("aoiDisplay", "clip");
+        testPrint(config, requestData, "clip-page-aoi", format);
+
+        getPagingAttributes(requestData).put("aoiDisplay", "render");
+        testPrint(config, requestData, "default-aoi", format);
+
+        getPagingAttributes(requestData).put("aoiDisplay", "none");
+        testPrint(config, requestData, "none-aoi", format);
+
+        getAreaOfInterest(requestData).put("display", "CLIP");
+        getPagingAttributes(requestData).put("aoiDisplay", "RENDER");
+        testPrint(config, requestData, "full-clip-sub-render", format);
+
+        getAreaOfInterest(requestData).put("display", "CLIP");
+        getPagingAttributes(requestData).put("aoiDisplay", "NONE");
+        testPrint(config, requestData, "full-clip-sub-none", format);
+
+        getAreaOfInterest(requestData).put("display", "CLIP");
+        getPagingAttributes(requestData).put("aoiDisplay", "NONE");
+        testPrint(config, requestData, "full-clip-sub-none", format);
+
+        getAreaOfInterest(requestData).put("display", "NONE");
+        getPagingAttributes(requestData).put("aoiDisplay", "NONE");
+        testPrint(config, requestData, "all-none", format);
+    }
+
+    private JSONObject getAreaOfInterest(PJsonObject requestData) throws JSONException {
+        return getMapAttributes(requestData).getJSONObject("areaOfInterest");
+    }
+
+    private JSONObject getPagingAttributes(PJsonObject requestData) throws JSONException {
+        final PJsonObject attributes = requestData.getJSONObject("attributes");
+        JSONObject paging = attributes.getInternalObj().optJSONObject("paging");
+        if (paging == null) {
+            paging = new JSONObject();
+            attributes.getInternalObj().put("paging", paging);
+        }
+        return paging;
+    }
+
+    private JSONObject getMapAttributes(PJsonObject requestData) throws JSONException {
+        final PJsonObject attributes = requestData.getJSONObject("attributes");
+        return attributes.getInternalObj().optJSONObject("map");
+    }
+
+    private void testPrint(Configuration config, PJsonObject requestData, String testName, AbstractJasperReportOutputFormat format) throws Exception {
         JasperPrint print = format.getJasperPrint(requestData, config, config.getDirectory(), getTaskDirectory()).print;
 
         assertEquals(7, print.getPages().size());
         for (int i = 0; i < print.getPages().size(); i++) {
             BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, i);
-            ImageIO.write(reportImage, "png", new File("e:/tmp/" + "expected-page-"+i+".png"));
 
-//            File expectedImage = getFile(BASE_DIR + "output/expected-page-"+i+".png");
-//            new ImageSimilarity(reportImage, 5).assertSimilarity(expectedImage, 10);
+//            final File output = new File("e:/tmp/" + testName + "/expected-page-" + i + ".png");
+//            output.getParentFile().mkdirs();
+//            ImageIO.write(reportImage, "png", output);
+
+            File expectedImage = getFile(BASE_DIR + "output/"+testName+"/expected-page-" + i + ".png");
+            new ImageSimilarity(reportImage, 5).assertSimilarity(expectedImage, 10);
         }
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(PagingProcessorTest.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateMapPagesProcessorTest.class, BASE_DIR + "requestData.json");
     }
 }
