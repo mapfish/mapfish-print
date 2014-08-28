@@ -24,7 +24,6 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
 import com.google.common.io.CharStreams;
 import com.sampullara.cli.Args;
 import org.json.JSONWriter;
@@ -35,7 +34,6 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractXmlApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -50,7 +48,6 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * A shell version of the MapPrinter. Can be used for testing or for calling
@@ -58,13 +55,6 @@ import javax.annotation.Nullable;
  */
 public final class Main {
     private static boolean exceptionOnFailure;
-    private static Function<ApplicationContext, Void> springContextCallback = new Function<ApplicationContext, Void>() {
-        @Nullable
-        @Override
-        public Void apply(final ApplicationContext input) {
-            return null;
-        }
-    };
 
     private Main() {
         // intentionally empty
@@ -118,7 +108,6 @@ public final class Main {
         if (cli.springConfig != null) {
             context = new ClassPathXmlApplicationContext(DEFAULT_SPRING_CONTEXT, cli.springConfig);
         }
-        springContextCallback.apply(context);
         try {
             context.getBean(Main.class).run(cli);
         } finally {
@@ -232,17 +221,6 @@ public final class Main {
             file = System.in;
         }
         return file;
-    }
-
-    /**
-     * A callback which is called after the spring application context is loaded.  This allows a test (for example)
-     * to configure the http client request factory to handle special test urls.
-     *
-     * @param callback the callback function
-     */
-    @VisibleForTesting
-    static void setSpringContextCallback(final Function<ApplicationContext, Void> callback) {
-        Main.springContextCallback = callback;
     }
 
     /**

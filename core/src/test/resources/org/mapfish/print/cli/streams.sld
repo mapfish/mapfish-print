@@ -27,22 +27,7 @@
         <UserStyle>
             <FeatureTypeStyle>
                 <FeatureTypeName>Feature</FeatureTypeName>
-                <Rule>
-                    <MinScaleDenominator>32000</MinScaleDenominator>
-                    <LineSymbolizer>
-                        <Stroke>
-                            <CssParameter name="stroke">
-                                <ogc:Literal>#666666</ogc:Literal>
-                            </CssParameter>
-                            <CssParameter name="stroke-width">
-                                <ogc:Literal>2</ogc:Literal>
-                            </CssParameter>
-                        </Stroke>
-                    </LineSymbolizer>
-                </Rule>
-
                 <Rule>  <!-- thick line drawn first-->
-                    <MaxScaleDenominator>32000</MaxScaleDenominator>
                     <LineSymbolizer>
                         <Stroke>
                             <CssParameter name="stroke">
@@ -58,7 +43,6 @@
             <FeatureTypeStyle>
                 <FeatureTypeName>Feature</FeatureTypeName>
                 <Rule>  <!-- thin line drawn second -->
-                    <MaxScaleDenominator>32000</MaxScaleDenominator>
                     <LineSymbolizer>
                         <Stroke>
                             <CssParameter name="stroke">

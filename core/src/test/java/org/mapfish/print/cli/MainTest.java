@@ -19,23 +19,12 @@
 
 package org.mapfish.print.cli;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.io.Files;
 import org.junit.Before;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
-import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.test.util.ImageSimilarity;
-import org.springframework.context.ApplicationContext;
-import org.springframework.http.HttpMethod;
-import org.springframework.mock.http.client.MockClientHttpRequest;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 
 public class MainTest {
@@ -44,7 +33,6 @@ public class MainTest {
     private File configFile;
     private File v3ApiRequestFile;
     private File v2ApiRequestFile;
-    private String testSpringConfigFile;
 
     @Before
     public void setUp() throws Exception {
@@ -52,33 +40,7 @@ public class MainTest {
         this.configFile = getFile("config.yaml");
         this.v3ApiRequestFile = getFile("v3Request.json");
         this.v2ApiRequestFile = getFile("v2Request.json");
-        this.testSpringConfigFile = "/test-http-request-factory-application-context.xml";
         Main.setExceptionOnFailure(true);
-        Main.setSpringContextCallback(new Function<ApplicationContext, Void>() {
-
-            @Nullable
-            @Override
-            public Void apply(@Nonnull ApplicationContext input) {
-                final TestHttpClientFactory bean = input.getBean(TestHttpClientFactory.class);
-                bean.registerHandler(new Predicate<URI>() {
-                    @Override
-                    public boolean apply(@Nonnull URI input) {
-                        return input.getHost().equals("main-test.json");
-                    }
-                }, new TestHttpClientFactory.Handler() {
-                    @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws IOException, Exception {
-                        try {
-                            byte[] bytes = Files.toByteArray(getFile("/map-data" + uri.getPath()));
-                            return ok(uri, bytes, httpMethod);
-                        } catch (AssertionError e) {
-                            return error404(uri, httpMethod);
-                        }
-                    }
-                });
-                return null;
-            }
-        });
     }
 
     private File getFile(String fileName) {
@@ -88,7 +50,6 @@ public class MainTest {
     @Test
     public void testNewAPI() throws Exception {
         String[] args = {
-                "-springConfig", this.testSpringConfigFile,
                 "-config", this.configFile.getAbsolutePath(),
                 "-spec", this.v3ApiRequestFile.getAbsolutePath(),
                 "-output", this.outputFile.getAbsolutePath()};
@@ -101,7 +62,6 @@ public class MainTest {
     public void testOldAPI() throws Exception {
         String[] args = {
                 "-v2",
-                "-springConfig", this.testSpringConfigFile,
                 "-config", this.configFile.getAbsolutePath(),
                 "-spec", this.v2ApiRequestFile.getAbsolutePath(),
                 "-output", this.outputFile.getAbsolutePath()};
@@ -113,7 +73,6 @@ public class MainTest {
     @Test(expected = Exception.class)
     public void testV2SpecNoV2Param() throws Exception {
         String[] args = {
-                "-springConfig", this.testSpringConfigFile,
                 "-config", this.configFile.getAbsolutePath(),
                 "-spec", this.v2ApiRequestFile.getAbsolutePath(),
                 "-output", this.outputFile.getAbsolutePath()};
@@ -124,7 +83,6 @@ public class MainTest {
     public void testV3SpecV2ApiParam() throws Exception {
         String[] args = {
                 "-v2",
-                "-springConfig", this.testSpringConfigFile,
                 "-config", this.configFile.getAbsolutePath(),
                 "-spec", this.v3ApiRequestFile.getAbsolutePath(),
                 "-output", this.outputFile.getAbsolutePath()};
