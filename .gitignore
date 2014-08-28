@@ -14,3 +14,4 @@ core/gradle/
 core/gradlew
 generated-gradlew
 generated-gradlew.bat
+projectTests/

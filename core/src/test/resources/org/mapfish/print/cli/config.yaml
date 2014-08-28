@@ -1,0 +1,14 @@
+templates:
+  main: !template
+    reportTemplate: "simpleReport.jrxml"
+    attributes:
+      map: !map
+        width: 630
+        height: 294
+        maxDpi: 400
+    processors:
+    - !reportBuilder
+      directory: '.'
+    - !createMap {}
+
+
