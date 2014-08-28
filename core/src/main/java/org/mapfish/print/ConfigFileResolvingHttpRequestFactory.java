@@ -22,6 +22,8 @@ package org.mapfish.print;
 import com.vividsolutions.jts.util.Assert;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -46,6 +48,7 @@ import java.util.NoSuchElementException;
  * @author Jesse on 8/12/2014.
  */
 public final class ConfigFileResolvingHttpRequestFactory extends AbstractClientHttpRequestFactoryWrapper {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigFileResolvingHttpRequestFactory.class);
     private final Template template;
 
     /**
@@ -99,6 +102,7 @@ public final class ConfigFileResolvingHttpRequestFactory extends AbstractClientH
         @Override
         protected ClientHttpResponse executeInternal(final HttpHeaders headers) throws IOException {
             if (this.request != null) {
+                LOGGER.debug("Executing http request: " + this.request.getURI());
                 return this.request.execute();
             }
             if (this.httpMethod == HttpMethod.GET) {
@@ -106,12 +110,15 @@ public final class ConfigFileResolvingHttpRequestFactory extends AbstractClientH
                 final Configuration configuration = ConfigFileResolvingHttpRequestFactory.this.template.getConfiguration();
                 try {
                     final byte[] bytes = configuration.loadFile(uriString);
-                    return new ConfigFileResolverHttpResponse(bytes, headers);
+                    final ConfigFileResolverHttpResponse response = new ConfigFileResolverHttpResponse(bytes, headers);
+                    LOGGER.debug("Resolved request: " + uriString + " using mapfish print config file loaders.");
+                    return response;
                 } catch (NoSuchElementException e) {
                   // cannot be loaded by configuration so try http
                 }
             }
 
+            LOGGER.debug("Executing http request: " + this.getURI());
             return createRequestFromWrapped(headers).execute();
         }
 

@@ -147,11 +147,12 @@ public final class Main {
 
                 if (cli.v2Api) {
                     PJsonObject oldApiSpec = jsonSpec;
-                    LOGGER.info("Converting request data from old api request data to new");
+                    LOGGER.info("Converting request data from V2 API request data to V3 API");
                     jsonSpec = OldAPIRequestConverter.convert(oldApiSpec, this.mapPrinter.getConfiguration());
                 }
 
                 outFile = getOutputStream(cli.output, this.mapPrinter.getOutputFormat(jsonSpec).getFileSuffix());
+                LOGGER.debug("Request Data: \n" + jsonSpec.getInternalObj().toString(2));
                 this.mapPrinter.print(jsonSpec, outFile);
             }
         } finally {
