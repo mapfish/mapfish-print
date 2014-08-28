@@ -244,7 +244,7 @@ public final class OldAPIRequestConverter {
         final TableProcessor tableProcessor = getTableProcessor(template);
         final PJsonObject oldTablePage = (PJsonObject) getOldTablePage(oldRequest);
         
-        if (tableProcessor == null && oldTablePage == null) {
+        if (tableProcessor == null || oldTablePage == null) {
             // no table, no work
             return;
         } else if (tableProcessor != null && oldTablePage == null) {

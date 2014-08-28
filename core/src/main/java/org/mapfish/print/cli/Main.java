@@ -23,15 +23,19 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
 import com.google.common.io.CharStreams;
 import com.sampullara.cli.Args;
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
+import org.mapfish.print.servlet.oldapi.OldAPIRequestConverter;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractXmlApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -46,22 +50,26 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.List;
-
-import static org.mapfish.print.cli.CliDefinition.clientConfig;
-import static org.mapfish.print.cli.CliDefinition.config;
-import static org.mapfish.print.cli.CliDefinition.output;
-import static org.mapfish.print.cli.CliDefinition.spec;
-import static org.mapfish.print.cli.CliDefinition.springConfig;
-import static org.mapfish.print.cli.CliDefinition.verbose;
+import javax.annotation.Nullable;
 
 /**
  * A shell version of the MapPrinter. Can be used for testing or for calling
  * from other languages than Java.
  */
 public final class Main {
+    private static boolean exceptionOnFailure;
+    private static Function<ApplicationContext, Void> springContextCallback = new Function<ApplicationContext, Void>() {
+        @Nullable
+        @Override
+        public Void apply(final ApplicationContext input) {
+            return null;
+        }
+    };
+
     private Main() {
         // intentionally empty
     }
+
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
     private static final int LOGLEVEL_QUIET = 0;
@@ -72,7 +80,7 @@ public final class Main {
     /**
      * Name of the default spring context file.
      */
-    public static final String DEFAULT_SPRING_CONTEXT = "mapfish-spring-application-context.xml";
+    public static final String DEFAULT_SPRING_CONTEXT = "/mapfish-cli-spring-application-context.xml";
 
     @Autowired
     private MapPrinter mapPrinter;
@@ -85,22 +93,17 @@ public final class Main {
      */
     public static void main(final String[] args) throws Exception {
 
-        if (args.length == 1 || args.length == 0) {
-            if (args.length == 0 ||
-                "--help".equalsIgnoreCase(args[0])
-                || "-help".equalsIgnoreCase(args[0])
-                || "-h".equalsIgnoreCase(args[0])
-                || "-?".equals(args[0])) {
-                System.out.println("\n\n");
-                printUsage(0);
-            }
-        }
+        final CliDefinition cli = new CliDefinition();
         try {
-            List<String> unusedArguments = Args.parse(CliDefinition.class, args);
+            List<String> unusedArguments = Args.parse(cli, args);
 
             if (!unusedArguments.isEmpty()) {
                 System.out.println("\n\nThe following arguments are not recognized: " + unusedArguments);
                 printUsage(1);
+                return;
+            }
+            if (cli.help) {
+                printUsage(0);
                 return;
             }
         } catch (IllegalArgumentException invalidOption) {
@@ -108,15 +111,16 @@ public final class Main {
             printUsage(1);
             return;
         }
+        configureLogs(cli.verbose);
+
         AbstractXmlApplicationContext context = new ClassPathXmlApplicationContext(DEFAULT_SPRING_CONTEXT);
 
-        if (springConfig != null) {
-            context = new ClassPathXmlApplicationContext(DEFAULT_SPRING_CONTEXT, springConfig);
+        if (cli.springConfig != null) {
+            context = new ClassPathXmlApplicationContext(DEFAULT_SPRING_CONTEXT, cli.springConfig);
         }
-        configureLogs();
-
+        springContextCallback.apply(context);
         try {
-            context.getBean(Main.class).run();
+            context.getBean(Main.class).run(cli);
         } finally {
             context.destroy();
         }
@@ -124,16 +128,20 @@ public final class Main {
 
     private static void printUsage(final int exitCode) {
         Args.usage(CliDefinition.class);
-        System.exit(exitCode);
+        if (Main.exceptionOnFailure) {
+            throw new Error("Printing Usage: " + exitCode);
+        } else {
+            System.exit(exitCode);
+        }
     }
 
-    private void run() throws Exception {
-        final File configFile = new File(config);
+    private void run(final CliDefinition cli) throws Exception {
+        final File configFile = new File(cli.config);
         this.mapPrinter.setConfiguration(configFile);
         OutputStream outFile = null;
         try {
-            if (clientConfig) {
-                outFile = getOutputStream("");
+            if (cli.clientConfig) {
+                outFile = getOutputStream(cli.output, ".yaml");
                 final OutputStreamWriter writer = new OutputStreamWriter(outFile, Charset.forName(Constants.DEFAULT_ENCODING));
 
                 JSONWriter json = new JSONWriter(writer);
@@ -144,10 +152,17 @@ public final class Main {
                 writer.close();
 
             } else {
-                final InputStream inFile = getInputStream();
+                final InputStream inFile = getInputStream(cli.spec);
                 final String jsonConfiguration = CharStreams.toString(new InputStreamReader(inFile, Constants.DEFAULT_ENCODING));
-                final PJsonObject jsonSpec = MapPrinter.parseSpec(jsonConfiguration);
-                outFile = getOutputStream(this.mapPrinter.getOutputFormat(jsonSpec).getFileSuffix());
+                PJsonObject jsonSpec = MapPrinter.parseSpec(jsonConfiguration);
+
+                if (cli.v2Api) {
+                    PJsonObject oldApiSpec = jsonSpec;
+                    LOGGER.info("Converting request data from old api request data to new");
+                    jsonSpec = OldAPIRequestConverter.convert(oldApiSpec, this.mapPrinter.getConfiguration());
+                }
+
+                outFile = getOutputStream(cli.output, this.mapPrinter.getOutputFormat(jsonSpec).getFileSuffix());
                 this.mapPrinter.print(jsonSpec, outFile);
             }
         } finally {
@@ -158,7 +173,7 @@ public final class Main {
     }
 
 
-    private static void configureLogs() {
+    private static void configureLogs(final String verbose) {
         final ClassLoader classLoader = Main.class.getClassLoader();
         URL logfile;
         switch (Integer.parseInt(verbose)) {
@@ -194,13 +209,14 @@ public final class Main {
         StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext);
     }
 
-    private OutputStream getOutputStream(final String suffix) throws FileNotFoundException {
+    private OutputStream getOutputStream(final String output, final String suffix) throws FileNotFoundException {
+        String outputPath = output;
         final OutputStream outFile;
-        if (output != null) {
-            if (!output.endsWith("." + suffix)) {
-                output = output + "." + suffix;
+        if (outputPath != null) {
+            if (!outputPath.endsWith("." + suffix)) {
+                outputPath = outputPath + "." + suffix;
             }
-            outFile = new FileOutputStream(output);
+            outFile = new FileOutputStream(outputPath);
         } else {
             //noinspection UseOfSystemOutOrSystemErr
             outFile = System.out;
@@ -208,7 +224,7 @@ public final class Main {
         return outFile;
     }
 
-    private InputStream getInputStream() throws FileNotFoundException {
+    private InputStream getInputStream(final String spec) throws FileNotFoundException {
         final InputStream file;
         if (spec != null) {
             file = new FileInputStream(spec);
@@ -218,4 +234,24 @@ public final class Main {
         return file;
     }
 
+    /**
+     * A callback which is called after the spring application context is loaded.  This allows a test (for example)
+     * to configure the http client request factory to handle special test urls.
+     *
+     * @param callback the callback function
+     */
+    @VisibleForTesting
+    static void setSpringContextCallback(final Function<ApplicationContext, Void> callback) {
+        Main.springContextCallback = callback;
+    }
+
+    /**
+     * Instead of calling system.exit an exception will be thrown.  This is useful for testing so a test won't shutdown jvm.
+     *
+     * @param exceptionOnFailure if true then an exception will be thrown instead of system.exit being called.
+     */
+    @VisibleForTesting
+    static void setExceptionOnFailure(final boolean exceptionOnFailure) {
+        Main.exceptionOnFailure = exceptionOnFailure;
+    }
 }
