@@ -55,7 +55,7 @@ public class MainTest {
                 "-output", this.outputFile.getAbsolutePath()};
         Main.main(args);
 
-        new ImageSimilarity(getFile("expectedV3Image.png"), 2).assertSimilarity(this.outputFile, 10);
+        new ImageSimilarity(getFile("expectedV3Image.png"), 1).assertSimilarity(this.outputFile, 70);
     }
 
     @Test
@@ -67,7 +67,7 @@ public class MainTest {
                 "-output", this.outputFile.getAbsolutePath()};
         Main.main(args);
 
-        new ImageSimilarity(getFile("expectedV2Image.png"), 2).assertSimilarity(this.outputFile, 10);
+        new ImageSimilarity(getFile("expectedV2Image.png"), 1).assertSimilarity(this.outputFile, 70);
     }
 
     @Test(expected = Exception.class)

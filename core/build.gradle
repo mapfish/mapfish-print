@@ -19,7 +19,7 @@ task testCLI(type: Exec) {
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
         cmd = ['cmd', '/c', 'print.bat']
     } else {
-        cmd = ['print']
+        cmd = ['./print']
     }
 
     File outputFile = new File(appDir, 'cliTestOutput.png')
