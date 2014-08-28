@@ -25,7 +25,6 @@ import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.servlet.MapPrinterServletTest;
 import org.mapfish.print.servlet.ServletMapPrinterFactory;
-import org.mapfish.print.servlet.job.ThreadPoolJobManager;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -56,8 +55,6 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
     private MapPrinterServlet newApiServlet;
     @Autowired
     private ServletMapPrinterFactory printerFactory;
-    @Autowired
-    private ThreadPoolJobManager jobManager;
 
     @Test
     public void testInfoRequest() throws Exception {
