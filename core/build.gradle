@@ -54,6 +54,9 @@ configurations {
     geotools {
         description = 'Geotools spatial libraries'
     }
+    jasper {
+        description = 'Dependencies for the jasper reports generation'
+    }
 }
 
 dependencies {
@@ -82,6 +85,12 @@ dependencies {
             "org.geotools:gt-svg:$geotoolsVersion",
             "org.geotools:gt-cql:$geotoolsVersion"
     )
+    jasper (
+            "net.sf.jasperreports:jasperreports:$project.jasperReportVersion",
+            'org.codehaus.groovy:groovy-all:2.2.2',
+            'ar.com.fdvs:DynamicJasper:5.0.0',
+            'com.google.code.maven-play-plugin.org.apache.commons:commons-javaflow:1590792'
+    )
     compile fileTree(dir: "$projectDir/libs", include: '*.jar')
     compile (
             "com.google.guava:guava:16.0.1",
@@ -90,9 +99,6 @@ dependencies {
             'ch.qos.logback:logback-classic:1.1.1',
             'org.yaml:snakeyaml:1.13',
             "com.github.spullara.cli-parser:cli-parser:1.1.1",
-	        "net.sf.jasperreports:jasperreports:$project.jasperReportVersion",
-	        'org.codehaus.groovy:groovy-all:2.2.2',
-	        'ar.com.fdvs:DynamicJasper:5.0.0',
             'org.apache.httpcomponents:httpclient:4.3.3'
     )
 
@@ -102,6 +108,7 @@ dependencies {
         exclude module: 'logback-classic'
     }
     compile (configurations.geotools)
+    compile (configurations.jasper)
 
     // This jsr166 dependendency is here only so long as Java 6 is supported
     // it is the forkjoin code and can be removed if java 7 is a required library
