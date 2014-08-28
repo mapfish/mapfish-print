@@ -22,12 +22,9 @@ package org.mapfish.print.servlet.fileloader;
 import com.google.common.base.Optional;
 import com.google.common.io.Files;
 import org.junit.Test;
-import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.IllegalFileAccessException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.util.NoSuchElementException;
 
@@ -35,13 +32,17 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
-public class FileConfigFileLoaderTest extends AbstractMapfishSpringTest {
-    private static final File CONFIG_FILE = getFile(FileConfigFileLoaderTest.class, "config.yaml");
+public class FileConfigFileLoaderTest extends AbstractConfigLoaderTest {
 
     @Autowired
     private FileConfigFileLoader loader;
+
+    @Override
+    public FileConfigFileLoader getLoader() {
+        return loader;
+    }
+
     @Test
     public void testToFile() throws Exception {
         assertFalse(loader.toFile(new URI("servlet:///blahblahblah")).isPresent());
@@ -128,11 +129,4 @@ public class FileConfigFileLoaderTest extends AbstractMapfishSpringTest {
         this.loader.loadFile(configFileUri, "doesNotExist");
     }
 
-    private void assertFileAccessException(URI configFileUri, String resource) throws IOException {
-        try {
-            this.loader.isAccessible(configFileUri, resource);
-            fail("Expected " + IllegalFileAccessException.class.getSimpleName());
-        } catch (IllegalFileAccessException e) {
-            // good
-        }
-    }}
+}

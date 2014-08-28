@@ -28,7 +28,6 @@ import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.ConfigFileResolvingHttpRequestFactory;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
-import org.mapfish.print.config.Template;
 import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
 import org.mapfish.print.servlet.fileloader.ServletConfigFileLoader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -154,11 +153,7 @@ public class MapfishJsonFileResolverTest extends AbstractMapfishSpringTest {
         configuration.setFileLoaderManager(this.fileLoaderManager);
         configuration.setConfigurationFile(getFile(configFile));
 
-
-        Template template = new Template();
-        template.setConfiguration(configuration);
-        ConfigFileResolvingHttpRequestFactory requestFactory = new ConfigFileResolvingHttpRequestFactory(this.httpClient,
-                template);
+        ConfigFileResolvingHttpRequestFactory requestFactory = new ConfigFileResolvingHttpRequestFactory(this.httpClient, configuration);
 
         return parser.parseStyle(configuration, requestFactory,
                 styleString, null);

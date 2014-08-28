@@ -26,7 +26,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
-import org.mapfish.print.config.Template;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -76,9 +75,8 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
         );
 
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
-        final Template template = config.getTemplate("A4 Landscape");
 
-        this.resolvingFactory = new ConfigFileResolvingHttpRequestFactory(this.requestFactory, template);
+        this.resolvingFactory = new ConfigFileResolvingHttpRequestFactory(this.requestFactory, config);
     }
 
     @Test

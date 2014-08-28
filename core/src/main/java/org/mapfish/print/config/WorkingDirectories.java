@@ -45,6 +45,10 @@ public class WorkingDirectories {
         this.working = working;
     }
 
+    public final File getWorking() {
+        return this.working;
+    }
+
     /**
      * Called by spring after bean has been created and populated.
      */
@@ -153,4 +157,5 @@ public class WorkingDirectories {
     public final File getWorking(final Configuration configuration) {
         return new File(this.working, configuration.getDirectory().getName());
     }
+
 }
