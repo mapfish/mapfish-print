@@ -21,8 +21,10 @@ package org.mapfish.print.output;
 
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
 import jsr166y.ForkJoinPool;
 import jsr166y.ForkJoinTask;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -30,6 +32,8 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.Renderable;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+import net.sf.jasperreports.engine.util.LocalJasperReportsContext;
+import net.sf.jasperreports.repo.RepositoryService;
 import org.json.JSONException;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapAttribute;
@@ -151,6 +155,8 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             throw new CancellationException();
         }
 
+        JasperFillManager fillManager = getJasperFillManager(config);
+
         final JasperPrint print;
         if (template.getJdbcUrl() != null) {
             Connection connection;
@@ -159,10 +165,12 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             } else {
                 connection = DriverManager.getConnection(template.getJdbcUrl());
             }
-            print = JasperFillManager.fillReport(
+
+            print = fillManager.fill(
                     jasperTemplateBuild.getAbsolutePath(),
                     values.asMap(),
                     connection);
+
         } else if (template.getTableDataKey() != null) {
             final Object dataSourceObj = values.getObject(template.getTableDataKey(), Object.class);
             JRDataSource dataSource;
@@ -182,18 +190,26 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                                          "JRDataSource");
             }
 
-            print = JasperFillManager.fillReport(
+            print = fillManager.fill(
                     jasperTemplateBuild.getAbsolutePath(),
                     values.asMap(),
                     dataSource);
         } else {
-            print = JasperFillManager.fillReport(
+            print = fillManager.fill(
                     jasperTemplateBuild.getAbsolutePath(),
                     values.asMap(),
                     new JREmptyDataSource());
         }
         print.setProperty(Renderable.PROPERTY_IMAGE_DPI, String.valueOf(Math.round(maxDpi[0])));
         return new Print(print, maxDpi[0], maxDpi[1]);
+    }
+
+    private JasperFillManager getJasperFillManager(@Nonnull final Configuration configuration) {
+        LocalJasperReportsContext ctx = new LocalJasperReportsContext(DefaultJasperReportsContext.getInstance());
+        ctx.setClassLoader(getClass().getClassLoader());
+        ctx.setExtensions(RepositoryService.class,
+                Lists.newArrayList(new MapfishPrintRepositoryService(configuration, this.httpRequestFactory)));
+        return JasperFillManager.getInstance(ctx);
     }
 
     private JRDataSource toJRDataSource(@Nonnull final Iterator iterator) {
@@ -204,7 +220,8 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                 Values values = (Values) next;
                 rows.add(values.asMap());
             } else if (next instanceof Map) {
-                Map map = (Map) next;
+                @SuppressWarnings("unchecked")
+                Map<String, ?> map = (Map<String, ?>) next;
                 rows.add(map);
             } else {
                 throw new AssertionError("Objects of type: " + next.getClass() + " cannot be converted to a row in a JRDataSource");
@@ -245,4 +262,5 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             this.requestorDpi = requestorDpi;
         }
     }
+
 }
