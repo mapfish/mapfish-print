@@ -215,8 +215,8 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 try {
                     layer.render(graphics2D, clientHttpRequestFactory, transformer, isFirstLayer);
 
-                    path = new File(printDirectory, mapKey + "_layer_" + i + ".tiff");
-                    ImageIO.write(bufferedImage, "tiff", path);
+                    path = new File(printDirectory, mapKey + "_layer_" + i + ".png");
+                    ImageIO.write(bufferedImage, "png", path);
                 } finally {
                     graphics2D.dispose();
                 }
@@ -280,10 +280,10 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
     /**
      * If requested, adjust the bounds to the nearest scale and the map size.
      *
-     * @param mapValues         Map parameters
-     * @param dpiOfRequestor    The DPI.
-     * @param paintArea         The size of the painting area.
-     * @param bounds            The map bounds.
+     * @param mapValues      Map parameters
+     * @param dpiOfRequestor The DPI.
+     * @param paintArea      The size of the painting area.
+     * @param bounds         The map bounds.
      */
     public static MapBounds adjustBoundsToScaleAndMapSize(
             final MapAttribute.MapAttributeValues mapValues, final double dpiOfRequestor,
@@ -291,9 +291,9 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         MapBounds newBounds = bounds;
         if (mapValues.isUseNearestScale()) {
             newBounds = newBounds.adjustBoundsToNearestScale(
-                        mapValues.getZoomLevels(),
-                        mapValues.getZoomSnapTolerance(),
-                        mapValues.getZoomLevelSnapStrategy(), paintArea, dpiOfRequestor);
+                    mapValues.getZoomLevels(),
+                    mapValues.getZoomSnapTolerance(),
+                    mapValues.getZoomLevelSnapStrategy(), paintArea, dpiOfRequestor);
         }
 
         newBounds = new BBoxMapBounds(newBounds.toReferencedEnvelope(paintArea, dpiOfRequestor));
@@ -310,10 +310,11 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             return featureLayer.shouldRenderAsSvg();
         }
         return false;
-     }
+    }
 
     /**
      * Create a SVG graphic with the give dimensions.
+     *
      * @param size The size of the SVG graphic.
      */
     public static SVGGraphics2D getSvgGraphics(final Dimension size)
@@ -333,8 +334,9 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
 
     /**
      * Save a SVG graphic to the given path.
-     * @param graphics2d    The SVG graphic to save.
-     * @param path          The file.
+     *
+     * @param graphics2d The SVG graphic to save.
+     * @param path       The file.
      */
     public static void saveSvgFile(final SVGGraphics2D graphics2d, final File path) throws IOException {
         Closer closer = Closer.create();
