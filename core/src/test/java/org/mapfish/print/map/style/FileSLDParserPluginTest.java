@@ -28,7 +28,6 @@ import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.attribute.map.BBoxMapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
-import org.mapfish.print.config.Template;
 import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -138,10 +137,8 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         config.setConfigurationFile(tempFile);
         config.setFileLoaderManager(this.fileLoaderManager);
 
-        Template template = new Template();
-        template.setConfiguration(config);
         ConfigFileResolvingHttpRequestFactory requestFactory = new ConfigFileResolvingHttpRequestFactory(this.clientHttpRequestFactory,
-                template);
+                config);
 
         assertFalse(this.parser.parseStyle(config, requestFactory, file.getAbsolutePath(), mapContext).isPresent());
     }
@@ -152,10 +149,8 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         config.setConfigurationFile(file);
         config.setFileLoaderManager(this.fileLoaderManager);
 
-        Template template = new Template();
-        template.setConfiguration(config);
         ConfigFileResolvingHttpRequestFactory requestFactory = new ConfigFileResolvingHttpRequestFactory(this.clientHttpRequestFactory,
-                template);
+                config);
 
         return this.parser.parseStyle(config, requestFactory, styleString, mapContext);
     }

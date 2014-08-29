@@ -34,6 +34,7 @@ import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
+import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -48,7 +49,9 @@ import static org.mapfish.print.servlet.MapPrinterServlet.JSON_OUTPUT_FORMAT;
  * Converter for print requests of the old API.
  */
 public final class OldAPIRequestConverter {
-    
+
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(OldAPIRequestConverter.class);
+
     private OldAPIRequestConverter() { }
     
     private static final Set<String> NON_CUSTOM_PARAMS = Sets.newHashSet(
@@ -108,12 +111,19 @@ public final class OldAPIRequestConverter {
         final CreateMapProcessor mapProcessor = getMapProcessor(template);
         final PJsonObject oldMapPage = (PJsonObject) getOldMapPage(oldRequest);
         
-        if (mapProcessor == null && oldMapPage == null) {
-            // no map, no work
+        if (mapProcessor == null) {
+            if (oldMapPage == null) {
+                // no map, no work
+                return;
+            } else {
+                LOGGER.warn("The request json data has attribute information for creating the map but config does not have a" +
+                            "map attribute.  Check that the request and the config.yaml are correct.");
+                return;
+            }
+        } else if (oldMapPage == null) {
+            LOGGER.warn("The request json data does not have attribute information for creating the map." +
+                        "  Check that the request and the config.yaml are correct.");
             return;
-        } else if (mapProcessor != null && oldMapPage == null) {
-            throw new IllegalArgumentException("Configuration expects a map, but no "
-                    + "map is defined in the request.");
         }
         
         String mapAttributeName = "map";
@@ -195,7 +205,7 @@ public final class OldAPIRequestConverter {
         }
         
         PArray oldLayers = oldRequest.getArray("layers");
-        for (int i = 0; i < oldLayers.size(); i++) {
+        for (int i = oldLayers.size() - 1; i > -1; i--) {
             PJsonObject oldLayer = (PJsonObject) oldLayers.getObject(i);
             layers.put(OldAPILayerConverter.convert(oldLayer));
         }
@@ -243,15 +253,21 @@ public final class OldAPIRequestConverter {
             final PJsonObject oldRequest, final Template template) throws JSONException {
         final TableProcessor tableProcessor = getTableProcessor(template);
         final PJsonObject oldTablePage = (PJsonObject) getOldTablePage(oldRequest);
-        
-        if (tableProcessor == null || oldTablePage == null) {
-            // no table, no work
+
+        if (tableProcessor == null) {
+            if (oldTablePage == null) {
+                // no table, no work
+                return;
+            } else {
+                LOGGER.warn("The request json data has attribute information for creating the map but config does not have a" +
+                            "map attribute.  Check that the request and the config.yaml are correct.");
+                return;
+            }
+        } else if (oldTablePage == null) {
+            LOGGER.warn("Configuration expects a table, but no table is defined in the request");
             return;
-        } else if (tableProcessor != null && oldTablePage == null) {
-            throw new IllegalArgumentException("Configuration expects a table, but no "
-                    + "table is defined in the request.");
         }
-        
+
         String tableAttributeName = "table";
         if (tableProcessor.getInputMapperBiMap().containsValue("table")) {
             tableAttributeName = tableProcessor.getInputMapperBiMap().inverse().get("table");
