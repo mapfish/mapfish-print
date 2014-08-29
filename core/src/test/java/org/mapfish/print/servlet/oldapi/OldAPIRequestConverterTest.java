@@ -55,7 +55,7 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
     public void testConvert() throws IOException, JSONException, NoSuchAppException, URISyntaxException {
         setUpConfigFiles();
         Configuration configuration = printerFactory.create("default").getConfiguration();
-        JSONObject request = OldAPIRequestConverter.convert(loadRequestDataAsJson(), configuration).getInternalObj();
+        JSONObject request = OldAPIRequestConverter.convert(loadRequestDataAsJson("requestData-old-api-all.json"), configuration).getInternalObj();
         
         assertNotNull(request);
         assertEquals("A4 Portrait", request.getString(Constants.JSON_LAYOUT_KEY));
@@ -128,14 +128,37 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertEquals("27634972", data.getJSONArray(0).getString(0));
         assertEquals("27634973", data.getJSONArray(1).getString(0));
     }
-    
+
+    @Test
+    public void testConvertTableInConfigNotInRequest() throws IOException, JSONException, NoSuchAppException, URISyntaxException {
+        setUpConfigFiles();
+        Configuration configuration = printerFactory.create("default").getConfiguration();
+        final PJsonObject v2ApiRequest = loadRequestDataAsJson("requestData-old-api-no-table-data.json");
+        JSONObject request = OldAPIRequestConverter.convert(v2ApiRequest, configuration).getInternalObj();
+
+        assertTrue(request.has("attributes"));
+        JSONObject attributes = request.getJSONObject("attributes");
+
+        // table
+        assertTrue(attributes.has("entries"));
+        JSONObject table = attributes.getJSONObject("entries");
+        assertTrue(table.has("columns"));
+        assertTrue(table.has("data"));
+
+        JSONArray columns = table.getJSONArray("columns");
+        assertEquals(0, columns.length());
+
+        JSONArray data = table.getJSONArray("data");
+        assertEquals(0, data.length());
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testConvertInvalidTemplate() throws IOException, JSONException, NoSuchAppException, URISyntaxException {
         setUpConfigFiles();
         Configuration configuration = printerFactory.create("wrong-layout").getConfiguration();
         // will trigger an exception, because the configuration uses a 
         // different layout than specified in the request
-        OldAPIRequestConverter.convert(loadRequestDataAsJson(), configuration);
+        OldAPIRequestConverter.convert(loadRequestDataAsJson("requestData-old-api-all.json"), configuration);
     }
 
     private void setUpConfigFiles() throws URISyntaxException {
@@ -145,7 +168,7 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         printerFactory.setConfigurationFiles(configFiles);
     }
 
-    private PJsonObject loadRequestDataAsJson() throws IOException {
-        return AbstractMapfishSpringTest.parseJSONObjectFromFile(OldAPIRequestConverterTest.class, "requestData-old-api-all.json");
+    private PJsonObject loadRequestDataAsJson(String fileName) throws IOException {
+        return AbstractMapfishSpringTest.parseJSONObjectFromFile(OldAPIRequestConverterTest.class, fileName);
     }
 }
