@@ -88,8 +88,7 @@ dependencies {
     jasper (
             "net.sf.jasperreports:jasperreports:$project.jasperReportVersion",
             'org.codehaus.groovy:groovy-all:2.2.2',
-            'ar.com.fdvs:DynamicJasper:5.0.0',
-            'com.google.code.maven-play-plugin.org.apache.commons:commons-javaflow:1590792'
+            'ar.com.fdvs:DynamicJasper:5.0.0'
     )
     compile fileTree(dir: "$projectDir/libs", include: '*.jar')
     compile (
