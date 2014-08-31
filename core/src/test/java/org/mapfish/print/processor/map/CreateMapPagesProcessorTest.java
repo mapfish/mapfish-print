@@ -25,6 +25,7 @@ import jsr166y.ForkJoinPool;
 import net.sf.jasperreports.engine.JasperPrint;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -39,7 +40,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -65,9 +65,8 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
     @Autowired
     ForkJoinPool forkJoinPool;
 
-    @Test
-    @DirtiesContext
-    public void testExecute() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         final String host = "paging_processor_test";
         requestFactory.registerHandler(
                 new Predicate<URI>() {
@@ -87,42 +86,52 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
                     }
                 }
         );
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
+
+    }
+
+    @Test
+    @DirtiesContext
+    public void testExecute() throws Exception {
+        Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         PJsonObject requestData = loadJsonRequestData();
 
         final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
-        testPrint(config, requestData, "default-aoi", format);
+//        testPrint(config, requestData, "default-aoi", format);
+//
+//        getAreaOfInterest(requestData).put("display", "CLIP");
+//        testPrint(config, requestData, "clip-full-aoi", format);
+//        getAreaOfInterest(requestData).remove("display");
+//
+//        requestData = loadJsonRequestData();
+//
+//        getPagingAttributes(requestData).put("aoiDisplay", "clip");
+//        testPrint(config, requestData, "clip-page-aoi", format);
+//
+//        getPagingAttributes(requestData).put("aoiDisplay", "render");
+//        testPrint(config, requestData, "default-aoi", format);
+//
+//        getPagingAttributes(requestData).put("aoiDisplay", "none");
+//        testPrint(config, requestData, "none-aoi", format);
+//
+//        getAreaOfInterest(requestData).put("display", "CLIP");
+//        getPagingAttributes(requestData).put("aoiDisplay", "RENDER");
+//        testPrint(config, requestData, "full-clip-sub-render", format);
+//
+//        getAreaOfInterest(requestData).put("display", "CLIP");
+//        getPagingAttributes(requestData).put("aoiDisplay", "NONE");
+//        testPrint(config, requestData, "full-clip-sub-none", format);
+//
+//        getAreaOfInterest(requestData).put("display", "CLIP");
+//        getPagingAttributes(requestData).put("aoiDisplay", "NONE");
+//        testPrint(config, requestData, "full-clip-sub-none", format);
+//
+//        getAreaOfInterest(requestData).put("display", "NONE");
+//        getPagingAttributes(requestData).put("aoiDisplay", "NONE");
+//        testPrint(config, requestData, "all-none", format);
 
-        getAreaOfInterest(requestData).put("display", "CLIP");
-        testPrint(config, requestData, "clip-full-aoi", format);
-        getAreaOfInterest(requestData).remove("display");
-
+        config = configurationFactory.getConfig(getFile(BASE_DIR + "config-scalebar.yaml"));
         requestData = loadJsonRequestData();
-
-        getPagingAttributes(requestData).put("aoiDisplay", "clip");
-        testPrint(config, requestData, "clip-page-aoi", format);
-
-        getPagingAttributes(requestData).put("aoiDisplay", "render");
-        testPrint(config, requestData, "default-aoi", format);
-
-        getPagingAttributes(requestData).put("aoiDisplay", "none");
-        testPrint(config, requestData, "none-aoi", format);
-
-        getAreaOfInterest(requestData).put("display", "CLIP");
-        getPagingAttributes(requestData).put("aoiDisplay", "RENDER");
-        testPrint(config, requestData, "full-clip-sub-render", format);
-
-        getAreaOfInterest(requestData).put("display", "CLIP");
-        getPagingAttributes(requestData).put("aoiDisplay", "NONE");
-        testPrint(config, requestData, "full-clip-sub-none", format);
-
-        getAreaOfInterest(requestData).put("display", "CLIP");
-        getPagingAttributes(requestData).put("aoiDisplay", "NONE");
-        testPrint(config, requestData, "full-clip-sub-none", format);
-
-        getAreaOfInterest(requestData).put("display", "NONE");
-        getPagingAttributes(requestData).put("aoiDisplay", "NONE");
-        testPrint(config, requestData, "all-none", format);
+        testPrint(config, requestData, "scalebar", format);
     }
 
     private JSONObject getAreaOfInterest(PJsonObject requestData) throws JSONException {
@@ -151,7 +160,7 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
         for (int i = 0; i < print.getPages().size(); i++) {
             BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, i);
 
-//            final File output = new File("/tmp/test/paging" + testName + "/expected-page-" + i + ".png");
+//            final File output = new File("e:/tmp/test/" + testName + "/expected-page-" + i + ".png");
 //            output.getParentFile().mkdirs();
 //            ImageIO.write(reportImage, "png", output);
 

@@ -20,16 +20,23 @@
 package org.mapfish.print.processor.jasper;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import jsr166y.ForkJoinTask;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.mapfish.print.attribute.Attribute;
+import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
+import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.InternalValue;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
+import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -49,10 +56,14 @@ import javax.annotation.Nullable;
 public final class DataSourceProcessor extends AbstractProcessor<DataSourceProcessor.Input, DataSourceProcessor.Output> {
 
     private String rowInputName;
+    private Map<String, Attribute> attributes = Maps.newHashMap();
 
     @Autowired
     private ProcessorDependencyGraphFactory processorGraphFactory;
     private ProcessorDependencyGraph processorGraph;
+    @Autowired
+    private MapfishParser parser;
+
 
     /**
      * Constructor.
@@ -92,6 +103,15 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
         this.processorGraph = this.processorGraphFactory.build(processors);
     }
 
+    /**
+     * All the attributes needed either by the processors for each datasource row or by the jasper template.
+     *
+     * @param attributes the attributes.
+     */
+    public void setAttributes(final Map<String, Attribute> attributes) {
+        this.attributes = attributes;
+    }
+
     @Nullable
     @Override
     public Input createInputParameter() {
@@ -129,7 +149,8 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
     }
 
     private JRDataSource processInput(@Nonnull final Values values,
-                                      @Nonnull final Iterable<?> iterable) {
+                                      @Nonnull final Iterable<?> iterable) throws JSONException {
+        Template template = values.getObject(Values.TEMPLATE_KEY, Template.class);
         List<Values> dataSourceValues = Lists.newArrayList();
         for (Object o : iterable) {
             Values rowValues;
@@ -154,13 +175,16 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
         List<ForkJoinTask<Values>> futures = Lists.newArrayList();
         if (!dataSourceValues.isEmpty()) {
             for (Values dataSourceValue : dataSourceValues.subList(1, dataSourceValues.size())) {
+                addAttributes(template, dataSourceValue);
                 final ForkJoinTask<Values> taskFuture = this.processorGraph.createTask(dataSourceValue).fork();
                 futures.add(taskFuture);
             }
 
             List<Map<String, ?>> rows = new ArrayList<Map<String, ?>>();
 
-            Values firstRowData = this.processorGraph.createTask(dataSourceValues.get(0)).invoke();
+            final Values row1Values = dataSourceValues.get(0);
+            addAttributes(template, row1Values);
+            Values firstRowData = this.processorGraph.createTask(row1Values).invoke();
             rows.add(firstRowData.asMap());
 
             for (ForkJoinTask<Values> future : futures) {
@@ -173,10 +197,20 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
         return null;
     }
 
+    private void addAttributes(@Nonnull final Template template,
+                               @Nonnull final Values dataSourceValue) throws JSONException {
+        dataSourceValue.populateFromAttributes(template, this.parser, this.attributes,
+                new PJsonObject(new JSONObject(), "DataSourceProcessorAttributes"));
+    }
+
     @Override
     protected void extraValidation(final List<Throwable> validationErrors) {
         if (this.processorGraph == null || this.processorGraph.getAllProcessors().isEmpty()) {
             validationErrors.add(new IllegalStateException("There are child processors for this processor"));
+        }
+
+        for (Attribute attribute : this.attributes.values()) {
+            attribute.validate(validationErrors);
         }
     }
 
@@ -184,6 +218,11 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
      * Contains the datasource input.
      */
     public static final class Input {
+        /**
+         * The values object with all values.  This is required in order to run sub-processor graph
+         */
+        @InternalValue
+        public Values template;
         /**
          * The values object with all values.  This is required in order to run sub-processor graph
          */
@@ -196,6 +235,7 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
         public Object source;
 
     }
+
     /**
      * Contains the datasource output.
      */
@@ -207,6 +247,7 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
 
         /**
          * Constructor for setting the table data.
+         *
          * @param datasource the table data
          */
         public Output(@Nonnull final JRDataSource datasource) {
