@@ -33,6 +33,7 @@ import org.mapfish.print.processor.map.CreateMapProcessor;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PObject;
+import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.LoggerFactory;
 
@@ -252,7 +253,7 @@ public final class OldAPIRequestConverter {
     private static void setTableAttribute(final JSONObject attributes,
             final PJsonObject oldRequest, final Template template) throws JSONException {
         final TableProcessor tableProcessor = getTableProcessor(template);
-        final PJsonObject oldTablePage = (PJsonObject) getOldTablePage(oldRequest);
+        PJsonObject oldTablePage = (PJsonObject) getOldTablePage(oldRequest);
 
         if (tableProcessor == null) {
             if (oldTablePage == null) {
@@ -264,8 +265,8 @@ public final class OldAPIRequestConverter {
                 return;
             }
         } else if (oldTablePage == null) {
-            LOGGER.warn("Configuration expects a table, but no table is defined in the request");
-            return;
+            LOGGER.warn("Configuration expects a table, but no table data is defined in the request");
+            oldTablePage = new PJsonObject(oldRequest, new JSONObject(), "generated");
         }
 
         String tableAttributeName = "table";
@@ -348,14 +349,16 @@ public final class OldAPIRequestConverter {
     }
 
     private static List<String> getTableColumnKeys(final PJsonObject oldTablePage) {
-        final PObject table = oldTablePage.getObject("table");
-        final PArray columns = table.getArray("columns");
-        
+        final PJsonObject table = oldTablePage.optJSONObject("table");
         final List<String> columnKeys = new LinkedList<String>();
-        for (int i = 0; i < columns.size(); i++) {
-            columnKeys.add(columns.getString(i));
+        if (table != null) {
+            final PArray columns = table.optArray("columns", new PJsonArray(table, new JSONArray(), "columns"));
+
+            for (int i = 0; i < columns.size(); i++) {
+                columnKeys.add(columns.getString(i));
+            }
         }
-        
+
         return columnKeys;
     }
 
@@ -370,31 +373,33 @@ public final class OldAPIRequestConverter {
                 columnLabels.add("");
             }
         }
-        
+
         return columnLabels;
     }
 
     private static List<JSONArray> getTableData(final List<String> columnKeys,
             final PJsonObject oldTablePage) {
-        final PObject table = oldTablePage.getObject("table");
-        final PArray oldTableRows = table.getArray("data");
-        
+        final PJsonObject table = oldTablePage.optJSONObject("table");
+
         final List<JSONArray> tableData = new LinkedList<JSONArray>();
-        for (int i = 0; i < oldTableRows.size(); i++) {
-            final PObject oldRow = oldTableRows.getObject(i);
-            if (!oldRow.keys().hasNext()) {
-                // row is empty, skip
-                continue;
+        if (table != null) {
+            final PArray oldTableRows = table.optArray("data", new PJsonArray(table, new JSONArray(), "data"));
+
+            for (int i = 0; i < oldTableRows.size(); i++) {
+                final PObject oldRow = oldTableRows.getObject(i);
+                if (!oldRow.keys().hasNext()) {
+                    // row is empty, skip
+                    continue;
+                }
+
+                // copy the values for each column
+                final JSONArray row = new JSONArray();
+                for (String key : columnKeys) {
+                    row.put(oldRow.getString(key));
+                }
+                tableData.add(row);
             }
-            
-            // copy the values for each column
-            final JSONArray row = new JSONArray();
-            for (String key : columnKeys) {
-                row.put(oldRow.getString(key));
-            }
-            tableData.add(row);
         }
-        
         return tableData;
     }
 }
