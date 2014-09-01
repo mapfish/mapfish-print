@@ -127,6 +127,28 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertEquals(2, data.length());
         assertEquals("27634972", data.getJSONArray(0).getString(0));
         assertEquals("27634973", data.getJSONArray(1).getString(0));
+
+
+        // legend
+        assertLegend(attributes, "legend1");
+        assertLegend(attributes, "legend2");
+    }
+
+    private void assertLegend(JSONObject attributes, String legendAttName) throws JSONException {
+        assertTrue(attributes.has(legendAttName));
+        final JSONObject legendJson = attributes.getJSONObject(legendAttName);
+        assertTrue(legendJson.has("name"));
+        assertEquals(legendAttName, legendJson.getString("name"));
+        assertTrue(legendJson.has("classes"));
+
+        JSONArray classes = legendJson.getJSONArray("classes");
+        assertEquals(1, classes.length());
+        final JSONObject firstClass = classes.getJSONObject(0);
+        assertEquals(2, firstClass.length());
+        assertEquals(legendAttName, firstClass.getString("name"));
+        JSONArray icons = firstClass.getJSONArray("icons");
+        assertEquals(1, icons.length());
+        assertEquals("file://legend-ico.png", icons.getString(0));
     }
 
     @Test
@@ -139,6 +161,9 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertTrue(request.has("attributes"));
         JSONObject attributes = request.getJSONObject("attributes");
 
+
+        assertTrue(attributes.has("legend1"));
+        assertTrue(attributes.has("legend2"));
         // table
         assertTrue(attributes.has("entries"));
         JSONObject table = attributes.getJSONObject("entries");

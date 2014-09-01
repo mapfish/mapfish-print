@@ -93,7 +93,7 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals("A4 Portrait", layout.getString("name"));
         assertTrue(layout.getBool("rotation"));
         assertEquals(802, layout.getObject("map").getInt("width"));
-        assertEquals(500, layout.getObject("map").getInt("height"));
+        assertEquals(210, layout.getObject("map").getInt("height"));
         
         assertEquals("/print-old/dep/print.pdf", info.getString("printURL"));
         assertEquals("/print-old/dep/create.json", info.getString("createURL"));
