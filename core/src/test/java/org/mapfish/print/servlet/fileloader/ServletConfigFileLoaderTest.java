@@ -22,14 +22,12 @@ package org.mapfish.print.servlet.fileloader;
 import com.google.common.base.Optional;
 import com.google.common.io.Files;
 import org.junit.Test;
-import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.IllegalFileAccessException;
 import org.mapfish.print.servlet.MapPrinterServletTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.util.NoSuchElementException;
 
@@ -37,18 +35,21 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 @ContextConfiguration(locations = {
         MapPrinterServletTest.PRINT_CONTEXT
 })
-public class ServletConfigFileLoaderTest extends AbstractMapfishSpringTest {
+public class ServletConfigFileLoaderTest extends AbstractConfigLoaderTest {
 
-    private static final File CONFIG_FILE = getFile(FileConfigFileLoaderTest.class, "config.yaml");
+    public static final String CONFIG_FILE_URI_STRING = "servlet:///org/mapfish/print/servlet/fileloader/config.yaml";
+
     @Autowired
     private ServletConfigFileLoader loader;
 
-    public static final String CONFIG_FILE_URI_STRING = "servlet:///org/mapfish/print/servlet/fileloader/config.yaml";
+    @Override
+    protected ConfigFileLoaderPlugin getLoader() {
+        return loader;
+    }
     @Test
     public void testToFile() throws Exception {
         assertFalse(loader.toFile(new URI("file://blahblahblah")).isPresent());
@@ -60,7 +61,7 @@ public class ServletConfigFileLoaderTest extends AbstractMapfishSpringTest {
     public void testLastModified() throws Exception {
         final File file = CONFIG_FILE;
 
-        Optional<Long> lastModified = this.loader.lastModified(new URI(this.CONFIG_FILE_URI_STRING));
+        Optional<Long> lastModified = this.loader.lastModified(new URI(CONFIG_FILE_URI_STRING));
         assertTrue(lastModified.isPresent());
         assertEquals(file.lastModified(), lastModified.get().longValue());
     }
@@ -134,12 +135,4 @@ public class ServletConfigFileLoaderTest extends AbstractMapfishSpringTest {
         this.loader.loadFile(configFileUri, "doesNotExist");
     }
 
-    private void assertFileAccessException(URI configFileUri, String resource) throws IOException {
-        try {
-            this.loader.isAccessible(configFileUri, resource);
-            fail("Expected " + IllegalFileAccessException.class.getSimpleName());
-        } catch (IllegalFileAccessException e) {
-            // good
-        }
-    }
 }

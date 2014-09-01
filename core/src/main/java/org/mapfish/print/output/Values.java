@@ -21,6 +21,7 @@ package org.mapfish.print.output;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.ConfigFileResolvingHttpRequestFactory;
@@ -42,6 +43,7 @@ import java.io.File;
 import java.lang.reflect.Array;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -99,7 +101,8 @@ public final class Values {
                   final ClientHttpRequestFactory httpRequestFactory) throws JSONException {
         // add task dir. to values so that all processors can access it
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
-        this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY, new ConfigFileResolvingHttpRequestFactory(httpRequestFactory, template));
+        this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY, new ConfigFileResolvingHttpRequestFactory(httpRequestFactory,
+                template.getConfiguration()));
         this.values.put(TEMPLATE_KEY, template);
 
         final PJsonObject jsonAttributes = requestData.getJSONObject(MapPrinterServlet.JSON_ATTRIBUTES);
