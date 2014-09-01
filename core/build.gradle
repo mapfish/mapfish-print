@@ -160,6 +160,7 @@ war {
     from (fileTree(dir: examplesDir)) {
         into 'print-apps'
     }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 jettyRun {
