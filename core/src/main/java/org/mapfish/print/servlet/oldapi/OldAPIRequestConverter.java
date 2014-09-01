@@ -195,7 +195,7 @@ public final class OldAPIRequestConverter {
         }
         
         PArray oldLayers = oldRequest.getArray("layers");
-        for (int i = 0; i < oldLayers.size(); i++) {
+        for (int i = oldLayers.size() - 1; i > -1; i--) {
             PJsonObject oldLayer = (PJsonObject) oldLayers.getObject(i);
             layers.put(OldAPILayerConverter.convert(oldLayer));
         }
