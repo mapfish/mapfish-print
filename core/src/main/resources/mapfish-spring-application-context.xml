@@ -36,7 +36,6 @@
         <!-- If servlet id is not set then a random uuid will be used -->
         <!--<property name="servletId" value="print-server-1" />-->
     </bean>
-    <bean id="main" class="org.mapfish.print.cli.Main"/>
     <bean id="workingDirectories" class="org.mapfish.print.config.WorkingDirectories">
         <property name="working" value="${workingDir}" />
     </bean>
