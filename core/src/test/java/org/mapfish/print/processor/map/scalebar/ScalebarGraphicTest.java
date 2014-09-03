@@ -1,11 +1,5 @@
 package org.mapfish.print.processor.map.scalebar;
 
-import static org.junit.Assert.assertEquals;
-
-import java.awt.Dimension;
-import java.io.File;
-import java.net.URI;
-
 import org.json.JSONArray;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,6 +12,12 @@ import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonArray;
+
+import java.awt.Dimension;
+import java.io.File;
+import java.net.URI;
+
+import static org.junit.Assert.assertEquals;
 
 public class ScalebarGraphicTest {
 

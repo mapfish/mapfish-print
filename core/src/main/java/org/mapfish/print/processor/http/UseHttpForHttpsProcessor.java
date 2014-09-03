@@ -21,13 +21,12 @@ package org.mapfish.print.processor.http;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.RegexpUtil;
+import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
+import org.mapfish.print.http.MapfishClientHttpRequestFactory;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -77,13 +76,13 @@ public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFac
     }
 
     @Override
-    public ClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
-                                                         final ClientHttpRequestFactory requestFactory) {
-        return new AbstractClientHttpRequestFactoryWrapper(requestFactory) {
+    public MapfishClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
+                                                         final MapfishClientHttpRequestFactory requestFactory) {
+        return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory) {
             @Override
             protected ClientHttpRequest createRequest(final URI uri,
                                                       final HttpMethod httpMethod,
-                                                      final ClientHttpRequestFactory requestFactory) throws IOException {
+                                                      final MapfishClientHttpRequestFactory requestFactory) throws IOException {
                 if (uri.getScheme().equals("https")) {
                     try {
                         URI httpUri = uri;

@@ -22,8 +22,8 @@ package org.mapfish.print.processor.http;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.mapfish.print.attribute.HttpRequestHeadersAttribute;
+import org.mapfish.print.http.MapfishClientHttpRequestFactory;
 import org.mapfish.print.processor.AbstractProcessor;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -90,8 +90,8 @@ public final class ForwardHeadersProcessor
     }
 
     @Override
-    public ClientHttpRequestFactory createFactoryWrapper(final Param param,
-                                                         final ClientHttpRequestFactory requestFactory) {
+    public MapfishClientHttpRequestFactory createFactoryWrapper(final Param param,
+                                                         final MapfishClientHttpRequestFactory requestFactory) {
         Map<String, Object> headers = Maps.newHashMap();
 
         for (Map.Entry<String, List<String>> entry : param.requestHeaders.getHeaders().entrySet()) {

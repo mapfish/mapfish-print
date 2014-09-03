@@ -20,7 +20,6 @@
 package org.mapfish.print.servlet.job;
 
 import com.google.common.base.Optional;
-
 import org.json.JSONException;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.servlet.registry.Registry;
@@ -43,7 +42,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 

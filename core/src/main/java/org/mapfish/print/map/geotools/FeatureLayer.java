@@ -25,11 +25,10 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.styling.Style;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
-import org.springframework.http.client.ClientHttpRequestFactory;
+import org.mapfish.print.http.MapfishClientHttpRequestFactory;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -90,7 +89,7 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
             return new FeatureSourceSupplier() {
                 @Override
                 public FeatureSource load(
-                        final ClientHttpRequestFactory requestFactory,
+                        final MapfishClientHttpRequestFactory requestFactory,
                         final MapfishMapContext mapContext) {
                     return new CollectionFeatureSource(features);
                 }
@@ -109,7 +108,7 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
                                                                    final String styleString, final String defaultStyleName) {
             return new StyleSupplier<FeatureSource>() {
                 @Override
-                public Style load(final ClientHttpRequestFactory requestFactory,
+                public Style load(final MapfishClientHttpRequestFactory requestFactory,
                                   final FeatureSource featureSource,
                                   final MapfishMapContext mapContext) {
                     if (featureSource == null) {

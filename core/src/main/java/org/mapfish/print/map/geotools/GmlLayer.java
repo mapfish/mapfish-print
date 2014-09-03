@@ -29,7 +29,7 @@ import org.mapfish.print.FileUtils;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
-import org.springframework.http.client.ClientHttpRequestFactory;
+import org.mapfish.print.http.MapfishClientHttpRequestFactory;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -38,7 +38,6 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
-
 import javax.annotation.Nonnull;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
@@ -105,7 +104,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
             return new FeatureSourceSupplier() {
                 @Nonnull
                 @Override
-                public FeatureSource load(@Nonnull final ClientHttpRequestFactory requestFactory,
+                public FeatureSource load(@Nonnull final MapfishClientHttpRequestFactory requestFactory,
                                           @Nonnull final MapfishMapContext mapContext) {
                     SimpleFeatureCollection featureCollection;
                     try {
@@ -122,7 +121,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
         }
 
         private SimpleFeatureCollection createFeatureSource(final Template template,
-                                                            final ClientHttpRequestFactory httpRequestFactory,
+                                                            final MapfishClientHttpRequestFactory httpRequestFactory,
                                                             final String gmlString) throws IOException {
             try {
                 URL url = new URL(gmlString);

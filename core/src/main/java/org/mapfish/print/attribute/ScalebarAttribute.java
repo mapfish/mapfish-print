@@ -21,7 +21,6 @@ package org.mapfish.print.attribute;
 
 
 import com.google.common.base.Strings;
-
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.DistanceUnit;

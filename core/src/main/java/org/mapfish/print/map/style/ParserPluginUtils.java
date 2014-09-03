@@ -24,10 +24,10 @@ import com.google.common.base.Optional;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closer;
 import org.geotools.styling.Style;
+import org.mapfish.print.http.MapfishClientHttpRequestFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
 
 import java.io.File;
@@ -54,7 +54,7 @@ public final class ParserPluginUtils {
      * @param styleRef                 the uri/file/else for attempting to load a style
      * @param loadFunction             the function to call when data has been loaded.
      */
-    public static Optional<Style> loadStyleAsURI(final ClientHttpRequestFactory clientHttpRequestFactory, final String styleRef,
+    public static Optional<Style> loadStyleAsURI(final MapfishClientHttpRequestFactory clientHttpRequestFactory, final String styleRef,
                                                  final Function<byte[], Optional<Style>> loadFunction) throws IOException {
         HttpStatus statusCode;
         final byte[] input;

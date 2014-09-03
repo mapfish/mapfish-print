@@ -19,12 +19,8 @@
 
 package org.mapfish.print.processor.map;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-
+import com.google.common.base.Predicate;
+import com.google.common.io.Files;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -40,8 +36,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
-import com.google.common.base.Predicate;
-import com.google.common.io.Files;
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test of the CreateOverviewMap processor with a custom style for the bbox rectangle.

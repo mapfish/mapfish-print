@@ -24,11 +24,11 @@ import com.google.common.io.Resources;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.runner.RunWith;
+import org.mapfish.print.http.MapfishClientHttpRequestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -51,7 +51,7 @@ public abstract class AbstractApiTest {
     protected static final String PRINT_SERVER = "http://localhost:8080/print-servlet/";
     
     @Autowired
-    protected ClientHttpRequestFactory httpRequestFactory;
+    protected MapfishClientHttpRequestFactory httpRequestFactory;
 
     protected ClientHttpResponse response;
     

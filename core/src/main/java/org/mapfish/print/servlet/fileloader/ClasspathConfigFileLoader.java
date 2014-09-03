@@ -21,7 +21,6 @@ package org.mapfish.print.servlet.fileloader;
 
 import com.google.common.base.Optional;
 import com.google.common.io.Resources;
-
 import org.mapfish.print.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

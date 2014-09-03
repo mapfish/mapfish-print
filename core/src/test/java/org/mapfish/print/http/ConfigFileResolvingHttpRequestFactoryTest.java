@@ -149,8 +149,7 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
     public void testCreateRequestFile() throws Exception {
         final String path = BASE_DIR + "requestData.json";
         final URI uri = getFile(path).toURI();
-        final ClientHttpRequest request =
-                resolvingFactory.createRequest(uri, HttpMethod.GET);
+        final ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.GET);
 
         final ClientHttpResponse response = request.execute();
 

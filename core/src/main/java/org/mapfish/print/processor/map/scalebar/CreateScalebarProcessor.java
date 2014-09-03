@@ -20,9 +20,7 @@
 package org.mapfish.print.processor.map.scalebar;
 
 import com.google.common.collect.Lists;
-
 import net.sf.jasperreports.engine.JRException;
-
 import org.mapfish.print.attribute.ScalebarAttribute;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.processor.AbstractProcessor;
@@ -35,7 +33,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-
 import javax.xml.parsers.ParserConfigurationException;
 
 /**

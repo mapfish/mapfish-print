@@ -17,8 +17,24 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+package org.mapfish.print.http;
+
+import org.apache.http.client.methods.Configurable;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.springframework.http.client.ClientHttpRequest;
+
 /**
- * This package contains processors that affect the {@link org.mapfish.print.http.MapfishClientHttpRequestFactory}.
- * @author Jesse on 6/26/2014.
+ * A request object that provides low-level access so that the request can be configured for proxying, authentication, etc...
  */
-package org.mapfish.print.processor.http;
+public interface ConfigurableRequest extends ClientHttpRequest {
+    /**
+     * Get the request as a "Configurable" object.  It is the same request as getRequest only this provides the Configurable
+     * view.
+     */
+    Configurable getConfigurable();
+
+    /**
+     * Obtain the request object.
+     */
+     HttpUriRequest getRequest();
+}

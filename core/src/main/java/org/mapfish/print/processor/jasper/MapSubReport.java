@@ -21,7 +21,6 @@ package org.mapfish.print.processor.jasper;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.Files;
-
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.Renderable;

@@ -24,14 +24,13 @@ import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.StyleAttribute.StylesAttributeValues;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.http.MapfishClientHttpRequestFactory;
 import org.mapfish.print.map.style.SLDParserPlugin;
 import org.mapfish.print.map.style.StyleParserPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.List;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -85,7 +84,7 @@ public final class StyleAttribute extends ReflectiveAttribute<StylesAttributeVal
          * @param clientHttpRequestFactory a factory for creating http requests
          * @param mapContext information about the map projection, bounds, size, etc...
          */
-        public synchronized Style getStyle(@Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
+        public synchronized Style getStyle(@Nonnull final MapfishClientHttpRequestFactory clientHttpRequestFactory,
                                            @Nonnull final MapfishMapContext mapContext) throws Exception {
             if (this.styleObject == null && this.style != null) {
                 final StyleParserPlugin parser = new SLDParserPlugin();

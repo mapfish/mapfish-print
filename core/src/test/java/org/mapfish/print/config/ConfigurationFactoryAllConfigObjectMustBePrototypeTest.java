@@ -21,19 +21,11 @@ package org.mapfish.print.config;
 
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
-import org.mapfish.print.attribute.Attribute;
-import org.mapfish.print.processor.Processor;
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
 
 import java.io.File;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mapfish.print.AbstractMapfishSpringTest.DEFAULT_SPRING_XML;
 
 /**

@@ -20,7 +20,6 @@
 package org.mapfish.print.map.tiled.wmts;
 
 import com.vividsolutions.jts.util.Assert;
-
 import org.mapfish.print.Constants;
 import org.mapfish.print.map.tiled.AbstractWMXLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;

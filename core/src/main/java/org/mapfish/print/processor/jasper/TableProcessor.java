@@ -22,10 +22,10 @@ package org.mapfish.print.processor.jasper;
 import com.google.common.collect.Maps;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.mapfish.print.attribute.TableAttribute.TableAttributeValue;
+import org.mapfish.print.http.MapfishClientHttpRequestFactory;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.InternalValue;
 import org.mapfish.print.wrapper.PArray;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -107,7 +107,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
          * does not need to be set in configuration
          */
         @InternalValue
-        public ClientHttpRequestFactory clientHttpRequestFactory;
+        public MapfishClientHttpRequestFactory clientHttpRequestFactory;
         /**
          * Data for constructing the table Datasource.
          */

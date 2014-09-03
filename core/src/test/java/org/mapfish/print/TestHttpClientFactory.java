@@ -22,15 +22,23 @@ package org.mapfish.print;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.Configurable;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.protocol.HttpContext;
+import org.mapfish.print.http.ConfigurableRequest;
+import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.mapfish.print.http.MapfishClientHttpRequestFactoryImpl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.mock.http.client.MockClientHttpResponse;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.Map;
 
@@ -41,9 +49,20 @@ import static org.junit.Assert.fail;
  *
  * @author Jesse on 4/4/14.
  */
-public class TestHttpClientFactory implements ClientHttpRequestFactory {
+public class TestHttpClientFactory extends MapfishClientHttpRequestFactoryImpl implements MapfishClientHttpRequestFactory {
 
     private final Map<Predicate<URI>, Handler> handlers = Maps.newConcurrentMap();
+
+    /**
+     * Constructor.
+     */
+    public TestHttpClientFactory() {
+        super(createClient());
+    }
+
+    private static HttpClient createClient() {
+        return HttpClientBuilder.create().build();
+    }
 
     public void registerHandler(Predicate<URI> matcher, Handler handler) {
         if (handlers.containsKey(matcher)) {
@@ -53,17 +72,23 @@ public class TestHttpClientFactory implements ClientHttpRequestFactory {
     }
 
     @Override
-    public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
+    public ConfigurableRequest createRequest(URI uri, final HttpMethod httpMethod) throws IOException {
         for (Map.Entry<Predicate<URI>, Handler> entry : handlers.entrySet()) {
             if (entry.getKey().apply(uri)) {
                 try {
-                    return entry.getValue().handleRequest(uri, httpMethod);
+                    final MockClientHttpRequest httpRequest = entry.getValue().handleRequest(uri, httpMethod);
+                    return new TestConfigurableRequest(httpRequest);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
         }
         throw new IllegalArgumentException(uri + " not registered with " + getClass().getName());
+    }
+
+    @Override
+    public void register(RequestConfigurator callback) {
+        throw new UnsupportedOperationException("Not supported");
     }
 
     public static abstract class Handler {
@@ -91,6 +116,59 @@ public class TestHttpClientFactory implements ClientHttpRequestFactory {
                 }
             };
             return request;
+        }
+    }
+
+    private static class TestConfigurableRequest implements ConfigurableRequest {
+        private final MockClientHttpRequest httpRequest;
+
+        public TestConfigurableRequest(MockClientHttpRequest httpRequest) {
+            this.httpRequest = httpRequest;
+        }
+
+        @Override
+        public HttpClient getClient() {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public Configurable getConfigurable() {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public HttpContext getContext() {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public HttpUriRequest getRequest() {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public ClientHttpResponse execute() throws IOException {
+            return httpRequest.execute();
+        }
+
+        @Override
+        public OutputStream getBody() throws IOException {
+            return httpRequest.getBody();
+        }
+
+        @Override
+        public HttpMethod getMethod() {
+            return httpRequest.getMethod();
+        }
+
+        @Override
+        public URI getURI() {
+            return httpRequest.getURI();
+        }
+
+        @Override
+        public HttpHeaders getHeaders() {
+            return httpRequest.getHeaders();
         }
     }
 }

@@ -21,10 +21,10 @@ package org.mapfish.print.processor.http;
 
 import com.google.common.collect.Maps;
 import com.vividsolutions.jts.util.Assert;
+import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
+import org.mapfish.print.http.MapfishClientHttpRequestFactory;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -78,13 +78,13 @@ public final class AddHeadersProcessor extends AbstractClientHttpRequestFactoryP
     }
 
     @Override
-    public ClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
-                                                         final ClientHttpRequestFactory requestFactory) {
-        return new AbstractClientHttpRequestFactoryWrapper(requestFactory) {
+    public MapfishClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
+                                                         final MapfishClientHttpRequestFactory requestFactory) {
+        return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory) {
             @Override
             protected ClientHttpRequest createRequest(final URI uri,
                                                       final HttpMethod httpMethod,
-                                                      final ClientHttpRequestFactory requestFactory) throws
+                                                      final MapfishClientHttpRequestFactory requestFactory) throws
                     IOException {
                 final ClientHttpRequest request = requestFactory.createRequest(uri, httpMethod);
                 request.getHeaders().putAll(AddHeadersProcessor.this.headers);

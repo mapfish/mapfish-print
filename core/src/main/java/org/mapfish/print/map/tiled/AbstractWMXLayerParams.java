@@ -22,7 +22,6 @@ package org.mapfish.print.map.tiled;
 import com.google.common.base.Function;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.wrapper.PArray;
@@ -33,7 +32,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
-
 import javax.annotation.Nullable;
 
 /**

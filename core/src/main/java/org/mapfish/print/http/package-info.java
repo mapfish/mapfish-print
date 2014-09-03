@@ -18,7 +18,8 @@
  */
 
 /**
- * This package contains processors that affect the {@link org.mapfish.print.http.MapfishClientHttpRequestFactory}.
- * @author Jesse on 6/26/2014.
+ * Package contains support classes for making https requests.
+ *
+ * @author Jesse on 9/3/2014.
  */
-package org.mapfish.print.processor.http;
+package org.mapfish.print.http;
