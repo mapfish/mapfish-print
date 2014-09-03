@@ -6,7 +6,7 @@ import com.google.common.io.Files;
 import org.geotools.styling.Style;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
-import org.mapfish.print.ConfigFileResolvingHttpRequestFactory;
+import org.mapfish.print.http.ConfigFileResolvingHttpRequestFactory;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.attribute.map.BBoxMapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;

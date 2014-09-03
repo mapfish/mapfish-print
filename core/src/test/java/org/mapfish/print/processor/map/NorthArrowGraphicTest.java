@@ -29,7 +29,7 @@ import java.net.URI;
 import org.junit.Before;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
-import org.mapfish.print.ConfigFileResolvingHttpRequestFactory;
+import org.mapfish.print.http.ConfigFileResolvingHttpRequestFactory;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;

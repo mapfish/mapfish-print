@@ -17,7 +17,7 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print;
+package org.mapfish.print.http;
 
 import com.vividsolutions.jts.util.Assert;
 import org.mapfish.print.config.Configuration;

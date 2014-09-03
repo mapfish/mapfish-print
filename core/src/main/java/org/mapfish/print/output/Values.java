@@ -21,16 +21,15 @@ package org.mapfish.print.output;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.mapfish.print.ConfigFileResolvingHttpRequestFactory;
 import org.mapfish.print.attribute.ArrayReflectiveAttribute;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.attribute.HttpRequestHeadersAttribute;
 import org.mapfish.print.attribute.PrimitiveAttribute;
 import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.http.ConfigFileResolvingHttpRequestFactory;
 import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.wrapper.PArray;
@@ -43,7 +42,6 @@ import java.io.File;
 import java.lang.reflect.Array;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -51,8 +49,8 @@ import static org.mapfish.print.servlet.MapPrinterServlet.JSON_REQUEST_HEADERS;
 
 /**
  * Values that go into a processor from previous processors in the processor processing graph.
- * @author Jesse
  *
+ * @author Jesse
  */
 public final class Values {
     /**
@@ -88,10 +86,11 @@ public final class Values {
 
     /**
      * Construct from the json request body and the associated template.
-     *  @param requestData the json request data
-     * @param template the template
-     * @param parser the parser to use for parsing the request data.
-     * @param taskDirectory the temporary directory for this printing task.
+     *
+     * @param requestData        the json request data
+     * @param template           the template
+     * @param parser             the parser to use for parsing the request data.
+     * @param taskDirectory      the temporary directory for this printing task.
      * @param httpRequestFactory a factory for making http requests.
      */
     public Values(final PJsonObject requestData,
@@ -114,9 +113,9 @@ public final class Values {
     /**
      * Process the requestJsonAttributes using the attributes and the MapfishParser and add all resulting values to this values object.
      *
-     * @param template the template of the current request.
-     * @param parser the parser to use for parsing the request data.
-     * @param attributes the attributes that will be used to add values to this values object
+     * @param template              the template of the current request.
+     * @param parser                the parser to use for parsing the request data.
+     * @param attributes            the attributes that will be used to add values to this values object
      * @param requestJsonAttributes the json data for populating the attribute values
      * @throws JSONException
      */
@@ -140,7 +139,7 @@ public final class Values {
                 if (defaultVal != null) {
                     final JSONObject obj = new JSONObject();
                     obj.put(attributeName, defaultVal);
-                    PObject[] pValues = new PObject[]{requestJsonAttributes, new PJsonObject(obj, "default_" + attributeName) };
+                    PObject[] pValues = new PObject[]{requestJsonAttributes, new PJsonObject(obj, "default_" + attributeName)};
                     jsonToUse = new PMultiObject(pValues);
                 }
                 value = parser.parsePrimitive(attributeName, pAtt.getValueClass(), jsonToUse);
@@ -164,10 +163,10 @@ public final class Values {
                 PObject pValue = requestJsonAttributes.optJSONObject(attributeName);
 
                 if (pValue != null) {
-                    PObject[] pValues = new PObject[]{ pValue, rAtt.getDefaultValue() };
+                    PObject[] pValues = new PObject[]{pValue, rAtt.getDefaultValue()};
                     pValue = new PMultiObject(pValues);
                 } else {
-                   pValue = rAtt.getDefaultValue();
+                    pValue = rAtt.getDefaultValue();
                 }
                 parser.parse(errorOnExtraParameters, pValue, value);
             } else {
@@ -207,7 +206,7 @@ public final class Values {
     /**
      * Put a new value in map.
      *
-     * @param key id of the value for looking up.
+     * @param key   id of the value for looking up.
      * @param value the value.
      */
     public void put(final String key, final Object value) {
@@ -256,10 +255,9 @@ public final class Values {
     /**
      * Get a value as a string.
      *
-     * @param key the key for looking up the value.
+     * @param key  the key for looking up the value.
      * @param type the type of the object
-     * @param <V> the type
-     *
+     * @param <V>  the type
      */
     public <V> V getObject(final String key, final Class<V> type) {
         final Object obj = this.values.get(key);
@@ -298,7 +296,7 @@ public final class Values {
      * Find all the values of the requested type.
      *
      * @param valueTypeToFind the type of the value to return.
-     * @param <T> the type of the value to find.
+     * @param <T>             the type of the value to find.
      * @return the key, value pairs found.
      */
     @SuppressWarnings("unchecked")

@@ -17,13 +17,17 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print;
+package org.mapfish.print.http;
 
 import com.google.common.base.Predicate;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import org.junit.Before;
 import org.junit.Test;
+import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.Constants;
+import org.mapfish.print.IllegalFileAccessException;
+import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.springframework.beans.factory.annotation.Autowired;
