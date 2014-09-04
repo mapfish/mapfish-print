@@ -100,7 +100,7 @@ public class ProcessorGraphNodeTest {
         processor.getOutputMapperBiMap().put("i", iMappingName);
         processor.getOutputMapperBiMap().put("b", bMappingName);
 
-        ProcessorUtils.writeProcessorOutputToValues(dto, processor.getOutputMapperBiMap(), values);
+        ProcessorUtils.writeProcessorOutputToValues(dto, processor, values);
 
         assertEquals(dto.defaultI, values.getInteger("defaultI").intValue());
         assertEquals(dto.i, values.getInteger(iMappingName).intValue());
@@ -108,6 +108,32 @@ public class ProcessorGraphNodeTest {
         assertNull(values.getBoolean("s"));
         assertEquals(lsVal, values.getObject("ls", Object.class));
         assertArrayEquals(daVal, (double[]) values.getObject("da", Object.class), 0.00001);
+    }
+
+    @Test
+    public void testWritePrefixedOutputToValues() throws Exception {
+        Values values = new Values();
+
+        final DataTransferObject dto = new DataTransferObject();
+        dto.b = true;
+        dto.da = daVal;
+        dto.defaultI = 32;
+        dto.ls = lsVal;
+
+
+        TestProcessor processor = new TestProcessor();
+        processor.getOutputMapperBiMap().put("i", iMappingName);
+        processor.getOutputMapperBiMap().put("b", bMappingName);
+
+        processor.setOutputPrefix("   prefix   ");
+        ProcessorUtils.writeProcessorOutputToValues(dto, processor, values);
+
+        assertEquals(dto.defaultI, values.getInteger("prefixDefaultI").intValue());
+        assertEquals(dto.i, values.getInteger(iMappingName).intValue());
+        assertEquals(dto.b, values.getBoolean(bMappingName));
+        assertNull(values.getBoolean("prefixS"));
+        assertEquals(lsVal, values.getObject("prefixLs", Object.class));
+        assertArrayEquals(daVal, (double[]) values.getObject("prefixDa", Object.class), 0.00001);
     }
 
     static class DataTransferObject {

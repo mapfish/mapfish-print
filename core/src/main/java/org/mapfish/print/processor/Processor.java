@@ -103,6 +103,26 @@ public interface Processor<In, Out> extends ConfigurationObject {
     BiMap<String, String> getOutputMapperBiMap();
 
     /**
+     * Get the prefix to apply to each output value.  This provides a simple way to make all output values have unique values.
+     * <p>
+     *     If output prefix is non-null and non-empty (whitespace is removed) then the prefix will be prepended to the normal name
+     *     of the output value.
+     * </p>
+     * <p>
+     *     When a prefix is appended the normal name will be capitalized.  For example: if the normal name is: <em>map</em>
+     *     and the prefix is <em>page1</em> then the final name will be <em>page1Map</em>.
+     * </p>
+     * <p>
+     *     Note: If a mapping is in the {@link #getOutputMapperBiMap()} then the prefix will be ignored for that value and the
+     *     un-prefixed name from the output mapper will be used directly.
+     * </p>
+     * <p>
+     *     Note: If a prefix has white space at the start or end it will be removed.
+     * </p>
+     */
+    String getOutputPrefix();
+
+    /**
      * An execution context for a specific print task. 
      */
     public interface ExecutionContext {

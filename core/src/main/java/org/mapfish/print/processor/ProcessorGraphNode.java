@@ -224,7 +224,7 @@ public final class ProcessorGraphNode<In, Out> {
 
 
                 if (output != null) {
-                    ProcessorUtils.writeProcessorOutputToValues(output, process.getOutputMapperBiMap(), values);
+                    ProcessorUtils.writeProcessorOutputToValues(output, process, values);
                 }
             } finally {
                 this.execContext.finished(this.node);
