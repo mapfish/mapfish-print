@@ -178,7 +178,7 @@ public class MapfishClientHttpRequestFactoryImpl extends HttpComponentsClientHtt
 
         @Override
         public synchronized InputStream getBody() throws IOException {
-            if (this.inputStream != null) {
+            if (this.inputStream == null) {
                 this.inputStream = this.closer.register(this.response.getEntity().getContent());
             }
             return this.inputStream;

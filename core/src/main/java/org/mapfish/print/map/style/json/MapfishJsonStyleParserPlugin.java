@@ -33,6 +33,7 @@ import org.mapfish.print.http.MapfishClientHttpRequestFactory;
 import org.mapfish.print.map.style.ParserPluginUtils;
 import org.mapfish.print.map.style.StyleParserPlugin;
 import org.mapfish.print.wrapper.json.PJsonObject;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -454,7 +455,7 @@ public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
 
     @Override
     public Optional<Style> parseStyle(@Nullable final Configuration configuration,
-                                      @Nonnull final MapfishClientHttpRequestFactory clientHttpRequestFactory,
+                                      @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
                                       @Nonnull final String styleString,
                                       @Nonnull final MapfishMapContext mapContext) throws Throwable {
         final Optional<Style> styleOptional = tryLoadJson(configuration, styleString);

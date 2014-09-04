@@ -30,10 +30,10 @@ import org.geotools.styling.UserLayer;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -56,7 +56,7 @@ public final class StyleParser {
      * @param mapContext information about the map projection, bounds, size, etc...
      */
     public Optional<? extends Style> loadStyle(final Configuration configuration,
-                                               @Nonnull final MapfishClientHttpRequestFactory clientHttpRequestFactory,
+                                               @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
                                                final String styleString,
                                                final MapfishMapContext mapContext) {
         if (styleString != null) {

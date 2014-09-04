@@ -23,7 +23,7 @@ import com.google.common.base.Optional;
 import org.geotools.styling.Style;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -49,7 +49,7 @@ public interface StyleParserPlugin {
      * @return if this plugin can create a style form the string then return the style otherwise Optional.absent().
      */
     Optional<Style> parseStyle(@Nullable Configuration configuration,
-                               @Nonnull MapfishClientHttpRequestFactory clientHttpRequestFactory,
-                               String styleString,
+                               @Nonnull ClientHttpRequestFactory clientHttpRequestFactory,
+                               @Nullable String styleString,
                                @Nonnull MapfishMapContext mapContext) throws Throwable;
 }

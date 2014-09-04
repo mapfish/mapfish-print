@@ -26,14 +26,13 @@ import org.json.JSONWriter;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.attribute.InternalAttribute;
 import org.mapfish.print.attribute.map.MapfishMapContext;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
 import org.mapfish.print.map.style.StyleParser;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -67,9 +66,8 @@ public class Template implements ConfigurationObject, HasConfiguration {
     private Configuration configuration;
     @Autowired
     private StyleParser styleParser;
-    @Qualifier("httpClientFactory")
     @Autowired
-    private MapfishClientHttpRequestFactory httpRequestFactory;
+    private ClientHttpRequestFactory httpRequestFactory;
     private String tableDataKey;
 
 

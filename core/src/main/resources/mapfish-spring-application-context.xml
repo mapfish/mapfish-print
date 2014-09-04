@@ -61,7 +61,7 @@
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>
     <bean id="healthCheckRegistry" class="com.codahale.metrics.health.HealthCheckRegistry"/>
     <bean id="httpClientFactory" class="org.mapfish.print.http.MapfishClientHttpRequestFactoryImpl">
-        <property name="httpClient" ref="httpClient" />
+        <constructor-arg name="httpClient" ref="httpClient" />
     </bean>
     <bean id="httpClient" class="com.codahale.metrics.httpclient.InstrumentedHttpClient">
         <constructor-arg index="0" ref="metricRegistry"/>

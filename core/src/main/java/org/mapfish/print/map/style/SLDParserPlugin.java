@@ -32,7 +32,7 @@ import org.mapfish.print.Constants;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -56,7 +56,7 @@ public class SLDParserPlugin implements StyleParserPlugin {
 
     @Override
     public final Optional<Style> parseStyle(@Nullable final Configuration configuration,
-                                            @Nonnull final MapfishClientHttpRequestFactory clientHttpRequestFactory,
+                                            @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
                                             @Nonnull final String styleString,
                                             @Nonnull final MapfishMapContext mapContext) throws Throwable {
 

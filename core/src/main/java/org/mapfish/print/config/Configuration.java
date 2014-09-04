@@ -39,11 +39,11 @@ import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapfishMapContext;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
 import org.mapfish.print.map.style.StyleParser;
 import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
 import org.opengis.filter.expression.Expression;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.awt.Color;
 import java.io.File;
@@ -96,7 +96,7 @@ public class Configuration {
     @Autowired
     private StyleParser styleParser;
     @Autowired
-    private MapfishClientHttpRequestFactory clientHttpRequestFactory;
+    private ClientHttpRequestFactory clientHttpRequestFactory;
     @Autowired
     private ConfigFileLoaderManager fileLoaderManager;
 

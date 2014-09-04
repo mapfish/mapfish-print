@@ -80,7 +80,7 @@ public final class ConfigFileResolvingHttpRequestFactory implements MapfishClien
     private class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
         private final URI uri;
         private final HttpMethod httpMethod;
-        private ClientHttpRequest request;
+        private ConfigurableRequest request;
 
 
         ConfigFileResolvingRequest(final URI uri,
@@ -96,14 +96,10 @@ public final class ConfigFileResolvingHttpRequestFactory implements MapfishClien
             return this.request.getBody();
         }
 
-        private synchronized ClientHttpRequest createRequestFromWrapped(final HttpHeaders headers) throws IOException {
+        private synchronized ConfigurableRequest createRequestFromWrapped(final HttpHeaders headers) throws IOException {
             final MapfishClientHttpRequestFactoryImpl requestFactory = ConfigFileResolvingHttpRequestFactory.this.httpRequestFactory;
             ConfigurableRequest httpRequest = requestFactory.createRequest(this.uri, this.httpMethod);
             httpRequest.getHeaders().putAll(headers);
-            for (RequestConfigurator callback : ConfigFileResolvingHttpRequestFactory.this.callbacks) {
-                callback.performRequest(httpRequest);
-            }
-
             return httpRequest;
         }
 
@@ -111,7 +107,7 @@ public final class ConfigFileResolvingHttpRequestFactory implements MapfishClien
         protected synchronized ClientHttpResponse executeInternal(final HttpHeaders headers) throws IOException {
             if (this.request != null) {
                 LOGGER.debug("Executing http request: " + this.request.getURI());
-                return this.request.execute();
+                return executeCallbacksAndRequest(this.request);
             }
             if (this.httpMethod == HttpMethod.GET) {
                 final String uriString = this.uri.toString();
@@ -127,7 +123,15 @@ public final class ConfigFileResolvingHttpRequestFactory implements MapfishClien
             }
 
             LOGGER.debug("Executing http request: " + this.getURI());
-            return createRequestFromWrapped(headers).execute();
+            return executeCallbacksAndRequest(createRequestFromWrapped(headers));
+        }
+
+        private ClientHttpResponse executeCallbacksAndRequest(final ConfigurableRequest requestToExecute) throws IOException {
+            for (RequestConfigurator callback : ConfigFileResolvingHttpRequestFactory.this.callbacks) {
+                callback.performRequest(requestToExecute);
+            }
+
+            return requestToExecute.execute();
         }
 
         @Override

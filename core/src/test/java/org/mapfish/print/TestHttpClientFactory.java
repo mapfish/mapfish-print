@@ -26,7 +26,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.Configurable;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.protocol.HttpContext;
 import org.mapfish.print.http.ConfigurableRequest;
 import org.mapfish.print.http.MapfishClientHttpRequestFactory;
 import org.mapfish.print.http.MapfishClientHttpRequestFactoryImpl;
@@ -127,17 +126,7 @@ public class TestHttpClientFactory extends MapfishClientHttpRequestFactoryImpl i
         }
 
         @Override
-        public HttpClient getClient() {
-            throw new UnsupportedOperationException("Not supported");
-        }
-
-        @Override
         public Configurable getConfigurable() {
-            throw new UnsupportedOperationException("Not supported");
-        }
-
-        @Override
-        public HttpContext getContext() {
             throw new UnsupportedOperationException("Not supported");
         }
 
