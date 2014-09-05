@@ -25,6 +25,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.impl.conn.DefaultRoutePlanner;
 import org.apache.http.protocol.HttpContext;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.processor.http.matcher.MatchInfo;
 import org.springframework.http.HttpMethod;
 
 import java.net.MalformedURLException;
@@ -70,7 +71,7 @@ public final class MfRoutePlanner extends DefaultRoutePlanner {
         final List<HttpProxy> proxies = config.getProxies();
         for (HttpProxy proxy : proxies) {
             try {
-                if (proxy.matches(uri, method)) {
+                if (proxy.matches(MatchInfo.fromUri(uri, method))) {
                     return proxy.getHttpHost();
                 }
             } catch (SocketException e) {

@@ -20,14 +20,23 @@
 package org.mapfish.print.http;
 
 import com.google.common.collect.Lists;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpsServer;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.processor.http.matcher.DnsHostMatcher;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,14 +44,25 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {
+        AbstractMapfishSpringTest.DEFAULT_SPRING_XML,
+        "classpath:/org/mapfish/print/http/proxy/application-context-proxy-test.xml"
+})
 public class HttpCredentialTest {
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
+    private static final int HTTPS_PROXY_PORT = 21433;
     private static HttpsServer httpsServer;
+
+    @Autowired
+    ConfigurationFactory configurationFactory;
+    @Autowired
+    private MfClientHttpRequestFactoryImpl requestFactory;
 
     @BeforeClass
     public static void setUp() throws Exception {
-        httpsServer = HttpProxyTest.createHttpsServer();
+        httpsServer = HttpProxyTest.createHttpsServer(HTTPS_PROXY_PORT);
     }
 
     @AfterClass
@@ -71,9 +91,6 @@ public class HttpCredentialTest {
 
     @Test
     public void testToCredentials() throws Exception {
-        final String path = "/credentials";
-        final String message = "message from server";
-
         final HttpCredential credential = new HttpCredential();
         credential.setUsername(USERNAME);
         credential.setPassword(PASSWORD);
@@ -95,12 +112,49 @@ public class HttpCredentialTest {
         assertNotNull(credential.toCredentials(authscope));
 
         authscope = new AuthScope(AuthScope.ANY_HOST, 80, AuthScope.ANY_REALM, AuthScope.ANY_SCHEME);
-        assertNull(credential.toCredentials(authscope));
+        assertNotNull(credential.toCredentials(authscope));
 
         authscope = new AuthScope("google.com", AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthScope.ANY_SCHEME);
         assertNull(credential.toCredentials(authscope));
 
         authscope = new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, "http");
-        assertNull(credential.toCredentials(authscope));
+        assertNotNull(credential.toCredentials(authscope));
+    }
+
+    @Test
+    public void testToHttpsBehaviour() throws Exception {
+        final String message = "Message from server";
+
+        final String path = "/username";
+        httpsServer.createContext(path, new HttpHandler() {
+            @Override
+            public void handle(HttpExchange httpExchange) throws IOException {
+                final String authorization = httpExchange.getRequestHeaders().getFirst("Authorization");
+                if (authorization == null) {
+                    httpExchange.getResponseHeaders().add("WWW-Authenticate", "Basic realm=\"Test Site\"");
+                    httpExchange.sendResponseHeaders(401, 0);
+                    httpExchange.close();
+                } else {
+                    final String expectedAuth = "Basic dXNlcm5hbWU6cGFzc3dvcmQ=";
+                    if (authorization.equals(expectedAuth)) {
+                        HttpProxyTest.respond(httpExchange, message, 200);
+                    } else {
+                        final String errorMessage = "Expected authorization:\n'" + expectedAuth + "' but got:\n'" + authorization + "'";
+                        HttpProxyTest.respond(httpExchange, errorMessage, 500);
+                    }
+                }
+            }
+        });
+
+        final HttpCredential credential = new HttpCredential();
+        credential.setUsername(USERNAME);
+        credential.setPassword(PASSWORD);
+
+        final DnsHostMatcher matcher = new DnsHostMatcher();
+        matcher.setHost(HttpProxyTest.LOCALHOST);
+        credential.setMatchers(Collections.singletonList(matcher));
+
+        final String target = "https://" + HttpProxyTest.LOCALHOST + ":" + HTTPS_PROXY_PORT;
+        HttpProxyTest.assertCorrectResponse(this.configurationFactory, this.requestFactory, credential, message, target, path);
     }
 }

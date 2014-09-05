@@ -20,11 +20,9 @@
 package org.mapfish.print.processor.http.matcher;
 
 import org.mapfish.print.config.ConfigurationObject;
-import org.springframework.http.HttpMethod;
 
 import java.net.MalformedURLException;
 import java.net.SocketException;
-import java.net.URI;
 import java.net.UnknownHostException;
 
 /**
@@ -36,8 +34,7 @@ public interface URIMatcher extends ConfigurationObject {
     /**
      * Check if the uri is permitted, return true if the uri is accepted or false otherwise.
      *
-     * @param uri the uri to check
-     * @param httpMethod the method to be used to make the request
+     * @param matchInfo the matching information to check
      */
-    boolean accepts(final URI uri, HttpMethod httpMethod) throws UnknownHostException, SocketException, MalformedURLException;
+    boolean accepts(final MatchInfo matchInfo) throws UnknownHostException, SocketException, MalformedURLException;
 }

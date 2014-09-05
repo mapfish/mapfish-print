@@ -20,9 +20,13 @@
 package org.mapfish.print.processor.http.matcher;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import org.mapfish.print.config.ConfigurationException;
 
-import java.net.URI;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.List;
 
 /**
@@ -57,21 +61,26 @@ import java.util.List;
  * </code></pre>
  */
 public class DnsHostMatcher extends HostMatcher {
-    private String host = null;
+    private List<AddressHostMatcher> matchersForHost = Lists.newArrayList();
+    private String host;
 
     /**
      * Check the given URI to see if it matches.
      *
-     * @param uri the uri to validate.
+     * @param matchInfo the matchInfo to validate.
      *
      * @return True if it matches.
      */
     @Override
-    public final Optional<Boolean> tryOverrideValidation(final URI uri) {
-        if (!uri.getHost().equals(this.host)) {
-            return Optional.of(false);
+    public final Optional<Boolean> tryOverrideValidation(final MatchInfo matchInfo) throws SocketException,
+            UnknownHostException, MalformedURLException {
+        for (AddressHostMatcher addressHostMatcher : this.matchersForHost) {
+            if (addressHostMatcher.accepts(matchInfo)) {
+                return Optional.absent();
+            }
         }
-        return Optional.absent();
+
+        return Optional.of(false);
     }
     @Override
     public final void validate(final List<Throwable> validationErrors) {
@@ -80,8 +89,19 @@ public class DnsHostMatcher extends HostMatcher {
         }
     }
 
-    public final void setHost(final String host) {
+    /**
+     * Set the host.
+     * @param host the host
+     */
+    public final void setHost(final String host) throws UnknownHostException {
         this.host = host;
+        final InetAddress[] inetAddresses = InetAddress.getAllByName(host);
+
+        for (InetAddress address : inetAddresses) {
+            final AddressHostMatcher matcher = new AddressHostMatcher();
+            matcher.setIp(address.getHostAddress());
+            this.matchersForHost.add(matcher);
+        }
     }
 
     // CHECKSTYLE:OFF

@@ -19,20 +19,22 @@
 
 package org.mapfish.print.processor.http.matcher;
 
-import org.junit.Test;
 import org.springframework.http.HttpMethod;
 
+import java.net.MalformedURLException;
+import java.net.SocketException;
 import java.net.URI;
+import java.net.UnknownHostException;
 
-import static org.mapfish.print.processor.http.matcher.MatcherTestUtils.*;
+import static org.junit.Assert.assertEquals;
 
-public class AcceptAllMatcherTest {
-
-    @Test
-    public void testAccepts() throws Exception {
-        AcceptAllMatcher matcher = new AcceptAllMatcher();
-        assertMatch(matcher, true, new URI("http://localhost/print-servlet"), HttpMethod.GET);
-        assertMatch(matcher, true, new URI("http://www.camptocamp.com"), HttpMethod.GET);
-        assertMatch(matcher, true, new URI("http://www.camptocamp.com"), HttpMethod.POST);
+/**
+ * Support methods for the tests
+ * @author Jesse on 9/5/2014.
+ */
+public class MatcherTestUtils {
+    static void assertMatch(final URIMatcher matcher, boolean expected, final URI uri, final HttpMethod method)
+            throws SocketException, UnknownHostException, MalformedURLException {
+        assertEquals(expected, matcher.accepts(MatchInfo.fromUri(uri, method)));
     }
 }

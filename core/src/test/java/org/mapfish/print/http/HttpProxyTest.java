@@ -92,7 +92,7 @@ public class HttpProxyTest {
         targetServer = HttpServer.create(new InetSocketAddress(LOCALHOST, TARGET_PORT), 0);
         targetServer.start();
 
-        httpsServer = createHttpsServer();
+        httpsServer = createHttpsServer(HTTPS_PROXY_PORT);
     }
 
     @AfterClass
@@ -228,6 +228,11 @@ public class HttpProxyTest {
     }
 
     private void assertCorrectResponse(HttpProxy httpProxy, String expected, String target, String path) throws Exception {
+        assertCorrectResponse(configurationFactory, requestFactory, httpProxy, expected, target, path);
+    }
+
+    static void assertCorrectResponse(ConfigurationFactory configurationFactory, MfClientHttpRequestFactoryImpl requestFactory,
+                                             HttpCredential httpCredential, String expected, String target, String path) throws Exception {
         final File configFile = AbstractMapfishSpringTest.getFile(HttpProxyTest.class, "proxy/config.yaml");
         configurationFactory.setDoValidation(false);
         final Configuration config = configurationFactory.getConfig(configFile);
@@ -237,7 +242,12 @@ public class HttpProxyTest {
         certificateStore.setUri(getKeystoreFile().toURI());
 
         config.setCertificateStore(certificateStore);
-        config.setProxies(Collections.singletonList(httpProxy));
+        if (httpCredential instanceof HttpProxy) {
+            config.setProxies(Collections.singletonList((HttpProxy)httpCredential));
+        } else {
+            config.setCredentials(Collections.singletonList(httpCredential));
+        }
+
         ConfigFileResolvingHttpRequestFactory clientHttpRequestFactory = new ConfigFileResolvingHttpRequestFactory(requestFactory,
                 config);
 
@@ -283,8 +293,8 @@ public class HttpProxyTest {
         httpExchange.close();
     }
 
-    public static HttpsServer createHttpsServer() throws Exception {
-        HttpsServer httpsServer = HttpsServer.create(new InetSocketAddress(HTTPS_PROXY_PORT), 0);
+    public static HttpsServer createHttpsServer(int httpsProxyPort) throws Exception {
+        HttpsServer httpsServer = HttpsServer.create(new InetSocketAddress(httpsProxyPort), 0);
         SSLContext sslContext = getSslContext();
 
         final SSLEngine m_engine = sslContext.createSSLEngine();

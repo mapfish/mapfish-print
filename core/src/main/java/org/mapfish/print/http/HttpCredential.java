@@ -25,13 +25,11 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.mapfish.print.config.ConfigurationObject;
 import org.mapfish.print.processor.http.matcher.AcceptAllMatcher;
+import org.mapfish.print.processor.http.matcher.MatchInfo;
 import org.mapfish.print.processor.http.matcher.URIMatcher;
-import org.springframework.http.HttpMethod;
 
 import java.net.MalformedURLException;
 import java.net.SocketException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -108,12 +106,11 @@ public class HttpCredential implements ConfigurationObject {
     /**
      * Returns true if this proxy should be used for the provided URI.
      *
-     * @param uri the request URI
-     * @param method the method of the request
+     * @param matchInfo the information for making the patch
      */
-    public boolean matches(final URI uri, final HttpMethod method) throws SocketException, UnknownHostException, MalformedURLException {
+    public boolean matches(final MatchInfo matchInfo) throws SocketException, UnknownHostException, MalformedURLException {
         for (URIMatcher uriMatcher : this.getMatchers()) {
-            if (uriMatcher.accepts(uri, method)) {
+            if (uriMatcher.accepts(matchInfo)) {
                 return true;
             }
         }
@@ -128,15 +125,11 @@ public class HttpCredential implements ConfigurationObject {
      */
     @Nullable
     public final Credentials toCredentials(final AuthScope authscope) {
-        URI uri;
         try {
-            uri = new URI(authscope.getScheme(), null, authscope.getHost(), authscope.getPort(), null, null, null);
 
-            if (!matches(uri, null)) {
+            if (!matches(MatchInfo.fromAuthScope(authscope))) {
                 return null;
             }
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         } catch (MalformedURLException e) {
