@@ -19,8 +19,8 @@
 
 package org.mapfish.print.http;
 
-import org.apache.http.client.methods.Configurable;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.mapfish.print.config.Configuration;
 import org.springframework.http.client.ClientHttpRequest;
 
 /**
@@ -28,13 +28,15 @@ import org.springframework.http.client.ClientHttpRequest;
  */
 public interface ConfigurableRequest extends ClientHttpRequest {
     /**
-     * Get the request as a "Configurable" object.  It is the same request as getRequest only this provides the Configurable
-     * view.
-     */
-    Configurable getConfigurable();
-
-    /**
      * Obtain the request object.
      */
-     HttpUriRequest getRequest();
+    HttpRequestBase getUnderlyingRequest();
+
+    /**
+     * Set the current configuration object.  This should only be called by
+     * {@link org.mapfish.print.http.ConfigFileResolvingHttpRequestFactory}.
+     *
+     * @param configuration the config object for the current print job.
+     */
+    void setConfiguration(final Configuration configuration);
 }
