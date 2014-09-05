@@ -62,13 +62,6 @@ public final class CertificateStore implements ConfigurationObject, HasConfigura
 
     /**
      * The password for unlocking the certificate store.
-     */
-    public char[] getPassword() {
-        return this.password;
-    }
-
-    /**
-     * The password for unlocking the certificate store.
      *
      * @param password the password for unlocking the certificate store.
      */

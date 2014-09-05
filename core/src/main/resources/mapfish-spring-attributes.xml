@@ -28,6 +28,10 @@
 
     <bean id="!template" class="org.mapfish.print.config.Template" scope="prototype" />
 
+    <bean id="!proxy" class="org.mapfish.print.http.HttpProxy" scope="prototype" />
+    <bean id="!credential" class="org.mapfish.print.http.HttpCredential" scope="prototype" />
+    <bean id="!certificateStore" class="org.mapfish.print.http.CertificateStore" scope="prototype" />
+
     <bean id="!integer" class="org.mapfish.print.attribute.IntegerAttribute" scope="prototype" />
     <bean id="!float" class="org.mapfish.print.attribute.FloatAttribute" scope="prototype" />
     <bean id="!string" class="org.mapfish.print.attribute.StringAttribute" scope="prototype" />
