@@ -9,6 +9,8 @@ templates:
           count: !integer {}
     processors:
     - !createDataSource
+      reportTemplate: table.jrxml
+      reportKey: reportTemplate
       processors:
         - !prepareTable {}
 

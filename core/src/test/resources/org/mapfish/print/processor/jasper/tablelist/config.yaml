@@ -2,14 +2,16 @@ throwErrorOnExtraParameters: true
 templates:
   main: !template
     reportTemplate: simpleReport.jrxml
-    tableData: tableList
+    tableData: jrDataSource
     attributes:
-      datasource: !dataSource
+      datasource: !datasource
         attributes:
           table: !table {}
     processors:
     - !reportBuilder # compile all reports in current directory
       directory: '.'
     - !createDataSource
+      reportTemplate: table.jrxml
+      reportKey: reportTemplate
       processors:
         - !prepareTable {}

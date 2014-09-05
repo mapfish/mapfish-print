@@ -13,12 +13,13 @@
 	<field name="dataSource" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
 	<field name="displayName" class="java.lang.String"/>
 	<field name="name" class="java.lang.String"/>
+	<field name="reportTemplate" class="java.lang.String"/>
 	<detail>
 		<band height="65" splitType="Stretch">
 			<subreport>
 				<reportElement x="0" y="23" width="555" height="42" uuid="b4cae0ad-a520-425e-b790-d6984af7ddc8"/>
 				<dataSourceExpression><![CDATA[$F{dataSource}]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_TABLE_DIR} + "/table_" + $F{name} + ".jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$F{reportTemplate}]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>
