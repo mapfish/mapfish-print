@@ -22,13 +22,11 @@ package org.mapfish.print;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.Configurable;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.ConfigurableRequest;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
-import org.mapfish.print.http.MapfishClientHttpRequestFactoryImpl;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -51,17 +49,6 @@ import static org.junit.Assert.fail;
 public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl implements MfClientHttpRequestFactory {
 
     private final Map<Predicate<URI>, Handler> handlers = Maps.newConcurrentMap();
-
-    /**
-     * Constructor.
-     */
-    public TestHttpClientFactory() {
-        super(createClient());
-    }
-
-    private static HttpClient createClient() {
-        return HttpClientBuilder.create().build();
-    }
 
     public void registerHandler(Predicate<URI> matcher, Handler handler) {
         if (handlers.containsKey(matcher)) {
@@ -91,7 +78,7 @@ public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl implem
     }
 
     public static abstract class Handler {
-        public abstract MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws IOException, Exception;
+        public abstract MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception;
         public MockClientHttpRequest ok(URI uri, byte[] bytes, HttpMethod httpMethod) {
             MockClientHttpRequest request = new MockClientHttpRequest(httpMethod, uri);
             ClientHttpResponse response = new MockClientHttpResponse(bytes, HttpStatus.OK);
@@ -126,13 +113,13 @@ public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl implem
         }
 
         @Override
-        public Configurable getConfigurable() {
+        public HttpRequestBase getUnderlyingRequest() {
             throw new UnsupportedOperationException("Not supported");
         }
 
         @Override
-        public HttpUriRequest getRequest() {
-            throw new UnsupportedOperationException("Not supported");
+        public void setConfiguration(Configuration configuration) {
+            // ignore
         }
 
         @Override
