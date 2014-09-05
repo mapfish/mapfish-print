@@ -22,7 +22,7 @@ package org.mapfish.print.processor.http;
 import com.google.common.collect.Maps;
 import com.vividsolutions.jts.util.Assert;
 import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 
@@ -78,13 +78,13 @@ public final class AddHeadersProcessor extends AbstractClientHttpRequestFactoryP
     }
 
     @Override
-    public MapfishClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
-                                                         final MapfishClientHttpRequestFactory requestFactory) {
+    public MfClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
+                                                         final MfClientHttpRequestFactory requestFactory) {
         return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory) {
             @Override
             protected ClientHttpRequest createRequest(final URI uri,
                                                       final HttpMethod httpMethod,
-                                                      final MapfishClientHttpRequestFactory requestFactory) throws
+                                                      final MfClientHttpRequestFactory requestFactory) throws
                     IOException {
                 final ClientHttpRequest request = requestFactory.createRequest(uri, httpMethod);
                 request.getHeaders().putAll(AddHeadersProcessor.this.headers);

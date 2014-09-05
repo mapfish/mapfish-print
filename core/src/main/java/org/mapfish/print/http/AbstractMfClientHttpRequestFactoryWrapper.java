@@ -29,25 +29,25 @@ import java.net.URI;
 /**
  * @author Jesse on 9/3/2014.
  */
-public abstract class AbstractMfClientHttpRequestFactoryWrapper implements MapfishClientHttpRequestFactory {
+public abstract class AbstractMfClientHttpRequestFactoryWrapper implements MfClientHttpRequestFactory {
 
-    private final MapfishClientHttpRequestFactory wrappedFactory;
+    private final MfClientHttpRequestFactory wrappedFactory;
 
 
     /**
      * Creates a {@code AbstractClientHttpRequestFactoryWrapper} wrapping the given request factory.
      * @param wrappedFactory the request factory to be wrapped
      */
-    protected AbstractMfClientHttpRequestFactoryWrapper(final MapfishClientHttpRequestFactory wrappedFactory) {
+    protected AbstractMfClientHttpRequestFactoryWrapper(final MfClientHttpRequestFactory wrappedFactory) {
         Assert.notNull(wrappedFactory, "'requestFactory' must not be null");
         this.wrappedFactory = wrappedFactory;
     }
 
 
     /**
-     * This implementation simply calls {@link #createRequest(URI, HttpMethod, MapfishClientHttpRequestFactory)}
+     * This implementation simply calls {@link #createRequest(URI, HttpMethod, MfClientHttpRequestFactory)}
      * with the wrapped request factory provided to the
-     * {@linkplain #AbstractMfClientHttpRequestFactoryWrapper(MapfishClientHttpRequestFactory) constructor}.
+     * {@linkplain #AbstractMfClientHttpRequestFactoryWrapper(MfClientHttpRequestFactory) constructor}.
      *
      * @param uri the URI to create a request for
      * @param httpMethod the HTTP method to execute
@@ -71,7 +71,7 @@ public abstract class AbstractMfClientHttpRequestFactoryWrapper implements Mapfi
      */
     protected abstract ClientHttpRequest createRequest(final URI uri,
                                                        final HttpMethod httpMethod,
-                                                       final MapfishClientHttpRequestFactory requestFactory) throws IOException;
+                                                       final MfClientHttpRequestFactory requestFactory) throws IOException;
 
     @Override
     public final void register(final RequestConfigurator callback) {

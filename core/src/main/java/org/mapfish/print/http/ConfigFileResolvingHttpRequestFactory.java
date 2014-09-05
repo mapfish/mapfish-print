@@ -47,10 +47,10 @@ import javax.annotation.Nonnull;
  *
  * @author Jesse on 8/12/2014.
  */
-public final class ConfigFileResolvingHttpRequestFactory implements MapfishClientHttpRequestFactory {
+public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttpRequestFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigFileResolvingHttpRequestFactory.class);
     private final Configuration config;
-    private final MapfishClientHttpRequestFactoryImpl httpRequestFactory;
+    private final MfClientHttpRequestFactoryImpl httpRequestFactory;
     private final List<RequestConfigurator> callbacks = Lists.newCopyOnWriteArrayList();
 
     /**
@@ -59,7 +59,7 @@ public final class ConfigFileResolvingHttpRequestFactory implements MapfishClien
      * @param httpRequestFactory basic request factory
      * @param config             the template for the current print job.
      */
-    public ConfigFileResolvingHttpRequestFactory(final MapfishClientHttpRequestFactoryImpl httpRequestFactory,
+    public ConfigFileResolvingHttpRequestFactory(final MfClientHttpRequestFactoryImpl httpRequestFactory,
                                                  final Configuration config) {
         this.httpRequestFactory = httpRequestFactory;
         this.config = config;
@@ -97,7 +97,7 @@ public final class ConfigFileResolvingHttpRequestFactory implements MapfishClien
         }
 
         private synchronized ConfigurableRequest createRequestFromWrapped(final HttpHeaders headers) throws IOException {
-            final MapfishClientHttpRequestFactoryImpl requestFactory = ConfigFileResolvingHttpRequestFactory.this.httpRequestFactory;
+            final MfClientHttpRequestFactoryImpl requestFactory = ConfigFileResolvingHttpRequestFactory.this.httpRequestFactory;
             ConfigurableRequest httpRequest = requestFactory.createRequest(this.uri, this.httpMethod);
             httpRequest.getHeaders().putAll(headers);
             return httpRequest;

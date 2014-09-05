@@ -31,7 +31,7 @@ import net.sf.jasperreports.repo.Resource;
 import net.sf.jasperreports.repo.StreamRepositoryService;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.ConfigFileResolvingHttpRequestFactory;
-import org.mapfish.print.http.MapfishClientHttpRequestFactoryImpl;
+import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
 
@@ -54,7 +54,7 @@ class MapfishPrintRepositoryService implements StreamRepositoryService {
     private JasperReportsContext jasperReportsContext;
 
     MapfishPrintRepositoryService(@Nonnull final Configuration configuration,
-                                  @Nonnull final MapfishClientHttpRequestFactoryImpl httpRequestFactory) {
+                                  @Nonnull final MfClientHttpRequestFactoryImpl httpRequestFactory) {
         this.httpRequestFactory = new ConfigFileResolvingHttpRequestFactory(httpRequestFactory, configuration);
         this.jasperReportsContext = DefaultJasperReportsContext.getInstance();
     }

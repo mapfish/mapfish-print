@@ -29,7 +29,6 @@ import org.mapfish.print.Constants;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
 import org.mapfish.print.map.style.ParserPluginUtils;
 import org.mapfish.print.map.style.StyleParserPlugin;
 import org.mapfish.print.wrapper.json.PJsonObject;

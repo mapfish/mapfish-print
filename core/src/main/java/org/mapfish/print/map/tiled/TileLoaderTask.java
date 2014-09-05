@@ -35,7 +35,7 @@ import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
@@ -67,7 +67,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
     private final MapfishMapContext transformer;
     private final TileCacheInformation tiledLayer;
     private final BufferedImage errorImage;
-    private final MapfishClientHttpRequestFactory httpRequestFactory;
+    private final MfClientHttpRequestFactory httpRequestFactory;
     private Optional<Geometry> cachedRotatedMapBounds = null;
 
     /**
@@ -77,7 +77,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
      * @param transformer        a transformer for making calculations
      * @param tileCacheInfo      the object used to create the tile requests
      */
-    public TileLoaderTask(final MapfishClientHttpRequestFactory httpRequestFactory,
+    public TileLoaderTask(final MfClientHttpRequestFactory httpRequestFactory,
                           final double dpi,
                           final MapfishMapContext transformer,
                           final TileCacheInformation tileCacheInfo) {

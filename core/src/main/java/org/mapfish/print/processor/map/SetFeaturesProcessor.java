@@ -23,7 +23,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.mapfish.print.attribute.FeaturesAttribute.FeaturesAttributeValues;
 import org.mapfish.print.attribute.map.GenericMapAttribute;
 import org.mapfish.print.attribute.map.MapLayer;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.processor.AbstractProcessor;
 
@@ -74,7 +74,7 @@ public class SetFeaturesProcessor extends
         /**
          * The factory to use for making http requests.
          */
-        public MapfishClientHttpRequestFactory clientHttpRequestFactory;
+        public MfClientHttpRequestFactory clientHttpRequestFactory;
         /**
          * The map to update.
          */

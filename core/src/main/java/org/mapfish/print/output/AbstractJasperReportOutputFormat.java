@@ -40,7 +40,7 @@ import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.config.WorkingDirectories;
-import org.mapfish.print.http.MapfishClientHttpRequestFactoryImpl;
+import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
 import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -79,7 +79,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
     private WorkingDirectories workingDirectories;
 
     @Autowired
-    private MapfishClientHttpRequestFactoryImpl httpRequestFactory;
+    private MfClientHttpRequestFactoryImpl httpRequestFactory;
 
 
     /**

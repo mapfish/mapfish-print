@@ -22,7 +22,7 @@ package org.mapfish.print.processor.jasper;
 import com.google.common.io.Closer;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 import org.mapfish.print.attribute.LegendAttribute.LegendAttributeValue;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.InternalValue;
 import org.slf4j.Logger;
@@ -86,7 +86,7 @@ public class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, Le
         return new Output(dataSource, legendList.size());
     }
 
-    private void fillLegend(final MapfishClientHttpRequestFactory clientHttpRequestFactory,
+    private void fillLegend(final MfClientHttpRequestFactory clientHttpRequestFactory,
                             final LegendAttributeValue legendAttributes,
                             final List<Object[]> legendList,
                             final int level,
@@ -162,7 +162,7 @@ public class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, Le
          * does not need to be set in configuration
          */
         @InternalValue
-        public MapfishClientHttpRequestFactory clientHttpRequestFactory;
+        public MfClientHttpRequestFactory clientHttpRequestFactory;
         /**
          * The data required for creating the legend.
          */

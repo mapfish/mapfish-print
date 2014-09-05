@@ -25,7 +25,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.styling.Style;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -89,7 +89,7 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
             return new FeatureSourceSupplier() {
                 @Override
                 public FeatureSource load(
-                        final MapfishClientHttpRequestFactory requestFactory,
+                        final MfClientHttpRequestFactory requestFactory,
                         final MapfishMapContext mapContext) {
                     return new CollectionFeatureSource(features);
                 }
@@ -108,7 +108,7 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
                                                                    final String styleString, final String defaultStyleName) {
             return new StyleSupplier<FeatureSource>() {
                 @Override
-                public Style load(final MapfishClientHttpRequestFactory requestFactory,
+                public Style load(final MfClientHttpRequestFactory requestFactory,
                                   final FeatureSource featureSource,
                                   final MapfishMapContext mapContext) {
                     if (featureSource == null) {

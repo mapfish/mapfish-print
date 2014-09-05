@@ -30,8 +30,8 @@ import org.mapfish.print.attribute.PrimitiveAttribute;
 import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.ConfigFileResolvingHttpRequestFactory;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
-import org.mapfish.print.http.MapfishClientHttpRequestFactoryImpl;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
 import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.wrapper.PArray;
@@ -59,7 +59,7 @@ public final class Values {
      */
     public static final String TASK_DIRECTORY_KEY = "tempTaskDirectory";
     /**
-     * The key that is used to store {@link org.mapfish.print.http.MapfishClientHttpRequestFactory}.
+     * The key that is used to store {@link org.mapfish.print.http.MfClientHttpRequestFactory}.
      */
     public static final String CLIENT_HTTP_REQUEST_FACTORY_KEY = "clientHttpRequestFactory";
     /**
@@ -98,7 +98,7 @@ public final class Values {
                   final Template template,
                   final MapfishParser parser,
                   final File taskDirectory,
-                  final MapfishClientHttpRequestFactoryImpl httpRequestFactory) throws JSONException {
+                  final MfClientHttpRequestFactoryImpl httpRequestFactory) throws JSONException {
         // add task dir. to values so that all processors can access it
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
         this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY, new ConfigFileResolvingHttpRequestFactory(httpRequestFactory,
@@ -195,7 +195,7 @@ public final class Values {
      */
     public void addRequiredValues(@Nonnull final Values sourceValues) {
         Object taskDirectory = sourceValues.getObject(TASK_DIRECTORY_KEY, Object.class);
-        MapfishClientHttpRequestFactory requestFactory = sourceValues.getObject(CLIENT_HTTP_REQUEST_FACTORY_KEY, MapfishClientHttpRequestFactory.class);
+        MfClientHttpRequestFactory requestFactory = sourceValues.getObject(CLIENT_HTTP_REQUEST_FACTORY_KEY, MfClientHttpRequestFactory.class);
         Template template = sourceValues.getObject(TEMPLATE_KEY, Template.class);
 
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);

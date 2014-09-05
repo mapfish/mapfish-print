@@ -27,7 +27,7 @@ import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
 import org.mapfish.print.attribute.map.MapfishMapContext;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -68,7 +68,7 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
     }
 
     @Override
-    public final List<? extends Layer> getLayers(final MapfishClientHttpRequestFactory httpRequestFactory,
+    public final List<? extends Layer> getLayers(final MfClientHttpRequestFactory httpRequestFactory,
                                                  final MapfishMapContext mapContext,
                                                  final boolean isFirstLayer) throws Exception {
         FeatureSource source = this.featureSourceSupplier.load(httpRequestFactory, mapContext);
@@ -81,7 +81,7 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
 
             @Nonnull
             @Override
-            public FeatureSource load(@Nonnull final MapfishClientHttpRequestFactory requestFactory,
+            public FeatureSource load(@Nonnull final MfClientHttpRequestFactory requestFactory,
                                       @Nonnull final MapfishMapContext mapContext) {
                 return new CollectionFeatureSource(featureCollection);
             }

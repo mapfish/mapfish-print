@@ -23,7 +23,7 @@ import com.google.common.collect.Lists;
 import net.sf.jasperreports.engine.JRException;
 import org.mapfish.print.attribute.NorthArrowAttribute;
 import org.mapfish.print.attribute.map.MapAttribute;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.InternalValue;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
@@ -142,7 +142,7 @@ public class CreateNorthArrowProcessor extends AbstractProcessor<CreateNorthArro
         /**
          * The factory to use for making http requests.
          */
-        public MapfishClientHttpRequestFactory clientHttpRequestFactory;
+        public MfClientHttpRequestFactory clientHttpRequestFactory;
     }
 
     /**

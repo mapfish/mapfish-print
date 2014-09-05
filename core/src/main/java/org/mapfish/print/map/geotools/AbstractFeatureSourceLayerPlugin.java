@@ -25,7 +25,7 @@ import org.geotools.data.FeatureSource;
 import org.geotools.styling.Style;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.map.style.StyleParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +82,7 @@ public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFac
                                                                        final String styleString) {
         return new StyleSupplier<FeatureSource>() {
             @Override
-            public Style load(final MapfishClientHttpRequestFactory requestFactory,
+            public Style load(final MfClientHttpRequestFactory requestFactory,
                               final FeatureSource featureSource,
                               final MapfishMapContext mapContext) {
                 if (featureSource == null) {

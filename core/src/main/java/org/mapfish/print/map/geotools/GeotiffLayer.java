@@ -31,7 +31,7 @@ import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FileUtils;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +62,7 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
      * @param style           style to use for rendering the data.
      * @param executorService the thread pool for doing the rendering.
      */
-    public GeotiffLayer(final Function<MapfishClientHttpRequestFactory, AbstractGridCoverage2DReader> reader,
+    public GeotiffLayer(final Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> reader,
                         final StyleSupplier<AbstractGridCoverage2DReader> style,
                         final ExecutorService executorService) {
         super(reader, style, executorService);
@@ -91,7 +91,7 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
         @Override
         public MapLayer parse(final Template template,
                               @Nonnull final GeotiffParam param) throws IOException {
-            Function<MapfishClientHttpRequestFactory, AbstractGridCoverage2DReader> geotiffReader = getGeotiffReader(template, param.url);
+            Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> geotiffReader = getGeotiffReader(template, param.url);
 
             String styleRef = param.style;
 
@@ -100,14 +100,14 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
                     this.forkJoinPool);
         }
 
-        private Function<MapfishClientHttpRequestFactory, AbstractGridCoverage2DReader> getGeotiffReader(final Template template,
+        private Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> getGeotiffReader(final Template template,
                                                                                                   final String geotiffUrl) throws
                 IOException {
             final URL url = FileUtils.testForLegalFileUrl(template.getConfiguration(), new URL(geotiffUrl));
-            return new Function<MapfishClientHttpRequestFactory, AbstractGridCoverage2DReader>() {
+            return new Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader>() {
                 @Nullable
                 @Override
-                public AbstractGridCoverage2DReader apply(final MapfishClientHttpRequestFactory requestFactory) {
+                public AbstractGridCoverage2DReader apply(final MfClientHttpRequestFactory requestFactory) {
                     try {
                         final File geotiffFile;
                         if (url.getProtocol().equalsIgnoreCase("file")) {

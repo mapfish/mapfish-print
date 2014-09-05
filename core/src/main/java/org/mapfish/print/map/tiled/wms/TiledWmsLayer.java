@@ -24,7 +24,7 @@ import jsr166y.ForkJoinPool;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.attribute.map.MapBounds;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.Scale;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.tiled.AbstractTiledLayer;
@@ -92,7 +92,7 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
         @Nonnull
         @Override
         public ClientHttpRequest getTileRequest(
-                final MapfishClientHttpRequestFactory httpRequestFactory,
+                final MfClientHttpRequestFactory httpRequestFactory,
                 final String commonUrl,
                 final ReferencedEnvelope tileBounds,
                 final Dimension tileSizeOnScreen,

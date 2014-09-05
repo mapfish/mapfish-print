@@ -48,7 +48,7 @@ import static org.junit.Assert.fail;
  *
  * @author Jesse on 4/4/14.
  */
-public class TestHttpClientFactory extends MapfishClientHttpRequestFactoryImpl implements MapfishClientHttpRequestFactory {
+public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl implements MfClientHttpRequestFactory {
 
     private final Map<Predicate<URI>, Handler> handlers = Maps.newConcurrentMap();
 

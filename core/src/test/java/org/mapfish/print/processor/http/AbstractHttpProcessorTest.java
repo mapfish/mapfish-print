@@ -28,7 +28,7 @@ import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
@@ -120,7 +120,7 @@ public abstract class AbstractHttpProcessorTest extends AbstractMapfishSpringTes
     }
 
     public static class TestParam {
-        public MapfishClientHttpRequestFactory clientHttpRequestFactory;
+        public MfClientHttpRequestFactory clientHttpRequestFactory;
     }
 
     public static abstract class AbstractTestProcessor  extends AbstractProcessor<TestParam, Void> {

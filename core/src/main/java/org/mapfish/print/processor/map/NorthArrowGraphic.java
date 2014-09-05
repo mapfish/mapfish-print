@@ -27,7 +27,7 @@ import org.apache.batik.dom.util.DOMUtilities;
 import org.apache.batik.util.SVGConstants;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.apache.commons.io.output.FileWriterWithEncoding;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.style.json.ColorParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +89,7 @@ public final class NorthArrowGraphic {
             final Color backgroundColor, 
             final Double rotation,
             final File workingDir,
-            final MapfishClientHttpRequestFactory clientHttpRequestFactory) throws Exception {
+            final MfClientHttpRequestFactory clientHttpRequestFactory) throws Exception {
         final Closer closer = Closer.create();
         try {
             final RasterReference input = loadGraphic(graphicFile, clientHttpRequestFactory, closer);
@@ -104,7 +104,7 @@ public final class NorthArrowGraphic {
     }
 
     private static RasterReference loadGraphic(final String graphicFile,
-            final MapfishClientHttpRequestFactory clientHttpRequestFactory,
+            final MfClientHttpRequestFactory clientHttpRequestFactory,
             final Closer closer) throws IOException, URISyntaxException {
         if (Strings.isNullOrEmpty(graphicFile)) {
             // if no graphic is set, take a default graphic
@@ -194,7 +194,7 @@ public final class NorthArrowGraphic {
     private static URI createSvg(final Dimension targetSize,
             final RasterReference rasterReference, final Double rotation,
             final Color backgroundColor, final File workingDir,
-            final MapfishClientHttpRequestFactory clientHttpRequestFactory)
+            final MfClientHttpRequestFactory clientHttpRequestFactory)
             throws IOException {
         // load SVG graphic
         final SVGElement svgRoot = parseSvg(rasterReference.inputStream);

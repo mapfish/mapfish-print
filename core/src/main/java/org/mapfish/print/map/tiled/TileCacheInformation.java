@@ -24,7 +24,7 @@ import com.google.common.collect.Multimap;
 import com.vividsolutions.jts.geom.Coordinate;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.attribute.map.MapBounds;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.Scale;
 import org.springframework.http.client.ClientHttpRequest;
 
@@ -88,7 +88,7 @@ public abstract class TileCacheInformation {
      * @param row                the row index of the tile from the origin of the tile cache.
      */
     @Nonnull
-    public abstract ClientHttpRequest getTileRequest(MapfishClientHttpRequestFactory httpRequestFactory,
+    public abstract ClientHttpRequest getTileRequest(MfClientHttpRequestFactory httpRequestFactory,
                                                      String commonUrl,
                                                      ReferencedEnvelope tileBounds,
                                                      Dimension tileSizeOnScreen,

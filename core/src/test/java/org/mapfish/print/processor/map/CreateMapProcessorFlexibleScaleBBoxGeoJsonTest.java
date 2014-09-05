@@ -25,7 +25,7 @@ import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.http.MapfishClientHttpRequestFactoryImpl;
+import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.test.util.ImageSimilarity;
@@ -52,7 +52,7 @@ public class CreateMapProcessorFlexibleScaleBBoxGeoJsonTest extends AbstractMapf
     @Autowired
     private MapfishParser parser;
     @Autowired
-    private MapfishClientHttpRequestFactoryImpl httpRequestFactory;
+    private MfClientHttpRequestFactoryImpl httpRequestFactory;
 
 
     @Test

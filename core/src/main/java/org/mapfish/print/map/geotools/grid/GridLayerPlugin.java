@@ -32,7 +32,7 @@ import org.geotools.styling.Style;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayerPlugin;
 import org.mapfish.print.map.geotools.FeatureSourceSupplier;
 import org.mapfish.print.map.geotools.StyleSupplier;
@@ -78,7 +78,7 @@ public final class GridLayerPlugin extends AbstractFeatureSourceLayerPlugin<Grid
 
         return new StyleSupplier<FeatureSource>() {
             @Override
-            public Style load(final MapfishClientHttpRequestFactory requestFactory,
+            public Style load(final MfClientHttpRequestFactory requestFactory,
                               final FeatureSource featureSource,
                               final MapfishMapContext mapContext) {
                 String styleRef = layerData.style;
@@ -97,7 +97,7 @@ public final class GridLayerPlugin extends AbstractFeatureSourceLayerPlugin<Grid
         return new FeatureSourceSupplier() {
             @Nonnull
             @Override
-            public FeatureSource load(@Nonnull final MapfishClientHttpRequestFactory requestFactory,
+            public FeatureSource load(@Nonnull final MfClientHttpRequestFactory requestFactory,
                                       @Nonnull final MapfishMapContext mapContext) {
                 final SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
                 CoordinateReferenceSystem projection = mapContext.getBounds().getProjection();

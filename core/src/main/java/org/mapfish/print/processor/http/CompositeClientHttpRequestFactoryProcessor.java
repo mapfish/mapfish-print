@@ -20,7 +20,7 @@
 package org.mapfish.print.processor.http;
 
 import com.google.common.collect.Lists;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.ProcessorUtils;
@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
  * A processor that wraps several {@link AbstractClientHttpRequestFactoryProcessor}s.
  * <p>
  *   This makes it more convenient to configure multiple processors that modify
- *   {@link org.mapfish.print.http.MapfishClientHttpRequestFactory} objects.
+ *   {@link org.mapfish.print.http.MfClientHttpRequestFactory} objects.
  *</p>
  * <p>
  *     Consider the case where you need to:
@@ -97,9 +97,9 @@ public final class CompositeClientHttpRequestFactoryProcessor
 
     @SuppressWarnings("unchecked")
     @Override
-    public MapfishClientHttpRequestFactory createFactoryWrapper(final Values values,
-                                                         final MapfishClientHttpRequestFactory requestFactory) {
-        MapfishClientHttpRequestFactory finalRequestFactory = requestFactory;
+    public MfClientHttpRequestFactory createFactoryWrapper(final Values values,
+                                                         final MfClientHttpRequestFactory requestFactory) {
+        MfClientHttpRequestFactory finalRequestFactory = requestFactory;
         // apply the parts in reverse so that the last part is the inner most wrapper (will be last to be called)
         for (int i = this.httpProcessors.size() - 1; i > -1; i--) {
             final HttpProcessor processor = this.httpProcessors.get(i);
@@ -133,8 +133,8 @@ public final class CompositeClientHttpRequestFactoryProcessor
     @Override
     public ClientHttpFactoryProcessorParam execute(final Values values,
                                                    final ExecutionContext context) throws Exception {
-        MapfishClientHttpRequestFactory requestFactory = values.getObject(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY,
-                MapfishClientHttpRequestFactory.class);
+        MfClientHttpRequestFactory requestFactory = values.getObject(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY,
+                MfClientHttpRequestFactory.class);
 
         final ClientHttpFactoryProcessorParam output = new ClientHttpFactoryProcessorParam();
         output.clientHttpRequestFactory = createFactoryWrapper(values, requestFactory);

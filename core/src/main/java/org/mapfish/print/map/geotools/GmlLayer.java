@@ -29,7 +29,7 @@ import org.mapfish.print.FileUtils;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -104,7 +104,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
             return new FeatureSourceSupplier() {
                 @Nonnull
                 @Override
-                public FeatureSource load(@Nonnull final MapfishClientHttpRequestFactory requestFactory,
+                public FeatureSource load(@Nonnull final MfClientHttpRequestFactory requestFactory,
                                           @Nonnull final MapfishMapContext mapContext) {
                     SimpleFeatureCollection featureCollection;
                     try {
@@ -121,7 +121,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
         }
 
         private SimpleFeatureCollection createFeatureSource(final Template template,
-                                                            final MapfishClientHttpRequestFactory httpRequestFactory,
+                                                            final MfClientHttpRequestFactory httpRequestFactory,
                                                             final String gmlString) throws IOException {
             try {
                 URL url = new URL(gmlString);

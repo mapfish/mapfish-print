@@ -29,7 +29,7 @@ import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.attribute.map.MapfishMapContext;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -63,7 +63,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
 
     @Override
     public final void render(final Graphics2D graphics2D,
-                             final MapfishClientHttpRequestFactory clientHttpRequestFactory,
+                             final MfClientHttpRequestFactory clientHttpRequestFactory,
                              final MapfishMapContext transformer,
                              final boolean isFirstLayer) {
         Rectangle paintArea = new Rectangle(transformer.getMapSize());
@@ -135,7 +135,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
      * @param transformer the map transformer
      * @param isFirstLayer true indicates this layer is the first layer in the map (the first layer drawn, ie the base layer)
      */
-    protected abstract List<? extends Layer> getLayers(MapfishClientHttpRequestFactory httpRequestFactory,
+    protected abstract List<? extends Layer> getLayers(MfClientHttpRequestFactory httpRequestFactory,
                                                        MapfishMapContext transformer,
                                                        final boolean isFirstLayer) throws Exception;
     

@@ -27,7 +27,7 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  *
  * @author Jesse on 9/3/2014.
  */
-public interface MapfishClientHttpRequestFactory extends ClientHttpRequestFactory {
+public interface MfClientHttpRequestFactory extends ClientHttpRequestFactory {
 
     /**
      * Register a callback for config using a http request.
@@ -44,6 +44,6 @@ public interface MapfishClientHttpRequestFactory extends ClientHttpRequestFactor
          *
          * @param request the request to configure
          */
-        void performRequest(final ConfigurableRequest request);
+        void configureRequest(final ConfigurableRequest request);
     }
 }

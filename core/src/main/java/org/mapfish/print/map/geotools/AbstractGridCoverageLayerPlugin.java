@@ -22,7 +22,7 @@ package org.mapfish.print.map.geotools;
 import org.geotools.styling.Style;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.style.StyleParser;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -48,7 +48,7 @@ public abstract class AbstractGridCoverageLayerPlugin {
                                                              final String styleRef) {
         return new StyleSupplier<T>() {
             @Override
-            public Style load(final MapfishClientHttpRequestFactory requestFactory,
+            public Style load(final MfClientHttpRequestFactory requestFactory,
                               final T featureSource,
                               final MapfishMapContext mapContext) {
                 final StyleParser parser = AbstractGridCoverageLayerPlugin.this.styleParser;

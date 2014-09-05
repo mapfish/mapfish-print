@@ -26,17 +26,23 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.Configurable;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
+import org.mapfish.print.config.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.AbstractClientHttpRequest;
 import org.springframework.http.client.AbstractClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,22 +50,36 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Default implementation.
  *
  * @author Jesse on 9/3/2014.
  */
-public class MapfishClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequestFactory {
+public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequestFactory {
+    private static final ThreadLocal<Configuration> CURRENT_CONFIGURATION = new InheritableThreadLocal<Configuration>();
+
+    @Nullable
+    static Configuration getCurrentConfiguration() {
+        return CURRENT_CONFIGURATION.get();
+    }
 
     /**
      * Constructor.
-     *
-     * @param httpClient the http client to use for executing requests.
      */
-    public MapfishClientHttpRequestFactoryImpl(final HttpClient httpClient) {
-        super(httpClient);
+    public MfClientHttpRequestFactoryImpl() {
+        super(createHttpClient());
+    }
+
+    private static CloseableHttpClient createHttpClient() {
+        final HttpClientBuilder httpClientBuilder = HttpClients.custom().
+                setRoutePlanner(new MfRoutePlanner()).
+                setSSLSocketFactory(new MfSSLSocketFactory()).
+                setDefaultCredentialsProvider(new MfCredentialsProvider());
+        return httpClientBuilder.build();
     }
 
     // CSOFF: DesignForExtension
@@ -68,24 +88,25 @@ public class MapfishClientHttpRequestFactoryImpl extends HttpComponentsClientHtt
     public ConfigurableRequest createRequest(@Nonnull final URI uri,
                                              @Nonnull final HttpMethod httpMethod) throws IOException {
         // CSON: DesignForExtension
-        HttpUriRequest httpRequest = createHttpUriRequest(httpMethod, uri);
+        HttpRequestBase httpRequest = (HttpRequestBase) createHttpUriRequest(httpMethod, uri);
         return new Request(getHttpClient(), httpRequest, createHttpContext(httpMethod, uri));
     }
 
     /**
      * A request that can be configured at a low level.
-     *
+     * <p/>
      * It is an http components based request.
      */
     public static final class Request extends AbstractClientHttpRequest implements ConfigurableRequest {
 
         private final HttpClient client;
-        private final HttpUriRequest request;
+        private final HttpRequestBase request;
         private final HttpContext context;
         private final ByteArrayOutputStream outputStream;
+        private Configuration configuration;
 
         Request(@Nonnull final HttpClient client,
-                @Nonnull final HttpUriRequest request,
+                @Nonnull final HttpRequestBase request,
                 @Nonnull final HttpContext context) {
             this.client = client;
             this.request = request;
@@ -93,18 +114,19 @@ public class MapfishClientHttpRequestFactoryImpl extends HttpComponentsClientHtt
             this.outputStream = new ByteArrayOutputStream();
         }
 
+        public void setConfiguration(final Configuration configuration) {
+            this.configuration = configuration;
+        }
+
         public HttpClient getClient() {
             return this.client;
-        }
-        public Configurable getConfigurable() {
-            return (Configurable) this.request;
         }
 
         public HttpContext getContext() {
             return this.context;
         }
 
-        public HttpUriRequest getRequest() {
+        public HttpRequestBase getUnderlyingRequest() {
             return this.request;
         }
 
@@ -123,6 +145,8 @@ public class MapfishClientHttpRequestFactoryImpl extends HttpComponentsClientHtt
 
         @Override
         protected Response executeInternal(@Nonnull final HttpHeaders headers) throws IOException {
+            CURRENT_CONFIGURATION.set(this.configuration);
+
             for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
                 String headerName = entry.getKey();
                 if (!headerName.equalsIgnoreCase(HTTP.CONTENT_LEN) &&
@@ -148,14 +172,19 @@ public class MapfishClientHttpRequestFactoryImpl extends HttpComponentsClientHtt
     }
 
     static class Response extends AbstractClientHttpResponse {
-
+        private static final Logger LOGGER = LoggerFactory.getLogger(Response.class);
+        private static final AtomicInteger ID_COUNTER = new AtomicInteger();
         private final HttpResponse response;
+        private final int id = ID_COUNTER.incrementAndGet();
         private Closer closer = Closer.create();
         private InputStream inputStream;
 
+
         public Response(@Nonnull final HttpResponse response) {
             this.response = response;
+            LOGGER.trace("Creating Http Response object: " + this.id);
         }
+
 
         @Override
         public int getRawStatusCode() throws IOException {
@@ -168,18 +197,39 @@ public class MapfishClientHttpRequestFactoryImpl extends HttpComponentsClientHtt
         }
 
         @Override
+        protected void finalize() throws Throwable {
+            close();
+        }
+
+        @Override
         public void close() {
             try {
-                this.closer.close();
+                getBody();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                LOGGER.error("Error occurred while trying to retrieve Http Response " + this.id + " in order to close it.", e);
+            } finally {
+                try {
+                    this.closer.close();
+                } catch (IOException e) {
+                    LOGGER.trace("Error while closing Http Response object: " + this.id);
+                    throw new RuntimeException(e);
+                }
+
+                LOGGER.trace("Closed Http Response object: " + this.id);
             }
         }
 
         @Override
         public synchronized InputStream getBody() throws IOException {
             if (this.inputStream == null) {
-                this.inputStream = this.closer.register(this.response.getEntity().getContent());
+                final HttpEntity entity = this.response.getEntity();
+                if (entity != null) {
+                    this.inputStream = this.closer.register(entity.getContent());
+                }
+
+                if (this.inputStream == null) {
+                    this.inputStream = new ByteArrayInputStream(new byte[0]);
+                }
             }
             return this.inputStream;
         }

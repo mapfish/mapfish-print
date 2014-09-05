@@ -20,7 +20,7 @@
 package org.mapfish.print.processor.http;
 
 import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.http.matcher.AcceptAllMatcher;
 import org.mapfish.print.processor.http.matcher.HostMatcher;
 import org.mapfish.print.processor.http.matcher.URIMatcher;
@@ -118,13 +118,13 @@ public final class RestrictUrisProcessor extends AbstractClientHttpRequestFactor
     }
 
     @Override
-    public MapfishClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
-                                                         final MapfishClientHttpRequestFactory requestFactory) {
+    public MfClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
+                                                         final MfClientHttpRequestFactory requestFactory) {
         return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory) {
             @Override
             protected ClientHttpRequest createRequest(final URI uri,
                                                       final HttpMethod httpMethod,
-                                                      final MapfishClientHttpRequestFactory requestFactory) throws
+                                                      final MfClientHttpRequestFactory requestFactory) throws
                     IOException {
                 for (URIMatcher matcher : RestrictUrisProcessor.this.matchers) {
                     if (matcher.accepts(uri, httpMethod)) {

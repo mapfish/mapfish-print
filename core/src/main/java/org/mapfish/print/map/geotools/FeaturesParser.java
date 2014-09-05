@@ -31,7 +31,7 @@ import org.mapfish.print.Constants;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FileUtils;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.http.MapfishClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.http.HttpMethod;
@@ -53,7 +53,7 @@ import java.net.URL;
  * Created by Stéphane Brunner on 16/4/14.
  */
 public class FeaturesParser {
-    private final MapfishClientHttpRequestFactory httpRequestFactory;
+    private final MfClientHttpRequestFactory httpRequestFactory;
     private final boolean forceLongitudeFirst;
 
     /**
@@ -62,7 +62,7 @@ public class FeaturesParser {
      * @param httpRequestFactory  the HTTP request factory
      * @param forceLongitudeFirst if true then force longitude coordinate as first coordinate
      */
-    public FeaturesParser(final MapfishClientHttpRequestFactory httpRequestFactory, final boolean forceLongitudeFirst) {
+    public FeaturesParser(final MfClientHttpRequestFactory httpRequestFactory, final boolean forceLongitudeFirst) {
         this.httpRequestFactory = httpRequestFactory;
         this.forceLongitudeFirst = forceLongitudeFirst;
     }
