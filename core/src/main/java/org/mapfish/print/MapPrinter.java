@@ -19,6 +19,7 @@
 
 package org.mapfish.print;
 
+import com.google.common.io.Files;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
@@ -65,8 +66,7 @@ public class MapPrinter {
      * @param newConfigFile the file containing the new configuration.
      */
     public final void setConfiguration(final File newConfigFile) throws IOException {
-        this.configFile = newConfigFile;
-        this.configuration = this.configurationFactory.getConfig(newConfigFile);
+        setConfiguration(newConfigFile.toURI(), Files.toByteArray(newConfigFile));
     }
 
     /**
@@ -138,17 +138,6 @@ public class MapPrinter {
         } finally {
             this.workingDirectories.removeDirectory(taskDirectory);
         }
-    }
-
-    /**
-     * Get the output filename.  It is the name of the file that the client should receive.
-     *
-     * @param layout the layout that will be printed (it can affect the filename chosen).
-     * @param defaultName the default name (from configuration)
-     */
-    public final String getOutputFilename(final String layout, final String defaultName) {
-        final String name = this.configuration.getOutputFilename(layout);
-        return name == null ? defaultName : name;
     }
 
     /**

@@ -19,6 +19,7 @@
 
 package org.mapfish.print.config;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.Closer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +62,7 @@ public class ConfigurationFactory {
      *
      * @param configFile the file to read the configuration from.
      */
+    @VisibleForTesting
     public final Configuration getConfig(final File configFile) throws IOException {
         Closer closer = Closer.create();
         try {

@@ -23,8 +23,4 @@ templates:
     - !createMap
         inputMapper: {imageMap: map}
         outputPrefix: image
-        outputMapper: {mapSubReport: imageMap}
-        outputMapper:
-          mapSubReport: imageMap
-          mapContext: imageContext
 
