@@ -20,14 +20,21 @@
 package org.mapfish.print.attribute;
 
 import com.google.common.collect.Maps;
+import org.json.JSONException;
+import org.json.JSONWriter;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.MapfishParser;
+import org.mapfish.print.wrapper.PArray;
+import org.mapfish.print.wrapper.PObject;
+import org.mapfish.print.wrapper.yaml.PYamlArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * This attribute represents a collection of attributes which can be used as the data source of a Jasper report's
@@ -80,11 +87,12 @@ import java.util.Map;
  *
  * @author Jesse on 9/5/2014.
  */
-public final class DataSourceAttribute extends ReflectiveAttribute<DataSourceAttribute.DataSourceAttributeValue> {
+public final class DataSourceAttribute implements Attribute {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSourceAttribute.class);
 
-
     private Map<String, Attribute> attributes = Maps.newHashMap();
+    private String configName;
+    private PYamlArray defaults;
 
     /**
      * The attributes that are acceptable by this dataSource.  The format is the same as the template attributes section.
@@ -106,18 +114,72 @@ public final class DataSourceAttribute extends ReflectiveAttribute<DataSourceAtt
     }
 
     @Override
-    protected Class<? extends DataSourceAttributeValue> getValueType() {
-        return DataSourceAttributeValue.class;
+    public void printClientConfig(final JSONWriter json, final Template template) throws JSONException {
+        try {
+            json.key(ReflectiveAttribute.JSON_NAME).value(this.configName);
+            json.key(ReflectiveAttribute.JSON_ATTRIBUTE_TYPE).value(DataSourceAttributeValue.class.getSimpleName());
+
+            json.key(ReflectiveAttribute.JSON_CLIENT_PARAMS);
+            json.object();
+            json.key("attributes");
+            json.array();
+            for (Map.Entry<String, Attribute> entry : this.attributes.entrySet()) {
+                Attribute attribute = entry.getValue();
+                if (attribute.getClass().getAnnotation(InternalAttribute.class) == null) {
+                    json.object();
+                    json.key("name").value(entry.getKey());
+                    attribute.printClientConfig(json, template);
+                    json.endObject();
+                }
+            }
+            json.endArray();
+            json.endObject();
+
+        } catch (Throwable e) {
+            // Note: If this test fails and you just added a new attribute, make
+            // sure to set defaults in AbstractMapfishSpringTest.configureAttributeForTesting
+            throw new Error("Error printing the clientConfig of: " + DataSourceAttribute.class.getName(), e);
+        }
     }
 
     @Override
-    public DataSourceAttributeValue createValue(final Template template) {
-        return new DataSourceAttributeValue();
+    public void setConfigName(final String name) {
+        this.configName = name;
     }
 
     @Override
     public void validate(final List<Throwable> validationErrors) {
         // no validation to be done
+    }
+
+    /**
+     * Parser the attributes into the value object.
+     * @param parser the parser
+     * @param template the containing template
+     * @param jsonValue the json
+     */
+    @SuppressWarnings("unchecked")
+    public DataSourceAttributeValue parseAttribute(@Nonnull final MapfishParser parser,
+                                                   @Nonnull final Template template,
+                                                   @Nullable final PArray jsonValue) throws JSONException {
+        final PArray pValue;
+
+        if (jsonValue != null) {
+            pValue = jsonValue;
+        } else {
+            pValue = this.defaults;
+        }
+
+        final DataSourceAttributeValue value = new DataSourceAttributeValue();
+        value.attributesValues = new Map[pValue.size()];
+        for (int i = 0; i < pValue.size(); i++) {
+            PObject rowData = pValue.getObject(i);
+            final Values valuesForParsing = new Values();
+            valuesForParsing.populateFromAttributes(template, parser, this.attributes, rowData);
+            value.attributesValues[i] = valuesForParsing.asMap();
+        }
+
+        return value;
     }
 
     /**

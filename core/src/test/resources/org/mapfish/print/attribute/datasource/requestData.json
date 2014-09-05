@@ -1,0 +1,22 @@
+{
+  "datasource": [{
+    "table": {
+      "columns": ["id", "name", "icon"],
+      "data": [
+        [1, "blah", "icon_pan"],
+        [2, "blip", "icon_zoomin"]
+      ]
+    },
+    "name": "name1",
+    "count": 1
+  }, {
+    "table": {
+      "columns": ["id", "name", "icon", "other"],
+      "data": [
+        [1, "blah2", "icon_pan2", "somedata"]
+      ]
+    },
+    "name": "name2",
+    "count": 2
+  }]
+}

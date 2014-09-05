@@ -81,11 +81,11 @@ public class Template implements ConfigurationObject, HasConfiguration {
     public final void printClientConfig(final JSONWriter json) throws JSONException {
         json.key("attributes");
         json.array();
-        for (String name : this.attributes.keySet()) {
-            final Attribute attribute = this.attributes.get(name);
+        for (Map.Entry<String, Attribute> entry : this.attributes.entrySet()) {
+            Attribute attribute = entry.getValue();
             if (attribute.getClass().getAnnotation(InternalAttribute.class) == null) {
                 json.object();
-                json.key("name").value(name);
+                json.key("name").value(entry.getKey());
                 attribute.printClientConfig(json, this);
                 json.endObject();
             }

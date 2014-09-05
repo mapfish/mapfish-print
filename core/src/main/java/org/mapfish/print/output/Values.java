@@ -27,6 +27,7 @@ import org.json.JSONObject;
 import org.mapfish.print.ConfigFileResolvingHttpRequestFactory;
 import org.mapfish.print.attribute.ArrayReflectiveAttribute;
 import org.mapfish.print.attribute.Attribute;
+import org.mapfish.print.attribute.DataSourceAttribute;
 import org.mapfish.print.attribute.HttpRequestHeadersAttribute;
 import org.mapfish.print.attribute.PrimitiveAttribute;
 import org.mapfish.print.attribute.ReflectiveAttribute;
@@ -123,9 +124,9 @@ public final class Values {
     public void populateFromAttributes(@Nonnull final Template template,
                                        @Nonnull final MapfishParser parser,
                                        @Nonnull final Map<String, Attribute> attributes,
-                                       @Nonnull final PJsonObject requestJsonAttributes) throws JSONException {
+                                       @Nonnull final PObject requestJsonAttributes) throws JSONException {
         if (requestJsonAttributes.has(JSON_REQUEST_HEADERS) &&
-            requestJsonAttributes.getJSONObject(JSON_REQUEST_HEADERS).has(JSON_REQUEST_HEADERS)) {
+            requestJsonAttributes.getObject(JSON_REQUEST_HEADERS).has(JSON_REQUEST_HEADERS)) {
             if (!attributes.containsKey(MapPrinterServlet.JSON_REQUEST_HEADERS)) {
                 attributes.put(MapPrinterServlet.JSON_REQUEST_HEADERS, new HttpRequestHeadersAttribute());
             }
@@ -144,10 +145,13 @@ public final class Values {
                     jsonToUse = new PMultiObject(pValues);
                 }
                 value = parser.parsePrimitive(attributeName, pAtt.getValueClass(), jsonToUse);
+            } else if (attribute instanceof DataSourceAttribute) {
+                DataSourceAttribute dsAttribute = (DataSourceAttribute) attribute;
+                value = dsAttribute.parseAttribute(parser, template, requestJsonAttributes.getArray(attributeName));
             } else if (attribute instanceof ArrayReflectiveAttribute) {
                 boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
                 ArrayReflectiveAttribute<?> rAtt = (ArrayReflectiveAttribute<?>) attribute;
-                PArray arrayValues = requestJsonAttributes.optJSONArray(attributeName);
+                PArray arrayValues = requestJsonAttributes.optArray(attributeName);
                 if (arrayValues == null) {
                     arrayValues = rAtt.getDefaultValue();
                 }
@@ -161,7 +165,7 @@ public final class Values {
                 boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
                 ReflectiveAttribute<?> rAtt = (ReflectiveAttribute<?>) attribute;
                 value = rAtt.createValue(template);
-                PObject pValue = requestJsonAttributes.optJSONObject(attributeName);
+                PObject pValue = requestJsonAttributes.optObject(attributeName);
 
                 if (pValue != null) {
                     PObject[] pValues = new PObject[]{ pValue, rAtt.getDefaultValue() };

@@ -2,7 +2,13 @@
 templates:
   main: !template
     attributes:
-      datasource: !datasource {}
+      datasource: !datasource
+        attributes:
+          table: !table {}
+          name: !string {}
+          count: !integer {}
     processors:
-    - !springInjectionProcessor {}
+    - !createDataSource
+      processors:
+        - !prepareTable {}
 
