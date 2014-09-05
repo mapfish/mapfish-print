@@ -13,22 +13,26 @@ templates:
         default: 134
       ratio: !float
         default: 2.0
-      tableList: !tableList
+      datasource: !datasource
+        attributes:
+          table: !table {}
+          name: !string {}
+          count: !integer {}
         default:
-          -
-            id: "f1"
-            displayName: "Feature 1"
-            columns:
-              - "id"
-              - "name"
-              - "icon"
-            data:
-              -
-                - 1
-                - "blah"
-                - "icon_pan"
-              -
-                - 2
-                - "blip"
-                - "icon_zoomin"
+          - name: "name"
+            count: 3
+            table:
+              columns:
+                - "id"
+                - "name"
+                - "icon"
+              data:
+                -
+                  - 1
+                  - "blah"
+                  - "icon_pan"
+                -
+                  - 2
+                  - "blip"
+                  - "icon_zoomin"
 

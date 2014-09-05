@@ -4,11 +4,12 @@ templates:
     reportTemplate: simpleReport.jrxml
     tableData: tableList
     attributes:
-      tableList: !tableList {}
+      datasource: !dataSource
+        attributes:
+          table: !table {}
     processors:
     - !reportBuilder # compile all reports in current directory
       directory: '.'
-    - !prepareTableList
-      inputMapper: {tableList: tableList}
-      dynamicReport: {}
-      outputMapper: {tableList: tableList}
+    - !createDataSource
+      processors:
+        - !prepareTable {}

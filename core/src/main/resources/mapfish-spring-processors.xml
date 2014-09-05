@@ -33,7 +33,6 @@
 
     <bean id="!prepareLegend" class="org.mapfish.print.processor.jasper.LegendProcessor" scope="prototype" />
     <bean id="!prepareTable" class="org.mapfish.print.processor.jasper.TableProcessor" scope="prototype" />
-    <bean id="!prepareTableList" class="org.mapfish.print.processor.jasper.TableListProcessor" scope="prototype" />
     <bean id="!reportBuilder" class="org.mapfish.print.processor.jasper.JasperReportBuilder" scope="prototype" />
     <bean id="!useHttpForHttps" class="org.mapfish.print.processor.http.UseHttpForHttpsProcessor" scope="prototype" />
     <bean id="!mapUri" class="org.mapfish.print.processor.http.MapUriProcessor" scope="prototype" />

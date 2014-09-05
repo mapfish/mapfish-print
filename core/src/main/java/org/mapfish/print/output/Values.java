@@ -21,11 +21,9 @@ package org.mapfish.print.output;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.ConfigFileResolvingHttpRequestFactory;
-import org.mapfish.print.attribute.ArrayReflectiveAttribute;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.attribute.DataSourceAttribute;
 import org.mapfish.print.attribute.HttpRequestHeadersAttribute;
@@ -34,17 +32,14 @@ import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.servlet.MapPrinterServlet;
-import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.mapfish.print.wrapper.multi.PMultiObject;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -147,20 +142,7 @@ public final class Values {
                 value = parser.parsePrimitive(attributeName, pAtt.getValueClass(), jsonToUse);
             } else if (attribute instanceof DataSourceAttribute) {
                 DataSourceAttribute dsAttribute = (DataSourceAttribute) attribute;
-                value = dsAttribute.parseAttribute(parser, template, requestJsonAttributes.getArray(attributeName));
-            } else if (attribute instanceof ArrayReflectiveAttribute) {
-                boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
-                ArrayReflectiveAttribute<?> rAtt = (ArrayReflectiveAttribute<?>) attribute;
-                PArray arrayValues = requestJsonAttributes.optArray(attributeName);
-                if (arrayValues == null) {
-                    arrayValues = rAtt.getDefaultValue();
-                }
-                value = Array.newInstance(rAtt.createValue(template).getClass(), arrayValues.size());
-                for (int i = 0; i < arrayValues.size(); i++) {
-                    Object elem = rAtt.createValue(template);
-                    Array.set(value, i, elem);
-                    parser.parse(errorOnExtraParameters, arrayValues.getObject(i), elem);
-                }
+                value = dsAttribute.parseAttribute(parser, template, requestJsonAttributes.optArray(attributeName));
             } else if (attribute instanceof ReflectiveAttribute) {
                 boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
                 ReflectiveAttribute<?> rAtt = (ReflectiveAttribute<?>) attribute;

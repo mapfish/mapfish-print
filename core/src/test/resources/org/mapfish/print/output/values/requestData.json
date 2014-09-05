@@ -5,15 +5,17 @@
   "legend": {
     "name": "legendName"
   },
-  "tableList": [
+  "datasource": [
     {
-      "id": "f1",
-      "displayName": "Feature 1",
-      "columns": ["id", "name", "icon"],
-      "data": [
-        [1, "blah", "icon_pan"],
-        [2, "blip", "icon_zoomin"]
-      ]
+      "name": "requestDataName",
+      "count": 0,
+      "table": {
+        "columns": ["requestId", "name", "icon"],
+        "data": [
+          [1, "blah", "icon_pan"],
+          [2, "blip", "icon_zoomin"]
+        ]
+      }
     }
   ]
 }}

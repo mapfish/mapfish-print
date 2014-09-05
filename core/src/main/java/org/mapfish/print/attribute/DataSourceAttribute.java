@@ -94,6 +94,10 @@ public final class DataSourceAttribute implements Attribute {
     private String configName;
     private PYamlArray defaults;
 
+    public void setDefault(final List<Object> defaultData) {
+        this.defaults = new PYamlArray(null, defaultData, "dataSource");
+    }
+
     /**
      * The attributes that are acceptable by this dataSource.  The format is the same as the template attributes section.
      *
