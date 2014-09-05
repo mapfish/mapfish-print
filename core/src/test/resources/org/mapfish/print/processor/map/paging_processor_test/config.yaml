@@ -23,7 +23,7 @@ templates:
       directory: '.'
     - !createMapPages {} # creates the iterable<Values> consumed by dataSource
     - !createMap {}
-    - !dataSource
+    - !createDataSource
       inputMapper: {maps: source}
       processors:
         - !createMap {}

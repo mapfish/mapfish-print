@@ -19,7 +19,7 @@ templates:
       directory: '.'
     - !createMapPages {}
     - !createMap {}
-    - !dataSource
+    - !createDataSource
       inputMapper: {maps: source}
       processors:
         - !createMap {}
