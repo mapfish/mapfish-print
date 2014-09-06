@@ -13,18 +13,19 @@ templates:
         maxDpi: 400
         width: 400
         height: 200
-      tableList: !tableList {}
+      datasource: !datasource
+        attributes:
+          displayName: !string {}
+          table: !table {}
     processors:
     - !reportBuilder # compile all reports in current directory
       directory: '.'
     - !createMap
       inputMapper: {map: map}
       outputMapper: {mapSubReport: map}
-    - !prepareTableList
-      inputMapper: {tableList: tableList}
-      dynamicReport: {}
-      dynamicReportDirectory: "subreports"
-      outputMapper: {tableList: tableList}
-    - !reportBuilder  # compile all jasper report templates in subreports directory
-      directory: "subreports"
-    tableData: tableList
+    - !createDataSource
+      reportTemplate: table.jrxml
+      reportKey: reportTemplate
+      processors:
+        - !prepareTable {}
+    tableData: jrDataSource

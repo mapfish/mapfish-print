@@ -146,7 +146,10 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
         return new Output(jrDataSource);
     }
 
-    private JRDataSource processInput(@Nonnull final Input input) throws JSONException, JRException {
+    //CSOFF:RedundantThrows
+    private JRDataSource processInput(@Nonnull final Input input)
+            throws JSONException, JRException {
+        //CSON:RedundantThrows
         List<Values> dataSourceValues = Lists.newArrayList();
         for (Map<String, Object> o : input.datasource.attributesValues) {
             Values rowValues = new Values(input.values);

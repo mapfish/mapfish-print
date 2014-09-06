@@ -4,7 +4,7 @@ templates:
   A4 landscape: !template
   #===========================================================================
     reportTemplate: simpleReport.jrxml
-    tableData: datasource
+    tableData: jrDataSource
     attributes:
       map: !map
         maxDpi: 400
@@ -20,7 +20,7 @@ templates:
     - !createMapPages {}
     - !createMap {}
     - !createDataSource
-      inputMapper: {maps: source}
+      inputMapper: {maps: datasource}
       processors:
         - !createMap {}
     
