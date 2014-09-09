@@ -20,6 +20,8 @@
 package org.mapfish.print.config;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.geotools.styling.Style;
 import org.json.JSONException;
 import org.json.JSONWriter;
@@ -55,8 +57,8 @@ public class Template implements ConfigurationObject, HasConfiguration {
 
 
     private String reportTemplate;
-    private Map<String, Attribute> attributes;
-    private List<Processor> processors;
+    private Map<String, Attribute> attributes = Maps.newHashMap();
+    private List<Processor> processors = Lists.newArrayList();
 
     private String jdbcUrl;
     private String jdbcUser;

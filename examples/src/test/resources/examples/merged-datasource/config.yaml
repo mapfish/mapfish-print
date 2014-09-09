@@ -5,7 +5,7 @@ templates:
   A4 portrait: !template
     reportTemplate: main.jrxml
     attributes:
-      name: !string {}
+      title: !string {}
       description: !string {}
       legend: !legend {}
       map: !map
