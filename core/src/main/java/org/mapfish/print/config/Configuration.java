@@ -26,6 +26,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.util.Assert;
 import org.geotools.styling.Displacement;
 import org.geotools.styling.Fill;
 import org.geotools.styling.LineSymbolizer;
@@ -138,7 +139,9 @@ public class Configuration {
      * @param name the template name;
      */
     public final Template getTemplate(final String name) {
-        return this.templates.get(name);
+        final Template template = this.templates.get(name);
+        Assert.isTrue(template != null, "Template '" + name + " does not exist.  Options are: " + this.templates.keySet());
+        return template;
     }
 
     public final void setTemplates(final Map<String, Template> templates) {
