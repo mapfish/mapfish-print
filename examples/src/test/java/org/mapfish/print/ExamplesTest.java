@@ -153,12 +153,15 @@ public class ExamplesTest {
             final File configFile = new File(example, CONFIG_FILE);
             this.mapPrinter.setConfiguration(configFile);
 
+            if (!hasRequestFile(example)) {
+                throw new AssertionError("Example: '" + example.getName() + "' does not have any request data files.");
+            }
             for (File requestFile : Files.fileTreeTraverser().children(example)) {
                 if (!requestFile.isFile() ||  !configFilter.matcher(example.getName()).matches()) {
                     continue;
                 }
                 try {
-                    if (requestFile.getName().matches(REQUEST_DATA_FILE) || requestFile.getName().matches(OLD_API_REQUEST_DATA_FILE)) {
+                    if (isRequestDataFile(requestFile)) {
                         String requestData = Files.asCharSource(requestFile, Charset.forName(Constants.DEFAULT_ENCODING)).read();
 
                         final PJsonObject jsonSpec;
@@ -216,6 +219,19 @@ public class ExamplesTest {
         }
 
         return testsRan;
+    }
+
+    private boolean hasRequestFile(File example) {
+        for (File file : Files.fileTreeTraverser().children(example)) {
+            if (isRequestDataFile(file)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isRequestDataFile(File requestFile) {
+        return requestFile.getName().matches(REQUEST_DATA_FILE) || requestFile.getName().matches(OLD_API_REQUEST_DATA_FILE);
     }
 
 
