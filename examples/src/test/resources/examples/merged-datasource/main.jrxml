@@ -49,7 +49,7 @@
             </image>
             <textField>
                 <reportElement x="130" y="0" width="425" height="40" uuid="add57d67-ae70-4d65-b75c-e67a95767791"/>
-                <textElement textAlignment="Center" verticalAlignment="Middle">
+                <textElement verticalAlignment="Middle">
                     <font size="20" isBold="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$P{title}]]></textFieldExpression>

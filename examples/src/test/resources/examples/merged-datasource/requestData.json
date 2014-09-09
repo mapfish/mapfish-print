@@ -2,7 +2,7 @@
     "layout": "A4 portrait",
     "outputFormat": "pdf",
     "attributes": {
-        "name": "Hello",
+        "title": "Hello",
         "description": "Hello every body !",
         "datasource": [
           {

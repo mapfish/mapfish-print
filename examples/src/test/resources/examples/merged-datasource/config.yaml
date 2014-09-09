@@ -27,19 +27,19 @@ templates:
       reportKey: reportTemplate
       processors:
         - !prepareTable {}
-    - !prepareLegend {}
+    - !prepareLegend
+      template: legend.jrxml
     - !mergeDataSources
       sources:
         - !mergeSource
-          key: map
           type: SINGLE
           fields: # name the column data so there is consistence in all rows
             map: subReportPath
         - !mergeSource
-          key: legend
           type: SINGLE
           fields: # name the column data so there is consistence in all rows
-            legend: subReportPath
+            legendSubReport: subReportPath
+            legend: datasource
         - !mergeSource
           key: jrDataSource
           type: DATASOURCE
