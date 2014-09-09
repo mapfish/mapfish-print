@@ -28,7 +28,6 @@ import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import net.sf.jasperreports.engine.design.JRDesignField;
-import org.eclipse.jdt.internal.core.SourceType;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.ConfigurationObject;
 import org.mapfish.print.output.Values;
@@ -63,7 +62,7 @@ import javax.annotation.Nullable;
  * @author Jesse on 9/6/2014.
  */
 public final class MergeDataSourceProcessor extends AbstractProcessor<MergeDataSourceProcessor.In, MergeDataSourceProcessor.Out>
-    implements CustomDependencies {
+        implements CustomDependencies {
     private List<Source> sources = Lists.newArrayList();
 
     /**
@@ -97,31 +96,13 @@ public final class MergeDataSourceProcessor extends AbstractProcessor<MergeDataS
 
         for (int i = 0; i < this.sources.size(); i++) {
             Source source = this.sources.get(i);
-            if (source.key == null) {
-                validationErrors.add(new ConfigurationException("The " + i + "th source in " + getClass().getSimpleName() + " needs to " +
-                                                                "have a 'key' parameter defined."));
-            }
-            if (source.type == null) {
-                validationErrors.add(new ConfigurationException("The " + i + "th source in " + getClass().getSimpleName() + " needs to " +
-                                                                "have a 'type' parameter defined."));
-            }
-            if (source.type != SourceType.SINGLE && (source.fields == null || source.fields.isEmpty())) {
-                validationErrors.add(new ConfigurationException("The " + i + "th source in " + getClass().getSimpleName() + " needs to " +
-                                                                "have a 'fields' parameter defined."));
-            }
-            if (source.type == SourceType.SINGLE && source.fields != null) {
-                if (source.fields.size() > 1) {
-                    validationErrors.add(new ConfigurationException("The " + i + "th source in " + getClass().getSimpleName() +
-                                                                    " has an invalid 'fields' parameter defined. There should be at " +
-                                                                    "most" +
-                                                                    " one field defined"));
-                }
-                if (!source.fields.containsKey(source.key)) {
-                    validationErrors.add(new ConfigurationException("The " + i + "th source in " + getClass().getSimpleName() +
-                                                                    "has an invalid 'fields' parameter defined. There should be a " +
-                                                                    "field defined with '" + source.key + "' as the key."));
-                }
 
+            if (source.type == null) {
+                validationErrors.add(new ConfigurationException(
+                        "The " + indexString(i) + " source in " + getClass().getSimpleName() + " needs to " +
+                        "have a 'type' parameter defined."));
+            } else {
+                source.type.validate(i, validationErrors, source);
             }
         }
     }
@@ -150,7 +131,7 @@ public final class MergeDataSourceProcessor extends AbstractProcessor<MergeDataS
     public List<ProcessorDependency> createDependencies(@Nonnull final List<ProcessorGraphNode<Object, Object>> nodes) {
         HashSet<String> sourceKeys = Sets.newHashSet();
         for (Source source : this.sources) {
-            sourceKeys.add(source.key);
+            source.type.addValuesKeys(source, sourceKeys);
         }
 
         final ArrayList<ProcessorDependency> dependencies = Lists.newArrayList();
@@ -183,6 +164,16 @@ public final class MergeDataSourceProcessor extends AbstractProcessor<MergeDataS
         return dependencies;
     }
 
+    private static String indexString(final int i) {
+        switch (i + 1) {
+            case 1:
+                return "1st";
+            case 2:
+                return "2nd";
+            default:
+                return (i + 1) + "th";
+        }
+    }
 
     /**
      * The input object for {@link org.mapfish.print.processor.jasper.MergeDataSourceProcessor}.
@@ -277,26 +268,43 @@ public final class MergeDataSourceProcessor extends AbstractProcessor<MergeDataS
      */
     public enum SourceType {
         /**
-         * Indicates the object should be merged into the final DataSource as a single row.  The row will consist of a single row.
+         * Creates a single row from a set of values from the output and attribute objects.
          * <p>
-         * If the value does not exist or is null then no row will be added.
-         * </p>
-         * <p>
-         * The fields parameter in the source may be empty, in this case the field name will be the key, otherwise the field name
-         * will be looked up in the fields map using the key.
+         * In this case the key is not required, only the fields.  Each field key will be the
+         * look up key to find the object from the set of processor output and attributes.  The field
+         * value will be the column name for that value in the created row
          * </p>
          */
         SINGLE {
             @Override
             void add(final List<Map<String, ?>> rows, final Values values, final Source source) {
-                final Object object = values.getObject(source.key, Object.class);
-                if (object != null) {
-                    String key = source.key;
-                    if (source.fields.containsKey(key)) {
-                        key = source.fields.get(key);
-                    }
-                    rows.add(Collections.singletonMap(key, object));
+
+                Map<String, Object> row = Maps.newHashMap();
+                for (Map.Entry<String, String> entry : source.fields.entrySet()) {
+                    final Object object = values.getObject(entry.getKey(), Object.class);
+                    row.put(entry.getValue(), object);
                 }
+
+                rows.add(row);
+            }
+
+            @Override
+            void validate(final int rowIndex, final List<Throwable> validationErrors, final Source source) {
+                if (source.key != null) {
+                    validationErrors.add(new ConfigurationException(
+                            "The 'key' property is not required for source with the type " + name() + ". The " + indexString(rowIndex) +
+                            " source has a key property configured when it should not"));
+                }
+                if (source.fields.isEmpty()) {
+                    validationErrors.add(new ConfigurationException(
+                            "The " + indexString(rowIndex) + " source in " + getClass().getSimpleName() + " has an invalid 'fields' " +
+                            "parameter defined. There should be at least most one field defined"));
+                }
+            }
+
+            @Override
+            public void addValuesKeys(final Source source, final HashSet<String> sourceKeys) {
+                sourceKeys.addAll(source.fields.keySet());
             }
         },
         /**
@@ -329,8 +337,32 @@ public final class MergeDataSourceProcessor extends AbstractProcessor<MergeDataS
                     rows.add(row);
                 }
             }
+
+            @Override
+            void validate(final int rowIndex, final List<Throwable> validationErrors, final Source source) {
+                if (source.key.isEmpty()) {
+                    validationErrors.add(new ConfigurationException(
+                            "The " + indexString(rowIndex) + " source in " + MergeDataSourceProcessor.class.getSimpleName() +
+                            " needs to have a 'key' parameter defined."));
+                }
+                if (source.fields.isEmpty()) {
+                    validationErrors.add(new ConfigurationException(
+                            "The " + indexString(rowIndex) + " source in " + MergeDataSourceProcessor.class.getSimpleName() +
+                            " needs to have a 'fields' parameter defined."));
+                }
+
+            }
+
+            @Override
+            public void addValuesKeys(final Source source, final HashSet<String> sourceKeys) {
+                sourceKeys.add(source.key);
+            }
         };
 
         abstract void add(List<Map<String, ?>> rows, Values values, Source source) throws JRException;
+
+        abstract void validate(int rowIndex, List<Throwable> validationErrors, Source source);
+
+        abstract void addValuesKeys(Source source, HashSet<String> sourceKeys);
     }
 }

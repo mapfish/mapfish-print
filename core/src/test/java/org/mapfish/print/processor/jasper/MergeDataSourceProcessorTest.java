@@ -45,7 +45,8 @@ public class MergeDataSourceProcessorTest {
     @Test
     public void testExec() throws Exception {
         Values values = new Values();
-        values.put("row1", "hello");
+        values.put("row1", "hello10");
+        values.put("row11", "hello11");
         values.put("row2", "hello2");
         List<Map<String, ?>> innerData = Lists.newArrayList(
             createRow("r1val1", "r1val2", "r1val3"),
@@ -56,14 +57,23 @@ public class MergeDataSourceProcessorTest {
         values.put("manyRows", datasource);
 
         final MergeDataSourceProcessor processor = new MergeDataSourceProcessor();
+
+        Map<String, String> fieldMap1 = Maps.newHashMap();
+        fieldMap1.put("row1", "row1");
+        fieldMap1.put("row11", "row11");
         Map<String, String> fieldMap = Maps.newHashMap();
         fieldMap.put("col1", "col1");
         fieldMap.put("col3", "col2");
         List<Source> source = Lists.newArrayList(
-                Source.createSource("row1", SINGLE),
-                Source.createSource("row2", SINGLE, Collections.singletonMap("row2", "renamed")),
+                Source.createSource(null, SINGLE, fieldMap1),
+                Source.createSource(null, SINGLE, Collections.singletonMap("row2", "renamed")),
                 Source.createSource("manyRows", DATASOURCE, fieldMap));
         processor.setSources(source);
+
+        List<Throwable> errors = Lists.newArrayList();
+        processor.validate(errors);
+
+        assertEquals(errors.toString(), 0, errors.size());
 
         In in = new In();
         in.values = values;
@@ -73,7 +83,10 @@ public class MergeDataSourceProcessorTest {
         field.setName("row1");
         assertTrue(execute.mergedDataSource.next());
         Object value = execute.mergedDataSource.getFieldValue(field);
-        assertEquals("hello", value);
+        assertEquals("hello10", value);
+        field.setName("row11");
+        value = execute.mergedDataSource.getFieldValue(field);
+        assertEquals("hello11", value);
 
         assertTrue(execute.mergedDataSource.next());
         field.setName("renamed");
