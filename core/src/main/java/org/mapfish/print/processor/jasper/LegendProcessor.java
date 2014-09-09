@@ -20,12 +20,16 @@
 package org.mapfish.print.processor.jasper;
 
 import com.google.common.io.Closer;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 import org.mapfish.print.attribute.LegendAttribute.LegendAttributeValue;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.Template;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.InternalValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
@@ -37,6 +41,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -50,16 +55,20 @@ import javax.imageio.ImageIO;
  * @author Jesse
  * @author sbrunner
  */
-public class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, LegendProcessor.Output> {
+public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, LegendProcessor.Output> {
     private static final Logger LOGGER = LoggerFactory.getLogger(LegendProcessor.class);
     private static final String NAME_COLUMN = "name";
     private static final String ICON_COLUMN = "icon";
     private static final String LEVEL_COLUMN = "level";
+    @Autowired
+    private JasperReportBuilder jasperReportBuilder;
+
     // CSOFF:MagicNumber
     private Dimension missingImageSize = new Dimension(24, 24);
     // CSON:MagicNumber
     private BufferedImage missingImage;
     private Color missingImageColor = Color.PINK;
+    private String template;
 
     /**
      * Constructor.
@@ -68,13 +77,22 @@ public class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, Le
         super(Output.class);
     }
 
+    /**
+     * The path to the Jasper Report template for rendering the legend data.
+     *
+     * @param template path to the template file
+     */
+    public void setTemplate(final String template) {
+        this.template = template;
+    }
+
     @Override
-    public final Input createInputParameter() {
+    public Input createInputParameter() {
         return new Input();
     }
 
     @Override
-    public final Output execute(final Input values, final ExecutionContext context) throws Exception {
+    public Output execute(final Input values, final ExecutionContext context) throws Exception {
         final List<Object[]> legendList = new ArrayList<Object[]>();
         final String[] legendColumns = {NAME_COLUMN, ICON_COLUMN, LEVEL_COLUMN};
         final LegendAttributeValue legendAttributes = values.legend;
@@ -83,7 +101,18 @@ public class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, Le
 
         final JRTableModelDataSource dataSource = new JRTableModelDataSource(new TableDataSource(legendColumns,
                 legendList.toArray(legend)));
-        return new Output(dataSource, legendList.size());
+
+        String compiledTemplatePath = compileTemplate(values.template.getConfiguration());
+
+        return new Output(dataSource, legendList.size(), compiledTemplatePath);
+    }
+
+    private String compileTemplate(final Configuration configuration) throws JRException {
+        if (this.template != null) {
+            final File file = new File(configuration.getDirectory(), this.template);
+            return this.jasperReportBuilder.compileJasperReport(configuration, file).getAbsolutePath();
+        }
+        return null;
     }
 
     private void fillLegend(final ClientHttpRequestFactory clientHttpRequestFactory,
@@ -158,6 +187,11 @@ public class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, Le
      */
     public static final class Input {
         /**
+         * The template that contains this processor.
+         */
+        @InternalValue
+        public Template template;
+        /**
          * A factory for making http requests.  This is added to the values by the framework and therefore
          * does not need to be set in configuration
          */
@@ -178,13 +212,18 @@ public class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, Le
          */
         public final JRTableModelDataSource legend;
         /**
+         * The path to the compiled subreport.
+         */
+        public final String legendSubReport;
+        /**
          * The number of rows in the legend.
          */
         public final int numberOfLegendRows;
 
-        Output(final JRTableModelDataSource legend, final int numberOfLegendRows) {
+        Output(final JRTableModelDataSource legend, final int numberOfLegendRows, final String legendSubReport) {
             this.legend = legend;
             this.numberOfLegendRows = numberOfLegendRows;
+            this.legendSubReport = legendSubReport;
         }
     }
 }
