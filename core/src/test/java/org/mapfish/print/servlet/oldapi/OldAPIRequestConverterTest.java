@@ -20,6 +20,7 @@
 package org.mapfish.print.servlet.oldapi;
 
 import com.google.common.collect.Maps;
+import com.vividsolutions.jts.util.AssertionFailedException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -177,7 +178,7 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertEquals(0, data.length());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = AssertionFailedException.class)
     public void testConvertInvalidTemplate() throws IOException, JSONException, NoSuchAppException, URISyntaxException {
         setUpConfigFiles();
         Configuration configuration = printerFactory.create("wrong-layout").getConfiguration();

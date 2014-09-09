@@ -63,7 +63,7 @@ import javax.annotation.Nullable;
  * @author Jesse on 9/6/2014.
  */
 public final class MergeDataSourceProcessor extends AbstractProcessor<MergeDataSourceProcessor.In, MergeDataSourceProcessor.Out>
-    implements CustomDependencies{
+    implements CustomDependencies {
     private List<Source> sources = Lists.newArrayList();
 
     /**

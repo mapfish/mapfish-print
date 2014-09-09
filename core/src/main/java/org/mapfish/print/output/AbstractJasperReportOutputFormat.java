@@ -80,7 +80,6 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportPDFOutputFormat.class);
 
     private static final String SUBREPORT_DIR = "SUBREPORT_DIR";
-    private static final String SUBREPORT_TABLE_DIR = "SUBREPORT_TABLE_DIR";
 
     @Autowired
     private ForkJoinPool forkJoinPool;
@@ -150,7 +149,6 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         final File jasperTemplateDirectory = jasperTemplateBuild.getParentFile();
 
         values.put(SUBREPORT_DIR, jasperTemplateDirectory.getAbsolutePath());
-        values.put(SUBREPORT_TABLE_DIR, taskDirectory.getAbsolutePath());
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(template.getProcessorGraph().createTask(values));
 
@@ -183,9 +181,9 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                     connection);
 
         } else {
-            final Object dataSourceObj = values.getObject(template.getTableDataKey(), Object.class);
             JRDataSource dataSource;
             if (template.getTableDataKey() != null) {
+                final Object dataSourceObj = values.getObject(template.getTableDataKey(), Object.class);
                 if (dataSourceObj instanceof JRDataSource) {
                     dataSource = (JRDataSource) dataSourceObj;
                 } else if (dataSourceObj instanceof Iterable) {
