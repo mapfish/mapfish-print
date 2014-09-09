@@ -19,6 +19,7 @@
 
 package org.mapfish.print.config;
 
+import com.google.common.collect.Maps;
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.LineSymbolizer;
@@ -45,6 +46,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link org.mapfish.print.config.Configuration} class.
@@ -52,6 +54,26 @@ import static org.junit.Assert.assertTrue;
  * @author Jesse on 3/27/14.
  */
 public class ConfigurationTest {
+
+    @Test
+    public void testGetTemplate() throws Exception {
+
+        final Configuration configuration = new Configuration();
+        Map<String, Template> templates = Maps.newHashMap();
+        final Template t1Template = new Template();
+        templates.put("t1", t1Template);
+        configuration.setTemplates(templates);
+        assertEquals(t1Template, configuration.getTemplate("t1"));
+        assertEquals(1, configuration.getTemplates().size());
+        assertEquals(t1Template, configuration.getTemplates().values().iterator().next());
+
+        try {
+            configuration.getTemplate("Doesn't exist");
+            fail("Exception should have been thrown");
+        } catch (Exception e) {
+            // good
+        }
+    }
 
     @Test
     public void testGetDefaultStyle_IsPresentInMap() throws Exception {
