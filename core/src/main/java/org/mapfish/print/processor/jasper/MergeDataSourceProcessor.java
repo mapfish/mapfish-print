@@ -19,22 +19,35 @@
 
 package org.mapfish.print.processor.jasper;
 
+import com.google.common.collect.BiMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.vividsolutions.jts.util.Assert;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import net.sf.jasperreports.engine.design.JRDesignField;
+import org.eclipse.jdt.internal.core.SourceType;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.ConfigurationObject;
 import org.mapfish.print.output.Values;
+import org.mapfish.print.parser.ParserUtils;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.CustomDependencies;
 import org.mapfish.print.processor.InternalValue;
+import org.mapfish.print.processor.Processor;
+import org.mapfish.print.processor.ProcessorDependency;
+import org.mapfish.print.processor.ProcessorGraphNode;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -49,7 +62,8 @@ import javax.annotation.Nullable;
  *
  * @author Jesse on 9/6/2014.
  */
-public final class MergeDataSourceProcessor extends AbstractProcessor<MergeDataSourceProcessor.In, MergeDataSourceProcessor.Out> {
+public final class MergeDataSourceProcessor extends AbstractProcessor<MergeDataSourceProcessor.In, MergeDataSourceProcessor.Out>
+    implements CustomDependencies{
     private List<Source> sources = Lists.newArrayList();
 
     /**
@@ -130,6 +144,45 @@ public final class MergeDataSourceProcessor extends AbstractProcessor<MergeDataS
         JRDataSource mergedDataSource = new JRMapCollectionDataSource(rows);
         return new Out(mergedDataSource);
     }
+
+    @Nonnull
+    @Override
+    public List<ProcessorDependency> createDependencies(@Nonnull final List<ProcessorGraphNode<Object, Object>> nodes) {
+        HashSet<String> sourceKeys = Sets.newHashSet();
+        for (Source source : this.sources) {
+            sourceKeys.add(source.key);
+        }
+
+        final ArrayList<ProcessorDependency> dependencies = Lists.newArrayList();
+        for (ProcessorGraphNode<Object, Object> node : nodes) {
+            if (node.getProcessor() == this) {
+                continue;
+            }
+            final Processor<?, ?> processor = node.getProcessor();
+            final Collection<Field> allAttributes = ParserUtils.getAllAttributes(processor.getOutputType());
+            final BiMap<String, String> outputMapper = node.getOutputMapper();
+            ProcessorDependency customDependency = null;
+            for (Field allAttribute : allAttributes) {
+                String attributeName = allAttribute.getName();
+                final String mappedName = outputMapper.get(attributeName);
+                if (mappedName != null) {
+                    attributeName = mappedName;
+                }
+                if (sourceKeys.contains(attributeName)) {
+                    if (customDependency == null) {
+                        final Class<? extends Processor<?, ?>> processorClass = (Class<? extends Processor<?, ?>>) processor.getClass();
+                        customDependency = new ProcessorDependency(processorClass, getClass(),
+                                Collections.singleton(attributeName));
+                        dependencies.add(customDependency);
+                    } else {
+                        customDependency.addCommonInput(attributeName);
+                    }
+                }
+            }
+        }
+        return dependencies;
+    }
+
 
     /**
      * The input object for {@link org.mapfish.print.processor.jasper.MergeDataSourceProcessor}.
