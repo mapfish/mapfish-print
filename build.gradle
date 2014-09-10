@@ -89,5 +89,12 @@ configure(subprojects.findAll {['core', 'examples'].contains(it.name)}) {
         }
     }
 
+    tasks.withType(JavaCompile) {
+        options.encoding = "utf-8"
+    }
+    tasks.withType(Javadoc) {
+        options.encoding = "utf-8"
+    }
+
 }
 

@@ -36,7 +36,6 @@ import static org.junit.Assert.assertTrue;
 
 public class ClasspathConfigFileLoaderTest extends AbstractMapfishSpringTest {
 
-
     @Autowired
     private ClasspathConfigFileLoader loader;
     final String configFileUriString = "classpath://" + FileConfigFileLoaderTest.class.getPackage().getName().replace('.',
@@ -138,4 +137,5 @@ public class ClasspathConfigFileLoaderTest extends AbstractMapfishSpringTest {
 
         this.loader.loadFile(configFileUri, getFile(FileConfigFileLoader.class, resourceFileName).toURI().toString());
     }
+
 }

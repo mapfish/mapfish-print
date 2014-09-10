@@ -21,10 +21,12 @@ package org.mapfish.print.test.util;
 
 import com.google.common.collect.FluentIterable;
 import com.google.common.io.Files;
+
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.JRGraphics2DExporter;
 import net.sf.jasperreports.engine.export.JRGraphics2DExporterParameter;
+
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
@@ -39,6 +41,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
@@ -58,11 +61,11 @@ public final class ImageSimilarity {
     static final int DEFAULT_SAMPLESIZE = 15;
     // The reference image "signature" (25 representative pixels, each in R,G,B).
     // We use instances of Color to make things simpler.
-    private Color[][] signature;
+    private final Color[][] signature;
     // The size of the sampling area.
     private int sampleSize = DEFAULT_SAMPLESIZE;
     // values that are used to generate the position of the sample pixels
-    private float[] prop = new float[]
+    private final float[] prop = new float[]
             {1f / 10f, 3f / 10f, 5f / 10f, 7f / 10f, 9f / 10f};
 
     /**
@@ -97,9 +100,11 @@ public final class ImageSimilarity {
         Color[][] sig = new Color[5][5];
         // For each of the 25 signature values average the pixels around it.
         // Note that the coordinate of the central pixel is in proportions.
-        for (int x = 0; x < 5; x++)
-            for (int y = 0; y < 5; y++)
+        for (int x = 0; x < 5; x++) {
+            for (int y = 0; y < 5; y++) {
                 sig[x][y] = averageAround(i, prop[x], prop[y]);
+            }
+        }
         return sig;
     }
 
@@ -145,7 +150,7 @@ public final class ImageSimilarity {
         // we will calculate the sum of the distances between the RGB values of
         // pixels in the same positions.
         double dist = 0;
-        for (int x = 0; x < 5; x++)
+        for (int x = 0; x < 5; x++) {
             for (int y = 0; y < 5; y++) {
                 int r1 = this.signature[x][y].getRed();
                 int g1 = this.signature[x][y].getGreen();
@@ -156,6 +161,7 @@ public final class ImageSimilarity {
                 double tempDist = Math.sqrt((r1 - r2) * (r1 - r2) + (g1 - g2) * (g1 - g2) + (b1 - b2) * (b1 - b2));
                 dist += tempDist;
             }
+        }
         return dist;
     }
 

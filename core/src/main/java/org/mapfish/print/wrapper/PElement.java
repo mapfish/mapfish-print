@@ -82,6 +82,9 @@ public abstract class PElement {
     }
 
     private static String getPathElement(final String val) {
+        if (val == null) {
+            return "";
+        }
         if (val.contains(" ")) {
             return "'" + val + "'";
         } else {

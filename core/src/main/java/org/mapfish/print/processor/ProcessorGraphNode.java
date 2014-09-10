@@ -28,6 +28,7 @@ import com.google.common.collect.Lists;
 
 import jsr166y.RecursiveTask;
 
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.output.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -217,7 +218,7 @@ public final class ProcessorGraphNode<In, Out> {
                         throw new CancellationException();
                     } else {
                         LOGGER.error("Error while executing process: " + process, e);
-                        throw new RuntimeException(e);
+                        throw ExceptionUtils.getRuntimeException(e);
                     }
                 }
 

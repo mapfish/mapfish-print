@@ -154,7 +154,7 @@ public class MapfishJsonStyleParserPluginTest {
         assertTrue(filter instanceof PropertyIsLessThan);
         assertEquals("att < 3", ECQL.toCQL(filter));
 
-        assertEquals(1, rule.symbolizers().size());
+        assertEquals(2, rule.symbolizers().size());
 
         PointSymbolizer symbolizer = (PointSymbolizer) rule.symbolizers().get(0);
 
@@ -167,6 +167,8 @@ public class MapfishJsonStyleParserPluginTest {
         assertEquals(0.4, (Double) valueOf(symbolizer.getGraphic().getOpacity()), DELTA);
         assertEquals("#00FF00", valueOf(mark.getStroke().getColor()));
 
+        LineSymbolizer lineSymbolizer = (LineSymbolizer) rule.symbolizers().get(1);
+        assertNull(lineSymbolizer.getStroke().getDashArray());
     }
 
     @Test

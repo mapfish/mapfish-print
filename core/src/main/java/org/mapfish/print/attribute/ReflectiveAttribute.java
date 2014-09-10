@@ -24,10 +24,12 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jts.util.AssertionFailedException;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.ParserUtils;
 import org.mapfish.print.wrapper.PArray;
@@ -44,6 +46,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.PostConstruct;
 
 import static org.mapfish.print.parser.MapfishParser.stringRepresentation;
@@ -311,10 +314,16 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
                 json.object();
                 Object value = attribute.get(exampleValue);
                 if (value == null) {
-                    try {
-                        value = typeOrComponentType.newInstance();
-                    } catch (InstantiationException e) {
-                        throw new RuntimeException(e);
+                    if (typeOrComponentType.isEnum()) {
+                        if (typeOrComponentType.getEnumConstants().length > 0) {
+                            value = typeOrComponentType.getEnumConstants()[0];
+                        }
+                    } else {
+                        try {
+                            value = typeOrComponentType.newInstance();
+                        } catch (InstantiationException e) {
+                            throw ExceptionUtils.getRuntimeException(e);
+                        }
                     }
                 }
                 final Object childDefaultValue = getDefaultValue(((PObject) defaultValue), attribute);

@@ -20,12 +20,12 @@
 package org.mapfish.print.servlet.oldapi;
 
 import com.google.common.collect.Maps;
+import com.google.common.io.Files;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.servlet.MapPrinterServletTest;
 import org.mapfish.print.servlet.ServletMapPrinterFactory;
-import org.mapfish.print.servlet.job.ThreadPoolJobManager;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -43,6 +43,7 @@ import java.util.HashMap;
 import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = {
@@ -56,8 +57,6 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
     private MapPrinterServlet newApiServlet;
     @Autowired
     private ServletMapPrinterFactory printerFactory;
-    @Autowired
-    private ThreadPoolJobManager jobManager;
 
     @Test
     public void testInfoRequest() throws Exception {
@@ -94,7 +93,7 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals("A4 Portrait", layout.getString("name"));
         assertTrue(layout.getBool("rotation"));
         assertEquals(802, layout.getObject("map").getInt("width"));
-        assertEquals(500, layout.getObject("map").getInt("height"));
+        assertEquals(210, layout.getObject("map").getInt("height"));
         
         assertEquals("/print-old/dep/print.pdf", info.getString("printURL"));
         assertEquals("/print-old/dep/create.json", info.getString("createURL"));
@@ -179,9 +178,11 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         
         final String result = createResponse.getContentAsString();
         final String url = parseJSONObjectFromString(result).getString("getURL");
-        final String reportUrl = "http://demo.mapfish.org/2.2/print" + MapPrinterServlet.REPORT_URL + "/";
-        assertTrue(url.startsWith(reportUrl));
-        final String printId = url.replace(reportUrl, "");
+        final String reportUrl = "http://demo.mapfish.org/2.2/print/dep/";
+        assertTrue(String.format("Start of url is not as expected: \n'%s'\n'%s'", reportUrl, url), url.startsWith(reportUrl));
+        assertFalse(url.startsWith(reportUrl + "report/"));
+        assertTrue("Report url should end with .printout: " + url, url.endsWith(OldAPIMapPrinterServlet.REPORT_SUFFIX));
+        final String printId = Files.getNameWithoutExtension(url.substring(url.lastIndexOf('/') + 1));
 
         final MockHttpServletResponse getReportResponse = new MockHttpServletResponse();
         newApiServlet.getReport(printId, false, getReportResponse);
@@ -191,7 +192,7 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         this.servlet.getFile(printId, false, getFileResponse);
         assertEquals(HttpStatus.OK.value(), getFileResponse.getStatus());
     }
-    
+
     @Test
     public void testCreateMissingSpec() throws Exception {
         setUpConfigFiles();
@@ -281,6 +282,54 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         
         this.servlet.getFile("invalid-id.pdf", false, getFileResponse);
         assertEquals(HttpStatus.NOT_FOUND.value(), getFileResponse.getStatus());
+    }
+
+    @Test
+    public void testInfoRequest_UrlParameterForCreateURL() throws Exception {
+        setUpConfigFiles();
+
+        final MockHttpServletRequest infoRequest = new MockHttpServletRequest();
+        infoRequest.setContextPath("/print-old");
+        final MockHttpServletResponse infoResponse = new MockHttpServletResponse();
+        this.servlet.getInfo("http://ref.geoview.bl.ch/print/wsgi/printproxy", null, infoRequest, infoResponse);
+        assertEquals(HttpStatus.OK.value(), infoResponse.getStatus());
+
+        final String result = infoResponse.getContentAsString();
+        final PJsonObject info = parseJSONObjectFromString(result);
+
+        assertEquals("http://ref.geoview.bl.ch/print/wsgi/printproxy/create.json", info.getString(OldAPIMapPrinterServlet.JSON_CREATE_URL));
+        assertEquals("http://ref.geoview.bl.ch/print/wsgi/printproxy/print.pdf", info.getString(OldAPIMapPrinterServlet.JSON_PRINT_URL));
+    }
+
+    @Test
+    public void testCreateFromPostBody_UrlParamForBaseURL() throws Exception {
+        setUpConfigFiles();
+
+        final MockHttpServletRequest createRequest = new MockHttpServletRequest();
+        createRequest.setContextPath("/print-old");
+        createRequest.setPathInfo("/create.json");
+        final MockHttpServletResponse createResponse = new MockHttpServletResponse();
+
+        final String requestData = loadRequestDataAsString("requestData-old-api.json");
+        this.servlet.createReportPost("http://ref.geoview.bl.ch/print/wsgi/printproxy", null,
+                requestData, createRequest, createResponse);
+        assertEquals(HttpStatus.OK.value(), createResponse.getStatus());
+
+        final String result = createResponse.getContentAsString();
+        final String url = parseJSONObjectFromString(result).getString("getURL");
+        final String reportUrl = "http://ref.geoview.bl.ch/print/wsgi/printproxy/";
+        assertTrue(String.format("Start of url is not as expected: \n'%s'\n'%s'", reportUrl, url), url.startsWith(reportUrl));
+        assertTrue("Report url should end with .printout: " + url, url.endsWith(OldAPIMapPrinterServlet.REPORT_SUFFIX));
+        assertFalse(url.startsWith(reportUrl + "report/"));
+        final String printId = Files.getNameWithoutExtension(url.substring(url.lastIndexOf('/') + 1));
+
+        final MockHttpServletResponse getReportResponse = new MockHttpServletResponse();
+        newApiServlet.getReport(printId, false, getReportResponse);
+        assertEquals(HttpStatus.OK.value(), getReportResponse.getStatus());
+
+        final MockHttpServletResponse getFileResponse = new MockHttpServletResponse();
+        this.servlet.getFile(printId, false, getFileResponse);
+        assertEquals(HttpStatus.OK.value(), getFileResponse.getStatus());
     }
 
     private void setUpConfigFiles() throws URISyntaxException {

@@ -81,6 +81,9 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
          * a file in the configuration folder ("file://NorthArrow.svg").
          * Both SVG graphics and raster graphics (png, jpeg, tiff, ...) are
          * supported.</p>
+         * <p>While the resulting graphic used in the JasperReport template is
+         * a square, this graphic can have an arbitrary aspect ratio. The graphic
+         * will be scaled to the output size and rotated around its center.</p>
          * <p>If no graphic is given, a default north-arrow is used.</p>
          */
         @HasDefaultValue

@@ -6,11 +6,13 @@ templates:
     attributes:
       geojsonMap: !map
         width: 802
-        height: 500
+        height: 210
         maxDpi: 400
         zoomLevels: !zoomLevels
           scales: [5000, 10000, 25000, 50000, 100000, 500000, 1000000, 2000000, 5000000, 10000000]
       entries: !table {}
+      legend1: !legend {}
+      legend2: !legend {}
     processors:
     - !reportBuilder # compile all reports in current directory
         directory: '.'
@@ -20,4 +22,10 @@ templates:
     - !prepareTable
       inputMapper: {entries: table}
       outputMapper: {table: table}
+    - !prepareLegend
+      inputMapper: {legend1: legend}
+      outputMapper: {legend: legend1Datasource}
+    - !prepareLegend
+      inputMapper: {legend2: legend}
+      outputMapper: {legend: legend2Datasource}
 

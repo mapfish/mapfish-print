@@ -22,12 +22,14 @@ package org.mapfish.print.map.geotools;
 import com.google.common.io.CharSource;
 import com.google.common.io.Closer;
 import com.google.common.io.Files;
+
 import org.geotools.data.crs.ForceCoordinateSystemFeatureResults;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.SchemaException;
 import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.referencing.CRS;
 import org.mapfish.print.Constants;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FileUtils;
 import org.mapfish.print.config.Template;
 import org.opengis.referencing.FactoryException;
@@ -112,7 +114,7 @@ public class FeaturesParser {
 
             return readFeatureCollection(input);
         } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.getRuntimeException(e);
         } finally {
             closer.close();
         }
@@ -153,9 +155,9 @@ public class FeaturesParser {
                     simpleFeatureCollection = new ForceCoordinateSystemFeatureResults(simpleFeatureCollection, crs);
                 }
             } catch (FactoryException e) {
-                throw new RuntimeException(e);
+                throw ExceptionUtils.getRuntimeException(e);
             } catch (SchemaException e) {
-                throw new RuntimeException(e);
+                throw ExceptionUtils.getRuntimeException(e);
             }
         }
 

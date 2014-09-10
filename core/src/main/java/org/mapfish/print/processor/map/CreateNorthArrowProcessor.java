@@ -26,6 +26,7 @@ import net.sf.jasperreports.engine.JRException;
 import org.mapfish.print.attribute.NorthArrowAttribute;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.InternalValue;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
 import org.mapfish.print.processor.jasper.MapSubReport;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -154,6 +155,7 @@ public class CreateNorthArrowProcessor extends AbstractProcessor<CreateNorthArro
         /**
          * The path to the north arrow graphic (for testing purposes).
          */
+        @InternalValue
         public final URI graphic;
 
         /**

@@ -20,9 +20,16 @@
 package org.mapfish.print.processor.map;
 
 import com.google.common.collect.Lists;
+import com.google.common.io.Closer;
+import com.vividsolutions.jts.awt.ShapeWriter;
+import com.vividsolutions.jts.geom.Polygon;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.batik.svggen.SVGGeneratorContext;
 import org.apache.batik.svggen.SVGGraphics2D;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.mapfish.print.Constants;
+import org.mapfish.print.attribute.map.AreaOfInterest;
 import org.mapfish.print.attribute.map.BBoxMapBounds;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapBounds;
@@ -30,16 +37,22 @@ import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
+import org.mapfish.print.map.geotools.FeatureLayer;
 import org.mapfish.print.processor.AbstractProcessor;
-import org.mapfish.print.processor.DebugValue;
+import org.mapfish.print.processor.InternalValue;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
 import org.mapfish.print.processor.jasper.MapSubReport;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.w3c.dom.Document;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -51,10 +64,14 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
+import static org.geotools.renderer.lite.RendererUtilities.worldToScreenTransform;
 
 
 /**
@@ -94,6 +111,9 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         }
     }
 
+    @Autowired
+    FeatureLayer.Plugin featureLayerPlugin;
+
     private BufferedImageType imageType = BufferedImageType.TYPE_4BYTE_ABGR;
 
     /**
@@ -132,11 +152,11 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                                    final List<URI> graphics,
                                    final double dpi) throws IOException, JRException {
         final MapSubReport subReport = new MapSubReport(graphics, mapSize, dpi);
-        
+
         final File compiledReport = File.createTempFile("map-",
                 JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT, printDirectory);
         subReport.compile(compiledReport);
-        
+
         return compiledReport.toURI();
     }
 
@@ -160,9 +180,11 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         paintArea.setBounds(0, 0, (int) (mapSize.getWidth() * dpiRatio), (int) (mapSize.getHeight() * dpiRatio));
         final MapfishMapContext transformer = new MapfishMapContext(bounds, paintArea.getSize(),
                 mapValues.getRotation(), dpi, mapValues.longitudeFirst);
-        
+
         // reverse layer list to draw from bottom to top.  normally position 0 is top-most layer.
-        final List<MapLayer> layers = Lists.reverse(mapValues.getLayers());
+        final List<MapLayer> layers = Lists.reverse(Lists.newArrayList(mapValues.getLayers()));
+
+        final AreaOfInterest areaOfInterest = addAreaOfInterestLayer(mapValues, layers);
 
         final String mapKey = UUID.randomUUID().toString();
         final List<URI> graphics = new ArrayList<URI>(layers.size());
@@ -170,15 +192,16 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         for (MapLayer layer : layers) {
             checkCancelState(context);
             boolean isFirstLayer = i == 0;
-            
+
             File path = null;
             if (renderAsSvg(layer)) {
                 // render layer as SVG
                 final SVGGraphics2D graphics2D = getSvgGraphics(paintArea.getSize());
 
                 try {
-                    layer.render(graphics2D, clientHttpRequestFactory, transformer, isFirstLayer);
-                    
+                    Graphics2D clippedGraphics2D = createClippedGraphics(transformer, areaOfInterest, graphics2D);
+                    layer.render(clippedGraphics2D, clientHttpRequestFactory, transformer, isFirstLayer);
+
                     path = new File(printDirectory, mapKey + "_layer_" + i + ".svg");
                     saveSvgFile(graphics2D, path);
                 } finally {
@@ -188,13 +211,12 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 // render layer as raster graphic
                 final BufferedImage bufferedImage = new BufferedImage((int) paintArea.getWidth(),
                         (int) paintArea.getHeight(), this.imageType.value);
-                final Graphics2D graphics2D = bufferedImage.createGraphics();
-                
+                Graphics2D graphics2D = createClippedGraphics(transformer, areaOfInterest, bufferedImage.createGraphics());
                 try {
                     layer.render(graphics2D, clientHttpRequestFactory, transformer, isFirstLayer);
-                    
-                    path = new File(printDirectory, mapKey + "_layer_" + i + ".tiff");
-                    ImageIO.write(bufferedImage, "tiff", path);
+
+                    path = new File(printDirectory, mapKey + "_layer_" + i + ".png");
+                    ImageIO.write(bufferedImage, "png", path);
                 } finally {
                     graphics2D.dispose();
                 }
@@ -202,17 +224,66 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             graphics.add(path.toURI());
             i++;
         }
-        
+
         return graphics;
+    }
+
+
+    private AreaOfInterest addAreaOfInterestLayer(@Nonnull final MapAttribute.MapAttributeValues mapValues,
+                                                  @Nonnull final List<MapLayer> layers) throws IOException {
+        final AreaOfInterest areaOfInterest = mapValues.areaOfInterest;
+        if (areaOfInterest != null && areaOfInterest.display == AreaOfInterest.AoiDisplay.RENDER) {
+            FeatureLayer.FeatureLayerParam param = new FeatureLayer.FeatureLayerParam();
+            param.defaultStyle = Constants.Style.OverviewMap.NAME;
+            param.style = areaOfInterest.style;
+            param.renderAsSvg = areaOfInterest.renderAsSvg;
+            param.features = areaOfInterest.areaToFeatureCollection(mapValues);
+            final FeatureLayer featureLayer = this.featureLayerPlugin.parse(mapValues.getTemplate(), param);
+
+            layers.add(featureLayer);
+        }
+        return areaOfInterest;
+    }
+
+    private Graphics2D createClippedGraphics(@Nonnull final MapfishMapContext transformer,
+                                             @Nullable final AreaOfInterest areaOfInterest,
+                                             @Nonnull final Graphics2D graphics2D) {
+        if (areaOfInterest != null && areaOfInterest.display == AreaOfInterest.AoiDisplay.CLIP) {
+            final Polygon screenGeometry = areaOfInterestInScreenCRS(transformer, areaOfInterest);
+            final ShapeWriter shapeWriter = new ShapeWriter();
+            final Shape clipShape = shapeWriter.toShape(screenGeometry);
+            return new ConstantClipGraphics2D(graphics2D, clipShape);
+        }
+
+        return graphics2D;
+    }
+
+    private Polygon areaOfInterestInScreenCRS(@Nonnull final MapfishMapContext transformer,
+                                              @Nullable final AreaOfInterest areaOfInterest) {
+        if (areaOfInterest != null) {
+            final AffineTransform worldToScreenTransform = worldToScreenTransform(transformer.toReferencedEnvelope(),
+                    transformer.getPaintArea());
+
+            MathTransform mathTransform = new AffineTransform2D(worldToScreenTransform);
+            final Polygon screenGeometry;
+            try {
+                screenGeometry = (Polygon) JTS.transform(areaOfInterest.getArea(), mathTransform);
+            } catch (TransformException e) {
+                throw new RuntimeException(e);
+            }
+            return screenGeometry;
+        }
+
+        return null;
     }
 
     /**
      * If requested, adjust the bounds to the nearest scale and the map size.
-     * 
-     * @param mapValues         Map parameters
-     * @param dpiOfRequestor    The DPI.
-     * @param paintArea         The size of the painting area.
-     * @param bounds            The map bounds.
+     *
+     * @param mapValues      Map parameters
+     * @param dpiOfRequestor The DPI.
+     * @param paintArea      The size of the painting area.
+     * @param bounds         The map bounds.
      */
     public static MapBounds adjustBoundsToScaleAndMapSize(
             final MapAttribute.MapAttributeValues mapValues, final double dpiOfRequestor,
@@ -220,29 +291,30 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         MapBounds newBounds = bounds;
         if (mapValues.isUseNearestScale()) {
             newBounds = newBounds.adjustBoundsToNearestScale(
-                        mapValues.getZoomLevels(),
-                        mapValues.getZoomSnapTolerance(),
-                        mapValues.getZoomLevelSnapStrategy(), paintArea, dpiOfRequestor);
+                    mapValues.getZoomLevels(),
+                    mapValues.getZoomSnapTolerance(),
+                    mapValues.getZoomLevelSnapStrategy(), paintArea, dpiOfRequestor);
         }
-        
+
         newBounds = new BBoxMapBounds(newBounds.toReferencedEnvelope(paintArea, dpiOfRequestor));
-        
+
         if (mapValues.isUseAdjustBounds()) {
             newBounds = newBounds.adjustedEnvelope(paintArea);
         }
         return newBounds;
     }
-    
+
     private boolean renderAsSvg(final MapLayer layer) {
         if (layer instanceof AbstractFeatureSourceLayer) {
             AbstractFeatureSourceLayer featureLayer = (AbstractFeatureSourceLayer) layer;
             return featureLayer.shouldRenderAsSvg();
         }
         return false;
-     }
+    }
 
     /**
      * Create a SVG graphic with the give dimensions.
+     *
      * @param size The size of the SVG graphic.
      */
     public static SVGGraphics2D getSvgGraphics(final Dimension size)
@@ -262,20 +334,20 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
 
     /**
      * Save a SVG graphic to the given path.
-     * @param graphics2d    The SVG graphic to save.
-     * @param path          The file.
+     *
+     * @param graphics2d The SVG graphic to save.
+     * @param path       The file.
      */
     public static void saveSvgFile(final SVGGraphics2D graphics2d, final File path) throws IOException {
-        final FileOutputStream fs = new FileOutputStream(path);
-
-        Writer osw = null;
+        Closer closer = Closer.create();
         try {
-            osw = new BufferedWriter(new OutputStreamWriter(fs, "UTF-8"));
+            final FileOutputStream fs = closer.register(new FileOutputStream(path));
+            final OutputStreamWriter outputStreamWriter = closer.register(new OutputStreamWriter(fs, "UTF-8"));
+            Writer osw = closer.register(new BufferedWriter(outputStreamWriter));
+
             graphics2d.stream(osw);
         } finally {
-            if (osw != null) {
-                osw.close();
-            }
+            closer.close();
         }
     }
 
@@ -304,7 +376,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
          * The required parameters for the map.
          */
         public MapAttribute.MapAttributeValues map;
-        
+
         /**
          * The path to the temporary directory for the print task.
          */
@@ -319,7 +391,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         /**
          * The paths to a graphic for each layer.
          */
-        @DebugValue
+        @InternalValue
         public final List<URI> layerGraphics;
 
         /**

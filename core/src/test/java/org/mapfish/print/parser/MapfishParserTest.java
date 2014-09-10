@@ -79,18 +79,48 @@ public class MapfishParserTest {
         this.mapfishJsonParser.parse(true, json, p, null);
         Assert.assertEquals(1, p.choiceA);
         Assert.assertEquals(0.0, p.choiceB, 0.0000000001);
+        Assert.assertEquals(0, p.choiceC);
 
         p = new TestChoiceClass();
         json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"choiceB\":2.0}");
         this.mapfishJsonParser.parse(true, json, p);
         Assert.assertEquals(0, p.choiceA);
         Assert.assertEquals(2.0, p.choiceB, 0.0000000001);
+        Assert.assertEquals(0, p.choiceC);
+
+        p = new TestChoiceClass();
+        json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"choiceC\":2}");
+        this.mapfishJsonParser.parse(true, json, p);
+        Assert.assertEquals(0, p.choiceA);
+        Assert.assertEquals(0.0, p.choiceB, 0.0000000001);
+        Assert.assertEquals(2, p.choiceC, 0.0000000001);
+
+        p = new TestChoiceClass();
+        json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"choiceA\":3,\"choiceC\":2}");
+        this.mapfishJsonParser.parse(true, json, p);
+        Assert.assertEquals(3, p.choiceA);
+        Assert.assertEquals(0.0, p.choiceB, 0.0000000001);
+        Assert.assertEquals(2, p.choiceC, 0.0000000001);
+
+        p = new TestChoiceClass();
+        json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"choiceB\":3.0,\"choiceC\":2}");
+        this.mapfishJsonParser.parse(true, json, p);
+        Assert.assertEquals(0, p.choiceA);
+        Assert.assertEquals(3.0, p.choiceB, 0.0000000001);
+        Assert.assertEquals(2, p.choiceC, 0.0000000001);
     }
 
     @Test(expected = AssertionFailedException.class)
     public void testBothOneOfChoices() throws Exception {
         TestChoiceClass p = new TestChoiceClass();
         PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"choiceA\":1,\"choiceB\":2.0}");
+        this.mapfishJsonParser.parse(true, json, p);
+    }
+
+    @Test(expected = AssertionFailedException.class)
+    public void testBothOneOfChoicesAndCanSatisfyOneOf() throws Exception {
+        TestChoiceClass p = new TestChoiceClass();
+        PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"choiceA\":1,\"choiceB\":2.0,\"choiceC\":3.0}");
         this.mapfishJsonParser.parse(true, json, p);
     }
 
@@ -339,6 +369,8 @@ public class MapfishParserTest {
         public int choiceA;
         @OneOf("choiceGroup1")
         public double choiceB;
+        @CanSatisfyOneOf("choiceGroup1")
+        public int choiceC;
     }
 
     static class TestRequireClass {

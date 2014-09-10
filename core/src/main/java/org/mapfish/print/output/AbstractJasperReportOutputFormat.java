@@ -21,8 +21,10 @@ package org.mapfish.print.output;
 
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
 import jsr166y.ForkJoinPool;
 import jsr166y.ForkJoinTask;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -30,6 +32,8 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.Renderable;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+import net.sf.jasperreports.engine.util.LocalJasperReportsContext;
+import net.sf.jasperreports.repo.RepositoryService;
 import org.json.JSONException;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapAttribute;
@@ -50,10 +54,14 @@ import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
+import javax.annotation.Nonnull;
 
 /**
  * @author Jesse on 5/7/2014.
@@ -89,11 +97,11 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                             final File taskDirectory, final OutputStream outputStream)
             throws Exception {
         final Print print = getJasperPrint(requestData, config, configDir, taskDirectory);
-        
+
         if (Thread.currentThread().isInterrupted()) {
             throw new CancellationException();
         }
-        
+
         doExport(outputStream, print);
     }
 
@@ -136,7 +144,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         values.put(SUBREPORT_TABLE_DIR, taskDirectory.getAbsolutePath());
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(template.getProcessorGraph().createTask(values));
-        
+
         try {
             taskFuture.get();
         } catch (InterruptedException exc) {
@@ -147,64 +155,79 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             throw new CancellationException();
         }
 
+        JasperFillManager fillManager = getJasperFillManager(config);
+
         final JasperPrint print;
-        if (template.getIterValue() != null) {
-            if (!values.containsKey(template.getIterValue())) {
-                throw new IllegalArgumentException(template.getIterValue() + " is missing.  It must either an attribute or a processor " +
-                                                   "output");
-            }
-
-            final Object iterator = values.getObject(template.getIterValue(), Object.class);
-
-            final JRDataSource jrDataSource;
-            if (iterator instanceof Iterable) {
-                Iterable iterable = (Iterable) iterator;
-
-                final ForkJoinTask<List<Map<String, ?>>> iterTaskFuture =
-                        this.forkJoinPool.submit(new ExecuteIterProcessorsTask(values, template));
-
-                List<Map<String, ?>> dataSource;
-                try {
-                    dataSource = iterTaskFuture.get();
-                } catch (InterruptedException exc) {
-                    iterTaskFuture.cancel(true);
-                    Thread.currentThread().interrupt();
-                    throw new CancellationException();
-                }
-
-                jrDataSource = new JRMapCollectionDataSource(dataSource);
-            } else {
-                jrDataSource = new JREmptyDataSource();
-            }
-            print = JasperFillManager.fillReport(
-                    jasperTemplateBuild.getAbsolutePath(),
-                    values.getParameters(),
-                    jrDataSource);
-        } else if (template.getJdbcUrl() != null) {
+        if (template.getJdbcUrl() != null) {
             Connection connection;
             if (template.getJdbcUser() != null) {
                 connection = DriverManager.getConnection(template.getJdbcUrl(), template.getJdbcUser(), template.getJdbcPassword());
             } else {
                 connection = DriverManager.getConnection(template.getJdbcUrl());
             }
-            print = JasperFillManager.fillReport(
+
+            print = fillManager.fill(
                     jasperTemplateBuild.getAbsolutePath(),
-                    values.getParameters(),
+                    values.asMap(),
                     connection);
+
         } else if (template.getTableDataKey() != null) {
-            final JRDataSource dataSource = values.getObject(template.getTableDataKey(), JRDataSource.class);
-            print = JasperFillManager.fillReport(
+            final Object dataSourceObj = values.getObject(template.getTableDataKey(), Object.class);
+            JRDataSource dataSource;
+            if (dataSourceObj instanceof JRDataSource) {
+                dataSource = (JRDataSource) dataSourceObj;
+            } else if (dataSourceObj instanceof Iterable) {
+                Iterable sourceObj = (Iterable) dataSourceObj;
+                dataSource = toJRDataSource(sourceObj.iterator());
+            }  else if (dataSourceObj instanceof Iterator) {
+                Iterator sourceObj = (Iterator) dataSourceObj;
+                dataSource = toJRDataSource(sourceObj);
+            }  else if (dataSourceObj.getClass().isArray()) {
+                Object[] sourceObj = (Object[]) dataSourceObj;
+                dataSource = toJRDataSource(Arrays.asList(sourceObj).iterator());
+            } else {
+                throw new AssertionError("Objects of type: " + dataSourceObj.getClass() + " cannot be converted to a row in a " +
+                                         "JRDataSource");
+            }
+
+            print = fillManager.fill(
                     jasperTemplateBuild.getAbsolutePath(),
-                    values.getParameters(),
+                    values.asMap(),
                     dataSource);
         } else {
-            print = JasperFillManager.fillReport(
+            print = fillManager.fill(
                     jasperTemplateBuild.getAbsolutePath(),
-                    values.getParameters(),
+                    values.asMap(),
                     new JREmptyDataSource());
         }
         print.setProperty(Renderable.PROPERTY_IMAGE_DPI, String.valueOf(Math.round(maxDpi[0])));
         return new Print(print, maxDpi[0], maxDpi[1]);
+    }
+
+    private JasperFillManager getJasperFillManager(@Nonnull final Configuration configuration) {
+        LocalJasperReportsContext ctx = new LocalJasperReportsContext(DefaultJasperReportsContext.getInstance());
+        ctx.setClassLoader(getClass().getClassLoader());
+        ctx.setExtensions(RepositoryService.class,
+                Lists.newArrayList(new MapfishPrintRepositoryService(configuration, this.httpRequestFactory)));
+        return JasperFillManager.getInstance(ctx);
+    }
+
+    private JRDataSource toJRDataSource(@Nonnull final Iterator iterator) {
+        List<Map<String, ?>> rows = new ArrayList<Map<String, ?>>();
+        while (iterator.hasNext()) {
+            Object next = iterator.next();
+            if (next instanceof Values) {
+                Values values = (Values) next;
+                rows.add(values.asMap());
+            } else if (next instanceof Map) {
+                @SuppressWarnings("unchecked")
+                Map<String, ?> map = (Map<String, ?>) next;
+                rows.add(map);
+            } else {
+                throw new AssertionError("Objects of type: " + next.getClass() + " cannot be converted to a row in a JRDataSource");
+            }
+        }
+        return new JRMapCollectionDataSource(rows);
     }
 
     private double[] maxDpi(final Values values) {
@@ -239,4 +262,5 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             this.requestorDpi = requestorDpi;
         }
     }
+
 }

@@ -76,8 +76,9 @@ class RequiresTracker {
 
     /**
      * Check that each requirement is satisfied.
+     * @param currentPath the json path to the element being checked
      */
-    public void checkAllRequirementsSatisfied() {
+    public void checkAllRequirementsSatisfied(final String currentPath) {
         StringBuilder errors = new StringBuilder();
 
         for (Field field : this.dependantsInJson) {
@@ -91,6 +92,7 @@ class RequiresTracker {
                 errors.append("\t* ").append(type).append(' ').append(field.getName()).append(" depends on ").append(requirements);
             }
         }
-        Assert.equals(0, errors.length(), "\nErrors were detected when analysing the @Requires dependencies: " + errors);
+        Assert.equals(0, errors.length(), "\nErrors were detected when analysing the @Requires dependencies of '" +
+                                          currentPath + "': " + errors);
     }
 }

@@ -21,7 +21,6 @@ package org.mapfish.print.attribute.map;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
-
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.GeodeticCalculator;
 import org.mapfish.print.map.DistanceUnit;
@@ -42,6 +41,17 @@ public final class BBoxMapBounds extends MapBounds {
      * Constructor.
      *
      * @param projection the projection these bounds are defined in.
+     * @param envelope   the bounds
+     */
+    public BBoxMapBounds(final CoordinateReferenceSystem projection, final Envelope envelope) {
+        super(projection);
+        this.bbox = envelope;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param projection the projection these bounds are defined in.
      * @param minX       min X coordinate for the MapBounds
      * @param minY       min Y coordinate for the MapBounds
      * @param maxX       max X coordinate for the MapBounds
@@ -49,8 +59,7 @@ public final class BBoxMapBounds extends MapBounds {
      */
     public BBoxMapBounds(final CoordinateReferenceSystem projection, final double minX, final double minY,
                          final double maxX, final double maxY) {
-        super(projection);
-        this.bbox = new Envelope(minX, maxX, minY, maxY);
+        this(projection, new Envelope(minX, maxX, minY, maxY));
     }
 
     /**
@@ -133,7 +142,7 @@ public final class BBoxMapBounds extends MapBounds {
         if (rotation == 0.0) {
             return this;
         }
-        
+
         /**
          * When a rotation is set, the map is rotated around the center of the
          * original bbox. This means that the bbox might has to be expanded, so
@@ -141,16 +150,16 @@ public final class BBoxMapBounds extends MapBounds {
          */
         final double rotatedWidth = getRotatedWidth(rotation);
         final double rotatedHeight = getRotatedHeight(rotation);
-        
+
         final double widthDifference = (rotatedWidth - this.bbox.getWidth()) / 2.0;
         final double rotatedMinX = this.bbox.getMinX() - widthDifference;
         final double rotatedMaxX = this.bbox.getMaxX() + widthDifference;
-        
+
         final double heightDifference = (rotatedHeight - this.bbox.getHeight()) / 2.0;
         final double rotatedMinY = this.bbox.getMinY() - heightDifference;
         final double rotatedMaxY = this.bbox.getMaxY() + heightDifference;
-        
-        return new BBoxMapBounds(getProjection(), 
+
+        return new BBoxMapBounds(getProjection(),
                 rotatedMinX, rotatedMinY, rotatedMaxX, rotatedMaxY);
     }
 
@@ -158,7 +167,7 @@ public final class BBoxMapBounds extends MapBounds {
         double width = this.bbox.getWidth();
         if (rotation != 0.0) {
             double height = this.bbox.getHeight();
-            width = (float) (Math.abs(width * Math.cos(rotation)) + 
+            width = (float) (Math.abs(width * Math.cos(rotation)) +
                     Math.abs(height * Math.sin(rotation)));
         }
         return width;
@@ -168,7 +177,7 @@ public final class BBoxMapBounds extends MapBounds {
         double height = this.bbox.getHeight();
         if (rotation != 0.0) {
             double width = this.bbox.getWidth();
-            height = (float) (Math.abs(height * Math.cos(rotation)) + 
+            height = (float) (Math.abs(height * Math.cos(rotation)) +
                     Math.abs(width * Math.sin(rotation)));
         }
         return height;
@@ -190,8 +199,8 @@ public final class BBoxMapBounds extends MapBounds {
         double maxGeoX = centerX + destWidth / 2.0f;
         double minGeoY = centerY - destHeight / 2.0f;
         double maxGeoY = centerY + destHeight / 2.0f;
-        
-        return new BBoxMapBounds(getProjection(), 
+
+        return new BBoxMapBounds(getProjection(),
                 minGeoX, minGeoY, maxGeoX, maxGeoY);
     }
 

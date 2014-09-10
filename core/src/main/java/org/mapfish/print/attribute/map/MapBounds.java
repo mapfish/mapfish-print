@@ -88,19 +88,19 @@ public abstract class MapBounds {
      * @param dpi the dpi of the map
      */
     public abstract Scale getScaleDenominator(final Rectangle paintArea, final double dpi);
-    
+
     /**
      * In case a rotation is used for the map, the bounds have to be adjusted so that all
      * visible parts are rendered.
-     * 
+     *
      * @param rotation The rotation of the map in radians.
      * @return Bounds adjusted to the map rotation.
      */
     public abstract MapBounds adjustBoundsToRotation(final double rotation);
-    
+
     /**
      * Zooms-out the bounds by the given factor.
-     * 
+     *
      * @param factor The zoom factor.
      * @return Bounds adjusted to the zoom factor.
      */

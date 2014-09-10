@@ -38,7 +38,6 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,8 +57,6 @@ public class Template implements ConfigurationObject, HasConfiguration {
     private String reportTemplate;
     private Map<String, Attribute> attributes;
     private List<Processor> processors;
-    private String iterValue;
-    private List<Processor> iterProcessors = new ArrayList<Processor>();
 
     private String jdbcUrl;
     private String jdbcUser;
@@ -152,28 +149,6 @@ public class Template implements ConfigurationObject, HasConfiguration {
 
     }
 
-    public final String getIterValue() {
-        return this.iterValue;
-    }
-
-    public final void setIterValue(final String iterValue) {
-        this.iterValue = iterValue;
-    }
-
-    public final List<Processor> getIterProcessors() {
-        return this.iterProcessors;
-    }
-
-    /**
-     * Set the processors that require Iterable inputs.
-     *
-     * @param iterProcessors the processors to set.
-     */
-    public final void setIterProcessors(final List<Processor> iterProcessors) {
-        assertProcessors(iterProcessors);
-        this.iterProcessors = iterProcessors;
-    }
-
     /**
      * Set the key of the data that is the datasource for the main table in the report.
      *
@@ -228,22 +203,6 @@ public class Template implements ConfigurationObject, HasConfiguration {
     }
 
     /**
-     * Get the processor graph to use for executing all the iter processors for the template.
-     *
-     * @return the processor graph.
-     */
-    public final ProcessorDependencyGraph getIterProcessorGraph() {
-        if (this.iterProcessorGraph == null) {
-            synchronized (this) {
-                if (this.iterProcessorGraph == null) {
-                    this.iterProcessorGraph = this.processorGraphFactory.build(this.iterProcessors);
-                }
-            }
-        }
-        return this.iterProcessorGraph;
-    }
-
-    /**
      * Set the named styles defined in the configuration for this.
      *
      * @param styles set the styles specific for this template.
@@ -283,8 +242,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
 
     @Override
     public final void validate(final List<Throwable> validationErrors) {
-        int numberOfTableConfigurations = this.iterProcessors.isEmpty() ? 0 : 1;
-        numberOfTableConfigurations += this.tableDataKey == null ? 0 : 1;
+        int numberOfTableConfigurations = this.tableDataKey == null ? 0 : 1;
         numberOfTableConfigurations += this.jdbcUrl == null ? 0 : 1;
 
         if (numberOfTableConfigurations > 1) {

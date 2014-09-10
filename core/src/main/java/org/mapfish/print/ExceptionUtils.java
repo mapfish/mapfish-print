@@ -17,17 +17,27 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print.processor;
+package org.mapfish.print;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
 
 /**
- * Marks a processor output parameter as debug value. If no mapping is defined for this value, and if
- * there would be a conflict with an other value that has the same name, a mapping is created automatically
- * with a random name.
+ * Util class for exception handling.
  */
-@Target(value = ElementType.FIELD)
-@java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
-public @interface DebugValue {
+public final class ExceptionUtils {
+
+    private ExceptionUtils() { }
+
+    /**
+     * Returns a {@link RuntimeException} for the given exception.
+     *
+     * @param exc An exception.
+     * @return A {@link RuntimeException}
+     */
+    public static RuntimeException getRuntimeException(final Throwable exc) {
+        if (exc instanceof RuntimeException) {
+            return (RuntimeException) exc;
+        } else {
+            return new RuntimeException(exc);
+        }
+    }
 }

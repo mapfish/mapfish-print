@@ -21,6 +21,7 @@ package org.mapfish.print.wrapper.yaml;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.wrapper.ObjectMissingException;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PElement;
@@ -128,7 +129,7 @@ public class PYamlArray extends PElement implements PArray {
         try {
             return "PYaml(" + getCurrentPath() + ":" + toJSON().getInternalArray().toString(2) + ")";
         } catch (JSONException e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.getRuntimeException(e);
         }
     }
 

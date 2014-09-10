@@ -23,6 +23,7 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.ExtraPropertyException;
 import org.mapfish.print.MissingPropertyException;
 import org.mapfish.print.wrapper.ObjectMissingException;
@@ -113,19 +114,20 @@ public final class MapfishParser {
                     requiresTracker.markAsVisited(property);
                     property.set(objectToPopulate, value);
                 } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
+                    throw ExceptionUtils.getRuntimeException(e);
                 }
             } catch (ObjectMissingException e) {
                 final HasDefaultValue hasDefaultValue = property.getAnnotation(HasDefaultValue.class);
                 final OneOf oneOf = property.getAnnotation(OneOf.class);
-                if (hasDefaultValue == null && oneOf == null) {
+                final CanSatisfyOneOf canSatisfyOneOf = property.getAnnotation(CanSatisfyOneOf.class);
+                if (hasDefaultValue == null && oneOf == null && canSatisfyOneOf == null) {
                     missingProperties.put(property.getName(), property.getType());
                 }
             }
         }
 
-        oneOfTracker.checkAllGroupsSatisfied();
-        requiresTracker.checkAllRequirementsSatisfied();
+        oneOfTracker.checkAllGroupsSatisfied(requestData.getCurrentPath());
+        requiresTracker.checkAllRequirementsSatisfied(requestData.getCurrentPath());
 
         if (!missingProperties.isEmpty()) {
             String message = "Request Json is missing some required attributes at: '" + requestData.getCurrentPath() + "': ";
@@ -212,7 +214,7 @@ public final class MapfishParser {
             try {
                 value = new URL(layer.getString(name));
             } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
+                throw ExceptionUtils.getRuntimeException(e);
             }
         } else if (type.isArray()) {
             final PArray array = layer.getArray(name);
@@ -236,7 +238,7 @@ public final class MapfishParser {
             } catch (InstantiationException e) {
                 throw new UnsupportedTypeException(type, e);
             } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+                throw ExceptionUtils.getRuntimeException(e);
             }
         }
         return value;
@@ -245,24 +247,26 @@ public final class MapfishParser {
     @SuppressWarnings("unchecked")
     private Object parseEnum(final Class<?> type, final String path, final String enumString) {
         Object value;
+        // not the name, maybe the ordinal;
         try {
-            value = Enum.valueOf((Class<Enum>) type, enumString);
-        } catch (IllegalArgumentException e) {
-            // not the name, maybe the ordinal;
-
-            try {
-                int ordinal = Integer.parseInt(enumString);
-                final Object[] enumConstants = type.getEnumConstants();
-                if (ordinal < enumConstants.length) {
-                    value = enumConstants[ordinal];
-                } else {
-                    throw enumError(enumConstants, path, enumString);
-                }
-            } catch (NumberFormatException ne) {
-                throw enumError(type.getEnumConstants(), path, enumString);
+            int ordinal = Integer.parseInt(enumString);
+            final Object[] enumConstants = type.getEnumConstants();
+            if (ordinal < enumConstants.length) {
+                return enumConstants[ordinal];
+            } else {
+                throw enumError(enumConstants, path, enumString);
             }
+        } catch (NumberFormatException ne) {
+            final Object[] enumConstants = type.getEnumConstants();
+
+            for (Object enumConstant : enumConstants) {
+                if (enumConstant.toString().equalsIgnoreCase(enumString) ||
+                    ((Enum) enumConstant).name().equalsIgnoreCase(enumString)) {
+                    return enumConstant;
+                }
+            }
+            throw enumError(type.getEnumConstants(), path, enumString);
         }
-        return value;
     }
 
     private IllegalArgumentException enumError(final Object[] enumConstants, final String path, final String enumString) {
@@ -292,7 +296,7 @@ public final class MapfishParser {
             try {
                 value = new URL(array.getString(i));
             } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
+                throw ExceptionUtils.getRuntimeException(e);
             }
         } else if (type.isEnum()) {
             value = parseEnum(type, array.getPath("" + i), array.getString(i));
@@ -304,7 +308,7 @@ public final class MapfishParser {
             } catch (InstantiationException e) {
                 throw new UnsupportedTypeException(type, e);
             } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+                throw ExceptionUtils.getRuntimeException(e);
             }
         }
 

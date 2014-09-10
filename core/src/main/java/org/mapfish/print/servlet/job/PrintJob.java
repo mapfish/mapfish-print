@@ -21,6 +21,7 @@ package org.mapfish.print.servlet.job;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+
 import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
@@ -121,11 +122,26 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
             if (spec != null) {
                 fileName = getFileName(spec);
             }
-            return new FailedPrintJob(this.referenceId, getAppId(), new Date(), fileName, e.toString());
+            final Throwable rootCause = getRootCause(e);
+            return new FailedPrintJob(this.referenceId, getAppId(), new Date(), fileName, rootCause.toString());
         } finally {
             final long stop = TimeUnit.MILLISECONDS.convert(timer.stop(), TimeUnit.NANOSECONDS);
             LOGGER.debug("Print Job " + PrintJob.this.referenceId + " completed in " + stop + "ms");
         }
+    }
+
+    /**
+     * Because exceptions might get re-thrown several times, an error message like
+     * "java.util.concurrent.ExecutionException: java.lang.IllegalArgumentException: java.lang.IllegalArgumentException: ..."
+     * might get created. To avoid this, this method finds the root cause, so that only a message like
+     * "java.lang.IllegalArgumentException: ..." is shown.
+     */
+    private Throwable getRootCause(final Throwable e) {
+        Throwable rootCause = e;
+        while (rootCause.getCause() != null && rootCause.getCause() != rootCause) {
+            rootCause = rootCause.getCause();
+        }
+        return rootCause;
     }
 
     protected final String getAppId() {

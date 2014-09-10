@@ -25,6 +25,7 @@ import org.geotools.referencing.CRS;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.Constants;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.Template;
@@ -166,7 +167,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
                 if (dpi < 1 || dpi > this.getMaxDpi()) {
                     validationErrors.add(new ConfigurationException(
                             "dpiSuggestions contains an invalid value: " + dpi + " in " + getClass().getName()));
-                    
+
                 }
             }
         }
@@ -239,7 +240,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
             this.template = template;
             this.mapSize = mapSize;
         }
-        
+
         /**
          * Validate the values provided by the request data and construct MapBounds and parse the layers.
          */
@@ -257,7 +258,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
                     PObject layer = this.getRawLayers().getObject(i);
                     parseSingleLayer(layerList, layer);
                 } catch (Throwable throwable) {
-                    throw new RuntimeException(throwable);
+                    throw ExceptionUtils.getRuntimeException(throwable);
                 }
             }
 
@@ -340,7 +341,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
          * with a @HasDefaultValue annotation.
          */
         public abstract Double getDpi();
-        
+
         /**
          * Return the JSON layer definiton.
          * This method is abstract is abstract for the same reasons as {@link #getDpi()}.
@@ -424,6 +425,5 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
             // For the moment we require the client to convert their bounds to 72 DPI
             return Constants.PDF_DPI;
         }
-        
     }
 }

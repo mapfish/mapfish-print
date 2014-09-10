@@ -21,6 +21,8 @@ package org.mapfish.print.processor.http;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.RegexpUtil;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
@@ -100,7 +102,7 @@ public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFac
                         }
                         return requestFactory.createRequest(httpUri, httpMethod);
                     } catch (URISyntaxException e) {
-                        throw new RuntimeException(e);
+                        throw ExceptionUtils.getRuntimeException(e);
                     }
                 }
                 return requestFactory.createRequest(uri, httpMethod);

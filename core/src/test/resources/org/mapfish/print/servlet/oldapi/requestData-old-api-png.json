@@ -120,5 +120,24 @@
          "col1":"name",
          "col2":"icon"
       }
-   ]
+   ], "legends": [
+  {
+    "name": "legend1",
+    "classes": [
+      {
+        "name": "legend1",
+        "icons": ["file://legend-ico.png"]
+      }
+    ]
+  },
+  {
+    "name": "legend2",
+    "classes": [
+      {
+        "name": "legend2",
+        "icons": ["file://legend-ico.png"]
+      }
+    ]
+  }
+]
 }

@@ -19,8 +19,11 @@
 
 package org.mapfish.print.attribute.map;
 
+import com.google.common.base.Function;
+import com.vividsolutions.jts.geom.Envelope;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.Scale;
+import org.mapfish.print.parser.CanSatisfyOneOf;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.OneOf;
 import org.mapfish.print.parser.Requires;
@@ -31,6 +34,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 /**
  * The attributes for {@link org.mapfish.print.processor.map.CreateMapProcessor}.
@@ -48,7 +52,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
 
     @Override
     public MapAttributeValues createValue(final Template template) {
-        return new MapAttributeValues(template, new Dimension(this.getWidth(), this.getHeight()));
+        return new MapAttributeValues(template, new Dimension(getWidth(), getHeight()));
     }
 
     /**
@@ -56,12 +60,12 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
      */
     public class MapAttributeValues extends GenericMapAttribute<?>.GenericMapAttributeValues {
 
-        private static final boolean DEFAULT_USEADJUSTBOUNDS = false;
+        private static final boolean DEFAULT_ADJUST_BOUNDS = false;
         private static final double DEFAULT_ROTATION = 0.0;
         private static final String DEFAULT_PROJECTION = "EPSG:3857";
 
         private MapBounds mapBounds;
-        
+
         /**
          * An array of 4 doubles, minX, minY, maxX, maxY.  The bounding box of the map.
          * <p/>
@@ -70,6 +74,12 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
          */
         @OneOf("MapBounds")
         public double[] bbox;
+        /**
+         * A GeoJSON geometry that is essentially the area of the area to draw on the map.
+         * <p/>
+         */
+        @CanSatisfyOneOf("MapBounds")
+        public AreaOfInterest areaOfInterest;
         /**
          * An array of 2 doubles, (x, y).  The center of the map.
          */
@@ -81,7 +91,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
          */
         @HasDefaultValue
         public double scale;
-        
+
         /**
          * The json with all the layer information.  This will be parsed in postConstruct into a list of layers and
          * therefore this field should not normally be accessed.
@@ -106,7 +116,6 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
         //CSOFF: DesignForExtension
         @Override
         public Double getDpi() {
-        //CSON: DesignForExtension
             return this.dpi;
         }
 
@@ -118,11 +127,11 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
         @Override
         public final void postConstruct() throws FactoryException {
             super.postConstruct();
-            
-            if (this.getDpi() > MapAttribute.this.getMaxDpi()) {
+
+            if (getDpi() > getMaxDpi()) {
                 throw new IllegalArgumentException(
-                        "dpi parameter was " + this.getDpi() + " must be limited to " + MapAttribute.this.getMaxDpi()
-                        + ".  The path to the parameter is: " + this.getDpi());
+                        "dpi parameter was " + getDpi() + " must be limited to " + getMaxDpi()
+                        + ".  The path to the parameter is: " + getDpi());
             }
 
             this.mapBounds = parseBounds();
@@ -147,65 +156,56 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
                 double maxX = this.bbox[2];
                 double maxY = this.bbox[maxYIndex];
                 bounds = new BBoxMapBounds(crs, minX, minY, maxX, maxY);
+            } else if (this.areaOfInterest != null) {
+                Envelope area = this.areaOfInterest.getArea().getEnvelopeInternal();
+                bounds = new BBoxMapBounds(crs, area);
             } else {
-                throw new IllegalArgumentException("Expected either center and scale or bbox for the map bounds");
+                throw new IllegalArgumentException("Expected either: center and scale, bbox, or an areaOfInterest defined in order to " +
+                                                   "calculate the map bounds");
             }
             return bounds;
         }
 
-        //CSOFF: DesignForExtension
         public MapBounds getMapBounds() {
-        //CSON: DesignForExtension
             return this.mapBounds;
         }
 
-        //CSOFF: DesignForExtension
         @Override
         public String getProjection() {
-        //CSON: DesignForExtension
             return MapAttribute.getValueOr(super.getProjection(), DEFAULT_PROJECTION);
         }
 
-        //CSOFF: DesignForExtension
         @Override
         public Double getZoomSnapTolerance() {
-        //CSON: DesignForExtension
             return MapAttribute.getValueOr(super.getZoomSnapTolerance(), DEFAULT_SNAP_TOLERANCE);
         }
 
-        //CSOFF: DesignForExtension
         @Override
         public ZoomLevelSnapStrategy getZoomLevelSnapStrategy() {
-        //CSON: DesignForExtension
             return MapAttribute.getValueOr(super.getZoomLevelSnapStrategy(), DEFAULT_SNAP_STRATEGY);
         }
 
-        //CSOFF: DesignForExtension
         @Override
         public Double getRotation() {
-        //CSON: DesignForExtension
             return MapAttribute.getValueOr(super.getRotation(), DEFAULT_ROTATION);
         }
 
-        //CSOFF: DesignForExtension
         @Override
         public Boolean isUseNearestScale() {
-        //CSON: DesignForExtension
             return (this.useNearestScale == null || this.useNearestScale)
                         && getZoomLevels() != null;
         }
 
-        //CSOFF: DesignForExtension
         @Override
         public Boolean isUseAdjustBounds() {
-        //CSON: DesignForExtension
-            return MapAttribute.getValueOr(super.isUseAdjustBounds(), DEFAULT_USEADJUSTBOUNDS);
+            return MapAttribute.getValueOr(super.isUseAdjustBounds(), DEFAULT_ADJUST_BOUNDS);
         }
-        
+        //CSON: DesignForExtension
+
         /**
          * Creates an {@link org.mapfish.print.attribute.map.MapAttribute.OverriddenMapAttributeValues} instance with the current object
          * and a given {@link org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues} instance.
-         * 
+         *
          * @param paramOverrides Attributes set in this instance will override attributes in
          *  the current instance.
          */
@@ -213,23 +213,54 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
                 final GenericMapAttribute<?>.GenericMapAttributeValues paramOverrides) {
             return new OverriddenMapAttributeValues(this, paramOverrides, getTemplate());
         }
+
+        /**
+         * create a copy of this instance. should be overridded for each subclass
+         * @param newMapSize the size of the new map attribute values to create
+         * @param updater a function which will be called after copy is made but before postConstruct is called in order
+         *                to do other configuration changes.
+         */
+        // CSOFF: DesignForExtension
+        public MapAttribute.MapAttributeValues copy(@Nonnull final Dimension newMapSize,
+                                                    @Nonnull final Function<MapAttributeValues, Void> updater) {
+            // CSON: DesignForExtension
+            MapAttributeValues copy = new MapAttributeValues(getTemplate(), newMapSize);
+            copy.areaOfInterest = this.areaOfInterest.copy();
+            copy.bbox = this.bbox;
+            copy.center = this.center;
+            copy.scale = this.scale;
+            copy.layers = this.layers;
+            copy.dpi = this.getDpi();
+            copy.projection = this.getProjection();
+            copy.rotation = this.getRotation();
+            copy.useNearestScale = this.isUseNearestScale();
+            copy.useAdjustBounds = this.useAdjustBounds;
+            copy.longitudeFirst = this.longitudeFirst;
+            updater.apply(copy);
+            try {
+                copy.postConstruct();
+            } catch (FactoryException e) {
+                throw new RuntimeException(e);
+            }
+            return copy;
+        }
     }
 
     /**
      * A wrapper around a {@link MapAttributeValues} instance and an
      * {@link org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues} instance,
      * which is used to render the overview map.
-     * 
+     *
      * If attributes on the {@link org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues} instance are set, those
      * attributes will be returned, otherwise the ones on {@link MapAttributeValues}.
      */
-    public class OverriddenMapAttributeValues extends MapAttribute.MapAttributeValues {
-        
-        private MapAttribute.MapAttributeValues params;
-        private GenericMapAttribute<?>.GenericMapAttributeValues paramOverrides;
+    public class OverriddenMapAttributeValues extends MapAttributeValues {
+
+        private final MapAttributeValues params;
+        private final GenericMapAttribute<?>.GenericMapAttributeValues paramOverrides;
         private MapBounds zoomedOutBounds = null;
         private MapLayer mapExtentLayer = null;
-        
+
         /**
          * Constructor.
          *  @param params The fallback parameters.
@@ -253,16 +284,16 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
         public final MapBounds getOriginalBounds() {
             return this.params.getMapBounds();
         }
-        
+
         public final void setZoomedOutBounds(final MapBounds zoomedOutBounds) {
             this.zoomedOutBounds = zoomedOutBounds;
         }
-        
+
         @Override
         public final Double getDpi() {
             return MapAttribute.getValueOr(this.paramOverrides.getDpi(), this.params.getDpi());
         }
-        
+
         @Override
         public final Double getZoomSnapTolerance() {
             return MapAttribute.getValueOr(this.paramOverrides.getZoomSnapTolerance(), this.params.getZoomSnapTolerance());
@@ -272,29 +303,29 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
         public final ZoomLevelSnapStrategy getZoomLevelSnapStrategy() {
             return MapAttribute.getValueOr(this.paramOverrides.getZoomLevelSnapStrategy(), this.params.getZoomLevelSnapStrategy());
         }
-        
+
         @Override
         public final ZoomLevels getZoomLevels() {
             return MapAttribute.getValueOr(this.paramOverrides.getZoomLevels(), this.params.getZoomLevels());
         }
-        
+
         @Override
         public final Double getRotation() {
             return MapAttribute.getValueOr(this.paramOverrides.getRotation(), this.params.getRotation());
         }
-        
+
         @Override
         public final Boolean isUseAdjustBounds() {
             return MapAttribute.getValueOr(this.paramOverrides.isUseAdjustBounds(), this.params.isUseAdjustBounds());
         }
-        
+
         @Override
         public final Boolean isUseNearestScale() {
             final Boolean useNearestScale = MapAttribute.getValueOr(this.paramOverrides.useNearestScale, this.params.useNearestScale);
             return (useNearestScale == null || useNearestScale)
                     && getZoomLevels() != null;
         }
-        
+
         public final void setMapExtentLayer(final MapLayer mapExtentLayer) {
             this.mapExtentLayer = mapExtentLayer;
         }
@@ -312,11 +343,11 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
             } else {
                 layers.addAll(this.params.getLayers());
             }
-            
+
             return layers;
         }
     }
-    
+
     private static <T extends Object> T getValueOr(final T value, final T defaultValue) {
         if (value != null) {
             return value;

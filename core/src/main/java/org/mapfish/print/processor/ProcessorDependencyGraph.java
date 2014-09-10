@@ -69,10 +69,8 @@ public final class ProcessorDependencyGraph {
         }
 
         if (missingAttributes.length() > 0) {
-            final StringBuilder msg = new StringBuilder("It has been found that one or more required attributes are missing from the " +
-                                                        "values object:");
-            msg.append(missingAttributes).append("\n");
-            throw new IllegalArgumentException(msg.toString());
+            throw new IllegalArgumentException("It has been found that one or more required attributes are missing from the " +
+                                               "values object:" + missingAttributes + "\n");
         }
 
         return new ProcessorGraphForkJoinTask(values);
@@ -106,6 +104,13 @@ public final class ProcessorDependencyGraph {
                 final Set<String> requiredAttributesDefinedInInputParameter = getAttributeNames(inputParameterClass,
                         FILTER_ONLY_REQUIRED_ATTRIBUTES);
                 for (String attName : requiredAttributesDefinedInInputParameter) {
+                    try {
+                        if (inputParameterClass.getField(attName).getType() == Values.class) {
+                            continue;
+                        }
+                    } catch (NoSuchFieldException e) {
+                        throw new RuntimeException(e);
+                    }
                     String mappedName = inputMapper.get(attName);
                     if (mappedName != null) {
                         requiredInputs.put(mappedName, root.getProcessor());

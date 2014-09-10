@@ -21,6 +21,7 @@ package org.mapfish.print.output;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.ConfigFileResolvingHttpRequestFactory;
@@ -42,6 +43,7 @@ import java.io.File;
 import java.lang.reflect.Array;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -61,6 +63,10 @@ public final class Values {
      * The key that is used to store {@link org.springframework.http.client.ClientHttpRequestFactory}.
      */
     public static final String CLIENT_HTTP_REQUEST_FACTORY_KEY = "clientHttpRequestFactory";
+    /**
+     * The key that is used to store {@link org.mapfish.print.config.Template}.
+     */
+    public static final String TEMPLATE_KEY = "template";
 
     private final Map<String, Object> values = new ConcurrentHashMap<String, Object>();
 
@@ -95,13 +101,31 @@ public final class Values {
                   final ClientHttpRequestFactory httpRequestFactory) throws JSONException {
         // add task dir. to values so that all processors can access it
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
-        this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY, new ConfigFileResolvingHttpRequestFactory(httpRequestFactory, template));
+        this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY, new ConfigFileResolvingHttpRequestFactory(httpRequestFactory,
+                template.getConfiguration()));
+        this.values.put(TEMPLATE_KEY, template);
 
         final PJsonObject jsonAttributes = requestData.getJSONObject(MapPrinterServlet.JSON_ATTRIBUTES);
 
         Map<String, Attribute> attributes = Maps.newHashMap(template.getAttributes());
-        if (jsonAttributes.has(JSON_REQUEST_HEADERS) &&
-            jsonAttributes.getJSONObject(JSON_REQUEST_HEADERS).has(JSON_REQUEST_HEADERS)) {
+        populateFromAttributes(template, parser, attributes, jsonAttributes);
+    }
+
+    /**
+     * Process the requestJsonAttributes using the attributes and the MapfishParser and add all resulting values to this values object.
+     *
+     * @param template the template of the current request.
+     * @param parser the parser to use for parsing the request data.
+     * @param attributes the attributes that will be used to add values to this values object
+     * @param requestJsonAttributes the json data for populating the attribute values
+     * @throws JSONException
+     */
+    public void populateFromAttributes(@Nonnull final Template template,
+                                       @Nonnull final MapfishParser parser,
+                                       @Nonnull final Map<String, Attribute> attributes,
+                                       @Nonnull final PJsonObject requestJsonAttributes) throws JSONException {
+        if (requestJsonAttributes.has(JSON_REQUEST_HEADERS) &&
+            requestJsonAttributes.getJSONObject(JSON_REQUEST_HEADERS).has(JSON_REQUEST_HEADERS)) {
             if (!attributes.containsKey(MapPrinterServlet.JSON_REQUEST_HEADERS)) {
                 attributes.put(MapPrinterServlet.JSON_REQUEST_HEADERS, new HttpRequestHeadersAttribute());
             }
@@ -112,18 +136,18 @@ public final class Values {
             if (attribute instanceof PrimitiveAttribute) {
                 PrimitiveAttribute<?> pAtt = (PrimitiveAttribute<?>) attribute;
                 Object defaultVal = pAtt.getDefault();
-                PObject jsonToUse = jsonAttributes;
+                PObject jsonToUse = requestJsonAttributes;
                 if (defaultVal != null) {
                     final JSONObject obj = new JSONObject();
                     obj.put(attributeName, defaultVal);
-                    PObject[] pValues = new PObject[]{ jsonAttributes, new PJsonObject(obj, "default_" + attributeName) };
+                    PObject[] pValues = new PObject[]{requestJsonAttributes, new PJsonObject(obj, "default_" + attributeName) };
                     jsonToUse = new PMultiObject(pValues);
                 }
                 value = parser.parsePrimitive(attributeName, pAtt.getValueClass(), jsonToUse);
             } else if (attribute instanceof ArrayReflectiveAttribute) {
                 boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
                 ArrayReflectiveAttribute<?> rAtt = (ArrayReflectiveAttribute<?>) attribute;
-                PArray arrayValues = jsonAttributes.optJSONArray(attributeName);
+                PArray arrayValues = requestJsonAttributes.optJSONArray(attributeName);
                 if (arrayValues == null) {
                     arrayValues = rAtt.getDefaultValue();
                 }
@@ -137,7 +161,7 @@ public final class Values {
                 boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
                 ReflectiveAttribute<?> rAtt = (ReflectiveAttribute<?>) attribute;
                 value = rAtt.createValue(template);
-                PObject pValue = jsonAttributes.optJSONObject(attributeName);
+                PObject pValue = requestJsonAttributes.optJSONObject(attributeName);
 
                 if (pValue != null) {
                     PObject[] pValues = new PObject[]{ pValue, rAtt.getDefaultValue() };
@@ -155,24 +179,50 @@ public final class Values {
     }
 
     /**
+     * Create a new instance and copy the required elements from the other values object.
+     * (IE working directory, http client factory, etc...)
+     *
+     * @param values the values containing the required elements
+     */
+    public Values(@Nonnull final Values values) {
+        addRequiredValues(values);
+    }
+
+    /**
+     * Add the elements that all values objects require from the provided values object.
+     *
+     * @param sourceValues the values object containing the required elements
+     */
+    public void addRequiredValues(@Nonnull final Values sourceValues) {
+        Object taskDirectory = sourceValues.getObject(TASK_DIRECTORY_KEY, Object.class);
+        ClientHttpRequestFactory requestFactory = sourceValues.getObject(CLIENT_HTTP_REQUEST_FACTORY_KEY, ClientHttpRequestFactory.class);
+        Template template = sourceValues.getObject(TEMPLATE_KEY, Template.class);
+
+        this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
+        this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY, requestFactory);
+        this.values.put(TEMPLATE_KEY, template);
+
+    }
+
+    /**
      * Put a new value in map.
      *
      * @param key id of the value for looking up.
      * @param value the value.
      */
     public void put(final String key, final Object value) {
-        if (TASK_DIRECTORY_KEY.equals(key)) {
-            // ensure that no one overwrites the task directory 
+        if (TASK_DIRECTORY_KEY.equals(key) && this.values.keySet().contains(TASK_DIRECTORY_KEY)) {
+            // ensure that no one overwrites the task directory
             throw new IllegalArgumentException("Invalid key: " + key);
         }
-        
+
         this.values.put(key, value);
     }
 
     /**
      * Get all parameters.
      */
-    protected Map<String, Object> getParameters() {
+    public Map<String, Object> asMap() {
         return this.values;
     }
 
@@ -214,16 +264,6 @@ public final class Values {
     public <V> V getObject(final String key, final Class<V> type) {
         final Object obj = this.values.get(key);
         return type.cast(obj);
-    }
-
-    /**
-     * Get an a value as an iterator of values.
-     *
-     * @param key the key
-     */
-    @SuppressWarnings("unchecked")
-    public Iterable<Values> getIterator(final String key) {
-        return (Iterable<Values>) this.values.get(key);
     }
 
     /**
@@ -272,4 +312,5 @@ public final class Values {
 
         return (Map<String, T>) filtered;
     }
+
 }

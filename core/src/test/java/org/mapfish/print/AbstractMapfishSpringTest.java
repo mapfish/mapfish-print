@@ -21,13 +21,13 @@ package org.mapfish.print;
 
 import com.google.common.io.Files;
 import org.geotools.referencing.CRS;
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mapfish.print.attribute.map.CenterScaleMapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.map.Scale;
 import org.mapfish.print.wrapper.json.PJsonObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -55,9 +55,9 @@ public abstract class AbstractMapfishSpringTest {
     public static final String TEST_SPRING_XML = "classpath:test-http-request-factory-application-context.xml";
     static final Pattern IMPORT_PATTERN = Pattern.compile("@@importFile\\((\\S+)\\)@@");
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
-    
+    @Autowired
+    private WorkingDirectories workingDirectories;
+
     /**
      * Look on the classpath for the named file.  Will look at the root package and in the same package as testClass.
      *
@@ -105,9 +105,9 @@ public abstract class AbstractMapfishSpringTest {
     protected File getFile(String fileName) {
         return getFile(getClass(), fileName);
     }
-    
+
     protected File getTaskDirectory() {
-        return this.folder.getRoot();
+        return workingDirectories.getTaskDirectory();
     }
 
     public static MapfishMapContext createTestMapContext() {

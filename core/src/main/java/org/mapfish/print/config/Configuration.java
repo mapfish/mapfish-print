@@ -27,8 +27,10 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import org.geotools.styling.Displacement;
+import org.geotools.styling.Fill;
 import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.PointPlacement;
+import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.Symbolizer;
@@ -204,7 +206,7 @@ public class Configuration {
             } else if (normalizedGeomName.equalsIgnoreCase(Constants.Style.Grid.NAME)) {
                 return createGridStyle(builder);
             } else if (normalizedGeomName.equalsIgnoreCase(Constants.Style.OverviewMap.NAME)) {
-                symbolizer = builder.createPolygonSymbolizer(Color.blue, 2);
+                symbolizer = createMapOverviewStyle(builder);
             } else {
                 final Style geomStyle = this.defaultStyle.get(Geometry.class.getSimpleName().toLowerCase());
                 if (geomStyle != null) {
@@ -216,6 +218,12 @@ public class Configuration {
             style = builder.createStyle(symbolizer);
         }
         return style;
+    }
+
+    private Symbolizer createMapOverviewStyle(@Nonnull final StyleBuilder builder) {
+        Stroke stroke = builder.createStroke(Color.blue, 2);
+        final Fill fill = builder.createFill(Color.blue, 0.2);
+        return builder.createPolygonSymbolizer(stroke, fill);
     }
 
     private Style createGridStyle(final StyleBuilder builder) {

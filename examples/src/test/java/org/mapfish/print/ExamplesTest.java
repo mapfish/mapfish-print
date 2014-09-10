@@ -19,11 +19,17 @@
 
 package org.mapfish.print;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
+
 import org.json.JSONObject;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.internal.TextListener;
+import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
+import org.junit.runner.notification.RunListener;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.servlet.oldapi.OldAPIRequestConverter;
 import org.mapfish.print.test.util.ImageSimilarity;
@@ -39,6 +45,8 @@ import java.io.File;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.regex.Pattern;
+
 import javax.imageio.ImageIO;
 
 import static org.junit.Assert.fail;
@@ -68,8 +76,43 @@ public class ExamplesTest {
     private static final String REQUEST_DATA_FILE = "requestData(-.*)?.json";
     private static final String OLD_API_REQUEST_DATA_FILE = "oldApi-requestData(-.*)?.json";
     private static final String CONFIG_FILE = "config.yaml";
+    /**
+     * If this system property is set then it will be interpreted as a regular expression and will be used to filter the
+     * examples that are run.
+     *
+     * For example:
+     * -Dexamples.filter=verbose.*
+     *
+     * will run all examples starting with verbose.
+     */
+    private static final String FILTER_PROPERTY = "examples.filter";
+    private static final Pattern MATCH_ALL = Pattern.compile(".*");
     @Autowired
     MapPrinter mapPrinter;
+
+    private static Pattern exampleFilter;
+    private static Pattern configFilter;
+
+    @BeforeClass
+    public static void setUp() throws Exception {
+        String filterProperty = System.getProperty(FILTER_PROPERTY);
+        if (!Strings.isNullOrEmpty(filterProperty)) {
+            String[] parts = filterProperty.split("/", 2);
+
+            if (parts.length == 1) {
+                configFilter = MATCH_ALL;
+            } else {
+                configFilter = Pattern.compile(parts[1]);
+            }
+
+            exampleFilter = Pattern.compile(parts[0]);
+
+        } else {
+            configFilter = exampleFilter = MATCH_ALL;
+        }
+
+
+    }
 
     @Test
     public void testAllExamples() throws Exception {
@@ -79,7 +122,7 @@ public class ExamplesTest {
         final File examplesDir = getFile(ExamplesTest.class, "/examples");
 
         for (File example : Files.fileTreeTraverser().children(examplesDir)) {
-            if (example.isDirectory()) {
+            if (example.isDirectory() && exampleFilter.matcher(example.getName()).matches()) {
                 testsRan += runExample(example, errors);
             }
         }
@@ -111,7 +154,7 @@ public class ExamplesTest {
             this.mapPrinter.setConfiguration(configFile);
 
             for (File requestFile : Files.fileTreeTraverser().children(example)) {
-                if (!requestFile.isFile()) {
+                if (!requestFile.isFile() ||  !configFilter.matcher(example.getName()).matches()) {
                     continue;
                 }
                 try {
@@ -184,4 +227,26 @@ public class ExamplesTest {
 
         return new File(resource.getFile());
     }
+
+    public static void main(String[] args) {
+        JUnitCore junit = new JUnitCore();
+        if (args.length < 1) {
+            System.err.println("This main is expected to have at least one parameter, it is a regular expression for selecting the examples to run");
+            System.exit(1);
+        }
+        if (args.length > 2) {
+            System.err.println("A maximum of 2 parameters are allowed.  param 1=example regex, param2 = configRegexp");
+            System.exit(1);
+        }
+
+        String filter = args[0];
+        if (args.length == 2) {
+            filter += "/" + args[1];
+        }
+        System.setProperty(FILTER_PROPERTY, filter);
+        RunListener textListener = new TextListener(System.out);
+        junit.addListener(textListener);
+        junit.run(ExamplesTest.class);
+    }
+
 }

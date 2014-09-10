@@ -106,7 +106,7 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
          *      depending on the geometry type.
          */
         protected StyleSupplier<FeatureSource> createStyleFunction(final Template template,
-                                                                           final String styleString, final String defaultStyleName) {
+                                                                   final String styleString, final String defaultStyleName) {
             return new StyleSupplier<FeatureSource>() {
                 @Override
                 public Style load(final ClientHttpRequestFactory requestFactory,

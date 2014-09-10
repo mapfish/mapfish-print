@@ -22,6 +22,7 @@ package org.mapfish.print.map.style.json;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.styling.Rule;
@@ -30,6 +31,7 @@ import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.Symbolizer;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -40,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.annotation.Nonnull;
 
 import static org.mapfish.print.map.style.json.MapfishJsonStyleParserPlugin.Versions;
@@ -153,7 +156,7 @@ public final class MapfishJsonStyleVersion2 {
             try {
                 symbolizerJson.getInternalObj().put(entry.getKey(), entry.getValue());
             } catch (JSONException e) {
-                throw new RuntimeException(e);
+                throw ExceptionUtils.getRuntimeException(e);
             }
         }
     }

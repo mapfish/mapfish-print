@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 apply plugin: 'war'
 apply plugin: 'signing'
 apply plugin: 'maven-publish'
@@ -6,13 +8,44 @@ apply plugin: 'jetty'
 
 defaultTasks 'build'
 
-tasks.withType(JavaCompile) {
-    options.encoding = "utf-8"
+def appDir = new File(project.buildDir, "install")
+installApp.doFirst {
+    appDir.deleteDir()
 }
 tasks.withType(Javadoc) {
     options.encoding = "utf-8"
     title = "Mapfish Print Core Module $version"
+task testCLI(type: Exec) {
+    dependsOn installApp
+    workingDir new File(appDir, "core/bin")
+    def cmd
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        cmd = ['cmd', '/c', 'print.bat']
+    } else {
+        cmd = ['./print']
+    }
+
+    File outputFile = new File(appDir, 'cliTestOutput.png')
+    File configFile = file('src/test/resources/org/mapfish/print/cli/config.yaml')
+    File v3ApiRequestFile = file('src/test/resources/org/mapfish/print/cli/v3Request.json')
+    cmd.addAll([
+            "-config", configFile.getAbsolutePath(),
+            "-spec", v3ApiRequestFile.getAbsolutePath(),
+            "-output", outputFile.getAbsolutePath()])
+    commandLine cmd
+
+    doFirst {
+        println("Testing CLI application: " + workingDir)
+        outputFile.delete();
+        assert !outputFile.exists()
+    }
+    doLast {
+        assert outputFile.exists()
+        assert outputFile.length() > 0
+    }
 }
+
+build.dependsOn tasks.distZip, tasks.testCLI
 
 configurations {
     compile.transitive = true
@@ -24,6 +57,9 @@ configurations {
     geotools {
         description = 'Geotools spatial libraries'
     }
+    jasper {
+        description = 'Dependencies for the jasper reports generation'
+}
 }
 
 dependencies {
@@ -52,6 +88,11 @@ dependencies {
             "org.geotools:gt-svg:$geotoolsVersion",
             "org.geotools:gt-cql:$geotoolsVersion"
     )
+    jasper (
+            "net.sf.jasperreports:jasperreports:$project.jasperReportVersion",
+            "org.codehaus.groovy:groovy-all:$project.groovyVersion",
+            'ar.com.fdvs:DynamicJasper:5.0.0'
+    )
     compile fileTree(dir: "$projectDir/libs", include: '*.jar')
     compile (
             "com.google.guava:guava:16.0.1",
@@ -60,9 +101,6 @@ dependencies {
             'ch.qos.logback:logback-classic:1.1.1',
             'org.yaml:snakeyaml:1.13',
             "com.github.spullara.cli-parser:cli-parser:1.1.1",
-	        "net.sf.jasperreports:jasperreports:$project.jasperReportVersion",
-	        "org.codehaus.groovy:groovy-all:$project.groovyVersion",
-	        'ar.com.fdvs:DynamicJasper:5.0.0',
             'org.apache.httpcomponents:httpclient:4.3.3'
     )
 
@@ -72,6 +110,7 @@ dependencies {
         exclude module: 'logback-classic'
     }
     compile (configurations.geotools)
+    compile (configurations.jasper)
 
     // This jsr166 dependendency is here only so long as Java 6 is supported
     // it is the forkjoin code and can be removed if java 7 is a required library
@@ -85,23 +124,6 @@ dependencies {
     providedCompile('javax.servlet:servlet-api:2.5')
 }
 
-allprojects {
-    dependencies {
-        testCompile (
-                "junit:junit:${project.junitVersion}",
-                'org.mockito:mockito-core:1.9.5',
-                "org.springframework:spring-test:${springVersion}"
-        )
-
-    }
-
-    sourceSets {
-        test {
-            output.resourcesDir = output.classesDir
-        }
-    }
-}
-
 def gitRevision() {
     try {
         def cmd = "git rev-parse HEAD"
@@ -111,9 +133,6 @@ def gitRevision() {
         return "Error occurred while trying to execute git commandline tool: "+e
     }
 }
-
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
 
 compileJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
 
@@ -143,6 +162,7 @@ war {
     from (fileTree(dir: examplesDir)) {
         into 'print-apps'
     }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 jettyRun {

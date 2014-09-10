@@ -23,6 +23,7 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
     <bean id="!createMap" class="org.mapfish.print.processor.map.CreateMapProcessor" scope="prototype" />
+    <bean id="!createMapPages" class="org.mapfish.print.processor.map.CreateMapPagesProcessor" scope="prototype" />
     <bean id="!setStyle" class="org.mapfish.print.processor.map.SetStyleProcessor" scope="prototype" />
     <bean id="!setFeatures" class="org.mapfish.print.processor.map.SetFeaturesProcessor" scope="prototype" />
     <bean id="!setWmsCustomParam" class="org.mapfish.print.processor.map.SetWmsCustomParamProcessor" scope="prototype" />
@@ -40,6 +41,7 @@
     <bean id="!addHeaders" class="org.mapfish.print.processor.http.AddHeadersProcessor" scope="prototype" />
     <bean id="!forwardHeaders" class="org.mapfish.print.processor.http.ForwardHeadersProcessor" scope="prototype" />
     <bean id="!restrictUris" class="org.mapfish.print.processor.http.RestrictUrisProcessor" scope="prototype" />
+    <bean id="!dataSource" class="org.mapfish.print.processor.jasper.DataSourceProcessor" scope="prototype" />
 
     <bean id="!urlImage" class="org.mapfish.print.processor.jasper.HttpImageResolver" scope="prototype" />
 

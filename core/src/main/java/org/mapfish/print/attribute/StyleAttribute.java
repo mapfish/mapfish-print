@@ -20,6 +20,7 @@
 package org.mapfish.print.attribute;
 
 import org.geotools.styling.Style;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.StyleAttribute.StylesAttributeValues;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.List;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -89,10 +91,8 @@ public final class StyleAttribute extends ReflectiveAttribute<StylesAttributeVal
                 final StyleParserPlugin parser = new SLDParserPlugin();
                 try {
                     this.styleObject = parser.parseStyle(null, clientHttpRequestFactory, this.style, mapContext).get();
-                } catch (Exception exception) {
-                    throw exception;
                 } catch (Throwable throwable) {
-                    throw new RuntimeException(throwable);
+                    throw ExceptionUtils.getRuntimeException(throwable);
                 }
             }
             return this.styleObject;

@@ -19,6 +19,9 @@
 
 package org.mapfish.print.parser;
 
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -28,6 +31,8 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Keeps track of which OneOf groups there are and which ones are satisfied.
@@ -43,12 +48,23 @@ final class OneOfTracker {
      * @param field the field to register.
      */
     public void register(final Field field) {
-        final OneOf annotation = field.getAnnotation(OneOf.class);
-        if (annotation != null) {
-            OneOfGroup oneOfGroup = this.mapping.get(annotation.value());
+        final OneOf oneOfAnnotation = field.getAnnotation(OneOf.class);
+
+        String groupName = null;
+        if (oneOfAnnotation != null) {
+            groupName = oneOfAnnotation.value();
+        } else {
+            final CanSatisfyOneOf canSatisfyOneOf = field.getAnnotation(CanSatisfyOneOf.class);
+            if (canSatisfyOneOf != null) {
+                groupName = canSatisfyOneOf.value();
+            }
+        }
+
+        if (groupName != null) {
+            OneOfGroup oneOfGroup = this.mapping.get(groupName);
             if (oneOfGroup == null) {
-                oneOfGroup = new OneOfGroup(annotation.value());
-                this.mapping.put(annotation.value(), oneOfGroup);
+                oneOfGroup = new OneOfGroup(groupName);
+                this.mapping.put(groupName, oneOfGroup);
             }
             oneOfGroup.choices.add(field);
         }
@@ -60,17 +76,23 @@ final class OneOfTracker {
      * @param field the field that is done.
      */
     public void markAsVisited(final Field field) {
-        final OneOf annotation = field.getAnnotation(OneOf.class);
-        if (annotation != null) {
-            final OneOfGroup oneOfGroup = this.mapping.get(annotation.value());
-            oneOfGroup.satisfiedBy.add(field);
+        final OneOf oneOfAnnotation = field.getAnnotation(OneOf.class);
+        if (oneOfAnnotation != null) {
+            final OneOfGroup oneOfGroup = this.mapping.get(oneOfAnnotation.value());
+            oneOfGroup.satisfiedBy.add(new OneOfSatisfier(field, false));
+        }
+        final CanSatisfyOneOf canSatisfyOneOf = field.getAnnotation(CanSatisfyOneOf.class);
+        if (canSatisfyOneOf != null) {
+            final OneOfGroup oneOfGroup = this.mapping.get(canSatisfyOneOf.value());
+            oneOfGroup.satisfiedBy.add(new OneOfSatisfier(field, true));
         }
     }
 
     /**
      * Check that each group is satisfied by one and only one field.
+     * @param currentPath the json path to the element being checked
      */
-    public void checkAllGroupsSatisfied() {
+    public void checkAllGroupsSatisfied(final String currentPath) {
         StringBuilder errors = new StringBuilder();
 
         for (OneOfGroup group : this.mapping.values()) {
@@ -80,14 +102,32 @@ final class OneOfTracker {
                 errors.append("\t* The OneOf choice: ").append(group.name).append(" was not satisfied.  One (and only one) of the ");
                 errors.append("following fields is required in the request data: ").append(toNames(group.choices));
             }
-            if (group.satisfiedBy.size() > 1) {
+
+            Collection<OneOfSatisfier> oneOfSatisfiers = Collections2.filter(group.satisfiedBy, new Predicate<OneOfSatisfier>() {
+                @Override
+                public boolean apply(@Nonnull final OneOfSatisfier input) {
+                    return !input.isCanSatisfy;
+                }
+            });
+            if (oneOfSatisfiers.size() > 1) {
                 errors.append("\n");
-                errors.append("\t* The OneOf choice: ").append(group.name).append(" was satisfied by too many fields.  Only one choice");
-                errors.append("may be in the request data.  The fields found were: ").append(toNames(group.satisfiedBy));
+                errors.append("\t* The OneOf choice: ").append(group.name).append(" was satisfied by too many fields.  Only one choice ");
+                errors.append("may be in the request data.  The fields found were: ").append(toNames(toFields(group.satisfiedBy)));
             }
         }
 
-        Assert.equals(0, errors.length(), "\nErrors were detected when analysing the @OneOf dependencies: \n" + errors);
+        Assert.equals(0, errors.length(), "\nErrors were detected when analysing the @OneOf dependencies of '" + currentPath +
+                                          "': \n" + errors);
+    }
+
+    private Collection<Field> toFields(final Set<OneOfSatisfier> satisfiedBy) {
+        return Collections2.transform(satisfiedBy, new Function<OneOfSatisfier, Field>() {
+            @Nullable
+            @Override
+            public Field apply(@Nonnull final OneOfSatisfier input) {
+                return input.field;
+            }
+        });
     }
 
     private String toNames(final Collection<Field> choices) {
@@ -108,10 +148,39 @@ final class OneOfTracker {
     private static final class OneOfGroup {
         private String name;
         private Collection<Field> choices = Lists.newArrayList();
-        private Set<Field> satisfiedBy = Sets.newHashSet();
+        private Set<OneOfSatisfier> satisfiedBy = Sets.newHashSet();
 
         public OneOfGroup(final String name) {
             this.name = name;
         }
+    }
+    private static final class OneOfSatisfier {
+        private final Field field;
+        private final boolean isCanSatisfy;
+
+        public OneOfSatisfier(@Nonnull final Field field,
+                              final boolean isCanSatisfy) {
+            this.field = field;
+            this.isCanSatisfy = isCanSatisfy;
+        }
+
+        // CHECKSTYLE:OFF
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            OneOfSatisfier that = (OneOfSatisfier) o;
+
+            if (!field.equals(that.field)) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return field.hashCode();
+        }
+        // CHECKSTYLE:ON
     }
 }
