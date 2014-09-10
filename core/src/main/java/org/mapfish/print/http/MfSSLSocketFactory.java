@@ -67,7 +67,7 @@ public final class MfSSLSocketFactory implements LayeredConnectionSocketFactory 
 
     private LayeredConnectionSocketFactory getSSLSocketFactory() {
         final Configuration currentConfiguration = MfClientHttpRequestFactoryImpl.getCurrentConfiguration();
-        if (currentConfiguration == null && currentConfiguration.getCertificateStore() == null) {
+        if (currentConfiguration == null || currentConfiguration.getCertificateStore() == null) {
             return this.defaultFactory;
         }
         SSLContext context = currentConfiguration.getCertificateStore().getSSLContext();

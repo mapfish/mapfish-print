@@ -240,7 +240,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
             final Header[] allHeaders = this.response.getAllHeaders();
             for (Header header : allHeaders) {
                 for (HeaderElement element : header.getElements()) {
-                    translatedHeaders.add(header.getName(), element.getValue());
+                    translatedHeaders.add(header.getName(), element.toString());
                 }
             }
             return translatedHeaders;

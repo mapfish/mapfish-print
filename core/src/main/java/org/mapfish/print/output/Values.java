@@ -195,7 +195,8 @@ public final class Values {
      */
     public void addRequiredValues(@Nonnull final Values sourceValues) {
         Object taskDirectory = sourceValues.getObject(TASK_DIRECTORY_KEY, Object.class);
-        MfClientHttpRequestFactory requestFactory = sourceValues.getObject(CLIENT_HTTP_REQUEST_FACTORY_KEY, MfClientHttpRequestFactory.class);
+        MfClientHttpRequestFactory requestFactory = sourceValues.getObject(CLIENT_HTTP_REQUEST_FACTORY_KEY,
+                MfClientHttpRequestFactory.class);
         Template template = sourceValues.getObject(TEMPLATE_KEY, Template.class);
 
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
