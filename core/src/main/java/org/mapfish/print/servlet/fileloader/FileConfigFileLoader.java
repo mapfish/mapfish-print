@@ -27,7 +27,7 @@ import java.util.Iterator;
 
 /**
  * A plugin that loads the config resources from urls starting with prefix:
- * file://.
+ * {@value org.mapfish.print.servlet.fileloader.FileConfigFileLoader#PREFIX}://.
  *
  * @author Jesse on 4/28/2014.
  */

@@ -15,6 +15,7 @@ installApp.doFirst {
 tasks.withType(Javadoc) {
     options.encoding = "utf-8"
     title = "Mapfish Print Core Module $version"
+}
 task testCLI(type: Exec) {
     dependsOn installApp
     workingDir new File(appDir, "core/bin")

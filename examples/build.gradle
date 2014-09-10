@@ -96,7 +96,7 @@ task jettyRunBackground (dependsOn: jettyRun) << {
 
 gradle.taskGraph.whenReady {taskGraph ->
     if (taskGraph.hasTask(':core:jettyRun')) {
-        jettyRun.disabled = true
+        jettyRun.enabled = false
     }
     if (taskGraph.hasTask(jettyRunBackground)) {
         jettyRun.doFirst{

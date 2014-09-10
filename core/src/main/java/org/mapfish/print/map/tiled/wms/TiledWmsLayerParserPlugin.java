@@ -20,7 +20,9 @@
 package org.mapfish.print.map.tiled.wms;
 
 import com.google.common.collect.Sets;
+
 import jsr166y.ForkJoinPool;
+
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
@@ -28,6 +30,7 @@ import org.mapfish.print.map.geotools.AbstractGridCoverageLayerPlugin;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Set;
+
 import javax.annotation.Nonnull;
 
 /**
