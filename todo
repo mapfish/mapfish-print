@@ -1,4 +1,0 @@
-Image Output ==
-    Add JAI dependencies
-    Allow for JAI cache control tile cache size
-    Add config params for image output dpi restrictions for JAI

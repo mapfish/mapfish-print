@@ -1,0 +1,27 @@
+<p>
+    For generating reports Mapfish Print uses
+    <a href="http://community.jaspersoft.com/project/jasperreports-library">Jasper Reports</a>. Jasper Reports is a mature library report
+    generating reports. From the website:
+<blockquote>The JasperReports Library is the world's most popular open source reporting engine. It is entirely written in Java and it is
+    able to use data coming from any kind of data source and produce pixel-perfect documents that can be viewed, printed or exported in a
+    variety of document formats including HTML, PDF, Excel, OpenOffice and Word.
+</blockquote>
+</p>
+<p>
+    The central part of Jasper reports are the templates. A template is the layout of the report. It contains branding, styling and the
+    definition/layout of the report data. Once a template is created it can be compiled and ran to generate the report. In certain cases
+    all the required data (database connection parameters, url to images, etc... it can also contain parameters that need to be set by the
+    executor of the template. In the case of Mapfish print, the latter pattern is used. The output of the <a href="# processors">processors</a>
+    and <a href="# attributes">attributes</a> defined in the configuration file(config.yaml) will be passed to the jasper report template
+    for execution. The values can be used by the template to as the parameters.
+</p>
+<p>
+    When designing the template, the trick is to know the type of object that will be passed to the template from Mapfish print. For
+    example, the <a href="# processors#/!createMap">createMap processor</a> will pass a sub-report to the template, which will need to be
+    embedded into the template. This information should be provided in the documentation of the various <a
+        href="# processors">processors</a>.
+</p>
+<p>
+    In addition to needing to know how to embed the output of processors, all the other input parameters of the template must be added to
+    the attributes section in the config.yaml
+</p>

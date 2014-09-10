@@ -1,1 +1,0 @@
-The yaml files in this directory are loaded by ConfigTest in order to test compatibility of Config loading.

@@ -1,7 +1,0 @@
- * Legend consistency, reimplementation
-  * https://github.com/mapfish/mapfish-print/issues/33
-  * https://github.com/mapfish/mapfish-print/pull/40
- * Map readers and output formats now plugins.
-  * Plugins configured by spring configuration files:
-  * https://github.com/mapfish/mapfish-print/blob/master/src/main/resources/mapfish-spring-application-context.xml
- * A war specifically built to use ImageMagik for converting PDF to images is built and published along with the normal artifacts
