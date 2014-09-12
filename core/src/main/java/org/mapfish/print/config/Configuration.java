@@ -19,7 +19,10 @@
 
 package org.mapfish.print.config;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.vividsolutions.jts.geom.Geometry;
@@ -44,14 +47,22 @@ import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
 import org.opengis.filter.expression.Expression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 
 /**
@@ -99,6 +110,7 @@ public class Configuration {
     private ClientHttpRequestFactory clientHttpRequestFactory;
     @Autowired
     private ConfigFileLoaderManager fileLoaderManager;
+    private ArrayList<String> access = Lists.newArrayList();
 
     /**
      * Print out the configuration that the client needs to make a request.
@@ -109,10 +121,11 @@ public class Configuration {
     public final void printClientConfig(final JSONWriter json) throws JSONException {
         json.key("layouts");
         json.array();
-        for (String name : this.templates.keySet()) {
+        final Map<String, Template> accessibleTemplates = getTemplates();
+        for (String name : accessibleTemplates.keySet()) {
             json.object();
             json.key("name").value(name);
-            this.templates.get(name).printClientConfig(json);
+            accessibleTemplates.get(name).printClientConfig(json);
             json.endObject();
         }
         json.endArray();
@@ -129,7 +142,50 @@ public class Configuration {
     }
 
     public final Map<String, Template> getTemplates() {
-        return this.templates;
+        return Maps.filterEntries(this.templates, new Predicate<Map.Entry<String, Template>>() {
+            @Override
+            public boolean apply(@Nullable final Map.Entry<String, Template> input) {
+                if (input == null) {
+                    return false;
+                }
+                try {
+                    assertAccessible("Configuration", Configuration.this.access);
+                    input.getValue().assertAccessible(input.getKey());
+                    return true;
+                } catch (AccessDeniedException e) {
+                    return false;
+                } catch (AuthenticationCredentialsNotFoundException e) {
+                    return false;
+                }
+            }
+        });
+    }
+
+    static void assertAccessible(final String name, final Collection<String> requiredRoles) {
+        if (!requiredRoles.isEmpty()) {
+            final SecurityContext context = SecurityContextHolder.getContext();
+            if (context == null || context.getAuthentication() == null) {
+                throw new AuthenticationCredentialsNotFoundException(name + " requires an authenticated user");
+            } else {
+                Collection<String> authorities = Collections2.transform(context.getAuthentication().getAuthorities(),
+                        new Function<GrantedAuthority, String>() {
+                            @Nullable
+                            @Override
+                            public String apply(@Nullable final GrantedAuthority input) {
+                                return input == null ? "" : input.toString();
+                            }
+                        });
+                for (String acc : requiredRoles) {
+                    if (authorities.contains(acc)) {
+                        return;
+                    }
+                }
+
+                throw new AccessDeniedException("User " + context.getAuthentication().getPrincipal() +
+                                                " does not have one of the required roles");
+            }
+        }
+
     }
 
     /**
@@ -138,7 +194,12 @@ public class Configuration {
      * @param name the template name;
      */
     public final Template getTemplate(final String name) {
-        return this.templates.get(name);
+        final Template template = this.templates.get(name);
+        if (template != null) {
+            assertAccessible("Configuration", Configuration.this.access);
+            template.assertAccessible(name);
+        }
+        return template;
     }
 
     public final void setTemplates(final Map<String, Template> templates) {
@@ -182,8 +243,8 @@ public class Configuration {
 
     /**
      * Get a default style.  If null a simple black line style will be returned.
-     *  @param geometryType the name of the geometry type (point, line, polygon)
      *
+     * @param geometryType the name of the geometry type (point, line, polygon)
      */
     @Nonnull
     public final Style getDefaultStyle(@Nonnull final String geometryType) {
@@ -293,6 +354,10 @@ public class Configuration {
      */
     public final List<Throwable> validate() {
         List<Throwable> validationErrors = Lists.newArrayList();
+        if (this.access == null) {
+            validationErrors.add(new ConfigurationException("Access is null this is not permitted, by default it is nonnull so there " +
+                                                            "must be an programming error."));
+        }
         if (this.configurationFile == null) {
             validationErrors.add(new ConfigurationException("Configuration file is field on configuration object is null"));
         }
@@ -317,6 +382,7 @@ public class Configuration {
     public final boolean isAccessible(final String pathToSubResource) throws IOException {
         return this.fileLoaderManager.isAccessible(this.configurationFile.toURI(), pathToSubResource);
     }
+
     /**
      * Load the file related to the configuration file.
      *
@@ -331,9 +397,26 @@ public class Configuration {
 
     /**
      * Set file loader manager.
+     *
      * @param fileLoaderManager new manager.
      */
     public final void setFileLoaderManager(final ConfigFileLoaderManager fileLoaderManager) {
         this.fileLoaderManager = fileLoaderManager;
+    }
+
+    /**
+     * The roles required to access this configuration/app.  If empty or not set then it is a <em>public</em> app.  If there are
+     * many roles then a user must have one of the roles in order to access the configuration/app.
+     * <p/>
+     * The security (how authentication/authorization is done) is configured in the /WEB-INF/classes/mapfish-spring-security.xml
+     * <p>
+     * Any user without the required role will get an error when trying to access any of the templates and no templates will
+     * be listed in the capabilities requests.
+     * </p>
+     *
+     * @param access the roles needed to access this
+     */
+    public final void setAccess(final ArrayList<String> access) {
+        this.access = access;
     }
 }

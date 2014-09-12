@@ -20,6 +20,8 @@
 package org.mapfish.print.config;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.geotools.styling.Style;
 import org.json.JSONException;
 import org.json.JSONWriter;
@@ -55,8 +57,8 @@ public class Template implements ConfigurationObject, HasConfiguration {
 
 
     private String reportTemplate;
-    private Map<String, Attribute> attributes;
-    private List<Processor> processors;
+    private Map<String, Attribute> attributes = Maps.newHashMap();
+    private List<Processor> processors = Lists.newArrayList();
 
     private String jdbcUrl;
     private String jdbcUser;
@@ -65,6 +67,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
     private volatile ProcessorDependencyGraph iterProcessorGraph;
     private Map<String, String> styles = new HashMap<String, String>();
     private Configuration configuration;
+    private List<String> access = Lists.newArrayList();
     @Autowired
     private StyleParser styleParser;
     @Qualifier("httpClientFactory")
@@ -91,6 +94,22 @@ public class Template implements ConfigurationObject, HasConfiguration {
             }
         }
         json.endArray();
+    }
+
+    /**
+     * The roles required to access this template.  If empty or not set then it is a <em>public</em> template.  If there are
+     * many roles then a user must have one of the roles in order to access the template.
+     * <p/>
+     * The security (how authentication/authorization is done) is configured in the /WEB-INF/classes/mapfish-spring-security.xml
+     * <p>
+     * Any user without the required role will get an error when trying to access the template and the template will not
+     * be visible in the capabilities requests.
+     * </p>
+     *
+     * @param access the roles needed to access this
+     */
+    public final void setAccess(final List<String> access) {
+        this.access = access;
     }
 
     public final Map<String, Attribute> getAttributes() {
@@ -214,7 +233,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
     /**
      * Look for a style in the named styles provided in the configuration.
      *
-     * @param styleName the name of the style to look for.
+     * @param styleName  the name of the style to look for.
      * @param mapContext information about the map projection, bounds, size, etc...
      */
     @SuppressWarnings("unchecked")
@@ -242,6 +261,10 @@ public class Template implements ConfigurationObject, HasConfiguration {
 
     @Override
     public final void validate(final List<Throwable> validationErrors) {
+        if (this.access == null) {
+            validationErrors.add(new ConfigurationException("Access is null this is not permitted, by default it is nonnull so there " +
+                                                            "must be an programming error."));
+        }
         int numberOfTableConfigurations = this.tableDataKey == null ? 0 : 1;
         numberOfTableConfigurations += this.jdbcUrl == null ? 0 : 1;
 
@@ -284,5 +307,9 @@ public class Template implements ConfigurationObject, HasConfiguration {
                 }
             }
         }
+    }
+
+    final void assertAccessible(final String name) {
+        Configuration.assertAccessible(name, this.access);
     }
 }
