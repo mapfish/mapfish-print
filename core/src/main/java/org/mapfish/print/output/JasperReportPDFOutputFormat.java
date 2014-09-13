@@ -20,7 +20,9 @@
 package org.mapfish.print.output;
 
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
 
 import java.io.OutputStream;
 
@@ -44,6 +46,13 @@ public final class JasperReportPDFOutputFormat extends AbstractJasperReportOutpu
 
     @Override
     protected void doExport(final OutputStream outputStream, final Print print) throws JRException {
-        JasperExportManager.exportReportToPdfStream(print.print, outputStream);
+
+        JRPdfExporter exporter = new JRPdfExporter(print.context);
+
+        exporter.setParameter(JRExporterParameter.JASPER_PRINT, print.print);
+        exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, outputStream);
+        exporter.setParameter(JRPdfExporterParameter.PDF_VERSION, JRPdfExporterParameter.PDF_VERSION_1_7);
+
+        exporter.exportReport();
     }
 }

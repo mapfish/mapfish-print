@@ -30,6 +30,7 @@ import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.Renderable;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import net.sf.jasperreports.engine.util.LocalJasperReportsContext;
@@ -61,6 +62,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 
 /**
@@ -201,15 +203,20 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                     new JREmptyDataSource());
         }
         print.setProperty(Renderable.PROPERTY_IMAGE_DPI, String.valueOf(Math.round(maxDpi[0])));
-        return new Print(print, maxDpi[0], maxDpi[1]);
+        return new Print(print, maxDpi[0], maxDpi[1], getLocalJasperReportsContext(config));
     }
 
     private JasperFillManager getJasperFillManager(@Nonnull final Configuration configuration) {
+        LocalJasperReportsContext ctx = getLocalJasperReportsContext(configuration);
+        return JasperFillManager.getInstance(ctx);
+    }
+
+    private LocalJasperReportsContext getLocalJasperReportsContext(final Configuration configuration) {
         LocalJasperReportsContext ctx = new LocalJasperReportsContext(DefaultJasperReportsContext.getInstance());
         ctx.setClassLoader(getClass().getClassLoader());
         ctx.setExtensions(RepositoryService.class,
                 Lists.newArrayList(new MapfishPrintRepositoryService(configuration, this.httpRequestFactory)));
-        return JasperFillManager.getInstance(ctx);
+        return ctx;
     }
 
     private JRDataSource toJRDataSource(@Nonnull final Iterator iterator) {
@@ -251,15 +258,21 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
      */
     public static final class Print {
         // CHECKSTYLE:OFF
-        public final JasperPrint print;
-        public final double dpi;
-        public final double requestorDpi;
+        @Nonnull public final JasperPrint print;
+        @Nonnegative public final double dpi;
+        @Nonnegative public final double requestorDpi;
+        @Nonnull public final JasperReportsContext context;
+
         // CHECKSTYLE:ON
 
-        private Print(final JasperPrint print, final double dpi, final double requestorDpi) {
+        private Print(@Nonnull final JasperPrint print,
+                      @Nonnegative final double dpi,
+                      @Nonnegative final double requestorDpi,
+                      @Nonnull final JasperReportsContext context) {
             this.print = print;
             this.dpi = dpi;
             this.requestorDpi = requestorDpi;
+            this.context = context;
         }
     }
 
