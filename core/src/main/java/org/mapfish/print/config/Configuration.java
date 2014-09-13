@@ -92,6 +92,7 @@ public class Configuration {
     private Map<String, String> styles = new HashMap<String, String>();
     private Map<String, Style> defaultStyle = new HashMap<String, Style>();
     private boolean throwErrorOnExtraParameters = true;
+    private PDFConfig pdfConfig = new PDFConfig();
 
     @Autowired
     private StyleParser styleParser;
@@ -116,6 +117,18 @@ public class Configuration {
             json.endObject();
         }
         json.endArray();
+    }
+
+    PDFConfig getPdfConfig() {
+        return this.pdfConfig;
+    }
+
+    /**
+     * Configure various properties related to the reports generated as PDFs.
+     * @param pdfConfig the pdf configuration
+     */
+    public final void setPdfConfig(final PDFConfig pdfConfig) {
+        this.pdfConfig = pdfConfig;
     }
 
     /**

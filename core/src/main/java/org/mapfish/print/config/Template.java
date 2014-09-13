@@ -32,7 +32,6 @@ import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.sql.Connection;
@@ -52,6 +51,10 @@ public class Template implements ConfigurationObject, HasConfiguration {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Template.class);
     @Autowired
     private ProcessorDependencyGraphFactory processorGraphFactory;
+    @Autowired
+    private StyleParser styleParser;
+    @Autowired
+    private ClientHttpRequestFactory httpRequestFactory;
 
 
     private String reportTemplate;
@@ -62,16 +65,10 @@ public class Template implements ConfigurationObject, HasConfiguration {
     private String jdbcUser;
     private String jdbcPassword;
     private volatile ProcessorDependencyGraph processorGraph;
-    private volatile ProcessorDependencyGraph iterProcessorGraph;
     private Map<String, String> styles = new HashMap<String, String>();
     private Configuration configuration;
-    @Autowired
-    private StyleParser styleParser;
-    @Qualifier("httpClientFactory")
-    @Autowired
-    private ClientHttpRequestFactory httpRequestFactory;
+    private PDFConfig pdfConfig = new PDFConfig();
     private String tableDataKey;
-
 
     /**
      * Print out the template information that the client needs for performing a request.
@@ -91,6 +88,23 @@ public class Template implements ConfigurationObject, HasConfiguration {
             }
         }
         json.endArray();
+    }
+
+    /**
+     * Get the merged configuration between this template and the configuration's template.  The settings in the template take
+     * priority over the configurations settings but if not set in the template then the default will be the configuration's options.
+     */
+    // CSOFF: DesignForExtension -- Note this is disabled so that I can use Mockito and inject my own objects
+    public PDFConfig getPdfConfig() {
+        return this.pdfConfig.getMergedInstance(this.configuration.getPdfConfig());
+    }
+
+    /**
+     * Configure various properties related to the reports generated as PDFs.
+     * @param pdfConfig the pdf configuration
+     */
+    public final void setPdfConfig(final PDFConfig pdfConfig) {
+        this.pdfConfig = pdfConfig;
     }
 
     public final Map<String, Attribute> getAttributes() {

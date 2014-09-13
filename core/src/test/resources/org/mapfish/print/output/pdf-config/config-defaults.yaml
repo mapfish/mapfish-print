@@ -1,0 +1,21 @@
+throwErrorOnExtraParameters: true
+templates:
+  main: !template
+    reportTemplate: simple-map.jrxml
+    attributes:
+      map: !map
+        width: 500
+        height: 100
+        maxDpi: 400
+        zoomSnapTolerance: 0.025
+        zoomLevelSnapStrategy: CLOSEST_LOWER_SCALE_ON_TIE
+        zoomLevels: !zoomLevels
+          scales: [50000, 100000, 500000, 1000000]
+    processors:
+    - !reportBuilder
+        directory: "."
+    - !createMap
+        inputMapper: {map: map}
+        outputMapper: {mapSubReport: map}
+
+
