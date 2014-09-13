@@ -22,14 +22,10 @@ package org.mapfish.print.processor.map;
 import static org.junit.Assert.assertEquals;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 import java.util.List;
-
-import javax.imageio.ImageIO;
 
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -107,7 +103,7 @@ public class CreateMapProcessorFixedScaleCenterOsmDpiTest extends AbstractMapfis
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory);
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
         template.getProcessorGraph().createTask(values).invoke();
 
         @SuppressWarnings("unchecked")

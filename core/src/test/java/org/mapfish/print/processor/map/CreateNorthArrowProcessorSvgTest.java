@@ -20,6 +20,7 @@
 package org.mapfish.print.processor.map;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 
@@ -81,7 +82,7 @@ public class CreateNorthArrowProcessorSvgTest extends AbstractMapfishSpringTest 
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory);
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         URI northArrowGraphic = (URI) values.getObject("graphic", URI.class);

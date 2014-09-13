@@ -30,6 +30,7 @@ import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.attribute.HttpRequestHeadersAttribute;
 import org.mapfish.print.attribute.PrimitiveAttribute;
 import org.mapfish.print.attribute.ReflectiveAttribute;
+import org.mapfish.print.config.PDFConfig;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.servlet.MapPrinterServlet;
@@ -67,6 +68,12 @@ public final class Values {
      * The key that is used to store {@link org.mapfish.print.config.Template}.
      */
     public static final String TEMPLATE_KEY = "template";
+    /**
+     * The key for the values object for the {@link org.mapfish.print.config.PDFConfig} object.
+     */
+    public static final String PDF_CONFIG = "PDF_CONFIG";
+    private static final String SUBREPORT_DIR = "SUBREPORT_DIR";
+
 
     private final Map<String, Object> values = new ConcurrentHashMap<String, Object>();
 
@@ -88,22 +95,28 @@ public final class Values {
 
     /**
      * Construct from the json request body and the associated template.
-     *  @param requestData the json request data
+     * @param requestData the json request data
      * @param template the template
      * @param parser the parser to use for parsing the request data.
      * @param taskDirectory the temporary directory for this printing task.
      * @param httpRequestFactory a factory for making http requests.
+     * @param jasperTemplateBuild the directory where the jasper templates are compiled to
      */
     public Values(final PJsonObject requestData,
                   final Template template,
                   final MapfishParser parser,
                   final File taskDirectory,
-                  final ClientHttpRequestFactory httpRequestFactory) throws JSONException {
+                  final ClientHttpRequestFactory httpRequestFactory,
+                  final File jasperTemplateBuild) throws JSONException {
+
+
         // add task dir. to values so that all processors can access it
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
         this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY, new ConfigFileResolvingHttpRequestFactory(httpRequestFactory,
                 template.getConfiguration()));
         this.values.put(TEMPLATE_KEY, template);
+        this.values.put(PDF_CONFIG, template.getPdfConfig());
+        this.values.put(SUBREPORT_DIR, jasperTemplateBuild.getAbsolutePath());
 
         final PJsonObject jsonAttributes = requestData.getJSONObject(MapPrinterServlet.JSON_ATTRIBUTES);
 
@@ -197,10 +210,14 @@ public final class Values {
         Object taskDirectory = sourceValues.getObject(TASK_DIRECTORY_KEY, Object.class);
         ClientHttpRequestFactory requestFactory = sourceValues.getObject(CLIENT_HTTP_REQUEST_FACTORY_KEY, ClientHttpRequestFactory.class);
         Template template = sourceValues.getObject(TEMPLATE_KEY, Template.class);
+        PDFConfig pdfConfig = sourceValues.getObject(PDF_CONFIG, PDFConfig.class);
+        String subReportDir = sourceValues.getObject(SUBREPORT_DIR, String.class);
 
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
         this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY, requestFactory);
         this.values.put(TEMPLATE_KEY, template);
+        this.values.put(PDF_CONFIG, pdfConfig);
+        this.values.put(SUBREPORT_DIR, subReportDir);
 
     }
 

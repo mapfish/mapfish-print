@@ -71,9 +71,6 @@ import javax.annotation.Nonnull;
 public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportPDFOutputFormat.class);
 
-    private static final String SUBREPORT_DIR = "SUBREPORT_DIR";
-    private static final String SUBREPORT_TABLE_DIR = "SUBREPORT_TABLE_DIR";
-
     @Autowired
     private ForkJoinPool forkJoinPool;
 
@@ -132,18 +129,14 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             throw new IllegalArgumentException("\nThere is no template with the name: " + templateName +
             ".\nAvailable templates: " + possibleTemplates);
         }
-        final Values values = new Values(requestData, template, this.parser, taskDirectory, this.httpRequestFactory);
-
-        double[] maxDpi = maxDpi(values);
-
         final File jasperTemplateFile = new File(configDir, template.getReportTemplate());
         final File jasperTemplateBuild = this.workingDirectories.getBuildFileFor(config, jasperTemplateFile,
                 JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT, LOGGER);
 
-        final File jasperTemplateDirectory = jasperTemplateBuild.getParentFile();
+        final Values values = new Values(requestData, template, this.parser, taskDirectory, this.httpRequestFactory,
+                jasperTemplateBuild.getParentFile());
 
-        values.put(SUBREPORT_DIR, jasperTemplateDirectory.getAbsolutePath());
-        values.put(SUBREPORT_TABLE_DIR, taskDirectory.getAbsolutePath());
+        double[] maxDpi = maxDpi(values);
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(template.getProcessorGraph().createTask(values));
 
@@ -203,7 +196,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                     new JREmptyDataSource());
         }
         print.setProperty(Renderable.PROPERTY_IMAGE_DPI, String.valueOf(Math.round(maxDpi[0])));
-        return new Print(print, maxDpi[0], maxDpi[1], getLocalJasperReportsContext(config));
+        return new Print(getLocalJasperReportsContext(config), print, values, maxDpi[0], maxDpi[1]);
     }
 
     private JasperFillManager getJasperFillManager(@Nonnull final Configuration configuration) {
@@ -262,17 +255,18 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         @Nonnegative public final double dpi;
         @Nonnegative public final double requestorDpi;
         @Nonnull public final JasperReportsContext context;
+        @Nonnull public final Values values;
 
         // CHECKSTYLE:ON
 
-        private Print(@Nonnull final JasperPrint print,
-                      @Nonnegative final double dpi,
-                      @Nonnegative final double requestorDpi,
-                      @Nonnull final JasperReportsContext context) {
+        private Print(@Nonnull final JasperReportsContext context, @Nonnull final JasperPrint print,
+                      @Nonnull final Values values, @Nonnegative final double dpi,
+                      @Nonnegative final double requestorDpi) {
             this.print = print;
+            this.context = context;
+            this.values = values;
             this.dpi = dpi;
             this.requestorDpi = requestorDpi;
-            this.context = context;
         }
     }
 

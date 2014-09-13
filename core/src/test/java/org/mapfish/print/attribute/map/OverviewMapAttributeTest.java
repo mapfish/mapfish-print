@@ -60,7 +60,8 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
         final Template template = config.getTemplate("main");
         final PJsonObject pJsonObject = parseJSONObjectFromFile(OverviewMapAttributeTest.class, "overviewmap_attributes/requestData-json.json");
         
-        final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory);
+        final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory,
+                new File("."));
         final MapAttribute.MapAttributeValues mapValue = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
         final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue =
                 values.getObject("overviewMapDef", OverviewMapAttribute.OverviewMapAttributeValues.class);
@@ -84,7 +85,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
         final Template template = config.getTemplate("main");
         final PJsonObject pJsonObject = parseJSONObjectFromFile(OverviewMapAttributeTest.class, "overviewmap_attributes/requestData-yaml.json");
         
-        final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory);
+        final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory, new File("."));
         final MapAttribute.MapAttributeValues mapValue = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
         final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue =
                 values.getObject("overviewMapDef", OverviewMapAttribute.OverviewMapAttributeValues.class);
@@ -109,7 +110,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
         final Template template = config.getTemplate("main");
         final PJsonObject pJsonObject = parseJSONObjectFromFile(OverviewMapAttributeTest.class, "overviewmap_attributes/requestData-json.json");
         
-        final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory);
+        final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory, new File("."));
         final MapAttribute.MapAttributeValues mapValue = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
         final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue =
                 values.getObject("overviewMapDef", OverviewMapAttribute.OverviewMapAttributeValues.class);
