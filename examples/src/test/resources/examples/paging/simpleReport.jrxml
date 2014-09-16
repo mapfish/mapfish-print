@@ -13,11 +13,26 @@
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
 	<parameter name="mapSubReport" class="java.lang.String"/>
 	<field name="mapSubReport" class="java.lang.String"/>
-	<field name="name" class="java.lang.String"/>
-	<field name="top" class="java.lang.String"/>
-	<field name="bottom" class="java.lang.String"/>
-	<field name="left" class="java.lang.String"/>
-	<field name="right" class="java.lang.String"/>
+	<field name="name" class="java.lang.Integer"/>
+	<field name="top" class="java.lang.Integer"/>
+	<field name="bottom" class="java.lang.Integer"/>
+	<field name="left" class="java.lang.Integer"/>
+	<field name="right" class="java.lang.Integer"/>
+    <variable name="name" class="java.lang.String">
+        <variableExpression><![CDATA[$F{name} == -1 ? "" : ("" + (char)('A' + $F{name}))]]></variableExpression>
+    </variable>
+    <variable name="top" class="java.lang.String">
+        <variableExpression><![CDATA[$F{top} == -1 ? "" : ("" + (char)('A' + $F{top}))]]></variableExpression>
+    </variable>
+    <variable name="bottom" class="java.lang.String">
+        <variableExpression><![CDATA[$F{bottom} == -1 ? "" : ("" + (char)('A' + $F{bottom}))]]></variableExpression>
+    </variable>
+    <variable name="left" class="java.lang.String">
+        <variableExpression><![CDATA[$F{left} == -1 ? "" : ("" + (char)('A' + $F{left}))]]></variableExpression>
+    </variable>
+    <variable name="right" class="java.lang.String">
+        <variableExpression><![CDATA[$F{right} == -1 ? "" : ("" + (char)('A' + $F{right}))]]></variableExpression>
+    </variable>
 	<title>
 		<band height="390" splitType="Stretch">
 			<staticText>
@@ -60,7 +75,7 @@
 				<textElement>
 					<font size="16"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{name}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="350" y="60" width="100" height="20" uuid="43297ecc-010e-4f82-b9f1-90ac7a56d403"/>
@@ -73,7 +88,7 @@
 				<textElement textAlignment="Center">
 					<font size="11"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{top}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{top}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="340" y="360" width="100" height="20" uuid="2ae2e607-d286-4107-a0f2-1bd6f689cd51"/>
@@ -86,7 +101,7 @@
 				<textElement textAlignment="Center">
 					<font size="11"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{bottom}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{bottom}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="220" width="100" height="20" uuid="301bf53a-b24d-41b8-a935-f569b8896a27"/>
@@ -99,7 +114,7 @@
 				<textElement textAlignment="Center">
 					<font size="11"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{left}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{left}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="680" y="220" width="100" height="20" uuid="ade051fc-a43f-46f9-9147-962d5aacbb60"/>
@@ -112,7 +127,7 @@
 				<textElement textAlignment="Center">
 					<font size="11"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{right}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{right}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
