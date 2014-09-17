@@ -24,6 +24,7 @@
     <bean id="!integer" class="org.mapfish.print.attribute.IntegerAttribute" scope="prototype" />
     <bean id="!float" class="org.mapfish.print.attribute.FloatAttribute" scope="prototype" />
     <bean id="!string" class="org.mapfish.print.attribute.StringAttribute" scope="prototype" />
+    <bean id="!stringArray" class="org.mapfish.print.attribute.StringArrayAttribute" scope="prototype" />
     <bean id="!style" class="org.mapfish.print.attribute.StyleAttribute" scope="prototype" />
     <bean id="!features" class="org.mapfish.print.attribute.FeaturesAttribute" scope="prototype" />
     <bean id="!map" class="org.mapfish.print.attribute.map.MapAttribute" scope="prototype" />
