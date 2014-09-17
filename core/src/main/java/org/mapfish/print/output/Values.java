@@ -71,7 +71,7 @@ public final class Values {
     /**
      * The key for the values object for the {@link org.mapfish.print.config.PDFConfig} object.
      */
-    public static final String PDF_CONFIG = "PDF_CONFIG";
+    public static final String PDF_CONFIG = "pdfConfig";
     private static final String SUBREPORT_DIR = "SUBREPORT_DIR";
 
 
@@ -186,7 +186,6 @@ public final class Values {
             } else {
                 throw new IllegalArgumentException("Unsupported attribute type: " + attribute);
             }
-
             put(attributeName, value);
         }
     }
@@ -233,6 +232,9 @@ public final class Values {
             throw new IllegalArgumentException("Invalid key: " + key);
         }
 
+        if (value == null) {
+            throw new IllegalArgumentException("A null value was attempted to be put into the values object under key: " + key);
+        }
         this.values.put(key, value);
     }
 
@@ -330,4 +332,8 @@ public final class Values {
         return (Map<String, T>) filtered;
     }
 
+    @Override
+    public String toString() {
+        return this.values.toString();
+    }
 }

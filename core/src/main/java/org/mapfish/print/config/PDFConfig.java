@@ -35,7 +35,6 @@ import java.util.List;
 // CSOFF: DesignForExtension  -- Note: This is disabled so that I can use Mockito.spy in tests
 public class PDFConfig implements ConfigurationObject {
     private static final String MAPFISH_PRINT = "Mapfish Print";
-    private static final Joiner COMMA_JOINTER = Joiner.on(',');
     private Optional<Boolean> compressed = Optional.absent();
     private Optional<String> title = Optional.absent();
     private Optional<String> author = Optional.absent();
@@ -122,7 +121,14 @@ public class PDFConfig implements ConfigurationObject {
      * @param keywords the keywords of the PDF.
      */
     public void setKeywords(final List<String> keywords) {
-        this.keywords = Optional.of(COMMA_JOINTER.join(keywords));
+        StringBuilder builder = new StringBuilder();
+        for (String keyword : keywords) {
+            if (builder.length() > 0) {
+                builder.append(',');
+            }
+            builder.append(keyword.trim());
+        }
+        this.keywords = Optional.of(builder.toString());
     }
 
     public String getCreator() {

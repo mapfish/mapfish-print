@@ -44,6 +44,8 @@
     <bean id="!dataSource" class="org.mapfish.print.processor.jasper.DataSourceProcessor" scope="prototype" />
 
     <bean id="!urlImage" class="org.mapfish.print.processor.jasper.HttpImageResolver" scope="prototype" />
+    <bean id="!updatePdfConfig" class="org.mapfish.print.processor.PdfConfigurationProcessor" scope="prototype" />
+    <bean id="!updatePdfConfigUpdate" class="org.mapfish.print.processor.PdfConfigurationProcessor$Update" scope="prototype" />
 
 
     <bean class="org.mapfish.print.processor.ProcessorDependency">
