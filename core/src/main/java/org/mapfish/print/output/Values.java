@@ -23,8 +23,8 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.mapfish.print.attribute.ArrayReflectiveAttribute;
 import org.mapfish.print.attribute.Attribute;
+import org.mapfish.print.attribute.DataSourceAttribute;
 import org.mapfish.print.attribute.HttpRequestHeadersAttribute;
 import org.mapfish.print.attribute.PrimitiveAttribute;
 import org.mapfish.print.attribute.ReflectiveAttribute;
@@ -34,13 +34,11 @@ import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
 import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.servlet.MapPrinterServlet;
-import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.mapfish.print.wrapper.multi.PMultiObject;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
@@ -123,9 +121,9 @@ public final class Values {
     public void populateFromAttributes(@Nonnull final Template template,
                                        @Nonnull final MapfishParser parser,
                                        @Nonnull final Map<String, Attribute> attributes,
-                                       @Nonnull final PJsonObject requestJsonAttributes) throws JSONException {
+                                       @Nonnull final PObject requestJsonAttributes) throws JSONException {
         if (requestJsonAttributes.has(JSON_REQUEST_HEADERS) &&
-            requestJsonAttributes.getJSONObject(JSON_REQUEST_HEADERS).has(JSON_REQUEST_HEADERS)) {
+            requestJsonAttributes.getObject(JSON_REQUEST_HEADERS).has(JSON_REQUEST_HEADERS)) {
             if (!attributes.containsKey(MapPrinterServlet.JSON_REQUEST_HEADERS)) {
                 attributes.put(MapPrinterServlet.JSON_REQUEST_HEADERS, new HttpRequestHeadersAttribute());
             }
@@ -144,30 +142,20 @@ public final class Values {
                     jsonToUse = new PMultiObject(pValues);
                 }
                 value = parser.parsePrimitive(attributeName, pAtt.getValueClass(), jsonToUse);
-            } else if (attribute instanceof ArrayReflectiveAttribute) {
-                boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
-                ArrayReflectiveAttribute<?> rAtt = (ArrayReflectiveAttribute<?>) attribute;
-                PArray arrayValues = requestJsonAttributes.optJSONArray(attributeName);
-                if (arrayValues == null) {
-                    arrayValues = rAtt.getDefaultValue();
-                }
-                value = Array.newInstance(rAtt.createValue(template).getClass(), arrayValues.size());
-                for (int i = 0; i < arrayValues.size(); i++) {
-                    Object elem = rAtt.createValue(template);
-                    Array.set(value, i, elem);
-                    parser.parse(errorOnExtraParameters, arrayValues.getObject(i), elem);
-                }
+            } else if (attribute instanceof DataSourceAttribute) {
+                DataSourceAttribute dsAttribute = (DataSourceAttribute) attribute;
+                value = dsAttribute.parseAttribute(parser, template, requestJsonAttributes.optArray(attributeName));
             } else if (attribute instanceof ReflectiveAttribute) {
                 boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
                 ReflectiveAttribute<?> rAtt = (ReflectiveAttribute<?>) attribute;
                 value = rAtt.createValue(template);
-                PObject pValue = requestJsonAttributes.optJSONObject(attributeName);
+                PObject pValue = requestJsonAttributes.optObject(attributeName);
 
                 if (pValue != null) {
                     PObject[] pValues = new PObject[]{pValue, rAtt.getDefaultValue()};
                     pValue = new PMultiObject(pValues);
                 } else {
-                    pValue = rAtt.getDefaultValue();
+                   pValue = rAtt.getDefaultValue();
                 }
                 parser.parse(errorOnExtraParameters, pValue, value);
             } else {

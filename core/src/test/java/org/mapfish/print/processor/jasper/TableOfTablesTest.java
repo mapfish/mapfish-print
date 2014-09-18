@@ -38,15 +38,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue;
 
 /**
  * @author Jesse on 4/10/2014.
  */
-public class TableListProcessorTest  extends AbstractMapfishSpringTest {
+public class TableOfTablesTest extends AbstractMapfishSpringTest {
     public static final String BASE_DIR = "tablelist/";
 
     @Autowired
@@ -68,16 +68,9 @@ public class TableListProcessorTest  extends AbstractMapfishSpringTest {
         Values values = new Values(requestData, template, parser, getTaskDirectory(), this.httpRequestFactory);
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
-        @SuppressWarnings("unchecked")
-        final Iterator<Values> tablelist = values.getObject("tableList", Iterable.class).iterator();
+        final DataSourceAttributeValue datasource = values.getObject("datasource", DataSourceAttributeValue.class);
 
-        int count = 0;
-        while (tablelist.hasNext()) {
-            tablelist.next();
-            count++;
-        }
-
-        assertEquals(2, count);
+        assertEquals(2, datasource.attributesValues.length);
     }
 
     @Test
@@ -102,6 +95,6 @@ public class TableListProcessorTest  extends AbstractMapfishSpringTest {
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(TableListProcessorTest.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(TableOfTablesTest.class, BASE_DIR + "requestData.json");
     }
 }

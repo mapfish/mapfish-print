@@ -1,24 +1,25 @@
 {
-  "layout" : "main",
+  "layout": "main",
   "attributes": {
-    "tableList": [
+    "datasource": [
       {
-        "id": "f1",
-        "displayName": "Feature 1",
-        "columns": ["id", "name", "icon"],
-        "data": [
-          [1, "blah", "icon_pan"],
-          [2, "blip", "icon_zoomin"]
-        ]
+        "table": {
+          "columns": ["id", "name", "icon"],
+          "data": [
+            [1, "blah", "icon_pan"],
+            [2, "blip", "icon_zoomin"]
+          ]
+        }
       },
       {
         "id": "f2",
-        "displayName": "Feature 2",
-        "columns": ["id", "name", "icon"],
-        "data": [
-          [10, "blah2", "icon_pan2"],
-          [20, "blip2", "icon_zoomin2"]
-        ]
+        "table": {
+          "columns": ["id", "name", "icon"],
+          "data": [
+            [10, "blah2", "icon_pan2"],
+            [20, "blip2", "icon_zoomin2"]
+          ]
+        }
       }
     ]
   }
