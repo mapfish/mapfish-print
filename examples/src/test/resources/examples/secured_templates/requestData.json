@@ -1,0 +1,88 @@
+{
+  "layout": "A4 landscape",
+  "outputFormat": "pdf",
+  "attributes": {
+    "map": {
+      "projection": "EPSG:900913",
+      "dpi": 72,
+      "rotation": 0,
+      "center": [-8233518.5005945, 4980320.4059228],
+      "scale": 25000,
+      "layers": [
+        {
+          "baseURL": "http://localhost:9876/e2egeoserver/wms",
+          "opacity": 1,
+          "type": "WMS",
+          "layers": [
+            "tiger:tiger_roads"
+          ],
+
+          "imageFormat": "image/png",
+          "styles": [
+            "line"
+          ],
+
+          "customParams": {
+            "TRANSPARENT": "true"
+          }
+        },
+        {
+          "type": "WMTS",
+          "baseURL": "http://localhost:9876/e2egeoserver/gwc/service/wmts",
+          "opacity": 1.0,
+          "layer": "tiger-ny",
+          "version": "1.0.0",
+          "requestEncoding": "KVP",
+          "dimensions": null,
+          "dimensionParams": {},
+          "matrixSet": "EPSG:900913",
+          "matrices": [
+            {
+              "identifier": "EPSG:900913:12",
+              "matrixSize": [4096, 4096],
+              "scaleDenominator": 136494.69334738597,
+              "tileSize": [256, 256],
+              "topLeftCorner": [-2.003750834E7, 2.0037508E7]
+            },
+            {
+              "identifier": "EPSG:900913:13",
+              "matrixSize": [8192, 8192],
+              "scaleDenominator": 68247.34667369298,
+              "tileSize": [256, 256],
+              "topLeftCorner": [-2.003750834E7, 2.0037508E7]
+            },
+            {
+              "identifier": "EPSG:900913:14",
+              "matrixSize": [16384, 16384],
+              "scaleDenominator": 34123.67333684649,
+              "tileSize": [256, 256],
+              "topLeftCorner": [-2.003750834E7, 2.0037508E7]
+            },
+            {
+              "identifier": "EPSG:900913:15",
+              "matrixSize": [32768, 32768],
+              "scaleDenominator": 17061.836668423246,
+              "tileSize": [256, 256],
+              "topLeftCorner": [-2.003750834E7, 2.0037508E7]
+            },
+            {
+              "identifier": "EPSG:900913:16",
+              "matrixSize": [65536, 65536],
+              "scaleDenominator": 8530.9183342116231,
+              "tileSize": [256, 256],
+              "topLeftCorner": [-2.003750834E7, 2.0037508E7]
+            },
+            {
+              "identifier": "EPSG:900913:17",
+              "matrixSize": [131072, 131072],
+              "scaleDenominator": 4265.4591671058115,
+              "tileSize": [256, 256],
+              "topLeftCorner": [-2.003750834E7, 2.0037508E7]
+            }
+          ],
+          "imageFormat": "png"
+        }
+      ]
+    }
+  }
+}

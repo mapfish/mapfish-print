@@ -31,6 +31,8 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.OutputStream;
 import java.net.URI;
@@ -53,6 +55,7 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
     private MapPrinterFactory mapPrinterFactory;
     @Autowired
     private MetricRegistry metricRegistry;
+    private SecurityContext securityContext;
 
     /**
      * Get the reference id of the job so it can be looked up again later.
@@ -89,7 +92,7 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
 
     @Override
     public final PrintJobStatus call() throws Exception {
-
+        SecurityContextHolder.setContext(this.securityContext);
         Timer.Context timer = this.metricRegistry.timer(getClass().getName() + " call()").time();
         PJsonObject spec = null;
         try {
@@ -158,6 +161,17 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
             return "mapfish-print-report";
         }
         return fileName;
+    }
+
+    /**
+     * The security context that contains the information about the user that made the request.  This must be
+     * set on {@link org.springframework.security.core.context.SecurityContextHolder} when the thread starts executing.
+     *
+     * @param securityContext the conext object
+     */
+    public final void setSecurityContext(final SecurityContext securityContext) {
+        this.securityContext = SecurityContextHolder.createEmptyContext();
+        this.securityContext.setAuthentication(securityContext.getAuthentication());
     }
 
     /**
