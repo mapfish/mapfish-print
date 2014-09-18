@@ -96,38 +96,38 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
         PJsonObject requestData = loadJsonRequestData();
 
         final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
-//        testPrint(config, requestData, "default-aoi", format);
-//
-//        getAreaOfInterest(requestData).put("display", "CLIP");
-//        testPrint(config, requestData, "clip-full-aoi", format);
-//        getAreaOfInterest(requestData).remove("display");
-//
-//        requestData = loadJsonRequestData();
-//
-//        getPagingAttributes(requestData).put("aoiDisplay", "clip");
-//        testPrint(config, requestData, "clip-page-aoi", format);
-//
-//        getPagingAttributes(requestData).put("aoiDisplay", "render");
-//        testPrint(config, requestData, "default-aoi", format);
-//
-//        getPagingAttributes(requestData).put("aoiDisplay", "none");
-//        testPrint(config, requestData, "none-aoi", format);
-//
-//        getAreaOfInterest(requestData).put("display", "CLIP");
-//        getPagingAttributes(requestData).put("aoiDisplay", "RENDER");
-//        testPrint(config, requestData, "full-clip-sub-render", format);
-//
-//        getAreaOfInterest(requestData).put("display", "CLIP");
-//        getPagingAttributes(requestData).put("aoiDisplay", "NONE");
-//        testPrint(config, requestData, "full-clip-sub-none", format);
-//
-//        getAreaOfInterest(requestData).put("display", "CLIP");
-//        getPagingAttributes(requestData).put("aoiDisplay", "NONE");
-//        testPrint(config, requestData, "full-clip-sub-none", format);
-//
-//        getAreaOfInterest(requestData).put("display", "NONE");
-//        getPagingAttributes(requestData).put("aoiDisplay", "NONE");
-//        testPrint(config, requestData, "all-none", format);
+        testPrint(config, requestData, "default-aoi", format);
+
+        getAreaOfInterest(requestData).put("display", "CLIP");
+        testPrint(config, requestData, "clip-full-aoi", format);
+        getAreaOfInterest(requestData).remove("display");
+
+        requestData = loadJsonRequestData();
+
+        getPagingAttributes(requestData).put("aoiDisplay", "clip");
+        testPrint(config, requestData, "clip-page-aoi", format);
+
+        getPagingAttributes(requestData).put("aoiDisplay", "render");
+        testPrint(config, requestData, "default-aoi", format);
+
+        getPagingAttributes(requestData).put("aoiDisplay", "none");
+        testPrint(config, requestData, "none-aoi", format);
+
+        getAreaOfInterest(requestData).put("display", "CLIP");
+        getPagingAttributes(requestData).put("aoiDisplay", "RENDER");
+        testPrint(config, requestData, "full-clip-sub-render", format);
+
+        getAreaOfInterest(requestData).put("display", "CLIP");
+        getPagingAttributes(requestData).put("aoiDisplay", "NONE");
+        testPrint(config, requestData, "full-clip-sub-none", format);
+
+        getAreaOfInterest(requestData).put("display", "CLIP");
+        getPagingAttributes(requestData).put("aoiDisplay", "NONE");
+        testPrint(config, requestData, "full-clip-sub-none", format);
+
+        getAreaOfInterest(requestData).put("display", "NONE");
+        getPagingAttributes(requestData).put("aoiDisplay", "NONE");
+        testPrint(config, requestData, "all-none", format);
 
         config = configurationFactory.getConfig(getFile(BASE_DIR + "config-scalebar.yaml"));
         requestData = loadJsonRequestData();
