@@ -77,7 +77,7 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(baseDir + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData(baseDir);
-        Values values = new Values(requestData, template, parser, getTaskDirectory(), this.httpRequestFactory);
+        Values values = new Values(requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final JRMapCollectionDataSource tableDataSource = values.getObject("table", JRMapCollectionDataSource.class);

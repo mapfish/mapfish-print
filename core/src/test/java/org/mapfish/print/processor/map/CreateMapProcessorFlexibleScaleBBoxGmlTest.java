@@ -93,7 +93,7 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
             jsonLayer.remove("url");
             jsonLayer.accumulate("url", "http://" + host + ":23432" + "/gml/" + gmlDataName);
 
-            Values values = new Values(requestData, template, parser, getTaskDirectory(), this.requestFactory);
+            Values values = new Values(requestData, template, parser, getTaskDirectory(), this.requestFactory, new File("."));
             template.getProcessorGraph().createTask(values).invoke();
 
             @SuppressWarnings("unchecked")

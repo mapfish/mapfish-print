@@ -20,6 +20,7 @@
 package org.mapfish.print.config;
 
 import com.google.common.base.Function;
+
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -107,6 +108,7 @@ public class Configuration {
     private Map<String, Style> defaultStyle = new HashMap<String, Style>();
     private boolean throwErrorOnExtraParameters = true;
     private List<HttpProxy> proxies = Lists.newArrayList();
+    private PDFConfig pdfConfig = new PDFConfig();
     private List<HttpCredential> credentials = Lists.newArrayList();
     private CertificateStore certificateStore;
 
@@ -116,7 +118,6 @@ public class Configuration {
     private ClientHttpRequestFactory clientHttpRequestFactory;
     @Autowired
     private ConfigFileLoaderManager fileLoaderManager;
-    private ArrayList<String> access = Lists.newArrayList();
 
     /**
      * Print out the configuration that the client needs to make a request.
@@ -136,6 +137,19 @@ public class Configuration {
         }
         json.endArray();
     }
+
+    final PDFConfig getPdfConfig() {
+        return this.pdfConfig;
+    }
+
+    /**
+     * Configure various properties related to the reports generated as PDFs.
+     * @param pdfConfig the pdf configuration
+     */
+    public final void setPdfConfig(final PDFConfig pdfConfig) {
+        this.pdfConfig = pdfConfig;
+    }
+    private ArrayList<String> access = Lists.newArrayList();
 
     /**
      * The configuration for locating a custom certificate store.
@@ -442,7 +456,6 @@ public class Configuration {
     public final boolean isAccessible(final String pathToSubResource) throws IOException {
         return this.fileLoaderManager.isAccessible(this.configurationFile.toURI(), pathToSubResource);
     }
-
     /**
      * Load the file related to the configuration file.
      *

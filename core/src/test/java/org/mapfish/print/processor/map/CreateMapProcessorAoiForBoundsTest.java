@@ -86,7 +86,7 @@ public class CreateMapProcessorAoiForBoundsTest extends AbstractMapfishSpringTes
 
         PJsonObject requestData = loadJsonRequestData();
 
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory);
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
         template.getProcessorGraph().createTask(values).invoke();
 
         @SuppressWarnings("unchecked")

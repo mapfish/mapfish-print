@@ -1,0 +1,29 @@
+{
+	"layout": "A4 landscape",
+	"outputFormat": "pdf",
+	"attributes": 
+	{
+        "titleAtt" : "From Client",
+        "subjectAtt" : "Mapfish Print Update PDF Metadata Example",
+        "keywordsAtt" : ["map","example","metadata"],
+		"map":
+		{
+			"projection": "EPSG:4326",
+			"dpi": 72,
+			"rotation": 0,
+            "bbox": [-139.84870868359,18.549281576172,-51.852562316406,55.778420423828],
+            "longitudeFirst": true,
+			"layers": 
+			[
+				{
+		            "type": "WMS",
+		            "layers": ["topp:states"],
+		            "baseURL": "http://localhost:9876/e2egeoserver/wms",
+		            "imageFormat": "image/png",
+		            "version": "1.3.0",
+		            "customParams":{"TRANSPARENT":"true","EXCEPTIONS":"INIMAGE"}
+		        }
+			]
+		}
+	}
+}

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version last-->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="simple-report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e4958fb5-e59e-420f-95d9-6d8780394891">
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+    <parameter name="map" class="java.lang.String"/>
+    <queryString>
+        <![CDATA[]]>
+    </queryString>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <title>
+        <band height="40" splitType="Stretch">
+            <staticText>
+                <reportElement x="0" y="0" width="580" height="30" uuid="213ea5bb-0b20-4478-ac53-f2935b69f2e9"/>
+                <textElement>
+                    <font size="20"/>
+                </textElement>
+                <text><![CDATA[Report Title]]></text>
+            </staticText>
+            <image>
+                <reportElement x="460" y="0" width="82" height="40" backcolor="#FF7F27" uuid="a1d586d7-ed6a-4b0f-9194-3186eecfb4cf">
+                    <property name="local_mesure_unitwidth" value="pixel"/>
+                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
+                </reportElement>
+                <box>
+                    <topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+                    <leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+                    <bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+                    <rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+                </box>
+                <imageExpression><![CDATA["logo.png"]]></imageExpression>
+            </image>
+        </band>
+    </title>
+    <detail>
+        <band height="248" splitType="Stretch">
+            <subreport>
+                <reportElement x="0" y="0" width="500" height="100" uuid="15bb6ec6-4375-402f-90ec-cd1f6d4f56f2">
+                    <property name="local_mesure_unitwidth" value="pixel"/>
+                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
+                </reportElement>
+                <subreportExpression><![CDATA[$P{map}]]></subreportExpression>
+            </subreport>
+        </band>
+    </detail>
+</jasperReport>

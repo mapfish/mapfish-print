@@ -171,7 +171,7 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
             requestUpdater.apply(requestData);
         }
 
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory);
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
         template.getProcessorGraph().createTask(values).invoke();
 
         @SuppressWarnings("unchecked")

@@ -61,7 +61,7 @@ public class SetFeaturesProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.httpRequestFactory);
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
 
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 

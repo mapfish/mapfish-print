@@ -32,6 +32,7 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
@@ -58,7 +59,7 @@ public class CreateMapProcessorFixedScaleBBoxGeoJsonTest extends AbstractMapfish
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.httpRequestFactory);
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
         template.getProcessorGraph().createTask(values).invoke();
 
         @SuppressWarnings("unchecked")

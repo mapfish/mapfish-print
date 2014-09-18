@@ -21,6 +21,9 @@ package org.mapfish.print.processor.map;
 
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
+
+import java.io.File;
+
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -34,13 +37,12 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
-import org.springframework.test.annotation.DirtiesContext;
-
 import java.io.IOException;
+import org.springframework.test.annotation.DirtiesContext;
 import java.net.URI;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import java.util.List;
 
 /**
  * Test of the CreateOverviewMap processor with a custom style for the bbox rectangle.
@@ -98,7 +100,7 @@ public class CreateOverviewMapProcessorStyleTest extends AbstractMapfishSpringTe
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory);
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
         template.getProcessorGraph().createTask(values).invoke();
 
         @SuppressWarnings("unchecked")
