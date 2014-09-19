@@ -10,9 +10,13 @@ templates:
       directory: '.'
     - !prepareTable
       columns:
-        name: !urlImage
+        icon: !urlImage
           urlExtractor: (.*)
-      width: 555
+      jasperTemplate: table.jrxml
+      firstDetailStyle: DejaVu Sans_for_column_DJR_2141_COLUMN_0_
+      detailStyle: DejaVu Sans_for_column_DJR_2141_COLUMN_1_
+      lastDetailStyle: DejaVu Sans_for_column_DJR_2141_COLUMN_2_
+      headerStyle: dj_style_1_
       dynamic: true
       inputMapper: {table: table}
       outputMapper: {table: table}

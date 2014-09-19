@@ -2,12 +2,12 @@
     "layout" : "main",
     "attributes": {
         "table": {
-            "columns": ["id", "name", "icon"],
+            "columns": ["id", "icon", "name"],
             "data": [
-                [1, "file://logo.png", "icon_pan"],
-                [2, "file://logo.png", "icon_pan"],
-                [3, "file://logo.png", "icon_pan"],
-                [4, "file://logo.png", "icon_zoomin"]
+                [1, "file://logo.png", "name1"],
+                [2, "file://logo.png", "name2"],
+                [3, "file://logo.png", "name3"],
+                [4, "file://logo.png", "name4"]
             ]
         }
     }
