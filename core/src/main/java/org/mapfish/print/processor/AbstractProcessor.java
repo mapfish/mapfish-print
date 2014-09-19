@@ -21,6 +21,7 @@ package org.mapfish.print.processor;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.parser.ParserUtils;
 
@@ -105,7 +106,7 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
     }
 
     @Override
-    public final void validate(final List<Throwable> errors) {
+    public final void validate(final List<Throwable> errors, final Configuration configuration) {
         final In inputParameter = createInputParameter();
         final Set<String> allInputAttributeNames;
         if (inputParameter != null) {
@@ -128,14 +129,15 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
             }
         }
 
-        extraValidation(errors);
+        extraValidation(errors, configuration);
     }
 
     /**
      * Perform any extra validation a subclass may need to perform.
      * @param validationErrors a list to add errors to so that all validation errors are reported as one.
+     * @param configuration the containing configuration
      */
-    protected abstract void extraValidation(final List<Throwable> validationErrors);
+    protected abstract void extraValidation(final List<Throwable> validationErrors, final Configuration configuration);
 
     /**
      * Checks if the print was canceled and throws a

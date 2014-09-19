@@ -21,6 +21,7 @@ package org.mapfish.print.processor;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.ConfigurationObject;
 import org.mapfish.print.config.PDFConfig;
@@ -117,7 +118,7 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors) {
+    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.updates == null) {
             validationErrors.add(new ConfigurationException(
                     "The property 'attributeMap' in the !updatePdfConfig processor is required"));
@@ -127,7 +128,7 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
                         "At least one value for 'attributeMap' in !updatePdfConfig should be declared."));
             }
             for (Map.Entry<String, Update> entry : this.updates.entrySet()) {
-                entry.getValue().validate(validationErrors);
+                entry.getValue().validate(validationErrors, configuration);
             }
         }
     }
@@ -274,7 +275,7 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
         }
 
         @Override
-        public void validate(final List<Throwable> validationErrors) {
+        public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
             if (this.valueKey.isEmpty()) {
                 validationErrors.add(new ConfigurationException(
                         "The value of '" + this.property + "' should not be empty. Error in !updatePdfConfig"));

@@ -21,6 +21,7 @@ package org.mapfish.print.processor;
 
 import com.google.common.collect.Lists;
 import org.junit.Test;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.HasDefaultValue;
 
@@ -165,7 +166,7 @@ public class ProcessorGraphNodeTest {
         }
 
         @Override
-        protected void extraValidation(List<Throwable> validationErrors) {
+        protected void extraValidation(List<Throwable> validationErrors, final Configuration configuration) {
             // no checks
         }
     }

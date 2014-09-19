@@ -435,11 +435,11 @@ public class Configuration {
             validationErrors.add(new ConfigurationException("There are not templates defined."));
         }
         for (Template template : this.templates.values()) {
-            template.validate(validationErrors);
+            template.validate(validationErrors, this);
         }
 
         for (HttpProxy proxy : this.proxies) {
-            proxy.validate(validationErrors);
+            proxy.validate(validationErrors, this);
         }
 
         return validationErrors;

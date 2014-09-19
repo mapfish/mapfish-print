@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationObject;
 import org.mapfish.print.processor.http.matcher.AcceptAllMatcher;
 import org.mapfish.print.processor.http.matcher.MatchInfo;
@@ -97,7 +98,7 @@ public class HttpCredential implements ConfigurationObject {
     }
 
     @Override
-    public void validate(final List<Throwable> validationErrors) {
+    public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.username == null) {
             validationErrors.add(new IllegalStateException("The parameter 'username' is required."));
         }

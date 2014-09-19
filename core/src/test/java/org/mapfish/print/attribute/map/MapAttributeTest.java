@@ -94,7 +94,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
 
         final MapAttribute mapAttribute = (MapAttribute) template.getAttributes().get("mapDef");
         List<Throwable> errors = Lists.newArrayList();
-        mapAttribute.validate(errors);
+        mapAttribute.validate(errors, config);
 
         assertFalse(errors.isEmpty());
     }

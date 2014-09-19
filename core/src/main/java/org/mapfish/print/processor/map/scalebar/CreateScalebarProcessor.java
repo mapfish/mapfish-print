@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import net.sf.jasperreports.engine.JRException;
 import org.mapfish.print.attribute.ScalebarAttribute;
 import org.mapfish.print.attribute.map.MapAttribute;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.InternalValue;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
@@ -48,7 +49,7 @@ public class CreateScalebarProcessor extends AbstractProcessor<CreateScalebarPro
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors) {
+    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
     }
 
     @Override

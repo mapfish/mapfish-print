@@ -23,6 +23,7 @@ import com.google.common.collect.Maps;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.PrintException;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.MapfishParser;
@@ -153,7 +154,7 @@ public final class DataSourceAttribute implements Attribute {
     }
 
     @Override
-    public void validate(final List<Throwable> validationErrors) {
+    public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         // no validation to be done
     }
 

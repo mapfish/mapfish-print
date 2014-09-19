@@ -30,6 +30,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.processor.http.matcher.DnsHostMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,19 +74,20 @@ public class HttpCredentialTest {
     @Test
     public void testValidate() throws Exception {
         final HttpCredential credential = new HttpCredential();
+        Configuration configuration = new Configuration();
 
         List<Throwable> errors = Lists.newArrayList();
-        credential.validate(errors);
+        credential.validate(errors, configuration);
         assertEquals(1, errors.size());
 
         errors.clear();
-        credential.validate(errors);
+        credential.validate(errors, configuration);
         assertEquals(1, errors.size());
 
         credential.setUsername("username");
 
         errors.clear();
-        credential.validate(errors);
+        credential.validate(errors, configuration);
         assertEquals(0, errors.size());
     }
 

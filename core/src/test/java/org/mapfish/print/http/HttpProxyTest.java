@@ -107,14 +107,16 @@ public class HttpProxyTest {
         final HttpProxy httpProxy = new HttpProxy();
 
         List<Throwable> errors = Lists.newArrayList();
-        httpProxy.validate(errors);
+
+        Configuration configuration = new Configuration();
+        httpProxy.validate(errors, configuration);
         assertEquals(1, errors.size());
 
         httpProxy.setHost(LOCALHOST);
         httpProxy.setPort(PROXY_PORT);
 
         errors.clear();
-        httpProxy.validate(errors);
+        httpProxy.validate(errors, configuration);
         assertEquals(0, errors.size());
 
     }

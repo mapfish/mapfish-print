@@ -54,7 +54,7 @@ public class PDFConfig implements ConfigurationObject {
     }
 
     @Override
-    public void validate(final List<Throwable> validationErrors) {
+    public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         // no validation required
     }
 

@@ -21,6 +21,7 @@ package org.mapfish.print.processor;
 
 import com.codahale.metrics.MetricRegistry;
 import org.junit.Test;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.output.Values;
 
 import java.util.List;
@@ -106,7 +107,7 @@ public class ProcessorDependencyGraphTest {
         }
 
         @Override
-        protected void extraValidation(List<Throwable> validationErrors) {
+        protected void extraValidation(List<Throwable> validationErrors, final Configuration configuration) {
             // no checks
         }
 

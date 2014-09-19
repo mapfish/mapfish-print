@@ -21,6 +21,7 @@ package org.mapfish.print.processor.map;
 
 import org.mapfish.print.attribute.map.GenericMapAttribute;
 import org.mapfish.print.attribute.map.MapLayer;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.map.image.wms.WmsLayer;
 import org.mapfish.print.map.tiled.wms.TiledWmsLayer;
@@ -67,7 +68,7 @@ public class SetWmsCustomParamProcessor extends AbstractProcessor<SetWmsCustomPa
     }
 
     @Override
-    protected final void extraValidation(final List<Throwable> validationErrors) {
+    protected final void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.paramName == null) {
             validationErrors.add(new ConfigurationException("No paramName defined in " + getClass().getName()));
         }

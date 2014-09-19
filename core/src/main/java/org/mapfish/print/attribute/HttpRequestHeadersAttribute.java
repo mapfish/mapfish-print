@@ -21,6 +21,7 @@ package org.mapfish.print.attribute;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PObject;
@@ -57,7 +58,7 @@ public final class HttpRequestHeadersAttribute extends ReflectiveAttribute<HttpR
     }
 
     @Override
-    public void validate(final List<Throwable> validationErrors) {
+    public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         // nothing to do
     }
 

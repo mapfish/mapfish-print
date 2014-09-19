@@ -20,6 +20,7 @@
 package org.mapfish.print.attribute;
 
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.FeaturesParser;
@@ -47,7 +48,7 @@ public final class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribu
 
 
     @Override
-    public void validate(final List<Throwable> validationErrors) {
+    public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         // no checks required
     }
 

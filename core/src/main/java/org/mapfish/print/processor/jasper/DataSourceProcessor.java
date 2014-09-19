@@ -197,7 +197,7 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors) {
+    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.processorGraph == null || this.processorGraph.getAllProcessors().isEmpty()) {
             validationErrors.add(new ConfigurationException("There are child processors for this processor"));
         }
@@ -208,7 +208,7 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
                                                             " reportTemplate: " + this.reportTemplate));
         }
         for (Attribute attribute : this.attributes.values()) {
-            attribute.validate(validationErrors);
+            attribute.validate(validationErrors, configuration);
         }
     }
 

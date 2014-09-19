@@ -20,6 +20,7 @@
 package org.mapfish.print.attribute.map;
 
 import com.google.common.collect.Ordering;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.ConfigurationObject;
 
@@ -105,7 +106,7 @@ public final class ZoomLevels implements ConfigurationObject {
 
 
     @Override
-    public void validate(final List<Throwable> validationErrors) {
+    public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         if (scales == null || scales.length == 0) {
             validationErrors.add(new ConfigurationException("There are no scales defined in " + getClass().getName()));
         }

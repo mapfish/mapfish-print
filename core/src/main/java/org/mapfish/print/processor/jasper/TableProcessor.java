@@ -37,6 +37,7 @@ import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.mapfish.print.Constants;
 import org.mapfish.print.PrintException;
 import org.mapfish.print.attribute.TableAttribute.TableAttributeValue;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.AbstractProcessor;
@@ -233,7 +234,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors) {
+    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.dynamic && this.width < 1) {
             validationErrors.add(new ConfigurationException("Size must be set if !tableProcessor is dynamic."));
         }

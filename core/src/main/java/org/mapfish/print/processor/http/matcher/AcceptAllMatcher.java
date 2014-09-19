@@ -19,6 +19,8 @@
 
 package org.mapfish.print.processor.http.matcher;
 
+import org.mapfish.print.config.Configuration;
+
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -36,7 +38,7 @@ public final class AcceptAllMatcher implements URIMatcher {
     public static final AcceptAllMatcher INSTANCE = new AcceptAllMatcher();
 
     @Override
-    public void validate(final List<Throwable> validationErrors) {
+    public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         // no checks required
     }
 

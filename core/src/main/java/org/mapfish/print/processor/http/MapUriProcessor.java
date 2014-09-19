@@ -21,6 +21,7 @@ package org.mapfish.print.processor.http;
 
 import com.google.common.collect.Maps;
 import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.springframework.http.HttpMethod;
@@ -89,7 +90,7 @@ public final class MapUriProcessor extends AbstractClientHttpRequestFactoryProce
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors) {
+    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.uriMapping.isEmpty()) {
             validationErrors.add(new IllegalArgumentException("No uri mappings were defined"));
         }

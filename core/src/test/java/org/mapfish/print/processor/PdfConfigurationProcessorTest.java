@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.junit.Test;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.PDFConfig;
 import org.mapfish.print.output.Values;
 
@@ -183,7 +184,8 @@ public class PdfConfigurationProcessorTest {
         final PdfConfigurationProcessor pdfConfigurationProcessor = new PdfConfigurationProcessor();
         pdfConfigurationProcessor.setUpdates(attributeMap);
         List<Throwable> errors = Lists.newArrayList();
-        pdfConfigurationProcessor.validate(errors);
+        Configuration configuration = new Configuration();
+        pdfConfigurationProcessor.validate(errors, configuration);
         assertEquals(expectedNumErrors, errors.size());
     }
 }

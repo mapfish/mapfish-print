@@ -22,6 +22,7 @@ package org.mapfish.print.processor.jasper;
 import com.google.common.io.Closer;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 import org.mapfish.print.attribute.LegendAttribute.LegendAttributeValue;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.InternalValue;
@@ -134,7 +135,7 @@ public class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, Le
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors) {
+    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
         // no checks needed
     }
 

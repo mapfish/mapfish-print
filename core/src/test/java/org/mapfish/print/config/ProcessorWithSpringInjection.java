@@ -61,7 +61,7 @@ public class ProcessorWithSpringInjection extends AbstractProcessor<Object, Void
     }
 
     @Override
-    protected void extraValidation(List<Throwable> validationErrors) {
+    protected void extraValidation(List<Throwable> validationErrors, final Configuration configuration) {
         // no checks
     }
 }

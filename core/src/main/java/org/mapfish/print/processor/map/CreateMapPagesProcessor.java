@@ -32,6 +32,7 @@ import org.mapfish.print.attribute.map.AreaOfInterest;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.attribute.map.PagingAttribute;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -90,7 +91,7 @@ public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesPro
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors) {
+    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
     }
 
     @Override

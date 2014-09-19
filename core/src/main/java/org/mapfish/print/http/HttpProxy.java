@@ -20,6 +20,7 @@
 package org.mapfish.print.http;
 
 import org.apache.http.HttpHost;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.http.matcher.URIMatcher;
 
 import java.util.List;
@@ -153,7 +154,7 @@ public final class HttpProxy extends HttpCredential {
     }
 
     @Override
-    public void validate(final List<Throwable> validationErrors) {
+    public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.host == null) {
             validationErrors.add(new IllegalStateException("The parameter 'host' is required."));
         }

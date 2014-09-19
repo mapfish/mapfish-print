@@ -20,6 +20,7 @@
 package org.mapfish.print.processor.http;
 
 import com.google.common.collect.Lists;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.AbstractProcessor;
@@ -110,7 +111,7 @@ public final class CompositeClientHttpRequestFactoryProcessor
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors) {
+    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.httpProcessors.isEmpty()) {
             validationErrors.add(new IllegalStateException("There are no composite elements for this processor"));
         } else {

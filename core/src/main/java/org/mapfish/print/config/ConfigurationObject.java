@@ -31,6 +31,7 @@ public interface ConfigurationObject {
      * validate that the configuration was correct.
      *
      * @param validationErrors a list to add any detected errors to.
+     * @param configuration the containing configuration
      */
-    void validate(List<Throwable> validationErrors);
+    void validate(List<Throwable> validationErrors, final Configuration configuration);
 }

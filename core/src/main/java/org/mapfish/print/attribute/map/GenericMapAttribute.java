@@ -27,6 +27,7 @@ import org.json.JSONObject;
 import org.mapfish.print.Constants;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.ReflectiveAttribute;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
@@ -147,7 +148,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
 
     //CSOFF: DesignForExtension
     @Override
-    public void validate(final List<Throwable> validationErrors) {
+    public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
     //CSON: DesignForExtension
         if (this.width == null || this.width < 1) {
             validationErrors.add(new ConfigurationException("width field is not legal: " + this.width + " in " + getClass().getName()));

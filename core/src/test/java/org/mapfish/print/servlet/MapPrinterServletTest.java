@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.Constants;
 import org.mapfish.print.TestHttpClientFactory;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest;
 import org.mapfish.print.servlet.job.ThreadPoolJobManager;
@@ -968,7 +969,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         }
 
         @Override
-        protected void extraValidation(List<Throwable> validationErrors) {
+        protected void extraValidation(List<Throwable> validationErrors, final Configuration configuration) {
         }
     }
 }

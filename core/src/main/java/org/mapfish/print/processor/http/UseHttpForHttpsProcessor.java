@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.RegexpUtil;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.springframework.http.HttpMethod;
@@ -69,7 +70,7 @@ public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFac
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors) {
+    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.hosts.isEmpty()) {
             validationErrors.add(new IllegalArgumentException("No hosts are registered"));
         }

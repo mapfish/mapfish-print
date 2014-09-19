@@ -275,7 +275,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
     }
 
     @Override
-    public final void validate(final List<Throwable> validationErrors) {
+    public final void validate(final List<Throwable> validationErrors, final Configuration config) {
         if (this.access == null) {
             validationErrors.add(new ConfigurationException("Access is null this is not permitted, by default it is nonnull so there " +
                                                             "must be an programming error."));
@@ -288,11 +288,11 @@ public class Template implements ConfigurationObject, HasConfiguration {
         }
 
         for (Processor processor : this.processors) {
-            processor.validate(validationErrors);
+            processor.validate(validationErrors, config);
         }
 
         for (Attribute attribute : this.attributes.values()) {
-            attribute.validate(validationErrors);
+            attribute.validate(validationErrors, config);
         }
 
         try {

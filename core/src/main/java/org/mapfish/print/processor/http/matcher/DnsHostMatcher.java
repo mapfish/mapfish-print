@@ -21,6 +21,7 @@ package org.mapfish.print.processor.http.matcher;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 
 import java.net.InetAddress;
@@ -83,7 +84,7 @@ public class DnsHostMatcher extends HostMatcher {
         return Optional.of(false);
     }
     @Override
-    public final void validate(final List<Throwable> validationErrors) {
+    public final void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.host == null) {
             validationErrors.add(new ConfigurationException("No host defined: " + getClass().getName()));
         }

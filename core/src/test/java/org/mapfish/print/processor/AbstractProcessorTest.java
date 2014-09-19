@@ -21,6 +21,7 @@ package org.mapfish.print.processor;
 
 import com.google.common.collect.Lists;
 import org.junit.Test;
+import org.mapfish.print.config.Configuration;
 
 import java.util.List;
 import javax.annotation.Nullable;
@@ -44,13 +45,14 @@ public class AbstractProcessorTest {
         testProcessor.getInputMapperBiMap().put("pqr", "prop");
 
 
+        Configuration configuration = new Configuration();
         List<Throwable> errors = Lists.newArrayList();
-        testProcessor.validate(errors);
+        testProcessor.validate(errors, configuration);
 
 
         assertTrue(errors.isEmpty());
         testProcessor.getInputMapperBiMap().put("ml", "proc");
-        testProcessor.validate(errors);
+        testProcessor.validate(errors, configuration);
         assertFalse(errors.isEmpty());
     }
 
@@ -67,13 +69,14 @@ public class AbstractProcessorTest {
         testProcessor.getOutputMapperBiMap().put("prop", "oq");
 
 
+        Configuration configuration = new Configuration();
         List<Throwable> errors = Lists.newArrayList();
-        testProcessor.validate(errors);
+        testProcessor.validate(errors, configuration);
 
 
         assertTrue(errors.isEmpty());
         testProcessor.getInputMapperBiMap().put("proc", "mk");
-        testProcessor.validate(errors);
+        testProcessor.validate(errors, configuration);
         assertFalse(errors.isEmpty());
     }
 
@@ -101,7 +104,7 @@ public class AbstractProcessorTest {
         }
 
         @Override
-        protected void extraValidation(List<Throwable> validationErrors) {
+        protected void extraValidation(List<Throwable> validationErrors, final Configuration configuration) {
             // no checks
         }
     }

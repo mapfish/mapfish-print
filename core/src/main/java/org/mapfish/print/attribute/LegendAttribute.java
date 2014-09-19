@@ -19,6 +19,7 @@
 
 package org.mapfish.print.attribute;
 
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.HasDefaultValue;
 
@@ -41,7 +42,7 @@ public final class LegendAttribute extends ReflectiveAttribute<LegendAttribute.L
     }
 
     @Override
-    public void validate(final List<Throwable> validationErrors) {
+    public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         // no checks required
     }
 

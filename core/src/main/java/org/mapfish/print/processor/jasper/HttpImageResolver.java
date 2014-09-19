@@ -19,6 +19,7 @@
 
 package org.mapfish.print.processor.jasper;
 
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.slf4j.Logger;
@@ -111,7 +112,7 @@ public final class HttpImageResolver implements TableColumnConverter<BufferedIma
     }
 
     @Override
-    public void validate(final List<Throwable> validationErrors) {
+    public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.urlExtractor == null) {
             validationErrors.add(new ConfigurationException("No urlExtractor defined"));
         }

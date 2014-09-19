@@ -22,6 +22,7 @@ package org.mapfish.print.processor.http;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.mapfish.print.attribute.HttpRequestHeadersAttribute;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.AbstractProcessor;
 
@@ -79,7 +80,7 @@ public final class ForwardHeadersProcessor
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors) {
+    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
         if (!this.forwardAll && this.headerNames.isEmpty()) {
             validationErrors.add(new IllegalStateException("all is false and no headers are defined"));
         }

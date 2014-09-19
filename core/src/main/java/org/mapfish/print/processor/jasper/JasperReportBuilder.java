@@ -169,7 +169,7 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors) {
+    protected void extraValidation(final List<Throwable> validationErrors, final Configuration config) {
         // nothing to do
     }
 }

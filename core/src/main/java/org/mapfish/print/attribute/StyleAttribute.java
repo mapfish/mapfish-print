@@ -23,6 +23,7 @@ import org.geotools.styling.Style;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.StyleAttribute.StylesAttributeValues;
 import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.style.SLDParserPlugin;
@@ -55,7 +56,7 @@ public final class StyleAttribute extends ReflectiveAttribute<StylesAttributeVal
     }
 
     @Override
-    public void validate(final List<Throwable> validationErrors) {
+    public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         // no validation needed.
     }
 

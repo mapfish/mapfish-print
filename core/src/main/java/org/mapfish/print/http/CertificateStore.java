@@ -70,7 +70,7 @@ public final class CertificateStore implements ConfigurationObject, HasConfigura
     }
 
     @Override
-    public void validate(final List<Throwable> validationErrors) {
+    public void validate(final List<Throwable> validationErrors, final Configuration config) {
         if (this.uri == null) {
             validationErrors.add(new IllegalStateException("path is a required parameter"));
         }
