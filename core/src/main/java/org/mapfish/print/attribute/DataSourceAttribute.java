@@ -22,6 +22,7 @@ package org.mapfish.print.attribute;
 import com.google.common.collect.Maps;
 import org.json.JSONException;
 import org.json.JSONWriter;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.MapfishParser;
@@ -172,6 +173,10 @@ public final class DataSourceAttribute implements Attribute {
             pValue = jsonValue;
         } else {
             pValue = this.defaults;
+        }
+
+        if (pValue == null) {
+            throw new PrintException("Missing required attribute: " + this.configName);
         }
 
         final DataSourceAttributeValue value = new DataSourceAttributeValue();

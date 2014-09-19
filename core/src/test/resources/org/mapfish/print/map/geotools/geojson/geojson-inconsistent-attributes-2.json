@@ -1,0 +1,68 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "_gx_style": 1,
+        "gemeinde": "Allschwil",
+        "parzelle": "A-1436",
+        "arealname": "Spalen- Hegenheimermattweg",
+        "flaechenanteil_gaerten": "100%",
+        "nutzung_seit": "1915",
+        "erhebung": "2009",
+        "auswertedatum": "09.02.2012"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [2608332.812094, 1267811.655558],
+            [2608318.353853, 1267799.326605],
+            [2608312.393753, 1267794.046622],
+            [2608312.105748, 1267793.779622],
+            [2608713.13268, 1268001.740945],
+            [2608680.050342, 1268038.689737],
+            [2608427.343552, 1267876.312834],
+            [2608378.948827, 1267845.215767],
+            [2608363.169589, 1267834.625409],
+            [2608347.77134, 1267823.445497],
+            [2608332.812094, 1267811.655558]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_gx_style": 2,
+        "gemeinde_name": "Allschwil",
+        "typ": "ZPS",
+        "bemerkungen": "Totalrevision ZPS",
+        "status_bezeichnung": "nachgeführt",
+        "qualitaet": "AV93",
+        "rrb_nr": "1421",
+        "rrb_datum": "2008-10-21",
+        "nachfuehrung_rrb": "1047",
+        "nachfuehrung_rrb_datum": "2013-06-18",
+        "inventarnr": "02/ZPS/1/6"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [2609430.749, 1267444.708],
+            [2609413.829, 1267461.138],
+            [2609394.55, 1267479.848],
+            [2609381.161, 1267492.857],
+            [2609352.242, 1267520.926],
+            [2609480.828, 1267377.178],
+            [2609479.838, 1267392.478],
+            [2609479.528, 1267397.348],
+            [2609430.749, 1267444.708]
+          ]
+        ]
+      }
+    }
+ ]
+}

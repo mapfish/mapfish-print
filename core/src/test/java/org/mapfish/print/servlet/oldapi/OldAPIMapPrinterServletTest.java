@@ -231,10 +231,10 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         
         this.servlet.printReport(loadRequestDataAsString("requestData-old-api-png.json"), createRequest, createResponse);
         assertEquals(HttpStatus.OK.value(), createResponse.getStatus());
-        assertCorrectResponse(createResponse);
+        assertCorrectResponse(createResponse, "expectedSimpleImage.tiff");
     }
 
-    private void assertCorrectResponse(MockHttpServletResponse servletGetReportResponse) throws IOException {
+    private void assertCorrectResponse(MockHttpServletResponse servletGetReportResponse, String expectedImage) throws IOException {
         byte[] report = servletGetReportResponse.getContentAsByteArray();
 
         final String contentType = servletGetReportResponse.getHeader("Content-Type");
