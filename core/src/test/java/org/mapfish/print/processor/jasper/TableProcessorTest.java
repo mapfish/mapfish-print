@@ -49,6 +49,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Map;
 import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
 
@@ -57,6 +58,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class TableProcessorTest extends AbstractMapfishSpringTest {
     public static final String BASIC_BASE_DIR = "table/";
+    public static final String DYNAMIC_BASE_DIR = "table-dynamic/";
     public static final String IMAGE_CONVERTER_BASE_DIR = "table-image-column-resolver/";
 
     @Autowired
@@ -101,6 +103,22 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         JasperPrint print = format.getJasperPrint(requestData, config, file, getTaskDirectory()).print;
         BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
 
+        // note that we are using a sample size of 50, because the image is quite big.
+        // otherwise small differences are not detected!
+        new ImageSimilarity(reportImage, 50).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
+    }
+
+    @Test
+    public void testDynamicTablePrint() throws Exception {
+        final String baseDir = DYNAMIC_BASE_DIR;
+        final Configuration config = configurationFactory.getConfig(getFile(baseDir + "config.yaml"));
+        PJsonObject requestData = loadJsonRequestData(baseDir);
+
+        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
+        final File file = getFile(TableProcessorTest.class, baseDir);
+        JasperPrint print = format.getJasperPrint(requestData, config, file, getTaskDirectory()).print;
+        BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
+        ImageIO.write(reportImage, "png", new File("e:/tmp/expectedImage.png"));
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
         new ImageSimilarity(reportImage, 50).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);

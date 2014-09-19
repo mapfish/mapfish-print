@@ -32,12 +32,10 @@ import org.mapfish.print.http.ConfigFileResolvingHttpRequestFactory;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
@@ -46,7 +44,6 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
 
 
     private static final String EXAMPLE_GEOJSONFILE = "geojson/geojson-inconsistent-attributes-2.json";
-    @Qualifier("httpClientFactory")
     @Autowired
     private MfClientHttpRequestFactoryImpl requestFactory;
     @Autowired

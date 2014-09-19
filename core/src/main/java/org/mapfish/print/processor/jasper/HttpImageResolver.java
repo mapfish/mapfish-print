@@ -70,7 +70,7 @@ public final class HttpImageResolver implements TableColumnConverter<BufferedIma
     /**
      * Select the group in the regular expression that contains the url.
      *
-     * @param urlGroup the index of the group (starting at 1) that contans the url.
+     * @param urlGroup the index of the group (starting at 1) that contains the url.
      */
     public void setUrlGroup(final int urlGroup) {
         this.urlGroup = urlGroup;

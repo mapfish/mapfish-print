@@ -85,8 +85,11 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
     }
 
     File compileJasperReport(final Configuration config, final File jasperFile) throws JRException {
-        final File buildFile = this.workingDirectories.getBuildFileFor(config, jasperFile,
-                JASPER_REPORT_COMPILED_FILE_EXT, LOGGER);
+        final File buildFile = this.workingDirectories.getBuildFileFor(config, jasperFile, JASPER_REPORT_COMPILED_FILE_EXT, LOGGER);
+        return compileJasperReport(buildFile, jasperFile);
+    }
+
+    File compileJasperReport(final File buildFile, final File jasperFile) throws JRException {
 
         if (!buildFile.exists() || jasperFile.lastModified() > buildFile.lastModified()) {
             LOGGER.info("Building Jasper report: " + jasperFile.getAbsolutePath());
