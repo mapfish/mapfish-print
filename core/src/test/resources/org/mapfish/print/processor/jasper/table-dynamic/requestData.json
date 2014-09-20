@@ -2,12 +2,12 @@
     "layout" : "main",
     "attributes": {
         "table": {
-            "columns": ["id", "icon", "name"],
+            "columns": ["exclude", "id", "icon", "name", "greaterThanMax"],
             "data": [
-                [1, "file://logo.png", "name1"],
-                [2, "file://logo.png", "name2"],
-                [3, "file://logo.png", "name3"],
-                [4, "file://logo.png", "name4"]
+                ["excluded", 1, "file://logo.png", "name1", "do not include"],
+                ["excluded", 2, "file://logo.png", "name2", "do not include"],
+                ["excluded", 3, "file://logo.png", "name3", "do not include"],
+                ["excluded", 4, "file://logo.png", "name4", "do not include"]
             ]
         }
     }

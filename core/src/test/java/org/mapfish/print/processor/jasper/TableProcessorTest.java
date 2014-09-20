@@ -49,7 +49,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Map;
 import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
 
@@ -118,7 +117,9 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         final File file = getFile(TableProcessorTest.class, baseDir);
         JasperPrint print = format.getJasperPrint(requestData, config, file, getTaskDirectory()).print;
         BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
-        ImageIO.write(reportImage, "png", new File("e:/tmp/expectedImage.png"));
+
+//        ImageIO.write(reportImage, "png", new File("e:/tmp/expectedImage.png"));
+
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
         new ImageSimilarity(reportImage, 50).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);

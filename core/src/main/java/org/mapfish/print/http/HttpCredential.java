@@ -94,6 +94,11 @@ public class HttpCredential implements ConfigurationObject {
      * @param password the password for authenticating with the credentials
      */
     public  void setPassword(final String password) {
+        if (password == null) {
+            throw new IllegalArgumentException("Do not set a null password, simply exclude it from configuration file.  " +
+                                               "If there is supposed to be a password perhaps it has illegal characters, " +
+                                               "surround password with quotes");
+        }
         this.password = password.toCharArray();
     }
 

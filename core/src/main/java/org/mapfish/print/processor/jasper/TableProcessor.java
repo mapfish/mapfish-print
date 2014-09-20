@@ -21,6 +21,7 @@ package org.mapfish.print.processor.jasper;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import net.sf.jasperreports.engine.JRBand;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRException;
@@ -37,6 +38,7 @@ import net.sf.jasperreports.engine.design.JRDesignTextField;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.type.HorizontalAlignEnum;
 import net.sf.jasperreports.engine.type.ScaleImageEnum;
+import net.sf.jasperreports.engine.type.StretchTypeEnum;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 import org.mapfish.print.Constants;
@@ -60,6 +62,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.mapfish.print.processor.jasper.JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT;
 import static org.mapfish.print.processor.jasper.JasperReportBuilder.JASPER_REPORT_XML_FILE_EXT;
@@ -73,6 +76,7 @@ import static org.mapfish.print.processor.jasper.JasperReportBuilder.JASPER_REPO
 public final class TableProcessor extends AbstractProcessor<TableProcessor.Input, TableProcessor.Output> {
 
     private static final int SPACE_BETWEEN_COLS = 0;
+    private static final int DEFAULT_MAX_COLUMNS = 9;
     private Map<String, TableColumnConverter> columnConverterMap = Maps.newHashMap();
     private boolean dynamic = false;
     private String jasperTemplate = null;
@@ -82,6 +86,9 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     private String firstDetailStyle;
     private String lastDetailStyle;
     private String detailStyle;
+    private int maxColumns = DEFAULT_MAX_COLUMNS;
+    private Set<String> excludeColumns = Sets.newHashSet();
+
     @Autowired
     private JasperReportBuilder jasperReportBuilder;
 
@@ -197,6 +204,23 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         this.detailStyle = detailStyle;
     }
 
+    /**
+     * The maximum number of columns to allow.
+     * @param maxColumns maximum number of columns to allow.
+     */
+    public void setMaxColumns(final int maxColumns) {
+        this.maxColumns = maxColumns;
+    }
+
+    /**
+     * A set of column names to exclude from the table.
+     *
+     * @param excludeColumns a set of names of the columns to exclude from the table.
+     */
+    public void setExcludeColumns(final Set<String> excludeColumns) {
+        this.excludeColumns = excludeColumns;
+    }
+
     @Override
     public Input createInputParameter() {
         return new Input();
@@ -222,13 +246,15 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
                 if (converter != null) {
                     rowValue = converter.resolve(values.clientHttpRequestFactory, (String) rowValue);
                 }
-                Class<?> columnDef = columns.get(columnName);
-                if (columnDef == null) {
-                    Class<?> rowValueClass = null;
-                    if (rowValue != null) {
-                        rowValueClass = rowValue.getClass();
+                if (columns.size() < this.maxColumns && !this.excludeColumns.contains(columnName)) {
+                    Class<?> columnDef = columns.get(columnName);
+                    if (columnDef == null) {
+                        Class<?> rowValueClass = null;
+                        if (rowValue != null) {
+                            rowValueClass = rowValue.getClass();
+                        }
+                        columns.put(columnName, rowValueClass);
                     }
-                    columns.put(columnName, rowValueClass);
                 }
                 row.put(columnName, rowValue);
             }
@@ -268,17 +294,24 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         detailBand.setHeight(detailHeight);
         detailSection.addBand(detailBand);
 
-        int columnWidth = (templateDesign.getPageWidth() - (SPACE_BETWEEN_COLS * (columns.size() - 1))) / columns.size();
+        final int columnWidth;
+        final int numColumns = columns.size();
+        if (columns.isEmpty()) {
+            columnWidth = templateDesign.getPageWidth();
+        } else {
+            columnWidth = (templateDesign.getPageWidth() - (SPACE_BETWEEN_COLS * (numColumns - 1))) / numColumns;
+        }
 
         int i = 0;
         for (Map.Entry<String, Class<?>> entry : columns.entrySet()) {
             i++;
+
             JRStyle columnDetailStyle;
             JRStyle columnHeaderStyle;
-            if (i == 0) {
+            if (i == 1) {
                 columnDetailStyle = getStyle(templateDesign, this.firstDetailStyle, this.detailStyle);
                 columnHeaderStyle = getStyle(templateDesign, this.firstHeaderStyle, this.headerStyle);
-            } else if (i == columns.size()) {
+            } else if (i == numColumns) {
                 columnDetailStyle = getStyle(templateDesign, this.lastDetailStyle, this.detailStyle);
                 columnHeaderStyle = getStyle(templateDesign, this.lastHeaderStyle, this.headerStyle);
             } else {
@@ -304,6 +337,9 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
             colHeaderField.setHeight(headerHeight);
             colHeaderField.setHorizontalAlignment(HorizontalAlignEnum.LEFT);
             colHeaderField.setStyle(columnHeaderStyle);
+            colHeaderField.setStretchWithOverflow(true);
+            colHeaderField.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+
             JRDesignExpression headerExpression = new JRDesignExpression();
             headerExpression.setText('"' + columnName + '"');
             colHeaderField.setExpression(headerExpression);
@@ -329,6 +365,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
                 textField.setExpression(expression);
                 textField.setStretchWithOverflow(true);
             }
+            designElement.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
             designElement.setX(detailPosX);
             designElement.setY(detailPosY);
             designElement.setWidth(columnWidth);

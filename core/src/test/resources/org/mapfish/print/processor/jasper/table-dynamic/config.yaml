@@ -13,10 +13,14 @@ templates:
         icon: !urlImage
           urlExtractor: (.*)
       jasperTemplate: table.jrxml
-      firstDetailStyle: DejaVu Sans_for_column_DJR_2141_COLUMN_0_
-      detailStyle: DejaVu Sans_for_column_DJR_2141_COLUMN_1_
-      lastDetailStyle: DejaVu Sans_for_column_DJR_2141_COLUMN_2_
-      headerStyle: dj_style_1_
+      firstDetailStyle: column_style_1
+      detailStyle: column_style_2
+      lastDetailStyle: column_style_3
+      firstHeaderStyle: header_style_1
+      headerStyle: header_style_2
+      lastHeaderStyle: header_style_3
       dynamic: true
+      maxColumns: 3
+      excludeColumns: ["exclude"]
       inputMapper: {table: table}
       outputMapper: {table: table}
