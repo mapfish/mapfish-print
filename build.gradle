@@ -12,8 +12,18 @@ group = 'org.mapfish.print'
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'eclipse-wtp'
 apply plugin: 'idea'
 apply plugin: 'project-report'
+
+eclipse {
+    wtp {
+        component {
+            contextPath = 'mapfish-print'
+            deployName = 'MapfishPrint'
+        }
+    }
+}
 
 repositories {
         mavenLocal()
