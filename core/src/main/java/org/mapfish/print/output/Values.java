@@ -21,6 +21,7 @@ package org.mapfish.print.output;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
+import com.vividsolutions.jts.util.Assert;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.attribute.Attribute;
@@ -107,6 +108,7 @@ public final class Values {
                   final MfClientHttpRequestFactoryImpl httpRequestFactory,
                   final File jasperTemplateBuild) throws JSONException {
 
+        Assert.isTrue(!taskDirectory.mkdirs() || taskDirectory.exists());
 
         // add task dir. to values so that all processors can access it
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);

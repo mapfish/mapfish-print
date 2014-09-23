@@ -34,8 +34,12 @@ public final class ExceptionUtils {
      * @return A {@link RuntimeException}
      */
     public static RuntimeException getRuntimeException(final Throwable exc) {
-        if (exc instanceof RuntimeException) {
-            return (RuntimeException) exc;
+        Throwable e = exc;
+        while (e.getCause() instanceof RuntimeException) {
+            e = e.getCause();
+        }
+        if (e instanceof RuntimeException) {
+            return (RuntimeException) e;
         } else {
             return new RuntimeException(exc);
         }

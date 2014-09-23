@@ -24,6 +24,8 @@ import com.codahale.metrics.Timer;
 import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.Template;
 import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.servlet.ServletMapPrinterFactory;
@@ -39,6 +41,7 @@ import java.net.URI;
 import java.util.Date;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 
 /**
  * The information for printing a report.
@@ -95,19 +98,21 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
         SecurityContextHolder.setContext(this.securityContext);
         Timer.Context timer = this.metricRegistry.timer(getClass().getName() + " call()").time();
         PJsonObject spec = null;
+        MapPrinter mapPrinter = null;
         try {
             spec = PrintJob.this.requestData;
-            final MapPrinter mapPrinter = PrintJob.this.mapPrinterFactory.create(getAppId());
+            mapPrinter = PrintJob.this.mapPrinterFactory.create(getAppId());
+            final MapPrinter finalMapPrinter = mapPrinter;
             URI reportURI = withOpenOutputStream(new PrintAction() {
                 @Override
                 public void run(final OutputStream outputStream) throws Throwable {
-                    mapPrinter.print(PrintJob.this.requestData, outputStream);
+                    finalMapPrinter.print(PrintJob.this.requestData, outputStream);
                 }
             });
 
             this.metricRegistry.counter(getClass().getName() + "success").inc();
             LOGGER.debug("Successfully completed print job" + this.referenceId + "\n" + this.requestData);
-            String fileName = getFileName(spec);
+            String fileName = getFileName(mapPrinter, spec);
 
             final OutputFormat outputFormat = mapPrinter.getOutputFormat(spec);
             String mimeType = outputFormat.getContentType();
@@ -122,7 +127,7 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
             this.metricRegistry.counter(getClass().getName() + "failure").inc();
             String fileName = "unknownFileName";
             if (spec != null) {
-                fileName = getFileName(spec);
+                fileName = getFileName(mapPrinter, spec);
             }
             final Throwable rootCause = getRootCause(e);
             return new FailedPrintJob(this.referenceId, getAppId(), new Date(), fileName, rootCause.toString());
@@ -155,12 +160,27 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
     /**
      * Read filename from spec.
      */
-    private static String getFileName(final PJsonObject spec) {
+    private static String getFileName(@Nullable final MapPrinter mapPrinter, final PJsonObject spec) {
         String fileName = spec.optString(Constants.OUTPUT_FILENAME_KEY);
-        if (fileName == null) {
-            return "mapfish-print-report";
+        if (fileName != null) {
+            return fileName;
         }
-        return fileName;
+
+        if (mapPrinter != null) {
+            final Configuration config = mapPrinter.getConfiguration();
+            final String templateName = spec.getString(Constants.JSON_LAYOUT_KEY);
+
+            final Template template = config.getTemplate(templateName);
+
+            if (template.getOutputFilename() != null) {
+                return template.getOutputFilename();
+            }
+
+            if (config.getOutputFilename() != null) {
+                return config.getOutputFilename();
+            }
+        }
+        return "mapfish-print-report";
     }
 
     /**

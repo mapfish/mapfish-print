@@ -72,7 +72,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
     private List<String> access = Lists.newArrayList();
     private PDFConfig pdfConfig = new PDFConfig();
     private String tableDataKey;
-
+    private String outputFilename;
 
     /**
      * Print out the template information that the client needs for performing a request.
@@ -92,6 +92,34 @@ public class Template implements ConfigurationObject, HasConfiguration {
             }
         }
         json.endArray();
+    }
+
+    /**
+     * The default output file name of the report (takes precedence over
+     * {@link org.mapfish.print.config.Configuration#setOutputFilename(String)}).  This can be overridden by the outputFilename
+     * parameter in the request JSON.
+     * <p>
+     *     This can be a string and can also have a date section in the string that will be filled when the report is created for
+     *     example a section with ${&lt;dateFormatString>} will be replaced with the current date formatted in the way defined
+     *     by the &lt;dateFormatString> string.  The format rules are the rules in
+     *     <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">java.text.SimpleDateFormat</a>
+     *     (do a google search if the link above is broken).
+     * </p>
+     * <p>
+     *     Example: <code>outputFilename: print-${dd-MM-yyyy}</code> should output: <code>print-22-11-2014.pdf</code>
+     * </p>
+     * <p>
+     *     Note: the suffix will be appended to the end of the name.
+     * </p>
+     *
+     * @param outputFilename default output file name of the report.
+     */
+    public final void setOutputFilename(final String outputFilename) {
+        this.outputFilename = outputFilename;
+    }
+
+    public final String getOutputFilename() {
+        return this.outputFilename;
     }
 
     /**

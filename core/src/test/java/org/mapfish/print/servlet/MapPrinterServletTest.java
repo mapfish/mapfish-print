@@ -653,6 +653,29 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertCorrectResponse(servletCreateResponse);
     }
 
+    @Test(timeout = 60000)
+    public void testCreateReportAndGet_OutputName() throws Exception {
+        setUpConfigFiles();
+
+        final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
+        final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+
+        final PJsonObject requestJson = parseJSONObjectFromFile(MapPrinterServletTest.class, "requestData.json");
+        requestJson.getInternalObj().remove("outputFilename");
+
+        this.servlet.createReportAndGetNoAppId("png", requestJson.getInternalObj().toString(2), false, servletCreateRequest, servletCreateResponse);
+        assertEquals(HttpStatus.OK.value(), servletCreateResponse.getStatus());
+
+        assertCorrectResponse(servletCreateResponse, "config_test_outputname-");
+
+        requestJson.getInternalObj().put("layout", "WithOutputName");
+
+        this.servlet.createReportAndGetNoAppId("png", requestJson.getInternalObj().toString(2), false, servletCreateRequest, servletCreateResponse);
+        assertEquals(HttpStatus.OK.value(), servletCreateResponse.getStatus());
+
+        assertCorrectResponse(servletCreateResponse, "template_test_outputname-");
+    }
+
     private String getFormEncodedRequestData() throws IOException {
         return "spec=" + URLEncoder.encode(loadRequestDataAsString(), Constants.DEFAULT_ENCODING);
     }
@@ -749,7 +772,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         assertTrue(getInfoJson.has("layouts"));
         final PJsonArray layouts = getInfoJson.getJSONArray("layouts");
-        assertEquals(1, layouts.size());
+        assertEquals(2, layouts.size());
         final PObject mainLayout = layouts.getObject(0);
         assertEquals("A4 Landscape", mainLayout.getString("name"));
         assertTrue(mainLayout.has("attributes"));
@@ -784,7 +807,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         assertTrue(getInfoJson.has("layouts"));
         final PJsonArray layouts = getInfoJson.getJSONArray("layouts");
-        assertEquals(1, layouts.size());
+        assertEquals(2, layouts.size());
         final PObject mainLayout = layouts.getObject(0);
         assertEquals("A4 Landscape", mainLayout.getString("name"));
         assertTrue(mainLayout.has("attributes"));
@@ -920,15 +943,19 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     }
 
     private byte[] assertCorrectResponse(MockHttpServletResponse servletGetReportResponse) throws IOException {
-        byte[] report;
-        report = servletGetReportResponse.getContentAsByteArray();
+        return assertCorrectResponse(servletGetReportResponse, "test_report-");
+    }
+
+    private byte[] assertCorrectResponse(MockHttpServletResponse servletGetReportResponse, String outputNamePrefix) throws IOException {
+        byte[] report = servletGetReportResponse.getContentAsByteArray();
 
         final String contentType = servletGetReportResponse.getHeader("Content-Type");
         assertEquals("image/png", contentType);
+        String fileName = servletGetReportResponse.getHeader("Content-disposition").split("=")[1];
         final Calendar instance = Calendar.getInstance();
         int year = instance.get(Calendar.YEAR);
-        String fileName = servletGetReportResponse.getHeader("Content-disposition").split("=")[1];
-        assertEquals("test_report-" + year + ".png", fileName);
+
+        assertEquals(outputNamePrefix + year + ".png", fileName);
 
         final BufferedImage reportAsImage = ImageIO.read(new ByteArrayInputStream(report));
 
