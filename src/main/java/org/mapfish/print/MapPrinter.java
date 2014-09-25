@@ -173,7 +173,7 @@ public class MapPrinter {
             return output.print(params);
         } finally {
             final long printTime = timer.stop();
-            if (TimeUnit.SECONDS.toNanos(getConfig().getMaxPrintTimeBeforeWarningInSeconds()) < printTime) {
+            if ((config != null) && (TimeUnit.SECONDS.toNanos(config.getMaxPrintTimeBeforeWarningInSeconds()) < printTime)) {
                 LOGGER.warn("[Overtime Print] "+jsonSpec.getInternalObj());
             }
         }
