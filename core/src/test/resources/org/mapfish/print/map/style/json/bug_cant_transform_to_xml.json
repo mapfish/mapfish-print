@@ -1,0 +1,25 @@
+{"style": {
+    "styleProperty": "prop0",
+    "version": "1",
+    "value0": {
+      "strokeDashstyle": "solid",
+      "strokeLinecap": "round",
+      "fillColor": "green",
+      "pointRadius": 5,
+      "strokeColor": "#FFA829",
+      "strokeWidth": 5,
+      "strokeOpacity": 1,
+      "fillOpacity": 0
+    },
+    "value1": {
+      "strokeDashstyle": "dash",
+      "strokeLinecap": "round",
+      "fillColor": "blue",
+      "pointRadius": 5,
+      "strokeColor": "#FFA829",
+      "strokeWidth": 5,
+      "strokeOpacity": 1,
+      "fillOpacity": 0
+    }
+  }
+}

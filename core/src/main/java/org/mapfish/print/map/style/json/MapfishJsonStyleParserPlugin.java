@@ -37,6 +37,8 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_GEOM_ATT_NAME;
+
 /**
  * Supports a JSON based style format.
  * <p>
@@ -428,7 +430,7 @@ public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
             Style parseStyle(final PJsonObject json,
                              final StyleBuilder styleBuilder,
                              final Configuration configuration) {
-                return new MapfishJsonStyleVersion1(json, styleBuilder, configuration).parseStyle();
+                return new MapfishJsonStyleVersion1(json, styleBuilder, configuration, DEFAULT_GEOM_ATT_NAME).parseStyle();
             }
         }, TWO("2") {
             @Override

@@ -72,7 +72,9 @@ public final class StyleParser {
                             userLayer.addUserStyle(style.get());
                             final StyledLayerDescriptor sld = styleFactory.createStyledLayerDescriptor();
                             sld.addStyledLayer(userLayer);
-                            LOGGER.debug("Loaded style from: \n\n '" + styleString + "': \n\n" + transformer.transform(sld));
+                            if (LOGGER.isDebugEnabled()) {
+                                LOGGER.debug("Loaded style from: \n\n '" + styleString + "': \n\n" + transformer.transform(sld));
+                            }
                         } catch (Exception e) {
                             LOGGER.debug("Loaded style from: \n\n '" + styleString + "' \n\n<Unable to transform it to xml>: " + e, e);
                         }
