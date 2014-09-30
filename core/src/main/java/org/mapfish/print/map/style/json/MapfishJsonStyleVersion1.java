@@ -111,6 +111,7 @@ public final class MapfishJsonStyleVersion1 {
         return styleRules;
     }
 
+    @SuppressWarnings("unchecked")
     private List<Rule> createStyleRule(final String styleKey,
                                        final PJsonObject styleJson,
                                        final String styleProperty) {

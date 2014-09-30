@@ -63,6 +63,7 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
         this.renderAsSvg = renderAsSvg;
     }
 
+    @SuppressWarnings("unchecked")
     public final void setStyle(final StyleSupplier style) {
         this.styleSupplier = style;
     }

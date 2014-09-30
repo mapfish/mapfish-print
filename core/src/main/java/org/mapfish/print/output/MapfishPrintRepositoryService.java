@@ -26,7 +26,6 @@ import net.sf.jasperreports.repo.FileRepositoryService;
 import net.sf.jasperreports.repo.InputStreamResource;
 import net.sf.jasperreports.repo.PersistenceService;
 import net.sf.jasperreports.repo.PersistenceUtil;
-import net.sf.jasperreports.repo.RepositoryContext;
 import net.sf.jasperreports.repo.Resource;
 import net.sf.jasperreports.repo.StreamRepositoryService;
 import org.mapfish.print.config.Configuration;
@@ -48,6 +47,7 @@ import javax.annotation.Nonnull;
  *
  * @author Jesse on 8/28/2014.
  */
+@SuppressWarnings("deprecation")
 class MapfishPrintRepositoryService implements StreamRepositoryService {
 
     private final ConfigFileResolvingHttpRequestFactory httpRequestFactory;
@@ -60,7 +60,7 @@ class MapfishPrintRepositoryService implements StreamRepositoryService {
     }
 
     @Override
-    public void setContext(final RepositoryContext context) {
+    public void setContext(final net.sf.jasperreports.repo.RepositoryContext context) {
         // deprecated method so nothing to do
     }
 

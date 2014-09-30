@@ -27,6 +27,7 @@ public class StringArrayAttribute extends PrimitiveAttribute<String[]> {
     /**
      * Constructor.
      */
+    @SuppressWarnings("unchecked")
     public StringArrayAttribute() {
         super((Class<String[]>) new String[0].getClass());
     }
