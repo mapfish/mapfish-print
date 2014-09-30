@@ -38,8 +38,8 @@ public abstract class AbstractVectorLayerParam {
     /**
      * Indicates if the layer is rendered as SVG.
      * <p/>
-     * Default is <code>false</code>.
+     * (will default to {@link org.mapfish.print.config.Configuration#defaultStyle}).
      */
     @HasDefaultValue
-    public boolean renderAsSvg = false;
+    public Boolean renderAsSvg;
 }

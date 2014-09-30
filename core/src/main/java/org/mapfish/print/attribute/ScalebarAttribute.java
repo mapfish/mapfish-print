@@ -239,10 +239,11 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
         public String verticalAlign = VerticalAlign.BOTTOM.getLabel();
 
         /**
-         * Indicates if the scalebar graphic is rendered as SVG (default: false).
+         * Indicates if the scalebar graphic is rendered as SVG
+         * (will default to {@link org.mapfish.print.config.Configuration#defaultStyle}).
          */
         @HasDefaultValue
-        public boolean renderAsSvg = false;
+        public Boolean renderAsSvg;
 
         /**
          * Constructor.

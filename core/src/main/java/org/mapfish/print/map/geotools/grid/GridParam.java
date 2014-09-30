@@ -89,10 +89,10 @@ public final class GridParam {
     /**
      * Indicates if the layer is rendered as SVG.
      * <p/>
-     * Default is <code>false</code>.
+     * (will default to {@link org.mapfish.print.config.Configuration#defaultStyle}).
      */
     @HasDefaultValue
-    public boolean renderAsSvg = false;
+    public Boolean renderAsSvg = false;
 
     /**
      * The number of points that will be in the grid line.  If the line will be curved (for certain projections) then the more

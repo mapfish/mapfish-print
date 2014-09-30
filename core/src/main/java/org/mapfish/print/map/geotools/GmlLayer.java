@@ -96,7 +96,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
                     this.forkJoinPool,
                     createFeatureSourceSupplier(template, param.url),
                     createStyleFunction(template, param.style),
-                    param.renderAsSvg);
+                    template.getConfiguration().renderAsSvg(param.renderAsSvg));
         }
 
         private FeatureSourceSupplier createFeatureSourceSupplier(final Template template,

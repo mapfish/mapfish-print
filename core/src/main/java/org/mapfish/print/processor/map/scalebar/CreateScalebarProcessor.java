@@ -24,6 +24,7 @@ import net.sf.jasperreports.engine.JRException;
 import org.mapfish.print.attribute.ScalebarAttribute;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.Template;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.InternalValue;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
@@ -73,7 +74,7 @@ public class CreateScalebarProcessor extends AbstractProcessor<CreateScalebarPro
 
     private URI createScalebarGraphic(final Input values) throws IOException, ParserConfigurationException {
         final ScalebarGraphic scalebar = new ScalebarGraphic();
-        return scalebar.render(values.map, values.scalebar, values.tempTaskDirectory);
+        return scalebar.render(values.map, values.scalebar, values.tempTaskDirectory, values.template);
     }
 
     private URI createScalebarSubReport(final File printDirectory,
@@ -93,6 +94,7 @@ public class CreateScalebarProcessor extends AbstractProcessor<CreateScalebarPro
      * Input for the processor.
      */
     public static class Input {
+
         /**
          * The map the scalebar is created for.
          */
@@ -106,7 +108,13 @@ public class CreateScalebarProcessor extends AbstractProcessor<CreateScalebarPro
         /**
          * The path to the temporary directory for the print task.
          */
+        @InternalValue
         public File tempTaskDirectory;
+        /**
+         * The containing template.
+         */
+        @InternalValue
+        public Template template;
     }
 
     /**

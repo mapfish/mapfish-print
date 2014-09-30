@@ -314,8 +314,20 @@ public class ConfigurationTest {
         assertTrue(configuration.getTemplates().containsKey("unrestricted"));
         final JSONArray layouts = getClientConfigJson(configuration);
         assertEquals(expectedNumTemplates, layouts.length());
+    }
 
+    @Test
+    public void testRenderAsSvg() throws Exception {
+        final Configuration config = new Configuration();
+        config.setDefaultToSvg(false);
+        assertFalse(config.renderAsSvg(null));
+        assertFalse(config.renderAsSvg(false));
+        assertTrue(config.renderAsSvg(true));
 
+        config.setDefaultToSvg(true);
+        assertTrue(config.renderAsSvg(null));
+        assertFalse(config.renderAsSvg(false));
+        assertTrue(config.renderAsSvg(true));
     }
 
     private void assertStyleType(Class<?> expectedSymbolizerType, Style style) {

@@ -81,7 +81,7 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
                     this.forkJoinPool,
                     createFeatureSourceSupplier(template, param.geoJson),
                     createStyleFunction(template, param.style),
-                    param.renderAsSvg);
+                    template.getConfiguration().renderAsSvg(param.renderAsSvg));
         }
 
         private FeatureSourceSupplier createFeatureSourceSupplier(final Template template,

@@ -81,7 +81,7 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
                     this.forkJoinPool,
                     createFeatureSourceSupplier(param.features),
                     createStyleFunction(template, param.style, param.defaultStyle),
-                    param.renderAsSvg);
+                    template.getConfiguration().renderAsSvg(param.renderAsSvg));
         }
 
         private FeatureSourceSupplier createFeatureSourceSupplier(
@@ -158,8 +158,8 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
         /**
          * Indicates if the layer is rendered as SVG.
          * <p/>
-         * Default is <code>false</code>.
+         * (will default to {@link org.mapfish.print.config.Configuration#defaultStyle}).
          */
-        public boolean renderAsSvg = false;
+        public Boolean renderAsSvg;
     }
 }

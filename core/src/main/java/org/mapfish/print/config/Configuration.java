@@ -112,6 +112,7 @@ public class Configuration {
     private List<HttpCredential> credentials = Lists.newArrayList();
     private CertificateStore certificateStore;
     private String outputFilename;
+    private boolean defaultToSvg = false;
 
     @Autowired
     private StyleParser styleParser;
@@ -141,6 +142,27 @@ public class Configuration {
 
     final PDFConfig getPdfConfig() {
         return this.pdfConfig;
+    }
+
+    /**
+     * Either use the provided vale (renderAsSvg) or if it is null then use {@link #defaultToSvg}.
+     *
+     * @param renderAsSvg the value to use if non-null.
+     */
+    public final boolean renderAsSvg(final Boolean renderAsSvg) {
+        return renderAsSvg == null ? this.defaultToSvg : renderAsSvg;
+    }
+
+    /**
+     * If true then all vector layers (and other parts of the system that can be either SVG or Bitmap, like scalebar) will
+     * be rendered as SVG (unless layer specifically indicates useSvg as false).
+     * <p>
+     *     The default is false.
+     * </p>
+     * @param defaultToSvg whether or not to create svg layers by default
+     */
+    public final void setDefaultToSvg(final boolean defaultToSvg) {
+        this.defaultToSvg = defaultToSvg;
     }
 
     /**

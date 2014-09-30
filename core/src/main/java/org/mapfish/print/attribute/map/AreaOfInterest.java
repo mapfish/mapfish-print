@@ -71,9 +71,11 @@ public final class AreaOfInterest {
 
     /**
      * If true the Area of Interest will be rendered as SVG (if display == RENDER).
+     * <p/>
+     * (will default to {@link org.mapfish.print.config.Configuration#defaultStyle}).
      */
     @HasDefaultValue
-    public boolean renderAsSvg = false;
+    public Boolean renderAsSvg;
 
     /**
      * Tests that the area is valid geojson, the style ref is valid or null and the display is non-null.
@@ -143,6 +145,7 @@ public final class AreaOfInterest {
         aoi.area = this.area;
         aoi.polygon = this.polygon;
         aoi.style = this.style;
+        aoi.renderAsSvg = this.renderAsSvg;
         return aoi;
     }
 

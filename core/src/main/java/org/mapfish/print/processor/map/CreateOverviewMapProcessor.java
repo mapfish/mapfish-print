@@ -163,7 +163,7 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
         layerParams.style = style;
         layerParams.defaultStyle = Constants.Style.OverviewMap.NAME;
         // TODO make this configurable?
-        layerParams.renderAsSvg = false;
+        layerParams.renderAsSvg = null;
         layerParams.features = wrapIntoFeatureCollection(mapExtent, crs);
 
         return this.featureLayerParser.parse(mapParams.getTemplate(), layerParams);
