@@ -433,13 +433,18 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             while (iter.hasNext()) {
                 String styleName = (String) iter.next();
                 if (element.getAttributeNS(null, styleName).length() == 0) {
-                    String correctedName = styleName;
                     if (styleName.equals("opacity")) {
-                        correctedName = "fill-opacity";
-                    }
-                    if (appliesTo(styleName, tagName)) {
-                        element.setAttributeNS(null, correctedName,
-                                (String) styleMap.get(styleName));
+                        if (appliesTo(styleName, tagName)) {
+                            element.setAttributeNS(null, "fill-opacity",
+                                    (String) styleMap.get(styleName));
+                            element.setAttributeNS(null, "stroke-opacity",
+                                    (String) styleMap.get(styleName));
+                        }
+                    } else {
+                        if (appliesTo(styleName, tagName)) {
+                            element.setAttributeNS(null, styleName,
+                                    (String) styleMap.get(styleName));
+                        }
                     }
                 }
             }
