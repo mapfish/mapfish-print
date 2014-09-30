@@ -40,6 +40,28 @@ import static org.junit.Assert.assertNull;
 public class MapfishMapContextTest {
 
     @Test
+    public void testGetRoundedScale() {
+        assertRoundedScale(0.111, 0.111);
+        assertRoundedScale(0.11, 0.11);
+        assertRoundedScale(9, 9);
+        assertRoundedScale(9.1, 9);
+        assertRoundedScale(239, 240);
+        assertRoundedScale(993, 990);
+        assertRoundedScale(1113, 1100);
+        assertRoundedScale(11130, 11000);
+        assertRoundedScale(225229, 230000);
+        assertRoundedScale(1234229, 1200000);
+        assertRoundedScale(12342290, 12000000);
+    }
+
+    private void assertRoundedScale(double actualScale, double roundedScale) {
+        MapBounds bounds = new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 0, 0, new Scale(actualScale));
+        Dimension paint = new Dimension(200, 200);
+        MapfishMapContext transformer = new MapfishMapContext(bounds, paint, 90, Constants.PDF_DPI, null);
+        assertEquals(roundedScale, transformer.getRoundedScale(), 0.00001);
+    }
+
+    @Test
     public void testGetRotation() {
         MapfishMapContext transformer = new MapfishMapContext(null, null, 90, Constants.PDF_DPI, null);
         assertEquals("converted to radians", Math.toRadians(90.0), transformer.getRotation(), 1e-9);

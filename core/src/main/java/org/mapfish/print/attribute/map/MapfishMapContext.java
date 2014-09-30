@@ -78,6 +78,25 @@ public class MapfishMapContext {
     }
 
     /**
+     * Get a nicely rounded scale for to use for displaying the map scale.
+     */
+    public final double getRoundedScale() {
+        double scale = this.bounds.getScaleDenominator(getPaintArea(), this.dpi).getDenominator();
+
+        final int numChars = String.format("%d", Math.round(scale)).length();
+        if (numChars > 2) {
+            // CSOFF: MagicNumber
+            double factor = Math.pow(10, (numChars - 2));
+            // CSON: MagicNumber
+            scale = Math.round(scale / factor) * factor;
+        } else if (scale > 1) {
+            scale = Math.round(scale);
+        }
+
+        return scale;
+    }
+
+    /**
      * @return The new map size taking the rotation into account.
      */
     public final Dimension getRotatedMapSize() {
