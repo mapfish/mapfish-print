@@ -20,7 +20,7 @@
 package org.mapfish.print.processor.jasper;
 
 import org.mapfish.print.config.ConfigurationObject;
-import org.springframework.http.client.ClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -39,6 +39,6 @@ public interface TableColumnConverter<R> extends ConfigurationObject {
      * @param requestFactory for fetching file and http resources.
      * @param text the text to use to resolve the image.
      */
-    R resolve(ClientHttpRequestFactory requestFactory,
+    R resolve(MfClientHttpRequestFactory requestFactory,
               String text) throws URISyntaxException, IOException;
 }

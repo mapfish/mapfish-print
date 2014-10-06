@@ -32,7 +32,6 @@ import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.sql.Connection;
@@ -67,7 +66,6 @@ public class Template implements ConfigurationObject, HasConfiguration {
     private Configuration configuration;
     @Autowired
     private StyleParser styleParser;
-    @Qualifier("httpClientFactory")
     @Autowired
     private ClientHttpRequestFactory httpRequestFactory;
     private String tableDataKey;

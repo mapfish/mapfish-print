@@ -36,6 +36,7 @@ import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.ConfigurationException;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.map.geotools.FeatureLayer;
 import org.mapfish.print.processor.AbstractProcessor;
@@ -45,7 +46,6 @@ import org.mapfish.print.processor.jasper.MapSubReport;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.w3c.dom.Document;
 
 import java.awt.Dimension;
@@ -161,7 +161,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
     }
 
     private List<URI> createLayerGraphics(final File printDirectory,
-                                          final ClientHttpRequestFactory clientHttpRequestFactory,
+                                          final MfClientHttpRequestFactory clientHttpRequestFactory,
                                           final MapAttribute.MapAttributeValues mapValues,
                                           final ExecutionContext context)
             throws Exception {
@@ -374,7 +374,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
          * A factory for making http requests.  This is added to the values by the framework and therefore
          * does not need to be set in configuration
          */
-        public ClientHttpRequestFactory clientHttpRequestFactory;
+        public MfClientHttpRequestFactory clientHttpRequestFactory;
 
         /**
          * The required parameters for the map.

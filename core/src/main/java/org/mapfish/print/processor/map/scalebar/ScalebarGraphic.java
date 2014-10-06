@@ -20,7 +20,6 @@
 package org.mapfish.print.processor.map.scalebar;
 
 import com.google.common.annotations.VisibleForTesting;
-
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.geotools.referencing.GeodeticCalculator;
 import org.mapfish.print.attribute.ScalebarAttribute.ScalebarAttributeValues;
@@ -44,7 +43,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.imageio.ImageIO;
 import javax.xml.parsers.ParserConfigurationException;
 

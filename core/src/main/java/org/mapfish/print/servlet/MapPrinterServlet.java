@@ -22,7 +22,6 @@ package org.mapfish.print.servlet;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
-
 import org.jfree.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -68,7 +67,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

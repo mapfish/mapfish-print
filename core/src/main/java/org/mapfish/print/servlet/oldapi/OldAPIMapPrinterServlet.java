@@ -21,7 +21,6 @@ package org.mapfish.print.servlet.oldapi;
 
 
 import com.google.common.base.Strings;
-
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
@@ -54,7 +53,6 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.DecimalFormat;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

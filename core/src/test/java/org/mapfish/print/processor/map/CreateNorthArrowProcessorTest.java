@@ -19,12 +19,9 @@
 
 package org.mapfish.print.processor.map;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-
+import com.google.common.base.Predicate;
+import com.google.common.io.Files;
 import jsr166y.ForkJoinPool;
-
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -40,8 +37,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
-import com.google.common.base.Predicate;
-import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 
 public class CreateNorthArrowProcessorTest extends AbstractMapfishSpringTest {
     public static final String BASE_DIR = "north_arrow/";

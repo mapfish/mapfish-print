@@ -20,12 +20,12 @@
 package org.mapfish.print.processor.jasper;
 
 import org.mapfish.print.config.ConfigurationException;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
 
 import java.awt.image.BufferedImage;
@@ -77,7 +77,7 @@ public final class HttpImageResolver implements TableColumnConverter<BufferedIma
     }
 
     @Override
-    public BufferedImage resolve(final ClientHttpRequestFactory requestFactory,
+    public BufferedImage resolve(final MfClientHttpRequestFactory requestFactory,
                                  final String text) throws URISyntaxException, IOException {
         Matcher urlMatcher = this.urlExtractor.matcher(text);
 

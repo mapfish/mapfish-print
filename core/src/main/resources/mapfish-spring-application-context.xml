@@ -60,13 +60,7 @@
 
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>
     <bean id="healthCheckRegistry" class="com.codahale.metrics.health.HealthCheckRegistry"/>
-    <bean id="httpClientFactory" class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory">
-        <property name="httpClient" ref="httpClient" />
-    </bean>
-    <bean id="httpClient" class="com.codahale.metrics.httpclient.InstrumentedHttpClient">
-        <constructor-arg index="0" ref="metricRegistry"/>
-        <constructor-arg index="1" ref="metricNameStrategy" />
-    </bean>
+    <bean id="httpClientFactory" class="org.mapfish.print.http.MfClientHttpRequestFactoryImpl"/>
     <bean id="metricNameStrategy" class="org.mapfish.print.metrics.MetricsNameStrategyFactory" factory-method="hostAndMethod" />
     <bean id="loggingMetricsConfigurator" class="org.mapfish.print.metrics.LoggingMetricsConfigurator" lazy-init="false"/>
     <bean id="jvmMetricsConfigurator" class="org.mapfish.print.metrics.JvmMetricsConfigurator" lazy-init="false"/>

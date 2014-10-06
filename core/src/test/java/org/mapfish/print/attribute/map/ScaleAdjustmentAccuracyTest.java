@@ -23,8 +23,8 @@ import org.junit.Test;
 import org.mapfish.print.map.Scale;
 
 import static org.junit.Assert.assertEquals;
-import static org.mapfish.print.attribute.map.ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE;
 import static org.mapfish.print.attribute.map.ZoomLevelSnapStrategy.CLOSEST_HIGHER_SCALE_ON_TIE;
+import static org.mapfish.print.attribute.map.ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE;
 import static org.mapfish.print.attribute.map.ZoomLevelSnapStrategy.HIGHER_SCALE;
 import static org.mapfish.print.attribute.map.ZoomLevelSnapStrategy.LOWER_SCALE;
 

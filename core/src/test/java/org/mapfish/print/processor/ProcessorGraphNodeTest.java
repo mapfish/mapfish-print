@@ -20,14 +20,12 @@
 package org.mapfish.print.processor;
 
 import com.google.common.collect.Lists;
-
 import org.junit.Test;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.HasDefaultValue;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertArrayEquals;

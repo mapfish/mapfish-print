@@ -25,9 +25,9 @@ import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.Layer;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.AbstractGeotoolsLayer;
 import org.mapfish.print.map.geotools.StyleSupplier;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.awt.Rectangle;
 import java.util.Collections;
@@ -57,7 +57,7 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
     }
 
     @Override
-    protected final List<? extends Layer> getLayers(final ClientHttpRequestFactory httpRequestFactory,
+    protected final List<? extends Layer> getLayers(final MfClientHttpRequestFactory httpRequestFactory,
                                                     final MapfishMapContext mapContext,
                                                     final boolean isFirstLayer) throws Exception {
         double dpi = mapContext.getDPI();

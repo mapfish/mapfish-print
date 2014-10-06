@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
@@ -43,11 +42,16 @@ public abstract class InetHostMatcher extends HostMatcher {
     // CSON: VisibilityModifier
 
     @Override
-    protected final Optional<Boolean> tryOverrideValidation(final URI uri) throws UnknownHostException, SocketException {
+    protected final Optional<Boolean> tryOverrideValidation(final MatchInfo matchInfo) throws UnknownHostException, SocketException {
+        final String host = matchInfo.getHost();
+        if (host == MatchInfo.ANY_HOST) {
+            return Optional.absent();
+        }
+
         final InetAddress maskAddress = getMaskAddress();
         final InetAddress[] requestedIPs;
         try {
-            requestedIPs = InetAddress.getAllByName(uri.getHost());
+            requestedIPs = InetAddress.getAllByName(host);
         } catch (UnknownHostException ex) {
             return Optional.of(false);
         }

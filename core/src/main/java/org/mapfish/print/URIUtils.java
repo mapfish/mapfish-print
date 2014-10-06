@@ -23,9 +23,8 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Closer;
-
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
 
 import java.io.BufferedReader;
@@ -245,7 +244,7 @@ public final class URIUtils {
      * @param uri            the uri to load data from.
      * @return the data in string form.
      */
-    public static String toString(final ClientHttpRequestFactory requestFactory, final URI uri) throws IOException {
+    public static String toString(final MfClientHttpRequestFactory requestFactory, final URI uri) throws IOException {
         Closer closer = Closer.create();
         try {
             ClientHttpResponse response = closer.register(requestFactory.createRequest(uri, HttpMethod.GET).execute());
@@ -267,7 +266,7 @@ public final class URIUtils {
      * @param url            the uri to load data from.
      * @return the data in string form.
      */
-    public static String toString(final ClientHttpRequestFactory requestFactory, final URL url) throws IOException {
+    public static String toString(final MfClientHttpRequestFactory requestFactory, final URL url) throws IOException {
         try {
             return toString(requestFactory, url.toURI());
         } catch (URISyntaxException e) {

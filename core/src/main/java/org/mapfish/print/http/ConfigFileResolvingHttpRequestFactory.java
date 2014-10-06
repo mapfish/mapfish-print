@@ -17,8 +17,9 @@
  * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mapfish.print;
+package org.mapfish.print.http;
 
+import com.google.common.collect.Lists;
 import com.vividsolutions.jts.util.Assert;
 import org.mapfish.print.config.Configuration;
 import org.slf4j.Logger;
@@ -27,9 +28,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.AbstractClientHttpRequest;
-import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
 
 import java.io.ByteArrayInputStream;
@@ -37,7 +36,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.List;
 import java.util.NoSuchElementException;
+import javax.annotation.Nonnull;
 
 /**
  * This request factory will attempt to load resources using {@link org.mapfish.print.config.Configuration#loadFile(String)}
@@ -46,63 +47,69 @@ import java.util.NoSuchElementException;
  *
  * @author Jesse on 8/12/2014.
  */
-public final class ConfigFileResolvingHttpRequestFactory extends AbstractClientHttpRequestFactoryWrapper {
+public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttpRequestFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigFileResolvingHttpRequestFactory.class);
     private final Configuration config;
+    private final MfClientHttpRequestFactoryImpl httpRequestFactory;
+    private final List<RequestConfigurator> callbacks = Lists.newCopyOnWriteArrayList();
 
     /**
      * Constructor.
      *
      * @param httpRequestFactory basic request factory
-     * @param config the template for the current print job.
+     * @param config             the template for the current print job.
      */
-    public ConfigFileResolvingHttpRequestFactory(final ClientHttpRequestFactory httpRequestFactory,
+    public ConfigFileResolvingHttpRequestFactory(final MfClientHttpRequestFactoryImpl httpRequestFactory,
                                                  final Configuration config) {
-        super(httpRequestFactory);
-
+        this.httpRequestFactory = httpRequestFactory;
         this.config = config;
     }
 
     @Override
-    protected ClientHttpRequest createRequest(final URI uri,
-                                              final HttpMethod httpMethod,
-                                              final ClientHttpRequestFactory requestFactory) throws IOException {
-        return new ConfigFileResolvingRequest(uri, httpMethod, requestFactory);
+    public void register(@Nonnull final RequestConfigurator callback) {
+        this.callbacks.add(callback);
     }
+
+    @Override
+    public ClientHttpRequest createRequest(final URI uri,
+                                           final HttpMethod httpMethod) throws IOException {
+        return new ConfigFileResolvingRequest(uri, httpMethod);
+    }
+
 
     private class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
         private final URI uri;
         private final HttpMethod httpMethod;
-        private final ClientHttpRequestFactory requestFactory;
-        private ClientHttpRequest request;
+        private ConfigurableRequest request;
 
 
         ConfigFileResolvingRequest(final URI uri,
-                                   final HttpMethod httpMethod,
-                                   final ClientHttpRequestFactory requestFactory) {
+                                   final HttpMethod httpMethod) {
             this.uri = uri;
             this.httpMethod = httpMethod;
-            this.requestFactory = requestFactory;
         }
 
         @Override
-        protected OutputStream getBodyInternal(final HttpHeaders headers) throws IOException {
+        protected synchronized OutputStream getBodyInternal(final HttpHeaders headers) throws IOException {
             Assert.isTrue(this.request == null, "getBodyInternal() can only be called once.");
             this.request = createRequestFromWrapped(headers);
             return this.request.getBody();
         }
 
-        private ClientHttpRequest createRequestFromWrapped(final HttpHeaders headers) throws IOException {
-            ClientHttpRequest httpRequest = this.requestFactory.createRequest(this.uri, this.httpMethod);
+        private synchronized ConfigurableRequest createRequestFromWrapped(final HttpHeaders headers) throws IOException {
+            final MfClientHttpRequestFactoryImpl requestFactory = ConfigFileResolvingHttpRequestFactory.this.httpRequestFactory;
+            ConfigurableRequest httpRequest = requestFactory.createRequest(this.uri, this.httpMethod);
+            httpRequest.setConfiguration(ConfigFileResolvingHttpRequestFactory.this.config);
+
             httpRequest.getHeaders().putAll(headers);
             return httpRequest;
         }
 
         @Override
-        protected ClientHttpResponse executeInternal(final HttpHeaders headers) throws IOException {
+        protected synchronized ClientHttpResponse executeInternal(final HttpHeaders headers) throws IOException {
             if (this.request != null) {
                 LOGGER.debug("Executing http request: " + this.request.getURI());
-                return this.request.execute();
+                return executeCallbacksAndRequest(this.request);
             }
             if (this.httpMethod == HttpMethod.GET) {
                 final String uriString = this.uri.toString();
@@ -113,12 +120,20 @@ public final class ConfigFileResolvingHttpRequestFactory extends AbstractClientH
                     LOGGER.debug("Resolved request: " + uriString + " using mapfish print config file loaders.");
                     return response;
                 } catch (NoSuchElementException e) {
-                  // cannot be loaded by configuration so try http
+                    // cannot be loaded by configuration so try http
                 }
             }
 
             LOGGER.debug("Executing http request: " + this.getURI());
-            return createRequestFromWrapped(headers).execute();
+            return executeCallbacksAndRequest(createRequestFromWrapped(headers));
+        }
+
+        private ClientHttpResponse executeCallbacksAndRequest(final ConfigurableRequest requestToExecute) throws IOException {
+            for (RequestConfigurator callback : ConfigFileResolvingHttpRequestFactory.this.callbacks) {
+                callback.configureRequest(requestToExecute);
+            }
+
+            return requestToExecute.execute();
         }
 
         @Override

@@ -21,7 +21,6 @@ package org.mapfish.print.map.style;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.SLDTransformer;
 import org.geotools.styling.Style;
@@ -37,7 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.List;
-
 import javax.annotation.Nonnull;
 
 /**

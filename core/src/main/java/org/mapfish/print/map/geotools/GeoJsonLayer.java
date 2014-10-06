@@ -25,11 +25,10 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
-import org.springframework.http.client.ClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -90,7 +89,7 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
             return new FeatureSourceSupplier() {
                 @Nonnull
                 @Override
-                public FeatureSource load(@Nonnull final ClientHttpRequestFactory requestFactory,
+                public FeatureSource load(@Nonnull final MfClientHttpRequestFactory requestFactory,
                                           @Nonnull final MapfishMapContext mapContext) {
                     final FeaturesParser parser = new FeaturesParser(requestFactory, mapContext.isForceLongitudeFirst());
                     SimpleFeatureCollection featureCollection;

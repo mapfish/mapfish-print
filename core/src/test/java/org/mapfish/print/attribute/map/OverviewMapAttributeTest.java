@@ -23,6 +23,7 @@ import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
@@ -31,7 +32,6 @@ import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.File;
 
@@ -44,9 +44,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
     @Autowired
     private ConfigurationFactory configurationFactory;
     @Autowired
-    private MapfishParser parser;
-    @Autowired
-    private ClientHttpRequestFactory httpRequestFactory;
+    private TestHttpClientFactory httpRequestFactory;
 
     @Before
     public void setUp() throws Exception {

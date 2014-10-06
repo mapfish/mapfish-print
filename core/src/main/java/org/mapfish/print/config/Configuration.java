@@ -39,6 +39,9 @@ import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.http.CertificateStore;
+import org.mapfish.print.http.HttpCredential;
+import org.mapfish.print.http.HttpProxy;
 import org.mapfish.print.map.style.StyleParser;
 import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
 import org.opengis.filter.expression.Expression;
@@ -52,6 +55,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 
 /**
@@ -92,6 +96,9 @@ public class Configuration {
     private Map<String, String> styles = new HashMap<String, String>();
     private Map<String, Style> defaultStyle = new HashMap<String, Style>();
     private boolean throwErrorOnExtraParameters = true;
+    private List<HttpProxy> proxies = Lists.newArrayList();
+    private List<HttpCredential> credentials = Lists.newArrayList();
+    private CertificateStore certificateStore;
 
     @Autowired
     private StyleParser styleParser;
@@ -119,13 +126,63 @@ public class Configuration {
     }
 
     /**
-     * Calculate the name of the pdf file to return to the user.
-     *
-     * @param layoutName the name of file from the configuration.
+     * The configuration for locating a custom certificate store.
      */
-    public final String getOutputFilename(final String layoutName) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+    @Nullable
+    public final CertificateStore getCertificateStore() {
+        return this.certificateStore;
+    }
+
+    /**
+     * The configuration for locating a custom certificate store.  This is only required if the default certificate store
+     * which ships with all java installations does not contain the certificates needed by this server.  Usually it is to
+     * accept a self-signed certificate, for example on a test server.
+     *
+     * @param certificateStore The configuration for locating a custom certificate store
+     */
+    public final void setCertificateStore(final CertificateStore certificateStore) {
+        this.certificateStore = certificateStore;
+    }
+
+    /**
+     * Get the http credentials.  Should also getProxies since {@link org.mapfish.print.http.HttpProxy} is a subclass
+     * of {@link org.mapfish.print.http.HttpCredential}.
+     */
+    public final List<HttpCredential> getCredentials() {
+        return this.credentials;
+    }
+
+    /**
+     * Http credentials to be used when making http requests.
+     * <p>
+     *     If a proxy needs credentials you don't need to configure it here because the proxy configuration object also
+     *     has options for declaring the credentials.
+     * </p>
+     * @param credentials the credentials
+     */
+    public final void setCredentials(final List<HttpCredential> credentials) {
+        this.credentials = credentials;
+    }
+
+    /**
+     * Get the http proxies used by in all requests in this syste.
+     *
+     * @see org.mapfish.print.http.ConfigFileResolvingHttpRequestFactory
+     */
+    public final List<HttpProxy> getProxies() {
+        return this.proxies;
+    }
+
+    /**
+     * Configuration for proxying http requests.  Each proxy can be configured with authentication
+     * and with the uris that they apply to.
+     *<p/>
+     * See {@link org.mapfish.print.http.HttpProxy} for details on how to configure them.
+     *
+     * @param proxies the proxy configuration objects
+     */
+    public final void setProxies(final List<HttpProxy> proxies) {
+        this.proxies = proxies;
     }
 
     public final Map<String, Template> getTemplates() {
@@ -301,6 +358,10 @@ public class Configuration {
         }
         for (Template template : this.templates.values()) {
             template.validate(validationErrors);
+        }
+
+        for (HttpProxy proxy : this.proxies) {
+            proxy.validate(validationErrors);
         }
 
         return validationErrors;

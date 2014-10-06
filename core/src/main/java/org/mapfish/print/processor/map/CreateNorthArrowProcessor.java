@@ -20,16 +20,14 @@
 package org.mapfish.print.processor.map;
 
 import com.google.common.collect.Lists;
-
 import net.sf.jasperreports.engine.JRException;
-
 import org.mapfish.print.attribute.NorthArrowAttribute;
 import org.mapfish.print.attribute.map.MapAttribute;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.InternalValue;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
 import org.mapfish.print.processor.jasper.MapSubReport;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.awt.Dimension;
 import java.io.File;
@@ -144,7 +142,7 @@ public class CreateNorthArrowProcessor extends AbstractProcessor<CreateNorthArro
         /**
          * The factory to use for making http requests.
          */
-        public ClientHttpRequestFactory clientHttpRequestFactory;
+        public MfClientHttpRequestFactory clientHttpRequestFactory;
     }
 
     /**

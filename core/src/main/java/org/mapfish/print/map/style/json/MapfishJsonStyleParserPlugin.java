@@ -21,7 +21,6 @@ package org.mapfish.print.map.style.json;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
-
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.json.JSONException;

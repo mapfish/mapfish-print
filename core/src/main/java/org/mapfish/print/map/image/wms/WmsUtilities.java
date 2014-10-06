@@ -25,8 +25,8 @@ import org.geotools.data.wms.request.GetMapRequest;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.mapfish.print.URIUtils;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.opengis.referencing.FactoryException;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.awt.Dimension;
 import java.io.IOException;
@@ -52,7 +52,7 @@ public final class WmsUtilities {
      * @param imageSize the size of the image to request
      * @param bounds the area and projection of the request on the world.
      */
-    public static URI makeWmsGetLayerRequest(final ClientHttpRequestFactory requestFactory,
+    public static URI makeWmsGetLayerRequest(final MfClientHttpRequestFactory requestFactory,
                                              final WmsLayerParam wmsLayerParam,
                                              final URI commonURI,
                                              final Dimension imageSize,

@@ -22,6 +22,7 @@ package org.mapfish.print.output;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.attribute.LegendAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
@@ -30,7 +31,6 @@ import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.wrapper.ObjectMissingException;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.File;
 
@@ -48,7 +48,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
     @Autowired
     private MapfishParser parser;
     @Autowired
-    private ClientHttpRequestFactory httpRequestFactory;
+    private TestHttpClientFactory httpRequestFactory;
 
     @Test
     public void testNoDefaults() throws Exception {

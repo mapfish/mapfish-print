@@ -37,11 +37,9 @@ import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
 

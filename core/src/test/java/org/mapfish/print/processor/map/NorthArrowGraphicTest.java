@@ -19,23 +19,23 @@
 
 package org.mapfish.print.processor.map;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.TestHttpClientFactory;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.ConfigurationFactory;
+import org.mapfish.print.http.ConfigFileResolvingHttpRequestFactory;
+import org.mapfish.print.map.style.json.ColorParser;
+import org.mapfish.print.test.util.ImageSimilarity;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mapfish.print.AbstractMapfishSpringTest;
-import org.mapfish.print.ConfigFileResolvingHttpRequestFactory;
-import org.mapfish.print.TestHttpClientFactory;
-import org.mapfish.print.config.Configuration;
-import org.mapfish.print.config.ConfigurationFactory;
-import org.mapfish.print.map.style.json.ColorParser;
-import org.mapfish.print.test.util.ImageSimilarity;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
     private static final String BASE_DIR = "north_arrow/";

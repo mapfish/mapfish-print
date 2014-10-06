@@ -22,19 +22,17 @@ package org.mapfish.print.map.tiled;
 import com.google.common.base.Function;
 import com.google.common.collect.Multimap;
 import com.vividsolutions.jts.geom.Coordinate;
-
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.attribute.map.MapBounds;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.Scale;
 import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -90,7 +88,7 @@ public abstract class TileCacheInformation {
      * @param row                the row index of the tile from the origin of the tile cache.
      */
     @Nonnull
-    public abstract ClientHttpRequest getTileRequest(ClientHttpRequestFactory httpRequestFactory,
+    public abstract ClientHttpRequest getTileRequest(MfClientHttpRequestFactory httpRequestFactory,
                                                      String commonUrl,
                                                      ReferencedEnvelope tileBounds,
                                                      Dimension tileSizeOnScreen,

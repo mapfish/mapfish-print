@@ -21,7 +21,7 @@ package org.mapfish.print.map.geotools;
 
 import org.geotools.data.FeatureSource;
 import org.mapfish.print.attribute.map.MapfishMapContext;
-import org.springframework.http.client.ClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 
 import javax.annotation.Nonnull;
 
@@ -37,6 +37,6 @@ public interface FeatureSourceSupplier {
      * @param mapContext object containing the map information like bounds, map size, dpi, rotation, etc...
      */
     @Nonnull
-    FeatureSource load(@Nonnull final ClientHttpRequestFactory requestFactory,
+    FeatureSource load(@Nonnull final MfClientHttpRequestFactory requestFactory,
                        @Nonnull MapfishMapContext mapContext);
 }

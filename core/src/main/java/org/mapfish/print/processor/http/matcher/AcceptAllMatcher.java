@@ -19,11 +19,8 @@
 
 package org.mapfish.print.processor.http.matcher;
 
-import org.springframework.http.HttpMethod;
-
 import java.net.MalformedURLException;
 import java.net.SocketException;
-import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.List;
 
@@ -33,6 +30,11 @@ import java.util.List;
  * @author jesseeichar on 1/20/14.
  */
 public final class AcceptAllMatcher implements URIMatcher {
+    /**
+     * A singleton instance to reduce creating unnecessary instances.
+     */
+    public static final AcceptAllMatcher INSTANCE = new AcceptAllMatcher();
+
     @Override
     public void validate(final List<Throwable> validationErrors) {
         // no checks required
@@ -44,7 +46,7 @@ public final class AcceptAllMatcher implements URIMatcher {
     }
 
     @Override
-    public boolean accepts(final URI uri, final HttpMethod httpMethod) throws UnknownHostException, SocketException, MalformedURLException {
+    public boolean accepts(final MatchInfo matchInfo) throws UnknownHostException, SocketException, MalformedURLException {
         return true;
     }
 }

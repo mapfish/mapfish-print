@@ -25,7 +25,7 @@ import org.geotools.map.GridReaderLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
 import org.mapfish.print.attribute.map.MapfishMapContext;
-import org.springframework.http.client.ClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,7 +36,7 @@ import java.util.concurrent.ExecutorService;
  */
 public class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
 
-    private final Function<ClientHttpRequestFactory, AbstractGridCoverage2DReader> coverage2DReaderSupplier;
+    private final Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> coverage2DReaderSupplier;
     private final StyleSupplier<AbstractGridCoverage2DReader> styleSupplier;
 
     /**
@@ -46,7 +46,7 @@ public class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
      * @param style            style to use for rendering the data.
      * @param executorService  the thread pool for doing the rendering.
      */
-    public AbstractGridCoverage2DReaderLayer(final Function<ClientHttpRequestFactory, AbstractGridCoverage2DReader> coverage2DReader,
+    public AbstractGridCoverage2DReaderLayer(final Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> coverage2DReader,
                                              final StyleSupplier<AbstractGridCoverage2DReader> style,
                                              final ExecutorService executorService) {
         super(executorService);
@@ -55,7 +55,7 @@ public class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
     }
 
     @Override
-    public final synchronized List<? extends Layer> getLayers(final ClientHttpRequestFactory httpRequestFactory,
+    public final synchronized List<? extends Layer> getLayers(final MfClientHttpRequestFactory httpRequestFactory,
                                                  final MapfishMapContext mapContext,
                                                  final boolean isFirstLayer) throws Exception {
         AbstractGridCoverage2DReader coverage2DReader = this.coverage2DReaderSupplier.apply(httpRequestFactory);
