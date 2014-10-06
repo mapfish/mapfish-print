@@ -19,6 +19,7 @@
 
 package org.mapfish.print.processor.jasper;
 
+import com.google.common.annotations.Beta;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -61,6 +62,7 @@ import javax.annotation.Nullable;
  *
  * @author Jesse on 9/6/2014.
  */
+@Beta
 public final class MergeDataSourceProcessor extends AbstractProcessor<MergeDataSourceProcessor.In, MergeDataSourceProcessor.Out>
         implements CustomDependencies {
     private List<Source> sources = Lists.newArrayList();
