@@ -22,7 +22,6 @@ package org.mapfish.print.processor.jasper;
 import org.mapfish.print.config.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
@@ -49,10 +48,6 @@ public final class HttpImageResolver implements TableColumnConverter<BufferedIma
     private Pattern urlExtractor = Pattern.compile("(.*)");
     private int urlGroup = 1;
     private BufferedImage defaultImage;
-
-    @Autowired
-    private ClientHttpRequestFactory requestFactory;
-
 
     /**
      * Constructor.
@@ -82,22 +77,33 @@ public final class HttpImageResolver implements TableColumnConverter<BufferedIma
     }
 
     @Override
-    public BufferedImage resolve(final String text) throws URISyntaxException, IOException {
+    public BufferedImage resolve(final ClientHttpRequestFactory requestFactory,
+                                 final String text) throws URISyntaxException, IOException {
         Matcher urlMatcher = this.urlExtractor.matcher(text);
 
         if (urlMatcher.matches() && urlMatcher.group(this.urlGroup) != null) {
-            URI url = new URI(urlMatcher.group(this.urlGroup));
-            final ClientHttpRequest request = this.requestFactory.createRequest(url, HttpMethod.GET);
-            final ClientHttpResponse response = request.execute();
-            if (response.getStatusCode() == HttpStatus.OK) {
-                try {
-                    return ImageIO.read(response.getBody());
-                } catch (IOException e) {
-                    LOGGER.warn("Image loaded from '" + url + "'is not valid: " + e.getMessage());
+            final String uriString = urlMatcher.group(this.urlGroup);
+            try {
+                URI url = new URI(uriString);
+                final ClientHttpRequest request = requestFactory.createRequest(url, HttpMethod.GET);
+                final ClientHttpResponse response = request.execute();
+                if (response.getStatusCode() == HttpStatus.OK) {
+                    try {
+                        final BufferedImage image = ImageIO.read(response.getBody());
+                        if (image == null) {
+                            LOGGER.warn("The URL: " + url + " is an image format that can be decoded");
+                            return this.defaultImage;
+                        }
+                        return image;
+                    } catch (IOException e) {
+                        LOGGER.warn("Image loaded from '" + url + "'is not valid: " + e.getMessage());
+                    }
+                } else {
+                    LOGGER.warn("Error loading the table row image: " + url + ".\nStatus Code: " + response.getStatusCode() +
+                                "\nStatus Text: " + response.getStatusText());
                 }
-            } else {
-                LOGGER.warn("Error loading the table row image: " + url + ".\nStatus Code: " + response.getStatusCode() +
-                "\nStatus Text: " + response.getStatusText());
+            } catch (Throwable e) {
+                LOGGER.warn("Error loading table row image: " + uriString, e);
             }
         }
 

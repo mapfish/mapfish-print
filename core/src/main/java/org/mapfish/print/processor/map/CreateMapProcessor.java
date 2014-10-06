@@ -137,7 +137,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         checkCancelState(context);
         final URI mapSubReport = createMapSubReport(param.tempTaskDirectory, mapValues.getMapSize(), graphics, mapValues.getDpi());
 
-        return new Output(graphics, mapSubReport.toString());
+        return new Output(graphics, mapSubReport.toString(), createMapContext(mapValues));
     }
 
     @Override
@@ -165,21 +165,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                                           final MapAttribute.MapAttributeValues mapValues,
                                           final ExecutionContext context)
             throws Exception {
-        final Dimension mapSize = mapValues.getMapSize();
-        final double dpi = mapValues.getDpi();
-        Rectangle paintArea = new Rectangle(mapSize);
-
-        final double dpiOfRequestor = mapValues.getRequestorDPI();
-
-        MapBounds bounds = mapValues.getMapBounds();
-        bounds = adjustBoundsToScaleAndMapSize(mapValues, dpiOfRequestor, paintArea, bounds);
-
-        // if the DPI is higher than the PDF DPI we need to make the image larger so the image put in the PDF is large enough for the
-        // higher DPI printer
-        final double dpiRatio = dpi / dpiOfRequestor;
-        paintArea.setBounds(0, 0, (int) (mapSize.getWidth() * dpiRatio), (int) (mapSize.getHeight() * dpiRatio));
-        final MapfishMapContext transformer = new MapfishMapContext(bounds, paintArea.getSize(),
-                mapValues.getRotation(), dpi, mapValues.longitudeFirst);
+        final MapfishMapContext transformer = createMapContext(mapValues);
 
         // reverse layer list to draw from bottom to top.  normally position 0 is top-most layer.
         final List<MapLayer> layers = Lists.reverse(Lists.newArrayList(mapValues.getLayers()));
@@ -196,7 +182,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             File path = null;
             if (renderAsSvg(layer)) {
                 // render layer as SVG
-                final SVGGraphics2D graphics2D = getSvgGraphics(paintArea.getSize());
+                final SVGGraphics2D graphics2D = getSvgGraphics(transformer.getMapSize());
 
                 try {
                     Graphics2D clippedGraphics2D = createClippedGraphics(transformer, areaOfInterest, graphics2D);
@@ -209,8 +195,8 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 }
             } else {
                 // render layer as raster graphic
-                final BufferedImage bufferedImage = new BufferedImage((int) paintArea.getWidth(),
-                        (int) paintArea.getHeight(), this.imageType.value);
+                final BufferedImage bufferedImage = new BufferedImage(transformer.getMapSize().width,
+                        transformer.getMapSize().height, this.imageType.value);
                 Graphics2D graphics2D = createClippedGraphics(transformer, areaOfInterest, bufferedImage.createGraphics());
                 try {
                     layer.render(graphics2D, clientHttpRequestFactory, transformer, isFirstLayer);
@@ -226,6 +212,24 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         }
 
         return graphics;
+    }
+
+    private MapfishMapContext createMapContext(final MapAttribute.MapAttributeValues mapValues) {
+        final Dimension mapSize = mapValues.getMapSize();
+        Rectangle paintArea = new Rectangle(mapSize);
+
+        final double dpi = mapValues.getDpi();
+        final double dpiOfRequestor = mapValues.getRequestorDPI();
+
+        MapBounds bounds = mapValues.getMapBounds();
+        bounds = adjustBoundsToScaleAndMapSize(mapValues, dpiOfRequestor, paintArea, bounds);
+
+        // if the DPI is higher than the PDF DPI we need to make the image larger so the image put in the PDF is large enough for the
+        // higher DPI printer
+        final double dpiRatio = dpi / dpiOfRequestor;
+        paintArea.setBounds(0, 0, (int) (mapSize.getWidth() * dpiRatio), (int) (mapSize.getHeight() * dpiRatio));
+        return new MapfishMapContext(bounds, paintArea.getSize(),
+                mapValues.getRotation(), dpi, mapValues.longitudeFirst);
     }
 
 
@@ -399,9 +403,17 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
          */
         public final String mapSubReport;
 
-        private Output(final List<URI> layerGraphics, final String mapSubReport) {
+        /**
+         * The map parameters used after zooming and all other calculations that are made.
+         */
+        public final MapfishMapContext mapContext;
+
+        private Output(final List<URI> layerGraphics,
+                       final String mapSubReport,
+                       final MapfishMapContext mapContext) {
             this.layerGraphics = layerGraphics;
             this.mapSubReport = mapSubReport;
+            this.mapContext = mapContext;
         }
     }
 

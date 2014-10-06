@@ -37,7 +37,9 @@ templates:
         styleDef: style
     - !createMap
       inputMapper: {mapDef2: map}
-      outputMapper: {mapSubReport: map2}
+      outputMapper:
+        mapSubReport: map2
+        mapContext: mapContext2
     - !setStyle
       inputMapper:
         mapDef2: map

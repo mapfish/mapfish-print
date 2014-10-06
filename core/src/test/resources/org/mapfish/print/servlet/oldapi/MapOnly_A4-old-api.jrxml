@@ -6,8 +6,8 @@
         <parameterDescription><![CDATA[Geo Json map]]></parameterDescription>
     </parameter>
     <parameter name="table" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
-    <parameter name="legend1Datasource" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
-    <parameter name="legend2Datasource" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
+    <parameter name="legend1Legend" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
+    <parameter name="legend2Legend" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
     <queryString>
         <![CDATA[]]>
     </queryString>
@@ -33,12 +33,12 @@
             </subreport>
             <subreport>
                 <reportElement x="0" y="279" width="802" height="138" uuid="c6b99036-9edf-444d-9087-c6b51ce0b2c1"/>
-                <dataSourceExpression><![CDATA[$P{legend1Datasource}]]></dataSourceExpression>
+                <dataSourceExpression><![CDATA[$P{legend1Legend}]]></dataSourceExpression>
                 <subreportExpression><![CDATA["legend.jasper"]]></subreportExpression>
             </subreport>
             <subreport>
                 <reportElement x="0" y="417" width="802" height="138" uuid="c6b99036-9edf-444d-9087-c6b51ce0b2c2"/>
-                <dataSourceExpression><![CDATA[$P{legend2Datasource}]]></dataSourceExpression>
+                <dataSourceExpression><![CDATA[$P{legend2Legend}]]></dataSourceExpression>
                 <subreportExpression><![CDATA["legend.jasper"]]></subreportExpression>
             </subreport>
         </band>

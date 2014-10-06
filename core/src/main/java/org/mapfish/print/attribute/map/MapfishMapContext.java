@@ -20,6 +20,7 @@
 package org.mapfish.print.attribute.map;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.mapfish.print.map.Scale;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
@@ -72,7 +73,10 @@ public class MapfishMapContext {
     public final Dimension getMapSize() {
         return this.mapSize;
     }
-    
+    public final Scale getScale() {
+        return this.bounds.getScaleDenominator(getPaintArea(), this.dpi);
+    }
+
     /**
      * @return The new map size taking the rotation into account.
      */

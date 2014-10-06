@@ -24,8 +24,8 @@ templates:
       outputMapper: {table: table}
     - !prepareLegend
       inputMapper: {legend1: legend}
-      outputMapper: {legend: legend1Datasource}
+      outputPrefix: legend1
     - !prepareLegend
       inputMapper: {legend2: legend}
-      outputMapper: {legend: legend2Datasource}
+      outputPrefix: legend2
 

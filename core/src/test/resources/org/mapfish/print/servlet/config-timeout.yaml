@@ -20,8 +20,8 @@ templates:
         directory: '.'
     - !createMap
         inputMapper: {geojsonMap: map}
-        outputMapper: {mapSubReport: geojsonMap}
+        outputPrefix: geojson
     - !createMap
+        outputPrefix: image
         inputMapper: {imageMap: map}
-        outputMapper: {mapSubReport: imageMap}
 

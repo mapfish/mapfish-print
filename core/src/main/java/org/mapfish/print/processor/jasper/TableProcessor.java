@@ -23,7 +23,9 @@ import com.google.common.collect.Maps;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.mapfish.print.attribute.TableAttribute.TableAttributeValue;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.InternalValue;
 import org.mapfish.print.wrapper.PArray;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,7 +80,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
                 final String rowValue = jsonRow.getString(j);
                 TableColumnConverter converter = this.columnConverterMap.get(columnName);
                 if (converter != null) {
-                    Object convertedValue = converter.resolve(rowValue);
+                    Object convertedValue = converter.resolve(values.clientHttpRequestFactory, rowValue);
                     row.put(columnName, convertedValue);
                 } else {
                     row.put(columnName, rowValue);
@@ -88,7 +90,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         }
 
         final JRMapCollectionDataSource dataSource = new JRMapCollectionDataSource(table);
-        return new Output(dataSource);
+        return new Output(dataSource, table.size());
     }
 
     @Override
@@ -100,6 +102,12 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
      * Input object for execute.
      */
     public static final class Input {
+        /**
+         * A factory for making http requests.  This is added to the values by the framework and therefore
+         * does not need to be set in configuration
+         */
+        @InternalValue
+        public ClientHttpRequestFactory clientHttpRequestFactory;
         /**
          * Data for constructing the table Datasource.
          */
@@ -115,8 +123,15 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
          */
         public final JRMapCollectionDataSource table;
 
-        private Output(final JRMapCollectionDataSource dataSource) {
+        /**
+         * The number of rows in the table.
+         */
+        public final int numberOfTableRows;
+
+        private Output(final JRMapCollectionDataSource dataSource,
+                       final int numberOfTableRows) {
             this.table = dataSource;
+            this.numberOfTableRows = numberOfTableRows;
         }
     }
 }

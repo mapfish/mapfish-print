@@ -19,8 +19,8 @@ templates:
         directory: '.'
     - !createMap
         inputMapper: {geojsonMap: map}
-        outputMapper: {mapSubReport: geojsonMap}
+        outputPrefix: geojson
     - !createMap
         inputMapper: {imageMap: map}
-        outputMapper: {mapSubReport: imageMap}
+        outputPrefix: image
 
