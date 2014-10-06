@@ -52,7 +52,7 @@ import javax.annotation.Nullable;
  * </p>
  * <p>
  *     The json data of this attribute is special since it represents an array of attributes, each element in the array must
- *     be all of the attributes required to satisfy the processors in the {@link org.mapfish.print.processor.jasper.DataSourceProcessor}.
+ *     contain all of the attributes required to satisfy the processors in the {@link org.mapfish.print.processor.jasper.DataSourceProcessor}.
  * </p>
  * <p>
  * Example configuration:

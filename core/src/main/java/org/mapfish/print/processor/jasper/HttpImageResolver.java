@@ -92,7 +92,7 @@ public final class HttpImageResolver implements TableColumnConverter<BufferedIma
                     try {
                         final BufferedImage image = ImageIO.read(response.getBody());
                         if (image == null) {
-                            LOGGER.warn("The URL: " + url + " is an image format that can be decoded");
+                            LOGGER.warn("The URL: " + url + " is NOT an image format that can be decoded");
                             return this.defaultImage;
                         }
                         return image;

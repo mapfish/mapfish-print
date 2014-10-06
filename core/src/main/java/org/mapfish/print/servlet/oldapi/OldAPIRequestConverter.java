@@ -263,6 +263,11 @@ public final class OldAPIRequestConverter {
             oldLegendJson = new PJsonArray(oldRequest, new JSONArray(), "generated");
         }
 
+        if (legendProcessors.size() != oldLegendJson.size()) {
+            LOGGER.warn("Not all legends processors have request data.  There are " + legendProcessors.size() +
+                        " and there are " + oldLegendJson.size() + " legend request objects.");
+        }
+
         for (int i = 0; i < legendProcessors.size(); i++) {
             String legendAttName = "legend";
             LegendProcessor legendProcessor = legendProcessors.get(i);

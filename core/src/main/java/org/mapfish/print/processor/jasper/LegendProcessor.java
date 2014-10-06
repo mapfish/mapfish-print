@@ -107,7 +107,7 @@ public class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, Le
                     if (httpResponse.getStatusCode() == HttpStatus.OK) {
                         image = ImageIO.read(httpResponse.getBody());
                         if (image == null) {
-                            LOGGER.warn("The URL: " + icon + " is an image format that can be decoded");
+                            LOGGER.warn("The URL: " + icon + " is NOT an image format that can be decoded");
                         }
                     } else {
                         LOGGER.warn("Failed to load image from: " + icon + " due to server side error.\n\tResponse Code: " +
