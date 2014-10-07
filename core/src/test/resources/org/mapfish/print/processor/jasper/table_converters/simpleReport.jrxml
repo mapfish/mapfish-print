@@ -41,7 +41,7 @@
 	</style>
 	<field name="id" class="java.lang.Integer"/>
 	<field name="name" class="java.lang.String"/>
-	<field name="icon" class="java.awt.Image"/>
+	<field name="icon" class="java.lang.Object"/>
 	<pageHeader>
 		<band/>
 	</pageHeader>
@@ -71,8 +71,16 @@
 				<reportElement style="DejaVu Sans_for_column_DJR_2141_COLUMN_1_" positionType="Float" stretchType="RelativeToTallestObject" x="185" y="0" width="185" height="15" isPrintWhenDetailOverflows="true" uuid="1e0ee0ef-22a5-43d5-b8d2-a731fc573055"/>
 				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
 			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="405" y="4" width="185" height="15" isPrintWhenDetailOverflows="true" uuid="1e0ee0ef-22a5-43d5-b8d2-a731fc573055">
+					<printWhenExpression><![CDATA[new Boolean(!$F{icon}.getClass().equals(java.awt.image.BufferedImage.class))]]></printWhenExpression>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{icon}]]></textFieldExpression>
+			</textField>
 			<image>
-				<reportElement x="405" y="4" width="150" height="48" uuid="b596e4a6-f233-4628-b272-f2ba0607df3f"/>
+				<reportElement x="405" y="4" width="150" height="48" uuid="b596e4a6-f233-4628-b272-f2ba0607df3f">
+					<printWhenExpression><![CDATA[new Boolean($F{icon}.getClass().equals(java.awt.image.BufferedImage.class))]]></printWhenExpression>
+				</reportElement>
 				<imageExpression><![CDATA[$F{icon}]]></imageExpression>
 			</image>
 		</band>
