@@ -28,6 +28,7 @@
     <import resource="mapfish-spring-style-parsers.xml" />
     <import resource="mapfish-spring-config-file-loaders.xml" />
     <import resource="mapfish-spring-config-output-formats.xml" />
+    <import resource="mapfish-spring-access-assertions.xml" />
 
     <context:annotation-config/>
     <context:property-placeholder system-properties-mode="FALLBACK" file-encoding="UTF-8" location="classpath:mapfish-spring.properties"/>

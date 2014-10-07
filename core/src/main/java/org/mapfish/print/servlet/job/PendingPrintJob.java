@@ -21,6 +21,7 @@ package org.mapfish.print.servlet.job;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.mapfish.print.config.access.AccessAssertion;
 
 /**
  * Represents a pending print job.
@@ -33,9 +34,11 @@ public class PendingPrintJob extends PrintJobStatus {
      *
      * @param referenceId    reference of the report.
      * @param appId          the appId used for loading the configuration.
+     * @param access         the an access control object for downloading this report.  Typically this is combined access of the
+     *                       template and the configuration.
      */
-    public PendingPrintJob(final String referenceId, final String appId) {
-        super(referenceId, appId, null, null);
+    public PendingPrintJob(final String referenceId, final String appId, final AccessAssertion access) {
+        super(referenceId, appId, null, null, access);
     }
 
     /**
@@ -45,10 +48,13 @@ public class PendingPrintJob extends PrintJobStatus {
      *                       parent class.
      * @param referenceId    reference of the report.
      * @param appId          the appId used for loading the configuration.
+     * @param reportAccess   the an access control object for downloading this report.  Typically this is combined access of the
+     *                        template and the configuration.
      */
-    public static PendingPrintJob load(final JSONObject metadata, final String referenceId, final String appId)
+    public static PendingPrintJob load(final JSONObject metadata, final String referenceId, final String appId,
+                                       final AccessAssertion reportAccess)
             throws JSONException {
-        return new PendingPrintJob(referenceId, appId);
+        return new PendingPrintJob(referenceId, appId, reportAccess);
     }
 
     @Override

@@ -28,6 +28,9 @@ import org.json.JSONWriter;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.attribute.InternalAttribute;
 import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.config.access.AccessAssertion;
+import org.mapfish.print.config.access.AlwaysAllowAssertion;
+import org.mapfish.print.config.access.RoleAccessAssertion;
 import org.mapfish.print.map.style.StyleParser;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
@@ -67,7 +70,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
     private volatile ProcessorDependencyGraph iterProcessorGraph;
     private Map<String, String> styles = new HashMap<String, String>();
     private Configuration configuration;
-    private List<String> access = Lists.newArrayList();
+    private AccessAssertion accessAssertion = AlwaysAllowAssertion.INSTANCE;
     @Autowired
     private StyleParser styleParser;
     @Qualifier("httpClientFactory")
@@ -96,21 +99,6 @@ public class Template implements ConfigurationObject, HasConfiguration {
         json.endArray();
     }
 
-    /**
-     * The roles required to access this template.  If empty or not set then it is a <em>public</em> template.  If there are
-     * many roles then a user must have one of the roles in order to access the template.
-     * <p/>
-     * The security (how authentication/authorization is done) is configured in the /WEB-INF/classes/mapfish-spring-security.xml
-     * <p>
-     * Any user without the required role will get an error when trying to access the template and the template will not
-     * be visible in the capabilities requests.
-     * </p>
-     *
-     * @param access the roles needed to access this
-     */
-    public final void setAccess(final List<String> access) {
-        this.access = access;
-    }
 
     public final Map<String, Attribute> getAttributes() {
         return this.attributes;
@@ -261,10 +249,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
 
     @Override
     public final void validate(final List<Throwable> validationErrors) {
-        if (this.access == null) {
-            validationErrors.add(new ConfigurationException("Access is null this is not permitted, by default it is nonnull so there " +
-                                                            "must be an programming error."));
-        }
+        this.accessAssertion.validate(validationErrors);
         int numberOfTableConfigurations = this.tableDataKey == null ? 0 : 1;
         numberOfTableConfigurations += this.jdbcUrl == null ? 0 : 1;
 
@@ -310,6 +295,28 @@ public class Template implements ConfigurationObject, HasConfiguration {
     }
 
     final void assertAccessible(final String name) {
-        Configuration.assertAccessible(name, this.access);
+        this.accessAssertion.assertAccess("Template '" + name + "'", this);
+    }
+
+
+    /**
+     * The roles required to access this template.  If empty or not set then it is a <em>public</em> template.  If there are
+     * many roles then a user must have one of the roles in order to access the template.
+     * <p/>
+     * The security (how authentication/authorization is done) is configured in the /WEB-INF/classes/mapfish-spring-security.xml
+     * <p>
+     * Any user without the required role will get an error when trying to access the template and the template will not
+     * be visible in the capabilities requests.
+     * </p>
+     *
+     * @param access the roles needed to access this
+     */
+    public final void setAccess(final List<String> access) {
+        final RoleAccessAssertion assertion = new RoleAccessAssertion();
+        assertion.setRequiredRoles(access);
+        this.accessAssertion = assertion;
+    }
+    public final AccessAssertion getAccessAssertion() {
+        return this.accessAssertion;
     }
 }
