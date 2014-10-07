@@ -48,7 +48,7 @@ import static org.junit.Assert.assertEquals;
  * Created by Jesse on 3/26/14.
  */
 public class CreateMapProcessorCenterGeojsonJsonStyleV1 extends AbstractMapfishSpringTest {
-    public static final String BASE_DIR ="center-geojson-json-style-v1/";
+    public static final String BASE_DIR ="center_geojson_json_style_v1/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
