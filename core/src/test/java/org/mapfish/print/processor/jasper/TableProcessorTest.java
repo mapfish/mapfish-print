@@ -59,6 +59,7 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
     public static final String BASIC_BASE_DIR = "table/";
     public static final String DYNAMIC_BASE_DIR = "table-dynamic/";
     public static final String IMAGE_CONVERTER_BASE_DIR = "table-image-column-resolver/";
+    public static final String TABLE_CONVERTER = "table_converters/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
@@ -144,6 +145,38 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         });
 
         final String baseDir = IMAGE_CONVERTER_BASE_DIR;
+        final Configuration config = configurationFactory.getConfig(getFile(baseDir + "config.yaml"));
+        PJsonObject requestData = loadJsonRequestData(baseDir);
+
+        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
+        final File file = getFile(TableProcessorTest.class, baseDir);
+        JasperPrint print = format.getJasperPrint(requestData, config, file, getTaskDirectory()).print;
+        BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
+//        ImageIO.write(reportImage, "png", new File("e:/tmp/testColumnImageConverter.png"));
+        // note that we are using a sample size of 50, because the image is quite big.
+        // otherwise small differences are not detected!
+        new ImageSimilarity(reportImage, 50).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
+    }
+
+    @Test
+    public void testTableConverters() throws Exception {
+        httpRequestFactory.registerHandler(new Predicate<URI>() {
+            @Override
+            public boolean apply(@Nullable URI input) {
+                return input.toString().contains("icons.com");
+            }
+        }, new TestHttpClientFactory.Handler() {
+            @Override
+            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                final URL imageUrl = TableProcessorTest.class.getResource("/icons" + uri.getPath());
+                final byte[] imageBytes = Resources.toByteArray(imageUrl);
+                MockClientHttpRequest request = new MockClientHttpRequest();
+                request.setResponse(new MockClientHttpResponse(imageBytes, HttpStatus.OK));
+                return request;
+            }
+        });
+
+        final String baseDir = TABLE_CONVERTER;
         final Configuration config = configurationFactory.getConfig(getFile(baseDir + "config.yaml"));
         PJsonObject requestData = loadJsonRequestData(baseDir);
 
