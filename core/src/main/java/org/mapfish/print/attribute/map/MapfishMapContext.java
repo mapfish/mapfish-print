@@ -38,6 +38,7 @@ public class MapfishMapContext {
     private final double dpi;
     private final double requestorDpi;
     private final boolean forceLongitudeFirst;
+    private final boolean dpiSensitiveStyle;
 
     /**
      * Constructor.
@@ -47,15 +48,17 @@ public class MapfishMapContext {
      * @param dpi the dpi of the printed map
      * @param requestorDpi the dpi of the client map
      * @param forceLongitudeFirst If true then force longitude coordinates as the first coordinate.
+     * @param dpiSensitiveStyle Scale the vector styles?
      */
     public MapfishMapContext(final MapBounds bounds, final Dimension mapSize, final double rotationInDegree, final double dpi,
-                             final double requestorDpi, final Boolean forceLongitudeFirst) {
+                             final double requestorDpi, final Boolean forceLongitudeFirst, final boolean dpiSensitiveStyle) {
         this.bounds = bounds;
         this.mapSize = mapSize;
         this.rotation = Math.toRadians(rotationInDegree);
         this.dpi = dpi;
         this.requestorDpi = requestorDpi;
         this.forceLongitudeFirst = forceLongitudeFirst == null ? false : forceLongitudeFirst;
+        this.dpiSensitiveStyle = dpiSensitiveStyle;
     }
 
     /**
@@ -175,6 +178,10 @@ public class MapfishMapContext {
 
     public final Boolean isForceLongitudeFirst() {
         return this.forceLongitudeFirst;
+    }
+
+    public final Boolean isDpiSensitiveStyle() {
+        return this.dpiSensitiveStyle;
     }
 
     /**
