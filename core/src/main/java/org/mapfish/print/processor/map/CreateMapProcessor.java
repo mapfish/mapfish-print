@@ -234,7 +234,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         final double dpiRatio = dpi / dpiOfRequestor;
         paintArea.setBounds(0, 0, (int) (mapSize.getWidth() * dpiRatio), (int) (mapSize.getHeight() * dpiRatio));
         return new MapfishMapContext(bounds, paintArea.getSize(),
-                mapValues.getRotation(), dpi, mapValues.longitudeFirst);
+                mapValues.getRotation(), dpi, mapValues.getRequestorDPI(), mapValues.longitudeFirst);
     }
 
 

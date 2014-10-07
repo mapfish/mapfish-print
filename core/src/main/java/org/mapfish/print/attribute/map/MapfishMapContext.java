@@ -36,6 +36,7 @@ public class MapfishMapContext {
     private final Dimension mapSize;
     private final double rotation;
     private final double dpi;
+    private final double requestorDpi;
     private final boolean forceLongitudeFirst;
 
     /**
@@ -44,14 +45,16 @@ public class MapfishMapContext {
      * @param mapSize the map size
      * @param rotationInDegree the rotation in degree
      * @param dpi the dpi of the printed map
+     * @param requestorDpi the dpi of the client map
      * @param forceLongitudeFirst If true then force longitude coordinates as the first coordinate.
      */
     public MapfishMapContext(final MapBounds bounds, final Dimension mapSize, final double rotationInDegree, final double dpi,
-                             final Boolean forceLongitudeFirst) {
+                             final double requestorDpi, final Boolean forceLongitudeFirst) {
         this.bounds = bounds;
         this.mapSize = mapSize;
         this.rotation = Math.toRadians(rotationInDegree);
         this.dpi = dpi;
+        this.requestorDpi = requestorDpi;
         this.forceLongitudeFirst = forceLongitudeFirst == null ? false : forceLongitudeFirst;
     }
 
@@ -140,6 +143,10 @@ public class MapfishMapContext {
 
     public final double getDPI() {
         return this.dpi;
+    }
+
+    public final double getRequestorDPI() {
+        return this.requestorDpi;
     }
 
     private int getRotatedMapWidth() {
