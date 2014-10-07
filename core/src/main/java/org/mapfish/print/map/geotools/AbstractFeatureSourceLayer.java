@@ -26,6 +26,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
+import org.geotools.styling.visitor.RescaleStyleVisitor;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 
@@ -72,8 +73,17 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
     public final List<? extends Layer> getLayers(final MfClientHttpRequestFactory httpRequestFactory,
                                                  final MapfishMapContext mapContext,
                                                  final boolean isFirstLayer) throws Exception {
-        FeatureSource source = this.featureSourceSupplier.load(httpRequestFactory, mapContext);
+        FeatureSource<?, ?> source = this.featureSourceSupplier.load(httpRequestFactory, mapContext);
         Style style = this.styleSupplier.load(httpRequestFactory, source, mapContext);
+
+        if (mapContext.getDPI() > mapContext.getRequestorDPI()) {
+            // rescale styles for a higher dpi print
+            double scaleFactor = mapContext.getDPI() / mapContext.getRequestorDPI();
+            RescaleStyleVisitor scale = new RescaleStyleVisitor(scaleFactor);
+            style.accept(scale);
+            style = (Style) scale.getCopy();
+        }
+
         return Lists.newArrayList(new FeatureLayer(source, style));
     }
 
