@@ -72,7 +72,7 @@ public class GenericMapAttributeTest {
         assertTrue(json.toString(2), json.has(JSON_CLIENT_INFO));
 
         final JSONObject required = json.getJSONObject(JSON_CLIENT_PARAMS);
-        assertEquals(required.toString(2), 12, required.length());
+        assertEquals(required.toString(2), 13, required.length());
 
         assertElem(required, "requiredElem", "int", null, false);
         assertElem(required, "pArray", "array", null, false);
@@ -84,6 +84,7 @@ public class GenericMapAttributeTest {
         assertElem(required, "useNearestScale", "boolean", "null", false);
         assertElem(required, "useAdjustBounds", "boolean", "null", false);
         assertElem(required, "longitudeFirst", "boolean", "null", false);
+        assertElem(required, "dpiSensitiveStyle", "boolean", "true", false);
         assertEmbedded(required, false, "embedded");
         assertEmbedded(required, true, "optionalEmbedded");
 
@@ -118,7 +119,7 @@ public class GenericMapAttributeTest {
         JSONObject json = new JSONObject(stringWriter.toString());
 
         final JSONObject required = json.getJSONObject(JSON_CLIENT_PARAMS);
-        assertEquals(12, required.length());
+        assertEquals(13, required.length());
 
         assertElem(required, "rotation", "double", "1", false);
         JSONObject embeddedDefault = required.getJSONObject("embedded").getJSONObject(JSON_ATTRIBUTE_DEFAULT);

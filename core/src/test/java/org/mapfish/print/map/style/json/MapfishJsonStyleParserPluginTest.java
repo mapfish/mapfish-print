@@ -296,7 +296,7 @@ public class MapfishJsonStyleParserPluginTest {
         final String styleJson = getSpec(styleJsonFileName);
 
         final CenterScaleMapBounds bounds = new CenterScaleMapBounds(CRS.decode("CRS:84"), 0, 0, new Scale(300000));
-        MapfishMapContext context = new MapfishMapContext(bounds, new Dimension(500, 500), 0, 72, Constants.PDF_DPI, null);
+        MapfishMapContext context = new MapfishMapContext(bounds, new Dimension(500, 500), 0, 72, Constants.PDF_DPI, null, true);
         final Optional<Style> styleOptional = mapfishJsonStyleParserPlugin.parseStyle(config, httpClient, styleJson, context);
 
         assertTrue(styleOptional.isPresent());

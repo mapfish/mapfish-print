@@ -68,7 +68,7 @@ public class GridLayerPluginTest {
         Dimension mapSize = new Dimension(400, 400);
         double rotation = 0;
         double dpi = 72;
-        MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, Constants.PDF_DPI, null);
+        MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, Constants.PDF_DPI, null, true);
         final List<? extends Layer> layers = layer.getLayers(null, context, true);
         assertEquals(1, layers.size());
 
@@ -103,7 +103,7 @@ public class GridLayerPluginTest {
         Dimension mapSize = new Dimension(400, 400);
         double rotation = 0;
         double dpi = 72;
-        MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, Constants.PDF_DPI, null);
+        MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, Constants.PDF_DPI, null, true);
         final List<? extends Layer> layers = layer.getLayers(null, context, true);
         assertEquals(1, layers.size());
 

@@ -37,7 +37,7 @@ public class URLSLDParserPluginTest extends AbstractMapfishSpringTest {
     @Autowired
     private ConfigFileLoaderManager fileLoaderManager;
     private MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0,
-            72, Constants.PDF_DPI, null);
+            72, Constants.PDF_DPI, null, true);
 
     @Test
     @DirtiesContext
