@@ -57,6 +57,7 @@ import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -77,7 +78,8 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
 
     private static final int SPACE_BETWEEN_COLS = 0;
     private static final int DEFAULT_MAX_COLUMNS = 9;
-    private Map<String, TableColumnConverter> columnConverterMap = Maps.newHashMap();
+    private Map<String, TableColumnConverter<?>> columnConverterMap = Maps.newHashMap();
+    private List<TableColumnConverter<?>> converters = Lists.newArrayList();
     private boolean dynamic = false;
     private String jasperTemplate = null;
     private String firstHeaderStyle;
@@ -134,8 +136,19 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
      *
      * @param columnConverters Map from column name -> {@link TableColumnConverter}
      */
-    public void setColumns(final Map<String, TableColumnConverter> columnConverters) {
+    public void setColumns(final Map<String, TableColumnConverter<?>> columnConverters) {
         this.columnConverterMap = columnConverters;
+    }
+
+    /**
+     * Set strategies for converting the textual representation of each cell to some other object (image, other text, etc...).
+     * <p/>
+     * This is similar to the converters specified for a particular column. The difference is that these converters are applied
+     * to every cell of the table (except for the cells of those columns that are assigned a specific converter).
+     * @param converters A list of {@link TableColumnConverter}s.
+     */
+    public void setConverters(final List<TableColumnConverter<?>> converters) {
+        this.converters = converters;
     }
 
     /**
@@ -242,9 +255,11 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
             for (int j = 0; j < jsonRow.size(); j++) {
                 final String columnName = columnNames[j];
                 Object rowValue = jsonRow.get(j);
-                TableColumnConverter converter = this.columnConverterMap.get(columnName);
+                TableColumnConverter<?> converter = this.columnConverterMap.get(columnName);
                 if (converter != null) {
                     rowValue = converter.resolve(values.clientHttpRequestFactory, (String) rowValue);
+                } else {
+                    rowValue = tryConvert(values.clientHttpRequestFactory, rowValue);
                 }
                 if (columns.size() < this.maxColumns && !this.excludeColumns.contains(columnName)) {
                     Class<?> columnDef = columns.get(columnName);
@@ -267,6 +282,27 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         }
         final JRMapCollectionDataSource dataSource = new JRMapCollectionDataSource(table);
         return new Output(dataSource, table.size(), subreport);
+    }
+
+    /**
+     * If converters are set on a table, this function tests if these can convert
+     * a cell value. The first converter, which claims that it can convert,
+     * will be used to do the conversion.
+     */
+    private Object tryConvert(final MfClientHttpRequestFactory clientHttpRequestFactory,
+            final Object rowValue) throws URISyntaxException, IOException {
+        if (this.converters.isEmpty()) {
+            return rowValue;
+        }
+
+        String value = String.valueOf(rowValue);
+        for (TableColumnConverter<?> converter : this.converters) {
+            if (converter.canConvert(value)) {
+                return converter.resolve(clientHttpRequestFactory, value);
+            }
+        }
+
+        return rowValue;
     }
 
     private String generateSubReport(
