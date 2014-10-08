@@ -3,7 +3,7 @@
 
 
 Please read the documentation available here:
-http://trac.mapfish.org/trac/mapfish/wiki/PrintModuleDoc
+http://mapfish.github.io/mapfish-print/#/overview
 
 
 Build
