@@ -23,6 +23,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Objects;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 import com.vividsolutions.jts.util.Assert;
@@ -106,12 +107,19 @@ public final class ProcessorDependencyGraphFactory {
             nodes.add(node);
         }
 
+        ArrayList<ProcessorDependency> allDependencies = Lists.newArrayList(this.dependencies);
+        for (ProcessorGraphNode<Object, Object> node : nodes) {
+            if (node.getProcessor() instanceof CustomDependencies) {
+                CustomDependencies custom = (CustomDependencies) node.getProcessor();
+                allDependencies.addAll(custom.createDependencies(nodes));
+            }
+        }
         final SetMultimap<ProcessorGraphNode<Object, Object>, InputValue> inputsForNodes = cacheInputsForNodes(nodes);
         for (ProcessorGraphNode<Object, Object> node : nodes) {
             final Set<InputValue> inputs = inputsForNodes.get(node);
 
             // check explicit, external dependencies between nodes
-            checkExternalDependencies(node, nodes);
+            checkExternalDependencies(allDependencies, node, nodes);
 
             // check input/output value dependencies
             for (InputValue input : inputs) {
@@ -150,9 +158,10 @@ public final class ProcessorDependencyGraphFactory {
     }
 
     private void checkExternalDependencies(
+            final List<ProcessorDependency> allDependencies,
             final ProcessorGraphNode<Object, Object> node,
             final List<ProcessorGraphNode<Object, Object>> nodes) {
-        for (ProcessorDependency dependency : this.dependencies) {
+        for (ProcessorDependency dependency : allDependencies) {
             if (dependency.getRequired().equals(node.getProcessor().getClass())) {
                 // this node is required by another processor type, let's see if there
                 // is an actual processor of this type

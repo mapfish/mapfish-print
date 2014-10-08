@@ -287,6 +287,8 @@ public class Configuration {
         if (template != null) {
             this.accessAssertion.assertAccess("Configuration", this);
             template.assertAccessible(name);
+        } else {
+            throw new IllegalArgumentException("Template '" + name + " does not exist.  Options are: " + this.templates.keySet());
         }
         return template;
     }
@@ -473,7 +475,6 @@ public class Configuration {
     public final boolean isAccessible(final String pathToSubResource) throws IOException {
         return this.fileLoaderManager.isAccessible(this.configurationFile.toURI(), pathToSubResource);
     }
-
     /**
      * Load the file related to the configuration file.
      *

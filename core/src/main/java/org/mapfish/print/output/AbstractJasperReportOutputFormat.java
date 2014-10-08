@@ -22,21 +22,25 @@ package org.mapfish.print.output;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
+import com.vividsolutions.jts.util.AssertionFailedException;
 import jsr166y.ForkJoinPool;
 import jsr166y.ForkJoinTask;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRRewindableDataSource;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.Renderable;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+import net.sf.jasperreports.engine.design.JRDesignField;
 import net.sf.jasperreports.engine.util.LocalJasperReportsContext;
 import net.sf.jasperreports.repo.RepositoryService;
 import org.json.JSONException;
 import org.mapfish.print.Constants;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
@@ -48,7 +52,11 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -64,6 +72,8 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 /**
  * @author Jesse on 5/7/2014.
@@ -83,7 +93,8 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
 
     /**
      * Export the report to the output stream.
-     *  @param outputStream the output stream to export to
+     *
+     * @param outputStream the output stream to export to
      * @param print        the report
      */
     protected abstract void doExport(final OutputStream outputStream, final Print print) throws JRException, IOException;
@@ -104,6 +115,11 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         doExport(outputStream, print);
     }
 
+    private JasperFillManager getJasperFillManager(@Nonnull final Configuration configuration) {
+        LocalJasperReportsContext ctx = getLocalJasperReportsContext(configuration);
+        return JasperFillManager.getInstance(ctx);
+    }
+
     /**
      * Renders the jasper report.
      *
@@ -113,9 +129,8 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
      * @param taskDirectory the temporary directory for this printing task.
      * @return a jasper print object which can be used to generate a PDF or other outputs.
      * @throws ExecutionException
-     *
-     * // CSOFF: RedundantThrows
      */
+     // CSOFF: RedundantThrows
     @VisibleForTesting
     public final Print getJasperPrint(final PJsonObject requestData, final Configuration config,
                                       final File configDir, final File taskDirectory)
@@ -152,6 +167,8 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
 
         JasperFillManager fillManager = getJasperFillManager(config);
 
+        checkRequiredValues(config, values, template.getReportTemplate());
+
         final JasperPrint print;
         if (template.getJdbcUrl() != null) {
             Connection connection;
@@ -166,42 +183,140 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                     values.asMap(),
                     connection);
 
-        } else if (template.getTableDataKey() != null) {
-            final Object dataSourceObj = values.getObject(template.getTableDataKey(), Object.class);
+        } else {
             JRDataSource dataSource;
+            if (template.getTableDataKey() != null) {
+                final Object dataSourceObj = values.getObject(template.getTableDataKey(), Object.class);
             if (dataSourceObj instanceof JRDataSource) {
                 dataSource = (JRDataSource) dataSourceObj;
             } else if (dataSourceObj instanceof Iterable) {
                 Iterable sourceObj = (Iterable) dataSourceObj;
                 dataSource = toJRDataSource(sourceObj.iterator());
-            }  else if (dataSourceObj instanceof Iterator) {
+                } else if (dataSourceObj instanceof Iterator) {
                 Iterator sourceObj = (Iterator) dataSourceObj;
                 dataSource = toJRDataSource(sourceObj);
-            }  else if (dataSourceObj.getClass().isArray()) {
+                } else if (dataSourceObj.getClass().isArray()) {
                 Object[] sourceObj = (Object[]) dataSourceObj;
                 dataSource = toJRDataSource(Arrays.asList(sourceObj).iterator());
             } else {
                 throw new AssertionError("Objects of type: " + dataSourceObj.getClass() + " cannot be converted to a row in a " +
                                          "JRDataSource");
             }
-
+        } else {
+                dataSource = new JREmptyDataSource();
+            }
+            checkRequiredFields(config, dataSource, template.getReportTemplate());
             print = fillManager.fill(
                     jasperTemplateBuild.getAbsolutePath(),
                     values.asMap(),
                     dataSource);
-        } else {
-            print = fillManager.fill(
-                    jasperTemplateBuild.getAbsolutePath(),
-                    values.asMap(),
-                    new JREmptyDataSource());
         }
         print.setProperty(Renderable.PROPERTY_IMAGE_DPI, String.valueOf(Math.round(maxDpi[0])));
         return new Print(getLocalJasperReportsContext(config), print, values, maxDpi[0], maxDpi[1]);
     }
 
-    private JasperFillManager getJasperFillManager(@Nonnull final Configuration configuration) {
-        LocalJasperReportsContext ctx = getLocalJasperReportsContext(configuration);
-        return JasperFillManager.getInstance(ctx);
+    private void checkRequiredFields(final Configuration configuration, final JRDataSource dataSource, final String reportTemplate) {
+        if (dataSource instanceof JRRewindableDataSource) {
+            JRRewindableDataSource source = (JRRewindableDataSource) dataSource;
+            StringBuilder wrongType = new StringBuilder();
+            try {
+                while (source.next()) {
+                    final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    factory.setValidating(false);
+                    final DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+                    final byte[] bytes = configuration.loadFile(reportTemplate);
+                    final Document document = documentBuilder.parse(new ByteArrayInputStream(bytes));
+                    final NodeList parameters = document.getElementsByTagName("field");
+                    JRDesignField field = new JRDesignField();
+                    for (int i = 0; i < parameters.getLength(); i++) {
+                        final Element param = (Element) parameters.item(i);
+                        final String name = param.getAttribute("name");
+                        field.setName(name);
+                        Object record = dataSource.getFieldValue(field);
+                        if (record != null) {
+                            final String type = param.getAttribute("class");
+                            Class<?> clazz = Class.forName(type);
+
+                            if (!clazz.isInstance(record)) {
+                                wrongType.append("\t* ").append(name).append(" : ").append(record.getClass().getName());
+                                wrongType.append(" expected type: ").append(type).append("\n");
+                            } else {
+                                LOGGER.warn("The field " + name + " in " + reportTemplate + " is not available in at least one of the " +
+                                            "rows in the datasource.  This may not be an error.");
+                            }
+                        }
+                    }
+                }
+                source.moveFirst();
+            } catch (Throwable e) {
+                throw ExceptionUtils.getRuntimeException(e);
+            }
+
+            StringBuilder finalError = new StringBuilder();
+
+            if (wrongType.length() > 0) {
+                finalError.append("The following parameters are declared in ").append(reportTemplate).
+                        append(".  The class attribute in the template xml does not match the class of the actual object.").
+                        append("\nEither change the declaration in the jasper template or update the configuration so that the ").
+                        append("parameters have the correct type.\n\n").
+                        append(wrongType);
+            }
+
+            if (finalError.length() > 0) {
+                throw new AssertionFailedException(finalError.toString());
+            }
+
+        }
+    }
+
+    private void checkRequiredValues(final Configuration configuration, final Values values, final String reportTemplate) {
+        StringBuilder missing = new StringBuilder();
+        StringBuilder wrongType = new StringBuilder();
+        try {
+            final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setValidating(false);
+            final DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+            final byte[] bytes = configuration.loadFile(reportTemplate);
+            final Document document = documentBuilder.parse(new ByteArrayInputStream(bytes));
+            final NodeList parameters = document.getElementsByTagName("parameter");
+            for (int i = 0; i < parameters.getLength(); i++) {
+                final Element param = (Element) parameters.item(i);
+                final String name = param.getAttribute("name");
+                if (!values.containsKey(name)) {
+                    missing.append("\t* ").append(name).append("\n");
+                } else {
+                    final String type = param.getAttribute("class");
+                    Class<?> clazz = Class.forName(type);
+                    Object value = values.getObject(name, Object.class);
+                    if (!clazz.isInstance(value)) {
+                        wrongType.append("\t* ").append(name).append(" : ").append(value.getClass().getName());
+                        wrongType.append(" expected type: ").append(type).append("\n");
+                    }
+                }
+            }
+        } catch (Throwable e) {
+            throw ExceptionUtils.getRuntimeException(e);
+        }
+
+        StringBuilder finalError = new StringBuilder();
+        if (missing.length() > 0) {
+            finalError.append("The following parameters are declared in ").append(reportTemplate).
+                    append(" but are not output values of processors or attributes.").
+                    append("\nEither remove the references or update the configuration so that all the ").
+                    append("parameters are available for the report.\n\n").
+                    append(missing);
+        }
+        if (wrongType.length() > 0) {
+            finalError.append("The following parameters are declared in ").append(reportTemplate).
+                    append(".  The class attribute in the template xml does not match the class of the actual object.").
+                    append("\nEither change the declaration in the jasper template or update the configuration so that the ").
+                    append("parameters have the correct type.\n\n").
+                    append(wrongType);
+        }
+
+        if (finalError.length() > 0) {
+            throw new AssertionFailedException(finalError.toString());
+        }
     }
 
     private LocalJasperReportsContext getLocalJasperReportsContext(final Configuration configuration) {

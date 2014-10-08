@@ -73,6 +73,26 @@ public class ConfigurationTest {
     }
 
     @Test
+    public void testGetTemplate() throws Exception {
+
+        final Configuration configuration = new Configuration();
+        Map<String, Template> templates = Maps.newHashMap();
+        final Template t1Template = new Template();
+        templates.put("t1", t1Template);
+        configuration.setTemplates(templates);
+        assertEquals(t1Template, configuration.getTemplate("t1"));
+        assertEquals(1, configuration.getTemplates().size());
+        assertEquals(t1Template, configuration.getTemplates().values().iterator().next());
+
+        try {
+            configuration.getTemplate("Doesn't exist");
+            fail("Exception should have been thrown");
+        } catch (Exception e) {
+            // good
+        }
+    }
+
+    @Test
     public void testGetDefaultStyle_IsPresentInMap() throws Exception {
         final Configuration configuration = new Configuration();
         Map<String, Style> styles = new HashMap<String, Style>();

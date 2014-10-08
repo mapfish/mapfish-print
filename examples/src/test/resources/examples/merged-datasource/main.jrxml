@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) 2014  Camptocamp
+  ~
+  ~ This file is part of MapFish Print
+  ~
+  ~ MapFish Print is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ MapFish Print is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!-- Created with Jaspersoft Studio version last-->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="title" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="fc6f47d9-d774-4fa1-b587-43dbd1deb29a">
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+    <parameter name="title" class="java.lang.String">
+        <parameterDescription><![CDATA[]]></parameterDescription>
+    </parameter>
+    <parameter name="description" class="java.lang.String"/>
+    <queryString>
+        <![CDATA[]]>
+    </queryString>
+    <field name="datasource" class="net.sf.jasperreports.engine.JRDataSource"/>
+    <field name="subReportPath" class="java.lang.String"/>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <pageHeader>
+        <band height="84" splitType="Stretch">
+            <property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+            <property name="local_mesure_unitheight" value="pixel"/>
+            <property name="com.jaspersoft.studio.unit.height" value="px"/>
+            <image>
+                <reportElement x="0" y="0" width="130" height="50" uuid="fb85212c-d86d-4b66-9e60-e31468bb45f9">
+                    <property name="local_mesure_unitwidth" value="pixel"/>
+                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
+                    <property name="local_mesure_unitheight" value="pixel"/>
+                    <property name="com.jaspersoft.studio.unit.height" value="px"/>
+                </reportElement>
+                <imageExpression><![CDATA["mapfish-icon.png"]]></imageExpression>
+            </image>
+            <textField>
+                <reportElement x="130" y="0" width="425" height="40" uuid="add57d67-ae70-4d65-b75c-e67a95767791"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="20" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{title}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="130" y="40" width="425" height="40" uuid="38cc9e19-a068-431f-b4f3-1fbbeb094459"/>
+                <textFieldExpression><![CDATA[$P{description}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageHeader>
+    <detail>
+        <band height="266" splitType="Stretch">
+            <subreport>
+                <reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="555" height="266" isRemoveLineWhenBlank="true" uuid="0597f468-e7f6-456b-a20d-2b9f50006b6e">
+                    <property name="local_mesure_unitx" value="pixel"/>
+                    <property name="com.jaspersoft.studio.unit.x" value="px"/>
+                </reportElement>
+                <dataSourceExpression><![CDATA[$F{datasource}]]></dataSourceExpression>
+                <subreportExpression><![CDATA[$F{subReportPath}]]></subreportExpression>
+            </subreport>
+        </band>
+    </detail>
+    <columnFooter>
+        <band height="45" splitType="Stretch"/>
+    </columnFooter>
+    <pageFooter>
+        <band height="54" splitType="Stretch">
+            <textField>
+                <reportElement x="454" y="24" width="100" height="30" uuid="8e967375-a4f0-4bbe-a654-424d1956cd0a"/>
+                <textFieldExpression><![CDATA[new java.text.SimpleDateFormat().format(new java.util.Date())]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageFooter>
+</jasperReport>

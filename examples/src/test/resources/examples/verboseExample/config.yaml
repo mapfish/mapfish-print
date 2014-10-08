@@ -47,8 +47,12 @@ templates:
       inputMapper: {map: map, scalebarDef: scalebar}
       outputMapper: {subReport: scalebarSubReport}
     - !prepareLegend # create a datasource for the report with the 'legend' attribute
+      template: legend.jrxml
       inputMapper: {legend: legend}
-      outputMapper: {legend: legend}
+      outputMapper:
+        legend: legend
+        legendSubReport: legendSubReport
+        numberOfLegendRows: numberOfLegendRows
     - !prepareTable
       inputMapper: {table: table}
       outputMapper: {table: table}

@@ -7,3 +7,5 @@ jdk:
 
 script:
 - ./gradlew --no-color build
+
+after_failure: print-examples-test-output.sh

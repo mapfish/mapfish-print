@@ -121,7 +121,7 @@ public class OldPrintApiTest extends AbstractApiTest {
           
         ClientHttpRequest requestGetPdf = getRequest(getUrl.replace("/print-servlet/", ""), HttpMethod.GET);
         response = requestGetPdf.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(response.getStatusText(), HttpStatus.OK, response.getStatusCode());
         assertEquals(new MediaType("application", "pdf"), response.getHeaders().getContentType());
         assertTrue(response.getBody().read() >= 0);
     }
@@ -161,7 +161,7 @@ public class OldPrintApiTest extends AbstractApiTest {
 
         ClientHttpRequest requestGetPdf = httpRequestFactory.createRequest(new URI(getUrl), HttpMethod.GET);
         response = requestGetPdf.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(response.getStatusText(), HttpStatus.OK, response.getStatusCode());
         assertEquals(new MediaType("application", "pdf"), response.getHeaders().getContentType());
         assertTrue(response.getBody().read() >= 0);
     }
@@ -171,7 +171,7 @@ public class OldPrintApiTest extends AbstractApiTest {
         ClientHttpRequest request = getPrintRequest("print.pdf", HttpMethod.POST);
         setPrintSpec(getPrintSpec("examples/verboseExample/old-api-requestData.json"), request);
         response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(response.getStatusText(), HttpStatus.OK, response.getStatusCode());
         assertEquals(new MediaType("application", "pdf"), response.getHeaders().getContentType());
         assertTrue(response.getBody().read() >= 0);
     }
@@ -181,7 +181,7 @@ public class OldPrintApiTest extends AbstractApiTest {
         ClientHttpRequest request = getPrintRequest("print.pdf", HttpMethod.POST);
         setPrintSpec("spec=" + getPrintSpec("examples/verboseExample/old-api-requestData.json"), request);
         response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(response.getStatusText(), HttpStatus.OK, response.getStatusCode());
         assertEquals(new MediaType("application", "pdf"), response.getHeaders().getContentType());
         assertTrue(response.getBody().read() >= 0);
     }
@@ -207,7 +207,7 @@ public class OldPrintApiTest extends AbstractApiTest {
         String url = "print.pdf?spec=" + URLEncoder.encode(printSpec, Constants.DEFAULT_ENCODING);
         ClientHttpRequest request = getPrintRequest(url, HttpMethod.GET);
         response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(response.getStatusText(), HttpStatus.OK, response.getStatusCode());
         assertEquals(new MediaType("application", "pdf"), response.getHeaders()
                 .getContentType());
         assertTrue(response.getBody().read() >= 0);
@@ -255,7 +255,7 @@ public class OldPrintApiTest extends AbstractApiTest {
 
         ClientHttpRequest requestGetPdf = httpRequestFactory.createRequest(new URI(getUrl), HttpMethod.GET);
         response = requestGetPdf.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(response.getStatusText(), HttpStatus.OK, response.getStatusCode());
         assertEquals(new MediaType("application", "pdf"), response.getHeaders().getContentType());
         assertTrue(response.getBody().read() >= 0);
     }

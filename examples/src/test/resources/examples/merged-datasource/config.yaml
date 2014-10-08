@@ -1,0 +1,50 @@
+
+throwErrorOnExtraParameters: true
+
+templates:
+  A4 portrait: !template
+    reportTemplate: main.jrxml
+    attributes:
+      title: !string {}
+      description: !string {}
+      legend: !legend {}
+      map: !map
+        maxDpi: 400
+        width: 400
+        height: 200
+      datasource: !datasource
+        attributes:
+          displayName: !string {}
+          table: !table {}
+    processors:
+    - !reportBuilder # compile all reports in current directory
+      directory: '.'
+    - !createMap
+      inputMapper: {map: map}
+      outputMapper: {mapSubReport: map}
+    - !createDataSource
+      reportTemplate: table.jrxml
+      reportKey: reportTemplate
+      processors:
+        - !prepareTable {}
+    - !prepareLegend
+      template: legend.jrxml
+    - !mergeDataSources
+      sources:
+        - !mergeSource
+          type: SINGLE
+          fields: # name the column data so there is consistence in all rows
+            map: subReportPath
+        - !mergeSource
+          type: SINGLE
+          fields: # name the column data so there is consistence in all rows
+            legendSubReport: subReportPath
+            legend: datasource
+        - !mergeSource
+          key: jrDataSource
+          type: DATASOURCE
+          fields:
+            displayName: displayName
+            table: datasource # main.jrxml uses the name "datasource" so we need to use that mapping here
+            reportTemplate: subReportPath
+    tableData: mergedDataSource
