@@ -128,35 +128,36 @@ public abstract class TileableMapReader extends HTTPMapReader {
         }
         formatter.render(transformer, urls, parallelMapTileLoader, context, opacity, nbTilesW, offsetX, offsetY, bitmapTileW, bitmapTileH);
     }
+    
+    /**
+     * check if client has param to force resolution and return resolution if supported by layer
+     * @return a valid resolution or 0 if no supported resolutions was found
+     */
+    private double getSupportedClientResolution() {
+        if (this.context.getCurrentPageParams().has("clientResolution")) {
+            double clientResolution = this.context.getCurrentPageParams().getDouble("clientResolution");
+            for (double serverResolution : this.tileCacheLayerInfo.getResolutions()) {
+                if (serverResolution == clientResolution) {
+                    return clientResolution;
+                }
+            }
+        }
+        return 0;
+    }
 
     /**
      * fix the resolution to something compatible with the resolutions available in tilecache.
      */
     private Transformer fixTiledTransformer(Transformer transformer) throws CloneNotSupportedException {
-        double resolution;
-
-        // if clientResolution is passed from client use it explicitly if available otherwise calculate nearest resolution
-        if (this.context.getCurrentPageParams().has("clientResolution")) {
-            float clientResolution = this.context.getCurrentPageParams().getFloat("clientResolution");
-            boolean hasServerResolution = false;
-            for (double serverResolution : this.tileCacheLayerInfo.getResolutions()) {
-                if (serverResolution == clientResolution) {
-                    hasServerResolution = true;
-                }
-            }
-            if (!hasServerResolution) {
-                return null;
-            }
-            else {
-                resolution = clientResolution;
-            }
-        }
-        else {
+        double resolution = getSupportedClientResolution();
+        
+        // if no valid client resolution was found get nearest resolution
+        if (resolution == 0) {
             double targetResolution = transformer.getGeoW() / transformer.getStraightBitmapW();
             TileCacheLayerInfo.ResolutionInfo resolutionInfo = tileCacheLayerInfo.getNearestResolution(targetResolution);
             resolution = resolutionInfo.value;
         }
-
+        
         transformer = transformer.clone();
         transformer.setResolution(resolution);
         return transformer;
