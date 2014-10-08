@@ -1,6 +1,5 @@
-.. image:: https://magnum.travis-ci.com/camptocamp/mapfish-printV3.svg?token=MAvNLXTm92VaWzkhpFvd&branch=development   
-   :target: https://magnum.travis-ci.com/camptocamp/mapfish-printV3
-
+.. image:: https://travis-ci.org/camptocamp/mapfish-printV3.svg?branch=development
+    :target: https://travis-ci.org/camptocamp/mapfish-printV3
 
 Please read the documentation available here:
 http://mapfish.github.io/mapfish-print/#/overview
