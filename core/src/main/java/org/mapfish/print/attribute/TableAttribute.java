@@ -21,8 +21,6 @@ package org.mapfish.print.attribute;
 
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.parser.HasDefaultValue;
-import org.mapfish.print.processor.jasper.TableColumnConverter;
 import org.mapfish.print.wrapper.PArray;
 
 import java.util.List;
@@ -57,11 +55,6 @@ public final class TableAttribute extends ReflectiveAttribute<TableAttribute.Tab
          * An array for each table row.
          */
         public PArray[] data;
-        /**
-         * An array of table column converters.
-         */
-        @HasDefaultValue
-        public TableColumnConverter<?>[] converters = new TableColumnConverter<?>[] {};
     }
 
 }
