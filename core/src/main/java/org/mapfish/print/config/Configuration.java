@@ -19,11 +19,8 @@
 
 package org.mapfish.print.config;
 
-import com.google.common.base.Function;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.vividsolutions.jts.geom.Geometry;
@@ -43,6 +40,9 @@ import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.config.access.AccessAssertion;
+import org.mapfish.print.config.access.AlwaysAllowAssertion;
+import org.mapfish.print.config.access.RoleAccessAssertion;
 import org.mapfish.print.http.CertificateStore;
 import org.mapfish.print.http.HttpCredential;
 import org.mapfish.print.http.HttpProxy;
@@ -53,15 +53,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -121,25 +117,6 @@ public class Configuration {
     @Autowired
     private ConfigFileLoaderManager fileLoaderManager;
 
-    /**
-     * Print out the configuration that the client needs to make a request.
-     *
-     * @param json the output writer.
-     * @throws JSONException
-     */
-    public final void printClientConfig(final JSONWriter json) throws JSONException {
-        json.key("layouts");
-        json.array();
-        final Map<String, Template> accessibleTemplates = getTemplates();
-        for (String name : accessibleTemplates.keySet()) {
-            json.object();
-            json.key("name").value(name);
-            accessibleTemplates.get(name).printClientConfig(json);
-            json.endObject();
-        }
-        json.endArray();
-    }
-
     final PDFConfig getPdfConfig() {
         return this.pdfConfig;
     }
@@ -172,11 +149,7 @@ public class Configuration {
     public final void setPdfConfig(final PDFConfig pdfConfig) {
         this.pdfConfig = pdfConfig;
     }
-    private ArrayList<String> access = Lists.newArrayList();
-
-    public final String getOutputFilename() {
-        return this.outputFilename;
-    }
+    private AccessAssertion accessAssertion = AlwaysAllowAssertion.INSTANCE;
 
     /**
      * The default output file name of the report.  This can be overridden by
@@ -261,6 +234,29 @@ public class Configuration {
         this.proxies = proxies;
     }
 
+    /**
+     * Print out the configuration that the client needs to make a request.
+     *
+     * @param json the output writer.
+     * @throws JSONException
+     */
+    public final void printClientConfig(final JSONWriter json) throws JSONException {
+        json.key("layouts");
+        json.array();
+        final Map<String, Template> accessibleTemplates = getTemplates();
+        for (String name : accessibleTemplates.keySet()) {
+            json.object();
+            json.key("name").value(name);
+            accessibleTemplates.get(name).printClientConfig(json);
+            json.endObject();
+        }
+        json.endArray();
+    }
+
+    public final String getOutputFilename() {
+        return this.outputFilename;
+    }
+
     public final Map<String, Template> getTemplates() {
         return Maps.filterEntries(this.templates, new Predicate<Map.Entry<String, Template>>() {
             @Override
@@ -269,7 +265,7 @@ public class Configuration {
                     return false;
                 }
                 try {
-                    assertAccessible("Configuration", Configuration.this.access);
+                    Configuration.this.accessAssertion.assertAccess("Configuration", this);
                     input.getValue().assertAccessible(input.getKey());
                     return true;
                 } catch (AccessDeniedException e) {
@@ -281,33 +277,6 @@ public class Configuration {
         });
     }
 
-    static void assertAccessible(final String name, final Collection<String> requiredRoles) {
-        if (!requiredRoles.isEmpty()) {
-            final SecurityContext context = SecurityContextHolder.getContext();
-            if (context == null || context.getAuthentication() == null) {
-                throw new AuthenticationCredentialsNotFoundException(name + " requires an authenticated user");
-            } else {
-                Collection<String> authorities = Collections2.transform(context.getAuthentication().getAuthorities(),
-                        new Function<GrantedAuthority, String>() {
-                            @Nullable
-                            @Override
-                            public String apply(@Nullable final GrantedAuthority input) {
-                                return input == null ? "" : input.toString();
-                            }
-                        });
-                for (String acc : requiredRoles) {
-                    if (authorities.contains(acc)) {
-                        return;
-                    }
-                }
-
-                throw new AccessDeniedException("User " + context.getAuthentication().getPrincipal() +
-                                                " does not have one of the required roles");
-            }
-        }
-
-    }
-
     /**
      * Retrieve the configuration of the named template.
      *
@@ -316,7 +285,7 @@ public class Configuration {
     public final Template getTemplate(final String name) {
         final Template template = this.templates.get(name);
         if (template != null) {
-            assertAccessible("Configuration", Configuration.this.access);
+            this.accessAssertion.assertAccess("Configuration", this);
             template.assertAccessible(name);
         }
         return template;
@@ -474,10 +443,8 @@ public class Configuration {
      */
     public final List<Throwable> validate() {
         List<Throwable> validationErrors = Lists.newArrayList();
-        if (this.access == null) {
-            validationErrors.add(new ConfigurationException("Access is null this is not permitted, by default it is nonnull so there " +
-                                                            "must be an programming error."));
-        }
+        this.accessAssertion.validate(validationErrors, this);
+
         if (this.configurationFile == null) {
             validationErrors.add(new ConfigurationException("Configuration file is field on configuration object is null"));
         }
@@ -506,6 +473,7 @@ public class Configuration {
     public final boolean isAccessible(final String pathToSubResource) throws IOException {
         return this.fileLoaderManager.isAccessible(this.configurationFile.toURI(), pathToSubResource);
     }
+
     /**
      * Load the file related to the configuration file.
      *
@@ -540,6 +508,12 @@ public class Configuration {
      * @param access the roles needed to access this
      */
     public final void setAccess(final ArrayList<String> access) {
-        this.access = access;
+        final RoleAccessAssertion assertion = new RoleAccessAssertion();
+        assertion.setRequiredRoles(access);
+        this.accessAssertion = assertion;
+    }
+
+    public final AccessAssertion getAccessAssertion() {
+        return this.accessAssertion;
     }
 }

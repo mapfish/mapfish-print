@@ -96,6 +96,7 @@ public class MapPrinter {
      * Parse the JSON string and return the object.  The string is expected to be the JSON print data from the client.
      *
      * @param spec the JSON formatted string.
+     *
      * @return The encapsulated JSON object
      */
     public static PJsonObject parseSpec(final String spec) {

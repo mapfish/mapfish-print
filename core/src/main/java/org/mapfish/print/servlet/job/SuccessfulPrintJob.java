@@ -22,6 +22,7 @@ package org.mapfish.print.servlet.job;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.config.access.AccessAssertion;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -50,10 +51,14 @@ public final class SuccessfulPrintJob extends PrintJobStatus {
      * @param fileName       the fileName to send to the client.
      * @param mimeType       the mimetype of the printed file
      * @param fileExtension  the file extension (to be added to the filename)
+     * @param access         the an access control object for downloading this report.  Typically this is combined access of the
+     *                       template and the configuration.
      */
+    // CSOFF: ParameterNumber
     public SuccessfulPrintJob(final String referenceId, final URI reportURI, final String appId, final Date completionDate,
-                              final String fileName, final String mimeType, final String fileExtension) {
-        super(referenceId, appId, completionDate, fileName);
+                              final String fileName, final String mimeType, final String fileExtension, final AccessAssertion access) {
+        // CSON: ParameterNumber
+        super(referenceId, appId, completionDate, fileName, access);
         this.reportURI = reportURI;
         this.mimeType = mimeType;
         this.fileExtension = fileExtension;
@@ -80,15 +85,18 @@ public final class SuccessfulPrintJob extends PrintJobStatus {
      * @param appId          the appId used for loading the configuration.
      * @param completionDate the date when the print job completed
      * @param fileName       the fileName to send to the client.
+     * @param reportAccess   the an access control object for downloading this report.  Typically this is combined access of the
+     *                       template and the configuration.
      */
     public static SuccessfulPrintJob load(final JSONObject metadata, final String referenceId, final String appId,
-                                          final Date completionDate, final String fileName)
+                                          final Date completionDate, final String fileName, final AccessAssertion reportAccess)
             throws JSONException {
         try {
             URI reportURI = new URI(metadata.getString(JSON_REPORT_URI));
             String fileExt = metadata.getString(JSON_FILE_EXT);
             String mimeType = metadata.getString(JSON_MIME_TYPE);
-            return new SuccessfulPrintJob(referenceId, reportURI, appId, completionDate, fileName, mimeType, fileExt);
+
+            return new SuccessfulPrintJob(referenceId, reportURI, appId, completionDate, fileName, mimeType, fileExt, reportAccess);
         } catch (URISyntaxException e) {
             throw ExceptionUtils.getRuntimeException(e);
         }

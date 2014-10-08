@@ -21,6 +21,7 @@ package org.mapfish.print.servlet.job;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.mapfish.print.config.access.AccessAssertion;
 
 import java.util.Date;
 
@@ -41,10 +42,12 @@ public class FailedPrintJob extends PrintJobStatus {
      * @param completionDate the date when the print job completed
      * @param fileName       the fileName to send to the client.
      * @param error          the error that occurred during running.
+     * @param access         the an access control object for downloading this report.  Typically this is combined access of the
+     *                       template and the configuration.
      */
     public FailedPrintJob(final String referenceId, final String appId, final Date completionDate, final String fileName,
-                          final String error) {
-        super(referenceId, appId, completionDate, fileName);
+                          final String error, final AccessAssertion access) {
+        super(referenceId, appId, completionDate, fileName, access);
         this.error = error;
     }
 
@@ -62,12 +65,17 @@ public class FailedPrintJob extends PrintJobStatus {
      * @param appId          the appId used for loading the configuration.
      * @param completionDate the date when the print job completed
      * @param fileName       the fileName to send to the client.
+     * @param reportAccess   the access/roles required to download this report.  Typically this is all the roles in the template and
+     *                       the configuration.
      */
-    public static FailedPrintJob load(final JSONObject metadata, final String referenceId, final String appId,
-                                      final Date completionDate, final String fileName) throws JSONException {
+    public static FailedPrintJob load(final JSONObject metadata,
+                                      final String referenceId,
+                                      final String appId,
+                                      final Date completionDate,
+                                      final String fileName, final AccessAssertion reportAccess) throws JSONException {
         String error = metadata.getString(JSON_ERROR);
 
-        return new FailedPrintJob(referenceId, appId, completionDate, fileName, error);
+        return new FailedPrintJob(referenceId, appId, completionDate, fileName, error, reportAccess);
     }
 
 

@@ -30,6 +30,7 @@ import org.mapfish.print.Constants;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
+import org.mapfish.print.config.Template;
 import org.mapfish.print.servlet.job.FailedPrintJob;
 import org.mapfish.print.servlet.job.JobManager;
 import org.mapfish.print.servlet.job.NoSuchReferenceException;
@@ -838,10 +839,6 @@ public class MapPrinterServlet extends BaseMapServlet {
         if (SPEC_LOGGER.isInfoEnabled()) {
             SPEC_LOGGER.info(specJson.toString());
         }
-        // check that we have authorization:
-        final String templateName = specJson.getString(Constants.JSON_LAYOUT_KEY);
-        final MapPrinter mapPrinter = this.mapPrinterFactory.create(appId);
-        mapPrinter.getConfiguration().getTemplate(templateName);
 
         specJson.getInternalObj().remove(JSON_OUTPUT_FORMAT);
         specJson.getInternalObj().put(JSON_OUTPUT_FORMAT, format);
@@ -858,6 +855,12 @@ public class MapPrinterServlet extends BaseMapServlet {
         job.setReferenceId(ref);
         job.setRequestData(specJson);
         job.setSecurityContext(SecurityContextHolder.getContext());
+
+        // check that we have authorization and configure the job so it can only be access by users with sufficient authorization
+        final String templateName = specJson.getString(Constants.JSON_LAYOUT_KEY);
+        final MapPrinter mapPrinter = this.mapPrinterFactory.create(appId);
+        final Template template = mapPrinter.getConfiguration().getTemplate(templateName);
+        job.configureAccess(template);
 
         try {
             this.jobManager.submit(job);

@@ -1,0 +1,29 @@
+throwErrorOnExtraParameters: true
+
+access: ['ROLE_USER']
+
+templates:
+  A4 Landscape: !template
+    access: ['ROLE_EDITOR']
+    reportTemplate: MapOnly_A4.jrxml
+    attributes:
+      geojsonMap: !map
+        width: 802
+        height: 500
+        maxDpi: 400
+      imageMap: !map
+        width: 802
+        height: 500
+        maxDpi: 400
+    processors:
+    - !forwardHeaders
+      headers: ['Cookies']
+    - !reportBuilder # compile all reports in current directory
+        directory: '.'
+    - !createMap
+        inputMapper: {geojsonMap: map}
+        outputPrefix: geojson
+    - !createMap
+        inputMapper: {imageMap: map}
+        outputPrefix: image
+

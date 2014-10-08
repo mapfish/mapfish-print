@@ -26,6 +26,8 @@ import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.config.access.AccessAssertion;
+import org.mapfish.print.config.access.AndAccessAssertion;
 import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.servlet.ServletMapPrinterFactory;
@@ -33,6 +35,7 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -53,11 +56,15 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
 
     private String referenceId;
     private PJsonObject requestData;
+    private AccessAssertion access;
 
     @Autowired
     private MapPrinterFactory mapPrinterFactory;
     @Autowired
     private MetricRegistry metricRegistry;
+    @Autowired
+    private ApplicationContext applicationContext;
+
     private SecurityContext securityContext;
 
     /**
@@ -117,7 +124,9 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
             final OutputFormat outputFormat = mapPrinter.getOutputFormat(spec);
             String mimeType = outputFormat.getContentType();
             String fileExtension = outputFormat.getFileSuffix();
-            return new SuccessfulPrintJob(this.referenceId, reportURI, getAppId(), new Date(), fileName, mimeType, fileExtension);
+
+            return new SuccessfulPrintJob(this.referenceId, reportURI, getAppId(), new Date(), fileName, mimeType,
+                    fileExtension, this.access);
         } catch (Throwable e) {
             String canceledText = "";
             if (Thread.currentThread().isInterrupted()) {
@@ -130,7 +139,7 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
                 fileName = getFileName(mapPrinter, spec);
             }
             final Throwable rootCause = getRootCause(e);
-            return new FailedPrintJob(this.referenceId, getAppId(), new Date(), fileName, rootCause.toString());
+            return new FailedPrintJob(this.referenceId, getAppId(), new Date(), fileName, rootCause.toString(), this.access);
         } finally {
             final long stop = TimeUnit.MILLISECONDS.convert(timer.stop(), TimeUnit.NANOSECONDS);
             LOGGER.debug("Print Job " + PrintJob.this.referenceId + " completed in " + stop + "ms");
@@ -192,6 +201,23 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
     public final void setSecurityContext(final SecurityContext securityContext) {
         this.securityContext = SecurityContextHolder.createEmptyContext();
         this.securityContext.setAuthentication(securityContext.getAuthentication());
+    }
+
+    public final AccessAssertion getAccess() {
+        return this.access;
+    }
+
+    /**
+     * Configure the access permissions required to access this print job.
+     *
+     * @param template the containing print template which should have sufficient information to configure the access.
+     */
+    public final void configureAccess(final Template template) {
+        final Configuration configuration = template.getConfiguration();
+
+        AndAccessAssertion accessAssertion = this.applicationContext.getBean(AndAccessAssertion.class);
+        accessAssertion.setPredicates(configuration.getAccessAssertion(), template.getAccessAssertion());
+        this.access = accessAssertion;
     }
 
     /**

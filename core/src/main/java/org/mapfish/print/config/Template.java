@@ -28,6 +28,9 @@ import org.json.JSONWriter;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.attribute.InternalAttribute;
 import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.config.access.AccessAssertion;
+import org.mapfish.print.config.access.AlwaysAllowAssertion;
+import org.mapfish.print.config.access.RoleAccessAssertion;
 import org.mapfish.print.map.style.StyleParser;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
@@ -54,9 +57,9 @@ public class Template implements ConfigurationObject, HasConfiguration {
     @Autowired
     private ProcessorDependencyGraphFactory processorGraphFactory;
     @Autowired
-    private StyleParser styleParser;
-    @Autowired
     private ClientHttpRequestFactory httpRequestFactory;
+    @Autowired
+    private StyleParser styleParser;
 
 
     private String reportTemplate;
@@ -69,30 +72,10 @@ public class Template implements ConfigurationObject, HasConfiguration {
     private volatile ProcessorDependencyGraph processorGraph;
     private Map<String, String> styles = new HashMap<String, String>();
     private Configuration configuration;
-    private List<String> access = Lists.newArrayList();
+    private AccessAssertion accessAssertion = AlwaysAllowAssertion.INSTANCE;
     private PDFConfig pdfConfig = new PDFConfig();
     private String tableDataKey;
     private String outputFilename;
-
-    /**
-     * Print out the template information that the client needs for performing a request.
-     *
-     * @param json the writer to write the information to.
-     */
-    public final void printClientConfig(final JSONWriter json) throws JSONException {
-        json.key("attributes");
-        json.array();
-        for (Map.Entry<String, Attribute> entry : this.attributes.entrySet()) {
-            Attribute attribute = entry.getValue();
-            if (attribute.getClass().getAnnotation(InternalAttribute.class) == null) {
-                json.object();
-                json.key("name").value(entry.getKey());
-                attribute.printClientConfig(json, this);
-                json.endObject();
-            }
-        }
-        json.endArray();
-    }
 
     /**
      * The default output file name of the report (takes precedence over
@@ -132,19 +115,23 @@ public class Template implements ConfigurationObject, HasConfiguration {
     }
 
     /**
-     * The roles required to access this template.  If empty or not set then it is a <em>public</em> template.  If there are
-     * many roles then a user must have one of the roles in order to access the template.
-     * <p/>
-     * The security (how authentication/authorization is done) is configured in the /WEB-INF/classes/mapfish-spring-security.xml
-     * <p>
-     * Any user without the required role will get an error when trying to access the template and the template will not
-     * be visible in the capabilities requests.
-     * </p>
+     * Print out the template information that the client needs for performing a request.
      *
-     * @param access the roles needed to access this
+     * @param json the writer to write the information to.
      */
-    public final void setAccess(final List<String> access) {
-        this.access = access;
+    public final void printClientConfig(final JSONWriter json) throws JSONException {
+        json.key("attributes");
+        json.array();
+        for (Map.Entry<String, Attribute> entry : this.attributes.entrySet()) {
+            Attribute attribute = entry.getValue();
+            if (attribute.getClass().getAnnotation(InternalAttribute.class) == null) {
+                json.object();
+                json.key("name").value(entry.getKey());
+                attribute.printClientConfig(json, this);
+                json.endObject();
+            }
+        }
+        json.endArray();
     }
 
     /**
@@ -154,6 +141,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
     public final void setPdfConfig(final PDFConfig pdfConfig) {
         this.pdfConfig = pdfConfig;
     }
+
 
     public final Map<String, Attribute> getAttributes() {
         return this.attributes;
@@ -304,10 +292,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
 
     @Override
     public final void validate(final List<Throwable> validationErrors, final Configuration config) {
-        if (this.access == null) {
-            validationErrors.add(new ConfigurationException("Access is null this is not permitted, by default it is nonnull so there " +
-                                                            "must be an programming error."));
-        }
+        this.accessAssertion.validate(validationErrors, config);
         int numberOfTableConfigurations = this.tableDataKey == null ? 0 : 1;
         numberOfTableConfigurations += this.jdbcUrl == null ? 0 : 1;
 
@@ -353,6 +338,28 @@ public class Template implements ConfigurationObject, HasConfiguration {
     }
 
     final void assertAccessible(final String name) {
-        Configuration.assertAccessible(name, this.access);
+        this.accessAssertion.assertAccess("Template '" + name + "'", this);
+    }
+
+
+    /**
+     * The roles required to access this template.  If empty or not set then it is a <em>public</em> template.  If there are
+     * many roles then a user must have one of the roles in order to access the template.
+     * <p/>
+     * The security (how authentication/authorization is done) is configured in the /WEB-INF/classes/mapfish-spring-security.xml
+     * <p>
+     * Any user without the required role will get an error when trying to access the template and the template will not
+     * be visible in the capabilities requests.
+     * </p>
+     *
+     * @param access the roles needed to access this
+     */
+    public final void setAccess(final List<String> access) {
+        final RoleAccessAssertion assertion = new RoleAccessAssertion();
+        assertion.setRequiredRoles(access);
+        this.accessAssertion = assertion;
+    }
+    public final AccessAssertion getAccessAssertion() {
+        return this.accessAssertion;
     }
 }
