@@ -57,6 +57,7 @@ import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -77,7 +78,8 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
 
     private static final int SPACE_BETWEEN_COLS = 0;
     private static final int DEFAULT_MAX_COLUMNS = 9;
-    private Map<String, TableColumnConverter> columnConverterMap = Maps.newHashMap();
+    private Map<String, TableColumnConverter<?>> columnConverterMap = Maps.newHashMap();
+    private List<TableColumnConverter<?>> converters = Lists.newArrayList();
     private boolean dynamic = false;
     private String jasperTemplate = null;
     private String firstHeaderStyle;
@@ -134,8 +136,19 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
      *
      * @param columnConverters Map from column name -> {@link TableColumnConverter}
      */
-    public void setColumns(final Map<String, TableColumnConverter> columnConverters) {
+    public void setColumns(final Map<String, TableColumnConverter<?>> columnConverters) {
         this.columnConverterMap = columnConverters;
+    }
+
+    /**
+     * Set strategies for converting the textual representation of each cell to some other object (image, other text, etc...).
+     * <p/>
+     * This is similar to the converters specified for a particular column. The difference is that these converters are applied
+     * to every cell of the table (except for the cells of those columns that are assigned a specific converter).
+     * @param converters A list of {@link TableColumnConverter}s.
+     */
+    public void setConverters(final List<TableColumnConverter<?>> converters) {
+        this.converters = converters;
     }
 
     /**
@@ -242,9 +255,11 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
             for (int j = 0; j < jsonRow.size(); j++) {
                 final String columnName = columnNames[j];
                 Object rowValue = jsonRow.get(j);
-                TableColumnConverter converter = this.columnConverterMap.get(columnName);
+                TableColumnConverter<?> converter = this.columnConverterMap.get(columnName);
                 if (converter != null) {
                     rowValue = converter.resolve(values.clientHttpRequestFactory, (String) rowValue);
+                } else {
+                    rowValue = tryConvert(values.clientHttpRequestFactory, rowValue);
                 }
                 if (columns.size() < this.maxColumns && !this.excludeColumns.contains(columnName)) {
                     Class<?> columnDef = columns.get(columnName);
@@ -267,6 +282,27 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         }
         final JRMapCollectionDataSource dataSource = new JRMapCollectionDataSource(table);
         return new Output(dataSource, table.size(), subreport);
+    }
+
+    /**
+     * If converters are set on a table, this function tests if these can convert
+     * a cell value. The first converter, which claims that it can convert,
+     * will be used to do the conversion.
+     */
+    private Object tryConvert(final MfClientHttpRequestFactory clientHttpRequestFactory,
+            final Object rowValue) throws URISyntaxException, IOException {
+        if (this.converters.isEmpty()) {
+            return rowValue;
+        }
+
+        String value = String.valueOf(rowValue);
+        for (TableColumnConverter<?> converter : this.converters) {
+            if (converter.canConvert(value)) {
+                return converter.resolve(clientHttpRequestFactory, value);
+            }
+        }
+
+        return rowValue;
     }
 
     private String generateSubReport(
@@ -326,7 +362,13 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
             // Create a Column Field
             JRDesignField field = new JRDesignField();
             field.setName(columnName);
-            field.setValueClass(valueClass);
+            if (this.converters.isEmpty()) {
+                // if there are no cell converters, the type for all cells in a column should be the same.
+                // so we can set a specific type. otherwise we have to set a generic type (Object.class).
+                field.setValueClass(valueClass);
+            } else {
+                field.setValueClass(Object.class);
+            }
             templateDesign.addField(field);
 
             // Add a Header Field to the headerBand
@@ -345,33 +387,40 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
             colHeaderField.setExpression(headerExpression);
             headerBand.addElement(colHeaderField);
 
-            // Add text field to the detailBand
-            JRDesignElement designElement;
-            if (RenderedImage.class.isAssignableFrom(valueClass)) {
-                JRDesignImage designImage = new JRDesignImage(templateDesign);
-                designElement = designImage;
-                designImage.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
-                designImage.setHorizontalAlignment(HorizontalAlignEnum.LEFT);
-                JRDesignExpression expression = new JRDesignExpression();
-                expression.setText("$F{" + columnName + "}");
-                designImage.setExpression(expression);
-
+            // Add fields to the detailBand
+            if (this.converters.isEmpty()) {
+                // if no converters are used, create a field depending on the type
+                JRDesignElement designElement;
+                if (RenderedImage.class.isAssignableFrom(valueClass)) {
+                    designElement = createImageElement(templateDesign, columnName);
+                    addElement(detailBand, designElement, detailPosX, detailPosY,
+                            columnWidth, detailHeight, columnDetailStyle);
+                } else {
+                    JRDesignTextField textField = createTextField(columnName);
+                    addElement(detailBand, textField, detailPosX, detailPosY,
+                            columnWidth, detailHeight, columnDetailStyle);
+                }
             } else {
-                JRDesignTextField textField = new JRDesignTextField();
-                designElement = textField;
-                textField.setHorizontalAlignment(HorizontalAlignEnum.LEFT);
-                JRDesignExpression expression = new JRDesignExpression();
-                expression.setText("$F{" + columnName + "}");
-                textField.setExpression(expression);
-                textField.setStretchWithOverflow(true);
+                // image element
+                JRDesignElement imageElement = createImageElement(templateDesign, columnName);
+                // condition: use this element for images
+                JRDesignExpression printWhenExpression = new JRDesignExpression();
+                printWhenExpression.setText("new Boolean($F{" + columnName + "}.getClass().equals(java.awt.image.BufferedImage.class))");
+                imageElement.setPrintWhenExpression(printWhenExpression);
+
+                addElement(detailBand, imageElement, detailPosX, detailPosY,
+                        columnWidth, detailHeight, columnDetailStyle);
+
+                // text field element
+                JRDesignTextField textField = createTextField(columnName);
+                // condition: use this element for non-images
+                printWhenExpression = new JRDesignExpression();
+                printWhenExpression.setText("new Boolean(!$F{" + columnName + "}.getClass().equals(java.awt.image.BufferedImage.class))");
+                textField.setPrintWhenExpression(printWhenExpression);
+
+                addElement(detailBand, textField, detailPosX, detailPosY,
+                        columnWidth, detailHeight, columnDetailStyle);
             }
-            designElement.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
-            designElement.setX(detailPosX);
-            designElement.setY(detailPosY);
-            designElement.setWidth(columnWidth);
-            designElement.setHeight(detailHeight);
-            designElement.setStyle(columnDetailStyle);
-            detailBand.addElement(designElement);
 
             headerPosX = headerPosX + columnWidth + SPACE_BETWEEN_COLS;
             detailPosX = detailPosX + columnWidth + SPACE_BETWEEN_COLS;
@@ -385,6 +434,39 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
             throw new PrintException("Unable to delete the build file: " + buildFile);
         }
         return this.jasperReportBuilder.compileJasperReport(buildFile, jrxmlFile).getAbsolutePath();
+    }
+
+    private JRDesignTextField createTextField(final String columnName) {
+        JRDesignTextField textField = new JRDesignTextField();
+        textField.setHorizontalAlignment(HorizontalAlignEnum.LEFT);
+        JRDesignExpression expression = new JRDesignExpression();
+        expression.setText("$F{" + columnName + "}");
+        textField.setExpression(expression);
+        textField.setStretchWithOverflow(true);
+        return textField;
+    }
+
+    private JRDesignElement createImageElement(final JasperDesign templateDesign,
+            final String columnName) {
+        JRDesignImage designImage = new JRDesignImage(templateDesign);
+        designImage.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
+        designImage.setHorizontalAlignment(HorizontalAlignEnum.LEFT);
+        JRDesignExpression expression = new JRDesignExpression();
+        expression.setText("$F{" + columnName + "}");
+        designImage.setExpression(expression);
+        return designImage;
+    }
+
+    private void addElement(final JRDesignBand detailBand,
+            final JRDesignElement designElement, final int detailPosX, final int detailPosY,
+            final int columnWidth, final int detailHeight, final JRStyle columnDetailStyle) {
+        designElement.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+        designElement.setX(detailPosX);
+        designElement.setY(detailPosY);
+        designElement.setWidth(columnWidth);
+        designElement.setHeight(detailHeight);
+        designElement.setStyle(columnDetailStyle);
+        detailBand.addElement(designElement);
     }
 
     private void removeDetailBand(final JasperDesign templateDesign) {

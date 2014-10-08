@@ -117,7 +117,7 @@ public abstract class AbstractMapfishSpringTest {
     public static MapfishMapContext createTestMapContext() {
         try {
             final CenterScaleMapBounds bounds = new CenterScaleMapBounds(CRS.decode("CRS:84"), 0, 0, new Scale(30000));
-            return new MapfishMapContext(bounds, new Dimension(500,500), 0, 72, null);
+            return new MapfishMapContext(bounds, new Dimension(500,500), 0, 72, Constants.PDF_DPI, null, true);
         } catch (Throwable e) {
             throw new Error(e);
         }

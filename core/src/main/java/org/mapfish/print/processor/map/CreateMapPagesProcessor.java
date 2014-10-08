@@ -26,6 +26,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
+
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.attribute.map.AreaOfInterest;
@@ -43,6 +44,7 @@ import java.awt.Rectangle;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -78,9 +80,9 @@ import static org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttribut
  */
 public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesProcessor.Input, CreateMapPagesProcessor.Output> {
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateMapPagesProcessor.class);
-    private static final char DO_NOT_RENDER_BBOX_CHAR = ' ';
+    private static final int DO_NOT_RENDER_BBOX_INDEX = -1;
 
-    private GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
+    private final GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
 
 
     /**
@@ -137,9 +139,9 @@ public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesPro
         final double minY = aoiBBox.getMinY() - marginHeight - paging.overlap / 2;
 
         LOGGER.info("Paging generate a grid of " + nbWidth + "x" + nbHeight + " potential maps.");
-        final char[][] names = new char[nbWidth][nbHeight];
+        final int[][] mapIndexes = new int[nbWidth][nbHeight];
         final Envelope[][] mapsBounds = new Envelope[nbWidth][nbHeight];
-        char mapName = 'A';
+        int mapIndex = 0;
 
         for (int j = 0; j < nbHeight; j++) {
             for (int i = 0; i < nbWidth; i++) {
@@ -160,10 +162,10 @@ public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesPro
 
                 if (areaOfInterest.getArea().intersects(bbox)) {
                     mapsBounds[i][j] = bbox.getEnvelopeInternal();
-                    names[i][j] = mapName;
-                    mapName++;
+                    mapIndexes[i][j] = mapIndex;
+                    mapIndex++;
                 } else {
-                    names[i][j] = DO_NOT_RENDER_BBOX_CHAR;
+                    mapIndexes[i][j] = DO_NOT_RENDER_BBOX_INDEX;
                 }
             }
         }
@@ -172,13 +174,13 @@ public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesPro
 
         for (int j = 0; j < nbHeight; j++) {
             for (int i = 0; i < nbWidth; i++) {
-                if (names[i][j] != DO_NOT_RENDER_BBOX_CHAR) {
+                if (mapIndexes[i][j] != DO_NOT_RENDER_BBOX_INDEX) {
                     Map<String, Object> mapValues = new HashMap<String, Object>();
-                    mapValues.put("name", "" + names[i][j]);
-                    mapValues.put("left", "" + (i != 0 ? names[i - 1][j] : DO_NOT_RENDER_BBOX_CHAR));
-                    mapValues.put("bottom", "" + (j != 0 ? names[i][j - 1] : DO_NOT_RENDER_BBOX_CHAR));
-                    mapValues.put("right", "" + (i != nbWidth - 1 ? names[i + 1][j] : DO_NOT_RENDER_BBOX_CHAR));
-                    mapValues.put("top", "" + (j != nbHeight - 1 ? names[i][j + 1] : DO_NOT_RENDER_BBOX_CHAR));
+                    mapValues.put("name", mapIndexes[i][j]);
+                    mapValues.put("left", i != 0 ? mapIndexes[i - 1][j] : DO_NOT_RENDER_BBOX_INDEX);
+                    mapValues.put("bottom", j != 0 ? mapIndexes[i][j - 1] : DO_NOT_RENDER_BBOX_INDEX);
+                    mapValues.put("right", i != nbWidth - 1 ? mapIndexes[i + 1][j] : DO_NOT_RENDER_BBOX_INDEX);
+                    mapValues.put("top", j != nbHeight - 1 ? mapIndexes[i][j + 1] : DO_NOT_RENDER_BBOX_INDEX);
 
                     final Coordinate center = mapsBounds[i][j].centre();
                     MapAttributeValues theMap = map.copy(map.getMapSize(), new Function<MapAttributeValues, Void>() {

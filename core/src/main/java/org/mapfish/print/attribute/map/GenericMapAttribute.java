@@ -232,6 +232,18 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
         public Boolean longitudeFirst = null;
 
         /**
+         * Should the vector style definitions be adapted to the target DPI resolution? (Default: true)
+         * <p/>
+         * The style definitions are often optimized for a use with OpenLayers (which uses
+         * a DPI value of 72). When these styles are used to print with a higher DPI value,
+         * lines often look too thin, label are too small, etc.
+         * <p/>
+         * If this property is set to `true`, the style definitions will be scaled to the target DPI value.
+         */
+        @HasDefaultValue
+        public Boolean dpiSensitiveStyle = true;
+
+        /**
          * Constructor.
          *
          * @param template the template this map is part of.
@@ -391,6 +403,10 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
         public Boolean isUseAdjustBounds() {
         //CSON: DesignForExtension
             return this.useAdjustBounds;
+        }
+
+        public final Boolean isDpiSensitiveStyle() {
+            return this.dpiSensitiveStyle;
         }
 
         //CSOFF: DesignForExtension

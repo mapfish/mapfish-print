@@ -117,4 +117,10 @@ public final class HttpImageResolver implements TableColumnConverter<BufferedIma
             validationErrors.add(new ConfigurationException("No urlExtractor defined"));
         }
     }
+
+    @Override
+    public boolean canConvert(final String text) {
+        Matcher urlMatcher = this.urlExtractor.matcher(text);
+        return (urlMatcher.matches() && urlMatcher.group(this.urlGroup) != null);
+    }
 }

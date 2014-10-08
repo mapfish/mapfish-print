@@ -13,11 +13,11 @@
     <property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
     <parameter name="mapSubReport" class="java.lang.String"/>
     <field name="mapSubReport" class="java.lang.String"/>
-    <field name="name" class="java.lang.String"/>
-    <field name="top" class="java.lang.String"/>
-    <field name="bottom" class="java.lang.String"/>
-    <field name="left" class="java.lang.String"/>
-    <field name="right" class="java.lang.String"/>
+    <field name="name" class="java.lang.Integer"/>
+    <field name="top" class="java.lang.Integer"/>
+    <field name="bottom" class="java.lang.Integer"/>
+    <field name="left" class="java.lang.Integer"/>
+    <field name="right" class="java.lang.Integer"/>
     <field name="scalebarSubReport" class="java.lang.String"/>
     <title>
         <band height="390" splitType="Stretch">

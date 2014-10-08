@@ -275,7 +275,7 @@ public class JsonStyleParserHelperTest {
         assertEquals(1, graphic.graphicalSymbols().size());
         Mark mark = (Mark) graphic.graphicalSymbols().get(0);
 
-        assertEquals("square", valueOf(mark.getWellKnownName()));
+        assertEquals("circle", valueOf(mark.getWellKnownName()));
         assertNotNull(mark.getFill());
         assertNotNull(mark.getStroke());
     }

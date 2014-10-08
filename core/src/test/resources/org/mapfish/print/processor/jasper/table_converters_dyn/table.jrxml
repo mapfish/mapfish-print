@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version last-->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DJR_2141" pageWidth="555" pageHeight="842" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" scriptletClass="ar.com.fdvs.dj.core.DJDefaultScriptlet" whenResourceMissingType="Key" uuid="e034c6ef-7449-4a6a-9b5e-4ce04cc083b2">
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+    <property name="com.jaspersoft.studio.unit." value="pixel"/>
+    <style name="header_style_1" mode="Transparent" forecolor="#000000" backcolor="#FFFFFF" radius="0" hAlign="Center" vAlign="Middle" rotation="None" isBlankWhenNull="true" fontName="DejaVu Sans" fontSize="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded="false">
+        <box padding="2">
+            <pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+            <bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+            <rightPen lineWidth="0.1"/>
+        </box>
+    </style>
+    <style name="header_style_2" mode="Transparent" forecolor="#000000" backcolor="#FFFFFF" radius="0" hAlign="Center" vAlign="Middle" rotation="None" isBlankWhenNull="true" fontName="DejaVu Sans" fontSize="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded="false">
+        <box padding="2">
+            <pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+            <leftPen lineWidth="1.0"/>
+            <bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+            <rightPen lineWidth="1.0"/>
+        </box>
+    </style>
+    <style name="header_style_3" mode="Transparent" forecolor="#000000" backcolor="#FFFFFF" radius="0" hAlign="Center" vAlign="Middle" rotation="None" isBlankWhenNull="true" fontName="DejaVu Sans" fontSize="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded="false">
+        <box padding="2">
+            <pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+            <topPen lineWidth="0.0"/>
+            <leftPen lineWidth="0.0"/>
+            <bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+            <rightPen lineWidth="0.0"/>
+        </box>
+    </style>
+    <style name="column_style_1" mode="Transparent" forecolor="#000000" backcolor="#FFFFFF" radius="0" hAlign="Left" vAlign="Middle" rotation="None" isBlankWhenNull="true" fontName="DejaVu Sans" fontSize="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded="false">
+        <box padding="2">
+            <pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+            <bottomPen lineWidth="1.0"/>
+        </box>
+        <conditionalStyle>
+            <conditionExpression><![CDATA[new java.lang.Boolean(((Number)$V{REPORT_COUNT}).doubleValue() % 2 == 0)]]></conditionExpression>
+            <style mode="Opaque" backcolor="#E6E6E6"/>
+        </conditionalStyle>
+    </style>
+    <style name="column_style_2" mode="Transparent" forecolor="#000000" backcolor="#FFFFFF" radius="0" hAlign="Left" vAlign="Middle" rotation="None" isBlankWhenNull="true" fontName="DejaVu Sans" fontSize="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded="false">
+        <box padding="2">
+            <pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+            <leftPen lineWidth="1.0"/>
+            <bottomPen lineWidth="1.0"/>
+            <rightPen lineWidth="1.0"/>
+        </box>
+        <conditionalStyle>
+            <conditionExpression><![CDATA[new java.lang.Boolean(((Number)$V{REPORT_COUNT}).doubleValue() % 2 == 0)]]></conditionExpression>
+            <style mode="Opaque" backcolor="#E6E6E6"/>
+        </conditionalStyle>
+    </style>
+    <style name="column_style_3" mode="Transparent" forecolor="#000000" backcolor="#FFFFFF" radius="0" hAlign="Left" vAlign="Middle" rotation="None" isBlankWhenNull="true" fontName="DejaVu Sans" fontSize="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded="false">
+        <box padding="2">
+            <pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+            <topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+            <leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+            <bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+            <rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+        </box>
+        <conditionalStyle>
+            <conditionExpression><![CDATA[new java.lang.Boolean(((Number)$V{REPORT_COUNT}).doubleValue() % 2 == 0)]]></conditionExpression>
+            <style mode="Opaque" backcolor="#E6E6E6"/>
+        </conditionalStyle>
+    </style>
+    <parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+    <parameter name="attribute_center_esting" class="java.lang.String"/>
+    <parameter name="attribute_scale" class="java.lang.String"/>
+    <parameter name="attribute_comment" class="java.lang.String"/>
+    <parameter name="attribute_title" class="java.lang.String"/>
+    <parameter name="attribute_srs" class="java.lang.String"/>
+    <parameter name="attribute_center_northing" class="java.lang.String"/>
+    <parameter name="attribute_rotation" class="java.lang.String"/>
+    <parameter name="map_main" class="java.awt.image.BufferedImage"/>
+    <parameter name="attribute_units" class="java.lang.String"/>
+    <queryString>
+        <![CDATA[]]>
+    </queryString>
+    <field name="col1" class="java.lang.String"/>
+    <field name="col2" class="java.lang.String"/>
+    <field name="col3" class="java.lang.String"/>
+    <pageHeader>
+        <band/>
+    </pageHeader>
+    <columnHeader>
+        <band height="20">
+            <property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.HorizontalRowLayout"/>
+            <property name="local_mesure_unitheight" value="pixel"/>
+            <property name="com.jaspersoft.studio.unit.height" value="px"/>
+            <textField isStretchWithOverflow="true" isBlankWhenNull="true">
+                <reportElement key="header_id" style="header_style_1" positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="185" height="20" isPrintWhenDetailOverflows="true" uuid="3a4e9d49-3645-4ca7-8e36-abfb35c0f688">
+                    <property name="com.jaspersoft.studio.unit.height" value="px"/>
+                </reportElement>
+                <textFieldExpression><![CDATA["col1"]]></textFieldExpression>
+            </textField>
+            <textField isStretchWithOverflow="true" isBlankWhenNull="true">
+                <reportElement key="header_name" style="header_style_2" positionType="Float" stretchType="RelativeToTallestObject" x="185" y="0" width="185" height="20" isPrintWhenDetailOverflows="true" uuid="9fac5b94-c27f-4ed4-960c-ac48b60d0598">
+                    <property name="com.jaspersoft.studio.unit.height" value="px"/>
+                </reportElement>
+                <textFieldExpression><![CDATA["col2"]]></textFieldExpression>
+            </textField>
+            <textField isStretchWithOverflow="true" isBlankWhenNull="true">
+                <reportElement key="header_icon" style="header_style_3" positionType="Float" stretchType="RelativeToTallestObject" x="370" y="0" width="185" height="20" isPrintWhenDetailOverflows="true" uuid="91317b7c-b366-4720-8e25-689630c8db0f">
+                    <property name="com.jaspersoft.studio.unit.height" value="px"/>
+                </reportElement>
+                <textElement>
+                    <font fontName="DejaVu Sans" size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA["col3"]]></textFieldExpression>
+            </textField>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="53">
+            <property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.HorizontalRowLayout"/>
+            <image>
+                <reportElement key="column_1" style="column_style_1" x="0" y="0" width="185" height="53" uuid="45c4a4a3-7262-4f70-86cc-bb0b35c5b758"/>
+                <imageExpression><![CDATA[$F{col1}]]></imageExpression>
+            </image>
+            <textField isStretchWithOverflow="true" isBlankWhenNull="true">
+                <reportElement key="style2" style="column_style_2" positionType="Float" stretchType="RelativeToTallestObject" x="185" y="0" width="185" height="53" isPrintWhenDetailOverflows="true" uuid="1e0ee0ef-22a5-43d5-b8d2-a731fc573055"/>
+                <textFieldExpression><![CDATA[$F{col2}]]></textFieldExpression>
+            </textField>
+            <textField isStretchWithOverflow="true" isBlankWhenNull="true">
+                <reportElement key="style3" style="column_style_3" positionType="Float" stretchType="RelativeToTallestObject" x="370" y="0" width="185" height="53" isPrintWhenDetailOverflows="true" uuid="25f68c48-9238-4b5b-b3dd-884418c66f7d">
+                    <property name="local_mesure_unitheight" value="pixel"/>
+                </reportElement>
+                <textFieldExpression><![CDATA[$F{col2}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+    <pageFooter>
+        <band/>
+    </pageFooter>
+    <summary>
+        <band/>
+    </summary>
+</jasperReport>

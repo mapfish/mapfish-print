@@ -1,0 +1,26 @@
+throwErrorOnExtraParameters: true
+templates:
+  main: !template
+    reportTemplate: simpleReport.jrxml
+    attributes:
+      table: !table {}
+    processors:
+    - !reportBuilder
+      directory: '.'
+    - !prepareTable
+      converters:
+      - !urlImage
+          urlExtractor: <img src="([^"]+)".*
+          urlGroup: 1
+      jasperTemplate: table.jrxml
+      firstDetailStyle: column_style_1
+      detailStyle: column_style_2
+      lastDetailStyle: column_style_3
+      firstHeaderStyle: header_style_1
+      headerStyle: header_style_2
+      lastHeaderStyle: header_style_3
+      dynamic: true
+      maxColumns: 3
+      excludeColumns: ["exclude"]
+      inputMapper: {table: table}
+      outputMapper: {table: table}

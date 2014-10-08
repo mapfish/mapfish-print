@@ -1,0 +1,17 @@
+throwErrorOnExtraParameters: true
+templates:
+  main: !template
+    reportTemplate: simpleReport.jrxml
+    tableData: table
+    attributes:
+      table: !table {}
+    processors:
+    - !reportBuilder # compile all reports in current directory
+      directory: '.'
+    - !prepareTable
+      converters:
+      - !urlImage
+          urlExtractor: <img src="([^"]+)".*
+          urlGroup: 1
+      inputMapper: {table: table}
+      outputMapper: {table: table}

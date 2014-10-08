@@ -5,6 +5,7 @@
       "scale": 110000,
       "projection": "EPSG:900913",
       "dpi": 300,
+      "dpiSensitiveStyle": false,
       "layers": [
         {
           "type": "geojson",
