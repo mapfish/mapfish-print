@@ -145,7 +145,7 @@ public class Configuration {
     }
 
     /**
-     * Either use the provided vale (renderAsSvg) or if it is null then use {@link #defaultToSvg}.
+     * Either use the provided value (renderAsSvg) or if it is null then use {@link #defaultToSvg}.
      *
      * @param renderAsSvg the value to use if non-null.
      */

@@ -42,6 +42,7 @@ import net.sf.jasperreports.engine.type.StretchTypeEnum;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 import org.mapfish.print.Constants;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.attribute.TableAttribute.TableAttributeValue;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
@@ -429,6 +430,9 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         JRXmlWriter.writeReport(templateDesign, jrxmlFile.getAbsolutePath(), Constants.DEFAULT_ENCODING);
 
         final File buildFile = File.createTempFile("table-", JASPER_REPORT_COMPILED_FILE_EXT, input.tempTaskDirectory);
+        if (!buildFile.delete()) {
+            throw new PrintException("Unable to delete the build file: " + buildFile);
+        }
         return this.jasperReportBuilder.compileJasperReport(buildFile, jrxmlFile).getAbsolutePath();
     }
 

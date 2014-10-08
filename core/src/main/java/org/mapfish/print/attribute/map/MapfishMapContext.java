@@ -85,6 +85,11 @@ public class MapfishMapContext {
 
     /**
      * Get a nicely rounded scale for to use for displaying the map scale.
+     * <p>
+     *     One of the output parameters of the {@link org.mapfish.print.processor.map.CreateMapProcessor} is 'mapContext' which can
+     *     be accessed in a template.  If the scale is required in the template then it can be accessed via:
+     *     <code>$P{mapContext}.getRoundedScale()</code>
+     * </p>
      */
     public final double getRoundedScale() {
         double scale = this.bounds.getScaleDenominator(getPaintArea(), this.dpi).getDenominator();
