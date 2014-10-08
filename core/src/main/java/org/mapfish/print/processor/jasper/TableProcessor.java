@@ -42,7 +42,6 @@ import net.sf.jasperreports.engine.type.StretchTypeEnum;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 import org.mapfish.print.Constants;
-import org.mapfish.print.PrintException;
 import org.mapfish.print.attribute.TableAttribute.TableAttributeValue;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
@@ -109,9 +108,9 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
      * actual field and column definitions will be dynamically generated from the table data that is provided.
      * This is required if dynamic is true.
      * </p>
-     * <p>
-     * This may be null if dynamic is false.  If it is null then main template will likely use the table data directly.
-     * </p>
+     * This may be null if dynamic is false.  If it is null then the main template will likely use the generated
+     * table datasource directly as its datasource for use in its detail section and the table will be directly in the main template's
+     * detail section.  Or a later processor may use the table's datasource in someway.
      *
      * @param jasperTemplate the template to use for rendering the table.
      */
@@ -430,9 +429,6 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         JRXmlWriter.writeReport(templateDesign, jrxmlFile.getAbsolutePath(), Constants.DEFAULT_ENCODING);
 
         final File buildFile = File.createTempFile("table-", JASPER_REPORT_COMPILED_FILE_EXT, input.tempTaskDirectory);
-        if (!buildFile.delete()) {
-            throw new PrintException("Unable to delete the build file: " + buildFile);
-        }
         return this.jasperReportBuilder.compileJasperReport(buildFile, jrxmlFile).getAbsolutePath();
     }
 
