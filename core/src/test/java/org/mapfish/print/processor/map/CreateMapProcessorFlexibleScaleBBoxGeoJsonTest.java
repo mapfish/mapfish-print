@@ -25,12 +25,12 @@ import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +52,7 @@ public class CreateMapProcessorFlexibleScaleBBoxGeoJsonTest extends AbstractMapf
     @Autowired
     private MapfishParser parser;
     @Autowired
-    private ClientHttpRequestFactory httpRequestFactory;
+    private MfClientHttpRequestFactoryImpl httpRequestFactory;
 
 
     @Test
@@ -72,7 +72,7 @@ public class CreateMapProcessorFlexibleScaleBBoxGeoJsonTest extends AbstractMapf
     private void doTest(PJsonObject requestData) throws IOException, JSONException {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
-        Values values = new Values(requestData, template, parser, getTaskDirectory(), this.httpRequestFactory);
+        Values values = new Values(requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
         template.getProcessorGraph().createTask(values).invoke();
 
         @SuppressWarnings("unchecked")

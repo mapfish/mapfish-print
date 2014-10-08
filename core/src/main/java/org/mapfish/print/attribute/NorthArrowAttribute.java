@@ -19,6 +19,7 @@
 
 package org.mapfish.print.attribute;
 
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.style.json.ColorParser;
@@ -36,7 +37,7 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
     private Integer size = null;
 
     @Override
-    public final void validate(final List<Throwable> validationErrors) {
+    public final void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.size == null || this.size < 1) {
             validationErrors.add(new ConfigurationException("size field is not legal: " + this.size + " in " + getClass().getName()));
         }

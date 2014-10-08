@@ -64,7 +64,7 @@ public class ProcessorWithConfigurationInjection extends AbstractProcessor<Objec
     }
 
     @Override
-    protected void extraValidation(List<Throwable> validationErrors) {
+    protected void extraValidation(List<Throwable> validationErrors, final Configuration configuration) {
         // no checks
     }
 }

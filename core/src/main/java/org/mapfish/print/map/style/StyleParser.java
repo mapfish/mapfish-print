@@ -21,7 +21,6 @@ package org.mapfish.print.map.style;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.SLDTransformer;
 import org.geotools.styling.Style;
@@ -37,7 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.List;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -74,7 +72,9 @@ public final class StyleParser {
                             userLayer.addUserStyle(style.get());
                             final StyledLayerDescriptor sld = styleFactory.createStyledLayerDescriptor();
                             sld.addStyledLayer(userLayer);
-                            LOGGER.debug("Loaded style from: \n\n '" + styleString + "': \n\n" + transformer.transform(sld));
+                            if (LOGGER.isDebugEnabled()) {
+                                LOGGER.debug("Loaded style from: \n\n '" + styleString + "': \n\n" + transformer.transform(sld));
+                            }
                         } catch (Exception e) {
                             LOGGER.debug("Loaded style from: \n\n '" + styleString + "' \n\n<Unable to transform it to xml>: " + e, e);
                         }

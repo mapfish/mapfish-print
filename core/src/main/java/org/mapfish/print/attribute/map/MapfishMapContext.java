@@ -20,6 +20,7 @@
 package org.mapfish.print.attribute.map;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.mapfish.print.map.Scale;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
@@ -35,7 +36,9 @@ public class MapfishMapContext {
     private final Dimension mapSize;
     private final double rotation;
     private final double dpi;
+    private final double requestorDpi;
     private final boolean forceLongitudeFirst;
+    private final boolean dpiSensitiveStyle;
 
     /**
      * Constructor.
@@ -43,15 +46,19 @@ public class MapfishMapContext {
      * @param mapSize the map size
      * @param rotationInDegree the rotation in degree
      * @param dpi the dpi of the printed map
+     * @param requestorDpi the dpi of the client map
      * @param forceLongitudeFirst If true then force longitude coordinates as the first coordinate.
+     * @param dpiSensitiveStyle Scale the vector styles?
      */
     public MapfishMapContext(final MapBounds bounds, final Dimension mapSize, final double rotationInDegree, final double dpi,
-                             final Boolean forceLongitudeFirst) {
+                             final double requestorDpi, final Boolean forceLongitudeFirst, final boolean dpiSensitiveStyle) {
         this.bounds = bounds;
         this.mapSize = mapSize;
         this.rotation = Math.toRadians(rotationInDegree);
         this.dpi = dpi;
+        this.requestorDpi = requestorDpi;
         this.forceLongitudeFirst = forceLongitudeFirst == null ? false : forceLongitudeFirst;
+        this.dpiSensitiveStyle = dpiSensitiveStyle;
     }
 
     /**
@@ -72,7 +79,29 @@ public class MapfishMapContext {
     public final Dimension getMapSize() {
         return this.mapSize;
     }
-    
+    public final Scale getScale() {
+        return this.bounds.getScaleDenominator(getPaintArea(), this.dpi);
+    }
+
+    /**
+     * Get a nicely rounded scale for to use for displaying the map scale.
+     */
+    public final double getRoundedScale() {
+        double scale = this.bounds.getScaleDenominator(getPaintArea(), this.dpi).getDenominator();
+
+        final int numChars = String.format("%d", Math.round(scale)).length();
+        if (numChars > 2) {
+            // CSOFF: MagicNumber
+            double factor = Math.pow(10, (numChars - 2));
+            // CSON: MagicNumber
+            scale = Math.round(scale / factor) * factor;
+        } else if (scale > 1) {
+            scale = Math.round(scale);
+        }
+
+        return scale;
+    }
+
     /**
      * @return The new map size taking the rotation into account.
      */
@@ -119,6 +148,10 @@ public class MapfishMapContext {
         return this.dpi;
     }
 
+    public final double getRequestorDPI() {
+        return this.requestorDpi;
+    }
+
     private int getRotatedMapWidth() {
         double width = this.mapSize.getWidth();
         if (this.rotation != 0.0) {
@@ -145,6 +178,10 @@ public class MapfishMapContext {
 
     public final Boolean isForceLongitudeFirst() {
         return this.forceLongitudeFirst;
+    }
+
+    public final Boolean isDpiSensitiveStyle() {
+        return this.dpiSensitiveStyle;
     }
 
     /**

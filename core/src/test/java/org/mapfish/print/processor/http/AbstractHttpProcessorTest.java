@@ -28,6 +28,7 @@ import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
@@ -35,7 +36,6 @@ import org.mapfish.print.processor.ProcessorGraphNode;
 import org.mapfish.print.processor.map.CreateMapProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -120,7 +120,7 @@ public abstract class AbstractHttpProcessorTest extends AbstractMapfishSpringTes
     }
 
     public static class TestParam {
-        public ClientHttpRequestFactory clientHttpRequestFactory;
+        public MfClientHttpRequestFactory clientHttpRequestFactory;
     }
 
     public static abstract class AbstractTestProcessor  extends AbstractProcessor<TestParam, Void> {
@@ -133,7 +133,7 @@ public abstract class AbstractHttpProcessorTest extends AbstractMapfishSpringTes
         }
 
         @Override
-        protected void extraValidation(List<Throwable> validationErrors) {
+        protected void extraValidation(List<Throwable> validationErrors, final Configuration configuration) {
             // do nothing
         }
 

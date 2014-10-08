@@ -19,9 +19,9 @@
 
 package org.mapfish.print.processor.map;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URI;
+import com.google.common.base.Predicate;
+import com.google.common.io.Files;
+import java.io.File;
 
 import jsr166y.ForkJoinPool;
 
@@ -37,11 +37,12 @@ import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
-import org.springframework.mock.http.client.MockClientHttpRequest;
-import org.springframework.test.annotation.DirtiesContext;
 
-import com.google.common.base.Predicate;
-import com.google.common.io.Files;
+import java.awt.image.BufferedImage;
+import org.springframework.mock.http.client.MockClientHttpRequest;
+import java.io.IOException;
+import java.net.URI;
+import org.springframework.test.annotation.DirtiesContext;
 
 public class CreateNorthArrowProcessorSvgTest extends AbstractMapfishSpringTest {
     public static final String BASE_DIR = "north_arrow_svg/";
@@ -81,7 +82,7 @@ public class CreateNorthArrowProcessorSvgTest extends AbstractMapfishSpringTest 
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory);
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         URI northArrowGraphic = (URI) values.getObject("graphic", URI.class);

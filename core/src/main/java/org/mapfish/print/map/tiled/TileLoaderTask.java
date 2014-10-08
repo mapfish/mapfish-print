@@ -24,9 +24,7 @@ import com.google.common.collect.Lists;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-
 import jsr166y.RecursiveTask;
-
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
@@ -37,6 +35,7 @@ import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
@@ -44,7 +43,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
 
 import java.awt.Color;
@@ -55,7 +53,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
-
 import javax.imageio.ImageIO;
 
 /**
@@ -70,7 +67,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
     private final MapfishMapContext transformer;
     private final TileCacheInformation tiledLayer;
     private final BufferedImage errorImage;
-    private final ClientHttpRequestFactory httpRequestFactory;
+    private final MfClientHttpRequestFactory httpRequestFactory;
     private Optional<Geometry> cachedRotatedMapBounds = null;
 
     /**
@@ -80,7 +77,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
      * @param transformer        a transformer for making calculations
      * @param tileCacheInfo      the object used to create the tile requests
      */
-    public TileLoaderTask(final ClientHttpRequestFactory httpRequestFactory,
+    public TileLoaderTask(final MfClientHttpRequestFactory httpRequestFactory,
                           final double dpi,
                           final MapfishMapContext transformer,
                           final TileCacheInformation tileCacheInfo) {
@@ -294,6 +291,10 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
                 }
 
                 BufferedImage image = ImageIO.read(response.getBody());
+                if (image == null) {
+                    LOGGER.warn("The URL: " + this.tileRequest.getURI() + " is an image format that can be decoded");
+                    image = this.errorImage;
+                }
 
                 return new Tile(image, getTileIndexX(), getTileIndexY());
             } catch (IOException e) {

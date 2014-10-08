@@ -21,7 +21,6 @@ package org.mapfish.print.map.geotools;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
-
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
@@ -30,7 +29,7 @@ import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.attribute.map.MapfishMapContext;
-import org.springframework.http.client.ClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -64,7 +63,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
 
     @Override
     public final void render(final Graphics2D graphics2D,
-                             final ClientHttpRequestFactory clientHttpRequestFactory,
+                             final MfClientHttpRequestFactory clientHttpRequestFactory,
                              final MapfishMapContext transformer,
                              final boolean isFirstLayer) {
         Rectangle paintArea = new Rectangle(transformer.getMapSize());
@@ -79,7 +78,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
             graphics2D.setTransform(transformer.getTransform());
             Dimension mapSize = new Dimension(paintArea.width, paintArea.height);
             layerTransformer = new MapfishMapContext(bounds, mapSize, transformer.getRotation(), transformer.getDPI(),
-                    transformer.isForceLongitudeFirst());
+                    transformer.getRequestorDPI(), transformer.isForceLongitudeFirst(), transformer.isDpiSensitiveStyle());
         }
 
 
@@ -136,7 +135,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
      * @param transformer the map transformer
      * @param isFirstLayer true indicates this layer is the first layer in the map (the first layer drawn, ie the base layer)
      */
-    protected abstract List<? extends Layer> getLayers(ClientHttpRequestFactory httpRequestFactory,
+    protected abstract List<? extends Layer> getLayers(MfClientHttpRequestFactory httpRequestFactory,
                                                        MapfishMapContext transformer,
                                                        final boolean isFirstLayer) throws Exception;
     

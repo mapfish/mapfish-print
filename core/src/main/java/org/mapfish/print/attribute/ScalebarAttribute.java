@@ -21,7 +21,7 @@ package org.mapfish.print.attribute;
 
 
 import com.google.common.base.Strings;
-
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.DistanceUnit;
@@ -45,7 +45,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
     private Integer height = null;
 
     @Override
-    public final void validate(final List<Throwable> validationErrors) {
+    public final void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.width == null || this.width < 1) {
             validationErrors.add(new ConfigurationException("width field is not legal: " + this.width + " in " + getClass().getName()));
         }
@@ -239,10 +239,11 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
         public String verticalAlign = VerticalAlign.BOTTOM.getLabel();
 
         /**
-         * Indicates if the scalebar graphic is rendered as SVG (default: false).
+         * Indicates if the scalebar graphic is rendered as SVG
+         * (will default to {@link org.mapfish.print.config.Configuration#defaultStyle}).
          */
         @HasDefaultValue
-        public boolean renderAsSvg = false;
+        public Boolean renderAsSvg;
 
         /**
          * Constructor.

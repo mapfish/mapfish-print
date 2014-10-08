@@ -20,11 +20,12 @@
 package org.mapfish.print.attribute;
 
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.FeaturesParser;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.opengis.referencing.FactoryException;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,7 +48,7 @@ public final class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribu
 
 
     @Override
-    public void validate(final List<Throwable> validationErrors) {
+    public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         // no checks required
     }
 
@@ -84,7 +85,7 @@ public final class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribu
          *
          * @param httpRequestFactory the request factory to use for making requests
          */
-        public synchronized SimpleFeatureCollection getFeatures(final ClientHttpRequestFactory httpRequestFactory) throws
+        public synchronized SimpleFeatureCollection getFeatures(final MfClientHttpRequestFactory httpRequestFactory) throws
                 FactoryException, IOException {
             if (this.featuresCollection == null) {
                 final boolean forceLongitudeFirst = this.longitudeFirst == null ? false : this.longitudeFirst;

@@ -1,0 +1,15 @@
+{
+    "layout" : "main",
+    "attributes": {
+        "table": {
+            "columns": ["id", "name", "icon"],
+            "data": [
+                [1, "blah", "<img src=\"http://icons.com/warn.png\" />"],
+                [2, "blip", "<img src=\"http://icons.com/info-crosswalk-9.png\" />"],
+                [3, "blup", "This is not an image!"],
+                [4, "blep", ""],
+                [5, "blop"]
+            ]
+        }
+    }
+}

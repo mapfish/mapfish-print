@@ -1,14 +1,14 @@
 package org.mapfish.print.attribute;
 
-import static org.junit.Assert.*;
+import com.google.common.collect.Lists;
+import org.junit.Test;
+import org.mapfish.print.attribute.ScalebarAttribute.ScalebarAttributeValues;
+import org.mapfish.print.config.Configuration;
 
 import java.awt.Dimension;
 import java.util.List;
 
-import org.junit.Test;
-import org.mapfish.print.attribute.ScalebarAttribute.ScalebarAttributeValues;
-
-import com.google.common.collect.Lists;
+import static org.junit.Assert.assertEquals;
 
 public class ScalebarAttributeTest {
 
@@ -16,7 +16,8 @@ public class ScalebarAttributeTest {
     public void testValidate() {
         ScalebarAttribute attribute = new ScalebarAttribute();
         List<Throwable> validationErrors = Lists.newArrayList();
-        attribute.validate(validationErrors);
+        Configuration configuration = new Configuration();
+        attribute.validate(validationErrors, configuration);
         // errors: width and height is not set
         assertEquals(2, validationErrors.size());
     }

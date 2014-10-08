@@ -19,6 +19,7 @@
 
 package org.mapfish.print.processor.http.matcher;
 
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 
 import java.net.InetAddress;
@@ -85,7 +86,7 @@ public class AddressHostMatcher extends InetHostMatcher {
     }
 
     @Override
-    public final void validate(final List<Throwable> validationErrors) {
+    public final void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.ip == null) {
             validationErrors.add(new ConfigurationException("No IP address defined " + getClass().getName()));
         }

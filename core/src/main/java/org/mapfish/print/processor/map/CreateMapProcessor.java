@@ -24,6 +24,7 @@ import com.google.common.io.Closer;
 import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Polygon;
 import net.sf.jasperreports.engine.JRException;
+import org.apache.batik.svggen.DefaultStyleHandler;
 import org.apache.batik.svggen.SVGGeneratorContext;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.geotools.geometry.jts.JTS;
@@ -35,7 +36,9 @@ import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.map.geotools.FeatureLayer;
 import org.mapfish.print.processor.AbstractProcessor;
@@ -45,8 +48,8 @@ import org.mapfish.print.processor.jasper.MapSubReport;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -62,7 +65,9 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -137,11 +142,11 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         checkCancelState(context);
         final URI mapSubReport = createMapSubReport(param.tempTaskDirectory, mapValues.getMapSize(), graphics, mapValues.getDpi());
 
-        return new Output(graphics, mapSubReport.toString());
+        return new Output(graphics, mapSubReport.toString(), createMapContext(mapValues));
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors) {
+    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.imageType == null) {
             validationErrors.add(new ConfigurationException("No imageType defined in " + getClass().getName()));
         }
@@ -161,25 +166,11 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
     }
 
     private List<URI> createLayerGraphics(final File printDirectory,
-                                          final ClientHttpRequestFactory clientHttpRequestFactory,
+                                          final MfClientHttpRequestFactory clientHttpRequestFactory,
                                           final MapAttribute.MapAttributeValues mapValues,
                                           final ExecutionContext context)
             throws Exception {
-        final Dimension mapSize = mapValues.getMapSize();
-        final double dpi = mapValues.getDpi();
-        Rectangle paintArea = new Rectangle(mapSize);
-
-        final double dpiOfRequestor = mapValues.getRequestorDPI();
-
-        MapBounds bounds = mapValues.getMapBounds();
-        bounds = adjustBoundsToScaleAndMapSize(mapValues, dpiOfRequestor, paintArea, bounds);
-
-        // if the DPI is higher than the PDF DPI we need to make the image larger so the image put in the PDF is large enough for the
-        // higher DPI printer
-        final double dpiRatio = dpi / dpiOfRequestor;
-        paintArea.setBounds(0, 0, (int) (mapSize.getWidth() * dpiRatio), (int) (mapSize.getHeight() * dpiRatio));
-        final MapfishMapContext transformer = new MapfishMapContext(bounds, paintArea.getSize(),
-                mapValues.getRotation(), dpi, mapValues.longitudeFirst);
+        final MapfishMapContext transformer = createMapContext(mapValues);
 
         // reverse layer list to draw from bottom to top.  normally position 0 is top-most layer.
         final List<MapLayer> layers = Lists.reverse(Lists.newArrayList(mapValues.getLayers()));
@@ -196,7 +187,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             File path = null;
             if (renderAsSvg(layer)) {
                 // render layer as SVG
-                final SVGGraphics2D graphics2D = getSvgGraphics(paintArea.getSize());
+                final SVGGraphics2D graphics2D = getSvgGraphics(transformer.getMapSize());
 
                 try {
                     Graphics2D clippedGraphics2D = createClippedGraphics(transformer, areaOfInterest, graphics2D);
@@ -209,8 +200,8 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 }
             } else {
                 // render layer as raster graphic
-                final BufferedImage bufferedImage = new BufferedImage((int) paintArea.getWidth(),
-                        (int) paintArea.getHeight(), this.imageType.value);
+                final BufferedImage bufferedImage = new BufferedImage(transformer.getMapSize().width,
+                        transformer.getMapSize().height, this.imageType.value);
                 Graphics2D graphics2D = createClippedGraphics(transformer, areaOfInterest, bufferedImage.createGraphics());
                 try {
                     layer.render(graphics2D, clientHttpRequestFactory, transformer, isFirstLayer);
@@ -226,6 +217,24 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         }
 
         return graphics;
+    }
+
+    private MapfishMapContext createMapContext(final MapAttribute.MapAttributeValues mapValues) {
+        final Dimension mapSize = mapValues.getMapSize();
+        Rectangle paintArea = new Rectangle(mapSize);
+
+        final double dpi = mapValues.getDpi();
+        final double dpiOfRequestor = mapValues.getRequestorDPI();
+
+        MapBounds bounds = mapValues.getMapBounds();
+        bounds = adjustBoundsToScaleAndMapSize(mapValues, dpiOfRequestor, paintArea, bounds);
+
+        // if the DPI is higher than the PDF DPI we need to make the image larger so the image put in the PDF is large enough for the
+        // higher DPI printer
+        final double dpiRatio = dpi / dpiOfRequestor;
+        paintArea.setBounds(0, 0, (int) (mapSize.getWidth() * dpiRatio), (int) (mapSize.getHeight() * dpiRatio));
+        return new MapfishMapContext(bounds, paintArea.getSize(),
+                mapValues.getRotation(), dpi, mapValues.getRequestorDPI(), mapValues.longitudeFirst, mapValues.isDpiSensitiveStyle());
     }
 
 
@@ -324,6 +333,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         Document document = db.getDOMImplementation().createDocument(null, "svg", null);
 
         SVGGeneratorContext ctx = SVGGeneratorContext.createDefault(document);
+        ctx.setStyleHandler(new OpacityAdjustingStyleHandler());
         ctx.setComment("Generated by GeoTools2 with Batik SVG Generator");
 
         SVGGraphics2D g2d = new SVGGraphics2D(ctx, true);
@@ -345,7 +355,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             final OutputStreamWriter outputStreamWriter = closer.register(new OutputStreamWriter(fs, "UTF-8"));
             Writer osw = closer.register(new BufferedWriter(outputStreamWriter));
 
-            graphics2d.stream(osw);
+            graphics2d.stream(osw, true);
         } finally {
             closer.close();
         }
@@ -370,7 +380,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
          * A factory for making http requests.  This is added to the values by the framework and therefore
          * does not need to be set in configuration
          */
-        public ClientHttpRequestFactory clientHttpRequestFactory;
+        public MfClientHttpRequestFactory clientHttpRequestFactory;
 
         /**
          * The required parameters for the map.
@@ -399,10 +409,46 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
          */
         public final String mapSubReport;
 
-        private Output(final List<URI> layerGraphics, final String mapSubReport) {
+        /**
+         * The map parameters used after zooming and all other calculations that are made.
+         */
+        public final MapfishMapContext mapContext;
+
+        private Output(final List<URI> layerGraphics,
+                       final String mapSubReport,
+                       final MapfishMapContext mapContext) {
             this.layerGraphics = layerGraphics;
             this.mapSubReport = mapSubReport;
+            this.mapContext = mapContext;
         }
     }
 
+    private static final class OpacityAdjustingStyleHandler extends DefaultStyleHandler {
+        @Override
+        public void setStyle(final Element element,
+                             final Map styleMap,
+                             final SVGGeneratorContext generatorContext) {
+            String tagName = element.getTagName();
+            Iterator iter = styleMap.keySet().iterator();
+            while (iter.hasNext()) {
+                String styleName = (String) iter.next();
+                if (element.getAttributeNS(null, styleName).length() == 0) {
+                    if (styleName.equals("opacity")) {
+                        if (appliesTo(styleName, tagName)) {
+                            element.setAttributeNS(null, "fill-opacity",
+                                    (String) styleMap.get(styleName));
+                            element.setAttributeNS(null, "stroke-opacity",
+                                    (String) styleMap.get(styleName));
+                        }
+                    } else {
+                        if (appliesTo(styleName, tagName)) {
+                            element.setAttributeNS(null, styleName,
+                                    (String) styleMap.get(styleName));
+                        }
+                    }
+                }
+            }
+        }
+
+    }
 }

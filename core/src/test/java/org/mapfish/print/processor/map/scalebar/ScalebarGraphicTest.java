@@ -1,12 +1,7 @@
 package org.mapfish.print.processor.map.scalebar;
 
-import static org.junit.Assert.assertEquals;
-
-import java.awt.Dimension;
-import java.io.File;
-import java.net.URI;
-
 import org.json.JSONArray;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -15,9 +10,17 @@ import org.mapfish.print.attribute.ScalebarAttribute;
 import org.mapfish.print.attribute.ScalebarAttribute.ScalebarAttributeValues;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.Template;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonArray;
+
+import java.awt.Dimension;
+import java.io.File;
+import java.net.URI;
+
+import static org.junit.Assert.assertEquals;
 
 public class ScalebarGraphicTest {
 
@@ -25,6 +28,15 @@ public class ScalebarGraphicTest {
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
+    private Template template;
+
+    @Before
+    public void setUp() throws Exception {
+        Configuration configuration = new Configuration();
+        this.template = new Template();
+        this.template.setConfiguration(configuration);
+
+    }
 
     @Test
     public void testGetNearestNiceValue() {
@@ -124,7 +136,7 @@ public class ScalebarGraphicTest {
         scalebarParams.verticalAlign = VerticalAlign.TOP.getLabel();
 
         ScalebarGraphic scalebar = new ScalebarGraphic();
-        URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot());
+        URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);
 //      Files.copy(new File(file), new File("/tmp/" + getClass().getSimpleName() + "expected-scalebar-graphic.tiff"));
         new ImageSimilarity(new File(file), 4).assertSimilarity(getFile("expected-scalebar-graphic.tiff"), 15);
     }
@@ -149,7 +161,7 @@ public class ScalebarGraphicTest {
         ScalebarAttributeValues scalebarParams = scalebarAttibute.createValue(null);
 
         ScalebarGraphic scalebar = new ScalebarGraphic();
-        URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot());
+        URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);
 //      Files.copy(new File(file), new File("/tmp/" + getClass().getSimpleName() + "expected-scalebar-graphic-dpi.tiff"));
         new ImageSimilarity(new File(file), 4).assertSimilarity(getFile("expected-scalebar-graphic-dpi.tiff"), 15);
     }
@@ -175,7 +187,7 @@ public class ScalebarGraphicTest {
         scalebarParams.renderAsSvg = true;
 
         ScalebarGraphic scalebar = new ScalebarGraphic();
-        URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot());
+        URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);
 //        Files.copy(new File(file), new File("/tmp/" + getClass().getSimpleName() + "expected-scalebar-graphic.svg"));
 //        ImageSimilarity.writeUncompressedImage(
 //                ImageSimilarity.convertFromSvg(file, 300, 40), "/tmp/" + getClass().getSimpleName() + "expected-scalebar-graphic-svg.tiff");

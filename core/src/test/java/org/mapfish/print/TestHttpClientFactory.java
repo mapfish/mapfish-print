@@ -22,15 +22,20 @@ package org.mapfish.print;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.http.ConfigurableRequest;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.mock.http.client.MockClientHttpResponse;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.Map;
 
@@ -41,7 +46,7 @@ import static org.junit.Assert.fail;
  *
  * @author Jesse on 4/4/14.
  */
-public class TestHttpClientFactory implements ClientHttpRequestFactory {
+public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl implements MfClientHttpRequestFactory {
 
     private final Map<Predicate<URI>, Handler> handlers = Maps.newConcurrentMap();
 
@@ -53,11 +58,12 @@ public class TestHttpClientFactory implements ClientHttpRequestFactory {
     }
 
     @Override
-    public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
+    public ConfigurableRequest createRequest(URI uri, final HttpMethod httpMethod) throws IOException {
         for (Map.Entry<Predicate<URI>, Handler> entry : handlers.entrySet()) {
             if (entry.getKey().apply(uri)) {
                 try {
-                    return entry.getValue().handleRequest(uri, httpMethod);
+                    final MockClientHttpRequest httpRequest = entry.getValue().handleRequest(uri, httpMethod);
+                    return new TestConfigurableRequest(httpRequest);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -66,8 +72,13 @@ public class TestHttpClientFactory implements ClientHttpRequestFactory {
         throw new IllegalArgumentException(uri + " not registered with " + getClass().getName());
     }
 
+    @Override
+    public void register(RequestConfigurator callback) {
+        throw new UnsupportedOperationException("Not supported");
+    }
+
     public static abstract class Handler {
-        public abstract MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws IOException, Exception;
+        public abstract MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception;
         public MockClientHttpRequest ok(URI uri, byte[] bytes, HttpMethod httpMethod) {
             MockClientHttpRequest request = new MockClientHttpRequest(httpMethod, uri);
             ClientHttpResponse response = new MockClientHttpResponse(bytes, HttpStatus.OK);
@@ -91,6 +102,49 @@ public class TestHttpClientFactory implements ClientHttpRequestFactory {
                 }
             };
             return request;
+        }
+    }
+
+    private static class TestConfigurableRequest implements ConfigurableRequest {
+        private final MockClientHttpRequest httpRequest;
+
+        public TestConfigurableRequest(MockClientHttpRequest httpRequest) {
+            this.httpRequest = httpRequest;
+        }
+
+        @Override
+        public HttpRequestBase getUnderlyingRequest() {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public void setConfiguration(Configuration configuration) {
+            // ignore
+        }
+
+        @Override
+        public ClientHttpResponse execute() throws IOException {
+            return httpRequest.execute();
+        }
+
+        @Override
+        public OutputStream getBody() throws IOException {
+            return httpRequest.getBody();
+        }
+
+        @Override
+        public HttpMethod getMethod() {
+            return httpRequest.getMethod();
+        }
+
+        @Override
+        public URI getURI() {
+            return httpRequest.getURI();
+        }
+
+        @Override
+        public HttpHeaders getHeaders() {
+            return httpRequest.getHeaders();
         }
     }
 }

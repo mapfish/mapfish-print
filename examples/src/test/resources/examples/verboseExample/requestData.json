@@ -13,26 +13,28 @@
                 [2, "blip", "icon_zoomin"]
             ]
         },
-      "tableList": [
-        {
-          "id": "f1",
-          "displayName": "Feature 1",
-          "columns": ["id", "name", "icon"],
-          "data": [
-            [1, "blah", "icon_pan"],
-            [2, "blip", "icon_zoomin"]
-          ]
-        },
-        {
-          "id": "f2",
-          "displayName": "Feature 2",
-          "columns": ["id", "name", "icon"],
-          "data": [
-            [10, "blah2", "icon_pan2"],
-            [20, "blip2", "icon_zoomin2"]
-          ]
-        }
-      ],
+        "datasource": [
+          {
+            "displayName": "Feature 1",
+            "table" : {
+              "columns": ["id", "name", "icon"],
+              "data": [
+                [1, "blah", "icon_pan"],
+                [2, "blip", "icon_zoomin"]
+              ]
+            }
+          },
+          {
+            "displayName": "Feature 2",
+            "table": {
+              "columns": ["id", "name", "icon"],
+              "data": [
+                [10, "blah2", "icon_pan2"],
+                [20, "blip2", "icon_zoomin2"]
+              ]
+            }
+          }
+        ],
         "legend": {
             "name": "",
            "classes": [{

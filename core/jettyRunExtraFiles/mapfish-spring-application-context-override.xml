@@ -18,15 +18,18 @@
   ~ along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+    xmlns:beans="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:context="http://www.springframework.org/schema/context"
     xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
     <context:property-placeholder system-properties-mode="FALLBACK" file-encoding="UTF-8" location="classpath:mapfish-spring.properties"/>
 
-    <bean id="mapPrinterFactory" class="org.mapfish.print.servlet.ServletMapPrinterFactory">
-        <property name="appsRootDirectory" value="${path_to_examples}" />
-    </bean>
-</beans>
+    <beans:bean id="mapPrinterFactory" class="org.mapfish.print.servlet.ServletMapPrinterFactory">
+        <beans:property name="appsRootDirectory" value="${path_to_examples}" />
+    </beans:bean>
+</beans:beans>

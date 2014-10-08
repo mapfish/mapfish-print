@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version last-->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DJR_2141" pageWidth="595" pageHeight="842" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" scriptletClass="ar.com.fdvs.dj.core.DJDefaultScriptlet" whenResourceMissingType="Key" uuid="e034c6ef-7449-4a6a-9b5e-4ce04cc083b2">
+	<style name="dj_style_1_" mode="Transparent" forecolor="#000000" backcolor="#FFFFFF" radius="0" hAlign="Center" vAlign="Middle" rotation="None" isBlankWhenNull="true" fontName="DejaVu Sans" fontSize="14" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded="false">
+		<box padding="2">
+			<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+			<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="dj_style_2_" mode="Transparent" forecolor="#000000" backcolor="#FFFFFF" radius="0" hAlign="Left" vAlign="Middle" rotation="None" isBlankWhenNull="true" fontName="DejaVu Sans" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded="false">
+		<box padding="2">
+			<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="DejaVu Sans_for_column_DJR_2141_COLUMN_0_" mode="Transparent" forecolor="#000000" backcolor="#FFFFFF" radius="0" hAlign="Left" vAlign="Middle" rotation="None" isBlankWhenNull="true" fontName="DejaVu Sans" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded="false">
+		<box padding="2">
+			<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new java.lang.Boolean(((Number)$V{REPORT_COUNT}).doubleValue() % 2 == 0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#E6E6E6"/>
+		</conditionalStyle>
+	</style>
+	<style name="DejaVu Sans_for_column_DJR_2141_COLUMN_1_" mode="Transparent" forecolor="#000000" backcolor="#FFFFFF" radius="0" hAlign="Left" vAlign="Middle" rotation="None" isBlankWhenNull="true" fontName="DejaVu Sans" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded="false">
+		<box padding="2">
+			<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new java.lang.Boolean(((Number)$V{REPORT_COUNT}).doubleValue() % 2 == 0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#E6E6E6"/>
+		</conditionalStyle>
+	</style>
+	<style name="DejaVu Sans_for_column_DJR_2141_COLUMN_2_" mode="Transparent" forecolor="#000000" backcolor="#FFFFFF" radius="0" hAlign="Left" vAlign="Middle" rotation="None" isBlankWhenNull="true" fontName="DejaVu Sans" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded="false">
+		<box padding="2">
+			<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new java.lang.Boolean(((Number)$V{REPORT_COUNT}).doubleValue() % 2 == 0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#E6E6E6"/>
+		</conditionalStyle>
+	</style>
+	<field name="id" class="java.lang.Integer"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="icon" class="java.lang.Object"/>
+	<pageHeader>
+		<band/>
+	</pageHeader>
+	<columnHeader>
+		<band height="30">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement key="header_id" style="dj_style_1_" positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="185" height="30" isPrintWhenDetailOverflows="true" uuid="3a4e9d49-3645-4ca7-8e36-abfb35c0f688"/>
+				<textFieldExpression><![CDATA["id"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement key="header_name" style="dj_style_1_" positionType="Float" stretchType="RelativeToTallestObject" x="185" y="0" width="185" height="30" isPrintWhenDetailOverflows="true" uuid="9fac5b94-c27f-4ed4-960c-ac48b60d0598"/>
+				<textFieldExpression><![CDATA["name"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement key="header_icon" style="dj_style_1_" positionType="Float" stretchType="RelativeToTallestObject" x="370" y="0" width="185" height="30" isPrintWhenDetailOverflows="true" uuid="2f0cd44c-ab66-42b2-9ad4-1636193577a4"/>
+				<textFieldExpression><![CDATA["icon"]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="53" splitType="Immediate">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="DejaVu Sans_for_column_DJR_2141_COLUMN_0_" positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="185" height="15" isPrintWhenDetailOverflows="true" uuid="9b56d8ed-049e-41dc-806e-350ad84a3842"/>
+				<textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="DejaVu Sans_for_column_DJR_2141_COLUMN_1_" positionType="Float" stretchType="RelativeToTallestObject" x="185" y="0" width="185" height="15" isPrintWhenDetailOverflows="true" uuid="1e0ee0ef-22a5-43d5-b8d2-a731fc573055"/>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="405" y="4" width="185" height="15" isPrintWhenDetailOverflows="true" uuid="1e0ee0ef-22a5-43d5-b8d2-a731fc573055">
+					<printWhenExpression><![CDATA[new Boolean(!$F{icon}.getClass().equals(java.awt.image.BufferedImage.class))]]></printWhenExpression>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{icon}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="405" y="4" width="150" height="48" uuid="b596e4a6-f233-4628-b272-f2ba0607df3f">
+					<printWhenExpression><![CDATA[new Boolean($F{icon}.getClass().equals(java.awt.image.BufferedImage.class))]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$F{icon}]]></imageExpression>
+			</image>
+		</band>
+	</detail>
+	<pageFooter>
+		<band/>
+	</pageFooter>
+	<summary>
+		<band/>
+	</summary>
+</jasperReport>

@@ -24,15 +24,15 @@ import org.springframework.http.HttpMethod;
 
 import java.net.URI;
 
-import static org.junit.Assert.assertTrue;
+import static org.mapfish.print.processor.http.matcher.MatcherTestUtils.*;
 
 public class AcceptAllMatcherTest {
 
     @Test
     public void testAccepts() throws Exception {
         AcceptAllMatcher matcher = new AcceptAllMatcher();
-        assertTrue(matcher.accepts(new URI("http://localhost/print-servlet"), HttpMethod.GET));
-        assertTrue(matcher.accepts(new URI("http://www.camptocamp.com"), HttpMethod.GET));
-        assertTrue(matcher.accepts(new URI("http://www.camptocamp.com"), HttpMethod.POST));
+        assertMatch(matcher, true, new URI("http://localhost/print-servlet"), HttpMethod.GET);
+        assertMatch(matcher, true, new URI("http://www.camptocamp.com"), HttpMethod.GET);
+        assertMatch(matcher, true, new URI("http://www.camptocamp.com"), HttpMethod.POST);
     }
 }

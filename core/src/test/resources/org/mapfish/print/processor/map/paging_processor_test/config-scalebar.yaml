@@ -4,7 +4,7 @@ templates:
   main: !template
   #===========================================================================
     reportTemplate: simpleReport.jrxml
-    tableData: datasource
+    tableData: jrDataSource
     attributes:
       map: !map
         maxDpi: 400
@@ -23,8 +23,8 @@ templates:
       directory: '.'
     - !createMapPages {} # creates the iterable<Values> consumed by dataSource
     - !createMap {}
-    - !dataSource
-      inputMapper: {maps: source}
+    - !createDataSource
+      inputMapper: {maps: datasource}
       attributes:
         scalebar: !scalebar
           height: 20

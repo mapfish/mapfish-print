@@ -20,6 +20,8 @@
 package org.mapfish.print.config;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.geotools.styling.Style;
 import org.json.JSONException;
 import org.json.JSONWriter;
@@ -32,7 +34,6 @@ import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.sql.Connection;
@@ -52,26 +53,26 @@ public class Template implements ConfigurationObject, HasConfiguration {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Template.class);
     @Autowired
     private ProcessorDependencyGraphFactory processorGraphFactory;
+    @Autowired
+    private StyleParser styleParser;
+    @Autowired
+    private ClientHttpRequestFactory httpRequestFactory;
 
 
     private String reportTemplate;
-    private Map<String, Attribute> attributes;
-    private List<Processor> processors;
+    private Map<String, Attribute> attributes = Maps.newHashMap();
+    private List<Processor> processors = Lists.newArrayList();
 
     private String jdbcUrl;
     private String jdbcUser;
     private String jdbcPassword;
     private volatile ProcessorDependencyGraph processorGraph;
-    private volatile ProcessorDependencyGraph iterProcessorGraph;
     private Map<String, String> styles = new HashMap<String, String>();
     private Configuration configuration;
-    @Autowired
-    private StyleParser styleParser;
-    @Qualifier("httpClientFactory")
-    @Autowired
-    private ClientHttpRequestFactory httpRequestFactory;
+    private List<String> access = Lists.newArrayList();
+    private PDFConfig pdfConfig = new PDFConfig();
     private String tableDataKey;
-
+    private String outputFilename;
 
     /**
      * Print out the template information that the client needs for performing a request.
@@ -81,16 +82,77 @@ public class Template implements ConfigurationObject, HasConfiguration {
     public final void printClientConfig(final JSONWriter json) throws JSONException {
         json.key("attributes");
         json.array();
-        for (String name : this.attributes.keySet()) {
-            final Attribute attribute = this.attributes.get(name);
+        for (Map.Entry<String, Attribute> entry : this.attributes.entrySet()) {
+            Attribute attribute = entry.getValue();
             if (attribute.getClass().getAnnotation(InternalAttribute.class) == null) {
                 json.object();
-                json.key("name").value(name);
+                json.key("name").value(entry.getKey());
                 attribute.printClientConfig(json, this);
                 json.endObject();
             }
         }
         json.endArray();
+    }
+
+    /**
+     * The default output file name of the report (takes precedence over
+     * {@link org.mapfish.print.config.Configuration#setOutputFilename(String)}).  This can be overridden by the outputFilename
+     * parameter in the request JSON.
+     * <p>
+     *     This can be a string and can also have a date section in the string that will be filled when the report is created for
+     *     example a section with ${&lt;dateFormatString>} will be replaced with the current date formatted in the way defined
+     *     by the &lt;dateFormatString> string.  The format rules are the rules in
+     *     <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">java.text.SimpleDateFormat</a>
+     *     (do a google search if the link above is broken).
+     * </p>
+     * <p>
+     *     Example: <code>outputFilename: print-${dd-MM-yyyy}</code> should output: <code>print-22-11-2014.pdf</code>
+     * </p>
+     * <p>
+     *     Note: the suffix will be appended to the end of the name.
+     * </p>
+     *
+     * @param outputFilename default output file name of the report.
+     */
+    public final void setOutputFilename(final String outputFilename) {
+        this.outputFilename = outputFilename;
+    }
+
+    public final String getOutputFilename() {
+        return this.outputFilename;
+    }
+
+    /**
+     * Get the merged configuration between this template and the configuration's template.  The settings in the template take
+     * priority over the configurations settings but if not set in the template then the default will be the configuration's options.
+     */
+    // CSOFF: DesignForExtension -- Note this is disabled so that I can use Mockito and inject my own objects
+    public PDFConfig getPdfConfig() {
+        return this.pdfConfig.getMergedInstance(this.configuration.getPdfConfig());
+    }
+
+    /**
+     * The roles required to access this template.  If empty or not set then it is a <em>public</em> template.  If there are
+     * many roles then a user must have one of the roles in order to access the template.
+     * <p/>
+     * The security (how authentication/authorization is done) is configured in the /WEB-INF/classes/mapfish-spring-security.xml
+     * <p>
+     * Any user without the required role will get an error when trying to access the template and the template will not
+     * be visible in the capabilities requests.
+     * </p>
+     *
+     * @param access the roles needed to access this
+     */
+    public final void setAccess(final List<String> access) {
+        this.access = access;
+    }
+
+    /**
+     * Configure various properties related to the reports generated as PDFs.
+     * @param pdfConfig the pdf configuration
+     */
+    public final void setPdfConfig(final PDFConfig pdfConfig) {
+        this.pdfConfig = pdfConfig;
     }
 
     public final Map<String, Attribute> getAttributes() {
@@ -214,7 +276,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
     /**
      * Look for a style in the named styles provided in the configuration.
      *
-     * @param styleName the name of the style to look for.
+     * @param styleName  the name of the style to look for.
      * @param mapContext information about the map projection, bounds, size, etc...
      */
     @SuppressWarnings("unchecked")
@@ -241,7 +303,11 @@ public class Template implements ConfigurationObject, HasConfiguration {
     }
 
     @Override
-    public final void validate(final List<Throwable> validationErrors) {
+    public final void validate(final List<Throwable> validationErrors, final Configuration config) {
+        if (this.access == null) {
+            validationErrors.add(new ConfigurationException("Access is null this is not permitted, by default it is nonnull so there " +
+                                                            "must be an programming error."));
+        }
         int numberOfTableConfigurations = this.tableDataKey == null ? 0 : 1;
         numberOfTableConfigurations += this.jdbcUrl == null ? 0 : 1;
 
@@ -250,11 +316,11 @@ public class Template implements ConfigurationObject, HasConfiguration {
         }
 
         for (Processor processor : this.processors) {
-            processor.validate(validationErrors);
+            processor.validate(validationErrors, config);
         }
 
         for (Attribute attribute : this.attributes.values()) {
-            attribute.validate(validationErrors);
+            attribute.validate(validationErrors, config);
         }
 
         try {
@@ -284,5 +350,9 @@ public class Template implements ConfigurationObject, HasConfiguration {
                 }
             }
         }
+    }
+
+    final void assertAccessible(final String name) {
+        Configuration.assertAccessible(name, this.access);
     }
 }

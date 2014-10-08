@@ -21,17 +21,18 @@ package org.mapfish.print.processor.map;
 
 import com.google.common.base.Strings;
 import com.google.common.io.Closer;
-
 import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.dom.util.DOMUtilities;
 import org.apache.batik.util.SVGConstants;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.apache.commons.io.output.FileWriterWithEncoding;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.style.json.ColorParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
@@ -55,13 +56,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
-
 import javax.imageio.ImageIO;
 
 /**
  * Takes care of scaling and rotating a graphic for the north-arrow.
  */
 public final class NorthArrowGraphic {
+    private static final Logger LOGGER = LoggerFactory.getLogger(NorthArrowGraphic.class);
 
     private static final String DEFAULT_GRAPHIC = "NorthArrow_10.svg";
     private static final String SVG_NS = SVGDOMImplementation.SVG_NAMESPACE_URI;
@@ -88,28 +89,28 @@ public final class NorthArrowGraphic {
             final Color backgroundColor, 
             final Double rotation,
             final File workingDir,
-            final ClientHttpRequestFactory clientHttpRequestFactory) throws Exception {
+            final MfClientHttpRequestFactory clientHttpRequestFactory) throws Exception {
         final Closer closer = Closer.create();
         try {
-            final InputStream input = loadGraphic(graphicFile, clientHttpRequestFactory, closer);
+            final RasterReference input = loadGraphic(graphicFile, clientHttpRequestFactory, closer);
             if (graphicFile == null || graphicFile.toLowerCase().trim().endsWith("svg")) {
                 return createSvg(targetSize, input, rotation, backgroundColor, workingDir, clientHttpRequestFactory);
             } else {
-                return createRaster(targetSize, input, rotation, backgroundColor, workingDir, clientHttpRequestFactory);
+                return createRaster(targetSize, input, rotation, backgroundColor, workingDir);
             }
         } finally {
             closer.close();
         }
     }
 
-    private static InputStream loadGraphic(final String graphicFile,
-            final ClientHttpRequestFactory clientHttpRequestFactory,
+    private static RasterReference loadGraphic(final String graphicFile,
+            final MfClientHttpRequestFactory clientHttpRequestFactory,
             final Closer closer) throws IOException, URISyntaxException {
         if (Strings.isNullOrEmpty(graphicFile)) {
             // if no graphic is set, take a default graphic
             URL file = NorthArrowGraphic.class.getResource(DEFAULT_GRAPHIC);
             InputStream inputStream = new BufferedInputStream(new FileInputStream(new File(file.toURI())));
-            return closer.register(inputStream);
+            return new RasterReference(closer.register(inputStream), file.toURI());
         }
 
         // try to load the given graphic
@@ -119,24 +120,31 @@ public final class NorthArrowGraphic {
         } else {
             uri = new URI(graphicFile);
         }
+
         final ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
         final ClientHttpResponse response = closer.register(request.execute());
-        return new BufferedInputStream(response.getBody());
+        return new RasterReference(new BufferedInputStream(response.getBody()), uri);
     }
 
     /**
      * Renders a given graphic into a new image, scaled to fit the new size and rotated.
      */
-    private static URI createRaster(final Dimension targetSize, final InputStream inputStream,
-            final Double rotation, final Color backgroundColor,
-            final File workingDir, final ClientHttpRequestFactory clientHttpRequestFactory) throws IOException {
+    private static URI createRaster(final Dimension targetSize, final RasterReference rasterReference,
+                                    final Double rotation, final Color backgroundColor,
+                                    final File workingDir) throws IOException {
         final File path = File.createTempFile("north-arrow-", ".tiff", workingDir);
 
         final BufferedImage newImage = new BufferedImage(targetSize.width, targetSize.height, BufferedImage.TYPE_4BYTE_ABGR);
         Graphics2D graphics2d = null;
         try {
             graphics2d = newImage.createGraphics();
-            BufferedImage originalImage = ImageIO.read(inputStream);
+
+            final BufferedImage originalImage = ImageIO.read(rasterReference.inputStream);
+            if (originalImage == null) {
+                LOGGER.warn("Unable to load NorthArrow graphic: " + rasterReference.uri +
+                            ", it is not an image format that can be decoded");
+                throw new IllegalArgumentException();
+            }
 
             // set background color
             graphics2d.setColor(backgroundColor);
@@ -184,12 +192,12 @@ public final class NorthArrowGraphic {
      * as plain XML and doing the modifications by hand.
      */
     private static URI createSvg(final Dimension targetSize,
-            final InputStream inputStream, final Double rotation,
+            final RasterReference rasterReference, final Double rotation,
             final Color backgroundColor, final File workingDir,
-            final ClientHttpRequestFactory clientHttpRequestFactory)
+            final MfClientHttpRequestFactory clientHttpRequestFactory)
             throws IOException {
         // load SVG graphic
-        final SVGElement svgRoot = parseSvg(inputStream);
+        final SVGElement svgRoot = parseSvg(rasterReference.inputStream);
 
         // create a new SVG graphic in which the existing graphic is embedded (scaled and rotated)
         DOMImplementation impl = SVGDOMImplementation.getDOMImplementation();
@@ -334,5 +342,18 @@ public final class NorthArrowGraphic {
             }
         }
         return path;
+    }
+
+    private static final class RasterReference {
+
+        private final InputStream inputStream;
+        private final URI uri;
+
+        public RasterReference(
+                final InputStream inputStream,
+                final URI uri) {
+            this.inputStream = inputStream;
+            this.uri = uri;
+        }
     }
 }

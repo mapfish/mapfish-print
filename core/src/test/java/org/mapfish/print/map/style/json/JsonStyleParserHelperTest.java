@@ -57,7 +57,6 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-
 import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertArrayEquals;

@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.junit.Test;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mockito.Mockito;
 
@@ -58,7 +59,8 @@ public abstract class AbstractAttributeTest {
     @Test
     public void testValidate() throws Exception {
         List<Throwable> errors = Lists.newArrayList();
-        createAttribute().validate(errors);
+        Configuration configuration = new Configuration();
+        createAttribute().validate(errors, configuration);
 
         assertTrue(errors.toString(), errors.isEmpty());
     }

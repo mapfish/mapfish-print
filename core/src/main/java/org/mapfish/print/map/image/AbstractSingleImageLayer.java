@@ -30,9 +30,9 @@ import org.geotools.styling.Style;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.AbstractGeotoolsLayer;
 import org.mapfish.print.map.geotools.StyleSupplier;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.awt.image.BufferedImage;
 import java.util.Collections;
@@ -61,7 +61,7 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
     }
 
     @Override
-    protected final List<? extends Layer> getLayers(final ClientHttpRequestFactory httpRequestFactory,
+    protected final List<? extends Layer> getLayers(final MfClientHttpRequestFactory httpRequestFactory,
                                                     final MapfishMapContext mapContext,
                                                     final boolean isFirstLayer) throws Exception {
         BufferedImage image;
@@ -90,7 +90,7 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
      * @param transformer object containing map rendering information
      * @param isFirstLayer true indicates this layer is the first layer in the map (the first layer drawn, ie the base layer)
      */
-    protected abstract BufferedImage loadImage(ClientHttpRequestFactory requestFactory,
+    protected abstract BufferedImage loadImage(MfClientHttpRequestFactory requestFactory,
                                                MapfishMapContext transformer,
                                                boolean isFirstLayer) throws Throwable;
 }

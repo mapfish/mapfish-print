@@ -1,0 +1,20 @@
+{
+  "layout": "main",
+  "outputFormat": "pdf",
+  "attributes": {
+    "stringarray": ["s1", "s2"],
+    "map": {
+      "bbox": [97.5, -0.5, 107.5, 1.5],
+      "projection": "CRS:84",
+      "dpi": 72,
+      "layers": [
+        {
+          "type": "geojson",
+          "style": "polygon",
+          "renderAsSvg": true,
+          "geoJson":   @@importFile(geojson.json)@@
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+    "layout" : "main",
+    "attributes": {
+        "table": {
+            "columns": ["exclude", "id", "icon", "name", "greaterThanMax"],
+            "data": [
+                ["excluded", 1, "<img src=\"file://logo.png\" />", "name1", "do not include"],
+                ["excluded", 2, "<img src=\"file://logo.png\" />", "name2", "do not include"],
+                ["excluded", 3, "Not an image!", "name3", "do not include"],
+                ["excluded", 4, "", "name4", "do not include"]
+            ]
+        }
+    }
+}

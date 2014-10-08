@@ -24,7 +24,6 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jts.util.AssertionFailedException;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,7 +45,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.PostConstruct;
 
 import static org.mapfish.print.parser.MapfishParser.stringRepresentation;
@@ -59,10 +57,18 @@ import static org.mapfish.print.parser.MapfishParser.stringRepresentation;
  */
 public abstract class ReflectiveAttribute<Value> implements Attribute {
     private static final HashSet<Class<? extends Object>> VALUE_OBJ_FIELD_TYPE_THAT_SHOULD_BE_P_TYPE =
-            Sets.newHashSet(PJsonArray.class, PJsonObject.class,
+            createClassSet(PJsonArray.class, PJsonObject.class,
                     JSONObject.class, JSONArray.class);
     private static final HashSet<Class<? extends Object>> VALUE_OBJ_FIELD_NON_RECURSIVE_TYPE =
-            Sets.newHashSet(PElement.class, PArray.class, PObject.class);
+            createClassSet(PElement.class, PArray.class, PObject.class);
+
+    private static HashSet<Class<? extends Object>> createClassSet(final Object... args) {
+        final HashSet<Class<?>> classes = Sets.newHashSet();
+        for (Object arg : args) {
+            classes.add((Class<?>) arg);
+        }
+        return classes;
+    }
     /**
      * Name of attribute in the client config json.
      *

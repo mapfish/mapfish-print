@@ -22,6 +22,7 @@
     xmlns:context="http://www.springframework.org/schema/context"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+    <import resource="mapfish-spring-config-objects.xml" />
     <import resource="mapfish-spring-attributes.xml" />
     <import resource="mapfish-spring-processors.xml" />
     <import resource="mapfish-spring-layer-parser.xml" />
@@ -32,11 +33,16 @@
     <context:annotation-config/>
     <context:property-placeholder system-properties-mode="FALLBACK" file-encoding="UTF-8" location="classpath:mapfish-spring.properties"/>
 
+    <!--<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">-->
+        <!--<property name="pathMatcher">-->
+            <!--<bean class="org.mapfish.print.servlet.OptionalSecurePathMatcher" />-->
+        <!--</property>-->
+    <!--</bean>-->
+
     <bean id="servletInfo" class="org.mapfish.print.servlet.ConfigBasedServletInfo">
         <!-- If servlet id is not set then a random uuid will be used -->
         <!--<property name="servletId" value="print-server-1" />-->
     </bean>
-    <bean id="main" class="org.mapfish.print.cli.Main"/>
     <bean id="workingDirectories" class="org.mapfish.print.config.WorkingDirectories">
         <property name="working" value="${workingDir}" />
     </bean>
@@ -61,13 +67,7 @@
 
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>
     <bean id="healthCheckRegistry" class="com.codahale.metrics.health.HealthCheckRegistry"/>
-    <bean id="httpClientFactory" class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory">
-        <property name="httpClient" ref="httpClient" />
-    </bean>
-    <bean id="httpClient" class="com.codahale.metrics.httpclient.InstrumentedHttpClient">
-        <constructor-arg index="0" ref="metricRegistry"/>
-        <constructor-arg index="1" ref="metricNameStrategy" />
-    </bean>
+    <bean id="httpClientFactory" class="org.mapfish.print.http.MfClientHttpRequestFactoryImpl"/>
     <bean id="metricNameStrategy" class="org.mapfish.print.metrics.MetricsNameStrategyFactory" factory-method="hostAndMethod" />
     <bean id="loggingMetricsConfigurator" class="org.mapfish.print.metrics.LoggingMetricsConfigurator" lazy-init="false"/>
     <bean id="jvmMetricsConfigurator" class="org.mapfish.print.metrics.JvmMetricsConfigurator" lazy-init="false"/>

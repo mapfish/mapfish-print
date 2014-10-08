@@ -19,6 +19,7 @@
 
 package org.mapfish.print;
 
+import com.google.common.io.BaseEncoding;
 import com.google.common.io.ByteStreams;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,6 +33,8 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.util.Iterator;
 
@@ -422,6 +425,74 @@ public class PrintApiTest extends AbstractApiTest {
                 getBodyAsText(response));
         assertTrue(statusResult.getBoolean(MapPrinterServlet.JSON_DONE));
         assertEquals("task canceled", statusResult.getString(MapPrinterServlet.JSON_ERROR));
+    }
+
+    @Test
+    public void testSecuredTemplate_Capabilities() throws Exception {
+        final JSONArray layouts = execCapabilitiesRequestWithAut(1, null);
+        assertEquals("A4 landscape", layouts.getJSONObject(0).getString("name"));
+
+        execCapabilitiesRequestWithAut(2, "jimi:jimi"); // jimi is admin
+        execCapabilitiesRequestWithAut(1, "bob:bob"); // bob is has ROLE_USER
+    }
+
+    @Test
+    public void testSecuredTemplate_Capabilities_SecUrl() throws Exception {
+        assertRequiresAuth("sec/print/secured_templates" + MapPrinterServlet.CAPABILITIES_URL);
+        assertRequiresAuth("sec/print" + MapPrinterServlet.CAPABILITIES_URL);
+        assertRequiresAuth("sec/print/dep/info.json");
+    }
+
+    private void assertRequiresAuth(String path) throws IOException, URISyntaxException {
+        ClientHttpRequest request = getRequest(path, HttpMethod.GET);
+        HttpURLConnection urlConnection = (HttpURLConnection) request.getURI().toURL().openConnection();
+        assertEquals(HttpStatus.FOUND.value(), urlConnection.getResponseCode());
+        assertEquals("https://localhost:8443/print-servlet/"+path, urlConnection.getHeaderField("Location"));
+        urlConnection.disconnect();
+    }
+
+    @Test
+    public void testSecuredTemplate_CreateMap() throws Exception {
+        ClientHttpRequest request = getPrintRequest("secured_templates" + MapPrinterServlet.CREATE_AND_GET_URL + ".pdf", HttpMethod.POST);
+        final String printSpec = getPrintSpec("examples/secured_templates/requestData.json").replace("\"A4 landscape\"", "\"secured\"");
+        setPrintSpec(printSpec, request);
+        response = request.execute();
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        response.close();
+
+        execCreateRequestWithAuth("jimi:jimi", HttpStatus.OK, printSpec);
+        execCreateRequestWithAuth("bob:bob", HttpStatus.FORBIDDEN, printSpec);
+
+    }
+
+    private JSONArray execCapabilitiesRequestWithAut(int expectedNumberOfLayouts, String credentials) throws IOException, URISyntaxException, JSONException {
+        ClientHttpRequest request = getPrintRequest("secured_templates" + MapPrinterServlet.CAPABILITIES_URL, HttpMethod.GET);
+        if (credentials != null) {
+            addAuthHeader(request, credentials);
+        }
+        response = request.execute();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        String responseAsText = getBodyAsText(response);
+        response.close();
+
+        JSONObject infoResult = new JSONObject(responseAsText);
+        final JSONArray layouts = infoResult.getJSONArray("layouts");
+        assertEquals(expectedNumberOfLayouts, layouts.length());
+        return layouts;
+    }
+
+    private void execCreateRequestWithAuth(String credentials, HttpStatus expectedStatus, String printSpec) throws IOException, URISyntaxException {
+        ClientHttpRequest request = getPrintRequest("secured_templates" + MapPrinterServlet.CREATE_AND_GET_URL + ".pdf", HttpMethod.POST);
+        setPrintSpec(printSpec, request);
+        addAuthHeader(request, credentials);
+        response = request.execute();
+        assertEquals(response.getStatusText(), expectedStatus, response.getStatusCode());
+        response.close();
+    }
+
+    private void addAuthHeader(ClientHttpRequest request, String credentials) throws UnsupportedEncodingException {
+        request.getHeaders().add("Authorization", "Basic " + BaseEncoding.base64Url().encode(credentials.getBytes("UTF-8")));
     }
 
     private void waitUntilDoneOrError(String ref) throws Exception {

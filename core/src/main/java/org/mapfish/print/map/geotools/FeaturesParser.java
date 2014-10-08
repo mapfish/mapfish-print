@@ -19,23 +19,33 @@
 
 package org.mapfish.print.map.geotools;
 
+import com.google.common.collect.Sets;
 import com.google.common.io.CharSource;
+import com.google.common.io.CharStreams;
 import com.google.common.io.Closer;
 import com.google.common.io.Files;
-
-import org.geotools.data.crs.ForceCoordinateSystemFeatureResults;
+import com.vividsolutions.jts.geom.Geometry;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.feature.SchemaException;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultEngineeringCRS;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.mapfish.print.Constants;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FileUtils;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
 
 import java.io.BufferedReader;
@@ -47,6 +57,9 @@ import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Iterator;
+import java.util.Set;
+import javax.annotation.Nonnull;
 
 /**
  * Parser for GeoJson features collection.
@@ -54,7 +67,8 @@ import java.net.URL;
  * Created by Stéphane Brunner on 16/4/14.
  */
 public class FeaturesParser {
-    private final ClientHttpRequestFactory httpRequestFactory;
+    private static final Logger LOGGER = LoggerFactory.getLogger(FeaturesParser.class);
+    private final MfClientHttpRequestFactory httpRequestFactory;
     private final boolean forceLongitudeFirst;
 
     /**
@@ -63,7 +77,7 @@ public class FeaturesParser {
      * @param httpRequestFactory  the HTTP request factory
      * @param forceLongitudeFirst if true then force longitude coordinate as first coordinate
      */
-    public FeaturesParser(final ClientHttpRequestFactory httpRequestFactory, final boolean forceLongitudeFirst) {
+    public FeaturesParser(final MfClientHttpRequestFactory httpRequestFactory, final boolean forceLongitudeFirst) {
         this.httpRequestFactory = httpRequestFactory;
         this.forceLongitudeFirst = forceLongitudeFirst;
     }
@@ -99,6 +113,7 @@ public class FeaturesParser {
             return null;
         }
 
+        final String geojsonString;
         Closer closer = Closer.create();
         try {
             Reader input;
@@ -111,13 +126,14 @@ public class FeaturesParser {
 
                 input = closer.register(new BufferedReader(new InputStreamReader(response.getBody(), Constants.DEFAULT_CHARSET)));
             }
-
-            return readFeatureCollection(input);
+            geojsonString = CharStreams.toString(input);
         } catch (URISyntaxException e) {
             throw ExceptionUtils.getRuntimeException(e);
         } finally {
             closer.close();
         }
+
+        return treatStringAsGeoJson(geojsonString);
     }
 
     /**
@@ -128,39 +144,126 @@ public class FeaturesParser {
      * @throws IOException
      */
     public final SimpleFeatureCollection treatStringAsGeoJson(final String geoJsonString) throws IOException {
-        final byte[] bytes = geoJsonString.getBytes(Constants.DEFAULT_ENCODING);
-        ByteArrayInputStream input = null;
+        return readFeatureCollection(geoJsonString);
+    }
+
+    private SimpleFeatureCollection readFeatureCollection(final String geojsonData) throws IOException {
+        String convertedGeojsonObject = convertToGeoJsonCollection(geojsonData);
+
+        FeatureJSON geoJsonReader = new FeatureJSON();
+        final SimpleFeatureType featureType = createFeatureType(convertedGeojsonObject);
+        if (featureType != null) {
+            geoJsonReader.setFeatureType(featureType);
+        }
+        ByteArrayInputStream input = new ByteArrayInputStream(convertedGeojsonObject.getBytes(Constants.DEFAULT_CHARSET));
+
+        return (SimpleFeatureCollection) geoJsonReader.readFeatureCollection(input);
+    }
+
+    private String convertToGeoJsonCollection(final String geojsonData) {
+        String convertedGeojsonObject = geojsonData.trim();
+        if (convertedGeojsonObject.startsWith("[")) {
+            convertedGeojsonObject = "{\"type\": \"FeatureCollection\", \"features\": " + convertedGeojsonObject + "}";
+        }
+        return convertedGeojsonObject;
+    }
+
+    private SimpleFeatureType createFeatureType(@Nonnull final String geojsonData) {
         try {
-            input = new ByteArrayInputStream(bytes);
-            return readFeatureCollection(input);
-        } finally {
-            if (input != null) {
-                input.close();
+            JSONObject geojson = new JSONObject(geojsonData);
+            if (geojson.has("type") && geojson.getString("type").equalsIgnoreCase("FeatureCollection")) {
+                CoordinateReferenceSystem crs = parseCoordinateReferenceSystem(geojson);
+                SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+                builder.setName("GeosjonFeatureType");
+                final JSONArray features = geojson.getJSONArray("features");
+
+                Set<String> allAttributes = Sets.newHashSet();
+                Class<Geometry> geomType = null;
+                for (int i = 0; i < features.length(); i++) {
+                    final JSONObject feature = features.getJSONObject(i);
+                    final JSONObject properties = feature.getJSONObject("properties");
+                    final Iterator keys = properties.keys();
+                    while (keys.hasNext()) {
+                        String nextKey = (String) keys.next();
+                        if (!allAttributes.contains(nextKey)) {
+                            allAttributes.add(nextKey);
+                            builder.add(nextKey, Object.class);
+                        }
+                        if (geomType != Geometry.class) {
+                            Class<Geometry> thisGeomType = parseGeometryType(feature);
+                            if (thisGeomType != null) {
+                                if (geomType == null) {
+                                    geomType = thisGeomType;
+                                } else if (geomType != thisGeomType) {
+                                    geomType = Geometry.class;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                builder.add("geometry", geomType, crs);
+                builder.setDefaultGeometry("geometry");
+                return builder.buildFeatureType();
+            } else {
+                return null;
+            }
+        } catch (JSONException e) {
+            throw new PrintException("Invalid geoJSON: \n" + geojsonData + ": " + e.getMessage(), e);
+        }
+
+    }
+
+    @SuppressWarnings("unchecked")
+    private Class<Geometry> parseGeometryType(@Nonnull final JSONObject featureJson) throws JSONException {
+        JSONObject geomJson = featureJson.optJSONObject("geometry");
+        if (geomJson == null) {
+            return null;
+        }
+        String geomTypeString = geomJson.optString("type", "Geometry");
+        if (geomTypeString.equalsIgnoreCase("Positions")) {
+            return Geometry.class;
+        } else {
+            try {
+                return (Class<Geometry>) Class.forName("com.vividsolutions.jts.geom." + geomTypeString);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException("Unrecognized geometry type in geojson: " + geomTypeString);
             }
         }
     }
 
-    private SimpleFeatureCollection readFeatureCollection(final Object input) throws IOException {
-        FeatureJSON geoJsonReader = new FeatureJSON();
-        SimpleFeatureCollection simpleFeatureCollection = (SimpleFeatureCollection) geoJsonReader.readFeatureCollection(input);
-        if (this.forceLongitudeFirst) {
-            CoordinateReferenceSystem crs = simpleFeatureCollection.getSchema().getCoordinateReferenceSystem();
-
-            final String code;
-            try {
-                code = CRS.lookupIdentifier(crs, false);
-
-                if (code != null) {
-                    crs = CRS.decode(code, true);
-                    simpleFeatureCollection = new ForceCoordinateSystemFeatureResults(simpleFeatureCollection, crs);
+    private CoordinateReferenceSystem parseCoordinateReferenceSystem(final JSONObject geojson) {
+        CoordinateReferenceSystem crs = DefaultEngineeringCRS.GENERIC_2D;
+        StringBuilder code = new StringBuilder();
+        try {
+            if (geojson.has("crs")) {
+                JSONObject crsJson = geojson.getJSONObject("crs");
+                if (crsJson.has("type")) {
+                    code.append(crsJson.getString("type"));
                 }
-            } catch (FactoryException e) {
-                throw ExceptionUtils.getRuntimeException(e);
-            } catch (SchemaException e) {
-                throw ExceptionUtils.getRuntimeException(e);
-            }
-        }
 
-        return simpleFeatureCollection;
+                if (crsJson.has("properties")) {
+                    final JSONObject propertiesJson = crsJson.getJSONObject("properties");
+                    if (propertiesJson.has("code")) {
+                        if (code.length() > 0) {
+                            code.append(":");
+                        }
+                        code.append(propertiesJson.getString("code"));
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            LOGGER.warn("Error reading the required elements to parse crs of the geojson: \n" + geojson, e);
+        }
+        try {
+            if (code.length() > 0) {
+                crs = CRS.decode(code.toString(), this.forceLongitudeFirst);
+            }
+        } catch (NoSuchAuthorityCodeException e) {
+            LOGGER.warn("No CRS with code: " + code + ".\nRead from geojson: \n" + geojson);
+        } catch (FactoryException e) {
+            LOGGER.warn("Error loading CRS with code: " + code + ".\nRead from geojson: \n" + geojson);
+        }
+        return crs;
     }
 }

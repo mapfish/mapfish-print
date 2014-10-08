@@ -21,14 +21,12 @@ package org.mapfish.print.servlet.registry;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.ExceptionUtils;
 
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
-
 import javax.annotation.PostConstruct;
 
 /**

@@ -19,8 +19,7 @@
 
 package org.mapfish.print.processor;
 
-import com.google.common.collect.BiMap;
-
+import com.google.common.base.Strings;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.HasDefaultValue;
@@ -30,6 +29,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import static org.mapfish.print.parser.ParserUtils.getAllAttributes;
 
@@ -100,25 +101,21 @@ public final class ProcessorUtils {
 
     /**
      * Read the values from the output object and write them to the values object.
-     *
-     * @param output       the output object from a processor
-     * @param outputMapper the mapper for mapping the names of the fields in output to the keys in the values object
-     * @param values       the object for sharing values between processors
+     * @param output    the output object from a processor
+     * @param processor the processor the output if from
+     * @param values    the object for sharing values between processors
      */
     public static void writeProcessorOutputToValues(final Object output,
-                                                    final BiMap<String, String> outputMapper,
+                                                    final Processor<?, ?> processor,
                                                     final Values values) {
-        Map<String, String> mapper = outputMapper;
-        if (outputMapper == null) {
+        Map<String, String> mapper = processor.getOutputMapperBiMap();
+        if (mapper == null) {
             mapper = Collections.emptyMap();
         }
 
         final Collection<Field> fields = getAllAttributes(output.getClass());
         for (Field field : fields) {
-            String name = mapper.get(field.getName());
-            if (name == null) {
-                name = field.getName();
-            }
+            String name = getOutputValueName(processor.getOutputPrefix(), mapper, field);
             try {
                 final Object value = field.get(output);
                 if (value != null) {
@@ -130,5 +127,26 @@ public final class ProcessorUtils {
                 throw ExceptionUtils.getRuntimeException(e);
             }
         }
+    }
+
+    /**
+     * Calculate the name of the output value.
+     *
+     * @param outputPrefix a nullable prefix to prepend to the name if non-null and non-empty
+     * @param outputMapper the name mapper
+     * @param field        the field containing the value
+     */
+    public static String getOutputValueName(@Nullable final String outputPrefix,
+                                            @Nonnull final Map<String, String> outputMapper,
+                                            @Nonnull final Field field) {
+        String name = outputMapper.get(field.getName());
+        if (name == null) {
+            name = field.getName();
+            if (!Strings.isNullOrEmpty(outputPrefix) && !outputPrefix.trim().isEmpty()) {
+                name = outputPrefix.trim() + Character.toUpperCase(name.charAt(0)) + name.substring(1);
+            }
+        }
+
+        return name;
     }
 }

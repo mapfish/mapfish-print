@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) 2014  Camptocamp
+  ~
+  ~ This file is part of MapFish Print
+  ~
+  ~ MapFish Print is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ MapFish Print is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+    xmlns:beans="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <http use-expressions="true">
+        <!-- in order to get a challenge (for capabilities for example) you need to use the print/sec/* urls -->
+        <intercept-url pattern="/sec/print/**" requires-channel="https" access="isAuthenticated()" />
+        <http-basic />
+        <anonymous />
+    </http>
+
+    <beans:bean name="bcryptEncoder"
+        class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+
+    <!--
+        This authentication manager is not really production quality.  It will work if you don't have complex
+        needs but it is recommended to use ldap or database based authentication providers, etc..
+        See http://docs.spring.io/spring-security/site/docs/3.2.5.RELEASE/reference/htmlsingle/#ns-config for some
+        help
+    -->
+    <authentication-manager alias="authenticationManager">
+        <authentication-provider>
+            <password-encoder ref="bcryptEncoder" />
+            <user-service>
+                <!-- password is jimi -->
+                <user name="jimi" password="$2a$10$OeKmMfVmL2IbF/3skK8l2.Gl3EqvvGhb.Pxr/K0dN7.ttPRHsOzVW"
+                    authorities="ROLE_USER, ROLE_ADMIN" />
+                <!-- password is bob -->
+                <user name="bob" password="$2a$10$D5gwUewQQSpjfZPTcj9rpuTTfmxAqNEyJ19pzC7Z9.fHSCl3jtDj."
+                    authorities="ROLE_USER" />
+            </user-service>
+        </authentication-provider>
+    </authentication-manager>
+</beans:beans>

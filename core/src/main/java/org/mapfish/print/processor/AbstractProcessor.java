@@ -21,7 +21,7 @@ package org.mapfish.print.processor;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.parser.ParserUtils;
 
@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -47,6 +46,7 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
     private BiMap<String, String> outputMapper = HashBiMap.create();
 
     private final Class<Out> outputType;
+    private String outputPrefix;
 
     /**
      * Constructor.
@@ -66,6 +66,19 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
     @Nonnull
     public final BiMap<String, String> getInputMapperBiMap() {
         return this.inputMapper;
+    }
+
+    /**
+     * The prefix to apply to each output value.  This provides a simple way to make all output values have unique values.
+     * @param prefix the new prefix
+     */
+    public final void setOutputPrefix(final String prefix) {
+       this.outputPrefix = prefix;
+    }
+
+    @Override
+    public final String getOutputPrefix() {
+       return this.outputPrefix;
     }
 
     /**
@@ -93,7 +106,7 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
     }
 
     @Override
-    public final void validate(final List<Throwable> errors) {
+    public final void validate(final List<Throwable> errors, final Configuration configuration) {
         final In inputParameter = createInputParameter();
         final Set<String> allInputAttributeNames;
         if (inputParameter != null) {
@@ -116,14 +129,15 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
             }
         }
 
-        extraValidation(errors);
+        extraValidation(errors, configuration);
     }
 
     /**
      * Perform any extra validation a subclass may need to perform.
      * @param validationErrors a list to add errors to so that all validation errors are reported as one.
+     * @param configuration the containing configuration
      */
-    protected abstract void extraValidation(final List<Throwable> validationErrors);
+    protected abstract void extraValidation(final List<Throwable> validationErrors, final Configuration configuration);
 
     /**
      * Checks if the print was canceled and throws a

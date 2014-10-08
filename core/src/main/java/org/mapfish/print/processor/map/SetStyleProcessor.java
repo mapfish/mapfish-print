@@ -24,10 +24,11 @@ import org.mapfish.print.attribute.StyleAttribute;
 import org.mapfish.print.attribute.map.GenericMapAttribute;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.processor.AbstractProcessor;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class SetStyleProcessor extends
             if (layer instanceof AbstractFeatureSourceLayer) {
                 ((AbstractFeatureSourceLayer) layer).setStyle(new StyleSupplier() {
                     @Override
-                    public Style load(final ClientHttpRequestFactory requestFactory,
+                    public Style load(final MfClientHttpRequestFactory requestFactory,
                                       final Object featureSource,
                                       final MapfishMapContext mapContext) throws Exception {
                         return values.style.getStyle(values.clientHttpRequestFactory, mapContext);
@@ -71,7 +72,7 @@ public class SetStyleProcessor extends
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors) {
+    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
         // no validation needed
     }
 
@@ -83,7 +84,7 @@ public class SetStyleProcessor extends
          * A factory for making http requests.  This is added to the values by the framework and therefore
          * does not need to be set in configuration
          */
-        public ClientHttpRequestFactory clientHttpRequestFactory;
+        public MfClientHttpRequestFactory clientHttpRequestFactory;
         /**
          * The map to update.
          */

@@ -19,13 +19,15 @@
 
 package org.mapfish.print.processor.http;
 
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.http.matcher.AcceptAllMatcher;
 import org.mapfish.print.processor.http.matcher.HostMatcher;
+import org.mapfish.print.processor.http.matcher.MatchInfo;
 import org.mapfish.print.processor.http.matcher.URIMatcher;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -107,7 +109,7 @@ public final class RestrictUrisProcessor extends AbstractClientHttpRequestFactor
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors) {
+    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.matchers == null) {
             validationErrors.add(new IllegalArgumentException("Matchers cannot be null.  There should be at least a !acceptAll matcher"));
         }
@@ -118,16 +120,15 @@ public final class RestrictUrisProcessor extends AbstractClientHttpRequestFactor
     }
 
     @Override
-    public ClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
-                                                         final ClientHttpRequestFactory requestFactory) {
-        return new AbstractClientHttpRequestFactoryWrapper(requestFactory) {
+    public MfClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
+                                                         final MfClientHttpRequestFactory requestFactory) {
+        return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory) {
             @Override
             protected ClientHttpRequest createRequest(final URI uri,
                                                       final HttpMethod httpMethod,
-                                                      final ClientHttpRequestFactory requestFactory) throws
-                    IOException {
+                                                      final MfClientHttpRequestFactory requestFactory) throws IOException {
                 for (URIMatcher matcher : RestrictUrisProcessor.this.matchers) {
-                    if (matcher.accepts(uri, httpMethod)) {
+                    if (matcher.accepts(MatchInfo.fromUri(uri, httpMethod))) {
                         return requestFactory.createRequest(uri, httpMethod);
                     }
                 }

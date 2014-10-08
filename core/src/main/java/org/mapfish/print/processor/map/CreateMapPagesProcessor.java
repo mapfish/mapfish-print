@@ -20,6 +20,7 @@
 package org.mapfish.print.processor.map;
 
 import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -32,21 +33,22 @@ import org.mapfish.print.attribute.map.AreaOfInterest;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.attribute.map.PagingAttribute;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.DistanceUnit;
-import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.Rectangle;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import static org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue;
 
 /**
  * Processor used to display a map on multiple pages.
@@ -91,7 +93,7 @@ public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesPro
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors) {
+    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
     }
 
     @Override
@@ -99,6 +101,7 @@ public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesPro
         return new Input();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public final Output execute(final Input values, final ExecutionContext context) throws Exception {
 
@@ -167,7 +170,7 @@ public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesPro
             }
         }
 
-        final List<Values> mapList = new ArrayList<Values>();
+        final List<Map<String, Object>> mapList = Lists.newArrayList();
 
         for (int j = 0; j < nbHeight; j++) {
             for (int i = 0; i < nbWidth; i++) {
@@ -198,12 +201,14 @@ public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesPro
                     });
                     mapValues.put("map", theMap);
 
-                    mapList.add(new Values(mapValues));
+                    mapList.add(mapValues);
                 }
             }
         }
         LOGGER.info("Paging generate " + mapList.size() + " maps definitions.");
-        return new Output(mapList);
+        DataSourceAttributeValue datasourceAttributes = new DataSourceAttributeValue();
+        datasourceAttributes.attributesValues = mapList.toArray(new Map[mapList.size()]);
+        return new Output(datasourceAttributes);
     }
 
     /**
@@ -229,9 +234,9 @@ public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesPro
         /**
          * Resulting list of values for the maps.
          */
-        public final List<Values> maps;
+        public final DataSourceAttributeValue maps;
 
-        private Output(final List<Values> tableList) {
+        private Output(final DataSourceAttributeValue tableList) {
             this.maps = tableList;
         }
     }

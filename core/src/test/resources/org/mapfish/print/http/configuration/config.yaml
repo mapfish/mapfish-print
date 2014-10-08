@@ -1,0 +1,41 @@
+throwErrorOnExtraParameters: true
+
+certificateStore: !certificateStore
+  uri: file://keystore.jks
+  password: password
+
+credentials:
+  - !credential
+    username: username1
+    password: password
+  - !credential
+    username: username2
+    matchers:
+      - !localMatch {}
+      - !ipMatch
+        ip: 127.1.1.1
+
+proxies:
+  - !proxy
+    host: 127.1.1.1
+    port: 80
+    username: uu
+    password: pp
+    scheme: http
+    matchers:
+      - !localMatch {}
+      - !ipMatch
+        ip: 127.1.1.0
+
+templates:
+  A4 Landscape: !template
+    reportTemplate: MapOnly_A4.jrxml
+    attributes:
+      geojsonMap: !map
+        width: 802
+        height: 500
+        maxDpi: 400
+    processors:
+    - !createMap
+        inputMapper: {geojsonMap: map}
+

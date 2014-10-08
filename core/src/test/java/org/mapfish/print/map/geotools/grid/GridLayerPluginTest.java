@@ -22,12 +22,14 @@ package org.mapfish.print.map.geotools.grid;
 import com.google.common.collect.Maps;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
+
 import org.geotools.data.FeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.map.Layer;
 import org.geotools.referencing.crs.DefaultEngineeringCRS;
 import org.junit.Test;
+import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.BBoxMapBounds;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
@@ -66,7 +68,7 @@ public class GridLayerPluginTest {
         Dimension mapSize = new Dimension(400, 400);
         double rotation = 0;
         double dpi = 72;
-        MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, null);
+        MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, Constants.PDF_DPI, null, true);
         final List<? extends Layer> layers = layer.getLayers(null, context, true);
         assertEquals(1, layers.size());
 
@@ -101,7 +103,7 @@ public class GridLayerPluginTest {
         Dimension mapSize = new Dimension(400, 400);
         double rotation = 0;
         double dpi = 72;
-        MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, null);
+        MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, Constants.PDF_DPI, null, true);
         final List<? extends Layer> layers = layer.getLayers(null, context, true);
         assertEquals(1, layers.size());
 

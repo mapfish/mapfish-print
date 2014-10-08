@@ -21,13 +21,13 @@ package org.mapfish.print.processor.http;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.RegexpUtil;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -70,20 +70,20 @@ public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFac
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors) {
+    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.hosts.isEmpty()) {
             validationErrors.add(new IllegalArgumentException("No hosts are registered"));
         }
     }
 
     @Override
-    public ClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
-                                                         final ClientHttpRequestFactory requestFactory) {
-        return new AbstractClientHttpRequestFactoryWrapper(requestFactory) {
+    public MfClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
+                                                         final MfClientHttpRequestFactory requestFactory) {
+        return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory) {
             @Override
             protected ClientHttpRequest createRequest(final URI uri,
                                                       final HttpMethod httpMethod,
-                                                      final ClientHttpRequestFactory requestFactory) throws IOException {
+                                                      final MfClientHttpRequestFactory requestFactory) throws IOException {
                 if (uri.getScheme().equals("https")) {
                     try {
                         URI httpUri = uri;

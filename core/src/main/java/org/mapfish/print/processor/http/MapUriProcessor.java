@@ -20,12 +20,12 @@
 package org.mapfish.print.processor.http;
 
 import com.google.common.collect.Maps;
-
 import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -36,7 +36,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This processor maps uris submitted to the {@link org.springframework.http.client.ClientHttpRequestFactory} to a modified uri
+ * This processor maps uris submitted to the {@link org.mapfish.print.http.MfClientHttpRequestFactory} to a modified uri
  * as specified by the mapping parameter.
  * <p>Example: change the hostname of all requests that are http requests and have the hostname: myhost.com to localhost instead
  * of myhost.com</p>
@@ -65,13 +65,13 @@ public final class MapUriProcessor extends AbstractClientHttpRequestFactoryProce
     }
 
     @Override
-    public ClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
-                                                         final ClientHttpRequestFactory requestFactory) {
-        return new AbstractClientHttpRequestFactoryWrapper(requestFactory) {
+    public MfClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
+                                                         final MfClientHttpRequestFactory requestFactory) {
+        return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory) {
             @Override
             protected ClientHttpRequest createRequest(final URI uri,
                                                       final HttpMethod httpMethod,
-                                                      final ClientHttpRequestFactory requestFactory) throws IOException {
+                                                      final MfClientHttpRequestFactory requestFactory) throws IOException {
                 final String uriString = uri.toString();
                 for (Map.Entry<Pattern, String> entry : MapUriProcessor.this.uriMapping.entrySet()) {
                     Matcher matcher = entry.getKey().matcher(uriString);
@@ -90,7 +90,7 @@ public final class MapUriProcessor extends AbstractClientHttpRequestFactoryProce
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors) {
+    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.uriMapping.isEmpty()) {
             validationErrors.add(new IllegalArgumentException("No uri mappings were defined"));
         }

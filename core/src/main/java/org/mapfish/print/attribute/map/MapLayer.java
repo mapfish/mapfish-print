@@ -20,7 +20,7 @@
 package org.mapfish.print.attribute.map;
 
 import com.google.common.base.Optional;
-import org.springframework.http.client.ClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 
 import java.awt.Graphics2D;
 
@@ -52,7 +52,7 @@ public interface MapLayer {
      * @param isFirstLayer true indicates this layer is the first layer in the map (the first layer drawn, ie the base layer)
      */
     void render(Graphics2D graphics2D,
-                ClientHttpRequestFactory clientHttpRequestFactory,
+                MfClientHttpRequestFactory clientHttpRequestFactory,
                 MapfishMapContext transformer,
                 final boolean isFirstLayer);
 

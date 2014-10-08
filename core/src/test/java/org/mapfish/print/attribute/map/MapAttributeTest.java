@@ -19,11 +19,13 @@
 
 package org.mapfish.print.attribute.map;
 
+import com.google.common.collect.Lists;
 import org.geotools.referencing.CRS;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
@@ -34,9 +36,6 @@ import org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJso
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.client.ClientHttpRequestFactory;
-
-import com.google.common.collect.Lists;
 
 import java.io.File;
 import java.util.List;
@@ -59,7 +58,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
     @Autowired
     private MapfishParser parser;
     @Autowired
-    private ClientHttpRequestFactory httpRequestFactory;
+    private TestHttpClientFactory httpRequestFactory;
 
     @Before
     public void setUp() throws Exception {
@@ -95,7 +94,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
 
         final MapAttribute mapAttribute = (MapAttribute) template.getAttributes().get("mapDef");
         List<Throwable> errors = Lists.newArrayList();
-        mapAttribute.validate(errors);
+        mapAttribute.validate(errors, config);
 
         assertFalse(errors.isEmpty());
     }
@@ -106,7 +105,8 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
         final PJsonObject pJsonObject = parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-json.json");
-        final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory);
+        final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory,
+                new File("."));
         final MapAttribute.MapAttributeValues value = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
 
         assertEquals(90.0, value.getDpi(), 0.1);
@@ -125,7 +125,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
         final PJsonObject pJsonObject = parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-yaml.json");
-        final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory);
+        final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory, new File("."));
         final MapAttribute.MapAttributeValues value = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
 
         assertEquals(80.0, value.getDpi(), 0.1);
@@ -144,7 +144,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
         final PJsonObject pJsonObject = parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-json.json");
-        final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory);
+        final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory, new File("."));
         final MapAttribute.MapAttributeValues value = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
 
         assertEquals(90.0, value.getDpi(), 0.1);

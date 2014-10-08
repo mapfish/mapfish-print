@@ -32,6 +32,7 @@ import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.OverviewMapAttribute;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.geotools.FeatureLayer;
 import org.mapfish.print.map.geotools.FeatureLayer.FeatureLayerParam;
 import org.mapfish.print.processor.AbstractProcessor;
@@ -162,7 +163,7 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
         layerParams.style = style;
         layerParams.defaultStyle = Constants.Style.OverviewMap.NAME;
         // TODO make this configurable?
-        layerParams.renderAsSvg = false;
+        layerParams.renderAsSvg = null;
         layerParams.features = wrapIntoFeatureCollection(mapExtent, crs);
 
         return this.featureLayerParser.parse(mapParams.getTemplate(), layerParams);
@@ -195,8 +196,8 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
     }
 
     @Override
-    protected final void extraValidation(final List<Throwable> validationErrors) {
-        this.mapProcessor.extraValidation(validationErrors);
+    protected final void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
+        this.mapProcessor.extraValidation(validationErrors, configuration);
     }
 
     /**

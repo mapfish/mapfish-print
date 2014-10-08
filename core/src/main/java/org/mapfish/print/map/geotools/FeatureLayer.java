@@ -25,11 +25,10 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.styling.Style;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
-import org.springframework.http.client.ClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -82,7 +81,7 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
                     this.forkJoinPool,
                     createFeatureSourceSupplier(param.features),
                     createStyleFunction(template, param.style, param.defaultStyle),
-                    param.renderAsSvg);
+                    template.getConfiguration().renderAsSvg(param.renderAsSvg));
         }
 
         private FeatureSourceSupplier createFeatureSourceSupplier(
@@ -90,7 +89,7 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
             return new FeatureSourceSupplier() {
                 @Override
                 public FeatureSource load(
-                        final ClientHttpRequestFactory requestFactory,
+                        final MfClientHttpRequestFactory requestFactory,
                         final MapfishMapContext mapContext) {
                     return new CollectionFeatureSource(features);
                 }
@@ -109,7 +108,7 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
                                                                    final String styleString, final String defaultStyleName) {
             return new StyleSupplier<FeatureSource>() {
                 @Override
-                public Style load(final ClientHttpRequestFactory requestFactory,
+                public Style load(final MfClientHttpRequestFactory requestFactory,
                                   final FeatureSource featureSource,
                                   final MapfishMapContext mapContext) {
                     if (featureSource == null) {
@@ -159,8 +158,8 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
         /**
          * Indicates if the layer is rendered as SVG.
          * <p/>
-         * Default is <code>false</code>.
+         * (will default to {@link org.mapfish.print.config.Configuration#defaultStyle}).
          */
-        public boolean renderAsSvg = false;
+        public Boolean renderAsSvg;
     }
 }

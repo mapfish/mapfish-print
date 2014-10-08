@@ -35,6 +35,7 @@ import javax.servlet.ServletException;
  * @author Jesse on 8/27/2014.
  */
 // CHECKSTYLE:OFF
+@SuppressWarnings("deprecation")
 public final class CliServletContext implements ServletContext {
     @Override
     public String getContextPath() {

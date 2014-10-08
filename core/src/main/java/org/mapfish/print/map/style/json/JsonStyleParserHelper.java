@@ -24,7 +24,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
-
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.styling.AnchorPoint;
@@ -58,7 +57,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Set;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
@@ -118,6 +116,7 @@ public final class JsonStyleParserHelper {
     }
 
     private static final String[] SUPPORTED_MIME_TYPES = ImageIO.getReaderMIMETypes();
+    private static final String DEFAULT_POINT_MARK = "circle";
 
 
     private final Configuration configuration;
@@ -168,7 +167,8 @@ public final class JsonStyleParserHelper {
     @Nullable
     public PointSymbolizer createPointSymbolizer(final PJsonObject styleJson) {
 
-        if (this.allowNullSymbolizer && !(styleJson.has(JSON_EXTERNAL_GRAPHIC) || styleJson.has(JSON_GRAPHIC_NAME))) {
+        if (this.allowNullSymbolizer && !(styleJson.has(JSON_EXTERNAL_GRAPHIC) || styleJson.has(JSON_GRAPHIC_NAME) ||
+                                          styleJson.has(JSON_POINT_RADIUS))) {
             return null;
         }
 
@@ -196,12 +196,11 @@ public final class JsonStyleParserHelper {
         }
 
         if (graphic.graphicalSymbols().isEmpty()) {
-            graphic = this.styleBuilder.createGraphic();
             Fill fill = createFill(styleJson);
             Stroke stroke = createStroke(styleJson, false);
-            final Mark mark = (Mark) graphic.graphicalSymbols().get(0);
-            mark.setStroke(stroke);
-            mark.setFill(fill);
+
+            final Mark mark = this.styleBuilder.createMark(DEFAULT_POINT_MARK, fill, stroke);
+            graphic.graphicalSymbols().add(mark);
         }
 
         graphic.setOpacity(parseExpression(null, styleJson, JSON_GRAPHIC_OPACITY, new Function<String, Object>() {

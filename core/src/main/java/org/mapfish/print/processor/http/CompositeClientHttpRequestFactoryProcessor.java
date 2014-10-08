@@ -20,10 +20,11 @@
 package org.mapfish.print.processor.http;
 
 import com.google.common.collect.Lists;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.ProcessorUtils;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.List;
 import javax.annotation.Nullable;
@@ -32,7 +33,7 @@ import javax.annotation.Nullable;
  * A processor that wraps several {@link AbstractClientHttpRequestFactoryProcessor}s.
  * <p>
  *   This makes it more convenient to configure multiple processors that modify
- *   {@link org.springframework.http.client.ClientHttpRequestFactory} objects.
+ *   {@link org.mapfish.print.http.MfClientHttpRequestFactory} objects.
  *</p>
  * <p>
  *     Consider the case where you need to:
@@ -97,9 +98,9 @@ public final class CompositeClientHttpRequestFactoryProcessor
 
     @SuppressWarnings("unchecked")
     @Override
-    public ClientHttpRequestFactory createFactoryWrapper(final Values values,
-                                                         final ClientHttpRequestFactory requestFactory) {
-        ClientHttpRequestFactory finalRequestFactory = requestFactory;
+    public MfClientHttpRequestFactory createFactoryWrapper(final Values values,
+                                                         final MfClientHttpRequestFactory requestFactory) {
+        MfClientHttpRequestFactory finalRequestFactory = requestFactory;
         // apply the parts in reverse so that the last part is the inner most wrapper (will be last to be called)
         for (int i = this.httpProcessors.size() - 1; i > -1; i--) {
             final HttpProcessor processor = this.httpProcessors.get(i);
@@ -110,7 +111,7 @@ public final class CompositeClientHttpRequestFactoryProcessor
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors) {
+    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.httpProcessors.isEmpty()) {
             validationErrors.add(new IllegalStateException("There are no composite elements for this processor"));
         } else {
@@ -133,8 +134,8 @@ public final class CompositeClientHttpRequestFactoryProcessor
     @Override
     public ClientHttpFactoryProcessorParam execute(final Values values,
                                                    final ExecutionContext context) throws Exception {
-        ClientHttpRequestFactory requestFactory = values.getObject(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY,
-                ClientHttpRequestFactory.class);
+        MfClientHttpRequestFactory requestFactory = values.getObject(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY,
+                MfClientHttpRequestFactory.class);
 
         final ClientHttpFactoryProcessorParam output = new ClientHttpFactoryProcessorParam();
         output.clientHttpRequestFactory = createFactoryWrapper(values, requestFactory);

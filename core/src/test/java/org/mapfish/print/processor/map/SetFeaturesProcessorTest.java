@@ -22,6 +22,7 @@ package org.mapfish.print.processor.map;
 import jsr166y.ForkJoinPool;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
@@ -30,7 +31,6 @@ import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,14 +54,14 @@ public class SetFeaturesProcessorTest extends AbstractMapfishSpringTest {
     @Autowired
     private ForkJoinPool forkJoinPool;
     @Autowired
-    private ClientHttpRequestFactory httpRequestFactory;
+    private TestHttpClientFactory httpRequestFactory;
 
     @Test
     public void testExecute() throws Exception {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.httpRequestFactory);
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
 
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 

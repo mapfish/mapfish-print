@@ -19,20 +19,32 @@
 
 package org.mapfish.print.map.style.json;
 
-import com.google.common.base.Predicates;
 import com.google.common.base.Strings;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
+import org.geotools.styling.LineSymbolizer;
+import org.geotools.styling.PointSymbolizer;
+import org.geotools.styling.PolygonSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.Symbolizer;
+import org.geotools.styling.TextSymbolizer;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.Function;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -49,17 +61,24 @@ public final class MapfishJsonStyleVersion1 {
 
     private static final String JSON_STYLE_PROPERTY = "styleProperty";
     private static final String DEFAULT_STYLE_PROPERTY = "_style";
-    
+    /**
+     * The default name to use for selecting the geometry attribute of a feature.
+     */
+    public static final String DEFAULT_GEOM_ATT_NAME = "geometry";
+
+    private final String geometryProperty;
     private final PJsonObject json;
     private final StyleBuilder sldStyleBuilder;
     private final JsonStyleParserHelper parserHelper;
 
     MapfishJsonStyleVersion1(@Nonnull final PJsonObject json,
                              @Nonnull final StyleBuilder styleBuilder,
-                             @Nonnull final Configuration configuration) {
+                             @Nonnull final Configuration configuration,
+                             @Nonnull final String defaultGeomAttName) {
         this.json = json;
         this.sldStyleBuilder = styleBuilder;
         this.parserHelper = new JsonStyleParserHelper(configuration, this.sldStyleBuilder, true, Versions.ONE);
+        this.geometryProperty = defaultGeomAttName;
     }
 
     Style parseStyle() {
@@ -81,30 +100,72 @@ public final class MapfishJsonStyleVersion1 {
                 continue;
             }
             PJsonObject styleJson = this.json.getJSONObject(styleKey);
-            styleRules.add(createStyleRule(styleKey, styleJson, styleProperty));
+            final List<Rule> currentRules = createStyleRule(styleKey, styleJson, styleProperty);
+            for (Rule currentRule : currentRules) {
+                if (currentRule != null) {
+                    styleRules.add(currentRule);
+                }
+            }
         }
 
         return styleRules;
     }
 
-    private Rule createStyleRule(final String styleKey,
-                                 final PJsonObject styleJson,
-                                 final String styleProperty) {
+    @SuppressWarnings("unchecked")
+    private List<Rule> createStyleRule(final String styleKey,
+                                       final PJsonObject styleJson,
+                                       final String styleProperty) {
 
-        Collection<Symbolizer> symbolizers = Collections2.filter(Lists.newArrayList(
-                this.parserHelper.createPointSymbolizer(styleJson),
-                this.parserHelper.createLineSymbolizer(styleJson),
-                this.parserHelper.createPolygonSymbolizer(styleJson),
-                this.parserHelper.createTextSymbolizer(styleJson)), Predicates.notNull());
+        final PointSymbolizer pointSymbolizer = this.parserHelper.createPointSymbolizer(styleJson);
+        final LineSymbolizer lineSymbolizer = this.parserHelper.createLineSymbolizer(styleJson);
+        final PolygonSymbolizer polygonSymbolizer = this.parserHelper.createPolygonSymbolizer(styleJson);
+        final TextSymbolizer textSymbolizer = this.parserHelper.createTextSymbolizer(styleJson);
 
-        Rule rule = this.sldStyleBuilder.createRule(symbolizers.toArray(new Symbolizer[symbolizers.size()]));
-        rule.setName(styleKey);
-
-        Filter filter = createFilter(styleKey, styleProperty);
-        if (filter != null) {
-            rule.setFilter(filter);
+        Filter propertyMatches = createFilter(styleKey, styleProperty);
+        Rule textRule = null;
+        if (textSymbolizer != null) {
+            textRule = this.sldStyleBuilder.createRule(textSymbolizer);
+            if (propertyMatches != null) {
+                textRule.setFilter(propertyMatches);
+            }
+            textRule.setName(styleKey + "_Text");
         }
-        return rule;
+
+        return Lists.newArrayList(
+                createGeometryFilteredRule(pointSymbolizer, styleKey, styleProperty, Point.class, MultiPoint.class,
+                        GeometryCollection.class),
+                createGeometryFilteredRule(lineSymbolizer, styleKey, styleProperty, LineString.class, MultiLineString.class,
+                        LinearRing.class, GeometryCollection.class),
+                createGeometryFilteredRule(polygonSymbolizer, styleKey, styleProperty, Polygon.class, MultiPolygon.class,
+                        GeometryCollection.class),
+                textRule);
+    }
+
+    private Rule createGeometryFilteredRule(final Symbolizer symb,
+                                            final String styleKey,
+                                            final String styleProperty,
+                                            final Class<? extends Geometry>... geomClass) {
+        if (symb != null) {
+            Expression geomProperty = this.sldStyleBuilder.attributeExpression(this.geometryProperty);
+            final Function geometryTypeFunction = this.sldStyleBuilder.getFilterFactory().function("geometryType", geomProperty);
+            final ArrayList<Filter> geomOptions = Lists.newArrayListWithExpectedSize(geomClass.length);
+            for (Class<? extends Geometry> requiredType : geomClass) {
+                Expression expr = this.sldStyleBuilder.literalExpression(requiredType.getSimpleName());
+                geomOptions.add(this.sldStyleBuilder.getFilterFactory().equals(geometryTypeFunction, expr));
+            }
+
+            Filter ruleFilter = this.sldStyleBuilder.getFilterFactory().or(geomOptions);
+            Filter propertyMatches = createFilter(styleKey, styleProperty);
+            Rule rule = this.sldStyleBuilder.createRule(symb);
+            if (propertyMatches != null) {
+                ruleFilter = this.sldStyleBuilder.getFilterFactory().and(propertyMatches, ruleFilter);
+            }
+            rule.setFilter(ruleFilter);
+            rule.setName(styleKey + "_" + geomClass[0].getSimpleName());
+            return rule;
+        } else {
+            return null;
+        }
     }
 
     @Nullable

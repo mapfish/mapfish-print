@@ -1,17 +1,18 @@
-#maxDpi: 254
-
-#===========================================================================
-# allowed Formats
-#===========================================================================
-#formats: ['*']
-
-# outputFilename: 'mapfish-print-${date}.pdf'
+pdfConfig: !pdfConfig
+  compressed: false
+  author: "Mapfish Print"
+  subject: "Mapfish Print Verbose example"
+  creator: "Mapfish Print"
 
 throwErrorOnExtraParameters: true
 
 templates:
   A4 portrait: !template
+    pdfConfig: !pdfConfig
+      title: "Verbose A4 Portrait"
+      keywords: ["legend", "table", "tablelist", "map", "verbose"]
     reportTemplate: simpleReport.jrxml
+    tableData: jrDataSource
     attributes:
       number: !integer {}
       name: !string {}
@@ -24,7 +25,10 @@ templates:
         height: 200
       legend: !legend {}
       table: !table {}
-      tableList: !tableList {}
+      datasource: !datasource
+        attributes:
+          displayName: !string {}
+          table: !table {}
       scalebarDef: !scalebar
         width: 230
         height: 40
@@ -48,15 +52,16 @@ templates:
     - !prepareTable
       inputMapper: {table: table}
       outputMapper: {table: table}
-    - !prepareTableList
-      inputMapper: {tableList: tableList}
-      dynamicReport: {}
-      outputMapper: {tableList: tableList}
-    - !reportBuilder  # compile all jasper report templates in subreports directory
-      directory: "subreports"
-    tableData: tableList
+    - !createDataSource
+      reportTemplate: table.jrxml
+      reportKey: reportTemplate
+      processors:
+        - !prepareTable {}
 
   A4 portrait old api: !template
+    pdfConfig: !pdfConfig
+      title: "Verbose A4 Portrait old api"
+      keywords: ["map", "verbose", "old-api"]
     reportTemplate: simpleReport-old-api.jrxml
     attributes:
       map: !map

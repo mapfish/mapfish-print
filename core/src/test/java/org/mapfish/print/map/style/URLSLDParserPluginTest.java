@@ -3,14 +3,16 @@ package org.mapfish.print.map.style;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
+
 import org.geotools.styling.Style;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
-import org.mapfish.print.ConfigFileResolvingHttpRequestFactory;
+import org.mapfish.print.Constants;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.attribute.map.BBoxMapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.http.ConfigFileResolvingHttpRequestFactory;
 import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -34,7 +36,8 @@ public class URLSLDParserPluginTest extends AbstractMapfishSpringTest {
     private TestHttpClientFactory clientHttpRequestFactory;
     @Autowired
     private ConfigFileLoaderManager fileLoaderManager;
-    private MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0, 72, null);
+    private MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0,
+            72, Constants.PDF_DPI, null, true);
 
     @Test
     @DirtiesContext

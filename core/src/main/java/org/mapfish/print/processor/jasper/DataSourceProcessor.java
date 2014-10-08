@@ -24,10 +24,13 @@ import com.google.common.collect.Maps;
 import jsr166y.ForkJoinTask;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.attribute.Attribute;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.MapfishParser;
@@ -39,13 +42,14 @@ import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import static org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue;
 
 /**
  * A processor that will run several other processors on a Iterable value and output a datasource object for
@@ -55,7 +59,6 @@ import javax.annotation.Nullable;
  */
 public final class DataSourceProcessor extends AbstractProcessor<DataSourceProcessor.Input, DataSourceProcessor.Output> {
 
-    private String rowInputName;
     private Map<String, Attribute> attributes = Maps.newHashMap();
 
     @Autowired
@@ -63,7 +66,11 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
     private ProcessorDependencyGraph processorGraph;
     @Autowired
     private MapfishParser parser;
+    @Autowired
+    private JasperReportBuilder jasperReportBuilder;
 
+    private String reportTemplate;
+    private String reportKey;
 
     /**
      * Constructor.
@@ -73,18 +80,27 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
     }
 
     /**
-     * The name to register the <em>datasource</em> value under in the values object passed to the processors.
-     * <p/>
-     * It is preferred that the <em>datasource</em> value is an Iterator &lt;Values> or Iteratable &lt;Values> in that case
-     * inputName is not required and will be ignored.
-     * <p/>
-     * However if <em>datasource</em> refers to a single value or an iterable of a kind &lt;Values>, then it will be
-     * put in a new values object with the key <em>inputName</em>.
-     *
-     * @param rowInputName the name to use when adding the row data to the values object.
+     * The path to the report template used to render each row of the data.  This is only required if a subreport needs to be
+     * compiled and is referenced in the containing report's detail section.
+     * <p>
+     *     The path should be relative to the configuration directory
+     * </p>
+     * @param reportTemplate the path to the report template.
      */
-    public void setRowInputName(final String rowInputName) {
-        this.rowInputName = rowInputName;
+    public void setReportTemplate(final String reportTemplate) {
+        this.reportTemplate = reportTemplate;
+    }
+
+    /**
+     * The key/name to use when putting the path to the compiled subreport in each row of the datasource.
+     * This is required if {@link #reportTemplate} has been set.  The path to the compiled
+     * subreport will be added to each row in the datasource with this value as the key.  This allows the containing report to
+     * reference the subreport in each row.
+     *
+     * @param reportKey the key/name to use when putting the path to the compiled subreport in each row of the datasource.
+     */
+    public void setReportKey(final String reportKey) {
+        this.reportKey = reportKey;
     }
 
     /**
@@ -122,25 +138,7 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
     @Override
     public Output execute(final Input input, final ExecutionContext context) throws Exception {
 
-        Values values = input.values;
-        final Object val = input.source;
-        final Iterable<?> iterable;
-        if (val != null) {
-            if (val instanceof Iterable) {
-                iterable = (Iterable<?>) val;
-            } else if (val instanceof Iterator) {
-                iterable = Lists.newArrayList((Iterator) val);
-            } else {
-                iterable = Collections.singleton(val);
-            }
-        } else {
-            iterable = null;
-        }
-
-        JRDataSource jrDataSource = null;
-        if (iterable != null) {
-            jrDataSource = processInput(values, iterable);
-        }
+        JRDataSource jrDataSource = processInput(input);
 
         if (jrDataSource == null) {
             jrDataSource = new JREmptyDataSource();
@@ -148,47 +146,42 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
         return new Output(jrDataSource);
     }
 
-    private JRDataSource processInput(@Nonnull final Values values,
-                                      @Nonnull final Iterable<?> iterable) throws JSONException {
-        Template template = values.getObject(Values.TEMPLATE_KEY, Template.class);
+    //CSOFF:RedundantThrows
+    private JRDataSource processInput(@Nonnull final Input input)
+            throws JSONException, JRException {
+        //CSON:RedundantThrows
         List<Values> dataSourceValues = Lists.newArrayList();
-        for (Object o : iterable) {
-            Values rowValues;
-            if (o instanceof Values) {
-                rowValues = (Values) o;
-                rowValues.addRequiredValues(values);
-            } else {
-                if (this.rowInputName == null) {
-                    String sourceName = getInputMapperBiMap().get("source");
-                    if (sourceName == null) {
-                        sourceName = "source";
-                    }
-                    throw new AssertionError("One of the values of '" + sourceName + "' does not refer to a 'Values' object " +
-                                             "and there is no inputName defined");
-                }
-
-                rowValues = new Values(values);
-                rowValues.put(this.rowInputName, o);
+        for (Map<String, Object> o : input.datasource.attributesValues) {
+            Values rowValues = new Values(input.values);
+            for (Map.Entry<String, Object> entry : o.entrySet()) {
+                rowValues.put(entry.getKey(), entry.getValue());
             }
+
             dataSourceValues.add(rowValues);
         }
+
         List<ForkJoinTask<Values>> futures = Lists.newArrayList();
         if (!dataSourceValues.isEmpty()) {
-            for (Values dataSourceValue : dataSourceValues.subList(1, dataSourceValues.size())) {
-                addAttributes(template, dataSourceValue);
+            for (Values dataSourceValue : dataSourceValues) {
+                addAttributes(input.template, dataSourceValue);
                 final ForkJoinTask<Values> taskFuture = this.processorGraph.createTask(dataSourceValue).fork();
                 futures.add(taskFuture);
             }
-
+            final File reportFile;
+            if (this.reportTemplate != null) {
+                final Configuration configuration = input.template.getConfiguration();
+                final File file = new File(configuration.getDirectory(), this.reportTemplate);
+                reportFile = this.jasperReportBuilder.compileJasperReport(configuration, file);
+            } else {
+                reportFile = null;
+            }
             List<Map<String, ?>> rows = new ArrayList<Map<String, ?>>();
-
-            final Values row1Values = dataSourceValues.get(0);
-            addAttributes(template, row1Values);
-            Values firstRowData = this.processorGraph.createTask(row1Values).invoke();
-            rows.add(firstRowData.asMap());
 
             for (ForkJoinTask<Values> future : futures) {
                 final Values rowData = future.join();
+                if (reportFile != null) {
+                        rowData.put(this.reportKey, reportFile.getAbsolutePath());
+                }
                 rows.add(rowData.asMap());
             }
 
@@ -204,13 +197,18 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors) {
+    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.processorGraph == null || this.processorGraph.getAllProcessors().isEmpty()) {
-            validationErrors.add(new IllegalStateException("There are child processors for this processor"));
+            validationErrors.add(new ConfigurationException("There are child processors for this processor"));
         }
 
+        if (this.reportTemplate != null && this.reportKey == null || this.reportTemplate == null && this.reportKey != null) {
+            validationErrors.add(new ConfigurationException("'reportKey' and 'reportTemplate' must either both be null or both" +
+                                                            " be non-null.  reportKey: " + this.reportKey +
+                                                            " reportTemplate: " + this.reportTemplate));
+        }
         for (Attribute attribute : this.attributes.values()) {
-            attribute.validate(validationErrors);
+            attribute.validate(validationErrors, configuration);
         }
     }
 
@@ -222,7 +220,7 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
          * The values object with all values.  This is required in order to run sub-processor graph
          */
         @InternalValue
-        public Values template;
+        public Template template;
         /**
          * The values object with all values.  This is required in order to run sub-processor graph
          */
@@ -232,7 +230,7 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
         /**
          * The data that will be processed by this processor in order to create a Jasper DataSource object.
          */
-        public Object source;
+        public DataSourceAttributeValue datasource;
 
     }
 
@@ -243,7 +241,7 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
         /**
          * The datasource to be assigned to a report or sub-report detail/table section.
          */
-        public final JRDataSource datasource;
+        public final JRDataSource jrDataSource;
 
         /**
          * Constructor for setting the table data.
@@ -251,7 +249,7 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
          * @param datasource the table data
          */
         public Output(@Nonnull final JRDataSource datasource) {
-            this.datasource = datasource;
+            this.jrDataSource = datasource;
         }
     }
 }

@@ -62,6 +62,7 @@ public final class ProcessorExecutionContext {
      * @param processorGraphNode the node that should start.
      * @return if the node of the processor can be started.
      */
+    @SuppressWarnings("unchecked")
     public boolean tryStart(final ProcessorGraphNode processorGraphNode) {
         this.processorLock.lock();
         boolean canStart = false;

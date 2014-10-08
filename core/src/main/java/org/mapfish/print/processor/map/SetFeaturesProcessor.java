@@ -23,9 +23,10 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.mapfish.print.attribute.FeaturesAttribute.FeaturesAttributeValues;
 import org.mapfish.print.attribute.map.GenericMapAttribute;
 import org.mapfish.print.attribute.map.MapLayer;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.processor.AbstractProcessor;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.List;
 
@@ -63,7 +64,7 @@ public class SetFeaturesProcessor extends
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors) {
+    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
         // no checks needed
     }
 
@@ -74,7 +75,7 @@ public class SetFeaturesProcessor extends
         /**
          * The factory to use for making http requests.
          */
-        public ClientHttpRequestFactory clientHttpRequestFactory;
+        public MfClientHttpRequestFactory clientHttpRequestFactory;
         /**
          * The map to update.
          */

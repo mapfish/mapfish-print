@@ -45,7 +45,7 @@ import javax.annotation.Nullable;
  * @author Jesse
  * @author sbrunner
  */
-public class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.Input, Void> implements HasConfiguration {
+public final class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.Input, Void> implements HasConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
     /**
      * Extension for Jasper XML Report Template files.
@@ -71,32 +71,40 @@ public class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.I
     }
 
     @Override
-    public final Void execute(final JasperReportBuilder.Input param, final ExecutionContext context) throws JRException {
+    public Void execute(final JasperReportBuilder.Input param, final ExecutionContext context) throws JRException {
         Timer.Context buildReports = this.metricRegistry.timer(getClass() + "_execute()").time();
         try {
             for (final File jasperFile : jasperXmlFiles()) {
                 checkCancelState(context);
-                final File buildFile = this.workingDirectories.getBuildFileFor(this.configuration, jasperFile,
-                        JASPER_REPORT_COMPILED_FILE_EXT, LOGGER);
-
-                if (!buildFile.exists() || jasperFile.lastModified() > buildFile.lastModified()) {
-                    LOGGER.info("Building Jasper report: " + jasperFile.getAbsolutePath());
-                    LOGGER.debug("To: " + buildFile.getAbsolutePath());
-                    final Timer.Context compileJasperReport = this.metricRegistry.timer("compile_" + jasperFile).time();
-                    try {
-                        JasperCompileManager.compileReportToFile(jasperFile.getAbsolutePath(), buildFile.getAbsolutePath());
-                    } finally {
-                        final long compileTime = TimeUnit.MILLISECONDS.convert(compileJasperReport.stop(), TimeUnit.NANOSECONDS);
-                        LOGGER.info("Report built in " + compileTime + "ms.");
-                    }
-                } else {
-                    LOGGER.debug("Destination file is already up to date: " + buildFile.getAbsolutePath());
-                }
+                compileJasperReport(this.configuration, jasperFile);
             }
             return null;
         } finally {
             buildReports.stop();
         }
+    }
+
+    File compileJasperReport(final Configuration config, final File jasperFile) throws JRException {
+        final File buildFile = this.workingDirectories.getBuildFileFor(config, jasperFile, JASPER_REPORT_COMPILED_FILE_EXT, LOGGER);
+        return compileJasperReport(buildFile, jasperFile);
+    }
+
+    File compileJasperReport(final File buildFile, final File jasperFile) throws JRException {
+
+        if (!buildFile.exists() || jasperFile.lastModified() > buildFile.lastModified()) {
+            LOGGER.info("Building Jasper report: " + jasperFile.getAbsolutePath());
+            LOGGER.debug("To: " + buildFile.getAbsolutePath());
+            final Timer.Context compileJasperReport = this.metricRegistry.timer("compile_" + jasperFile).time();
+            try {
+                JasperCompileManager.compileReportToFile(jasperFile.getAbsolutePath(), buildFile.getAbsolutePath());
+            } finally {
+                final long compileTime = TimeUnit.MILLISECONDS.convert(compileJasperReport.stop(), TimeUnit.NANOSECONDS);
+                LOGGER.info("Report built in " + compileTime + "ms.");
+            }
+        } else {
+            LOGGER.debug("Destination file is already up to date: " + buildFile.getAbsolutePath());
+        }
+        return buildFile;
     }
 
     private Iterable<File> jasperXmlFiles() {
@@ -120,7 +128,7 @@ public class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.I
 
 
     @Override
-    public final JasperReportBuilder.Input createInputParameter() {
+    public JasperReportBuilder.Input createInputParameter() {
         return new JasperReportBuilder.Input();
     }
 
@@ -129,7 +137,7 @@ public class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.I
      *
      * @param directory the new directory
      */
-    public final void setDirectory(final String directory) {
+    public void setDirectory(final String directory) {
         this.directory = new File(this.configuration.getDirectory(), directory);
         if (!this.directory.exists()) {
             throw new IllegalArgumentException("Directory does not exist: "
@@ -145,12 +153,12 @@ public class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.I
     }
 
     @Override
-    public final void setConfiguration(final Configuration configuration) {
+    public void setConfiguration(final Configuration configuration) {
         this.configuration = configuration;
     }
 
     @Override
-    public final String toString() {
+    public String toString() {
         return getClass().getSimpleName() + "(" + this.directory + ")";
     }
 
@@ -161,7 +169,7 @@ public class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.I
     }
 
     @Override
-    protected final void extraValidation(final List<Throwable> validationErrors) {
+    protected void extraValidation(final List<Throwable> validationErrors, final Configuration config) {
         // nothing to do
     }
 }

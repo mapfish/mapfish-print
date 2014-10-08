@@ -19,6 +19,8 @@
 
 package org.mapfish.print.config;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.LineSymbolizer;
@@ -30,21 +32,33 @@ import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONWriter;
+import org.junit.After;
 import org.junit.Test;
 import org.mapfish.print.Constants;
-import org.mapfish.print.attribute.map.BBoxMapBounds;
-import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mockito.Mockito;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.awt.Dimension;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link org.mapfish.print.config.Configuration} class.
@@ -53,10 +67,13 @@ import static org.junit.Assert.assertTrue;
  */
 public class ConfigurationTest {
 
+    @After
+    public void tearDown() throws Exception {
+        SecurityContextHolder.clearContext();
+    }
+
     @Test
     public void testGetDefaultStyle_IsPresentInMap() throws Exception {
-        MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0, 72, null);
-
         final Configuration configuration = new Configuration();
         Map<String, Style> styles = new HashMap<String, Style>();
         final Style pointStyle = Mockito.mock(Style.class);
@@ -94,7 +111,6 @@ public class ConfigurationTest {
 
     @Test
     public void testGetDefaultStyle_NotInMap() throws Exception {
-        MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0, 72, null);
         final Configuration configuration = new Configuration();
         Map<String, Style> styles = new HashMap<String, Style>();
         final Style geomStyle = Mockito.mock(Style.class);
@@ -124,7 +140,6 @@ public class ConfigurationTest {
     }
     @Test
     public void testGetDefaultStyle_GeomNotInMap() throws Exception {
-        MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0, 72, null);
         final Configuration configuration = new Configuration();
 
         assertStyleType(Symbolizer.class, configuration.getDefaultStyle("geom"));
@@ -137,7 +152,6 @@ public class ConfigurationTest {
 
     @Test
     public void testGridStyle() throws Exception {
-        MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0, 72, null);
         final Configuration configuration = new Configuration();
         final Style gridStyle = configuration.getDefaultStyle(Constants.Style.Grid.NAME);
         final AtomicInteger foundLineSymb = new AtomicInteger(0);
@@ -163,6 +177,157 @@ public class ConfigurationTest {
 
         assertEquals(1, foundLineSymb.intValue());
         assertEquals(1, foundTextSymb.intValue());
+    }
+
+    @Test
+    public void testTemplateAccess() throws Exception {
+        Configuration configuration = new Configuration();
+        Map<String, Template> templates = Maps.newHashMap();
+        Template unrestricted = new Template();
+        templates.put("unrestricted", unrestricted);
+        Template restricted = new Template();
+        restricted.setAccess(Lists.newArrayList("ROLE_USER", "ROLE_ADMIN"));
+        templates.put("restricted", restricted);
+        configuration.setTemplates(templates);
+
+        assertCorrectTemplates(configuration, unrestricted, restricted, AuthenticationCredentialsNotFoundException.class);
+
+        SimpleGrantedAuthority userAuth = new SimpleGrantedAuthority("ROLE_USER");
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        SecurityContextHolder.setContext(securityContext);
+        securityContext.setAuthentication(new UsernamePasswordAuthenticationToken("user", "", Lists.newArrayList(userAuth)));
+        assertCorrectTemplates(configuration, unrestricted, restricted, null);
+
+        securityContext = SecurityContextHolder.createEmptyContext();
+        SecurityContextHolder.setContext(securityContext);
+        assertCorrectTemplates(configuration, unrestricted, restricted, AuthenticationCredentialsNotFoundException.class);
+
+        SimpleGrantedAuthority adminAuth = new SimpleGrantedAuthority("ROLE_ADMIN");
+        securityContext = SecurityContextHolder.createEmptyContext();
+        SecurityContextHolder.setContext(securityContext);
+        securityContext.setAuthentication(new UsernamePasswordAuthenticationToken("admin", "", Lists.newArrayList(adminAuth)));
+        assertCorrectTemplates(configuration, unrestricted, restricted, null);
+
+        SecurityContextHolder.clearContext();
+        assertCorrectTemplates(configuration, unrestricted, restricted, AuthenticationCredentialsNotFoundException.class);
+
+
+        SimpleGrantedAuthority otherAuth = new SimpleGrantedAuthority("ROLE_OTHER");
+        securityContext = SecurityContextHolder.createEmptyContext();
+        SecurityContextHolder.setContext(securityContext);
+        securityContext.setAuthentication(new UsernamePasswordAuthenticationToken("other", "", Lists.newArrayList(otherAuth)));
+        assertCorrectTemplates(configuration, unrestricted, restricted, AccessDeniedException.class);
+    }
+    @Test
+    public void testTemplateAccess_ConfigHasAccess() throws Exception {
+        Configuration configuration = new Configuration();
+        Map<String, Template> templates = Maps.newHashMap();
+        Template template1 = new Template();
+        templates.put("template1", template1);
+        Template template2 = new Template();
+        templates.put("template2", template2);
+        configuration.setTemplates(templates);
+        configuration.setAccess(Lists.newArrayList("ROLE_USER", "ROLE_ADMIN"));
+
+        assertAccessTemplate_ConfigSecured(configuration, AuthenticationCredentialsNotFoundException.class);
+
+        SimpleGrantedAuthority userAuth = new SimpleGrantedAuthority("ROLE_USER");
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        SecurityContextHolder.setContext(securityContext);
+        securityContext.setAuthentication(new UsernamePasswordAuthenticationToken("user", "", Lists.newArrayList(userAuth)));
+        assertAccessTemplate_ConfigSecured(configuration, null);
+
+        securityContext = SecurityContextHolder.createEmptyContext();
+        SecurityContextHolder.setContext(securityContext);
+        assertAccessTemplate_ConfigSecured(configuration, AuthenticationCredentialsNotFoundException.class);
+
+        SimpleGrantedAuthority adminAuth = new SimpleGrantedAuthority("ROLE_ADMIN");
+        securityContext = SecurityContextHolder.createEmptyContext();
+        SecurityContextHolder.setContext(securityContext);
+        securityContext.setAuthentication(new UsernamePasswordAuthenticationToken("admin", "", Lists.newArrayList(adminAuth)));
+        assertAccessTemplate_ConfigSecured(configuration, null);
+
+        SecurityContextHolder.clearContext();
+        assertAccessTemplate_ConfigSecured(configuration, AuthenticationCredentialsNotFoundException.class);
+
+
+        SimpleGrantedAuthority otherAuth = new SimpleGrantedAuthority("ROLE_OTHER");
+        securityContext = SecurityContextHolder.createEmptyContext();
+        SecurityContextHolder.setContext(securityContext);
+        securityContext.setAuthentication(new UsernamePasswordAuthenticationToken("other", "", Lists.newArrayList(otherAuth)));
+        assertAccessTemplate_ConfigSecured(configuration, AccessDeniedException.class);
+    }
+
+    private void assertAccessTemplate_ConfigSecured(Configuration configuration,
+                                                    @Nullable Class<?> expectedException) throws Exception {
+        final int numExpectedTemplates = expectedException == null ? 2 : 0;
+        assertEquals(numExpectedTemplates, configuration.getTemplates().size());
+        if (expectedException != null) {
+            try {
+                configuration.getTemplate("template1");
+                fail("Expected " + expectedException + " to be thrown");
+            } catch (Exception e) {
+                if (!expectedException.isInstance(e)) {
+                    throw e;
+                }
+            }
+        } else {
+            assertNotNull(configuration.getTemplate("template1"));
+            assertNotNull(configuration.getTemplate("template2"));
+        }
+        final JSONArray layouts = getClientConfigJson(configuration);
+        assertEquals(numExpectedTemplates, layouts.length());
+    }
+
+    private JSONArray getClientConfigJson(Configuration configuration) throws JSONException {
+        final StringWriter w = new StringWriter();
+        JSONWriter writer = new JSONWriter(w);
+        writer.object();
+        configuration.printClientConfig(writer);
+        writer.endObject();
+        final JSONObject clientConfig = new JSONObject(w.toString());
+        return clientConfig.getJSONArray("layouts");
+    }
+
+    private void assertCorrectTemplates(Configuration configuration,
+                                        Template unrestricted,
+                                        Template restricted,
+                                        @Nullable Class<? extends Exception> expectedException) throws Exception {
+        if (expectedException != null) {
+            try {
+                configuration.getTemplate("restricted");
+                fail("Expected " + expectedException + " to be thrown");
+            } catch (Exception e) {
+                if (!expectedException.isInstance(e)) {
+                    throw e;
+                }
+            }
+            assertFalse(configuration.getTemplates().containsKey("restricted"));
+        } else {
+            assertEquals(restricted, configuration.getTemplate("restricted"));
+            assertTrue(configuration.getTemplates().containsKey("restricted"));
+        }
+
+        assertEquals(unrestricted, configuration.getTemplate("unrestricted"));
+        final int expectedNumTemplates = expectedException == null ? 2 : 1;
+        assertEquals(expectedNumTemplates, configuration.getTemplates().size());
+        assertTrue(configuration.getTemplates().containsKey("unrestricted"));
+        final JSONArray layouts = getClientConfigJson(configuration);
+        assertEquals(expectedNumTemplates, layouts.length());
+    }
+
+    @Test
+    public void testRenderAsSvg() throws Exception {
+        final Configuration config = new Configuration();
+        config.setDefaultToSvg(false);
+        assertFalse(config.renderAsSvg(null));
+        assertFalse(config.renderAsSvg(false));
+        assertTrue(config.renderAsSvg(true));
+
+        config.setDefaultToSvg(true);
+        assertTrue(config.renderAsSvg(null));
+        assertFalse(config.renderAsSvg(false));
+        assertTrue(config.renderAsSvg(true));
     }
 
     private void assertStyleType(Class<?> expectedSymbolizerType, Style style) {

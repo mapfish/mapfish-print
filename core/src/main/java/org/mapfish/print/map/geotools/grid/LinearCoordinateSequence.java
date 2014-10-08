@@ -22,7 +22,6 @@ package org.mapfish.print.map.geotools.grid;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Envelope;
-
 import org.mapfish.print.ExceptionUtils;
 import org.opengis.referencing.cs.AxisDirection;
 

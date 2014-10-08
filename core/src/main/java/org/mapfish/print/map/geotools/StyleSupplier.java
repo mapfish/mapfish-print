@@ -21,7 +21,7 @@ package org.mapfish.print.map.geotools;
 
 import org.geotools.styling.Style;
 import org.mapfish.print.attribute.map.MapfishMapContext;
-import org.springframework.http.client.ClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 
 /**
  * A strategy for loading style objects.
@@ -37,7 +37,7 @@ public interface StyleSupplier<Source> {
      * @param featureSource the source the style applies to
      * @param mapContext information about the map projection, bounds, size, etc...
      */
-    Style load(final ClientHttpRequestFactory requestFactory,
+    Style load(final MfClientHttpRequestFactory requestFactory,
                final Source featureSource,
                final MapfishMapContext mapContext) throws Exception;
 }

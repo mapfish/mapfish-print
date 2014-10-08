@@ -22,7 +22,6 @@ package org.mapfish.print.servlet;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
-
 import org.jfree.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,7 +68,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -191,7 +190,11 @@ public class MapPrinterServlet extends BaseMapServlet {
     @Autowired
     private ServletInfo servletInfo;
 
+
     private long maxCreateAndGetWaitTimeInSeconds;
+    @Autowired
+    private MapPrinterFactory mapPrinterFactory;
+
 
     /**
      * Get a status report on a job.  Returns the following json:
@@ -283,7 +286,7 @@ public class MapPrinterServlet extends BaseMapServlet {
                                    @PathVariable final String format,
                                    @RequestBody final String requestData,
                                    final HttpServletRequest createReportRequest,
-                                   final HttpServletResponse createReportResponse) throws JSONException {
+                                   final HttpServletResponse createReportResponse) throws JSONException, NoSuchAppException {
         String ref = createAndSubmitPrintJob(appId, format, requestData, createReportRequest, createReportResponse);
         if (ref == null) {
             error(createReportResponse, "Failed to create a print job", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -373,7 +376,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     public final void createReport(@PathVariable final String format,
                                    @RequestBody final String requestData,
                                    final HttpServletRequest createReportRequest,
-                                   final HttpServletResponse createReportResponse) throws JSONException {
+                                   final HttpServletResponse createReportResponse) throws JSONException, NoSuchAppException {
         PJsonObject spec = parseJson(requestData, createReportResponse);
 
         String appId = spec.optString(JSON_APP, DEFAULT_CONFIGURATION_FILE_KEY);
@@ -397,7 +400,7 @@ public class MapPrinterServlet extends BaseMapServlet {
                                          @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
                                          final HttpServletRequest createReportRequest,
                                          final HttpServletResponse createReportResponse)
-            throws IOException, ServletException, InterruptedException, JSONException {
+            throws IOException, ServletException, InterruptedException, JSONException, NoSuchAppException {
 
         String ref = createAndSubmitPrintJob(appId, format, requestData, createReportRequest, createReportResponse);
         if (ref == null) {
@@ -463,7 +466,7 @@ public class MapPrinterServlet extends BaseMapServlet {
                                                 @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
                                                 final HttpServletRequest createReportRequest,
                                                 final HttpServletResponse createReportResponse)
-            throws IOException, ServletException, InterruptedException, JSONException {
+            throws IOException, ServletException, InterruptedException, JSONException, NoSuchAppException {
         PJsonObject spec = parseJson(requestData, createReportResponse);
 
         String appId = spec.optString(JSON_APP, DEFAULT_CONFIGURATION_FILE_KEY);
@@ -826,7 +829,7 @@ public class MapPrinterServlet extends BaseMapServlet {
      */
     public final String createAndSubmitPrintJob(final String appId, final String format, final String requestDataRaw,
                                            final HttpServletRequest httpServletRequest,
-                                           final HttpServletResponse httpServletResponse) throws JSONException {
+                                           final HttpServletResponse httpServletResponse) throws JSONException, NoSuchAppException {
 
         PJsonObject specJson = parseJson(requestDataRaw, httpServletResponse);
         if (specJson == null) {
@@ -835,6 +838,11 @@ public class MapPrinterServlet extends BaseMapServlet {
         if (SPEC_LOGGER.isInfoEnabled()) {
             SPEC_LOGGER.info(specJson.toString());
         }
+        // check that we have authorization:
+        final String templateName = specJson.getString(Constants.JSON_LAYOUT_KEY);
+        final MapPrinter mapPrinter = this.mapPrinterFactory.create(appId);
+        mapPrinter.getConfiguration().getTemplate(templateName);
+
         specJson.getInternalObj().remove(JSON_OUTPUT_FORMAT);
         specJson.getInternalObj().put(JSON_OUTPUT_FORMAT, format);
         specJson.getInternalObj().remove(JSON_APP);
@@ -849,6 +857,7 @@ public class MapPrinterServlet extends BaseMapServlet {
 
         job.setReferenceId(ref);
         job.setRequestData(specJson);
+        job.setSecurityContext(SecurityContextHolder.getContext());
 
         try {
             this.jobManager.submit(job);

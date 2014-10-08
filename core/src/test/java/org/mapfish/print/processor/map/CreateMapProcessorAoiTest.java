@@ -111,17 +111,17 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
 
-//        createMap(template, "expectedSimpleImage-default.png", RENDER, null, false, null);
-//        createMap(template, "expectedSimpleImage-render-thinline.png", RENDER, "file://thinline.sld", false, null);
-//        createMap(template, "expectedSimpleImage-render-jsonStyle.png", RENDER, createJsonStyle().toString(), false, null);
-//        createMap(template, "expectedSimpleImage-render-polygon.png", RENDER, "polygon",
-//                false, null);
-//        createMap(template, "expectedSimpleImage-none.png", AreaOfInterest.AoiDisplay.NONE, null, false, null);
-//        createMap(template, "expectedSimpleImage-clip.png", AreaOfInterest.AoiDisplay.CLIP, null, false, null);
-//
-//        // Test when SVG is used for vector layers
-//        createMap(template, "expectedSimpleImage-render-polygon-svg.png", RENDER, createJsonStyle().toString(), true, null);
-//        createMap(template, "expectedSimpleImage-clip-svg.png", AreaOfInterest.AoiDisplay.CLIP, null, true, null);
+        createMap(template, "expectedSimpleImage-default.png", RENDER, null, false, null);
+        createMap(template, "expectedSimpleImage-render-thinline.png", RENDER, "file://thinline.sld", false, null);
+        createMap(template, "expectedSimpleImage-render-jsonStyle.png", RENDER, createJsonStyle().toString(), false, null);
+        createMap(template, "expectedSimpleImage-render-polygon.png", RENDER, "polygon",
+                false, null);
+        createMap(template, "expectedSimpleImage-none.png", AreaOfInterest.AoiDisplay.NONE, null, false, null);
+        createMap(template, "expectedSimpleImage-clip.png", AreaOfInterest.AoiDisplay.CLIP, null, false, null);
+
+        // Test when SVG is used for vector layers
+        createMap(template, "expectedSimpleImage-render-polygon-svg.png", RENDER, createJsonStyle().toString(), true, null);
+        createMap(template, "expectedSimpleImage-clip-svg.png", AreaOfInterest.AoiDisplay.CLIP, null, true, null);
         Function<PJsonObject, Void> setRotationUpdater = new Function<PJsonObject, Void>() {
 
             @Nullable
@@ -171,7 +171,7 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
             requestUpdater.apply(requestData);
         }
 
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory);
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
         template.getProcessorGraph().createTask(values).invoke();
 
         @SuppressWarnings("unchecked")

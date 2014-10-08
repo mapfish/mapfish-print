@@ -18,6 +18,7 @@ import org.mapfish.print.processor.map.SetStyleProcessor;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.File;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -43,7 +44,7 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = this.configurationFactory.getConfig(getFile(BASE_DIR + "basic/config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = parseJSONObjectFromFile(SetStyleProcessorTest.class, BASE_DIR + "basic/request.json");
-        Values values = new Values(requestData, template, parser, this.folder.getRoot(), this.httpClientFactory);
+        Values values = new Values(requestData, template, parser, this.folder.getRoot(), this.httpClientFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final MapAttribute.MapAttributeValues map = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);

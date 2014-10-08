@@ -32,6 +32,7 @@ import org.geotools.styling.Style;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayerPlugin;
 import org.mapfish.print.map.geotools.FeatureSourceSupplier;
 import org.mapfish.print.map.geotools.StyleSupplier;
@@ -40,7 +41,6 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.cs.AxisDirection;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import javax.annotation.Nonnull;
 
@@ -71,14 +71,15 @@ public final class GridLayerPlugin extends AbstractFeatureSourceLayerPlugin<Grid
 
         FeatureSourceSupplier featureSource = createFeatureSourceFunction(template, layerData);
         final StyleSupplier<FeatureSource> styleFunction = createStyleSupplier(template, layerData);
-        return new GridLayer(this.pool, featureSource, styleFunction, layerData.renderAsSvg);
+        return new GridLayer(this.pool, featureSource, styleFunction,
+                template.getConfiguration().renderAsSvg(layerData.renderAsSvg));
     }
 
     private StyleSupplier<FeatureSource> createStyleSupplier(final Template template, final GridParam layerData) {
 
         return new StyleSupplier<FeatureSource>() {
             @Override
-            public Style load(final ClientHttpRequestFactory requestFactory,
+            public Style load(final MfClientHttpRequestFactory requestFactory,
                               final FeatureSource featureSource,
                               final MapfishMapContext mapContext) {
                 String styleRef = layerData.style;
@@ -97,7 +98,7 @@ public final class GridLayerPlugin extends AbstractFeatureSourceLayerPlugin<Grid
         return new FeatureSourceSupplier() {
             @Nonnull
             @Override
-            public FeatureSource load(@Nonnull final ClientHttpRequestFactory requestFactory,
+            public FeatureSource load(@Nonnull final MfClientHttpRequestFactory requestFactory,
                                       @Nonnull final MapfishMapContext mapContext) {
                 final SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
                 CoordinateReferenceSystem projection = mapContext.getBounds().getProjection();

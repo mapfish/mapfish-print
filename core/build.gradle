@@ -60,10 +60,13 @@ configurations {
 }
 
 dependencies {
+    def springSecurityVersion = "3.2.5.RELEASE"
     compile (
             "org.springframework:spring-context:$project.springVersion",
             "org.springframework:spring-web:$project.springVersion",
-            "org.springframework:spring-webmvc:$project.springVersion"
+            "org.springframework:spring-webmvc:$project.springVersion",
+            "org.springframework.security:spring-security-config:$springSecurityVersion",
+            "org.springframework.security:spring-security-web:$springSecurityVersion"
     )
     def metricsVersion = "3.0.2"
     metrics (

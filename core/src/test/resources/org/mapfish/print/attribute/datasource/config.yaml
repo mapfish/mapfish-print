@@ -1,0 +1,16 @@
+
+templates:
+  main: !template
+    attributes:
+      datasource: !datasource
+        attributes:
+          table: !table {}
+          name: !string {}
+          count: !integer {}
+    processors:
+    - !createDataSource
+      reportTemplate: table.jrxml
+      reportKey: reportTemplate
+      processors:
+        - !prepareTable {}
+

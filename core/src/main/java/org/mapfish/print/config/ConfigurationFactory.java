@@ -19,10 +19,10 @@
 
 package org.mapfish.print.config;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.Closer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.yaml.snakeyaml.Yaml;
@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
-
 import javax.annotation.PostConstruct;
 
 /**
@@ -63,6 +62,7 @@ public class ConfigurationFactory {
      *
      * @param configFile the file to read the configuration from.
      */
+    @VisibleForTesting
     public final Configuration getConfig(final File configFile) throws IOException {
         Closer closer = Closer.create();
         try {

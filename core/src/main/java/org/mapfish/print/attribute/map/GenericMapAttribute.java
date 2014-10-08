@@ -27,6 +27,7 @@ import org.json.JSONObject;
 import org.mapfish.print.Constants;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.ReflectiveAttribute;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
@@ -147,7 +148,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
 
     //CSOFF: DesignForExtension
     @Override
-    public void validate(final List<Throwable> validationErrors) {
+    public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
     //CSON: DesignForExtension
         if (this.width == null || this.width < 1) {
             validationErrors.add(new ConfigurationException("width field is not legal: " + this.width + " in " + getClass().getName()));
@@ -229,6 +230,18 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
          */
         @HasDefaultValue
         public Boolean longitudeFirst = null;
+
+        /**
+         * Should the vector style definitions be adapted to the target DPI resolution? (Default: true)
+         * <p/>
+         * The style definitions are often optimized for a use with OpenLayers (which uses
+         * a DPI value of 72). When these styles are used to print with a higher DPI value,
+         * lines often look too thin, label are too small, etc.
+         * <p/>
+         * If this property is set to `true`, the style definitions will be scaled to the target DPI value.
+         */
+        @HasDefaultValue
+        public Boolean dpiSensitiveStyle = true;
 
         /**
          * Constructor.
@@ -390,6 +403,10 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
         public Boolean isUseAdjustBounds() {
         //CSON: DesignForExtension
             return this.useAdjustBounds;
+        }
+
+        public final Boolean isDpiSensitiveStyle() {
+            return this.dpiSensitiveStyle;
         }
 
         //CSOFF: DesignForExtension

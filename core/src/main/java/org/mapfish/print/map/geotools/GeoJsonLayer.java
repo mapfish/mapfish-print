@@ -25,11 +25,10 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
-import org.springframework.http.client.ClientHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -82,7 +81,7 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
                     this.forkJoinPool,
                     createFeatureSourceSupplier(template, param.geoJson),
                     createStyleFunction(template, param.style),
-                    param.renderAsSvg);
+                    template.getConfiguration().renderAsSvg(param.renderAsSvg));
         }
 
         private FeatureSourceSupplier createFeatureSourceSupplier(final Template template,
@@ -90,7 +89,7 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
             return new FeatureSourceSupplier() {
                 @Nonnull
                 @Override
-                public FeatureSource load(@Nonnull final ClientHttpRequestFactory requestFactory,
+                public FeatureSource load(@Nonnull final MfClientHttpRequestFactory requestFactory,
                                           @Nonnull final MapfishMapContext mapContext) {
                     final FeaturesParser parser = new FeaturesParser(requestFactory, mapContext.isForceLongitudeFirst());
                     SimpleFeatureCollection featureCollection;
@@ -110,7 +109,7 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
      */
     public static class GeoJsonParam extends AbstractVectorLayerParam {
         /**
-         * A url to the geoJson or the raw GeoJSON data.
+         * A geojson formatted string or url to the geoJson or the raw GeoJSON data.
          * <p/>
          * The url can be a file url, however if it is it must be relative to the configuration directory.
          */

@@ -22,13 +22,12 @@ package org.mapfish.print.processor;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-
 import jsr166y.ForkJoinPool;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.map.CreateOverviewMapProcessor;
 import org.mapfish.print.processor.map.SetStyleProcessor;
@@ -38,7 +37,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
@@ -423,7 +421,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         }
 
         @Override
-        protected void extraValidation(List<Throwable> validationErrors) {
+        protected void extraValidation(List<Throwable> validationErrors, final Configuration configuration) {
             // no checks
         }
 
@@ -648,7 +646,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         }
 
         @Override
-        protected void extraValidation(List<Throwable> validationErrors) {
+        protected void extraValidation(List<Throwable> validationErrors, final Configuration configuration) {
             // no checks
         }
 

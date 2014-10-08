@@ -20,11 +20,9 @@
 package org.mapfish.print.processor.http.matcher;
 
 import com.google.common.base.Optional;
-import org.springframework.http.HttpMethod;
 
 import java.net.MalformedURLException;
 import java.net.SocketException;
-import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,22 +43,19 @@ public abstract class HostMatcher implements URIMatcher {
     // CSON: VisibilityModifier
 
     @Override
-    public final boolean accepts(final URI uri, final HttpMethod httpMethod) throws UnknownHostException, SocketException,
+    public final boolean accepts(final MatchInfo matchInfo) throws UnknownHostException, SocketException,
             MalformedURLException {
-        Optional<Boolean> overridden = tryOverrideValidation(uri);
+        Optional<Boolean> overridden = tryOverrideValidation(matchInfo);
         if (overridden.isPresent()) {
             return overridden.get();
         } else {
-            int uriPort = uri.getPort();
-            if (uriPort < 0) {
-                uriPort = uri.toURL().getDefaultPort();
-            }
-            if (this.port > 0 && uriPort != this.port) {
+            int uriPort = matchInfo.getPort();
+            if (uriPort != MatchInfo.ANY_PORT && this.port > 0 && uriPort != this.port) {
                 return false;
             }
 
-            if (this.pathRegex != null) {
-                Matcher matcher = Pattern.compile(this.pathRegex).matcher(uri.getPath());
+            if (this.pathRegex != null && matchInfo.getPath() != MatchInfo.ANY_PATH) {
+                Matcher matcher = Pattern.compile(this.pathRegex).matcher(matchInfo.getPath());
                 if (!matcher.matches()) {
                     return false;
                 }
@@ -73,9 +68,10 @@ public abstract class HostMatcher implements URIMatcher {
      * If the subclass has its own checks or if it has a different validation method this method can return a
      * valid value.
      *
-     * @param uri the uri to validate.
+     * @param matchInfo the match information to validate.
      */
-    protected abstract Optional<Boolean> tryOverrideValidation(URI uri) throws UnknownHostException, SocketException;
+    protected abstract Optional<Boolean> tryOverrideValidation(final MatchInfo matchInfo) throws UnknownHostException, SocketException,
+            MalformedURLException;
 
     public final void setPort(final int port) {
         this.port = port;

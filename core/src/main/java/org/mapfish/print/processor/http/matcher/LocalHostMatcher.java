@@ -19,6 +19,8 @@
 
 package org.mapfish.print.processor.http.matcher;
 
+import org.mapfish.print.config.Configuration;
+
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -78,7 +80,7 @@ public class LocalHostMatcher extends InetHostMatcher {
     }
 
     @Override
-    public final void validate(final List<Throwable> validationErrors) {
+    public final void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         // no checks required
     }
 

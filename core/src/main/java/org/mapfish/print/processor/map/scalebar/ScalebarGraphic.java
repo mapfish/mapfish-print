@@ -20,12 +20,12 @@
 package org.mapfish.print.processor.map.scalebar;
 
 import com.google.common.annotations.VisibleForTesting;
-
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.geotools.referencing.GeodeticCalculator;
 import org.mapfish.print.attribute.ScalebarAttribute.ScalebarAttributeValues;
 import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.attribute.map.MapBounds;
+import org.mapfish.print.config.Template;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.Scale;
 import org.mapfish.print.processor.map.CreateMapProcessor;
@@ -44,7 +44,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.imageio.ImageIO;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -58,12 +57,15 @@ public class ScalebarGraphic {
 
     /**
      * Render the scalebar.
-     *
-     * @param mapParams         The parameters of the map for which the scalebar is created.
+     *  @param mapParams        The parameters of the map for which the scalebar is created.
      * @param scalebarParams    The scalebar parameters.
      * @param tempFolder        The directory in which the graphic file is created.
+     * @param template          The template that containts the scalebar processor
      */
-    public final URI render(final MapAttributeValues mapParams, final ScalebarAttributeValues scalebarParams, final File tempFolder)
+    public final URI render(final MapAttributeValues mapParams,
+                            final ScalebarAttributeValues scalebarParams,
+                            final File tempFolder,
+                            final Template template)
             throws IOException, ParserConfigurationException {
         final double dpi = mapParams.getDpi();
         final double dpiRatio = dpi / mapParams.getRequestorDPI();
@@ -103,7 +105,7 @@ public class ScalebarGraphic {
 
         // start the rendering
         File path = null;
-        if (scalebarParams.renderAsSvg) {
+        if (template.getConfiguration().renderAsSvg(scalebarParams.renderAsSvg)) {
             // render scalebar as SVG
             final SVGGraphics2D graphics2D = CreateMapProcessor.getSvgGraphics(
                     new Dimension(maxWidthInPixelAdjusted, maxHeightInPixelAdjusted));

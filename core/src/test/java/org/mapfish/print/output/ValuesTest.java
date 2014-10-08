@@ -22,7 +22,10 @@ package org.mapfish.print.output;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.TestHttpClientFactory;
+import org.mapfish.print.attribute.DataSourceAttribute;
 import org.mapfish.print.attribute.LegendAttribute;
+import org.mapfish.print.attribute.TableAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
@@ -30,9 +33,9 @@ import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.wrapper.ObjectMissingException;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.File;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -48,7 +51,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
     @Autowired
     private MapfishParser parser;
     @Autowired
-    private ClientHttpRequestFactory httpRequestFactory;
+    private TestHttpClientFactory httpRequestFactory;
 
     @Test
     public void testNoDefaults() throws Exception {
@@ -59,7 +62,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
 
         Template template = config.getTemplates().values().iterator().next();
-        final Values values = new Values(requestData, template, this.parser, new File("tmp"), this.httpRequestFactory);
+        final Values values = new Values(requestData, template, this.parser, new File("tmp"), this.httpRequestFactory, new File("."));
 
         assertTrue(values.containsKey("title"));
         assertEquals("title", values.getString("title"));
@@ -67,7 +70,14 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         assertEquals(2.0, values.getObject("ratio", Double.class), 0.00001);
         assertTrue(values.containsKey("legend"));
         assertEquals("legendName", values.getObject("legend", LegendAttribute.LegendAttributeValue.class).name);
-        assertTrue(values.containsKey("tableList"));
+
+        assertTrue(values.containsKey("datasource"));
+        final Map<String, Object>[] attributesValues = values.getObject("datasource", DataSourceAttribute.DataSourceAttributeValue.class)
+                .attributesValues;
+        assertEquals(1, attributesValues.length);
+        assertEquals("requestDataName", attributesValues[0].get("name"));
+        final TableAttribute.TableAttributeValue table = (TableAttribute.TableAttributeValue) attributesValues[0].get("table");
+        assertEquals("requestId", table.columns[0]);
     }
 
     @Test(expected = ObjectMissingException.class)
@@ -80,7 +90,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
 
         Template template = config.getTemplates().values().iterator().next();
-        new Values(requestData, template, this.parser, new File("tmp"), this.httpRequestFactory);
+        new Values(requestData, template, this.parser, new File("tmp"), this.httpRequestFactory, new File("."));
     }
 
     @Test
@@ -93,7 +103,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-defaults.yaml"));
 
         Template template = config.getTemplates().values().iterator().next();
-        final Values values = new Values(requestData, template, this.parser, new File("tmp"), this.httpRequestFactory);
+        final Values values = new Values(requestData, template, this.parser, new File("tmp"), this.httpRequestFactory, new File("."));
 
         assertTrue(values.containsKey("title"));
         assertEquals("title", values.getString("title"));
@@ -101,6 +111,12 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         assertEquals(2.0, values.getObject("ratio", Double.class), 0.00001);
         assertTrue(values.containsKey("legend"));
         assertEquals("legendName", values.getObject("legend", LegendAttribute.LegendAttributeValue.class).name);
-        assertTrue(values.containsKey("tableList"));
+        assertTrue(values.containsKey("datasource"));
+        final Map<String, Object>[] attributesValues = values.getObject("datasource", DataSourceAttribute.DataSourceAttributeValue.class)
+                .attributesValues;
+        assertEquals(1, attributesValues.length);
+        assertEquals("name", attributesValues[0].get("name"));
+        final TableAttribute.TableAttributeValue table = (TableAttribute.TableAttributeValue) attributesValues[0].get("table");
+        assertEquals("id", table.columns[0]);
     }
 }

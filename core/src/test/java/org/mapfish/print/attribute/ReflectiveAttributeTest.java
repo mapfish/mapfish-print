@@ -23,6 +23,7 @@ import com.vividsolutions.jts.util.AssertionFailedException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -74,7 +75,7 @@ public class ReflectiveAttributeTest {
         }
 
         @Override
-        public void validate(List<Throwable> validationErrors) {
+        public void validate(List<Throwable> validationErrors, final Configuration configuration) {
 
         }
     }

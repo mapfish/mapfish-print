@@ -2,10 +2,10 @@
 <!-- Created with Jaspersoft Studio version last-->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MapOnly_A4_Landscape" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a7a9883c-4f9f-4a4a-b97b-16b15015bf20">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
-	<parameter name="geojsonMap" class="java.lang.String">
+	<parameter name="geojsonMapSubReport" class="java.lang.String">
 		<parameterDescription><![CDATA[Geo Json map]]></parameterDescription>
 	</parameter>
-	<parameter name="imageMap" class="java.lang.String">
+	<parameter name="imageMapSubReport" class="java.lang.String">
 		<parameterDescription><![CDATA[Geo referenced image map]]></parameterDescription>
 	</parameter>
 	<queryString>
@@ -21,7 +21,7 @@
                     <property name="local_mesure_unitwidth" value="pixel"/>
                     <property name="com.jaspersoft.studio.unit.width" value="px"/>
                 </reportElement>
-                <subreportExpression><![CDATA[$P{geojsonMap}]]></subreportExpression>
+                <subreportExpression><![CDATA[$P{geojsonMapSubReport}]]></subreportExpression>
             </subreport>
 		</band>
 		<band height="500">
@@ -33,7 +33,7 @@
                     <property name="local_mesure_unitwidth" value="pixel"/>
                     <property name="com.jaspersoft.studio.unit.width" value="px"/>
                 </reportElement>
-                <subreportExpression><![CDATA[$P{imageMap}]]></subreportExpression>
+                <subreportExpression><![CDATA[$P{imageMapSubReport}]]></subreportExpression>
             </subreport>
 		</band>
 	</detail>

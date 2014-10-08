@@ -1,5 +1,6 @@
 throwErrorOnExtraParameters: true
 
+outputFilename: config_test_outputname-${yyyy}
 templates:
   A4 Landscape: !template
     reportTemplate: MapOnly_A4.jrxml
@@ -19,8 +20,32 @@ templates:
         directory: '.'
     - !createMap
         inputMapper: {geojsonMap: map}
-        outputMapper: {mapSubReport: geojsonMap}
+        outputPrefix: geojson
     - !createMap
         inputMapper: {imageMap: map}
-        outputMapper: {mapSubReport: imageMap}
+        outputPrefix: image
+
+  WithOutputName: !template
+    outputFilename: template_test_outputname-${yyyy}
+    reportTemplate: MapOnly_A4.jrxml
+    attributes:
+      geojsonMap: !map
+        width: 802
+        height: 500
+        maxDpi: 400
+      imageMap: !map
+        width: 802
+        height: 500
+        maxDpi: 400
+    processors:
+    - !forwardHeaders
+      headers: ['Cookies']
+    - !reportBuilder # compile all reports in current directory
+        directory: '.'
+    - !createMap
+        inputMapper: {geojsonMap: map}
+        outputPrefix: geojson
+    - !createMap
+        inputMapper: {imageMap: map}
+        outputPrefix: image
 

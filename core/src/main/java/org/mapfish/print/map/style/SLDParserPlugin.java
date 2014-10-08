@@ -25,7 +25,6 @@ import com.google.common.io.ByteSource;
 import com.google.common.io.CharSource;
 import com.google.common.io.Closeables;
 import com.vividsolutions.jts.util.Assert;
-
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
@@ -37,7 +36,6 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 

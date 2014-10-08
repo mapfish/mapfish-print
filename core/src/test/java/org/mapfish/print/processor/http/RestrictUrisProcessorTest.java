@@ -23,6 +23,7 @@ import com.google.common.base.Predicate;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mapfish.print.TestHttpClientFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.http.matcher.LocalHostMatcher;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -61,7 +62,7 @@ public class RestrictUrisProcessorTest {
     @Test
     public void testCreateFactoryWrapperLegalRequest() throws Exception {
         ClientHttpFactoryProcessorParam params = new ClientHttpFactoryProcessorParam();
-        final ClientHttpRequestFactory factoryWrapper = restrictUrisProcessor.createFactoryWrapper(params, requestFactory);
+        final MfClientHttpRequestFactory factoryWrapper = restrictUrisProcessor.createFactoryWrapper(params, requestFactory);
         factoryWrapper.createRequest(new URI("http://localhost:8080/geoserver/wms"), HttpMethod.GET);
     }
 

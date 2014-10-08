@@ -21,6 +21,7 @@ package org.mapfish.print.attribute;
 
 import org.json.JSONException;
 import org.json.JSONWriter;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 
 import java.util.List;
@@ -74,7 +75,7 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
     }
 
     @Override
-    public void validate(final List<Throwable> validationErrors) {
+    public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         // no checks required
     }
 

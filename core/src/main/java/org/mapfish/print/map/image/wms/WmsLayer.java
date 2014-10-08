@@ -21,23 +21,27 @@ package org.mapfish.print.map.image.wms;
 
 import com.google.common.io.Closer;
 import com.vividsolutions.jts.util.Assert;
-
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.image.AbstractSingleImageLayer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.util.concurrent.ExecutorService;
-
 import javax.imageio.ImageIO;
+
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
 
 /**
  * Wms layer.
@@ -45,7 +49,7 @@ import javax.imageio.ImageIO;
  * @author Jesse on 4/10/2014.
  */
 public final class WmsLayer extends AbstractSingleImageLayer {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(WmsLayer.class);
     private final WmsLayerParam params;
 
     /**
@@ -63,7 +67,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
     }
 
     @Override
-    protected BufferedImage loadImage(final ClientHttpRequestFactory requestFactory,
+    protected BufferedImage loadImage(final MfClientHttpRequestFactory requestFactory,
                                       final MapfishMapContext transformer,
                                       final boolean isFirstLayer) throws Throwable {
         final WmsLayerParam wmsLayerParam = this.params;
@@ -80,9 +84,30 @@ public final class WmsLayer extends AbstractSingleImageLayer {
             Assert.equals(HttpStatus.OK, response.getStatusCode(), "Http status code for " + uri + " was not OK.  It was: " + response
                     .getStatusCode() + ".  The response message was: '" + response.getStatusText() + "'");
 
-            return ImageIO.read(response.getBody());
+            final BufferedImage image = ImageIO.read(response.getBody());
+            if (image == null) {
+                LOGGER.warn("The URI: " + uri + " is an image format that can be decoded");
+                return createErrorImage(paintArea);
+            }
+
+            return image;
         } finally {
             closer.close();
+        }
+    }
+
+    private BufferedImage createErrorImage(final Rectangle area) {
+        final BufferedImage bufferedImage = new BufferedImage(area.width, area.height, TYPE_INT_ARGB_PRE);
+        final Graphics2D graphics = bufferedImage.createGraphics();
+        try {
+            // CSOFF: MagicNumber
+            graphics.setBackground(new Color(255, 255, 255, 125));
+            // CSON: MagicNumber
+
+            graphics.clearRect(0, 0, area.width, area.height);
+            return bufferedImage;
+        } finally {
+            graphics.dispose();
         }
     }
 
