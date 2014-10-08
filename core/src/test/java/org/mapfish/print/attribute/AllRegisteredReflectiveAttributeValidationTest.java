@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.test.util.AttributeTesting;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.StringWriter;
@@ -65,7 +66,7 @@ public class AllRegisteredReflectiveAttributeValidationTest extends AbstractMapf
             if (attribute instanceof ReflectiveAttribute<?>) {
                 ReflectiveAttribute<?> reflectiveAttribute = (ReflectiveAttribute<?>) attribute;
 
-                AbstractMapfishSpringTest.configureAttributeForTesting(reflectiveAttribute);
+                AttributeTesting.configureAttributeForTesting(reflectiveAttribute);
             }
 
             final StringWriter w = new StringWriter();

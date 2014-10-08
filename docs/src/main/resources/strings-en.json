@@ -1,0 +1,18 @@
+{
+  "tocApiTitle": "Web Protocol",
+  "tocConfigurationTitle": "Configuration",
+  "tocAttributesTitle": "Attributes",
+  "tocProcessorTitle": "Processors",
+  "tocMapLayerTitle": "Map Layers",
+  "tocStyleTitle": "Vector Styles",
+  "tocOutputFormatsTitle": "Output Formats",
+  "tocFileLoadersTitle": "File Loaders",
+  "tocOverview": "Overview",
+  "tocJasperReports": "Jasper Reports",
+  "inputParamTitle": "Input Parameters:",
+  "outputParamTitle": "Output Parameters:",
+  "jsonParamTitle": "Json Paramaters:",
+  "headerTitle": "Mapfish Print Documentation",
+  "contentsTitle": "Contents",
+  "configuration" : "Configuration",
+  "configurationDescription": "Configuration elements are to be put in the config.yaml"

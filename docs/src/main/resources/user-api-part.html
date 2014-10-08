@@ -1,0 +1,51 @@
+<accordion close-others="oneAtATime">
+
+    <p class="pageDesc" ng-bind-html="renderHtml(pages[page].desc)"></p>
+    <accordion-group
+            ng-repeat="record in records | sortRecords"
+            is-open="expanded"
+            ng-controller="RecordCtrl"
+            ng-click="setLocationHash()">
+        <accordion-heading>
+            <a id="{{record.title}}"></a><h4>{{getTitle(record)}}</h4><p ng-bind-html="renderHtml(record.summaryDesc)"></p>
+        </accordion-heading>
+
+        <p ng-bind-html="renderHtml(record.desc)"></p>
+        <a id="{{record.title + '__config'}}"></a>
+        <h4 ng-if="record.details.length">{{'configuration' | translate}}</h4>
+        <div>{{'configurationDescription' | translate}}</div>
+        <div class="well well-sm link"
+             ng-repeat="detail in record.details | sortRecords"
+             ng-controller="DetailCtrl"
+             ng-click="setLocationHash(anchorId(detail, 'config'), $event)">
+            <a id="{{anchorId(detail, 'config')}}"></a>
+            <div><strong>{{getTitle(detail)}}</strong></div>
+            <p ng-bind-html="renderHtml(detail.desc)"></p>
+        </div>
+
+        <a id="{{record.title + '__input'}}"></a>
+        <h4 ng-if="record.input.length > 0 && pages[page].inputTitle">{{pages[page].inputTitle | translate}}</h4>
+        <div class="well well-sm link"
+             ng-repeat="input in record.input | sortRecords"
+             ng-controller="DetailCtrl"
+             ng-click="setLocationHash(anchorId(input, 'input'), $event)">
+            <a id="{{anchorId(input, 'input')}}"></a>
+            <div>
+                <i  x-ng-if="input.required" style="color: red;font-size: 15">*&nbsp;</i>
+                <strong>{{getTitle(input)}}</strong>
+            </div>
+            <p ng-bind-html="renderHtml(input.desc)"></p>
+        </div>
+
+        <a id="{{record.title + '__output'}}"></a>
+        <h4 ng-if="record.output.length > 0 && pages[page].outputTitle">{{pages[page].outputTitle | translate}}</h4>
+        <div class="well well-sm link"
+             ng-repeat="output in record.output | sortRecords"
+             ng-controller="DetailCtrl"
+             ng-click="setLocationHash(anchorId(output, 'output'), $event)">
+            <a id="{{anchorId(output, 'output')}}"></a>
+            <div><strong>{{getTitle(output)}}</strong></div>
+            <p ng-bind-html="renderHtml(output.desc)"></p>
+        </div>
+    </accordion-group>
+</accordion>

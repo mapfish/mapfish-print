@@ -29,7 +29,6 @@ import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.mapfish.print.Constants;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FileUtils;
-import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
@@ -89,7 +88,7 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
 
         @Nonnull
         @Override
-        public MapLayer parse(final Template template,
+        public GeotiffLayer parse(final Template template,
                               @Nonnull final GeotiffParam param) throws IOException {
             Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> geotiffReader = getGeotiffReader(template, param.url);
 

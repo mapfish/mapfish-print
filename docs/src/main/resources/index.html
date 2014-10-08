@@ -1,0 +1,88 @@
+<!--
+  ~ Copyright (C) 2014  Camptocamp
+  ~
+  ~ This file is part of MapFish Print
+  ~
+  ~ MapFish Print is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ MapFish Print is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<html>
+<head>
+    <title>Mapfish Print Documentation</title>
+    <link rel="shortcut icon" href="favicon.ico" />
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <style>
+
+        blockquote {
+            font-size: 14px;
+            font-style: italic;
+        }
+        div.title {
+            margin-bottom: 2em;
+        }
+
+        img.icon {
+            margin-top: 10px;
+            width: 180px;
+            height: 96px;
+        }
+        h2.contentsTitle {
+            padding-right: 5px;
+        }
+        h2.pageTitle, h2.contentsTitle {
+            padding-left: 5px;
+        }
+        span.architecture > svg {
+            max-height: 450px;
+        }
+    </style>
+     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.14/angular.min.js"></script>
+    <script src="angular-translate.min.js"></script>
+    <script src="angular-translate-loader-static-files.min.js"></script>
+
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.14/angular.js"></script>-->
+    <!--<script src="angular-translate.js"></script>-->
+    <!--<script src="angular-translate-loader-static-files.js"></script>-->
+
+    <script src="ui-bootstrap-tpls-0.11.0.min.js"></script>
+
+    <script src="lib.js" charset="UTF-8"></script>
+    <script src="generated-data.js" charset="UTF-8"></script>
+</head>
+<body ng-app="docsApp">
+<div ng-controller="DocsCtrl">
+    <div class="row col-sm-12 title">
+        <a href=""><img class="icon col-xs-2" src="mapfish_transparent.png" /></a>
+        <div class="col-xs-10">
+            <h1>{{'headerTitle' | translate}}</h1>
+            <div>@version@</div>
+            <div><a href="http://www.camptocamp.com/geospatial/">Camptocamp SA</a></div>
+        </div>
+    </div>
+    <div class="row col-sm-2">
+        <h2 class="contentsTitle">{{'contentsTitle' | translate}}</h2>
+        <ul class="nav nav-pills nav-stacked">
+            <li ng-repeat="v in pages | sortTableOfContents"
+                ng-class="page == v.key ? 'active' : ''"><a href="{{'#'+v.key}}" ng-click="select(v.key)">{{v.title}}</a></li>
+        </ul>
+    </div>
+    <div class="col-sm-10">
+        <h2 class="pageTitle">{{pages[page].title | translate}}</h2>
+        <div ng-include="pages[page].html"/>
+    </div>
+</div>
+</body>
+</html>

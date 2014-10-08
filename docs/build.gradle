@@ -1,0 +1,88 @@
+/*
+ * Copyright (C) 2014  Camptocamp
+ *
+ * This file is part of MapFish Print
+ *
+ * MapFish Print is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MapFish Print is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
+ */
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'jetty'
+
+defaultTasks 'build'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {url "http://dev.mapfish.org/maven/repository"}
+    maven {url "http://download.osgeo.org/webdav/geotools"}
+}
+
+//configurations.compile.transitive = false
+dependencies {
+    compile project(':core')
+    compile "org.codehaus.groovy:groovy-all:$project.groovyVersion",
+    "org.springframework:spring-test:${springVersion}",
+    "org.ccil.cowan.tagsoup:tagsoup:1.2.1"
+}
+
+def site = new File(buildDir, "site").path
+
+jettyRun {
+    dependsOn ':docs:buildDocs'
+    webAppSourceDirectory = file(site)
+}
+
+task copyJavadocs(type: Copy) {
+    dependsOn ':core:javadoc'
+    from project(':core').tasks.javadoc.destinationDir
+    into new File(site, 'javadoc')
+}
+
+import org.apache.tools.ant.filters.ReplaceTokens
+task copySite(type: Copy) {
+    from (sourceSets.main.output.resourcesDir) {
+        exclude "strings-en.json", "*.html", "*.js", "long-strings/*", "long-strings"
+    }
+    from (sourceSets.main.output.resourcesDir) {
+        include "*.html", "*.js"
+        exclude "long-strings/*", "long-strings"
+        filter(ReplaceTokens, tokens: [version: version])
+    }
+    from (project(':core').webAppDir) {
+        include "favicon.ico", "mapfish_transparent.png"
+    }
+    into site
+}
+
+task ('buildDocs', type: JavaExec) {
+    dependsOn compileGroovy
+    dependsOn copyJavadocs
+    dependsOn copySite
+    main = 'GenerateDocs'
+    classpath = sourceSets.main.runtimeClasspath
+
+    def javadocs = project(':core').tasks.javadoc.destinationDir
+    def basicAppContext = "classpath*:mapfish-spring-application-context.xml"
+    def appContext = project(':core').projectDir.toURI().toString() + "/jettyRunExtraFiles/*.xml"
+    def appContext2 = project(':core').webAppDir.toURI().toString() + "/WEB-INF/mapfish-print-servlet.xml"
+    def overrideAppContext = "classpath*:mapfish-spring-application-context-override.xml"
+    args site, javadocs, basicAppContext, appContext, appContext2, overrideAppContext
+    systemProperty "path_to_examples", "${project(':examples').projectDir}/src/test/resources/examples"
+}
+
+build {
+    dependsOn buildDocs
+}

@@ -1,0 +1,19 @@
+<p>
+    An Attribute is a value the that a processor requires as its input (if it is not satisfied by the output of another processor) or the
+    report template. An attribute represents one or more values. Usually simple values (numbers, strings, etc...) are values required by
+    the report template but on occasion they might be required by a processor. Typically a processor will require a specific attribute
+    type, for example the <a href="#/processors#!createMap">!createMap</a> processor requires a <a href="#/attributes#!map">!map</a>
+    attribute, which contains all of the information required to render a map (layers, bbox, projections, etc...)
+</p><p>
+    Attributes are declared in the configuration yaml file in the !attribute block. The
+    attribute block is a map of name - > attributeType pairs. This means that each attribute consists of a name and a type. Each processor
+    has a inputs which must be satisfied by an attribute or the output of another processor. Each input has a name/key that is used to
+    look up the attribute (or output). If an input of a processor is not satisfied, an error will be reported to the client detailing the
+    attribute(s) that are missing.
+</p><p>
+    All attributes can have a <em>default</em> block where the values of the attribute can be supplied. As the term implies, an attribute
+    with default values does not need to be supplied by the client (although they can be overridden). Further, if an attribute has
+    multiple values the default block may only provide defaults for a subset of the values (the client must supply the rest).
+</p><p>
+    Defaults provide a way to make the API the client must use to be very simple (when designing a custom client) but remain flexible.
+</p>

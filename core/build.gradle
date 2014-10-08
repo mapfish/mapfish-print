@@ -12,6 +12,10 @@ def appDir = new File(project.buildDir, "install")
 installApp.doFirst {
     appDir.deleteDir()
 }
+tasks.withType(Javadoc) {
+    options.encoding = "utf-8"
+    title = "Mapfish Print Core Module $version"
+}
 task testCLI(type: Exec) {
     dependsOn installApp
     workingDir new File(appDir, "core/bin")
@@ -56,7 +60,7 @@ configurations {
     }
     jasper {
         description = 'Dependencies for the jasper reports generation'
-    }
+}
 }
 
 dependencies {
@@ -90,7 +94,7 @@ dependencies {
     )
     jasper (
             "net.sf.jasperreports:jasperreports:$project.jasperReportVersion",
-            'org.codehaus.groovy:groovy-all:2.2.2',
+            "org.codehaus.groovy:groovy-all:$project.groovyVersion",
             'ar.com.fdvs:DynamicJasper:5.0.0'
     )
     compile fileTree(dir: "$projectDir/libs", include: '*.jar')

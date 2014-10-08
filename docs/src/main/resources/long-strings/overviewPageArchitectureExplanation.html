@@ -1,0 +1,29 @@
+<p>
+    On the server side, once a create request is received the server will create a Print Job and send it to Job Manager, which is
+    responsible for running the print job asynchronously (possibly on a completely different server) and allowing the http request to
+    return a response to the user without waiting for the print job to complete. As an aside, there is a createAndGet request that will
+    wait until the printing is done and directly return the report without having to poll to see if the print is done. This is a
+    convenience for client makers.
+</p>
+<p>
+    While creating the Print Job all of the <a href="#/attributes">attributes</a> are parsed from the JSON and a Job Reference Id is
+    generated to uniquely identify the job is create.
+</p>
+<p>
+    Once the Print Job is started, the <a href="#/attributes">attributes</a> are passed to the <a href="#/processors">processors</a>. The
+    processor work with the <a href="#/attributes">attributes</a> in order to generate the maps, tables, legends, etc... that are required
+    by the <a href="#/outputFormats">output format</a> (Jasper template).
+</p>
+<p>
+    Once the <a href="#/processors">processors</a> have all completed execution all of the values are passed to the <a
+        href="#/outputFormats">output format</a> which uses that information to generate the report. In theory an <a href="#/outputFormats">output
+    format</a> could be anything that generates a report. However the current version uses the
+    <a href="http://community.jaspersoft.com/project/jasperreports-library">Jasper Reports Library</a> for its outputs and several of the
+    processors are Jasper reports focuses.
+    Because of this the documentation will assume that the output format is always based on
+    <a href="http://community.jaspersoft.com/project/jasperreports-library">Jasper Reports</a>.
+</p>
+<p>
+    The <a href="#/outputFormats">output format</a> will generate a report and store it in some way for later retrieval. At this point the
+    status request would return a response indicating that the print job has completed.
+</p>

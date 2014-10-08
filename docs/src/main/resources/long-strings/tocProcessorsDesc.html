@@ -1,0 +1,56 @@
+<p>
+    This page lists all the <em>processors </em> available in the Mapfish distribution. The documentation consists of several parts:
+<ul>
+    <li>Summary: all the processors are listed with the name/id and a short description of the processor. The name is the value that is
+        put in the config file when configuring Mapfish print.
+    </li>
+    <li>Description: the full description for each processor can be found by expanding one of the list elements.</li>
+    <li>Configuration: the configuration options are also listed when a processor element is expanded. A configuration option is a value
+        that can be set on the processor in the configuration yaml file. These options are consistent across all print jobs because they
+        are not provided by the client.
+    </li>
+    <li>Input: the required input values of the processor are listed when the processor element is in expanded form. Input values are
+        either <a href="#/attributes">attributes </a> or the output values of other processors.
+    </li>
+    <li>Output: the output values of the processors are also listed when a processor element is expanded. As the name implies, the output
+        values are the data the processor produces and is the input of other processors or the input parameters of the outputFormat
+        template
+    </li>
+</ul>
+</p>
+
+A processor's main responsibility is to take the <a
+        href="#/attributes">attributes </a> for the print job and producing the parameters required by the <a href="outputFormat">
+    outputFormat</a> to produce the report.
+<p>
+    While many processors are responsible for directly producing the parameters required by the <a href="outputFormat"> outputFormat</a>,
+    some processors be considered <em>support</em> processors. A support processor is a processor that in some way prepares attributes for
+    for the </em>primary</em> processors. For example, there are processors that can add layers to the map so that all maps will have the
+    layers (reducing the data the client needs to send.) Another example are several processors which configure how http requests are make
+    (add cookies, headers, remap URLs, etc...)
+</p>
+<p>
+    A processor usually has inputs and outputs, in the simple case an input is one of the attributes and the outputs all map to parameters
+    in the Jasper template. Each input and output have default names and often these are sufficient.
+</p>
+<p>
+    However consider the case where a report had two maps (or legends or....). In this case the default input and output parameter names
+    are not sufficient because the input attributes need to be mapped to the correct processor and the output values need to be mapped to
+    the correct parameters in the templates. In order to account for this case, processors have the configuration options: inputMapper and
+    outputMapper.
+</p>
+<p>
+    InputMapper and outputMapper configuration parameters can be configured as follows:
+<pre><code>
+- !createMap<br/>
+    inputMapper: { attributeName : defaultInputParamName}<br/>
+    outputMapper: { defaultOutputName : templateParamName}<br/>
+</code></pre>
+
+Or if the there are multiple mappings that need to be made :
+<pre><code>
+- processorName<br/>
+    inputMapper :<br/>
+    attributeName1 : inputName1<br/>
+    attributeName2 : inputName2<br/>
+</code></pre>

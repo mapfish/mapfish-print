@@ -1,0 +1,15 @@
+The typical request sequence a client will make is as follows:
+<ul>
+    <li>
+        If the client is a generic client, the client will make a capabilities request in order to obtain information about the required <a href="#/attributes">attributes</a> needed to be sent to the server.
+    </li>
+    <li>
+        Next the create request will be made and all the <a href="#/attributes">attributes</a> (the data required in order to print the report) are sent to the server.  The server will return a reference ID of the print job for obtaining the report and the status
+    </li>
+    <li>
+        Once the create request returns the client will poll the server asking about the status of the print.
+    </li>
+    <li>
+        Once the status request returns the completion response (and not an error) then the client will make the GET report request.
+    </li>
+</ul>
