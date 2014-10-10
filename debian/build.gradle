@@ -44,7 +44,7 @@ task debian {
 
     inputs.dir debianDataFiles.destinationDir
     outputs.dir "$buildDir/deb"
-    ext.debFile = file("$buildDir/deb/print-app-${version}.deb")
+    ext.debFile = file("$buildDir/deb/print-war-${version}.deb")
     doLast {
         def keyId = signing_keyId;
         if (keyId.startsWith("0x")) {

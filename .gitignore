@@ -15,3 +15,5 @@ core/gradlew
 generated-gradlew
 generated-gradlew.bat
 projectTests/
+.idea/
+*.iml

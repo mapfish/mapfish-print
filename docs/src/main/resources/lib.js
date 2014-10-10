@@ -103,6 +103,12 @@ docsApp.controller('DocsCtrl', function ($scope, $rootScope, $sce, $translate, $
       html: 'user-api-part.html',
       setRecords: function() {$scope.records = docs.fileLoaders},
       desc: 'tocFileLoadersDesc'
+    },
+    downloads: {
+      order: 40,
+      title: 'tocDownloads',
+      html: 'downloads-part.html',
+      setRecords: function() {}
     }
   };
   $scope.page = 'overview';

@@ -64,13 +64,28 @@ task copySite(type: Copy) {
     from (project(':core').webAppDir) {
         include "favicon.ico", "mapfish_transparent.png"
     }
+
     into site
 }
 
+task copyDownloads(type: Copy) {
+    from (new File(project(':core').buildDir, "libs")) {
+        rename '(.+)', 'mapfish-$1'
+    }
+    from (new File(project(':core').buildDir, "distributions")) {
+        rename 'core-(.+)-zip.zip', 'mapfish-print-app-$1.zip'
+    }
+    from (new File(project(':debian').buildDir, "deb")) {
+        rename '(.+)', 'mapfish-$1'
+    }
+
+    into new File(site, "downloads")
+}
 task ('buildDocs', type: JavaExec) {
     dependsOn compileGroovy
     dependsOn copyJavadocs
     dependsOn copySite
+    dependsOn copyDownloads
     main = 'GenerateDocs'
     classpath = sourceSets.main.runtimeClasspath
 

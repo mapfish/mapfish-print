@@ -1,0 +1,60 @@
+<h4>Source Code</h4>
+<div>
+    The source code for mapfish print is available on GitHub at:
+    <a href="https://github.com/mapfish/mapfish-print.">https://github.com/mapfish/mapfish-print.</a>
+</div>
+<div>
+    Please feel free to fork and contribute via pull requests and creating new issues.
+</div>
+
+<h4>Downloads</h4>
+<div>
+    Downloads for the latest version are available at: <a href="downloads/">downloads/</a>
+</div>
+
+<h4>Web Application (WAR) Distribution</h4>
+<div>
+    The mapfish-print WAR file is a Java archive that can be ran in any Java Web Application Server like
+    <a href="http://tomcat.apache.org/">Tomcat</a> or <a href="http://www.eclipse.org/jetty/">Jetty</a>.  To
+    use Mapfish Print as a standalone Web Application you should:
+    <ul>
+        <li>Install Java 7 or later</li>
+        <li>Download a Web Application Server</li>
+        <li>Put the WAR file in the webapps directory of the Web Application Server</li>
+        <li>Rename the WAR file to a more convenient name like print.war (the name will be part of the url)</li>
+        <li>Start the Web Application Server</li>
+        <li>
+            Verify the application executed correctly by visiting http://localhost:8080/print/index.html.
+            (This assumes that the server is running on localhost port 8080 and you renamed the war to print.war)
+        </li>
+    </ul>
+</div>
+
+<h4>Java Library Distribution</h4>
+<div>
+    The JAR file contains the mapfish code for integrating mapfish-print into an existing application.  It is only the java code
+    with none of the dependent class files, so all dependencies will also need to be downloaded.
+</div>
+<div>
+    In the future mapfish-print will be published to maven central so that build tools can easily integrate mapfish-print.
+    That will be available in mapfish print 3.1+
+</div>
+
+<h4>Command Line Distribution</h4>
+<div>
+    The ZIP file is mapfish print distributed as an application that can be ran from the commandline to
+    execute print jobs. It is useful for debugging print configurations and requests.
+</div>
+<div>
+    Assuming you have Java 7+ installed, the <code>bin/print</code> script will execute a print task.  The command line useage can be
+    printed by executing: <code>bin/print -?</code>.
+</div>
+<div>
+    An example of using the application is: <code>bin/print -config config.yaml -spec requestData.json -output out.pdf</code>
+</div>
+
+<h4>Debian Package</h4>
+<div>
+    There is a debian package also available which is the war wrapped in a debian package.  It will install the war at:
+    <code>/srv/tomcat/tomcat1/webapps</code> for the moment.
+</div>
