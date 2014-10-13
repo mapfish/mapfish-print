@@ -59,7 +59,13 @@ task copySite(type: Copy) {
     from (sourceSets.main.output.resourcesDir) {
         include "*.html", "*.js"
         exclude "long-strings/*", "long-strings"
-        filter(ReplaceTokens, tokens: [version: version, maven_repo_url:'repo1.maven.org/maven2'])
+        String repoUrl;
+        if (version.endsWith("-SNAPSHOT")) {
+            repoUrl = 'oss.sonatype.org/content/repositories/snapshots/'
+        } else {
+            repoUrl = 'repo1.maven.org/maven2'
+        }
+        filter(ReplaceTokens, tokens: [version: version, maven_repo_url:repoUrl])
     }
     from (project(':core').webAppDir) {
         include "favicon.ico", "mapfish_transparent.png"
