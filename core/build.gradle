@@ -1,8 +1,6 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 apply plugin: 'war'
-apply plugin: 'signing'
-apply plugin: 'maven-publish'
 apply plugin: 'application'
 apply plugin: 'jetty'
 
@@ -255,105 +253,4 @@ startScripts {
             file.setText(file.getText(encoding).replace(jar.archivePath.name, '*'), encoding)
         }
     }
-}
-
-def addCommonPomNodes(node) {
-    NodeBuilder builder = NodeBuilder.newInstance()
-    node.appendNode('url', 'http://www.mapfish.org/doc/print/')
-    node.append(builder.scm {
-        url 'scm:git@github.com:mapfish/mapfish-print.git'
-        connection 'scm:git@github.com:mapfish/mapfish-print.git'
-        developerConnection 'scm:git@github.com:mapfish/mapfish-print.git'
-    })
-    node.append(builder.licenses{
-        license {
-            name 'GNU General Public License'
-            url 'http://www.gnu.org/licenses/#GPL'
-            distribution 'repo'
-        }
-    })
-    node.append(builder.developers {
-        developer {
-            id 'jesseeichar'
-            name 'Jesse Eichar'
-        }
-        developer {
-            id 'sbrunner'
-            name 'Stephane Brunner'
-        }
-        developer {
-            id 'geekdenz'
-            name 'Tim-Hinnerk Heuer'
-        }
-    })
-    node.append(builder.mailingLists {
-        mailingList {
-            name 'Users'
-            subscribe 'users-subscribe@mapfish.org'
-            unsubscribe 'users-subscribe@mapfish.org'
-            post 'users@mapfish.org'
-            archive 'http://www.mapfish.org/pipermail/users/'
-        }
-        mailingList {
-            name 'Dev'
-            subscribe 'dev-subscribe@mapfish.org'
-            unsubscribe 'dev-subscribe@mapfish.org'
-            post 'dev@mapfish.org'
-            archive 'http://www.mapfish.org/pipermail/dev/'
-        }
-    })
-}
-
-publishing {
-    publications {
-        printLib(MavenPublication) {
-            artifactId 'print-lib'
-            from components.java
-
-            artifact libSourcesJar
-            artifact libJavadocJar
-            pom.withXml {
-                asNode().appendNode('description', 'Library for generating PDFs and images from online web-mapping services')
-                addCommonPomNodes(asNode())
-            }
-        }
-        printServlet(MavenPublication) {
-            artifactId 'print-servlet'
-            from components.web
-            pom.withXml {
-                asNode().appendNode('description', 'Java servlet/war/web application for generating PDFs and images from online web-mapping services')
-                addCommonPomNodes(asNode())
-            }
-        }
-        printApp(MavenPublication) {
-            artifactId 'print-app'
-            artifact distZip {
-                classifier 'zip'
-            }
-            artifact distTar {
-                classifier 'tar.gz'
-            }
-            pom.withXml {
-                asNode().appendNode('description', 'Standalone application for generating PDFs and images from online web-mapping services')
-                addCommonPomNodes(asNode())
-            }
-        }
-    }
-
-    repositories {
-        def nexusUrl = "https://$host/service/local/staging/deploy/maven2"
-        if (version.contains("-SNAPSHOT")) {
-            nexusUrl = "https://$host/content/repositories/snapshots"
-        }
-        maven {
-            url nexusUrl
-            name 'nexus'
-
-            credentials {
-                username sonatypeUsername
-                password sonatypePassword
-            }
-        }
-    }
-
 }

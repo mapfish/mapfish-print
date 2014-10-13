@@ -60,7 +60,8 @@ public final class ProcessorDependencyGraphFactory {
 
     /**
      * Sets the external dependencies between processors. Usually configured in 
-     * {@link /mapfish-spring-processors.xml}.
+     * <code>mapfish-spring-processors.xml</code>
+     *
      * @param dependencies the dependencies
      */
     public void setDependencies(final List<ProcessorDependency> dependencies) {

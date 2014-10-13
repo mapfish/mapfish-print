@@ -1,6 +1,4 @@
 apply plugin: 'signing'
-apply plugin: 'maven-publish'
-
 configurations {
     jdeb
 }
@@ -31,7 +29,6 @@ task debianDataFiles(type: Copy) {
     from  file(war.archivePath)
     rename {file ->
         if (file.endsWith(".war")) {
-            println("----" + file)
             return "print.war"
         }
         return null;

@@ -59,7 +59,7 @@ task copySite(type: Copy) {
     from (sourceSets.main.output.resourcesDir) {
         include "*.html", "*.js"
         exclude "long-strings/*", "long-strings"
-        filter(ReplaceTokens, tokens: [version: version])
+        filter(ReplaceTokens, tokens: [version: version, maven_repo_url:'repo1.maven.org/maven2'])
     }
     from (project(':core').webAppDir) {
         include "favicon.ico", "mapfish_transparent.png"
@@ -68,24 +68,11 @@ task copySite(type: Copy) {
     into site
 }
 
-task copyDownloads(type: Copy) {
-    from (new File(project(':core').buildDir, "libs")) {
-        rename '(.+)', 'mapfish-$1'
-    }
-    from (new File(project(':core').buildDir, "distributions")) {
-        rename 'core-(.+)-zip.zip', 'mapfish-print-app-$1.zip'
-    }
-    from (new File(project(':debian').buildDir, "deb")) {
-        rename '(.+)', 'mapfish-$1'
-    }
-
-    into new File(site, "downloads")
-}
 task ('buildDocs', type: JavaExec) {
     dependsOn compileGroovy
     dependsOn copyJavadocs
     dependsOn copySite
-    dependsOn copyDownloads
+
     main = 'GenerateDocs'
     classpath = sourceSets.main.runtimeClasspath
 

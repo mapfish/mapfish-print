@@ -129,7 +129,6 @@ public abstract class BaseMapServlet {
      * Returns the base URL of the print servlet.
      * 
      * @param httpServletRequest the request
-     * @return
      */
     protected final StringBuilder getBaseUrl(final HttpServletRequest httpServletRequest) {
         StringBuilder baseURL = new StringBuilder();
