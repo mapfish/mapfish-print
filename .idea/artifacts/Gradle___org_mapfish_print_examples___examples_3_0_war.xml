@@ -1,0 +1,16 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="Gradle : org.mapfish.print:examples : examples-3.0.war">
+    <output-path>$PROJECT_DIR$/build/classes/artifacts/examples</output-path>
+    <root id="archive" name="examples-3.0.war">
+      <element id="javaee-facet-resources" facet="examples/web/Web Gradle : examples-3.0.war" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="examples" />
+        </element>
+      </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/build/classes/artifacts/examples/exploded/examples-3.0.war/META-INF/MANIFEST.MF" />
+      </element>
+    </root>
+  </artifact>
+</component>

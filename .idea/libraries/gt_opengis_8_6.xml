@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="gt-opengis-8.6">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/artifacts-23/filestore/org.geotools/gt-opengis/8.6/jar/5ee2005a776e325639f895ba5c0e23caadbd1b82/gt-opengis-8.6.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/artifacts-23/filestore/org.geotools/gt-opengis/8.6/source/9e66cd4e0b5c59ab197d7277e3df13eb0e7bfeaa/gt-opengis-8.6-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

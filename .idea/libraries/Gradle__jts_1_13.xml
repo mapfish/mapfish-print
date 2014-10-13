@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: jts-1.13">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/vividsolutions/jts/1.13/jts-1.13.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/vividsolutions/jts/1.13/jts-1.13-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

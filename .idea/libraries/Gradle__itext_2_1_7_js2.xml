@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Gradle: itext-2.1.7.js2">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/lowagie/itext/2.1.7.js2/itext-2.1.7.js2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

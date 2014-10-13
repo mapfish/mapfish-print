@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: commons-pool-1.5.4">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/commons-pool/commons-pool/1.5.4/commons-pool-1.5.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/commons-pool/commons-pool/1.5.4/commons-pool-1.5.4-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

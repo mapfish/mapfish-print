@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: jackson-annotations-2.2.2">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-annotations/2.2.2/jackson-annotations-2.2.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-annotations/2.2.2/jackson-annotations-2.2.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

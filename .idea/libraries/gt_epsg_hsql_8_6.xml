@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="gt-epsg-hsql-8.6">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/artifacts-23/filestore/org.geotools/gt-epsg-hsql/8.6/jar/1a8b03b885d33c611fe27ec8e60a99d180c0f521/gt-epsg-hsql-8.6.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/artifacts-23/filestore/org.geotools/gt-epsg-hsql/8.6/source/8aa4df5d58390f180fb8467cc5cc2cc40f800f8/gt-epsg-hsql-8.6-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,81 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="org.mapfish.print:mapfish-print">
+    <output-path>$PROJECT_DIR$/build/idea-classes/main/artifacts/org_mapfish_print_mapfish_print</output-path>
+    <root id="archive" name="org.mapfish.print_mapfish-print.war">
+      <element id="javaee-facet-resources" facet="mapfish-print/web/Web Gradle" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="mapfish-print" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Gradle: spring-context-3.1.0.RELEASE" />
+          <element id="library" level="project" name="Gradle: spring-web-3.1.0.RELEASE" />
+          <element id="library" level="project" name="Gradle: itext-2.1.5" />
+          <element id="library" level="project" name="Gradle: xercesImpl-2.4.0" />
+          <element id="library" level="project" name="Gradle: json-20080701" />
+          <element id="library" level="project" name="Gradle: jyaml-1.3" />
+          <element id="library" level="project" name="Gradle: xalan-2.7.0" />
+          <element id="library" level="project" name="Gradle: log4j-1.2.14" />
+          <element id="library" level="project" name="Gradle: mapfish-geo-lib-1.2.0" />
+          <element id="library" level="project" name="Gradle: commons-httpclient-3.1" />
+          <element id="library" level="project" name="Gradle: gt-epsg-hsql-8.6" />
+          <element id="library" level="project" name="Gradle: pdfbox-1.6.0" />
+          <element id="library" level="project" name="Gradle: jai_core-1.1.3" />
+          <element id="library" level="project" name="Gradle: jai_imageio-1.1" />
+          <element id="library" level="project" name="Gradle: jai_codec-1.1.3" />
+          <element id="library" level="project" name="Gradle: batik-transcoder-1.7" />
+          <element id="library" level="project" name="Gradle: spring-asm-3.1.0.RELEASE" />
+          <element id="library" level="project" name="Gradle: commons-logging-1.1.1" />
+          <element id="library" level="project" name="Gradle: spring-core-3.1.0.RELEASE" />
+          <element id="library" level="project" name="Gradle: spring-beans-3.1.0.RELEASE" />
+          <element id="library" level="project" name="Gradle: aopalliance-1.0" />
+          <element id="library" level="project" name="Gradle: spring-aop-3.1.0.RELEASE" />
+          <element id="library" level="project" name="Gradle: spring-expression-3.1.0.RELEASE" />
+          <element id="library" level="project" name="Gradle: bcmail-jdk14-138" />
+          <element id="library" level="project" name="Gradle: bcprov-jdk14-138" />
+          <element id="library" level="project" name="Gradle: commons-codec-1.2" />
+          <element id="library" level="project" name="Gradle: vecmath-1.3.2" />
+          <element id="library" level="project" name="Gradle: commons-pool-1.5.4" />
+          <element id="library" level="project" name="Gradle: jsr-275-1.0-beta-2" />
+          <element id="library" level="project" name="Gradle: gt-opengis-8.6" />
+          <element id="library" level="project" name="Gradle: gt-metadata-8.6" />
+          <element id="library" level="project" name="Gradle: jgridshift-1.0" />
+          <element id="library" level="project" name="Gradle: gt-referencing-8.6" />
+          <element id="library" level="project" name="Gradle: hsqldb-1.8.0.7" />
+          <element id="library" level="project" name="Gradle: fontbox-1.6.0" />
+          <element id="library" level="project" name="Gradle: jempbox-1.6.0" />
+          <element id="library" level="project" name="Gradle: batik-util-1.7" />
+          <element id="library" level="project" name="Gradle: batik-awt-util-1.7" />
+          <element id="library" level="project" name="Gradle: batik-bridge-1.7" />
+          <element id="library" level="project" name="Gradle: batik-xml-1.7" />
+          <element id="library" level="project" name="Gradle: xml-apis-ext-1.3.04" />
+          <element id="library" level="project" name="Gradle: batik-ext-1.7" />
+          <element id="library" level="project" name="Gradle: batik-css-1.7" />
+          <element id="library" level="project" name="Gradle: batik-dom-1.7" />
+          <element id="library" level="project" name="Gradle: batik-svg-dom-1.7" />
+          <element id="library" level="project" name="Gradle: batik-parser-1.7" />
+          <element id="library" level="project" name="Gradle: batik-anim-1.7" />
+          <element id="library" level="project" name="Gradle: batik-js-1.7" />
+          <element id="library" level="project" name="Gradle: batik-gvt-1.7" />
+          <element id="library" level="project" name="Gradle: batik-script-1.7" />
+          <element id="library" level="project" name="Gradle: batik-svggen-1.7" />
+          <element id="library" level="project" name="Gradle: jdom-1.0" />
+          <element id="library" level="project" name="Gradle: gt-coverage-8.6" />
+          <element id="library" level="project" name="Gradle: guava-15.0" />
+          <element id="library" level="project" name="Gradle: jt-utils-1.3.0" />
+          <element id="library" level="project" name="Gradle: gt-api-8.6" />
+          <element id="library" level="project" name="Gradle: gt-cql-8.6" />
+          <element id="library" level="project" name="Gradle: imageio-ext-tiff-1.1.6" />
+          <element id="library" level="project" name="Gradle: jts-1.13" />
+          <element id="library" level="project" name="Gradle: jt-zonalstats-1.3.0" />
+          <element id="library" level="project" name="Gradle: gt-main-8.6" />
+          <element id="library" level="project" name="Gradle: imageio-ext-utilities-1.1.6" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/geotools/gt-render/8.6/gt-render-8.6.jar" />
+        </element>
+      </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/build/idea-classes/main/artifacts/org_mapfish_print_mapfish_print/META-INF/MANIFEST.MF" />
+      </element>
+    </root>
+  </artifact>
+</component>

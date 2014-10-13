@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="json-20080701">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/artifacts-23/filestore/org.json/json/20080701/jar/d652f102185530c93b66158b1859f35d45687258/json-20080701.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/artifacts-23/filestore/org.json/json/20080701/source/71bd54221e701df9d112bf9ba2918e13b0671f3a/json-20080701-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,16 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="org.mapfish.print:e2e-tests">
+    <output-path>$PROJECT_DIR$/build/idea-classes/main/artifacts/org_mapfish_print_e2e_tests</output-path>
+    <root id="archive" name="org.mapfish.print_e2e-tests.war">
+      <element id="javaee-facet-resources" facet="e2e-tests/web/Web Gradle" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="e2e-tests" />
+        </element>
+      </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/build/idea-classes/main/artifacts/org_mapfish_print_e2e_tests/META-INF/MANIFEST.MF" />
+      </element>
+    </root>
+  </artifact>
+</component>

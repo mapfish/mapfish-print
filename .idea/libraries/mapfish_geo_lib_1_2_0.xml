@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="mapfish-geo-lib-1.2.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/artifacts-23/filestore/org.mapfish.geo/mapfish-geo-lib/1.2.0/jar/8b9e6380696236560b9c7dfe71b0d177bf50caa3/mapfish-geo-lib-1.2.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/artifacts-23/filestore/org.mapfish.geo/mapfish-geo-lib/1.2.0/source/d892b2c57dc79cf0e6f44f32575baf09c54e37b7/mapfish-geo-lib-1.2.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

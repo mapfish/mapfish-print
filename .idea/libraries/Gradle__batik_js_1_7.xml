@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Gradle: batik-js-1.7">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/xmlgraphics/batik-js/1.7/batik-js-1.7.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

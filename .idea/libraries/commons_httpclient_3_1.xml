@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="commons-httpclient-3.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/artifacts-23/filestore/commons-httpclient/commons-httpclient/3.1/jar/964cd74171f427720480efdec40a7c7f6e58426a/commons-httpclient-3.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/artifacts-23/filestore/commons-httpclient/commons-httpclient/3.1/source/c6d6ea83d0cf16d3ed9c1b7e600fa0f60b9d3159/commons-httpclient-3.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

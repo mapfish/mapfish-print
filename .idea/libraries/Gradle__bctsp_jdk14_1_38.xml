@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: bctsp-jdk14-1.38">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/bouncycastle/bctsp-jdk14/1.38/bctsp-jdk14-1.38.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/bouncycastle/bctsp-jdk14/1.38/bctsp-jdk14-1.38-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Gradle: bcmail-jdk14-138">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/bouncycastle/bcmail-jdk14/138/bcmail-jdk14-138.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

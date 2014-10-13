@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: DynamicJasper-5.0.0">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/ar/com/fdvs/DynamicJasper/5.0.0/DynamicJasper-5.0.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/ar/com/fdvs/DynamicJasper/5.0.0/DynamicJasper-5.0.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

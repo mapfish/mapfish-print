@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Gradle: jfreechart-1.0.12">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/jfree/jfreechart/1.0.12/jfreechart-1.0.12.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

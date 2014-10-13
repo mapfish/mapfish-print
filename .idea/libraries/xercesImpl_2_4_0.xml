@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="xercesImpl-2.4.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/artifacts-23/filestore/xerces/xercesImpl/2.4.0/jar/9e2205a4b10554ffddc50bbc4ca8abeb1d537e14/xercesImpl-2.4.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/artifacts-23/filestore/xerces/xercesImpl/2.4.0/source/12ae1acd978a95cbe56b41d12d09c767f404f942/xercesImpl-2.4.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

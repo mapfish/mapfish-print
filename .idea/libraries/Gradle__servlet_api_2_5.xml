@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: servlet-api-2.5">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/javax/servlet/servlet-api/2.5/servlet-api-2.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/javax/servlet/servlet-api/2.5/servlet-api-2.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

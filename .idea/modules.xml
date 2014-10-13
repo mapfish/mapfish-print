@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/core/core.iml" filepath="$PROJECT_DIR$/core/core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/debian/debian.iml" filepath="$PROJECT_DIR$/debian/debian.iml" />
+      <module fileurl="file://$PROJECT_DIR$/docs/docs.iml" filepath="$PROJECT_DIR$/docs/docs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/examples/examples.iml" filepath="$PROJECT_DIR$/examples/examples.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mapfish-print.iml" filepath="$PROJECT_DIR$/mapfish-print.iml" />
+      <module fileurl="file://$PROJECT_DIR$/publish/publish.iml" filepath="$PROJECT_DIR$/publish/publish.iml" />
+    </modules>
+  </component>
+</project>
+

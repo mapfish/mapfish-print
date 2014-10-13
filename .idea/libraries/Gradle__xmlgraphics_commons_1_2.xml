@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Gradle: xmlgraphics-commons-1.2">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/xmlgraphics/xmlgraphics-commons/1.2/xmlgraphics-commons-1.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

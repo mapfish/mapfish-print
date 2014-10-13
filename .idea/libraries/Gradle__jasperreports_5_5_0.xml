@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: jasperreports-5.5.0">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/net/sf/jasperreports/jasperreports/5.5.0/jasperreports-5.5.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/net/sf/jasperreports/jasperreports/5.5.0/jasperreports-5.5.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Gradle: fop-0.94">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/xmlgraphics/fop/0.94/fop-0.94.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

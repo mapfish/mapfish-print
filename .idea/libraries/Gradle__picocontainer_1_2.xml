@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Gradle: picocontainer-1.2">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/picocontainer/picocontainer/1.2/picocontainer-1.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

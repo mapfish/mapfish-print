@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: xsd-2.6.0">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/xsd/xsd/2.6.0/xsd-2.6.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/xsd/xsd/2.6.0/xsd-2.6.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

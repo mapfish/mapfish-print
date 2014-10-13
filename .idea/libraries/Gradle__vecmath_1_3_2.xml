@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: vecmath-1.3.2">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/java3d/vecmath/1.3.2/vecmath-1.3.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/java3d/vecmath/1.3.2/vecmath-1.3.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

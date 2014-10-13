@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: gt-geotiff-11.0">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/geotools/gt-geotiff/11.0/gt-geotiff-11.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/geotools/gt-geotiff/11.0/gt-geotiff-11.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

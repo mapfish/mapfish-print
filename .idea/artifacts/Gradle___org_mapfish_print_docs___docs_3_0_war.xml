@@ -1,0 +1,137 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="Gradle : org.mapfish.print:docs : docs-3.0.war">
+    <output-path>$PROJECT_DIR$/build/classes/artifacts/docs</output-path>
+    <root id="archive" name="docs-3.0.war">
+      <element id="javaee-facet-resources" facet="docs/web/Web Gradle : docs-3.0.war" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="docs" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="archive" name="org.mapfish.print-core-3.0.jar">
+            <element id="module-output" name="core" />
+          </element>
+          <element id="library" level="project" name="Gradle: jai_core-1.1.3" />
+          <element id="library" level="project" name="Gradle: spring-context-3.2.8.RELEASE" />
+          <element id="library" level="project" name="Gradle: spring-web-3.2.8.RELEASE" />
+          <element id="library" level="project" name="Gradle: spring-webmvc-3.2.8.RELEASE" />
+          <element id="library" level="project" name="Gradle: guava-16.0.1" />
+          <element id="library" level="project" name="Gradle: slf4j-api-1.7.6" />
+          <element id="library" level="project" name="Gradle: json-20080701" />
+          <element id="library" level="project" name="Gradle: logback-classic-1.1.1" />
+          <element id="library" level="project" name="Gradle: snakeyaml-1.13" />
+          <element id="library" level="project" name="Gradle: cli-parser-1.1.1" />
+          <element id="library" level="project" name="Gradle: httpclient-4.3.3" />
+          <element id="library" level="project" name="Gradle: jsr166y-1.7.0" />
+          <element id="library" level="project" name="Gradle: batik-transcoder-1.7" />
+          <element id="library" level="project" name="Gradle: gt-epsg-hsql-11.0" />
+          <element id="library" level="project" name="Gradle: gt-render-11.0" />
+          <element id="library" level="project" name="Gradle: gt-geojson-11.0" />
+          <element id="library" level="project" name="Gradle: gt-geotiff-11.0" />
+          <element id="library" level="project" name="Gradle: gt-wms-11.0" />
+          <element id="library" level="project" name="Gradle: gt-xsd-gml3-11.0" />
+          <element id="library" level="project" name="Gradle: gt-svg-11.0" />
+          <element id="library" level="project" name="Gradle: gt-cql-11.0" />
+          <element id="library" level="project" name="Gradle: jasperreports-5.5.0" />
+          <element id="library" level="project" name="Gradle: DynamicJasper-5.0.0" />
+          <element id="library" level="project" name="Gradle: metrics-core-3.0.2" />
+          <element id="library" level="project" name="Gradle: metrics-servlet-3.0.2" />
+          <element id="library" level="project" name="Gradle: metrics-httpclient-3.0.2" />
+          <element id="library" level="project" name="Gradle: metrics-servlets-3.0.2" />
+          <element id="library" level="project" name="Gradle: metrics-jvm-3.0.2" />
+          <element id="library" level="project" name="Gradle: metrics-logback-3.0.2" />
+          <element id="library" level="project" name="Gradle: spring-aop-3.2.8.RELEASE" />
+          <element id="library" level="project" name="Gradle: spring-beans-3.2.8.RELEASE" />
+          <element id="library" level="project" name="Gradle: spring-core-3.2.8.RELEASE" />
+          <element id="library" level="project" name="Gradle: spring-expression-3.2.8.RELEASE" />
+          <element id="library" level="project" name="Gradle: logback-core-1.1.1" />
+          <element id="library" level="project" name="Gradle: httpcore-4.3.2" />
+          <element id="library" level="project" name="Gradle: commons-logging-1.1.3" />
+          <element id="library" level="project" name="Gradle: commons-codec-1.6" />
+          <element id="library" level="project" name="Gradle: batik-awt-util-1.7" />
+          <element id="library" level="project" name="Gradle: batik-bridge-1.7" />
+          <element id="library" level="project" name="Gradle: batik-dom-1.7" />
+          <element id="library" level="project" name="Gradle: batik-gvt-1.7" />
+          <element id="library" level="project" name="Gradle: batik-svg-dom-1.7" />
+          <element id="library" level="project" name="Gradle: batik-svggen-1.7" />
+          <element id="library" level="project" name="Gradle: batik-util-1.7" />
+          <element id="library" level="project" name="Gradle: batik-xml-1.7" />
+          <element id="library" level="project" name="Gradle: xml-apis-ext-1.3.04" />
+          <element id="library" level="project" name="Gradle: gt-referencing-11.0" />
+          <element id="library" level="project" name="Gradle: hsqldb-2.2.8" />
+          <element id="library" level="project" name="Gradle: gt-main-11.0" />
+          <element id="library" level="project" name="Gradle: gt-coverage-11.0" />
+          <element id="library" level="project" name="Gradle: json-simple-1.1" />
+          <element id="library" level="project" name="Gradle: jai_imageio-1.1" />
+          <element id="library" level="project" name="Gradle: imageio-ext-tiff-1.1.8" />
+          <element id="library" level="project" name="Gradle: commons-httpclient-3.1" />
+          <element id="library" level="project" name="Gradle: gt-xml-11.0" />
+          <element id="library" level="project" name="Gradle: commons-io-2.1" />
+          <element id="library" level="project" name="Gradle: gt-api-11.0" />
+          <element id="library" level="project" name="Gradle: gt-xsd-core-11.0" />
+          <element id="library" level="project" name="Gradle: gt-xsd-gml2-11.0" />
+          <element id="library" level="project" name="Gradle: commons-digester-2.1" />
+          <element id="library" level="project" name="Gradle: itext-2.1.7.js2" />
+          <element id="library" level="project" name="Gradle: jcommon-1.0.15" />
+          <element id="library" level="project" name="Gradle: jfreechart-1.0.12" />
+          <element id="library" level="project" name="Gradle: jdtcore-3.1.0" />
+          <element id="library" level="project" name="Gradle: castor-1.2" />
+          <element id="library" level="project" name="Gradle: metrics-healthchecks-3.0.2" />
+          <element id="library" level="project" name="Gradle: metrics-json-3.0.2" />
+          <element id="library" level="project" name="Gradle: aopalliance-1.0" />
+          <element id="library" level="project" name="Gradle: batik-anim-1.7" />
+          <element id="library" level="project" name="Gradle: batik-css-1.7" />
+          <element id="library" level="project" name="Gradle: batik-ext-1.7" />
+          <element id="library" level="project" name="Gradle: batik-parser-1.7" />
+          <element id="library" level="project" name="Gradle: batik-script-1.7" />
+          <element id="library" level="project" name="Gradle: xalan-2.6.0" />
+          <element id="library" level="project" name="Gradle: vecmath-1.3.2" />
+          <element id="library" level="project" name="Gradle: commons-pool-1.5.4" />
+          <element id="library" level="project" name="Gradle: gt-metadata-11.0" />
+          <element id="library" level="project" name="Gradle: jgridshift-1.0" />
+          <element id="library" level="project" name="Gradle: jts-1.13" />
+          <element id="library" level="project" name="Gradle: jdom-1.1.3" />
+          <element id="library" level="project" name="Gradle: jt-zonalstats-1.3.1" />
+          <element id="library" level="project" name="Gradle: jt-utils-1.3.1" />
+          <element id="library" level="project" name="Gradle: imageio-ext-utilities-1.1.8" />
+          <element id="library" level="project" name="Gradle: jai_codec-1.1.3" />
+          <element id="library" level="project" name="Gradle: xml-commons-resolver-1.2" />
+          <element id="library" level="project" name="Gradle: gt-graph-11.0" />
+          <element id="library" level="project" name="Gradle: picocontainer-1.2" />
+          <element id="library" level="project" name="Gradle: commons-jxpath-1.3" />
+          <element id="library" level="project" name="Gradle: common-2.6.0" />
+          <element id="library" level="project" name="Gradle: ecore-2.6.1" />
+          <element id="library" level="project" name="Gradle: xsd-2.6.0" />
+          <element id="library" level="project" name="Gradle: fop-0.94" />
+          <element id="library" level="project" name="Gradle: batik-js-1.7" />
+          <element id="library" level="project" name="Gradle: gt-opengis-11.0" />
+          <element id="library" level="project" name="Gradle: xmlgraphics-commons-1.2" />
+          <element id="library" level="project" name="Gradle: avalon-framework-api-4.3.1" />
+          <element id="library" level="project" name="Gradle: avalon-framework-impl-4.3.1" />
+          <element id="library" level="project" name="Gradle: jsr-275-1.0-beta-2" />
+          <element id="library" level="project" name="Gradle: bcmail-jdk14-138" />
+          <element id="library" level="project" name="Gradle: bcprov-jdk14-138" />
+          <element id="library" level="project" name="Gradle: bctsp-jdk14-1.38" />
+          <element id="library" level="project" name="Gradle: bcprov-jdk14-1.38" />
+          <element id="library" level="project" name="Gradle: bcmail-jdk14-1.38" />
+          <element id="library" level="project" name="Gradle: commons-collections-3.1" />
+          <element id="library" level="project" name="Gradle: commons-beanutils-1.8.3" />
+          <element id="library" level="project" name="Gradle: jackson-databind-2.2.2" />
+          <element id="library" level="project" name="Gradle: jackson-annotations-2.2.2" />
+          <element id="library" level="project" name="Gradle: jackson-core-2.2.2" />
+          <element id="library" level="project" name="Gradle: spring-security-config-3.2.5.RELEASE" />
+          <element id="library" level="project" name="Gradle: spring-security-web-3.2.5.RELEASE" />
+          <element id="library" level="project" name="Gradle: groovy-all-2.3.3" />
+          <element id="library" level="project" name="Gradle: spring-security-core-3.2.5.RELEASE" />
+          <element id="library" level="project" name="Gradle: spring-test-3.2.8.RELEASE" />
+          <element id="library" level="project" name="Gradle: tagsoup-1.2.1" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/com/google/code/findbugs/jsr305/2.0.1/jsr305-2.0.1.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/javax/servlet/servlet-api/2.5/servlet-api-2.5.jar" />
+        </element>
+      </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/build/classes/artifacts/docs/exploded/docs-3.0.war/META-INF/MANIFEST.MF" />
+      </element>
+    </root>
+  </artifact>
+</component>

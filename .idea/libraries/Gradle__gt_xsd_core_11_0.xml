@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: gt-xsd-core-11.0">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/geotools/xsd/gt-xsd-core/11.0/gt-xsd-core-11.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/geotools/xsd/gt-xsd-core/11.0/gt-xsd-core-11.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

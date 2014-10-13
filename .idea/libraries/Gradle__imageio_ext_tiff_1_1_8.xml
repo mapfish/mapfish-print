@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: imageio-ext-tiff-1.1.8">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/it/geosolutions/imageio-ext/imageio-ext-tiff/1.1.8/imageio-ext-tiff-1.1.8.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/it/geosolutions/imageio-ext/imageio-ext-tiff/1.1.8/imageio-ext-tiff-1.1.8-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

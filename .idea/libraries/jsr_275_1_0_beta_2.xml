@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="jsr-275-1.0-beta-2">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/artifacts-23/filestore/net.java.dev.jsr-275/jsr-275/1.0-beta-2/jar/7bdd90125e67cd38bee363208e32993c0c75e9be/jsr-275-1.0-beta-2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/artifacts-23/filestore/net.java.dev.jsr-275/jsr-275/1.0-beta-2/source/d6ad47c9432e76c6f727fd10e1128e919033dd60/jsr-275-1.0-beta-2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: commons-codec-1.6">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/commons-codec/commons-codec/1.6/commons-codec-1.6.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/commons-codec/commons-codec/1.6/commons-codec-1.6-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
