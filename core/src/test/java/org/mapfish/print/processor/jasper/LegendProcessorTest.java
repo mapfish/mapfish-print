@@ -22,6 +22,7 @@ package org.mapfish.print.processor.jasper;
 import com.google.common.base.Predicate;
 import jsr166y.ForkJoinPool;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
+import org.json.simple.JSONArray;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -91,6 +92,42 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
         }
 
         assertEquals(9, count);
+        assertEquals(9, values.getInteger("numberOfLegendRows").intValue());
+    }
+
+    @Test
+    @DirtiesContext
+    public void testEmptyLegend() throws Exception {
+        httpRequestFactory.registerHandler(new Predicate<URI>() {
+            @Override
+            public boolean apply(@Nullable URI input) {
+                return input != null && input.getHost().equals("legend.com");
+            }
+        }, new TestHttpClientFactory.Handler() {
+            @Override
+            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)  {
+                final MockClientHttpRequest request = new MockClientHttpRequest();
+                request.setResponse(new MockClientHttpResponse(new byte[0],HttpStatus.OK));
+                return request;
+            }
+        });
+        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
+        final Template template = config.getTemplate("main");
+        PJsonObject requestData = loadJsonRequestData();
+        requestData.getJSONObject("attributes").getJSONObject("legend").getInternalObj().put("classes", new JSONArray());
+
+        Values values = new Values(requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
+        forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
+
+        final JRTableModelDataSource legend = values.getObject("legend", JRTableModelDataSource.class);
+
+        int count = 0;
+        while (legend.next()) {
+            count++;
+        }
+
+        assertEquals(0, count);
+        assertEquals(0, values.getInteger("numberOfLegendRows").intValue());
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

@@ -120,9 +120,6 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
                             final List<Object[]> legendList,
                             final int level,
                             final ExecutionContext context) throws IOException, URISyntaxException {
-        final Object[] row = {legendAttributes.name, null, level};
-        legendList.add(row);
-
         final URL[] icons = legendAttributes.icons;
         if (icons != null) {
             for (URL icon : icons) {
@@ -159,6 +156,10 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
             for (LegendAttributeValue value : legendAttributes.classes) {
                 fillLegend(clientHttpRequestFactory, value, legendList, level + 1, context);
             }
+        }
+
+        if (!legendList.isEmpty()) {
+            legendList.add(0, new Object[]{legendAttributes.name, null, level});
         }
     }
 

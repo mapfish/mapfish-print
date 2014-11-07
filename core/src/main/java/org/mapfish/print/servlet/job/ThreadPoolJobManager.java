@@ -36,12 +36,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
@@ -137,7 +138,7 @@ public class ThreadPoolJobManager implements JobManager {
     private Registry registry;
 
     private PriorityBlockingQueue<Runnable> queue;
-    private Timer timer;
+    private ScheduledExecutorService timer;
     @Qualifier("accessAssertionPersister")
     @Autowired
     private AccessAssertionPersister assertionPersister;
@@ -203,9 +204,16 @@ public class ThreadPoolJobManager implements JobManager {
         this.executor = new ThreadPoolExecutor(this.maxNumberOfRunningPrintJobs, this.maxNumberOfRunningPrintJobs,
                 this.maxIdleTime, TimeUnit.SECONDS, this.queue, threadFactory);
 
-        this.timer = new Timer("Post result to registry", true);
-        this.timer.schedule(new PostResultToRegistryTask(this.assertionPersister), PostResultToRegistryTask.CHECK_INTERVAL,
-                PostResultToRegistryTask.CHECK_INTERVAL);
+        this.timer = Executors.newScheduledThreadPool(1, new ThreadFactory() {
+            @Override
+            public Thread newThread(final Runnable timerTask) {
+                final Thread thread = new Thread(timerTask, "Post result to registry");
+                thread.setDaemon(true);
+                return thread;
+            }
+        });
+        this.timer.scheduleAtFixedRate(new PostResultToRegistryTask(this.assertionPersister), PostResultToRegistryTask.CHECK_INTERVAL,
+                PostResultToRegistryTask.CHECK_INTERVAL, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -213,7 +221,7 @@ public class ThreadPoolJobManager implements JobManager {
      */
     @PreDestroy
     public final void shutdown() {
-        this.timer.cancel();
+        this.timer.shutdownNow();
         this.executor.shutdownNow();
     }
 
@@ -321,7 +329,7 @@ public class ThreadPoolJobManager implements JobManager {
      * This timer task changes the status of finished jobs in the registry.
      * Also it stops jobs that have been running for too long (timeout).
      */
-    private class PostResultToRegistryTask extends TimerTask {
+    private class PostResultToRegistryTask implements Runnable {
 
         private static final int CHECK_INTERVAL = 500;
         private final AccessAssertionPersister assertionPersister;
