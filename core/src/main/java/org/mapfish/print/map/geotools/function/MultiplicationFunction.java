@@ -11,18 +11,25 @@ import static org.geotools.filter.capability.FunctionNameImpl.parameter;
  *
 * @author Jesse on 11/7/2014.
 */
-public class MultiplicationFunction extends FunctionExpressionImpl {
+public final class MultiplicationFunction extends FunctionExpressionImpl {
 
-    public static FunctionName NAME = new FunctionNameImpl("multiplication",
+    /**
+     * The name of this function.
+     */
+    public static final FunctionName NAME = new FunctionNameImpl("multiplication",
             parameter("result", Double.class),
             parameter("value1", Double.class),
             parameter("value2", Double.class));
 
+    /**
+     * Default constructor.
+     */
     public MultiplicationFunction() {
         super(NAME);
     }
 
-    public Object evaluate(Object feature) {
+    @Override
+    public Object evaluate(final Object feature) {
         double value1;
         double value2;
 

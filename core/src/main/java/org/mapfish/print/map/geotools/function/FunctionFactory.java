@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
  *
  * @author Jesse on 11/7/2014.
  */
-public class FunctionFactory implements org.geotools.filter.FunctionFactory {
+public final class FunctionFactory implements org.geotools.filter.FunctionFactory {
     private List<? extends FunctionExpressionImpl> functions = Lists.newArrayList(
             new MultiplicationFunction()
     );
@@ -27,14 +27,14 @@ public class FunctionFactory implements org.geotools.filter.FunctionFactory {
         return Lists.transform(this.functions, new com.google.common.base.Function<Function, FunctionName>() {
             @Nullable
             @Override
-            public FunctionName apply(@Nonnull Function input) {
+            public FunctionName apply(@Nonnull final Function input) {
                 return input.getFunctionName();
             }
         });
     }
 
     @Override
-    public Function function(String name, List<Expression> args, Literal fallback) {
+    public Function function(final String name, final List<Expression> args, final Literal fallback) {
         for (FunctionExpressionImpl template : this.functions) {
             if (template.getName().equals(name)) {
                 try {
@@ -52,7 +52,7 @@ public class FunctionFactory implements org.geotools.filter.FunctionFactory {
     }
 
     @Override
-    public Function function(Name name, List<Expression> args, Literal fallback) {
+    public Function function(final Name name, final List<Expression> args, final Literal fallback) {
         return function(name.getLocalPart(), args, fallback);
     }
 }

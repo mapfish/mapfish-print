@@ -44,6 +44,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
+import static org.mapfish.print.Constants.OPACITY_PRECISION;
+
 /**
  * @author Jesse on 3/26/14.
  */
@@ -54,15 +56,14 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
 
     /**
      * Constructor.
-     *  @param executorService the thread pool for doing the rendering.
-     *  @param params the parameters for this layer
      *
+     * @param executorService the thread pool for doing the rendering.
+     * @param params          the parameters for this layer
      */
     protected AbstractGeotoolsLayer(final ExecutorService executorService, final AbstractLayerParams params) {
         this.executorService = executorService;
         this.params = params;
     }
-
 
 
     @Override
@@ -140,10 +141,12 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
         }
     }
 
-    private void applyTransparency(List<? extends Layer> layers) {
-        final double opacity = params.opacity;
-        Assert.isTrue(opacity > -0.001 && opacity < 1.001, "Opacity of " + this + " is an illegal value: " + opacity);
-        if (1.0 - opacity > 0.001) {
+    private void applyTransparency(final List<? extends Layer> layers) {
+        final double opacity = this.params.opacity;
+        Assert.isTrue(opacity > -OPACITY_PRECISION && opacity < (1 + OPACITY_PRECISION),
+                "Opacity of " + this + " is an illegal value: " + opacity);
+
+        if (1.0 - opacity > OPACITY_PRECISION) {
             StyleVisitor visitor = new OpacitySettingStyleVisitor(opacity);
 
             for (Layer layer : layers) {
@@ -156,14 +159,15 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
 
     /**
      * Get the {@link org.geotools.data.DataStore} object that contains the data for this layer.
-     *  @param httpRequestFactory the factory for making http requests
-     * @param transformer the map transformer
-     * @param isFirstLayer true indicates this layer is the first layer in the map (the first layer drawn, ie the base layer)
+     *
+     * @param httpRequestFactory the factory for making http requests
+     * @param transformer        the map transformer
+     * @param isFirstLayer       true indicates this layer is the first layer in the map (the first layer drawn, ie the base layer)
      */
     protected abstract List<? extends Layer> getLayers(MfClientHttpRequestFactory httpRequestFactory,
                                                        MapfishMapContext transformer,
                                                        final boolean isFirstLayer) throws Exception;
-    
+
     //CHECKSTYLE:OFF: DesignForExtension - Set a default value for all sub classes.
     @Override
     public boolean supportsNativeRotation() {

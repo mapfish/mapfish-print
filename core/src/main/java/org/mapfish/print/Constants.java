@@ -64,6 +64,10 @@ public interface Constants {
      * The OGC standard dpi. (About 90 dpi)
      */
     double OGC_DPI = 25.4 / 0.28;
+    /**
+     * The amount of precision to use when comparing opacity levels.  For example 0.0009 is considered the same as 0.0 for opacity
+     */
+    double OPACITY_PRECISION = 0.001;
 
     /**
      * Style related constants.

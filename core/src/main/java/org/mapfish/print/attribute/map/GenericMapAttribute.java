@@ -270,7 +270,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
                 try {
                     PObject layer = this.getRawLayers().getObject(i);
                     // only render if  the opacity is greater than 0
-                    if (Math.abs(layer.optDouble("opacity", 1.0)) > 0.001) {
+                    if (Math.abs(layer.optDouble("opacity", 1.0)) > Constants.OPACITY_PRECISION) {
                         parseSingleLayer(layerList, layer);
                     }
                 } catch (Throwable throwable) {

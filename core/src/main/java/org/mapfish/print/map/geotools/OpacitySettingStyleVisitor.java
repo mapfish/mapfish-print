@@ -17,7 +17,7 @@ import org.opengis.filter.expression.Function;
  *
  * @author Jesse on 11/7/2014.
  */
-public class OpacitySettingStyleVisitor extends AbstractStyleVisitor {
+public final class OpacitySettingStyleVisitor extends AbstractStyleVisitor {
     private final Expression opacityFactor;
     private final FilterFactory2 filterFactory;
 
@@ -32,35 +32,35 @@ public class OpacitySettingStyleVisitor extends AbstractStyleVisitor {
     }
 
     @Override
-    public void visit(Fill fill) {
+    public void visit(final Fill fill) {
         final Expression opacity = fill.getOpacity();
         final Function newExpr = getOpacityAdjustingExpression(opacity);
         fill.setOpacity(newExpr);
     }
 
     @Override
-    public void visit(Stroke stroke) {
+    public void visit(final Stroke stroke) {
         final Expression opacity = stroke.getOpacity();
         final Function newExpr = getOpacityAdjustingExpression(opacity);
         stroke.setOpacity(newExpr);
     }
 
     @Override
-    public void visit(Graphic gr) {
+    public void visit(final Graphic gr) {
         final Expression opacity = gr.getOpacity();
         final Function newExpr = getOpacityAdjustingExpression(opacity);
         gr.setOpacity(newExpr);
     }
 
     @Override
-    public void visit(RasterSymbolizer raster) {
+    public void visit(final RasterSymbolizer raster) {
         final Expression opacity = raster.getOpacity();
         final Function newExpr = getOpacityAdjustingExpression(opacity);
         raster.setOpacity(newExpr);
     }
 
-    private Function getOpacityAdjustingExpression(Expression opacity) {
-        return this.filterFactory.function(MultiplicationFunction.NAME.getName(), opacity, opacityFactor);
+    private Function getOpacityAdjustingExpression(final Expression opacity) {
+        return this.filterFactory.function(MultiplicationFunction.NAME.getName(), opacity, this.opacityFactor);
     }
 
 }

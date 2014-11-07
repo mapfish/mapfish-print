@@ -142,7 +142,7 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
     /**
      * The parameters for reading a Geotiff file, either from the server or from a URL.
      */
-    public static final class GeotiffParam extends AbstractLayerParams{
+    public static final class GeotiffParam extends AbstractLayerParams {
         /**
          * The url of the geotiff.  It can be a file but if it is the file must be contained within the config directory.
          */
