@@ -94,6 +94,8 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
         MapContent content = new MapContent();
         try {
             List<? extends Layer> layers = getLayers(clientHttpRequestFactory, layerTransformer, isFirstLayer);
+            applyTransparency(layers);
+
             content.addLayers(layers);
 
             StreamingRenderer renderer = new StreamingRenderer();
@@ -137,6 +139,20 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
             content.dispose();
         }
     }
+
+    private void applyTransparency(List<? extends Layer> layers) {
+        final double opacity = params.opacity;
+        Assert.isTrue(opacity > -0.001 && opacity < 1.001, "Opacity of " + this + " is an illegal value: " + opacity);
+        if (1.0 - opacity > 0.001) {
+            StyleVisitor visitor = new OpacitySettingStyleVisitor(opacity);
+
+            for (Layer layer : layers) {
+                final Style style = layer.getStyle();
+                style.accept(visitor);
+            }
+        }
+    }
+
 
     /**
      * Get the {@link org.geotools.data.DataStore} object that contains the data for this layer.
