@@ -21,6 +21,7 @@ package org.mapfish.print.map.geotools.grid;
 
 import com.vividsolutions.jts.util.Assert;
 import org.mapfish.print.Constants;
+import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.OneOf;
 import org.mapfish.print.parser.Requires;
@@ -31,7 +32,7 @@ import java.util.Arrays;
  * Parameters relevant to creating Grid layers.
  * CSOFF: VisibilityModifier
  */
-public final class GridParam {
+public final class GridParam extends AbstractLayerParams {
     private static final int DEFAULT_POINTS_IN_GRID_LINE = 10000;
     /**
      * The x,y spacing between grid lines.

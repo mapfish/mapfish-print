@@ -26,6 +26,7 @@ import org.geotools.styling.Style;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.mapfish.print.map.AbstractLayerParams;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -46,12 +47,14 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
      * @param featureSourceSupplier a function that creates the feature source.  This will only be called once.
      * @param styleSupplier         a function that creates the style for styling the features. This will only be called once.
      * @param renderAsSvg           is the layer rendered as SVG?
+     * @param params the parameters for this layer
      */
     public FeatureLayer(final ExecutorService executorService,
                         final FeatureSourceSupplier featureSourceSupplier,
                         final StyleSupplier<FeatureSource> styleSupplier,
-                        final boolean renderAsSvg) {
-        super(executorService, featureSourceSupplier, styleSupplier, renderAsSvg);
+                        final boolean renderAsSvg,
+                        final AbstractLayerParams params) {
+        super(executorService, featureSourceSupplier, styleSupplier, renderAsSvg, params);
     }
 
     /**
@@ -81,7 +84,8 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
                     this.forkJoinPool,
                     createFeatureSourceSupplier(param.features),
                     createStyleFunction(template, param.style, param.defaultStyle),
-                    template.getConfiguration().renderAsSvg(param.renderAsSvg));
+                    template.getConfiguration().renderAsSvg(param.renderAsSvg),
+                    param);
         }
 
         private FeatureSourceSupplier createFeatureSourceSupplier(
@@ -138,7 +142,7 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
     /**
      * The parameters for creating a vector layer.
      */
-    public static class FeatureLayerParam {
+    public static class FeatureLayerParam extends AbstractLayerParams {
         /**
          * A collection of features.
          */

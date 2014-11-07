@@ -62,7 +62,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
     protected WmsLayer(final ExecutorService executorService,
                        final StyleSupplier<GridCoverage2D> styleSupplier,
                        final WmsLayerParam params) {
-        super(executorService, styleSupplier);
+        super(executorService, styleSupplier, params);
         this.params = params;
     }
 

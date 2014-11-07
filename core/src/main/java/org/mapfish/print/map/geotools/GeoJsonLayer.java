@@ -26,6 +26,7 @@ import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.mapfish.print.map.AbstractLayerParams;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -45,12 +46,14 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
      * @param featureSourceSupplier a function that creates the feature source.  This will only be called once.
      * @param styleSupplier         a function that creates the style for styling the features. This will only be called once.
      * @param renderAsSvg           is the layer rendered as SVG?
+     * @param params the parameters for this layer
      */
     public GeoJsonLayer(final ExecutorService executorService,
                         final FeatureSourceSupplier featureSourceSupplier,
                         final StyleSupplier<FeatureSource> styleSupplier,
-                        final boolean renderAsSvg) {
-        super(executorService, featureSourceSupplier, styleSupplier, renderAsSvg);
+                        final boolean renderAsSvg,
+                        final AbstractLayerParams params) {
+        super(executorService, featureSourceSupplier, styleSupplier, renderAsSvg, params);
     }
 
     /**
@@ -81,7 +84,8 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
                     this.forkJoinPool,
                     createFeatureSourceSupplier(template, param.geoJson),
                     createStyleFunction(template, param.style),
-                    template.getConfiguration().renderAsSvg(param.renderAsSvg));
+                    template.getConfiguration().renderAsSvg(param.renderAsSvg),
+                    param);
         }
 
         private FeatureSourceSupplier createFeatureSourceSupplier(final Template template,

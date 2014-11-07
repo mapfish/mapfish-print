@@ -26,6 +26,7 @@ import org.geotools.map.Layer;
 import org.geotools.styling.Style;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.mapfish.print.map.AbstractLayerParams;
 
 import java.util.Collections;
 import java.util.List;
@@ -45,11 +46,13 @@ public class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
      * @param coverage2DReader the coverage2DReader for reading the grid coverage data.
      * @param style            style to use for rendering the data.
      * @param executorService  the thread pool for doing the rendering.
+     * @param params the parameters for this layer
      */
     public AbstractGridCoverage2DReaderLayer(final Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> coverage2DReader,
                                              final StyleSupplier<AbstractGridCoverage2DReader> style,
-                                             final ExecutorService executorService) {
-        super(executorService);
+                                             final ExecutorService executorService,
+                                             final AbstractLayerParams params) {
+        super(executorService, params);
         this.styleSupplier = style;
         this.coverage2DReaderSupplier = coverage2DReader;
     }

@@ -31,6 +31,7 @@ import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.map.geotools.AbstractGeotoolsLayer;
 import org.mapfish.print.map.geotools.StyleSupplier;
 
@@ -53,10 +54,12 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
      *
      * @param executorService the thread pool for doing the rendering.
      * @param styleSupplier     the style to use when drawing the constructed grid coverage on the map.
+     * @param params the parameters for this layer
      */
     protected AbstractSingleImageLayer(final ExecutorService executorService,
-                                       final StyleSupplier<GridCoverage2D> styleSupplier) {
-        super(executorService);
+                                       final StyleSupplier<GridCoverage2D> styleSupplier,
+                                       final AbstractLayerParams params) {
+        super(executorService, params);
         this.styleSupplier = styleSupplier;
     }
 

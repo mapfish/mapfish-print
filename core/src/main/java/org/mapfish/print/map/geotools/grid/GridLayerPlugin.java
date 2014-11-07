@@ -72,7 +72,8 @@ public final class GridLayerPlugin extends AbstractFeatureSourceLayerPlugin<Grid
         FeatureSourceSupplier featureSource = createFeatureSourceFunction(template, layerData);
         final StyleSupplier<FeatureSource> styleFunction = createStyleSupplier(template, layerData);
         return new GridLayer(this.pool, featureSource, styleFunction,
-                template.getConfiguration().renderAsSvg(layerData.renderAsSvg));
+                template.getConfiguration().renderAsSvg(layerData.renderAsSvg),
+                layerData);
     }
 
     private StyleSupplier<FeatureSource> createStyleSupplier(final Template template, final GridParam layerData) {

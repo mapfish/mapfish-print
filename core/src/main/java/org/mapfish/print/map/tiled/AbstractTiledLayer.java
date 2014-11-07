@@ -26,6 +26,7 @@ import org.geotools.map.Layer;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.map.geotools.AbstractGeotoolsLayer;
 import org.mapfish.print.map.geotools.StyleSupplier;
 
@@ -49,9 +50,12 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
      * Constructor.
      * @param forkJoinPool the thread pool for doing the rendering.
      * @param styleSupplier strategy for loading the style for this layer
+     * @param params the parameters for this layer
      */
-    protected AbstractTiledLayer(final ForkJoinPool forkJoinPool, final StyleSupplier<GridCoverage2D> styleSupplier) {
-        super(forkJoinPool);
+    protected AbstractTiledLayer(final ForkJoinPool forkJoinPool,
+                                 final StyleSupplier<GridCoverage2D> styleSupplier,
+                                 final AbstractLayerParams params) {
+        super(forkJoinPool, params);
         this.forkJoinPool = forkJoinPool;
         this.styleSupplier = styleSupplier;
     }

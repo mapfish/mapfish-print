@@ -29,6 +29,7 @@ import org.geotools.styling.Style;
 import org.geotools.styling.visitor.RescaleStyleVisitor;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.mapfish.print.map.AbstractLayerParams;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -52,12 +53,14 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
      * @param featureSourceSupplier a function that creates the feature source.  This will only be called once.
      * @param styleSupplier         a function that creates the style for styling the features. This will only be called once.
      * @param renderAsSvg is the layer rendered as SVG?
+     * @param params the parameters for this layer
      */
     public AbstractFeatureSourceLayer(final ExecutorService executorService,
                                       final FeatureSourceSupplier featureSourceSupplier,
                                       final StyleSupplier<FeatureSource> styleSupplier,
-                                      final boolean renderAsSvg) {
-        super(executorService);
+                                      final boolean renderAsSvg,
+                                      final AbstractLayerParams params) {
+        super(executorService, params);
         this.featureSourceSupplier = featureSourceSupplier;
         this.styleSupplier = styleSupplier;
 

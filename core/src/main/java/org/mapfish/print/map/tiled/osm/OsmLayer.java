@@ -57,7 +57,7 @@ public final class OsmLayer extends AbstractTiledLayer {
     public OsmLayer(final ForkJoinPool forkJoinPool,
                     final StyleSupplier<GridCoverage2D> styleSupplier,
                     final OsmLayerParam param) {
-        super(forkJoinPool, styleSupplier);
+        super(forkJoinPool, styleSupplier, param);
         this.param = param;
     }
 

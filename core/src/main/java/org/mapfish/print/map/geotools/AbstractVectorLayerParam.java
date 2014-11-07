@@ -19,6 +19,7 @@
 
 package org.mapfish.print.map.geotools;
 
+import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
 
 /**
@@ -26,7 +27,7 @@ import org.mapfish.print.parser.HasDefaultValue;
  *
  * @author Jesse on 7/2/2014.
  */
-public abstract class AbstractVectorLayerParam {
+public abstract class AbstractVectorLayerParam extends AbstractLayerParams {
     /**
      * The style name of a style to apply to the features during rendering.  The style name must map to a style in the
      * template or the configuration objects.

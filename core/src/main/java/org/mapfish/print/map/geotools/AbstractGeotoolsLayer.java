@@ -21,15 +21,19 @@ package org.mapfish.print.map.geotools;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import com.vividsolutions.jts.util.Assert;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
 import org.geotools.renderer.lite.StreamingRenderer;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyleVisitor;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.mapfish.print.map.AbstractLayerParams;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -46,15 +50,20 @@ import java.util.concurrent.ExecutorService;
 public abstract class AbstractGeotoolsLayer implements MapLayer {
 
     private final ExecutorService executorService;
+    private final AbstractLayerParams params;
 
     /**
      * Constructor.
      *  @param executorService the thread pool for doing the rendering.
+     *  @param params the parameters for this layer
      *
      */
-    protected AbstractGeotoolsLayer(final ExecutorService executorService) {
+    protected AbstractGeotoolsLayer(final ExecutorService executorService, final AbstractLayerParams params) {
         this.executorService = executorService;
+        this.params = params;
     }
+
+
 
     @Override
     public final Optional<MapLayer> tryAddLayer(final MapLayer newLayer) {

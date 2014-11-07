@@ -61,7 +61,7 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
             final ForkJoinPool forkJoinPool,
             final StyleSupplier<GridCoverage2D> styleSupplier,
             final TiledWmsLayerParam param) {
-        super(forkJoinPool, styleSupplier);
+        super(forkJoinPool, styleSupplier, param);
         this.param = param;
     }
 

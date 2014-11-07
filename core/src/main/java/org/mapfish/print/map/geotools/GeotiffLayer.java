@@ -31,6 +31,7 @@ import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FileUtils;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,11 +61,13 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
      * @param reader          the reader to use for reading the geotiff.
      * @param style           style to use for rendering the data.
      * @param executorService the thread pool for doing the rendering.
+     * @param params the parameters for this layer
      */
     public GeotiffLayer(final Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> reader,
                         final StyleSupplier<AbstractGridCoverage2DReader> style,
-                        final ExecutorService executorService) {
-        super(reader, style, executorService);
+                        final ExecutorService executorService,
+                        final AbstractLayerParams params) {
+        super(reader, style, executorService, params);
     }
 
     /**
@@ -96,7 +99,8 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
 
             return new GeotiffLayer(geotiffReader,
                     super.<AbstractGridCoverage2DReader>createStyleSupplier(template, styleRef),
-                    this.forkJoinPool);
+                    this.forkJoinPool,
+                    param);
         }
 
         private Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> getGeotiffReader(final Template template,
@@ -138,7 +142,7 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
     /**
      * The parameters for reading a Geotiff file, either from the server or from a URL.
      */
-    public static final class GeotiffParam {
+    public static final class GeotiffParam extends AbstractLayerParams{
         /**
          * The url of the geotiff.  It can be a file but if it is the file must be contained within the config directory.
          */

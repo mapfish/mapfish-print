@@ -21,6 +21,7 @@ package org.mapfish.print.map.tiled;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Multimap;
+import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
 
 import java.io.UnsupportedEncodingException;
@@ -32,12 +33,7 @@ import java.net.URISyntaxException;
  * @author Jesse on 4/3/14.
  *         // CSOFF:VisibilityModifier
  */
-public abstract class AbstractTiledLayerParams {
-    /**
-     * The opacity of the image.
-     */
-    @HasDefaultValue
-    public double opacity = 1.0;
+public abstract class AbstractTiledLayerParams extends AbstractLayerParams {
     /**
      * The name of the style (in Configuration or Template) to use when drawing the layer to the map.  This is separate from
      * the style in that it indicates how to draw the map.  It allows one to apply any of the SLD raster styling.

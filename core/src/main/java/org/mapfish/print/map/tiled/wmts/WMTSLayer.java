@@ -58,7 +58,7 @@ public class WMTSLayer extends AbstractTiledLayer {
     protected WMTSLayer(final ForkJoinPool executorService,
                         final StyleSupplier<GridCoverage2D> styleSupplier,
                         final WMTSLayerParam param) {
-        super(executorService, styleSupplier);
+        super(executorService, styleSupplier, param);
         this.param = param;
     }
 
