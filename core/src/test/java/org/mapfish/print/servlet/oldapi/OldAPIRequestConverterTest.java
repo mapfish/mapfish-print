@@ -130,15 +130,27 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
 
 
         // legend
-        assertLegend(attributes, "legend1");
-        assertLegend(attributes, "legend2");
+        assertLegend(attributes, "legend1", "legend1");
+        assertLegend(attributes, "legend2", "legend2", "legend3");
     }
 
-    private void assertLegend(JSONObject attributes, String legendAttName) throws JSONException {
+    private void assertLegend(JSONObject attributes, String legendAttName, String... rows) throws JSONException {
         assertTrue(attributes.has(legendAttName));
         final JSONObject legendJson = attributes.getJSONObject(legendAttName);
+        if (rows.length == 1) {
+            assertLegend(legendJson, rows[0]);
+        } else {
+            final JSONArray classes = legendJson.getJSONArray("classes");
+            for (int i = 0; i < rows.length; i++) {
+                assertLegend(classes.getJSONObject(i), rows[i]);
+            }
+        }
+    }
+
+    private void assertLegend(JSONObject legendJson, String legendAttName) throws JSONException {
         assertTrue(legendJson.has("name"));
         assertEquals(legendAttName, legendJson.getString("name"));
+
         assertTrue(legendJson.has("classes"));
 
         JSONArray classes = legendJson.getJSONArray("classes");

@@ -215,7 +215,7 @@
       "col4": "Grundbuchfläche (m2)",
       "col5": "Gemeinde"
     }
-  ], "legends": [
+  ], "legends":[
   {
     "name": "legend1",
     "classes": [
@@ -230,6 +230,15 @@
     "classes": [
       {
         "name": "legend2",
+        "icons": ["file://legend-ico.png"]
+      }
+    ]
+  },
+  {
+    "name": "legend3",
+    "classes": [
+      {
+        "name": "legend3",
         "icons": ["file://legend-ico.png"]
       }
     ]
