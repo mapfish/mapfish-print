@@ -116,7 +116,7 @@ public final class Main {
     }
 
     private static void printUsage(final int exitCode) {
-        Args.usage(CliDefinition.class);
+        Args.usage(new CliDefinition());
         if (Main.exceptionOnFailure) {
             throw new Error("Printing Usage: " + exitCode);
         } else {
