@@ -20,6 +20,7 @@
 package org.mapfish.print.processor;
 
 import com.google.common.collect.BiMap;
+
 import org.mapfish.print.config.ConfigurationObject;
 
 import javax.annotation.Nullable;
@@ -123,7 +124,7 @@ public interface Processor<In, Out> extends ConfigurationObject {
     String getOutputPrefix();
 
     /**
-     * An execution context for a specific print task. 
+     * An execution context for a specific print task.
      */
     public interface ExecutionContext {
         /**

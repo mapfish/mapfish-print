@@ -22,6 +22,7 @@ package org.mapfish.print.output;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import com.vividsolutions.jts.util.Assert;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.attribute.Attribute;
@@ -43,6 +44,7 @@ import org.mapfish.print.wrapper.multi.PMultiObject;
 import java.io.File;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 

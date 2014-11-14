@@ -1,7 +1,5 @@
 throwErrorOnExtraParameters: true
 
-
-
 templates:
   A4 Landscape: !template
     reportTemplate: MapOnly_A4.jrxml
@@ -25,4 +23,3 @@ templates:
     - !createMap
         inputMapper: {imageMap: map}
         outputPrefix: image
-

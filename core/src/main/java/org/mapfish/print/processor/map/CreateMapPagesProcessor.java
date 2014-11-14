@@ -29,6 +29,7 @@ import com.vividsolutions.jts.geom.Polygon;
 
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue;
 import org.mapfish.print.attribute.map.AreaOfInterest;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
@@ -47,8 +48,6 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import static org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue;
 
 /**
  * Processor used to display a map on multiple pages.

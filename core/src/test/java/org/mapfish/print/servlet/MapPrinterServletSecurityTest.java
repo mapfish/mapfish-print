@@ -22,6 +22,7 @@
 package org.mapfish.print.servlet;
 
 import com.google.common.collect.Maps;
+
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Test;
@@ -44,6 +45,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.HashMap;
+
 import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;

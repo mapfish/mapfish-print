@@ -23,4 +23,3 @@ templates:
       inputMapper: {maps: datasource}
       processors:
         - !createMap {}
-    

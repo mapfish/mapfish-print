@@ -21,14 +21,12 @@ templates:
         inputMapper: {mapDef: map}
         outputMapper: {mapSubReport: mapOut}
     - !createOverviewMap
-        inputMapper: {
+        inputMapper:
             mapDef: map,
             overviewMapDef: overviewMap
-        }
-        outputMapper: {
+        outputMapper:
             overviewMapSubReport: overviewMapOut,
             layerGraphics: overviewMapLayerGraphics 
-        }
     - !setStyle
       inputMapper:
         mapDef: map
@@ -37,5 +35,3 @@ templates:
       inputMapper:
         overviewMapDef: map
         styleDef: style
-
-

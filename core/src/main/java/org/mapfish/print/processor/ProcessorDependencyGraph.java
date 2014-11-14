@@ -23,7 +23,9 @@ import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+
 import jsr166y.RecursiveTask;
+
 import org.mapfish.print.output.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +35,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.Nonnull;
 
 import static org.mapfish.print.parser.ParserUtils.FILTER_ONLY_REQUIRED_ATTRIBUTES;
@@ -166,10 +169,10 @@ public final class ProcessorDependencyGraph {
 
         /**
          * Cancels the complete processor graph of a print task.
-         * 
+         *
          * This is achieved by setting the cancel flag of the execution
          * context, so that every processor can stop its execution.
-         * 
+         *
          * @param mayInterruptIfRunning is ignored
          */
         @Override
@@ -177,7 +180,7 @@ public final class ProcessorDependencyGraph {
             this.execContext.cancel();
             return super.cancel(mayInterruptIfRunning);
         }
-        
+
         @Override
         protected Values compute() {
             final ProcessorDependencyGraph graph = ProcessorDependencyGraph.this;

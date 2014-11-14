@@ -21,6 +21,7 @@ package org.mapfish.print.processor;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.parser.ParserUtils;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -42,8 +44,8 @@ import javax.annotation.Nonnull;
  * @author Jesse
  */
 public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
-    private BiMap<String, String> inputMapper = HashBiMap.create();
-    private BiMap<String, String> outputMapper = HashBiMap.create();
+    private final BiMap<String, String> inputMapper = HashBiMap.create();
+    private final BiMap<String, String> outputMapper = HashBiMap.create();
 
     private final Class<Out> outputType;
     private String outputPrefix;
@@ -142,7 +144,7 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
     /**
      * Checks if the print was canceled and throws a
      * {@link CancellationException} if so.
-     * 
+     *
      * @param context the execution context
      * @throws CancellationException
      */
@@ -151,28 +153,28 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
             throw new CancellationException("task was canceled");
         }
     }
-    
+
     // CHECKSTYLE:OFF
     @Override
     public String toString() {
         return getClass().getSimpleName();
     }
     // CHECKSTYLE:ON
-    
+
     /**
      * Default implementation of {@link ExecutionContext}.
      */
     public static final class Context implements ExecutionContext {
 
         private volatile boolean canceled = false;
-        
+
         /**
          * Sets the canceled flag.
          */
         public void cancel() {
             this.canceled = true;
         }
-        
+
         @Override
         public boolean isCanceled() {
             return this.canceled;

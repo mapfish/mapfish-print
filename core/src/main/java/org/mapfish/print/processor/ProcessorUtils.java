@@ -20,6 +20,7 @@
 package org.mapfish.print.processor;
 
 import com.google.common.base.Strings;
+
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.HasDefaultValue;
@@ -29,6 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.NoSuchElementException;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
