@@ -12,7 +12,9 @@
     <property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
     <property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
     <parameter name="mapSubReport" class="java.lang.String"/>
+    <parameter name="scalebarSubReport" class="java.lang.String"/>
     <field name="mapSubReport" class="java.lang.String"/>
+    <field name="scalebarSubReport" class="java.lang.String"/>
     <field name="name" class="java.lang.Integer"/>
     <field name="top" class="java.lang.Integer"/>
     <field name="bottom" class="java.lang.Integer"/>
@@ -51,6 +53,10 @@
                 </reportElement>
                 <subreportExpression><![CDATA[$P{mapSubReport}]]></subreportExpression>
             </subreport>
+            <subreport>
+                <reportElement x="540" y="341" width="240" height="40" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d"/>
+                <subreportExpression><![CDATA[$P{scalebarSubReport}]]></subreportExpression>
+            </subreport>
         </band>
     </title>
     <detail>
@@ -63,6 +69,10 @@
                     <property name="com.jaspersoft.studio.unit.height" value="px"/>
                 </reportElement>
                 <subreportExpression><![CDATA[$F{mapSubReport}]]></subreportExpression>
+            </subreport>
+            <subreport>
+                <reportElement x="540" y="341" width="240" height="40" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d"/>
+                <subreportExpression><![CDATA[$F{scalebarSubReport}]]></subreportExpression>
             </subreport>
             <textField>
                 <reportElement x="350" y="20" width="100" height="20" uuid="970c780d-e26b-4ded-8e71-3b2bf44e9889"/>
