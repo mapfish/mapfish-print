@@ -12,7 +12,7 @@ templates:
         height: 330
       paging: !paging
         default:
-          scale: 1000
+          scale: 800
           overlap: 0
     processors:
     - !reportBuilder # compile all reports in current directory
