@@ -11,7 +11,7 @@ configurations {
 }
 
 dependencies {
-    geoserver ('org.geoserver.web:web-app:2.4.8') {
+    geoserver ('org.geoserver.web:web-app:2.4.3') {
         transitive = false;
     }
     testCompile (project(':core'))
