@@ -74,7 +74,8 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
             } catch (AssertionError e) {
                 throw e;
             } catch (Throwable t) {
-                throw new AssertionError("Exception raised when processing: " + geojsonExample.getName() + "\n" + t.getMessage(), t);
+                t.printStackTrace();
+                throw new AssertionError("Exception raised when processing: " + geojsonExample.getName() + "\n" + t.getMessage());
             }
         }
     }

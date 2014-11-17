@@ -49,7 +49,8 @@ public class AccessAssertionPersisterTest extends AbstractMapfishSpringTest {
             } catch (AssertionError e) {
                 throw e;
             } catch (Exception e) {
-                throw new AssertionError("Marshalling or unmarshalling access assertion: " + assertion.getClass() + " failed", e);
+                e.printStackTrace();
+                throw new AssertionError("Marshalling or unmarshalling access assertion: " + assertion.getClass() + " failed");
             }
         }
     }
