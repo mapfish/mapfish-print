@@ -268,8 +268,8 @@ public final class OldAPIRequestConverter {
                         " and there are " + oldLegendJson.size() + " legend request objects.");
         }
 
+        String legendAttName = "legend";
         for (int i = 0; i < legendProcessors.size(); i++) {
-            String legendAttName = "legend";
             LegendProcessor legendProcessor = legendProcessors.get(i);
 
             if (legendProcessor.getInputMapperBiMap().containsValue("legend")) {
@@ -284,6 +284,18 @@ public final class OldAPIRequestConverter {
             }
 
             attributes.put(legendAttName, value);
+        }
+
+        if (legendProcessors.size() < oldLegendJson.size()) {
+            JSONObject newApiValue = new JSONObject();
+            JSONArray classes = new JSONArray();
+            newApiValue.put("classes", classes);
+
+            classes.put(attributes.get(legendAttName));
+            attributes.put(legendAttName, newApiValue);
+            for (int i = legendProcessors.size(); i < oldLegendJson.size(); i++) {
+                classes.put(oldLegendJson.getJSONObject(i).getInternalObj());
+            }
         }
     }
 
