@@ -233,10 +233,10 @@ public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesPro
         /**
          * Resulting list of values for the maps.
          */
-        public final DataSourceAttributeValue maps;
+        public final DataSourceAttributeValue datasource;
 
         private Output(final DataSourceAttributeValue tableList) {
-            this.maps = tableList;
+            this.datasource = tableList;
         }
     }
 }
