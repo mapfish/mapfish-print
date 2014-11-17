@@ -20,6 +20,5 @@ templates:
     - !createMapPages {}
     - !createMap {}
     - !createDataSource
-      inputMapper: {maps: datasource}
       processors:
         - !createMap {}

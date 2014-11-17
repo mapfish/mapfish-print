@@ -29,7 +29,7 @@ templates:
         attributes:
           displayName: !string {}
           table: !table {}
-      scalebarDef: !scalebar
+      scalebar: !scalebar
         width: 230
         height: 40
     processors:
@@ -43,9 +43,7 @@ templates:
     - !createMap
       inputMapper: {map: map}
       outputMapper: {mapSubReport: mapSubReport}
-    - !createScalebar
-      inputMapper: {map: map, scalebarDef: scalebar}
-      outputMapper: {subReport: scalebarSubReport}
+    - !createScalebar {}
     - !prepareLegend # create a datasource for the report with the 'legend' attribute
       template: legend.jrxml
       inputMapper: {legend: legend}

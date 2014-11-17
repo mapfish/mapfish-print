@@ -134,11 +134,11 @@ public class CreateScalebarProcessor extends AbstractProcessor<CreateScalebarPro
         /**
          * The path to the compiled sub-report for the scalebar.
          */
-        public final String subReport;
+        public final String scalebarSubReport;
 
         private Output(final URI graphic, final String subReport) {
             this.graphic = graphic;
-            this.subReport = subReport;
+            this.scalebarSubReport = subReport;
         }
     }
 }

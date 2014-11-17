@@ -31,5 +31,4 @@ templates:
           width: 143
       processors:
         - !createMap {}
-        - !createScalebar
-          outputMapper: {subReport: scalebarSubReport}
+        - !createScalebar {}

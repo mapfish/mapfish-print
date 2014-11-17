@@ -2,7 +2,7 @@ templates:
   main: !template
     reportTemplate: "dummy.jxml"
     attributes:
-      mapDef: !map
+      map: !map
         width: 780
         height: 330
         maxDpi: 400
@@ -10,13 +10,10 @@ templates:
         zoomLevelSnapStrategy: CLOSEST_LOWER_SCALE_ON_TIE
         zoomLevels: !zoomLevels
           scales: [5000, 10000, 25000, 50000, 110000, 500000, 1000000]
-      scalebarDef: !scalebar
+      scalebar: !scalebar
         width: 300
         height: 40
     processors:
     - !createMap
-        inputMapper: {mapDef: map}
         outputMapper: {mapSubReport: mapOut}
-    - !createScalebar
-        inputMapper: {mapDef: map, scalebarDef: scalebar}
-        outputMapper: {subReport: scalebarOut}
+    - !createScalebar {}
