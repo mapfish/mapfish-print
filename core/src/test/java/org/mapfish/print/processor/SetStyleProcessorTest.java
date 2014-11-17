@@ -48,7 +48,7 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
         Values values = new Values(requestData, template, parser, this.folder.getRoot(), this.httpClientFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
-        final MapAttribute.MapAttributeValues map = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
+        final MapAttribute.MapAttributeValues map = values.getObject("map", MapAttribute.MapAttributeValues.class);
         final AbstractFeatureSourceLayer layer = (AbstractFeatureSourceLayer) map.getLayers().get(0);
         final MapfishMapContext mapContext = AbstractMapfishSpringTest.createTestMapContext();
         assertEquals("Default Line",

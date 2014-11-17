@@ -48,6 +48,8 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
     private final BiMap<String, String> outputMapper = HashBiMap.create();
 
     private final Class<Out> outputType;
+    private String prefix;
+    private String inputPrefix;
     private String outputPrefix;
 
     /**
@@ -71,16 +73,37 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
     }
 
     /**
-     * The prefix to apply to each output value.  This provides a simple way to make all output values have unique values.
+     * The prefix to apply to each value.  This provides a simple way to make all output values have unique values.
      * @param prefix the new prefix
      */
-    public final void setOutputPrefix(final String prefix) {
-       this.outputPrefix = prefix;
+    public final void setPrefix(final String prefix) {
+       this.prefix = prefix;
+    }
+
+    /**
+     * The prefix to apply to each input value.  This provides a simple way to make all output values have unique values.
+     * @param inputPrefix the new prefix
+     */
+    public final void setInputPrefix(final String inputPrefix) {
+       this.inputPrefix = inputPrefix;
+    }
+
+    @Override
+    public final String getInputPrefix() {
+       return this.inputPrefix == null ? this.prefix : this.inputPrefix;
+    }
+
+    /**
+     * The prefix to apply to each output value.  This provides a simple way to make all output values have unique values.
+     * @param outputPrefix the new prefix
+     */
+    public final void setOutputPrefix(final String outputPrefix) {
+       this.outputPrefix = outputPrefix;
     }
 
     @Override
     public final String getOutputPrefix() {
-       return this.outputPrefix;
+        return this.outputPrefix == null ? this.prefix : this.outputPrefix;
     }
 
     /**

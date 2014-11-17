@@ -289,6 +289,8 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         Values values = new Values();
         values.put(EXECUTION_TRACKER, execution);
 
+        System.out.println(888888);
+        System.out.println(graph.createTask(values));
         forkJoinPool.invoke(graph.createTask(values));
 
         assertEquals(0, execution.testOrderExecution.size());

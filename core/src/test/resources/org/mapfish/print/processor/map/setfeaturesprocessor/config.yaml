@@ -16,4 +16,3 @@ templates:
           features: features
     - !createMap
         inputMapper: {map1: map}
-        outputMapper: {mapSubReport: map}

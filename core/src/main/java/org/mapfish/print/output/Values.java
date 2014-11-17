@@ -72,7 +72,10 @@ public final class Values {
      * The key for the values object for the {@link org.mapfish.print.config.PDFConfig} object.
      */
     public static final String PDF_CONFIG = "pdfConfig";
-    private static final String SUBREPORT_DIR = "SUBREPORT_DIR";
+    /**
+     * The key for the values object for the subreport directory.
+     */
+    public static final String SUBREPORT_DIR = "SUBREPORT_DIR";
 
 
     private final Map<String, Object> values = new ConcurrentHashMap<String, Object>();

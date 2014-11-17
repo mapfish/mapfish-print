@@ -287,11 +287,8 @@ public final class ProcessorDependencyGraphFactory {
 
             final Collection<Field> allProperties = getAllAttributes(inputParameter.getClass());
             for (Field field : allProperties) {
-                if (!inputMapper.containsValue(field.getName())) {
-                    inputs.add(new InputValue(field.getName(), field.getType()));
-                } else {
-                    inputs.add(new InputValue(inputMapper.inverse().get(field.getName()), field.getType()));
-                }
+                String name = ProcessorUtils.getInputValueName(node.getProcessor().getInputPrefix(), inputMapper, field.getName());
+                inputs.add(new InputValue(name, field.getType()));
             }
         }
 

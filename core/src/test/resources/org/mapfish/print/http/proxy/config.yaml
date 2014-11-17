@@ -18,8 +18,6 @@ templates:
     - !reportBuilder # compile all reports in current directory
         directory: '.'
     - !createMap
-        inputMapper: {geojsonMap: map}
-        outputPrefix: geojson
+        prefix: geojson
     - !createMap
-        inputMapper: {imageMap: map}
-        outputPrefix: image
+        prefix: image

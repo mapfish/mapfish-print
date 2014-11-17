@@ -20,6 +20,7 @@
 package org.mapfish.print.processor;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.BiMap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -33,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -95,9 +95,9 @@ public final class ProcessorDependencyGraph {
     public Multimap<String, Processor> getAllRequiredAttributes() {
         Multimap<String, Processor> requiredInputs = HashMultimap.create();
         for (ProcessorGraphNode root : this.roots) {
-            final Map<String, String> inputMapper = root.getInputMapper().inverse();
-            for (String value : inputMapper.values()) {
-                requiredInputs.put(value, root.getProcessor());
+            final BiMap<String, String> inputMapper = root.getInputMapper();
+            for (String attr : inputMapper.keySet()) {
+                requiredInputs.put(attr, root.getProcessor());
             }
             final Object inputParameter = root.getProcessor().createInputParameter();
             if (inputParameter instanceof Values) {
@@ -114,12 +114,10 @@ public final class ProcessorDependencyGraph {
                     } catch (NoSuchFieldException e) {
                         throw new RuntimeException(e);
                     }
-                    String mappedName = inputMapper.get(attName);
-                    if (mappedName != null) {
-                        requiredInputs.put(mappedName, root.getProcessor());
-                    } else {
-                        requiredInputs.put(attName, root.getProcessor());
-                    }
+                    String mappedName = ProcessorUtils.getInputValueName(
+                            root.getProcessor().getInputPrefix(),
+                            inputMapper, attName);
+                    requiredInputs.put(mappedName, root.getProcessor());
                 }
             }
         }
