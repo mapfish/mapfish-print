@@ -1,8 +1,8 @@
-.. image:: https://travis-ci.org/camptocamp/mapfish-printV3.svg?branch=development
-    :target: https://travis-ci.org/camptocamp/mapfish-printV3
+.. image:: https://travis-ci.org/mapfish/mapfish-print.svg?branch=development
+    :target: https://travis-ci.org/mapfish-print/mapfish-print
 
 Please read the documentation available here:
-http://mapfish.github.io/mapfish-print/#/overview
+http://mapfish.github.io/mapfish-print/
 
 
 Build
@@ -25,7 +25,7 @@ If you only want to build the docs simply run
 
   > ./gradlew docs:build
 
-or run buld in the docs directory
+or run build in the docs directory
 
 Deploy
 ------
