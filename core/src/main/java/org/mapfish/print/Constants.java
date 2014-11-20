@@ -54,7 +54,7 @@ public interface Constants {
      * The default charset.  Depends on {@link #DEFAULT_ENCODING}.
      */
     Charset DEFAULT_CHARSET = Charset.forName(DEFAULT_ENCODING);
- 
+
     /**
      * The DPI of a PDF according to the spec.  Also the DPI used by old Openlayers versions (2.0 and earlier).
      */

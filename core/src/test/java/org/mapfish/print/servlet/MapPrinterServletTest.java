@@ -24,6 +24,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -60,6 +61,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
@@ -135,7 +137,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertTrue(contentAsString2.startsWith("exampleRequest("));
         assertTrue(contentAsString2.endsWith(");"));
     }
-    
+
     @Test(timeout = 60000)
     public void testCreateReport_Success_NoAppId() throws Exception {
         doCreateAndPollAndGetReport(new Function<MockHttpServletRequest, MockHttpServletResponse>() {
@@ -225,7 +227,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
             }
         }, true);
     }
-    
+
     @Test(timeout = 60000)
     public void testCreateReport_2Requests_Success_NoAppId() throws Exception {
         doCreateAndPollAndGetReport(new Function<MockHttpServletRequest, MockHttpServletResponse>() {
@@ -335,7 +337,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
                 assertTrue(contentAsString.endsWith(");"));
                 contentAsString = contentAsString.replace("getStatus(", "").replace(");", "");
             }
-            
+
             final PJsonObject statusJson = parseJSONObjectFromString(contentAsString);
             assertTrue(statusJson.toString(), statusJson.has(MapPrinterServlet.JSON_DONE));
             assertTrue(statusJson.toString(), statusJson.has(MapPrinterServlet.JSON_TIME));
@@ -356,7 +358,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         final int status = servletGetReportResponse.getStatus();
         assertEquals(HttpStatus.OK.value(), status);
         assertCorrectResponse(servletGetReportResponse);
-        
+
         return ref;
 
     }
@@ -441,7 +443,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     @Test(timeout = 60000)
     public void testCancel() throws Exception {
         setUpConfigFiles();
-        
+
         final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
         final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
 
@@ -470,7 +472,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     @Test(timeout = 60000)
     public void testCancel_Sleep() throws Exception {
         setUpConfigFiles();
-        
+
         final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
         final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
 
@@ -484,7 +486,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         // sleep a bit, so that the processors have time to start ...
         Thread.sleep(500);
-        
+
         // ... then cancel
         MockHttpServletResponse servletCancelResponse = new MockHttpServletResponse();
         servlet.cancel(ref, servletCancelResponse);
@@ -516,7 +518,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
                 }
             }
         }, false);
-        
+
         // ... then cancel
         MockHttpServletResponse servletCancelResponse = new MockHttpServletResponse();
         servlet.cancel(ref, servletCancelResponse);
@@ -545,7 +547,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     public void testCreateReport_Timeout() throws Exception {
         jobManager.setTimeout(1L);
         setUpConfigFiles();
-        
+
         final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
         final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
 
@@ -561,7 +563,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertTrue(ref.endsWith(atHostRefSegment));
         assertTrue(ref.indexOf(atHostRefSegment) > 0);
         waitForCanceled(ref);
-        
+
         // now after canceling a task, check that the system is left in a state in which
         // it still can process jobs
         jobManager.setTimeout(600L);
@@ -573,7 +575,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     public void testCreateReport_AbandonedTimeout() throws Exception {
         jobManager.setAbandonedTimeout(1L);
         setUpConfigFiles();
-        
+
         final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
         final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
 
@@ -587,7 +589,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         // wait for 2 seconds without making a status request, the job should be canceled after that time
         Thread.sleep(2000);
-        
+
         final MockHttpServletRequest statusRequest = new MockHttpServletRequest();
         final MockHttpServletResponse statusResponse = new MockHttpServletResponse();
         servlet.getStatus(ref, "", statusRequest, statusResponse);
@@ -609,6 +611,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
                 Thread.sleep(500);
             } else if (status == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                 String error = servletGetReportResponse.getContentAsString();
+                System.out.println(error);
                 assertTrue(error.contains("canceled"));
                 return;
             } else {
@@ -738,19 +741,19 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     @Test(timeout = 60000)
     public void testGetStatus_InvalidRef() throws Exception {
         setUpConfigFiles();
-        
+
         String ref = "invalid-ref";
         MockHttpServletRequest servletStatusRequest = new MockHttpServletRequest("GET", "/print/status/" + ref + ".json");
         MockHttpServletResponse servletStatusResponse = new MockHttpServletResponse();
         servlet.getStatus(ref, "", servletStatusRequest, servletStatusResponse);
-        
+
         assertEquals(HttpStatus.NOT_FOUND.value(), servletStatusResponse.getStatus());
     }
 
     @Test(timeout = 60000)
     public void testGetReport_InvalidRef() throws Exception {
         setUpConfigFiles();
-        
+
         String ref = "invalid-ref";
         MockHttpServletResponse servletGetReportResponse = new MockHttpServletResponse();
         servlet.getReport(ref, false, servletGetReportResponse);
@@ -974,7 +977,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         final PJsonObject requestJson = parseJSONObjectFromFile(MapPrinterServletTest.class, "requestData.json");
         return requestJson.getInternalObj().toString();
     }
-    
+
     /**
      * Processor which sleeps for 2 seconds, to test timeouts.
      */

@@ -24,7 +24,5 @@ templates:
     - !createMapPages {} # creates the iterable<Values> consumed by dataSource
     - !createMap {}
     - !createDataSource
-      inputMapper: {maps: datasource}
       processors:
         - !createMap {}
-    

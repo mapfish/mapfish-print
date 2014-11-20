@@ -19,8 +19,9 @@
 
 package org.mapfish.print.attribute.map;
 
-import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.util.Assert;
+
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -35,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -45,7 +47,7 @@ import javax.annotation.Nonnull;
  */
 // CSOFF: VisibilityModifier
 public final class AreaOfInterest {
-    private Polygon polygon;
+    private Geometry polygon;
 
     /**
      * A Geojson geometry (can be string or GeoJson) that indicates the area of interest.
@@ -96,7 +98,7 @@ public final class AreaOfInterest {
         try {
             bytes = this.area.getBytes(Constants.DEFAULT_ENCODING);
             final InputStream input = new ByteArrayInputStream(bytes);
-            this.polygon = (Polygon) json.read(input);
+            this.polygon = json.read(input);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -107,7 +109,7 @@ public final class AreaOfInterest {
     /**
      * Get the area polygon.  It will parse the polygon string representation in the polygon field.
      */
-    public synchronized Polygon getArea() {
+    public synchronized Geometry getArea() {
         if (this.polygon == null) {
             parseGeometry();
         }
@@ -132,7 +134,7 @@ public final class AreaOfInterest {
         return features;
     }
 
-    public void setPolygon(final Polygon polygon) {
+    public void setPolygon(final Geometry polygon) {
         this.polygon = polygon;
     }
 

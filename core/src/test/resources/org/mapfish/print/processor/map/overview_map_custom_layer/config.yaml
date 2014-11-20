@@ -2,8 +2,8 @@ templates:
   main: !template
     reportTemplate: "dummy.jxml"
     attributes:
-      styleDef: !style {}
-      mapDef: !map
+      style: !style {}
+      map: !map
         width: 780
         height: 330
         maxDpi: 400
@@ -11,31 +11,20 @@ templates:
         zoomLevelSnapStrategy: CLOSEST_LOWER_SCALE_ON_TIE
         zoomLevels: !zoomLevels
           scales: [5000, 10000, 25000, 50000, 110000, 500000, 1000000]
-      overviewMapDef: !overviewMap
+      overviewMap: !overviewMap
         width: 300
         height: 200
         maxDpi: 400
         zoomFactor: 2
     processors:
     - !createMap
-        inputMapper: {mapDef: map}
         outputMapper: {mapSubReport: mapOut}
     - !createOverviewMap
-        inputMapper: {
-            mapDef: map,
-            overviewMapDef: overviewMap
-        }
-        outputMapper: {
-            overviewMapSubReport: overviewMapOut,
+        outputMapper:
+            overviewMapSubReport: overviewMapOut
             layerGraphics: overviewMapLayerGraphics 
-        }
+    - !setStyle {}
     - !setStyle
       inputMapper:
-        mapDef: map
-        styleDef: style
-    - !setStyle
-      inputMapper:
-        overviewMapDef: map
-        styleDef: style
-
-
+        overviewMap: map
+        style: style

@@ -27,6 +27,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 import com.vividsolutions.jts.util.Assert;
+
 import org.mapfish.print.parser.ParserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -51,7 +52,7 @@ public final class ProcessorDependencyGraphFactory {
 
     @Autowired
     private MetricRegistry metricRegistry;
-    
+
     /**
      * External dependencies between processor types.
      */
@@ -59,7 +60,7 @@ public final class ProcessorDependencyGraphFactory {
     private List<ProcessorDependency> dependencies;
 
     /**
-     * Sets the external dependencies between processors. Usually configured in 
+     * Sets the external dependencies between processors. Usually configured in
      * <code>mapfish-spring-processors.xml</code>
      *
      * @param dependencies the dependencies
@@ -146,12 +147,12 @@ public final class ProcessorDependencyGraphFactory {
         for (ProcessorGraphNode<Object, Object> node : nodes) {
             // a root node is a node that has no requirements (that is no other node
             // should be executed before the node) and that has only external inputs
-            if (!node.hasRequirements() && 
+            if (!node.hasRequirements() &&
                     hasNoneOrOnlyExternalInput(node, inputsForNodes.get(node), provideBy)) {
                 graph.addRoot(node);
             }
         }
-        
+
         Assert.isTrue(graph.getAllProcessors().containsAll(processors), "'" + graph + "' does not contain all the processors: " +
                                                                         processors);
 
@@ -193,7 +194,7 @@ public final class ProcessorDependencyGraphFactory {
                                     break;
                                 }
                             }
-                            
+
                             if (allRequiredInputsInCommon) {
                                 node.addDependency(dependentNode);
                             }
@@ -206,7 +207,7 @@ public final class ProcessorDependencyGraphFactory {
 
     /**
      * Get the name of the common input attribute for the dependent node.
-     * 
+     *
      * E.g. "map;overviewMap" -> "overviewMap"
      * or   "map" -> "map"
      */
@@ -220,7 +221,7 @@ public final class ProcessorDependencyGraphFactory {
 
     /**
      * Get the name of the common input attribute for the required node.
-     * 
+     *
      * E.g. "map;overviewMap" -> "map"
      * or   "map" -> "map"
      */
@@ -237,7 +238,7 @@ public final class ProcessorDependencyGraphFactory {
         if (node.getInputMapper().containsValue(requiredInput)) {
             inputName = node.getInputMapper().inverse().get(requiredInput);
         }
-        
+
         return inputName;
     }
 
@@ -246,7 +247,7 @@ public final class ProcessorDependencyGraphFactory {
         if (node.getInputMapper().containsKey(mappedKey)) {
             inputName = node.getInputMapper().get(mappedKey);
         }
-        
+
         return inputName;
     }
 
@@ -286,11 +287,8 @@ public final class ProcessorDependencyGraphFactory {
 
             final Collection<Field> allProperties = getAllAttributes(inputParameter.getClass());
             for (Field field : allProperties) {
-                if (!inputMapper.containsValue(field.getName())) {
-                    inputs.add(new InputValue(field.getName(), field.getType()));
-                } else {
-                    inputs.add(new InputValue(inputMapper.inverse().get(field.getName()), field.getType()));
-                }
+                String name = ProcessorUtils.getInputValueName(node.getProcessor().getInputPrefix(), inputMapper, field.getName());
+                inputs.add(new InputValue(name, field.getType()));
             }
         }
 
@@ -341,7 +339,7 @@ public final class ProcessorDependencyGraphFactory {
 
     private static class InputValue {
         private final String name;
-        private Class<?> type;
+        private final Class<?> type;
 
         public InputValue(final String name, final Class<?> type) {
             this.name = name;

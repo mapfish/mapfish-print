@@ -2,7 +2,7 @@
 templates:
   main: !template
     attributes:
-      styleDef: !style {}
+      style: !style {}
       mapDef1: !map
         maxDpi: 300
         width: 555
@@ -34,7 +34,6 @@ templates:
     - !setStyle
       inputMapper:
         mapDef1: map
-        styleDef: style
     - !createMap
       inputMapper: {mapDef2: map}
       outputMapper:
@@ -43,4 +42,3 @@ templates:
     - !setStyle
       inputMapper:
         mapDef2: map
-        styleDef: style

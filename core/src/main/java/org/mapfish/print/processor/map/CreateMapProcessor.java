@@ -23,7 +23,9 @@ import com.google.common.collect.Lists;
 import com.google.common.io.Closer;
 import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Polygon;
+
 import net.sf.jasperreports.engine.JRException;
+
 import org.apache.batik.svggen.DefaultStyleHandler;
 import org.apache.batik.svggen.SVGGeneratorContext;
 import org.apache.batik.svggen.SVGGraphics2D;
@@ -69,6 +71,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;

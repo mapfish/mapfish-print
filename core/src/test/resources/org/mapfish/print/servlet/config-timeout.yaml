@@ -13,15 +13,10 @@ templates:
         height: 500
         maxDpi: 400
     processors:
-    - !sleeper # sleepy processor for timeout tests
-        inputMapper: {}
-        outputMapper: {}
+    - !sleeper {} # sleepy processor for timeout tests
     - !reportBuilder # compile all reports in current directory
         directory: '.'
     - !createMap
-        inputMapper: {geojsonMap: map}
-        outputPrefix: geojson
+        prefix: geojson
     - !createMap
-        outputPrefix: image
-        inputMapper: {imageMap: map}
-
+        prefix: image

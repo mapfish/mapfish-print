@@ -2,8 +2,8 @@
 templates:
   main: !template
     attributes:
-      styleDef: !style {}
-      mapDef: !map
+      style: !style {}
+      map: !map
         maxDpi: 300
         width: 555
         height: 400
@@ -16,10 +16,5 @@ templates:
             style: "point"
             geoJson: "{}"
     processors:
-    - !createMap
-      inputMapper: {mapDef: map}
-      outputMapper: {mapSubReport: map}
-    - !setStyle
-      inputMapper:
-        mapDef: map
-        styleDef: style
+    - !createMap {}
+    - !setStyle {}

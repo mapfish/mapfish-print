@@ -4,7 +4,7 @@ templates:
     attributes:
       customP1: !string {}
       customP2: !string {}
-      map1: !map
+      map: !map
         width: 630
         height: 294
         maxDpi: 400
@@ -16,13 +16,9 @@ templates:
     - !setWmsCustomParam
         paramName: customP1
         inputMapper: 
-          map1: map
           customP1: value
     - !setWmsCustomParam
         paramName: customP2
         inputMapper: 
-          map1: map
           customP2: value
-    - !createMap
-        inputMapper: {map1: map}
-        outputMapper: {mapSubReport: map}
+    - !createMap {}

@@ -1,4 +1,5 @@
 throwErrorOnExtraParameters: true
+
 templates:
   main: !template
     reportTemplate: "dummy.jxml"
@@ -15,4 +16,3 @@ templates:
           features: features
     - !createMap
         inputMapper: {map1: map}
-        outputMapper: {mapSubReport: map}

@@ -20,15 +20,19 @@
 package org.mapfish.print.processor;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.BiMap;
+
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.HasDefaultValue;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.NoSuchElementException;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -62,19 +66,10 @@ public final class ProcessorUtils {
             return castValues;
         }
         if (inputObject != null) {
-            Map<String, String> inputMapper = processor.getInputMapperBiMap();
-            if (inputMapper == null) {
-                inputMapper = Collections.emptyMap();
-            } else {
-                inputMapper = processor.getInputMapperBiMap().inverse();
-            }
-
             Collection<Field> fields = getAllAttributes(inputObject.getClass());
             for (Field field : fields) {
-                String name = inputMapper.get(field.getName());
-                if (name == null) {
-                    name = field.getName();
-                }
+                String name = getInputValueName(processor.getOutputPrefix(),
+                        processor.getInputMapperBiMap(), field.getName());
                 Object value;
                 if (field.getType() == Values.class) {
                     value = values;
@@ -89,9 +84,9 @@ public final class ProcessorUtils {
                     }
                 } else {
                     if (field.getAnnotation(HasDefaultValue.class) == null) {
-                        throw new NoSuchElementException(name + " is a required property for " + processor +
+                        throw new NoSuchElementException(name + " or " + field.getName() + " is a required property for " + processor +
                                                          " and therefore must be defined in the Request Data or be an output of one" +
-                                                         " of the other processors.");
+                                                         " of the other processors. Available values: " + values.asMap().keySet() + ".");
                     }
                 }
             }
@@ -127,6 +122,36 @@ public final class ProcessorUtils {
                 throw ExceptionUtils.getRuntimeException(e);
             }
         }
+    }
+
+    /**
+     * Calculate the name of the input value.
+     *
+     * @param inputPrefix a nullable prefix to prepend to the name if non-null and non-empty
+     * @param inputMapper the name mapper
+     * @param field        the field containing the value
+     */
+    public static String getInputValueName(@Nullable final String inputPrefix,
+                                            @Nonnull final BiMap<String, String> inputMapper,
+                                            @Nonnull final String field) {
+        String name = inputMapper == null ? null : inputMapper.inverse().get(field);
+        if (name == null) {
+            if (inputMapper.containsKey(field)) {
+                throw new RuntimeException("field in keys");
+            }
+            final String[] defaultValues = {
+                    Values.TASK_DIRECTORY_KEY, Values.CLIENT_HTTP_REQUEST_FACTORY_KEY,
+                    Values.TEMPLATE_KEY, Values.PDF_CONFIG, Values.SUBREPORT_DIR
+                };
+            if (inputPrefix == null || Arrays.asList(defaultValues).contains(field)) {
+                name = field;
+            } else {
+                name = inputPrefix.trim() +
+                        Character.toUpperCase(field.charAt(0)) +
+                        field.substring(1);
+            }
+        }
+        return name;
     }
 
     /**

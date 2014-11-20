@@ -12,15 +12,24 @@ templates:
         height: 330
       paging: !paging
         default:
-          scale: 1000
+          scale: 800
           overlap: 0
+      scalebar: !scalebar
+        width: 240
+        height: 40
     processors:
     - !reportBuilder # compile all reports in current directory
       directory: '.'
     - !createMapPages {}
     - !createMap {}
+    - !createScalebar
+      outputMapper: {}
     - !createDataSource
-      inputMapper: {maps: datasource}
+      inputMapper: {}
+      attributes:
+        scalebar: !scalebar
+          width: 240
+          height: 40
       processors:
         - !createMap {}
-    
+        - !createScalebar {}
