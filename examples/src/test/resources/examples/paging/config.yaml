@@ -10,6 +10,8 @@ templates:
         maxDpi: 400
         width: 780
         height: 330
+        default:
+            useAdjustBounds: true
       paging: !paging
         default:
           scale: 800
