@@ -15,7 +15,7 @@ templates:
       paging: !paging
         default:
           scale: 800
-          overlap: 0
+          overlap: 50
       scalebar: !scalebar
         width: 240
         height: 40
