@@ -10,10 +10,12 @@ templates:
         maxDpi: 400
         width: 780
         height: 330
+        default:
+            useAdjustBounds: true
       paging: !paging
         default:
           scale: 800
-          overlap: 0
+          overlap: 50
       scalebar: !scalebar
         width: 240
         height: 40
