@@ -183,13 +183,18 @@ public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesPro
                     mapValues.put("right", i != nbWidth - 1 ? mapIndexes[i + 1][j] : DO_NOT_RENDER_BBOX_INDEX);
                     mapValues.put("top", j != nbHeight - 1 ? mapIndexes[i][j + 1] : DO_NOT_RENDER_BBOX_INDEX);
 
-                    final Coordinate center = mapsBounds[i][j].centre();
+                    final Envelope mapsBound = mapsBounds[i][j];
                     MapAttributeValues theMap = map.copy(map.getMapSize(), new Function<MapAttributeValues, Void>() {
                         @Nullable
                         @Override
                         public Void apply(@Nonnull final MapAttributeValues input) {
-                            input.center = new double[]{center.x, center.y};
-                            input.scale = paging.scale;
+                            input.center = null;
+                            input.bbox = new double[]{
+                                    mapsBound.getMinX(),
+                                    mapsBound.getMinY(),
+                                    mapsBound.getMaxX(),
+                                    mapsBound.getMaxY()
+                            };
                             input.dpi = dpi;
                             if (paging.aoiDisplay != null) {
                                 input.areaOfInterest.display = paging.aoiDisplay;
