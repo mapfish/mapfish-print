@@ -130,11 +130,11 @@ public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesPro
 
         final double overlapProj = DistanceUnit.IN.convertTo(paging.overlap * paging.scale / dpi, projectionUnit);
 
-        final int nbWidth = (int) Math.ceil(aoiBBox.getWidth() / (paintAreaWidth - overlapProj));
-        final int nbHeight = (int) Math.ceil(aoiBBox.getHeight() / (paintAreaHeight - overlapProj));
+        final int nbWidth = (int) Math.ceil((aoiBBox.getWidth() + overlapProj) / (paintAreaWidth - overlapProj));
+        final int nbHeight = (int) Math.ceil((aoiBBox.getHeight() + overlapProj) / (paintAreaHeight - overlapProj));
 
-        final double marginWidth = (paintAreaWidth * nbWidth - aoiBBox.getWidth()) / 2;
-        final double marginHeight = (paintAreaHeight * nbHeight - aoiBBox.getHeight()) / 2;
+        final double marginWidth = (paintAreaWidth * nbWidth - (nbWidth - 1) * overlapProj - aoiBBox.getWidth()) / 2;
+        final double marginHeight = (paintAreaHeight * nbHeight - (nbHeight - 1) * overlapProj - aoiBBox.getHeight()) / 2;
 
         final double minX = aoiBBox.getMinX() - marginWidth - overlapProj / 2;
         final double minY = aoiBBox.getMinY() - marginHeight - overlapProj / 2;
