@@ -230,8 +230,8 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     }
 
     private URI writeToFile(final BufferedImage image, final File tempTaskDirectory) throws IOException {
-        File path = File.createTempFile("legend-", ".tiff", tempTaskDirectory);
-        ImageIO.write(image, "tiff", path);
+        File path = File.createTempFile("legend-", ".png", tempTaskDirectory);
+        ImageIO.write(image, "png", path);
         return path.toURI();
     }
 
