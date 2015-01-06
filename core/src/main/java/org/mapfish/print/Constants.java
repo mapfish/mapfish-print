@@ -73,6 +73,8 @@ public interface Constants {
      * Style related constants.
      */
     interface Style {
+        double POINT_SIZE = 10.0;
+
         /**
          * Grid style constants.
          */

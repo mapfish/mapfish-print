@@ -25,11 +25,17 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import org.geotools.styling.Displacement;
 import org.geotools.styling.Fill;
+import org.geotools.styling.Graphic;
 import org.geotools.styling.LineSymbolizer;
+import org.geotools.styling.Mark;
 import org.geotools.styling.PointPlacement;
 import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
@@ -347,18 +353,18 @@ public class Configuration {
         if (style == null) {
             StyleBuilder builder = new StyleBuilder();
             final Symbolizer symbolizer;
-            if (normalizedGeomName.equalsIgnoreCase(Point.class.getSimpleName())) {
+            if (isPointType(normalizedGeomName)) {
                 symbolizer = builder.createPointSymbolizer();
-            } else if (normalizedGeomName.equalsIgnoreCase(LineString.class.getSimpleName())) {
+            } else if (isLineType(normalizedGeomName)) {
                 symbolizer = builder.createLineSymbolizer(Color.black, 2);
-            } else if (normalizedGeomName.equalsIgnoreCase(Polygon.class.getSimpleName())) {
+            } else if (isPolygonType(normalizedGeomName)) {
                 symbolizer = builder.createPolygonSymbolizer(Color.lightGray, Color.black, 2);
             } else if (normalizedGeomName.equalsIgnoreCase(Constants.Style.Raster.NAME)) {
                 symbolizer = builder.createRasterSymbolizer();
             } else if (normalizedGeomName.equalsIgnoreCase(Constants.Style.Grid.NAME)) {
                 return createGridStyle(builder);
-            } else if (normalizedGeomName.equalsIgnoreCase(Constants.Style.OverviewMap.NAME)) {
-                symbolizer = createMapOverviewStyle(builder);
+            } else if (normalizedGeomName.startsWith(Constants.Style.OverviewMap.NAME)) {
+                symbolizer = createMapOverviewStyle(normalizedGeomName, builder);
             } else {
                 final Style geomStyle = this.defaultStyle.get(Geometry.class.getSimpleName().toLowerCase());
                 if (geomStyle != null) {
@@ -372,9 +378,42 @@ public class Configuration {
         return style;
     }
 
-    private Symbolizer createMapOverviewStyle(@Nonnull final StyleBuilder builder) {
+    private boolean isPolygonType(@Nonnull final String normalizedGeomName) {
+        return normalizedGeomName.equalsIgnoreCase(Polygon.class.getSimpleName())
+                   || normalizedGeomName.equalsIgnoreCase(MultiPolygon.class.getSimpleName());
+    }
+
+    private boolean isLineType(@Nonnull final String normalizedGeomName) {
+        return normalizedGeomName.equalsIgnoreCase(LineString.class.getSimpleName())
+                   || normalizedGeomName.equalsIgnoreCase(MultiLineString.class.getSimpleName())
+                   || normalizedGeomName.equalsIgnoreCase(LinearRing.class.getSimpleName());
+    }
+
+    private boolean isPointType(@Nonnull final String normalizedGeomName) {
+        return normalizedGeomName.equalsIgnoreCase(Point.class.getSimpleName())
+            || normalizedGeomName.equalsIgnoreCase(MultiPoint.class.getSimpleName());
+    }
+
+    private Symbolizer createMapOverviewStyle(@Nonnull final String normalizedGeomName,
+                                              @Nonnull final StyleBuilder builder) {
         Stroke stroke = builder.createStroke(Color.blue, 2);
         final Fill fill = builder.createFill(Color.blue, 0.2);
+        String overviewGeomType = Polygon.class.getSimpleName();
+
+        if (normalizedGeomName.contains(":")) {
+            final String[] parts = normalizedGeomName.split(":");
+            overviewGeomType = parts[1];
+        }
+
+        if (isPointType(overviewGeomType)) {
+            final Mark mark = builder.createMark(StyleBuilder.MARK_CIRCLE, fill, stroke);
+            Graphic graphic = builder.createGraphic(null, mark, null);
+            graphic.setSize(builder.literalExpression(Constants.Style.POINT_SIZE));
+            return builder.createPointSymbolizer(graphic);
+        }
+        if (isLineType(overviewGeomType)) {
+            return builder.createLineSymbolizer(stroke);
+        }
         return builder.createPolygonSymbolizer(stroke, fill);
     }
 

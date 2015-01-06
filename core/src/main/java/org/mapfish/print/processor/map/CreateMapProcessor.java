@@ -246,7 +246,8 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         final AreaOfInterest areaOfInterest = mapValues.areaOfInterest;
         if (areaOfInterest != null && areaOfInterest.display == AreaOfInterest.AoiDisplay.RENDER) {
             FeatureLayer.FeatureLayerParam param = new FeatureLayer.FeatureLayerParam();
-            param.defaultStyle = Constants.Style.OverviewMap.NAME;
+            param.defaultStyle = Constants.Style.OverviewMap.NAME + ":" + areaOfInterest.getArea().getClass().getSimpleName();
+
             param.style = areaOfInterest.style;
             param.renderAsSvg = areaOfInterest.renderAsSvg;
             param.features = areaOfInterest.areaToFeatureCollection(mapValues);
