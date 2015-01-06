@@ -21,6 +21,7 @@ package org.mapfish.print.attribute.map;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.GeodeticCalculator;
 import org.mapfish.print.map.DistanceUnit;
@@ -82,7 +83,7 @@ public final class BBoxMapBounds extends MapBounds {
         final double paintAreaAspectRatio = paintArea.getWidth() / paintArea.getHeight();
         final double bboxAspectRatio = this.bbox.getWidth() / this.bbox.getHeight();
         if (paintAreaAspectRatio > bboxAspectRatio) {
-            double centerX = (this.bbox.getMinY() + this.bbox.getMaxY()) / 2;
+            double centerX = (this.bbox.getMinX() + this.bbox.getMaxX()) / 2;
             double factor = paintAreaAspectRatio / bboxAspectRatio;
             double finalDiff =  (this.bbox.getMaxX() - centerX) * factor;
 

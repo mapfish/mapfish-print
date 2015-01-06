@@ -117,7 +117,7 @@ public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesPro
             areaOfInterest.display = AreaOfInterest.AoiDisplay.NONE;
             ReferencedEnvelope mapBBox = map.getMapBounds().toReferencedEnvelope(paintArea, dpi);
 
-            areaOfInterest.setPolygon((Polygon) this.geometryFactory.toGeometry(mapBBox));
+            areaOfInterest.setPolygon(this.geometryFactory.toGeometry(mapBBox));
         }
 
         Envelope aoiBBox = areaOfInterest.getArea().getEnvelopeInternal();
@@ -128,14 +128,16 @@ public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesPro
         final double paintAreaWidth = DistanceUnit.IN.convertTo(paintAreaWidthIn, projectionUnit);
         final double paintAreaHeight = DistanceUnit.IN.convertTo(paintAreaHeightIn, projectionUnit);
 
-        final int nbWidth = (int) Math.ceil(aoiBBox.getWidth() / (paintAreaWidth - paging.overlap));
-        final int nbHeight = (int) Math.ceil(aoiBBox.getHeight() / (paintAreaHeight - paging.overlap));
+        final double overlapProj = DistanceUnit.IN.convertTo(paging.overlap * paging.scale / dpi, projectionUnit);
 
-        final double marginWidth = (paintAreaWidth * nbWidth - aoiBBox.getWidth()) / 2;
-        final double marginHeight = (paintAreaHeight * nbHeight - aoiBBox.getHeight()) / 2;
+        final int nbWidth = (int) Math.ceil((aoiBBox.getWidth() + overlapProj) / (paintAreaWidth - overlapProj));
+        final int nbHeight = (int) Math.ceil((aoiBBox.getHeight() + overlapProj) / (paintAreaHeight - overlapProj));
 
-        final double minX = aoiBBox.getMinX() - marginWidth - paging.overlap / 2;
-        final double minY = aoiBBox.getMinY() - marginHeight - paging.overlap / 2;
+        final double marginWidth = (paintAreaWidth * nbWidth - (nbWidth - 1) * overlapProj - aoiBBox.getWidth()) / 2;
+        final double marginHeight = (paintAreaHeight * nbHeight - (nbHeight - 1) * overlapProj - aoiBBox.getHeight()) / 2;
+
+        final double minX = aoiBBox.getMinX() - marginWidth - overlapProj / 2;
+        final double minY = aoiBBox.getMinY() - marginHeight - overlapProj / 2;
 
         LOGGER.info("Paging generate a grid of " + nbWidth + "x" + nbHeight + " potential maps.");
         final int[][] mapIndexes = new int[nbWidth][nbHeight];
@@ -144,9 +146,9 @@ public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesPro
 
         for (int j = 0; j < nbHeight; j++) {
             for (int i = 0; i < nbWidth; i++) {
-                final double x1 = minX + i * (paintAreaWidth - paging.overlap);
+                final double x1 = minX + i * (paintAreaWidth - overlapProj);
                 final double x2 = x1 + paintAreaWidth;
-                final double y1 = minY + j * (paintAreaHeight - paging.overlap);
+                final double y1 = minY + j * (paintAreaHeight - overlapProj);
                 final double y2 = y1 + paintAreaHeight;
                 Coordinate[] coords  = new Coordinate[] {
                         new Coordinate(x1, y1),
@@ -181,13 +183,18 @@ public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesPro
                     mapValues.put("right", i != nbWidth - 1 ? mapIndexes[i + 1][j] : DO_NOT_RENDER_BBOX_INDEX);
                     mapValues.put("top", j != nbHeight - 1 ? mapIndexes[i][j + 1] : DO_NOT_RENDER_BBOX_INDEX);
 
-                    final Coordinate center = mapsBounds[i][j].centre();
+                    final Envelope mapsBound = mapsBounds[i][j];
                     MapAttributeValues theMap = map.copy(map.getMapSize(), new Function<MapAttributeValues, Void>() {
                         @Nullable
                         @Override
                         public Void apply(@Nonnull final MapAttributeValues input) {
-                            input.center = new double[]{center.x, center.y};
-                            input.scale = paging.scale;
+                            input.center = null;
+                            input.bbox = new double[]{
+                                    mapsBound.getMinX(),
+                                    mapsBound.getMinY(),
+                                    mapsBound.getMaxX(),
+                                    mapsBound.getMaxY()
+                            };
                             input.dpi = dpi;
                             if (paging.aoiDisplay != null) {
                                 input.areaOfInterest.display = paging.aoiDisplay;

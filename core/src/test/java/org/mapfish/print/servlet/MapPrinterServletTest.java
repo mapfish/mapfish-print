@@ -611,7 +611,6 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
                 Thread.sleep(500);
             } else if (status == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                 String error = servletGetReportResponse.getContentAsString();
-                System.out.println(error);
                 assertTrue(error.contains("canceled"));
                 return;
             } else {

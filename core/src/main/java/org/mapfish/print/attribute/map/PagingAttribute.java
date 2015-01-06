@@ -94,7 +94,5 @@ public final class PagingAttribute extends ReflectiveAttribute<PagingAttribute.P
          */
         @HasDefaultValue
         public String aoiStyle = null;
-
-
     }
 }
