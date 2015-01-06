@@ -27,8 +27,8 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.InternalValue;
+import org.mapfish.print.processor.jasper.ImagesSubReport;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
-import org.mapfish.print.processor.jasper.MapSubReport;
 
 import java.awt.Dimension;
 import java.io.File;
@@ -112,7 +112,7 @@ public class CreateNorthArrowProcessor extends AbstractProcessor<CreateNorthArro
                                    final Dimension size,
                                    final List<URI> graphics,
                                    final double dpi) throws IOException, JRException {
-        final MapSubReport subReport = new MapSubReport(graphics, size, dpi);
+        final ImagesSubReport subReport = new ImagesSubReport(graphics, size, dpi);
 
         final File compiledReport = File.createTempFile("north-arrow-report-",
                 JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT, printDirectory);

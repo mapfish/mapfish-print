@@ -208,7 +208,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
 
         URI imageFile = writeToFile(image, tempTaskDirectory);
 
-        final MapSubReport subReport = new MapSubReport(
+        final ImagesSubReport subReport = new ImagesSubReport(
                 Lists.newArrayList(imageFile),
                 new Dimension((int) (image.getWidth() * scaleFactor), (int) (image.getHeight() * scaleFactor)),
                 this.dpi);
