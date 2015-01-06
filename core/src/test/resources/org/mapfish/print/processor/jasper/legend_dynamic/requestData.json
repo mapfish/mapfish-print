@@ -1,0 +1,17 @@
+{
+    "attributes": {
+        "legend": {
+            "name": "",
+            "classes": [{
+                "name": "Arbres",
+                "icons": ["http://legend.com/legend1.png"]
+            }, {
+                "name": "Peturbations",
+                "icons": ["http://legend.com/legend2.png"]
+            }, {
+                "name": "Points de vente",
+                "icons": ["http://legend.com/legend3.png"]
+            }]
+        }
+    }
+}
