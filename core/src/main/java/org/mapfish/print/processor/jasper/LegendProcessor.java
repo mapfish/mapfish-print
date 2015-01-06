@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import com.google.common.io.Closer;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
+import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.LegendAttribute.LegendAttributeValue;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
@@ -72,9 +73,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     private Color missingImageColor = Color.PINK;
     private String template;
     private Integer maxWidth = null;
-    // CSOFF:MagicNumber
-    private Integer dpi = 72;
-    // CSON:MagicNumber
+    private Double dpi = Constants.PDF_DPI;
 
     /**
      * Constructor.
@@ -108,7 +107,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
      * Note: This parameter is only considered when `maxWidth` is set.
      * @param dpi The DPI value.
      */
-    public void setDpi(final Integer dpi) {
+    public void setDpi(final Double dpi) {
         this.dpi = dpi;
     }
 
@@ -227,9 +226,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     }
 
     private double getScaleFactor() {
-        // CSOFF:MagicNumber
-        return 72.0 / this.dpi;
-        // CSON:MagicNumber
+        return Constants.PDF_DPI / this.dpi;
     }
 
     private URI writeToFile(final BufferedImage image, final File tempTaskDirectory) throws IOException {
