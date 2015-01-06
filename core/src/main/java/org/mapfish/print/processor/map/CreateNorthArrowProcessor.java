@@ -61,7 +61,7 @@ import java.util.List;
  *       northArrowDef: northArrow
  *     }
  *     outputMapper: {
- *       subReport: northArrowSubReport
+ *       northArrowSubReport: northArrowSubReport
  *     }
  * </code></pre>
  */
@@ -160,11 +160,11 @@ public class CreateNorthArrowProcessor extends AbstractProcessor<CreateNorthArro
         /**
          * The path to the compiled sub-report for the north arrow.
          */
-        public final String subReport;
+        public final String northArrowSubReport;
 
-        private Output(final URI graphic, final String subReport) {
+        private Output(final URI graphic, final String northArrowSubReport) {
             this.graphic = graphic;
-            this.subReport = subReport;
+            this.northArrowSubReport = northArrowSubReport;
         }
     }
 }

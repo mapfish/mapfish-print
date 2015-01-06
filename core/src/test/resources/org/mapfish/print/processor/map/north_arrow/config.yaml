@@ -20,6 +20,6 @@ templates:
         outputMapper: {mapSubReport: mapOut}
     - !createNorthArrow
         inputMapper: {mapDef: map, northArrowDef: northArrow}
-        outputMapper: {subReport: northArrowOut}
+        outputMapper: {northArrowSubReport: northArrowOut}
 
 

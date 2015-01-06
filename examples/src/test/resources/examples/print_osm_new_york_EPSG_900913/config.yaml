@@ -29,4 +29,3 @@ templates:
     - !createScalebar {}
     - !createNorthArrow
         inputMapper: {map: map, northArrowDef: northArrow}
-        outputMapper: {subReport: northArrowSubReport}

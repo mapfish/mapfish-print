@@ -63,7 +63,7 @@ public final class WmsUtilities {
         getMapRequest.setFormat(wmsLayerParam.imageFormat);
         getMapRequest.setSRS(CRS.lookupIdentifier(bounds.getCoordinateReferenceSystem(), false));
 
-        for (int i = 0; i < wmsLayerParam.layers.length; i++) {
+        for (int i = wmsLayerParam.layers.length - 1; i > -1; i--) {
             String layer = wmsLayerParam.layers[i];
             String style = "";
             if (wmsLayerParam.styles != null) {
