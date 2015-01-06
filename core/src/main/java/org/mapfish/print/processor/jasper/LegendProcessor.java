@@ -19,9 +19,11 @@
 
 package org.mapfish.print.processor.jasper;
 
+import com.google.common.collect.Lists;
 import com.google.common.io.Closer;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
+import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.LegendAttribute.LegendAttributeValue;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
@@ -39,10 +41,10 @@ import org.springframework.http.client.ClientHttpResponse;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -59,6 +61,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     private static final Logger LOGGER = LoggerFactory.getLogger(LegendProcessor.class);
     private static final String NAME_COLUMN = "name";
     private static final String ICON_COLUMN = "icon";
+    private static final String REPORT_COLUMN = "report";
     private static final String LEVEL_COLUMN = "level";
     @Autowired
     private JasperReportBuilder jasperReportBuilder;
@@ -69,6 +72,8 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     private BufferedImage missingImage;
     private Color missingImageColor = Color.PINK;
     private String template;
+    private Integer maxWidth = null;
+    private Double dpi = Constants.PDF_DPI;
 
     /**
      * Constructor.
@@ -86,6 +91,26 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         this.template = template;
     }
 
+    /**
+     * The maximum width in pixels for the legend graphics.
+     * If this parameter is set, the legend graphics are cropped to the given maximum
+     * width. In this case a sub-report is created containing the graphic.
+     * For reference see the example `legend_dynamic`.
+     * @param maxWidth The max. width.
+     */
+    public void setMaxWidth(final Integer maxWidth) {
+        this.maxWidth = maxWidth;
+    }
+
+    /**
+     * The DPI value that is used for the legend graphics.
+     * Note: This parameter is only considered when `maxWidth` is set.
+     * @param dpi The DPI value.
+     */
+    public void setDpi(final Double dpi) {
+        this.dpi = dpi;
+    }
+
     @Override
     public Input createInputParameter() {
         return new Input();
@@ -94,9 +119,9 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     @Override
     public Output execute(final Input values, final ExecutionContext context) throws Exception {
         final List<Object[]> legendList = new ArrayList<Object[]>();
-        final String[] legendColumns = {NAME_COLUMN, ICON_COLUMN, LEVEL_COLUMN};
+        final String[] legendColumns = {NAME_COLUMN, ICON_COLUMN, REPORT_COLUMN, LEVEL_COLUMN};
         final LegendAttributeValue legendAttributes = values.legend;
-        fillLegend(values.clientHttpRequestFactory, legendAttributes, legendList, 0, context);
+        fillLegend(values.clientHttpRequestFactory, legendAttributes, legendList, 0, context, values.tempTaskDirectory);
         final Object[][] legend = new Object[legendList.size()][];
 
         final JRTableModelDataSource dataSource = new JRTableModelDataSource(new TableDataSource(legendColumns,
@@ -119,12 +144,13 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
                             final LegendAttributeValue legendAttributes,
                             final List<Object[]> legendList,
                             final int level,
-                            final ExecutionContext context) throws IOException, URISyntaxException {
+                            final ExecutionContext context,
+                            final File tempTaskDirectory) throws IOException, URISyntaxException, JRException {
         int insertNameIndex = legendList.size();
         final URL[] icons = legendAttributes.icons;
         if (icons != null) {
             for (URL icon : icons) {
-                Image image = null;
+                BufferedImage image = null;
                 Closer closer = Closer.create();
                 try {
                     checkCancelState(context);
@@ -148,20 +174,65 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
                 if (image == null) {
                     image = this.getMissingImage();
                 }
-                final Object[] iconRow = {null, image, level};
+
+                String report = null;
+                if (this.maxWidth != null) {
+                    // if a max width is given, create a sub-report containing the cropped graphic
+                    report = createSubReport(image, tempTaskDirectory).toString();
+                }
+                final Object[] iconRow = {null, image, report, level};
                 legendList.add(iconRow);
             }
         }
 
         if (legendAttributes.classes != null) {
             for (LegendAttributeValue value : legendAttributes.classes) {
-                fillLegend(clientHttpRequestFactory, value, legendList, level + 1, context);
+                fillLegend(clientHttpRequestFactory, value, legendList, level + 1, context, tempTaskDirectory);
             }
         }
 
         if (!legendList.isEmpty()) {
-            legendList.add(insertNameIndex, new Object[]{legendAttributes.name, null, level});
+            legendList.add(insertNameIndex, new Object[]{legendAttributes.name, null, null, level});
         }
+    }
+
+    private URI createSubReport(final BufferedImage originalImage,
+            final File tempTaskDirectory) throws IOException, JRException {
+        assert (this.maxWidth != null);
+
+        double scaleFactor = getScaleFactor();
+        BufferedImage image = originalImage;
+        if (image.getWidth() * scaleFactor > this.maxWidth) {
+            image = cropToMaxWidth(image, scaleFactor);
+        }
+
+        URI imageFile = writeToFile(image, tempTaskDirectory);
+
+        final ImagesSubReport subReport = new ImagesSubReport(
+                Lists.newArrayList(imageFile),
+                new Dimension((int) (image.getWidth() * scaleFactor), (int) (image.getHeight() * scaleFactor)),
+                this.dpi);
+
+        final File compiledReport = File.createTempFile("legend-report-",
+                JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT, tempTaskDirectory);
+        subReport.compile(compiledReport);
+
+        return compiledReport.toURI();
+    }
+
+    private BufferedImage cropToMaxWidth(final BufferedImage image, final double scaleFactor) {
+        int width = (int) Math.round(this.maxWidth / scaleFactor);
+        return image.getSubimage(0, 0, width, image.getHeight());
+    }
+
+    private double getScaleFactor() {
+        return Constants.PDF_DPI / this.dpi;
+    }
+
+    private URI writeToFile(final BufferedImage image, final File tempTaskDirectory) throws IOException {
+        File path = File.createTempFile("legend-", ".png", tempTaskDirectory);
+        ImageIO.write(image, "png", path);
+        return path.toURI();
     }
 
     @Override
@@ -199,6 +270,11 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
          */
         @InternalValue
         public MfClientHttpRequestFactory clientHttpRequestFactory;
+        /**
+         * The path to the temporary directory for the print task.
+         */
+        @InternalValue
+        public File tempTaskDirectory;
         /**
          * The data required for creating the legend.
          */
