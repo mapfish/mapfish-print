@@ -39,34 +39,34 @@ import java.net.URI;
 import java.util.List;
 
 /**
- * Creates a Jasper report for a map, which is supposed to
+ * Creates a Jasper containing overlaid images, which is supposed to
  * be embedded into an another report as sub-report. 
  * 
  * @author tsauerwein
  */
-public class MapSubReport {
+public class ImagesSubReport {
     
     private final JasperDesign reportDesign;
 
     /**
      * Constructor.
      * 
-     * @param layerGraphics A list of rendered graphic files for each layer.
-     * @param mapSize The size of the map in pixel.
-     * @param dpi the dpi of the map
+     * @param graphics A list of graphic files.
+     * @param size The size of the report in pixel.
+     * @param dpi the dpi of the report
      */
-    public MapSubReport(final List<URI> layerGraphics, final Dimension mapSize, final double dpi) {
-        this.reportDesign = createReport(layerGraphics, mapSize, dpi);
+    public ImagesSubReport(final List<URI> graphics, final Dimension size, final double dpi) {
+        this.reportDesign = createReport(graphics, size, dpi);
     }
 
-    private JasperDesign createReport(final List<URI> layerGraphics, final Dimension mapSize, final double dpi) {
+    private JasperDesign createReport(final List<URI> graphics, final Dimension size, final double dpi) {
         final JasperDesign design = new JasperDesign();
         design.setName("map");
 
         // report size and margins
-        design.setPageWidth(mapSize.width);
-        design.setPageHeight(mapSize.height);
-        design.setColumnWidth(mapSize.width);
+        design.setPageWidth(size.width);
+        design.setPageHeight(size.height);
+        design.setColumnWidth(size.width);
         design.setColumnSpacing(0);
         design.setLeftMargin(0);
         design.setRightMargin(0);
@@ -74,10 +74,10 @@ public class MapSubReport {
         design.setBottomMargin(0);
         
         JRDesignBand band = new JRDesignBand();
-        band.setHeight(mapSize.height);
+        band.setHeight(size.height);
 
         // add layer graphics to report
-        addLayers(layerGraphics, band, mapSize, design);
+        addGraphics(graphics, band, size, design);
         
         // note that the images are added to the "NoData" band, this ensures
         // that they are displayed even if no data connection is passed to the
@@ -88,12 +88,12 @@ public class MapSubReport {
         return design;
     }
 
-    private void addLayers(final List<URI> layerGraphics, final JRDesignBand band,
-            final Dimension mapSize, final JasperDesign design) {
-        for (URI layerGraphicFile : layerGraphics) {
+    private void addGraphics(final List<URI> graphics, final JRDesignBand band,
+            final Dimension size, final JasperDesign design) {
+        for (URI graphicFile : graphics) {
             String imageExpression;
             
-            final String fileName = new File(layerGraphicFile).getAbsolutePath().replace('\\', '/');
+            final String fileName = new File(graphicFile).getAbsolutePath().replace('\\', '/');
             if (Files.getFileExtension(fileName).equals("svg")) {
                 imageExpression = "net.sf.jasperreports.renderers.BatikRenderer.getInstance(new java.io.File(\""
                         + fileName + "\"))";
@@ -101,7 +101,7 @@ public class MapSubReport {
                 imageExpression = "\"" + fileName + "\"";
             }
             
-            band.addElement(getImage(imageExpression, mapSize, design));
+            band.addElement(getImage(imageExpression, size, design));
         }
     }
 

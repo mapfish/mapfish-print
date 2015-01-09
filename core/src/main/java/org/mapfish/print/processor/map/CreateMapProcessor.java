@@ -45,8 +45,8 @@ import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.map.geotools.FeatureLayer;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.InternalValue;
+import org.mapfish.print.processor.jasper.ImagesSubReport;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
-import org.mapfish.print.processor.jasper.MapSubReport;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -159,7 +159,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                                    final Dimension mapSize,
                                    final List<URI> graphics,
                                    final double dpi) throws IOException, JRException {
-        final MapSubReport subReport = new MapSubReport(graphics, mapSize, dpi);
+        final ImagesSubReport subReport = new ImagesSubReport(graphics, mapSize, dpi);
 
         final File compiledReport = File.createTempFile("map-",
                 JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT, printDirectory);
@@ -246,7 +246,8 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         final AreaOfInterest areaOfInterest = mapValues.areaOfInterest;
         if (areaOfInterest != null && areaOfInterest.display == AreaOfInterest.AoiDisplay.RENDER) {
             FeatureLayer.FeatureLayerParam param = new FeatureLayer.FeatureLayerParam();
-            param.defaultStyle = Constants.Style.OverviewMap.NAME;
+            param.defaultStyle = Constants.Style.OverviewMap.NAME + ":" + areaOfInterest.getArea().getClass().getSimpleName();
+
             param.style = areaOfInterest.style;
             param.renderAsSvg = areaOfInterest.renderAsSvg;
             param.features = areaOfInterest.areaToFeatureCollection(mapValues);

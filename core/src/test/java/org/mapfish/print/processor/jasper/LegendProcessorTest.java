@@ -19,9 +19,23 @@
 
 package org.mapfish.print.processor.jasper;
 
-import com.google.common.base.Predicate;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import jsr166y.ForkJoinPool;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
+import net.sf.jasperreports.engine.design.JRDesignField;
+
 import org.json.simple.JSONArray;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -39,18 +53,15 @@ import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.test.annotation.DirtiesContext;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import javax.annotation.Nullable;
-
-import static org.junit.Assert.assertEquals;
+import com.google.common.base.Predicate;
+import com.google.common.io.Files;
 
 /**
  * @author Jesse on 4/10/2014.
  */
 public class LegendProcessorTest extends AbstractMapfishSpringTest {
     public static final String BASE_DIR = "legend/";
+    public static final String BASE_DIR_DYNAMIC = "legend_dynamic/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
@@ -95,6 +106,60 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
         assertEquals(9, values.getInteger("numberOfLegendRows").intValue());
     }
 
+
+    @Test
+    @DirtiesContext
+    public void testDynamicLegendProperties() throws Exception {
+        httpRequestFactory.registerHandler(new Predicate<URI>() {
+            @Override
+            public boolean apply(@Nullable URI input) {
+                return input != null && input.getHost().equals("legend.com");
+            }
+        }, new TestHttpClientFactory.Handler() {
+            @Override
+            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws IOException  {
+                try {
+                    byte[] bytes = Files.toByteArray(getFile(BASE_DIR_DYNAMIC + uri.getPath()));
+                    return ok(uri, bytes, httpMethod);
+                } catch (AssertionError e) {
+                    return error404(uri, httpMethod);
+                }
+            }
+        });
+        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR_DYNAMIC + "config.yaml"));
+        final Template template = config.getTemplate("main");
+        PJsonObject requestData = loadDynamicJsonRequestData();
+        Values values = new Values(requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
+        forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
+
+        final JRTableModelDataSource legend = values.getObject("legend", JRTableModelDataSource.class);
+
+        JRDesignField iconField = new JRDesignField();
+        iconField.setName("icon");
+        JRDesignField reportField = new JRDesignField();
+        reportField.setName("report");
+
+        List<Object> icons = new ArrayList<Object>();
+        List<Object> reports = new ArrayList<Object>();
+        int count = 0;
+        while (legend.next()) {
+            icons.add(legend.getFieldValue(iconField));
+            reports.add(legend.getFieldValue(reportField));
+            count++;
+        }
+
+        assertEquals(7, count);
+        assertEquals(7, values.getInteger("numberOfLegendRows").intValue());
+
+        assertTrue(icons.get(2) instanceof BufferedImage);
+        assertTrue(icons.get(4) instanceof BufferedImage);
+        assertTrue(icons.get(6) instanceof BufferedImage);
+
+        assertNotNull(reports.get(2));
+        assertNotNull(reports.get(4));
+        assertNotNull(reports.get(6));
+    }
+
     @Test
     @DirtiesContext
     public void testEmptyLegend() throws Exception {
@@ -132,5 +197,9 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
 
     private static PJsonObject loadJsonRequestData() throws IOException {
         return parseJSONObjectFromFile(LegendProcessorTest.class, BASE_DIR + "requestData.json");
+    }
+
+    private static PJsonObject loadDynamicJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(LegendProcessorTest.class, BASE_DIR_DYNAMIC + "requestData.json");
     }
 }
