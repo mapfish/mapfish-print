@@ -80,8 +80,8 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
 
         assertEquals(10, info.getArray("scales").size());
         final PObject firstScale = info.getArray("scales").getObject(0);
-        assertEquals("1:5000", firstScale.getString("name"));
-        assertEquals("5000", firstScale.getString("value"));
+        assertEquals("1:10000000", firstScale.getString("name"));
+        assertEquals("10000000", firstScale.getString("value"));
 
         assertEquals(5, info.getArray("dpis").size());
         
