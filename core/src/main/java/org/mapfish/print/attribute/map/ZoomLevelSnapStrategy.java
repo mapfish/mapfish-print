@@ -87,17 +87,15 @@ public enum ZoomLevelSnapStrategy {
         @Override
         protected SearchResult search(final Scale scale, final double tolerance, final ZoomLevels zoomLevels) {
             double targetScale = scale.getDenominator();
+            final double cutOff = targetScale * (1 - tolerance);
 
-            int pos = 0;
-            for (int i = 1; i < zoomLevels.size(); i++) {
+            int pos = zoomLevels.size() - 1;
+            for (int i = zoomLevels.size() - 1; i >= 0; --i) {
                 double cur = zoomLevels.get(i);
 
-                final double cutOff = targetScale * (1 - tolerance);
                 if (cur >= cutOff) {
                     pos = i;
-                    if (cur == targetScale) {
-                        break;
-                    }
+                    break;
                 }
             }
 
@@ -111,16 +109,15 @@ public enum ZoomLevelSnapStrategy {
         @Override
         protected SearchResult search(final Scale scale, final double tolerance, final ZoomLevels zoomLevels) {
             double targetScale = scale.getDenominator();
+            final double cutOff = targetScale * (1 + tolerance);
 
-            int pos = zoomLevels.size() - 1;
-            for (int i = zoomLevels.size() - 1; i >= 0; --i) {
+            int pos = 0;
+            for (int i = 1; i < zoomLevels.size(); i++) {
                 double cur = zoomLevels.get(i);
 
-                if (cur <= targetScale * (1 + tolerance)) {
+                if (cur <= cutOff) {
                     pos = i;
-                    if (cur == targetScale) {
-                        break;
-                    }
+                    break;
                 }
             }
 
