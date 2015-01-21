@@ -1,0 +1,15 @@
+throwErrorOnExtraParameters: true
+templates:
+  main: !template
+    reportTemplate: "dummy.jxml"
+    attributes:
+      mapDef: !map
+        width: 500
+        height: 400
+        maxDpi: 400
+    processors:
+    - !createMap
+        inputMapper: {mapDef: map}
+        outputMapper: {mapSubReport: mapOut}
+
+
