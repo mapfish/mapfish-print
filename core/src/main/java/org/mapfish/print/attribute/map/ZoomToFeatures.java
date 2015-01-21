@@ -76,14 +76,12 @@ public class ZoomToFeatures {
     public enum ZoomType {
 
         /**
-         * Set the center of the map to the center of the features of all vector layers
-         * of the map.
+         * Set the center of the map to the center of the extent of the features.
          */
         CENTER,
 
         /**
-         * Set the extent of the map so that all features of all vector layers of the map
-         * are visible.
+         * Set the extent of the map so that all features are visible.
          */
         EXTENT
     }
