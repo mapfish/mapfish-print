@@ -43,6 +43,7 @@ import javax.annotation.Nonnull;
 public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
 
     private FeatureSourceSupplier featureSourceSupplier;
+    private FeatureSource<?, ?> featureSource = null;
     private StyleSupplier<FeatureSource> styleSupplier;
     private final Boolean renderAsSvg;
 
@@ -72,11 +73,24 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
         this.styleSupplier = style;
     }
 
+    /**
+     * Get the feature source (either load from the supplier or return the cached source).
+     * @param httpRequestFactory The factory for making http requests.
+     * @param mapContext The map context.
+     */
+    public final FeatureSource<?, ?> getFeatureSource(final MfClientHttpRequestFactory httpRequestFactory,
+            final MapfishMapContext mapContext) {
+        if (this.featureSource == null) {
+            this.featureSource = this.featureSourceSupplier.load(httpRequestFactory, mapContext);
+        }
+        return this.featureSource;
+    }
+
     @Override
     public final List<? extends Layer> getLayers(final MfClientHttpRequestFactory httpRequestFactory,
                                                  final MapfishMapContext mapContext,
                                                  final boolean isFirstLayer) throws Exception {
-        FeatureSource<?, ?> source = this.featureSourceSupplier.load(httpRequestFactory, mapContext);
+        FeatureSource<?, ?> source = getFeatureSource(httpRequestFactory, mapContext);
         Style style = this.styleSupplier.load(httpRequestFactory, source, mapContext);
 
         if (mapContext.isDpiSensitiveStyle() && mapContext.getDPI() > mapContext.getRequestorDPI()) {
