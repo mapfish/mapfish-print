@@ -106,6 +106,14 @@ public abstract class MapBounds {
      */
     public abstract MapBounds zoomOut(final double factor);
 
+    /**
+     * Zoom to the given scale.
+     *
+     * @param scale The new scale.
+     * @return Bounds adjusted to the scale.
+     */
+    public abstract MapBounds zoomToScale(final double scale);
+
     // CHECKSTYLE:OFF
     @Override
     public boolean equals(Object o) {

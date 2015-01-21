@@ -205,6 +205,37 @@ public final class BBoxMapBounds extends MapBounds {
                 minGeoX, minGeoY, maxGeoX, maxGeoY);
     }
 
+    @Override
+    public MapBounds zoomToScale(final double scale) {
+        Coordinate center = this.bbox.centre();
+        return new CenterScaleMapBounds(getProjection(), center.x, center.y, new Scale(scale));
+    }
+
+    /**
+     * Expand the bounds by the given margin (in pixel).
+     *
+     * @param margin Value in pixel.
+     * @param paintArea the paint area of the map.
+     */
+    public MapBounds expand(final int margin, final Rectangle paintArea) {
+        double factorX = 1.0 + (2 * margin) / paintArea.getWidth();
+        double factorY = 1.0 + (2 * margin) / paintArea.getHeight();
+
+        double destWidth = this.bbox.getWidth() * factorX;
+        double destHeight = this.bbox.getHeight() * factorY;
+
+        double centerX = this.bbox.centre().x;
+        double centerY = this.bbox.centre().y;
+
+        double minGeoX = centerX - destWidth / 2.0;
+        double maxGeoX = centerX + destWidth / 2.0;
+        double minGeoY = centerY - destHeight / 2.0;
+        double maxGeoY = centerY + destHeight / 2.0;
+
+        return new BBoxMapBounds(getProjection(),
+                minGeoX, minGeoY, maxGeoX, maxGeoY);
+    }
+
     // CHECKSTYLE:OFF
     @Override
     public boolean equals(Object o) {
