@@ -20,6 +20,7 @@
 package org.mapfish.print.attribute.map;
 
 import com.google.common.collect.Lists;
+
 import org.geotools.referencing.CRS;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -27,6 +28,7 @@ import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.attribute.ReflectiveAttribute;
+import org.mapfish.print.attribute.map.ZoomToFeatures.ZoomType;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
@@ -155,5 +157,32 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         assertTrue(CRS.equalsIgnoreMetadata(expected, proj));
         assertEquals(0.0, value.rotation, 0.1);
         assertArrayEquals(new double[]{90, 200, 300, 400}, value.getDpiSuggestions(), 0.1);
+    }
+
+    @Test
+    public void testZoomToFeatures() throws Exception {
+        final File configFile = getFile(MapAttributeTest.class, "map_attributes/config-zoomTo.yaml");
+        final Configuration config = configurationFactory.getConfig(configFile);
+        final Template template = config.getTemplate("main");
+        final PJsonObject pJsonObject = parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-zoomTo.json");
+        final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory,
+                new File("."));
+        final MapAttribute.MapAttributeValues value = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
+
+        assertEquals(null, value.zoomToFeatures);
+    }
+
+    @Test
+    public void testZoomToFeaturesCenter() throws Exception {
+        final File configFile = getFile(MapAttributeTest.class, "map_attributes/config-zoomToCenter.yaml");
+        final Configuration config = configurationFactory.getConfig(configFile);
+        final Template template = config.getTemplate("main");
+        final PJsonObject pJsonObject = parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-zoomToCenter.json");
+        final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory,
+                new File("."));
+        final MapAttribute.MapAttributeValues value = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
+
+        assertNotNull(value.zoomToFeatures);
+        assertEquals(ZoomType.CENTER, value.zoomToFeatures.zoomType);
     }
 }
