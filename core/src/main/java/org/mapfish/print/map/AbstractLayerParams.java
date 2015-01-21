@@ -13,4 +13,9 @@ public class AbstractLayerParams {
      */
     @HasDefaultValue
     public double opacity = 1.0;
+    /**
+     * The name of the layer.
+     */
+    @HasDefaultValue
+    public String name = "";
 }

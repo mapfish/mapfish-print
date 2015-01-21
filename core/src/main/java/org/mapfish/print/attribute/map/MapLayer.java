@@ -62,4 +62,9 @@ public interface MapLayer {
      * @return True if the layer itself takes care of rotating.
      */
     boolean supportsNativeRotation();
+
+    /**
+     * The layer name.
+     */
+    String getName();
 }

@@ -21,6 +21,9 @@ package org.mapfish.print.attribute.map;
 
 import com.google.common.base.Function;
 import com.vividsolutions.jts.geom.Envelope;
+
+import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.attribute.map.ZoomToFeatures.ZoomType;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.Scale;
 import org.mapfish.print.parser.CanSatisfyOneOf;
@@ -90,7 +93,13 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
          * If center is defined then this is the scale of the map centered at center.
          */
         @HasDefaultValue
-        public double scale;
+        public Double scale;
+
+        /**
+         * Zoom the map to the features of a specific layer or all features of the map.
+         */
+        @HasDefaultValue
+        public ZoomToFeatures zoomToFeatures;
 
         /**
          * The json with all the layer information.  This will be parsed in postConstruct into a list of layers and
@@ -134,6 +143,22 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
                         + ".  The path to the parameter is: " + getDpi());
             }
 
+            if (this.zoomToFeatures != null) {
+                if (this.zoomToFeatures.zoomType == ZoomType.CENTER) {
+                    if (this.scale == null && this.zoomToFeatures.minScale == null) {
+                        throw new IllegalArgumentException(
+                                "When using 'zoomToFeatures.zoom.Type: center' either 'scale' " +
+                                "or 'zoomToFeatures.minScale' has to be given.");
+                    }
+                } else if (this.zoomToFeatures.zoomType == ZoomType.EXTENT) {
+                    if (this.zoomToFeatures.minScale == null) {
+                        throw new IllegalArgumentException(
+                                "When using 'zoomToFeatures.zoom.Type: extent' 'zoomToFeatures.minScale'" +
+                                "has to be given.");
+                    }
+                }
+            }
+
             this.mapBounds = parseBounds();
         }
 
@@ -168,6 +193,21 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
 
         public MapBounds getMapBounds() {
             return this.mapBounds;
+        }
+
+        public void setMapBounds(final MapBounds mapBounds) {
+            this.mapBounds = mapBounds;
+        }
+
+        /**
+         * Recalculate the bounds after center or bounds have changed.
+         */
+        public void recalculateBounds() {
+            try {
+                this.mapBounds = parseBounds();
+            } catch (FactoryException e) {
+                throw ExceptionUtils.getRuntimeException(e);
+            }
         }
 
         @Override
@@ -215,7 +255,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
         }
 
         /**
-         * create a copy of this instance. should be overridded for each subclass
+         * Create a copy of this instance. Should be overridden for each subclass.
          * @param newMapSize the size of the new map attribute values to create
          * @param updater a function which will be called after copy is made but before postConstruct is called in order
          *                to do other configuration changes.
@@ -236,6 +276,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
             copy.useNearestScale = this.isUseNearestScale();
             copy.useAdjustBounds = this.useAdjustBounds;
             copy.longitudeFirst = this.longitudeFirst;
+            copy.zoomToFeatures = (this.zoomToFeatures == null) ? null : this.zoomToFeatures.copy();
             updater.apply(copy);
             try {
                 copy.postConstruct();

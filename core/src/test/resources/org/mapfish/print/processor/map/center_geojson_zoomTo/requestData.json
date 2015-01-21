@@ -1,0 +1,23 @@
+{
+  "attributes": {
+    "mapDef": {
+      "center": [100, -0.5],
+      "scale": 5000000,
+      "zoomToFeatures": {
+        "zoomType": "center",
+        "layer": "polygons"
+      },
+      "projection": "CRS:84",
+      "dpi": 72,
+      "layers": [
+        {
+          "name": "polygons",
+          "type": "geojson",
+          "style": "polygon",
+          "renderAsSvg": true,
+          "geoJson":   @@importFile(geojson.json)@@
+        }
+      ]
+    }
+  }
+}

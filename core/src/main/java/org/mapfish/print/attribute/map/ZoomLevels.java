@@ -43,6 +43,21 @@ public final class ZoomLevels implements ConfigurationObject {
      * @param scales do not need to be sorted or unique.
      */
     public ZoomLevels(final double... scales) {
+        setScales(scales);
+    }
+
+    /**
+     * default constructor for constructing by spring.
+     */
+    public ZoomLevels() {
+        // intentionally empty
+    }
+
+    /**
+     * Set the scales (sorts from largest to smallest).
+     * @param scales The scales (may be unsorted).
+     */
+    public void setScales(final double[] scales) {
         TreeSet<Double> sortedSet = new TreeSet<Double>(Ordering.natural().reverse());
         for (int i = 0; i < scales.length; i++) {
             sortedSet.add(scales[i]);
@@ -53,17 +68,6 @@ public final class ZoomLevels implements ConfigurationObject {
             this.scales[i] = aDouble;
             i++;
         }
-    }
-
-    /**
-     * default constructor for constructing by spring.
-     */
-    public ZoomLevels() {
-        // intentionally empty
-    }
-
-    public void setScales(final double[] scales) {
-        this.scales = scales;
     }
 
     /**

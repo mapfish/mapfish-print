@@ -174,4 +174,8 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
         return false;
     }
     //CHECKSTYLE:ON
+
+    public final String getName() {
+        return this.params.name;
+    }
 }
