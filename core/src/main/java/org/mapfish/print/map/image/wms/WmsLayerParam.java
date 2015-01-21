@@ -61,6 +61,13 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
     @HasDefaultValue
     public boolean useNativeAngle = false;
 
+    /**
+     *  The server type ("mapserver", "geoserver" or "qgisserver"). By specifying the server type
+     *  vendor specific parameters (like for the DPI value) can be used when making the request.
+     */
+    @HasDefaultValue
+    public ServerType serverType;
+
     @Override
     public final String getBaseUrl() {
         return this.baseURL;
@@ -89,5 +96,23 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
         if (!this.imageFormat.startsWith("image/")) {
             this.imageFormat = "image/" + this.imageFormat;
         }
+    }
+
+    /**
+     * The WMS server type.
+     */
+    public enum ServerType {
+        /**
+         * MapServer.
+         */
+        MAPSERVER,
+        /**
+         * GeoServer.
+         */
+        GEOSERVER,
+        /**
+         * QGIS Server.
+         */
+        QGISSERVER
     }
 }

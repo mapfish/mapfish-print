@@ -75,7 +75,8 @@ public final class WmsLayer extends AbstractSingleImageLayer {
 
         final Rectangle paintArea = transformer.getPaintArea();
         ReferencedEnvelope envelope = transformer.getBounds().toReferencedEnvelope(paintArea, transformer.getDPI());
-        URI uri = WmsUtilities.makeWmsGetLayerRequest(requestFactory, wmsLayerParam, commonUri, paintArea.getSize(), envelope);
+        URI uri = WmsUtilities.makeWmsGetLayerRequest(requestFactory, wmsLayerParam, commonUri, paintArea.getSize(),
+                transformer.getDPI(), envelope);
 
         Closer closer = Closer.create();
         try {
