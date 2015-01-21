@@ -29,40 +29,72 @@
 <h3>Basics</h3>
 <p>
 
-
-Template for jasper reports can be created by hand. However, you may be interested to use a pleasant interface since we are talking about visual products. <a href="https://community.jaspersoft.com/project/jaspersoft-studio/releases">Jaspersoft Studio</a> is the software we recommend to use. It has an active community and a good support. Jaspersoft Studio will help you in the way of creating a jrxml file, which is a template layout. It is the main and sometimes only file needed for printed report. This file will be compiled as a .jasper file before releasing the print output. Used with Mapfish Print, the jrxml file will take the role of "container", waiting from data to produce a nice and useful PDF report. If you are deeply interested in the way report with Jaspersoft Studio are created, you can follow this <a href="https://community.jaspersoft.com/wiki/designing-report-jaspersoft-studio">tutorial</a>. However, the Mapfish Print pipe allow us to leave huge parts of the report creation workflow (we can at least skip the chapter about loading data in the report).
+Template for jasper reports can be created by hand. However, you may be interested to use a pleasant interface since we are 
+talking about visual products. <a href="https://community.jaspersoft.com/project/jaspersoft-studio/releases">Jaspersoft Studio</a> is
+ the software we recommend to use. It has an active community and a good support.
+ Jaspersoft Studio will help you creating a jrxml file, which is a template layout.
+ It is the main and sometimes only file needed for a printed report. 
+This file will be compiled as a .jasper file before releasing the print output. Used with Mapfish Print, 
+the jrxml file will take the role of a "container", waiting for data to produce a nice and useful PDF report. 
+If you are deeply interested in the way reports Studio are created with Jaspersoft, you can follow this <a href="https://community.jaspersoft.com/wiki/designing-report-jaspersoft-studio">tutorial</a>. 
+However, the Mapfish Print pipe allow us to leave out huge parts of the report creation workflow 
+(we can at least skip the chapter about loading data in the report).
 <br> <br>
 On the following file, you can observe the principle parts of Jaspersoft Studio: 
 </p>
 <img src="images/jaspersoft.png" alt="Jaspersoft Studio, overview" style="height-max: 300px">
 <ol>
-<li>The report template (what your are currently editing), with either a gui view, or a text view (design or preview tab, at the bottom left corner)</li>
-<li>The outline, for managing bands, parameters, variables etc.</li>
-<li>Property windows, of selected item. You can access appearance, content properties and advanced properties.</li>
+<li>The report template (what your are currently editing), trough either a gui view or a text view 
+(tabs at the bottom left corner)
+</li>
+<li>Outline for managing bands, parameters, variables etc.</li>
+<li>Property window of selected item. Access for appearance, content properties and advanced properties.</li>
 <li>Elements available for insertion in the report (don't use the map element..)</li>
 <li>Shortcut to preconfigure fields</li>
 <li>Console for information and errors</li>
 <li>Data connection (not used with Mapfish Print)</li>
 </ol>
 <p>
-Jasper reports have a "band logic": different data will fall in different bands (or sections). The report will be structured in many bands, which have each one particular behaviors. Moreover, the data themselves affect how the bands will be printed. This is shown on the next graphic. What you see in Jaspersoft Studio is therefore not what you will get once the print request is sent. The preview tab in the main window allows to pass through this inconvenience when working on a report template. Unfortunately, the introduction of maps by Mapfish Print doesn't allow to use directly the preview tab in Jaspersoft Studio.
+Jasper reports have a "band logic": different data will fall in different bands (or sections).
+ The report will be structured in many bands, which have each one particular behaviors.
+ Moreover, the data themselves affect how the bands will be printed. This is shown on the next graphic.
+ What you see in Jaspersoft Studio is therefore not what you will get once the print request will have been sent.
+ The preview tab in the main window allows to pass through this inconvenience when working on a report template.
+ Unfortunately, the introduction of maps by Mapfish Print doesn't allow to use directly the preview tab in Jaspersoft Studio.
 </p>
 <h4>Mapfish Print, jasper reports and Jaspersoft Studio</h4>
-<p>One of the most important change from version 2 to 3 of Mapfish Print, at least for users, is the use of jasper template (jrxml) as basis of layout. The chapter “General workflow for adapting existing templates” provides enough information for working with Jaspersoft Studio. The key point stands in the fact that Mapfish Print as NOT been developed for enhancing the Studio software, but the Jasper Report Library, which is almost but not the same thing. This involves some sort of incompatibility with Studio, being easily solved by small user manipulation. When editing template in Jaspersoft Studio, keep in mind this last point.
+<p>One of the most important change from version 2 to 3 of Mapfish Print, at least for users, 
+is the use of jasper template (jrxml) as basis of layout. The chapter “General workflow for adapting existing templates”
+ provides enough information for working with Jaspersoft Studio. 
+The key point stands in the fact that Mapfish Print as NOT been developed for enhancing the Studio software,
+ but the Jasper Report Library. This remark involves some sort of incompatibility with Studio,
+ being easily solved by small manipulations. When editing template in Jaspersoft Studio, keep in mind this last point.
 </p>
 <img src="images/jasperbands.png" alt="Band logic representation" style="max-height: 300px">
 <h3>Elements vs Content</h3>
 <p>
-An important concept is the differentiation between the containers you add to your template and all the things with which you can populate them. Containers are called "elements" in Jaspersoft and are visible under the number 4 in the previous image. The main elements are static text, text field and subreport. With Mapfish Print, all special elements (maps, scale bar, etc.) are placed as subreport. Apart from maps elements, we are here mainly focused on the text fields. Text fields have dynamic text thanks to the expressions. An expression can use parameters, variables or functions (we don't discuss the fields since we are not interesting in loading data directly from database).
+An important concept is the differentiation between the containers you add to your template 
+and all the things with which you can populate them. 
+Containers are called "elements" in Jaspersoft Studio and are visible under the number 4 in the previous image.
+ The main elements are static text, text field and subreport.
+ With Mapfish Print, all special elements (maps, scale bar, etc.) are placed as subreport.
+ Apart from maps elements, we are here mainly focused on the text fields. Text fields have dynamic text thanks to the expressions. An expression can use parameters, variables or functions (we don't discuss the fields since we are not interesting in loading data directly from database).
 </p>
 <ol>
-<li>Parameters : set at the compiling. They can be string, integer, subreport etc. there are one the of of keys of Mapfish Print. The map elements are passed by parameters, as well as scale bar, north arrow, etc. More standard parameters can also be used with Mapfish Print, as title or comments for example</li>
-<li>Variables : they are calculated at the compiling. They are not given by an external source of the report, as parameters. Variables are typically page numbers or current date. They can also represent a value calculated with parameters.</li>
+<li>Parameters : set at the compiling. They can be string, integer, boolean etc.
+ There are one the of of keys of Mapfish Print.
+ The map elements are passed by parameters, as well as scale bar, north arrow, etc.
+ More standard parameters can also be used with Mapfish Print, as title or comments for example</li>
+<li>Variables : they are calculated at the compiling. 
+They are not given by an external source of the report, as parameters. 
+Variables are typically page numbers or current date.
+ They can also represent a value calculated on parameters.</li>
 <li>Functions : java functions, for example String.format("static text: %.0f", parameter)</li>
 </ol>
 <h3>The bands</h3>
 <p>
-The table below comes from this <a href="http://www.jasperassistant.com/docs/guide/ch06s10.html">website</a>. More than description of bands, it provides a broad and clear idea of the logic behind jasper reporting.
+The table below comes from this <a href="http://www.jasperassistant.com/docs/guide/ch06s10.html">website</a>.
+ More than description of bands, it provides a broad and clear idea of the logic behind jasper reporting.
 <br> <br>
 Take a look at the most important bands : Title, page header, detail, background.
 </p>
@@ -77,11 +109,14 @@ Take a look at the most important bands : Title, page header, detail, background
   </tr>
   <tr>
     <td>Column Header</td>
-    <td>This section appears at the beginning of each column in the generated document. If the report has only one column defined, then column header and footer sections are ignored.</td>
+    <td>This section appears at the beginning of each column in the generated document.
+ If the report has only one column defined, then column header and footer sections are ignored.</td>
   </tr>
   <tr>
     <td>Group Header</td>
-    <td>This section is introduced by a report group (chapter Groups). Each time the grouping expression changes its value, the group header section is printed above the detail section. In case, if more than one group is defined, the group header is printed in the order of group definition.</td>
+    <td>This section is introduced by a report group (chapter Groups).
+ Each time the grouping expression changes its value, the group header section is printed above the detail section.
+ In case, if more than one group is defined, the group header is printed in the order of group definition.</td>
   </tr>
   <tr>
     <td>Detail</td>
@@ -89,10 +124,14 @@ Take a look at the most important bands : Title, page header, detail, background
   </tr>
   <tr>
     <td>Group Footer</td>
-    <td>This section is introduced by a report group (chapter Groups). The group footer section is printed below the detail section before the value of the grouping expression changes. The group footer is always printed for the last line of data in data source. In case, if more than one group is defined, the group footer is printed in the reverse order of group definition.</td>
+    <td>This section is introduced by a report group (chapter Groups).
+ The group footer section is printed below the detail section before the value of the grouping expression changes.
+ The group footer is always printed for the last line of data in data source.
+ In case, if more than one group is defined, the group footer is printed in the reverse order of group definition.</td>
   <tr>
     <td>Column Footer</td>
-    <td>This section appears at the bottom of each column. If the report's column count is 1, then column header and footer sections are ignored.</td>
+    <td>This section appears at the bottom of each column.
+ If the report's column count is 1, then column header and footer sections are ignored.</td>
   </tr>
   <tr>
     <td>Page Footer</td>
@@ -100,7 +139,9 @@ Take a look at the most important bands : Title, page header, detail, background
   </tr>
   <tr>
     <td>Last Page Fotter</td>
-    <td>This section replaces the regular page footer on the last page of the report. In case the summary section is also present, then this might not be the very last page of the document. This section is sometimes useful when summary information has to be displayed at the bottom of the last page.</td>
+    <td>This section replaces the regular page footer on the last page of the report.
+ In case the summary section is also present, then this might not be the very last page of the document.
+ This section is sometimes useful when summary information has to be displayed at the bottom of the last page.</td>
   </tr>
   <tr>
     <td>Summary</td>
@@ -108,18 +149,28 @@ Take a look at the most important bands : Title, page header, detail, background
   </tr>
   <tr>
     <td>No Data</td>
-    <td>This section is printed when the When No Data Print report property is set to No Data Section. If the <noData> section is defined in the report template, and if the data source is empty, then the <noData> section will be the only one taken into account at fill time, and its content will produce the report output.</td>
+    <td>This section is printed when the When No Data Print report property is set to No Data Section.
+ If the <noData> section is defined in the report template, and if the data source is empty,
+ then the <noData> section will be the only one taken into account at fill time, and its content will produce the report output.</td>
   </tr>
   <tr>
     <td>Background</td>
-    <td>The background section is displayed on every page and cannot overflow to the next page. Elements placed on this section are evaluated at page initialization time and are displayed in the background. All other page objects are displayed on top of the background objects. This section is useful for creating page watermarks.</td>
+    <td>The background section is displayed on every page and cannot overflow to the next page.
+ Elements placed on this section are evaluated at page initialization time and are displayed in the background.
+ All other page objects are displayed on top of the background objects. This section is useful for creating page watermarks.</td>
   </tr>
 </table>
 <h3>Parameters, Variables and Expressions</h3>
 <p>
-Above is a brief description of differences between parameters, variables and functions. We will see here in a more detail manner how to fill elements of templates with parameters and variables.
+Above is a brief description of differences between parameters, variables and functions.
+ We will see here in more details how to fill elements of templates with parameters and variables.
 <br> <br>
-As described, parameters are values given by an external source of the report. In a ordinary application, parameters are often given to the report through a web service. It is therefore complex (but possible) to add or delete new parameters. Good news is that once you have you service running, you will not require parameters other than those already in place, at least in most cases. New parameters can be created in the outline window of Jaspersoft Studio by right-clicking on "Parameters". Another way is to create directly in the source code by adding a line on the top of the document, near the other parameter declarations. For example, declaring the new "title" parameter is done as follow : 
+As described, parameters are values given by an external source of the report.
+ In an ordinary application, parameters are often given to the report through a web service.
+ It is therefore complex (but possible) to add or delete new parameters.
+ Good news is that once you have you service running, you will not require parameters other than those already in place, at least in most cases. New parameters can be created in the outline window of Jaspersoft Studio by right-clicking on "Parameters".
+ Another way is to create directly in the source code by adding a line on the top of the document,
+ near the other parameter declarations. For example, declaring the new "title" parameter is done as follow : 
 </p>
 <blockquote>
 <pre>
@@ -129,7 +180,9 @@ As described, parameters are values given by an external source of the report. I
 </pre>
 </blockquote>
 <p>
-<i>name</i> is the name of the parameter, <i>class</i> is the java class (String, Integer, Float, Boolean, etc.), <i>isForPrompting</i> (see further) will be ignore outside Jaspersoft Studio. Last, <i>parameterDescription</i> is optional. Once again, you don't have to add more parameters and this explanation is more for understanding parameters than for manipulation purposes.
+<i>name</i> is the name of the parameter, <i>class</i> is the java class (String, Integer, Float, Boolean, etc.), <i>isForPrompting</i> (see further) will be ignore outside Jaspersoft Studio.
+ Last, <i>parameterDescription</i> is optional.
+ Once again, you don't have to add more parameters and this explanation is more for understanding parameters than for manipulation purposes.
 <br> <br>
 the title parameter will be called with the following expression:
 </p>
@@ -139,7 +192,9 @@ $P{title}
 <p>
 $P{title} would be for a parameter, $V{title} would be for a variable, $F{title} would be for a database field.
 <br> <br>
-It's already known that parameters and variables are reporting values, but are not displayed by their own on the printed report. A container needs to be set for displaying them. For a simple text parameter, we can use a text field container. Back to the title example :
+It's already known that parameters and variables are reporting values, but are not displayed by their own on the printed report.
+ A container needs to be set for displaying them.
+ For a simple text parameter, we can use a text field container. Back to the title example :
 </p>
 <blockquote>
 <pre>
@@ -150,25 +205,42 @@ It's already known that parameters and variables are reporting values, but are n
 </pre>
 </blockquote>
 <p>
-<i>textField</i> is the container in which we will add contents. <i>reportElement</i> describes where and how the field will be displayed. It's the property of the container. Contents are added to the container through an expression. It may be a good habit to use the expression editor of Jaspersoft Studio for creating expressions, since it has useful error messages.
+<i>textField</i> is the container in which we will add content.
+ <i>reportElement</i> describes where and how the field will be displayed.
+ It's the property of the container. Contents are added to the container through an expression.
+ It may be a good habit to use the expression editor of Jaspersoft Studio since it has useful error messages.
 </p>
 <img src="images/expression.png" alt="expression edito" style="max-height: 300px">
 <p>
-After the selection of a report element, click on 1, the element content properties, then on 2 expression. The expression editor will open for customization of the expression in 3.
+After the selection of a report element, click on 1 to open content properties and then on 2 to open the editor.
+ The expression editor will open for customization of the expression in 3.
 <br> <br>
-All the same goes for variable usage, with the difference that a variable has its own expression (recall: variables are not passed to the report but calculated directly at print generation time). 
+All the same goes for variables usage, with the difference that a variable has its own expression
+ (recall: variables are not passed to the report but calculated directly at print generation time). 
 </p>
 <h3>Appearance</h3>
 <p>
-Visual settings of report elements are found in the Appearance tab of the property window. The location refers to the top left corner position of the element. &#9888; Location is given in reference to the band beginning without the margins. Margins of the documents are set in the page format settings:
+Visual settings of report elements are found in the Appearance tab of the property window.
+ The location refers to the top left corner position of the element.
+ &#9888; Location is given in reference to the band beginning without the margins.
+ Margins of the documents are set in the page format settings:
 <br> <br>
 Outline -> select main document (top) -> property window -> tab "report" -> edit page format (bottom)
 <br> <br>
-It's here that behavior of fields are set. For example, you can allow a text field to be multiline and to extend if the text (passed as parameter) is very long. In this case, you will tell the rest of the documents, below the extension, to shift down. Since such behaviors are not easy to manage, it's recommended to set elements not stretchable and fixed relative to the top. In case you implement other behaviors, it would be worth to extract the best of all the sections (header, details, summary, etc.) for managing many pages.
+It's here that behavior of fields are set.
+ For example, you can allow a text field to be multiline and to extend if the text (passed as parameter) is very long.
+ In this case, you will tell the rest of the documents, below the extension, to shift down.
+ Since such behaviors are not easy to manage, it's recommended to set elements not stretchable and fixed relative to the top.
+ In case you implement other behaviors, it would be worth to extract the best of all the sections (header, details, summary, etc.)
+ for managing many pages.
 </p>
 <h4>PDF fonts</h4>
 <p>
-&#9888; The number of fonts supported by PDF documents are limited. There is a special method of setting PDF fonts for text fields. This is done under select element -> property window -> tab "advanced" -> tree: font -> PDF font name.. It may be easier to set the PDF font directly in the source code. All the care must be taken, on the other hand, for setting a valid PDF font name. Such code can looks like the following: 
+&#9888; The number of fonts supported by PDF documents are limited.
+ There is a special method of setting PDF fonts for text fields.
+ This is done under the ui path: select element -> property window -> tab "advanced" -> tree: font -> PDF font name.
+ It may be easier to set the PDF font directly in the source code.
+ All the care must be taken, on the other hand, for setting a valid PDF font name. Such code can looks like the following: 
 </p>
 <blockquote>
 <pre>
@@ -184,25 +256,40 @@ It's here that behavior of fields are set. For example, you can allow a text fie
 <h3>Tips</h3>
 <h4>Snapping on the grid</h4>
 <p>
-One of the most important tool in Jaspersoft Studio is the snapping, which can be done on elements, on rulers or on the grid. You can customize snapping behaviors by clicking on the arrow next to the "settings" button at the top right corner of the central window. Snapping on grid can be enabled or disabled, but most importantly, grid size can be adjusted there.
+One of the most important tool in Jaspersoft Studio is the snapping tool. Snapping is available on elements, on rulers or on the grid.
+ You can customize snapping behaviors by clicking on the arrow next to the "settings" button at the top right corner of the central window.
+ Snapping on grid can be enabled or disabled, but most importantly, grid size can be adjusted there.
 </p>
 <h3>Jaspersoft Studio peculiarity</h3>
 <p>
-Jaspersoft Studio, even if it's easily accessible and usable, suffers from many drawbacks. There are no problems when knowledge about mechanism is there, but very strange behavior can happen if doubt is present. I will illustrate this affirmation with some examples. The main purpose is recognition of such mechanisms when encountered. One already known example is the font with PDF documents (see previous chapter).
+Jaspersoft Studio, even if it's easily accessible and usable, suffers from many drawbacks.
+ It's important to know about drawbacks, so lots of trouble can be avoided: <i> know your enemies and know yourself, you will not be imperiled in a hundred battles. Sun Tzu </i> <br>
+ I will illustrate this affirmation with some examples. The main purpose is recognition of such mechanisms when encountered.
+ One already known example is the font with PDF documents (see previous chapter).
 <p>
 <h4>Example 1: background color and transparency</h4>
 <p>
-Quite often in software, some settings are disabled when it's senseless to give a settings. This logic does not apply to Jaspersoft Studio. For example, you can set the color of a text field background in window property -> appearance -> color. Just below, there is a transparent check box, which makes the background fully transparent. If you check the box, you can still set any color but this will have no effect.
+In a usual software, some settings are disabled when it's senseless to give a settings. This logic does not apply to Jaspersoft Studio.
+ For example, you can set the color of a text field background in window property -> appearance -> color.
+ Just below, there is a transparent check box, which makes the background fully transparent.
+ If you check the box, you can still set any color but this will have no effect.
 <br><br>
 Such behavior can be observed for different tools in Jaspersoft Studio.
 </p>
 <h4>Example 2: page numbering</h4>
 <p>
-Page number can be accessed through the variable $V{PAGE_NUMBER}. In the palette window, you can observe the Page X of Y tools. The same variable (page number) is used two times, but has different values. The difference comes from the evaluation time property (property window -> text field -> evaluation time), which leads to different values of the variable. It's not a problem of the software, just a very confusing implementation of a simple count.
+Page number can be accessed through the variable $V{PAGE_NUMBER}.
+ In the palette window, you can observe the Page X of Y tools.
+ The same variable (page number) is used two times, but has different values.
+ The difference comes from the evaluation time property (property window -> text field -> evaluation time),
+ which leads to different values of the variable.
+ It's not a problem of the software, just a very confusing implementation of a simple page counter.
 </p>
 <h2>General workflow for adapting existing templates</h2>
 <p>
-Here is a short description of steps required for being able to create a new template from another already existing. This is particularly useful for Mapfish Print users having the willingness of customizing their template without the need of calling an IT expert.
+Here is a short description of steps required for being able to create a new template from another already existing.
+ This is particularly useful for Mapfish Print users having the willingness
+ of customizing their template without the need of calling an IT expert.
 <ol>
 <li>Install Jaspersoft Studio</li>
 <li>Copy the template to your local machine</li>
@@ -215,11 +302,19 @@ Here is a short description of steps required for being able to create a new tem
 <li>Save your changes, copy the file to the server</li>
 <li>Update the print setup</li>
 </ol>
-What you see in Jaspersoft Studio is not exactly how printed report will look like. Therefore, a "preview" tool is available. However, Mapfish Print adds special elements that are not recognized by Jaspersoft Studio. This leads to generation of errors at the preview opening. For being able to use the preview in Jaspersoft studio, you will need to adapt slightly the template. The principle is to keep safe notes of your original state, then apply adaptation for removing Mapfish Print dependencies, and eventually to reset the original state after the edition of your template. In the following chapter are listed adaptation require in Jaspersoft Studio for preview usage. 
+What you see in Jaspersoft Studio is not exactly how printed reports will look like.
+ Therefore, a "preview" tool is available. However, Mapfish Print adds special elements that are not recognized by Jaspersoft Studio.
+ This leads to generation of errors at the preview opening.
+ For being able to use the preview in Jaspersoft studio, you will need to adapt slightly the template.
+ The principle is to keep safe notes of your original state, then apply adaptation for removing Mapfish Print dependencies,
+ and eventually to reset the original state after the edition of your template.
+ In the following chapter are listed adaptation require in Jaspersoft Studio for preview usage. 
 <p>
 <h3>Removing Mapfish Print dependencies</h3>
 <p>
-An example will be treated for illustration of almost an exhaustive dependence list. We can see below, on the left, a print example and the print template opened in Jaspersoft Studio. Below on the right, we can see the preview result, once all checks and adaptations have been applied to the template: 
+An example will be treated for illustration of almost an exhaustive dependencies list.
+ We can see below, on the left, a print example and the print template opened in Jaspersoft Studio.
+ Below on the right, we can see the preview result once all checks and adaptations have been applied to the template: 
 </p>
 <table>
 <tr>
@@ -233,31 +328,48 @@ An example will be treated for illustration of almost an exhaustive dependence l
 </table>
 <h4>1: static text</h4>
 <p>
-With static text, it compiles easily and will often be printed as it looks like. Font difference can be observed. Information about pdf fonts can be found near the end of this documentation.
+With static text, it compiles easily and will often be printed as it looks like.
+ Font difference can be observed. Information about pdf fonts can be found near the end of this documentation.
 <p>
 <h4>2 and 3: text field</h4>
 <p>
-Text fields are report elements with text that are not static. Parts of the text field element is calculating at the generation time of the printed report. Calculation of the fields is either with some functions depending on the environment (date, language, etc.) or depending on parameters passed to the print template (title, map, etc. ). When a preview is created on Jaspersoft Studio, parameters need to be set, because text fields are calculated. Parameters will be asked in Jaspersoft Studio as on the next image for generating reports. 
+Text fields are report elements with text that are not static.
+ Parts of the text field element is calculating at the generation time of the printed report.
+ Calculation of the fields is either with some functions depending on the environment (date, language, etc.)
+ or depending on parameters passed to the print template (title, map, etc. ).
+ When a preview is created on Jaspersoft Studio, parameters need to be set, because text fields are calculated.
+ Parameters will be asked in Jaspersoft Studio as on the next image for generating reports. 
 </p>
 <img src="images/prompt.png" alt="Jaspersoft Studio, overview" style="max-height: 200px">
 <p>
-There is an parameter option which has to be true (or checked) allowing the prompt for it. This option will be critical for map elements. Parameter for map elements need to be ignored, so NOT asked. If parameters are asked in the prompt window, check the state under:
+There is a parameter option which has to be true (or checked) for allowing the prompt to be used.
+ This option will be critical for map elements. Parameters for map elements need to be ignored, so NOT asked.
+ If parameters are asked in the prompt window, check the state under:
 <br><br>
-Outline window -> right-click on the parameters -> open property window -> isForPrompt -> set Checked
+Outline window -> right-click on the parameters -> open property window -> isForPrompt -> set Checked/Unchecked
 <br><br>
-The difference between arrow 2 and 3 is the presence of parameters in the text field. In case of arrow N°3, no parameters will be asked and it must compiled without error without changes. 
+The difference between arrow 2 and 3 is the presence of parameters in the text field.
+ In case of arrow N°3, no parameters will be asked and it must compiled without error without changes. 
 </p>
 <h4>4: map</h4>
 <p>
-Maps are included in the report by the means of subreports. In standard jasper reports, subreports are as named : reports inside report. With them, it's possible to access many data different data source inside the same report. It's also with subreport that multiple database entries will be repeated (<a href="https://community.jaspersoft.com/wiki/subreports-jaspersoft-studio">example</a>)
+Maps are included in the report by the means of subreports. In standard jasper reports, subreports are as named :
+ reports inside report. With them, it's possible to access many data from different data source inside the same report.
+ It's also with subreport that multiple database entries will be repeated
+ (<a href="https://community.jaspersoft.com/wiki/subreports-jaspersoft-studio">example</a>)
 <br><br>
-Mapfish Print uses subreport element for including maps, but doesn't use "standard" subreport. Therefore, it requires to disable the subreport for being able to see the preview. In general, all the parameters related to Mapfish Print must have false prompting behavior. You can check all the parameters values, or directly open the source code. Near the top of the code, parameters must be declared as <i>isForPrompting="false"</i>: 
+Mapfish Print uses subreport elements for including maps, but doesn't use "standard" subreport.
+ A requirement is therefore to disable the map subreports for being able to see the preview.
+ In general, all the parameters related to Mapfish Print must have false prompting behavior.
+ You can check all the parameters values, or directly open the source code.
+ Near the top of the code, parameters must be declared as <i>isForPrompting="false"</i>: 
 </p>
 <blockquote>
 &lt;parameter name="mapSubReport" class="java.lang.String" isForPrompting="false"/&gt;
 </blockquote>
 <p>
-This option must be set for all parameters related to Mapfish Print (but must be set by default). Here is a list of parameter which must have the setting <i>isForPrompting</i> as false:
+This option must be set for all parameters related to Mapfish Print (but must be set by default).
+ Here is a list of parameter which must have the setting <i>isForPrompting</i> as false:
 <ul>
 <li>mapContext</li>
 <li>mapSubReport</li>
@@ -271,11 +383,16 @@ This option must be set for all parameters related to Mapfish Print (but must be
 </ul>
 <h4>5: logo</h4>
 <p>
-The logo is usually placed on the server in the same folder as the template. For seeing the logo (and fixing the error related to it), it has to be copied from the server to the same folder as the local copy of the template. 
+The logo is usually placed on the server in the same folder as the template.
+ For seeing the logo (and fixing the error related to it), it has to be copied from the server to the same folder as the local copy of the template. 
 </p>
 <h4>6: others</h4>
 <p>
-Finally, other problems arise, making the preview unusable. In our example, a problem will appear due to a parameter special to Mapfish Print used in text field. In this case, you will have to change the text field for removing the problematic object. This manipulation have to be undo just before releasing the new template to the server. For such manipulation, open the source tab, copy the problematic part of code to a text file, keep and safe it for reseting it later. Concretely, you will do such modification for fixing this type of error:
+Finally, other problems arise making the preview unusable.
+ In our example, a problem will appear due to a special parameter related to Mapfish Print used in text field.
+ In this case, you will have to change the text field for removing the problematic element.
+ This manipulation have to be undo just before releasing the new template to the server.
+ For such manipulation, open the source tab, copy the problematic part of code to a text file, keep and safe it for reseting it later. Concretely, you will do such modification for fixing this type of error:
 </p>
 <blockquote>
 <pre>
@@ -291,11 +408,16 @@ Finally, other problems arise, making the preview unusable. In our example, a pr
 </blockquote>
 <h3>Without Jaspersoft Studio</h3>
 <p>
-It is possible to change directly the source code on the server. It's useful for small modifications. It is also a good way to work on visual details, since it can be quickly compiled to the finished printed report.
+It is possible to change directly the source code on the server.
+ It's useful for small modifications.
+ It is also a good way to work on visual details, since it can be quickly compiled to the finished printed report.
 </p>
 <h3>Configuration of Mapfish Print</h3>
 <p>
-Once the new template is created and updated on the server, Mapfish Print needs to be told that a new template has been created and needs to know which parameters to give to it. Under the assumption that only visual modifications have been done to the template, we can enumerate the modifications to do to the file <i>config.yaml</i>, which is found in the same directory that the templates.
+Once the new template is created and updated on the server, Mapfish Print needs to be told that
+ a new template has been created and needs to know which parameters to give to it.
+ Under the assumption that only visual modifications have been done to the template,
+ we can enumerate the modifications to do to the file <i>config.yaml</i>, which is found in the same directory that the templates.
 <p>
 <blockquote>
 <pre>
@@ -317,13 +439,16 @@ Once the new template is created and updated on the server, Mapfish Print needs 
 <h2>small FAQ</h2>
 <h4>What is a subreport for?</h4>
 <p>
-Maps are included in the report by the way of subreports. In standard jasper reports, subreports are as named : reports inside report. With them, it's possible to access many data different data source inside the same report. Also, with subreports, multiple database entries will be repeated (example)
+Maps are included in the report trough subreports. In standard jasper reports, subreports are as named :
+ reports inside report. With them, it's possible to access many data different data source inside the same report.
+ Also, with subreports, multiple database entries will be repeated (example)
 <br><br>
 Mapfish Print uses subreport element for including maps, but doesn't use "standard" subreport.
 </p>
 <h4>How do I add/remove a Subreport?</h4>
 <p>
-You're not supposed to add a subreport in a template. You can delete subreports if, for example, you want to remove the north arrow, scale bar, etc. You will have to do different manipulations:
+You're not supposed to add a subreport in a template.
+ You can delete subreports if, for example, you want to remove the north arrow, scale bar, etc. You will have to do different manipulations:
 <br>
 <pre>
     remove the subreports element in Jaspersoft Studio
@@ -333,11 +458,14 @@ You're not supposed to add a subreport in a template. You can delete subreports 
 </p>
 <h4>What is a variable ?</h4>
 <p>
-Variables are calculated at compiling using an expression. There are not given by an external source of the report, as parameters. Variables are typically page numbers or current date. They can also represent a value calculated with parameters.
+Variables are calculated at compiling using an expression each. There are not given by an external source of the report, as parameters.
+ Variables are typically page numbers or current date. They can also represent a value calculated based on parameters.
 </p>
 <h4>What is a parameter ?</h4>
 <p>
-Parameter are objects set at the compiling. They can be string, integer, subreport etc. there are one the of of keys of Mapfish Print. The map elements are passed by parameters, as well as scale bar, north arrow, etc. More standard parameters can also be used with Mapfish Print, as title or comments for example.
+Parameter are objects set at the compiling. They can be string, integer, subreport etc. there are one the of of keys of Mapfish Print.
+ The map elements are passed by parameters, as well as scale bar, north arrow, etc.
+ More standard parameters can also be used with Mapfish Print, as title or comments for example.
 </p>
 <h4>How do I add/remove a Variable/Parameters?</h4>
 <p>
@@ -345,5 +473,5 @@ In the Outline window, right-click on variables or parameters.
 <p>
 <h4>What variables are available ?</h4>
 <p>
-A small list of built-in variable is available in the Palette window, under tools. You can create as many variable as you wish.
+A small list of built-in variables is available in the Palette window, under tools. You can create as many variables as you wish.
 </p>
