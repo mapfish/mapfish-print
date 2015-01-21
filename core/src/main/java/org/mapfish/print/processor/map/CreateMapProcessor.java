@@ -22,6 +22,7 @@ package org.mapfish.print.processor.map;
 import com.google.common.collect.Lists;
 import com.google.common.io.Closer;
 import com.vividsolutions.jts.awt.ShapeWriter;
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Polygon;
 
 import net.sf.jasperreports.engine.JRException;
@@ -29,20 +30,29 @@ import net.sf.jasperreports.engine.JRException;
 import org.apache.batik.svggen.DefaultStyleHandler;
 import org.apache.batik.svggen.SVGGeneratorContext;
 import org.apache.batik.svggen.SVGGraphics2D;
+import org.geotools.data.FeatureSource;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.JTS;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.mapfish.print.Constants;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.AreaOfInterest;
 import org.mapfish.print.attribute.map.BBoxMapBounds;
 import org.mapfish.print.attribute.map.MapAttribute;
+import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.attribute.map.ZoomLevelSnapStrategy;
+import org.mapfish.print.attribute.map.ZoomToFeatures.ZoomType;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.mapfish.print.map.Scale;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.map.geotools.FeatureLayer;
+import org.mapfish.print.map.geotools.grid.GridLayer;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.InternalValue;
 import org.mapfish.print.processor.jasper.ImagesSubReport;
@@ -140,6 +150,9 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
     public Output execute(final Input param, final ExecutionContext context) throws Exception {
         checkCancelState(context);
         MapAttribute.MapAttributeValues mapValues = param.map;
+        if (mapValues.zoomToFeatures != null) {
+            zoomToFeatures(param.tempTaskDirectory, param.clientHttpRequestFactory, mapValues, context);
+        }
         final List<URI> graphics = createLayerGraphics(param.tempTaskDirectory, param.clientHttpRequestFactory,
                 mapValues, context);
         checkCancelState(context);
@@ -363,6 +376,101 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         } finally {
             closer.close();
         }
+    }
+
+    private void zoomToFeatures(final File tempTaskDirectory, final MfClientHttpRequestFactory clientHttpRequestFactory,
+            final MapAttributeValues mapValues, final ExecutionContext context) {
+
+        ReferencedEnvelope bounds = getFeatureBounds(clientHttpRequestFactory,
+                mapValues, context);
+
+        if (bounds != null) {
+            if (mapValues.zoomToFeatures.zoomType == ZoomType.CENTER) {
+                // center the map on the center of the feature bounds
+                Coordinate center = bounds.centre();
+                mapValues.center = new double[] {center.x, center.y};
+                if (mapValues.zoomToFeatures.minScale != null) {
+                    mapValues.scale = mapValues.zoomToFeatures.minScale;
+                }
+                mapValues.bbox = null;
+                mapValues.recalculateBounds();
+            } else if (mapValues.zoomToFeatures.zoomType == ZoomType.EXTENT) {
+                if (bounds.getWidth() == 0.0 && bounds.getHeight() == 0.0) {
+                    // single point, so we directly set the center
+                    Coordinate center = bounds.centre();
+                    mapValues.center = new double[] {center.x, center.y};
+                    mapValues.bbox = null;
+                    mapValues.scale = mapValues.zoomToFeatures.minScale;
+                    mapValues.recalculateBounds();
+                } else {
+                    mapValues.bbox = new double[] {
+                            bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMaxY()};
+                    mapValues.center = null;
+                    mapValues.recalculateBounds();
+
+                    MapBounds mapBounds = mapValues.getMapBounds();
+                    Rectangle paintArea = new Rectangle(mapValues.getMapSize());
+                    // expand the bounds so that they match the ratio of the paint area
+                    mapBounds = mapBounds.adjustedEnvelope(paintArea);
+
+                    if (mapValues.zoomToFeatures.minMargin != null) {
+                        // add a margin around the feature bounds
+                        mapBounds = ((BBoxMapBounds) mapBounds).expand(mapValues.zoomToFeatures.minMargin, paintArea);
+                    }
+
+                    Scale scale = mapBounds.getScaleDenominator(paintArea, mapValues.getDpi());
+                    if (scale.getDenominator() < mapValues.zoomToFeatures.minScale) {
+                        // if the current scale is smaller than the min. scale, change it
+                        mapBounds = mapBounds.zoomToScale(mapValues.zoomToFeatures.minScale);
+                    }
+
+                    if (mapValues.isUseNearestScale()) {
+                        // if fixed scales are used, take next higher scale
+                        mapBounds = mapBounds.adjustBoundsToNearestScale(
+                                mapValues.getZoomLevels(),
+                                0.0,
+                                ZoomLevelSnapStrategy.HIGHER_SCALE, paintArea, mapValues.getRequestorDPI());
+                    }
+
+                    mapValues.setMapBounds(mapBounds);
+                }
+            }
+        }
+    }
+
+    /**
+     * Get the bounding-box containing all features of all layers.
+     */
+    private ReferencedEnvelope getFeatureBounds(
+            final MfClientHttpRequestFactory clientHttpRequestFactory,
+            final MapAttributeValues mapValues, final ExecutionContext context) {
+        final MapfishMapContext mapContext = createMapContext(mapValues);
+
+        ReferencedEnvelope bounds = null;
+        for (MapLayer layer : mapValues.getLayers()) {
+            checkCancelState(context);
+
+            if (layer instanceof AbstractFeatureSourceLayer && !(layer instanceof GridLayer)) {
+                AbstractFeatureSourceLayer featureLayer = (AbstractFeatureSourceLayer) layer;
+                FeatureSource<?, ?> featureSource = featureLayer.getFeatureSource(clientHttpRequestFactory, mapContext);
+                FeatureCollection<?, ?> features;
+                try {
+                    features = featureSource.getFeatures();
+                } catch (IOException e) {
+                    throw ExceptionUtils.getRuntimeException(e);
+                }
+
+                if (!features.isEmpty()) {
+                    if (bounds == null) {
+                        bounds = features.getBounds();
+                    } else {
+                        bounds.expandToInclude(features.getBounds());
+                    }
+                }
+            }
+        }
+
+        return bounds;
     }
 
     /**
