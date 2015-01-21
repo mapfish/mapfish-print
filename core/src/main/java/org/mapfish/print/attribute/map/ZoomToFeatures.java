@@ -41,6 +41,13 @@ public class ZoomToFeatures {
     public ZoomType zoomType = ZoomType.EXTENT;
 
     /**
+     * The name of the layer whose features will be used. If not set,
+     * the features of all vector layers will be used.
+     */
+    @HasDefaultValue
+    public String layer;
+
+    /**
      * The minimum scale that the map is zoomed to.
      */
     @HasDefaultValue

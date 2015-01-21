@@ -19,6 +19,7 @@
 
 package org.mapfish.print.processor.map;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.io.Closer;
 import com.vividsolutions.jts.awt.ShapeWriter;
@@ -446,11 +447,14 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             final MapAttributeValues mapValues, final ExecutionContext context) {
         final MapfishMapContext mapContext = createMapContext(mapValues);
 
+        String layerName = mapValues.zoomToFeatures.layer;
         ReferencedEnvelope bounds = null;
         for (MapLayer layer : mapValues.getLayers()) {
             checkCancelState(context);
 
-            if (layer instanceof AbstractFeatureSourceLayer && !(layer instanceof GridLayer)) {
+            if ((!Strings.isNullOrEmpty(layerName) && layerName.equals(layer.getName())) ||
+                    (Strings.isNullOrEmpty(layerName) && layer instanceof AbstractFeatureSourceLayer &&
+                            !(layer instanceof GridLayer))) {
                 AbstractFeatureSourceLayer featureLayer = (AbstractFeatureSourceLayer) layer;
                 FeatureSource<?, ?> featureSource = featureLayer.getFeatureSource(clientHttpRequestFactory, mapContext);
                 FeatureCollection<?, ?> features;
