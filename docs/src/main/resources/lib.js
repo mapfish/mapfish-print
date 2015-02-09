@@ -41,7 +41,7 @@ docsApp.controller('DocsCtrl', function ($scope, $rootScope, $sce, $translate, $
     jasperReports: {
       order: 1,
       title: 'tocJasperReports',
-      html: 'jaspert-reports-part.html',
+      html: 'jasper-reports-part.html',
       setRecords: function() {}
     },
     'API': {
