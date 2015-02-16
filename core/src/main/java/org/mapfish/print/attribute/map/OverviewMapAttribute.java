@@ -32,23 +32,25 @@ import java.awt.Dimension;
 public final class OverviewMapAttribute extends GenericMapAttribute<OverviewMapAttribute.OverviewMapAttributeValues> {
     
     private static final double DEFAULT_ZOOM_FACTOR = 5.0;
-    
+
+    private double zoomFactor = DEFAULT_ZOOM_FACTOR;
+
+    private String style = null;
+
     /**
      * The zoom factor by which the extent of the main map will be augmented to
      * create an overview.
+     * @param zoomFactor The zoom-factor.
      */
-    private double zoomFactor = DEFAULT_ZOOM_FACTOR;
-
-    /**
-     * The style name of a style to apply to the bbox rectangle of the original map during rendering.
-     * The style name must map to a style in the template or the configuration objects.
-     */
-    private String style = null;
-
     public void setZoomFactor(final double zoomFactor) {
         this.zoomFactor = zoomFactor;
     }
 
+    /**
+     * The style name of a style to apply to the bbox rectangle of the original map during rendering.
+     * The style name must map to a style in the template or the configuration objects.
+     * @param style The style.
+     */
     public void setStyle(final String style) {
         this.style = style;
     }
