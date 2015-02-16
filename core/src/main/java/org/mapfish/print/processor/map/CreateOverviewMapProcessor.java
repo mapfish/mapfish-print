@@ -116,7 +116,7 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
         // NOTE: Original map is the map that is the "subject/target" of this overview map
         MapBounds boundsOfOriginalMap = mapParams.getOriginalBounds();
         setOriginalMapExtentLayer(boundsOfOriginalMap, values, mapParams);
-        setZoomedOutBounds(mapParams, boundsOfOriginalMap, values);
+        setOverviewMapBounds(mapParams, boundsOfOriginalMap, values);
 
         CreateMapProcessor.Output output = this.mapProcessor.execute(mapProcessorValues, context);
         return new Output(output.layerGraphics, output.mapSubReport);
@@ -183,11 +183,16 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
         return features;
     }
 
-    private void setZoomedOutBounds(
+    private void setOverviewMapBounds(
             final MapAttribute.OverriddenMapAttributeValues mapParams,
             final MapBounds originalBounds, final Input values) {
-        // zoom-out the bounds by the given factor
-        MapBounds overviewMapBounds = originalBounds.zoomOut(values.overviewMap.getZoomFactor());
+        MapBounds overviewMapBounds;
+        if (mapParams.getCustomBounds() != null) {
+            overviewMapBounds = mapParams.getCustomBounds();
+        } else {
+            // zoom-out the original map bounds by the given factor
+            overviewMapBounds = originalBounds.zoomOut(values.overviewMap.getZoomFactor());
+        }
 
         // adjust the bounds to size of the overview map, because the overview map
         // might have a different aspect ratio than the main map
