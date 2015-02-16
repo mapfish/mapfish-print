@@ -21,9 +21,13 @@ package org.mapfish.print.attribute.map;
 
 import org.json.JSONArray;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.map.Scale;
 import org.mapfish.print.parser.HasDefaultValue;
+import org.mapfish.print.parser.Requires;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.json.PJsonArray;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.awt.Dimension;
 /**
@@ -83,7 +87,34 @@ public final class OverviewMapAttribute extends GenericMapAttribute<OverviewMapA
          */
         @HasDefaultValue
         public Double dpi = null;
-        
+
+        private MapBounds mapBounds;
+
+        /**
+         * An array of 4 doubles, minX, minY, maxX, maxY.  The bounding box of the overview-map.
+         * <p/>
+         * If a bounding box is given, the overview-map shows a fixed extent. The configuration
+         * parameter <code>zoomFactor</code> is ignored in this case.
+         */
+        @HasDefaultValue
+        public double[] bbox;
+
+        /**
+         * An array of 2 doubles, (x, y).  The center of the overview-map.
+         * <p/>
+         * If center and scale are given, the overview-map shows a fixed extent. The configuration
+         * parameter <code>zoomFactor</code> is ignored in this case.
+         */
+        @Requires("scale")
+        @HasDefaultValue
+        public double[] center;
+
+        /**
+         * If <code>center</code> is defined then this is the scale of the map centered at <code>center</code>.
+         */
+        @HasDefaultValue
+        public Double scale;
+
         /**
          * Constructor.
          *
@@ -94,6 +125,39 @@ public final class OverviewMapAttribute extends GenericMapAttribute<OverviewMapA
             super(template, mapSize);
         }
 
+        @Override
+        public void postConstruct() throws FactoryException {
+            super.postConstruct();
+            this.mapBounds = parseBounds();
+        }
+
+        private MapBounds parseBounds() throws FactoryException {
+            final CoordinateReferenceSystem crs = parseProjection();
+            if (this.center != null && this.bbox != null) {
+                throw new IllegalArgumentException("Cannot have both center and bbox defined");
+            }
+            MapBounds bounds = null;
+            if (this.center != null) {
+                double centerX = this.center[0];
+                double centerY = this.center[1];
+                Scale scaleObject = new Scale(this.scale);
+
+                bounds = new CenterScaleMapBounds(crs, centerX, centerY, scaleObject);
+            } else if (this.bbox != null) {
+                final int maxYIndex = 3;
+                double minX = this.bbox[0];
+                double minY = this.bbox[1];
+                double maxX = this.bbox[2];
+                double maxY = this.bbox[maxYIndex];
+                bounds = new BBoxMapBounds(crs, minX, minY, maxX, maxY);
+            }
+
+            return bounds;
+        }
+
+        public MapBounds getMapBounds() {
+            return this.mapBounds;
+        }
         @Override
         public Double getDpi() {
             return this.dpi;
@@ -110,6 +174,11 @@ public final class OverviewMapAttribute extends GenericMapAttribute<OverviewMapA
 
         public String getStyle() {
             return OverviewMapAttribute.this.style;
+        }
+
+        @Override
+        public String getProjection() {
+            return getValueOr(super.getProjection(), DEFAULT_PROJECTION);
         }
     }
 }
