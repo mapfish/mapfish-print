@@ -83,6 +83,12 @@ configure(subprojects.findAll {['core', 'examples'].contains(it.name)}) {
 
     }
 
+    test {
+        testLogging {
+            exceptionFormat = 'full'
+        }
+    }
+
     sourceSets {
         test {
             output.resourcesDir = output.classesDir
