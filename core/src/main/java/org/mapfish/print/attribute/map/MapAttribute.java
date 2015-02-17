@@ -23,6 +23,7 @@ import com.google.common.base.Function;
 import com.vividsolutions.jts.geom.Envelope;
 
 import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues;
 import org.mapfish.print.attribute.map.ZoomToFeatures.ZoomType;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.Scale;
@@ -65,7 +66,6 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
 
         private static final boolean DEFAULT_ADJUST_BOUNDS = false;
         private static final double DEFAULT_ROTATION = 0.0;
-        private static final String DEFAULT_PROJECTION = "EPSG:3857";
 
         private MapBounds mapBounds;
 
@@ -212,22 +212,22 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
 
         @Override
         public String getProjection() {
-            return MapAttribute.getValueOr(super.getProjection(), DEFAULT_PROJECTION);
+            return getValueOr(super.getProjection(), DEFAULT_PROJECTION);
         }
 
         @Override
         public Double getZoomSnapTolerance() {
-            return MapAttribute.getValueOr(super.getZoomSnapTolerance(), DEFAULT_SNAP_TOLERANCE);
+            return getValueOr(super.getZoomSnapTolerance(), DEFAULT_SNAP_TOLERANCE);
         }
 
         @Override
         public ZoomLevelSnapStrategy getZoomLevelSnapStrategy() {
-            return MapAttribute.getValueOr(super.getZoomLevelSnapStrategy(), DEFAULT_SNAP_STRATEGY);
+            return getValueOr(super.getZoomLevelSnapStrategy(), DEFAULT_SNAP_STRATEGY);
         }
 
         @Override
         public Double getRotation() {
-            return MapAttribute.getValueOr(super.getRotation(), DEFAULT_ROTATION);
+            return getValueOr(super.getRotation(), DEFAULT_ROTATION);
         }
 
         @Override
@@ -238,7 +238,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
 
         @Override
         public Boolean isUseAdjustBounds() {
-            return MapAttribute.getValueOr(super.isUseAdjustBounds(), DEFAULT_ADJUST_BOUNDS);
+            return getValueOr(super.isUseAdjustBounds(), DEFAULT_ADJUST_BOUNDS);
         }
         //CSON: DesignForExtension
 
@@ -250,7 +250,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
          *  the current instance.
          */
         public final OverriddenMapAttributeValues getWithOverrides(
-                final GenericMapAttribute<?>.GenericMapAttributeValues paramOverrides) {
+                final OverviewMapAttributeValues paramOverrides) {
             return new OverriddenMapAttributeValues(this, paramOverrides, getTemplate());
         }
 
@@ -298,7 +298,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
     public class OverriddenMapAttributeValues extends MapAttributeValues {
 
         private final MapAttributeValues params;
-        private final GenericMapAttribute<?>.GenericMapAttributeValues paramOverrides;
+        private final OverviewMapAttributeValues paramOverrides;
         private MapBounds zoomedOutBounds = null;
         private MapLayer mapExtentLayer = null;
 
@@ -310,18 +310,31 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
          */
         public OverriddenMapAttributeValues(
                 final MapAttributeValues params,
-                final GenericMapAttribute<?>.GenericMapAttributeValues paramOverrides,
+                final OverviewMapAttributeValues paramOverrides,
                 final Template template) {
             super(template, paramOverrides.getMapSize());
             this.params = params;
             this.paramOverrides = paramOverrides;
         }
 
+        /**
+         * The bounds used to render the overview-map.
+         */
         @Override
         public final MapBounds getMapBounds() {
             return this.zoomedOutBounds;
         }
 
+        /**
+         * Custom bounds for the overview-map. Overwrites the bounds of the original map.
+         */
+        public final MapBounds getCustomBounds() {
+            return this.paramOverrides.getMapBounds();
+        }
+
+        /**
+         * The bounds of the original map that this overview-map is associated to.
+         */
         public final MapBounds getOriginalBounds() {
             return this.params.getMapBounds();
         }
@@ -332,37 +345,37 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
 
         @Override
         public final Double getDpi() {
-            return MapAttribute.getValueOr(this.paramOverrides.getDpi(), this.params.getDpi());
+            return getValueOr(this.paramOverrides.getDpi(), this.params.getDpi());
         }
 
         @Override
         public final Double getZoomSnapTolerance() {
-            return MapAttribute.getValueOr(this.paramOverrides.getZoomSnapTolerance(), this.params.getZoomSnapTolerance());
+            return getValueOr(this.paramOverrides.getZoomSnapTolerance(), this.params.getZoomSnapTolerance());
         }
 
         @Override
         public final ZoomLevelSnapStrategy getZoomLevelSnapStrategy() {
-            return MapAttribute.getValueOr(this.paramOverrides.getZoomLevelSnapStrategy(), this.params.getZoomLevelSnapStrategy());
+            return getValueOr(this.paramOverrides.getZoomLevelSnapStrategy(), this.params.getZoomLevelSnapStrategy());
         }
 
         @Override
         public final ZoomLevels getZoomLevels() {
-            return MapAttribute.getValueOr(this.paramOverrides.getZoomLevels(), this.params.getZoomLevels());
+            return getValueOr(this.paramOverrides.getZoomLevels(), this.params.getZoomLevels());
         }
 
         @Override
         public final Double getRotation() {
-            return MapAttribute.getValueOr(this.paramOverrides.getRotation(), this.params.getRotation());
+            return getValueOr(this.paramOverrides.getRotation(), this.params.getRotation());
         }
 
         @Override
         public final Boolean isUseAdjustBounds() {
-            return MapAttribute.getValueOr(this.paramOverrides.isUseAdjustBounds(), this.params.isUseAdjustBounds());
+            return getValueOr(this.paramOverrides.isUseAdjustBounds(), this.params.isUseAdjustBounds());
         }
 
         @Override
         public final Boolean isUseNearestScale() {
-            final Boolean useNearestScale = MapAttribute.getValueOr(this.paramOverrides.useNearestScale, this.params.useNearestScale);
+            final Boolean useNearestScale = getValueOr(this.paramOverrides.useNearestScale, this.params.useNearestScale);
             return (useNearestScale == null || useNearestScale)
                     && getZoomLevels() != null;
         }
@@ -386,14 +399,6 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
             }
 
             return layers;
-        }
-    }
-
-    private static <T extends Object> T getValueOr(final T value, final T defaultValue) {
-        if (value != null) {
-            return value;
-        } else {
-            return defaultValue;
         }
     }
 }

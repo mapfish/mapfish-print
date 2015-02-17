@@ -192,6 +192,12 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
      */
     public abstract class GenericMapAttributeValues {
         private static final String TYPE = "type";
+
+        /**
+         * The default projection.
+         */
+        protected static final String DEFAULT_PROJECTION = "EPSG:3857";
+
         private final Dimension mapSize;
         private final Template template;
         private List<MapLayer> mapLayers;
@@ -444,6 +450,19 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
             // specify the DPI they are using for creating the bounds.
             // For the moment we require the client to convert their bounds to 72 DPI
             return Constants.PDF_DPI;
+        }
+
+        /**
+         * @param value The value or null.
+         * @param defaultValue The default value.
+         * @param <T> A type.
+         */
+        protected final <T extends Object> T getValueOr(final T value, final T defaultValue) {
+            if (value != null) {
+                return value;
+            } else {
+                return defaultValue;
+            }
         }
     }
 }

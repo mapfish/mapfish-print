@@ -47,10 +47,10 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Test for the CreateOverviewMap processor, where the overview map has its own
- * layers and where a style is set on these layers.
+ * center/scale and where a style is set on these layers.
  */
-public class CreateOverviewMapProcessorCustomLayerTest extends AbstractMapfishSpringTest {
-    public static final String BASE_DIR = "overview_map_custom_layer/";
+public class CreateOverviewMapProcessorCustomBounds extends AbstractMapfishSpringTest {
+    public static final String BASE_DIR = "overview_map_custom_bounds/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
@@ -64,7 +64,7 @@ public class CreateOverviewMapProcessorCustomLayerTest extends AbstractMapfishSp
     @Test
     @DirtiesContext
     public void testExecute() throws Exception {
-        final String host = "overview_map_custom_layer";
+        final String host = "overview_map_custom_bounds";
         requestFactory.registerHandler(
                 new Predicate<URI>() {
                     @Override
@@ -120,7 +120,7 @@ public class CreateOverviewMapProcessorCustomLayerTest extends AbstractMapfishSp
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateOverviewMapProcessorCustomLayerTest.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateOverviewMapProcessorCustomBounds.class, BASE_DIR + "requestData.json");
     }
 
 }
