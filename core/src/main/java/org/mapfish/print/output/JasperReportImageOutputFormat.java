@@ -20,13 +20,12 @@
 package org.mapfish.print.output;
 
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.export.JRGraphics2DExporter;
-import net.sf.jasperreports.engine.export.JRGraphics2DExporterParameter;
+import net.sf.jasperreports.engine.JasperPrintManager;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -63,30 +62,27 @@ public final class JasperReportImageOutputFormat extends AbstractJasperReportOut
         JasperPrint jasperPrint = print.print;
         final int numPages = jasperPrint.getPages().size();
 
-        final double dpiRatio = print.dpi / print.requestorDpi;
+        final float dpiRatio = (float) (print.dpi / print.requestorDpi);
         final int pageHeightOnImage = (int) ((jasperPrint.getPageHeight() + 1) * dpiRatio);
-        final int pageWidthOnImage = (int) ((jasperPrint.getPageWidth() + 1) * dpiRatio);
-        BufferedImage pageImage = new BufferedImage(pageWidthOnImage, numPages * pageHeightOnImage, this.imageType);
+        final int pageWidthOnImage = (int) (jasperPrint.getPageWidth() * dpiRatio);
+        BufferedImage reportImage = new BufferedImage(pageWidthOnImage, numPages * pageHeightOnImage, this.imageType);
 
-        Graphics2D graphics2D = pageImage.createGraphics();
-        graphics2D.scale(dpiRatio, dpiRatio);
+        Graphics2D graphics2D = reportImage.createGraphics();
         try {
-            JRGraphics2DExporter exporter = new JRGraphics2DExporter();
-            exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
-            exporter.setParameter(JRGraphics2DExporterParameter.GRAPHICS_2D, graphics2D);
-            for (int pageIndex = 0; pageIndex < numPages; pageIndex++) {
-                exporter.setParameter(JRExporterParameter.PAGE_INDEX, pageIndex);
+            JasperPrintManager printManager = JasperPrintManager.getInstance(print.context);
 
-                exporter.exportReport();
+            for (int pageIndex = 0; pageIndex < numPages; pageIndex++) {
+                Image pageImage = printManager.printToImage(jasperPrint, pageIndex, dpiRatio);
+                graphics2D.drawImage(pageImage, 0, pageHeightOnImage * pageIndex, null);
+
                 graphics2D.setColor(Color.black);
                 graphics2D.drawLine(0, pageHeightOnImage, pageWidthOnImage, pageHeightOnImage);
-                graphics2D.translate(0, pageHeightOnImage);
             }
         } finally {
             graphics2D.dispose();
         }
 
-        ImageIO.write(pageImage, getFileSuffix(), outputStream);
+        ImageIO.write(reportImage, getFileSuffix(), outputStream);
     }
 
     /**
