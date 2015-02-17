@@ -1,5 +1,5 @@
 .. image:: https://travis-ci.org/mapfish/mapfish-print.svg?branch=development
-    :target: https://travis-ci.org/mapfish-print/mapfish-print
+    :target: https://travis-ci.org/mapfish/mapfish-print
 
 Please read the documentation available here:
 http://mapfish.github.io/mapfish-print/
