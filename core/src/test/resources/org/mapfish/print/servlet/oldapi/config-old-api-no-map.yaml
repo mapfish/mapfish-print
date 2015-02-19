@@ -1,0 +1,11 @@
+throwErrorOnExtraParameters: true
+
+templates:
+  Egrid: !template
+    reportTemplate: Egrid.jrxml
+    attributes:
+      EGRID: !string {}
+    processors:
+    - !reportBuilder
+      directory: '.'
+

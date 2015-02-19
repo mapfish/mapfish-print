@@ -39,6 +39,8 @@ import org.mapfish.print.servlet.NoSuchAppException;
 import org.mapfish.print.servlet.job.JobManager;
 import org.mapfish.print.servlet.job.NoSuchReferenceException;
 import org.mapfish.print.wrapper.json.PJsonObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -64,6 +66,8 @@ import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGU
  */
 @Controller
 public class OldAPIMapPrinterServlet extends BaseMapServlet {
+    private static final Logger LOGGER = LoggerFactory.getLogger(OldAPIMapPrinterServlet.class);
+
     static final String REPORT_SUFFIX = ".printout";
     private static final String DEP_SEG = "/dep";
     private static final String INFO_URL = "/info.json";
@@ -332,26 +336,25 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
                     }
                 }
                 if (map == null) {
-                    throw new UnsupportedOperationException("Template '" + name + "' contains "
-                                                            + "no map configuration.");
-                }
-                
-                MapAttributeValues mapValues = map.createValue(template);
-                json.key("map");
-                json.object();
-                {
-                    json.key("width").value(mapValues.getMapSize().width);
-                    json.key("height").value(mapValues.getMapSize().height);
-                }
-                json.endObject();
-                
-                // get the zoom levels and dpi values from the first template
-                if (maxDpi == null) {
-                    maxDpi = map.getMaxDpi();
-                    dpiSuggestions = map.getDpiSuggestions();
-                }
-                if (zoomLevels == null) {
-                    zoomLevels = mapValues.getZoomLevels();
+                    LOGGER.warn("Template '" + name + "' contains no map configuration.");
+                } else {
+                    MapAttributeValues mapValues = map.createValue(template);
+                    json.key("map");
+                    json.object();
+                    {
+                        json.key("width").value(mapValues.getMapSize().width);
+                        json.key("height").value(mapValues.getMapSize().height);
+                    }
+                    json.endObject();
+
+                    // get the zoom levels and dpi values from the first template
+                    if (maxDpi == null) {
+                        maxDpi = map.getMaxDpi();
+                        dpiSuggestions = map.getDpiSuggestions();
+                    }
+                    if (zoomLevels == null) {
+                        zoomLevels = mapValues.getZoomLevels();
+                    }
                 }
             }
             json.endObject();
