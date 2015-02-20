@@ -11,16 +11,26 @@
 <p>
     Downloads for the latest version are available at:
     <ul>
+    <li>Commandline Application Distribution, <a href="https://@maven_repo_url@/org/mapfish/print/print-cli/@version@/print-cli-@version@-zip.zip">Zip</a> or <a href="https://@maven_repo_url@/org/mapfish/print/print-cli/@version@/print-cli-@version@-tar.tar">Tar</a></li>
     <li><a href="https://@maven_repo_url@/org/mapfish/print/print-servlet/@version@/print-servlet-@version@.war">Web Application (WAR) Distribution</a></li>
     <li><a href="https://@maven_repo_url@/org/mapfish/print/print-lib/@version@/print-lib-@version@.jar">Java Library (JAR) Distribution</a></li>
     <li><a href="https://@maven_repo_url@/org/mapfish/print/print-deb/@version@/print-deb-@version@.deb">Debian Package Distribution</a></li>
-    <li>Commandline Application Distribution
-        <ul>
-            <li><a href="https://@maven_repo_url@/org/mapfish/print/print-cli/@version@/print-cli-@version@-zip.zip">Zip</a></li>
-            <li><a href="https://@maven_repo_url@/org/mapfish/print/print-cli/@version@/print-cli-@version@-tar.tar">Tar</a></li>
-        </ul>
-    </li>
     </ul>
+</p>
+
+<h4>Command Line Distribution</h4>
+<p>
+    The <a href="https://@maven_repo_url@/org/mapfish/print/print-cli/@version@/print-cli-@version@-zip.zip">Zip</a>
+    file and the <a href="https://@maven_repo_url@/org/mapfish/print/print-cli/@version@/print-cli-@version@-tar.tar">Tar</a>
+    file are mapfish print distributed as an application that can be ran from the commandline to
+    execute print jobs. It is useful for debugging print configurations and requests.
+</p>
+<p>
+    Assuming you have Java 7+ installed, the <code>bin/print</code> script will execute a print task.  The command line useage can be
+    printed by executing: <code>bin/print -?</code>.
+</p>
+<p>
+    An example of using the application is: <code>bin/print -config config.yaml -spec requestData.json -output out.pdf</code>
 </p>
 
 <h4>Web Application (WAR) Distribution</h4>
@@ -51,21 +61,6 @@
 <p>
     In the future mapfish-print will be published to maven central so that build tools can easily integrate mapfish-print.
     That will be available in mapfish print 3.1+
-</p>
-
-<h4>Command Line Distribution</h4>
-<p>
-    The <a href="https://@maven_repo_url@/org/mapfish/print/print-cli/@version@/print-cli-@version@-zip.zip">Zip</a>
-    file and the <a href="https://@maven_repo_url@/org/mapfish/print/print-cli/@version@/print-cli-@version@-tar.tar">Tar</a>
-    file are mapfish print distributed as an application that can be ran from the commandline to
-    execute print jobs. It is useful for debugging print configurations and requests.
-</p>
-<p>
-    Assuming you have Java 7+ installed, the <code>bin/print</code> script will execute a print task.  The command line useage can be
-    printed by executing: <code>bin/print -?</code>.
-</p>
-<p>
-    An example of using the application is: <code>bin/print -config config.yaml -spec requestData.json -output out.pdf</code>
 </p>
 
 <h4>Debian Package</h4>
