@@ -24,6 +24,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
+import org.mapfish.print.attribute.DataSourceAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
@@ -34,19 +35,19 @@ import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue;
+import static org.junit.Assert.assertTrue;
 
-/**
- * @author Jesse on 4/10/2014.
- */
-public class TableOfTablesTest extends AbstractMapfishSpringTest {
+public class DataSourceProcessorTest extends AbstractMapfishSpringTest {
+
     public static final String BASE_DIR = "tablelist/";
 
     @Autowired
@@ -60,6 +61,17 @@ public class TableOfTablesTest extends AbstractMapfishSpringTest {
     @Autowired
     private Map<String, OutputFormat> outputFormat;
 
+    @Test @DirtiesContext
+    public void testValidate() throws Exception {
+        final File configFile = getFile("incorrectly-configured-DataSourceProcessor/config.yaml");
+        configurationFactory.setDoValidation(false);
+        final Configuration config = configurationFactory.getConfig(configFile);
+
+        final List<Throwable> validate = config.validate();
+
+        assertTrue(validate.size() > 0);
+    }
+
     @Test
     public void testBasicTableProperties() throws Exception {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
@@ -68,7 +80,7 @@ public class TableOfTablesTest extends AbstractMapfishSpringTest {
         Values values = new Values(requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
-        final DataSourceAttributeValue datasource = values.getObject("datasource", DataSourceAttributeValue.class);
+        final DataSourceAttribute.DataSourceAttributeValue datasource = values.getObject("datasource", DataSourceAttribute.DataSourceAttributeValue.class);
 
         assertEquals(2, datasource.attributesValues.length);
     }
@@ -83,18 +95,19 @@ public class TableOfTablesTest extends AbstractMapfishSpringTest {
         JasperPrint print = format.getJasperPrint(requestData, config, config.getDirectory(), getTaskDirectory()).print;
 
         assertEquals(1, print.getPages().size());
-            BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
+        BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
 
 //            final File output = new File("e:/tmp/expected-page.png");
 //            output.getParentFile().mkdirs();
 //            ImageIO.write(reportImage, "png", output);
 
-            File expectedImage = getFile(BASE_DIR + "expected-page.png");
-            new ImageSimilarity(reportImage, 5).assertSimilarity(expectedImage, 10);
+        File expectedImage = getFile(BASE_DIR + "expected-page.png");
+        new ImageSimilarity(reportImage, 5).assertSimilarity(expectedImage, 10);
 
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(TableOfTablesTest.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(DataSourceProcessorTest.class, BASE_DIR + "requestData.json");
     }
+
 }
