@@ -503,16 +503,16 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         if (styleRefDeclared && this.jasperTemplate == null) {
             validationErrors.add(new ConfigurationException(
                     "if a style is declared a 'jasperTemplate' must also be declared (in !tableProcessor)."));
-    }
+        }
         if (styleRefDeclared && !this.dynamic) {
             validationErrors.add(new ConfigurationException(
                     "if a style is declared dynamic must be true (in !tableProcessor)."));
-    }
+        }
         if (this.dynamic) {
             if (this.jasperTemplate == null) {
                 validationErrors.add(new ConfigurationException(
                         "'jasperTemplate' property must be declared if !tableProcessor is dynamic."));
-    }
+            }
             if (this.headerStyle == null) {
                 validationErrors.add(new ConfigurationException(
                         "'headerStyle' property must be declared if !tableProcessor is dynamic."));
@@ -520,7 +520,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
             if (this.detailStyle == null) {
                 validationErrors.add(new ConfigurationException(
                         "'detailStyle' property must be declared if !tableProcessor is dynamic."));
-        }
+            }
 
             try {
                 byte[] bytes = configuration.loadFile(this.jasperTemplate);
@@ -530,8 +530,8 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
                     validationErrors.add(new ConfigurationException(
                             "JasperTemplate must have a column band defined for height and positioning information"));
                 } else if (templateDesign.getColumnHeader().getElements().length == 0) {
-                        validationErrors.add(new ConfigurationException(
-                                "column header band must have at least one element defined for to height and positioning information"));
+                    validationErrors.add(new ConfigurationException(
+                            "column header band must have at least one element defined for to height and positioning information"));
                 }
 
                 final JRDesignSection detailSection = (JRDesignSection) templateDesign.getDetailSection();
@@ -551,7 +551,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
                 checkStyleExists(validationErrors, stylesMap, this.lastHeaderStyle);
             } catch (Throwable e) {
                 validationErrors.add(e);
-    }
+            }
 
         }
     }
