@@ -1,0 +1,47 @@
+throwErrorOnExtraParameters: true
+
+templates:
+    A4 portrait: !template
+        reportTemplate: A4_Portrait.jrxml
+        tableData: jrDataSource
+        attributes:
+            title: !string {}
+            comments: !string {}
+            legend: !legend {}
+            northArrow: !northArrow
+                size: 200
+                default:
+                    graphic: "north.svg"
+            scalebar: !scalebar
+                width: 230
+                height: 40
+            map: !map
+                maxDpi: 254
+                dpiSuggestions: [254]
+                zoomLevels: !zoomLevels
+                    scales: [5000, 10000, 25000, 50000, 100000, 500000]
+                width: 554
+                height: 662
+            datasource: !datasource
+                attributes:
+                    title: !string {}
+                    table: !table {}
+
+        processors:
+        - !reportBuilder # compile all reports in current directory
+            directory: '.'
+        - !prepareLegend
+            inputMapper:
+                legend: legend
+            outputMapper:
+                legend: legend
+                legendSubReport: legendSubReport
+        - !createNorthArrow {}
+        - !createScalebar {}
+        - !createMap {}
+        - !createDataSource
+            reportTemplate: table.jrxml
+            reportKey: reportTemplate
+            processors:
+            - !prepareTable
+                dynamic: true

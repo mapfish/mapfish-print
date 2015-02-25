@@ -46,6 +46,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -209,6 +210,11 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
         }
         for (Attribute attribute : this.attributes.values()) {
             attribute.validate(validationErrors, configuration);
+        }
+
+        final Set<Processor<?, ?>> allProcessors = this.processorGraph.getAllProcessors();
+        for (Processor<?, ?> processor : allProcessors) {
+            processor.validate(validationErrors, configuration);
         }
     }
 
