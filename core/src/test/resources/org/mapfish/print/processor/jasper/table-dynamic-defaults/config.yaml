@@ -12,7 +12,6 @@ templates:
         icon: !urlImage
           urlExtractor: (.*)
       dynamic: true
-      maxColumns: 3
       excludeColumns: ["exclude"]
       inputMapper: {table: table}
       outputMapper: {table: table}
