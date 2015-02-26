@@ -209,6 +209,26 @@ public class MapPrinterServlet extends BaseMapServlet {
      * @param statusRequest  the request object
      * @param statusResponse the response object
      */
+    @RequestMapping(value = "/{appId}" + STATUS_URL + "/{referenceId:\\S+}.json", method = RequestMethod.GET)
+    public final void getStatusSpecificAppId(
+            @PathVariable final String referenceId,
+            @RequestParam(value = "jsonp", defaultValue = "") final String jsonpCallback,
+            final HttpServletRequest statusRequest,
+            final HttpServletResponse statusResponse) {
+        getStatus(referenceId, jsonpCallback, statusRequest, statusResponse);
+    }
+    /**
+     * Get a status report on a job.  Returns the following json:
+     * <p/>
+     * <pre><code>
+     *  {"time":0,"count":0,"done":false}
+     * </code></pre>
+     *
+     * @param referenceId    the job reference
+     * @param jsonpCallback  if given the result is returned with a function call wrapped around it
+     * @param statusRequest  the request object
+     * @param statusResponse the response object
+     */
     @RequestMapping(value = STATUS_URL + "/{referenceId:\\S+}.json", method = RequestMethod.GET)
     public final void getStatus(
             @PathVariable final String referenceId,

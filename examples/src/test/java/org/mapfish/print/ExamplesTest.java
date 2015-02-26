@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mapfish.print.servlet.MapPrinterServlet.JSON_ATTRIBUTES;
 import static org.mapfish.print.servlet.MapPrinterServlet.JSON_REQUEST_HEADERS;
@@ -113,6 +114,22 @@ public class ExamplesTest {
 
     }
 
+    @Test
+    public void testExampleDirectoryNames() throws Exception {
+        final String namePattern = "[a-zA-Z0-9_]+";
+        final File examplesDir = getFile(ExamplesTest.class, "/examples");
+        StringBuilder errors = new StringBuilder();
+        for (File example : Files.fileTreeTraverser().children(examplesDir)) {
+            if (example.isDirectory()) {
+                if (!examplesDir.getName().matches(namePattern)) {
+                    errors.append("\n    * ").append(examplesDir.getName());
+                }
+            }
+        }
+
+        assertEquals("All example directory names must match the pattern: '" + namePattern + "'.  The following fail that test: " +
+                     errors, 0, errors.length());
+    }
     @Test
     public void testAllExamples() throws Exception {
         Map<String, Throwable> errors = Maps.newHashMap();

@@ -242,8 +242,7 @@ public class PrintApiTest extends AbstractApiTest {
         testCreateReport(MapPrinterServlet.REPORT_URL + ".pdf", printSpec);
     }
 
-    private void testCreateReport(String requestPath, String printSpec) throws Exception,
-            JSONException, Exception {
+    private void testCreateReport(String requestPath, String printSpec) throws Exception {
         ClientHttpRequest request = getPrintRequest(requestPath, HttpMethod.POST);
         setPrintSpec(printSpec, request);
         response = request.execute();
@@ -272,6 +271,23 @@ public class PrintApiTest extends AbstractApiTest {
         assertTrue(statusResult.has(MapPrinterServlet.JSON_DONE));
         assertEquals(downloadUrl, statusResult.getString(MapPrinterServlet.JSON_DOWNLOAD_LINK));
         response.close();
+
+        if (!requestPath.startsWith(MapPrinterServlet.REPORT_URL)) {
+            String appId = requestPath.substring(0, requestPath.indexOf('/'));
+
+            // app specific status option
+            request = getPrintRequest(appId + MapPrinterServlet.STATUS_URL + "/" + ref + ".json", HttpMethod.GET);
+            response = request.execute();
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
+
+            responseAsText = getBodyAsText(response);
+            statusResult = new JSONObject(responseAsText);
+
+            assertTrue(statusResult.has(MapPrinterServlet.JSON_DONE));
+            assertEquals(downloadUrl, statusResult.getString(MapPrinterServlet.JSON_DOWNLOAD_LINK));
+            response.close();
+        }
 
         // check status with JSONP
         request = getPrintRequest(MapPrinterServlet.STATUS_URL + "/" + ref + ".json?jsonp=getStatus", HttpMethod.GET);
