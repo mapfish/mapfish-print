@@ -272,8 +272,10 @@ public class PrintApiTest extends AbstractApiTest {
         assertEquals(downloadUrl, statusResult.getString(MapPrinterServlet.JSON_DOWNLOAD_LINK));
         response.close();
 
-        if (!requestPath.startsWith(MapPrinterServlet.REPORT_URL)) {
-            String appId = requestPath.substring(0, requestPath.indexOf('/'));
+        final boolean hasAppId = !requestPath.startsWith(MapPrinterServlet.REPORT_URL);
+        String appId = null;
+        if (hasAppId) {
+            appId = requestPath.substring(0, requestPath.indexOf('/'));
 
             // app specific status option
             request = getPrintRequest(appId + MapPrinterServlet.STATUS_URL + "/" + ref + ".json", HttpMethod.GET);
@@ -313,6 +315,16 @@ public class PrintApiTest extends AbstractApiTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(new MediaType("application", "pdf"), response.getHeaders().getContentType());
         assertTrue(response.getBody().read() >= 0);
+
+        if (hasAppId) {
+            // check download with appId url
+            request = getPrintRequest("/" + appId + MapPrinterServlet.REPORT_URL + "/" + ref, HttpMethod.GET);
+            response = request.execute();
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(new MediaType("application", "pdf"), response.getHeaders().getContentType());
+            assertTrue(response.getBody().read() >= 0);
+
+        }
     }
 
     @Test(timeout = 60000)
