@@ -22,7 +22,7 @@ package org.mapfish.print.output;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import com.vividsolutions.jts.util.Assert;
-
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.attribute.Attribute;
@@ -38,13 +38,13 @@ import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
 import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.wrapper.PObject;
+import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.mapfish.print.wrapper.multi.PMultiObject;
 
 import java.io.File;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -175,9 +175,20 @@ public final class Values {
                     PObject[] pValues = new PObject[]{pValue, rAtt.getDefaultValue()};
                     pValue = new PMultiObject(pValues);
                 } else {
-                    if (requestJsonAttributes.opt(attributeName) != null) {
-                        final String message = "Expected a JSON Object for " + requestJsonAttributes.getPath(attributeName) + "but instead "
-                                         + "got a '" + requestJsonAttributes.opt(attributeName).getClass().toString();
+                    final Object valueOpt = requestJsonAttributes.opt(attributeName);
+                    if (valueOpt != null) {
+                        String valueAsString;
+                        if (valueOpt instanceof PJsonArray) {
+                            valueAsString = ((PJsonArray) valueOpt).getInternalArray().toString(2);
+                        } else if (valueOpt instanceof JSONArray) {
+                            valueAsString = ((JSONArray) valueOpt).toString(2);
+                        } else {
+                            valueAsString = valueOpt.toString();
+                        }
+                        final String message = "Expected a JSON Object as the value for the element with the path: '" +
+                                               requestJsonAttributes.getPath(attributeName) + "' but instead "
+                                               + "got a '" + valueOpt.getClass().toString() +
+                                               "'.\nThe value is: \n" + valueAsString;
                         throw new IllegalArgumentException(message);
                     }
                     pValue = rAtt.getDefaultValue();
