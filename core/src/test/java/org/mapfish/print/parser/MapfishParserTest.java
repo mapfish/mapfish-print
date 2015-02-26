@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.ExtraPropertyException;
 import org.mapfish.print.MissingPropertyException;
+import org.mapfish.print.attribute.LegendAttribute;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -299,6 +300,22 @@ public class MapfishParserTest {
             Assert.assertEquals(totalAttributes, e.getAttributeNames().size());
             assertTrue(e.getExtraProperties().contains("extraProperty"));
         }
+    }
+
+    @Test(expected = ExtraPropertyException.class)
+    public void testDoesntMap() throws Exception {
+        String legendAtts = "{\n"
+                     + "    \"extra\": \"\",\n"
+                     + "    \"classes\": [{\n"
+                     + "        \"name\": \"osm\",\n"
+                     + "        \"icons\": [\"http://localhost:9876/e2egeoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0"
+                     + ".0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:states\"]\n"
+                     + "    }]\n"
+                     + "}\n";
+        PObject requestData = new PJsonObject(new JSONObject(legendAtts), "legend");
+        LegendAttribute.LegendAttributeValue param = new LegendAttribute.LegendAttributeValue();
+        new MapfishParser().parse(true, requestData, param);
+
     }
 
     public static void populateLayerParam(PObject requestData, Object param, String... extraNamesToIgnore)
