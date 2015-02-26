@@ -213,7 +213,7 @@ public class ExamplesTest {
 
                         BufferedImage image = ImageIO.read(new ByteArrayInputStream(out.toByteArray()));
 
-//                        File outDir = new File("e:/tmp/examples_text", example.getName()+"/expected_output");
+//                        File outDir = new File("e:/tmp/examples_test", example.getName()+"/expected_output");
 //                        outDir.mkdirs();
 //                        ImageIO.write(image, "png", new File(outDir, requestFile.getName().replace(".json", ".png")));
 
