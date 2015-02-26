@@ -22,6 +22,7 @@ package org.mapfish.print.output;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.vividsolutions.jts.util.AssertionFailedException;
 import jsr166y.ForkJoinPool;
 import jsr166y.ForkJoinTask;
@@ -41,6 +42,7 @@ import net.sf.jasperreports.repo.RepositoryService;
 import org.json.JSONException;
 import org.mapfish.print.Constants;
 import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
@@ -165,6 +167,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             throw new CancellationException();
         }
 
+        logAvailableValues(templateName, template, values);
         JasperFillManager fillManager = getJasperFillManager(config);
 
         checkRequiredValues(config, values, template.getReportTemplate());
@@ -213,6 +216,79 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         }
         print.setProperty(Renderable.PROPERTY_IMAGE_DPI, String.valueOf(Math.round(maxDpi[0])));
         return new Print(getLocalJasperReportsContext(config), print, values, maxDpi[0], maxDpi[1]);
+    }
+
+    private void logAvailableValues(final String templateName, final Template template, final Values values) {
+        if (!LOGGER.isInfoEnabled()) {
+            return;
+        }
+
+        StringBuilder builder = new StringBuilder("\nThis log message details the parameters available for use in the Jasper templates ");
+        builder.append("for the Mapfish Template: ").append(templateName).append("\n");
+        builder.append("  Jasper Template name: ").append(template.getReportTemplate()).append('\n');
+        builder.append("  The following parameters are available for use in the templates: \n");
+        final int standardIndentSize = 4;
+        int indent = standardIndentSize;
+        for (Map.Entry<String, Object> parameter : values.asMap().entrySet()) {
+            addIndent(indent, builder).append("* ").append(parameter.getKey());
+            boolean isTableDataKey = parameter.getKey().equals(template.getTableDataKey());
+
+            if (isTableDataKey) {
+                if (parameter.getValue() instanceof JRDataSource) {
+                    builder.append(" <tableDataKey>");
+                } else {
+                    final String message = "The output value: '" + parameter.getKey() + "' is defined in the template: '" +
+                                           templateName + "' as the tableDataKey but is not a '" + JRDataSource.class.getName() +
+                                           "' object as was expected.  Instead it is " + parameter.getValue().getClass().getName();
+                    throw new PrintException(message);
+                }
+            }
+
+            builder.append(" (").append(parameter.getValue().getClass().getName()).append(")\n");
+            if (parameter.getValue() instanceof JRDataSource) {
+                String section = isTableDataKey ? "'Top-level' template" : "sub-template";
+
+                 if (!isTableDataKey) {
+                     addIndent(indent, builder).append("  - This value is a Jasper Reports DataSource and thus can be passed to a ").
+                             append("subtemplate as a DataSource and used in the subtemplate's detail band.\n");
+                 }
+                if (parameter.getValue() instanceof JRMapCollectionDataSource) {
+                    JRMapCollectionDataSource source = (JRMapCollectionDataSource) parameter.getValue();
+
+                    addIndent(indent, builder).append("  - This value is a datasource that can be introspected and it contains the "
+                                                      + "following columns"
+                                                      + "(All rows are analyzed for their columns, thus each row may only have a subset of the columns)\n");
+
+                    indent += standardIndentSize;
+                    Map<String, String> columns = Maps.newHashMap();
+
+                    for (Map<String, ?> row : source.getData()) {
+                        for (Map.Entry<String, ?> column : row.entrySet()) {
+                            columns.put(column.getKey(), column.getValue().getClass().getName());
+                        }
+                    }
+
+                    for (Map.Entry<String, String> column : columns.entrySet()) {
+                        addIndent(indent, builder).append("* ").append(column.getKey()).append(" (").
+                                append(column.getValue().getClass().getName()).append(")\n");
+                    }
+                    indent -= standardIndentSize;
+                } else {
+                    addIndent(indent, builder).append("  - This datasource is not a type that can be introspected but it can be used in a detail section of ").
+                            append(section).append(" if the structure is known.\n");
+
+                }
+            }
+        }
+
+        LOGGER.info(builder.toString());
+    }
+
+    private StringBuilder addIndent(final int indent, final StringBuilder builder) {
+        for (int i = 0; i < indent; i++) {
+            builder.append(" ");
+        }
+        return builder;
     }
 
     private void checkRequiredFields(final Configuration configuration, final JRDataSource dataSource, final String reportTemplate) {
