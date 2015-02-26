@@ -19,6 +19,7 @@
 
 package org.mapfish.print.output;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -118,5 +119,24 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         assertEquals("name", attributesValues[0].get("name"));
         final TableAttribute.TableAttributeValue table = (TableAttribute.TableAttributeValue) attributesValues[0].get("table");
         assertEquals("id", table.columns[0]);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testExpectObjectGetArray() throws Exception {
+
+        PJsonObject requestData = parseJSONObjectFromFile(ValuesTest.class, BASE_DIR + "requestData.json");
+        String badLegendConf = "[{\n"
+                               + "    \"name\": \"\",\n"
+                               + "    \"classes\": [{\n"
+                               + "        \"name\": \"osm\",\n"
+                               + "        \"icons\": [\"http://localhost:9876/e2egeoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0"
+                               + ".0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:states\"]\n"
+                               + "    }]\n"
+                               + "}]\n";
+        requestData.getInternalObj().getJSONObject("attributes").put("legend", new JSONArray(badLegendConf));
+        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
+
+        Template template = config.getTemplates().values().iterator().next();
+        new Values(requestData, template, this.parser, new File("tmp"), this.httpRequestFactory, new File("."));
     }
 }

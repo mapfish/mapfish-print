@@ -175,6 +175,11 @@ public final class Values {
                     PObject[] pValues = new PObject[]{pValue, rAtt.getDefaultValue()};
                     pValue = new PMultiObject(pValues);
                 } else {
+                    if (requestJsonAttributes.opt(attributeName) != null) {
+                        final String message = "Expected a JSON Object for " + requestJsonAttributes.getPath(attributeName) + "but instead "
+                                         + "got a '" + requestJsonAttributes.opt(attributeName).getClass().toString();
+                        throw new IllegalArgumentException(message);
+                    }
                     pValue = rAtt.getDefaultValue();
                 }
                 parser.parse(errorOnExtraParameters, pValue, value);
