@@ -213,12 +213,12 @@ public class ExamplesTest {
 
                         BufferedImage image = ImageIO.read(new ByteArrayInputStream(out.toByteArray()));
 
-                        File outDir = new File("/tmp/examples_test", example.getName()+"/expected_output");
-                        outDir.mkdirs();
-                        ImageIO.write(image, "png", new File(outDir, requestFile.getName().replace(".json", ".png")));
+//                        File outDir = new File("e:/tmp/examples_test", example.getName()+"/expected_output");
+//                        outDir.mkdirs();
+//                        ImageIO.write(image, "png", new File(outDir, requestFile.getName().replace(".json", ".png")));
 
                         File expectedOutputDir = new File(example, "expected_output");
-                        File expectedOutput = new File(expectedOutputDir, requestFile.getName().replace(".json", ".png"));
+                        File expectedOutput = getExpecteOutput(requestFile, expectedOutputDir);
                         int similarity = 50;
                         File file = new File(expectedOutputDir, "image-similarity.txt");
                         if (file.isFile()) {
@@ -236,6 +236,23 @@ public class ExamplesTest {
         }
 
         return testsRan;
+    }
+
+    private File getExpecteOutput(File requestFile, File expectedOutputDir) {
+        File platformSpecificDir;
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {
+            platformSpecificDir = new File(expectedOutputDir, "win");
+        } else if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+            platformSpecificDir = new File(expectedOutputDir, "mac");
+        } else {
+            platformSpecificDir = new File(expectedOutputDir, "linux");
+        }
+
+        final String imageName = requestFile.getName().replace(".json", ".png");
+        if (new File(platformSpecificDir, imageName).exists()) {
+            return new File(platformSpecificDir, imageName);
+        }
+        return new File(expectedOutputDir, imageName);
     }
 
     private boolean hasRequestFile(File example) {
