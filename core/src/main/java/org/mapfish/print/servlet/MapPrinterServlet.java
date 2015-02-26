@@ -345,6 +345,20 @@ public class MapPrinterServlet extends BaseMapServlet {
      * @param inline            whether or not to inline the
      * @param getReportResponse the response object
      */
+    @RequestMapping(value = "/{appId}" + REPORT_URL + "/{referenceId:\\S+}", method = RequestMethod.GET)
+    public final void getReportSpecificAppId(@PathVariable final String referenceId,
+                                @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
+                                final HttpServletResponse getReportResponse)
+            throws IOException, ServletException {
+        getReport(referenceId, inline, getReportResponse);
+    }
+    /**
+     * To get the PDF created previously.
+     *
+     * @param referenceId       the path to the file.
+     * @param inline            whether or not to inline the
+     * @param getReportResponse the response object
+     */
     @RequestMapping(value = REPORT_URL + "/{referenceId:\\S+}", method = RequestMethod.GET)
     public final void getReport(@PathVariable final String referenceId,
                                 @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
