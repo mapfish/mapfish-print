@@ -19,21 +19,11 @@
 
 package org.mapfish.print.processor.jasper;
 
-import static org.junit.Assert.assertEquals;
-
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
+import com.google.common.base.Predicate;
+import com.google.common.io.Resources;
 import jsr166y.ForkJoinPool;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
-
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -52,8 +42,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.mock.http.client.MockClientHttpResponse;
 
-import com.google.common.base.Predicate;
-import com.google.common.io.Resources;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
+import java.util.Map;
+import javax.annotation.Nullable;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Jesse on 4/10/2014.
@@ -61,6 +58,7 @@ import com.google.common.io.Resources;
 public class TableProcessorTest extends AbstractMapfishSpringTest {
     public static final String BASIC_BASE_DIR = "table/";
     public static final String DYNAMIC_BASE_DIR = "table-dynamic/";
+    public static final String DEFAULT_DYNAMIC_BASE_DIR = "table-dynamic-defaults/";
     public static final String IMAGE_CONVERTER_BASE_DIR = "table-image-column-resolver/";
     public static final String TABLE_CONVERTERS = "table_converters/";
     public static final String TABLE_CONVERTERS_DYNAMIC = "table_converters_dyn/";
@@ -75,6 +73,24 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
     private TestHttpClientFactory httpRequestFactory;
     @Autowired
     private Map<String, OutputFormat> outputFormat;
+
+    @Test
+    public void testDefaultDynamicTableProperties() throws Exception {
+        final String baseDir = DEFAULT_DYNAMIC_BASE_DIR;
+
+        final Configuration config = configurationFactory.getConfig(getFile(baseDir + "config.yaml"));
+        PJsonObject requestData = loadJsonRequestData(baseDir);
+
+        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
+        final File file = getFile(TableProcessorTest.class, baseDir);
+        JasperPrint print = format.getJasperPrint(requestData, config, file, getTaskDirectory()).print;
+        BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
+
+//        ImageIO.write(reportImage, "png", new File("e:/tmp/testDefaultDynamicTableProperties.png"));
+        // note that we are using a sample size of 50, because the image is quite big.
+        // otherwise small differences are not detected!
+        new ImageSimilarity(reportImage, 50).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
+    }
 
     @Test
     public void testBasicTableProperties() throws Exception {

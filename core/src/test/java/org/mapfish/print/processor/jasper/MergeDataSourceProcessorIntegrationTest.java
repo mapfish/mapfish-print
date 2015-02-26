@@ -32,7 +32,6 @@ import org.mapfish.print.processor.ProcessorDependency;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.ProcessorGraphNode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
 
 import java.io.File;
 import java.util.List;
@@ -53,17 +52,6 @@ public class MergeDataSourceProcessorIntegrationTest extends AbstractMapfishSpri
     };
     @Autowired
     private ConfigurationFactory configurationFactory;
-
-    @Test @DirtiesContext
-    public void testValidate() throws Exception {
-        final File configFile = getFile("incorrectly-configured-DataSourceProcessor/config.yaml");
-        configurationFactory.setDoValidation(false);
-        final Configuration config = configurationFactory.getConfig(configFile);
-
-        final List<Throwable> validate = config.validate();
-
-        assertEquals(4, validate.size());
-    }
 
     @Test
     public void testCreateDependencies() throws Exception {

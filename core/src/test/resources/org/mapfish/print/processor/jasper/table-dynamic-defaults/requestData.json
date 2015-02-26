@@ -1,0 +1,14 @@
+{
+    "layout" : "main",
+    "attributes": {
+        "table": {
+            "columns": ["exclude", "id", "icon", "name", "last"],
+            "data": [
+                ["excluded", 1, "file://logo.png", "name1", "last1"],
+                ["excluded", 2, "file://logo.png", "name2", "last2"],
+                ["excluded", 3, "file://logo.png", "name3", "last3"],
+                ["excluded", 4, "file://logo.png", "name4", "last4"]
+            ]
+        }
+    }
+}

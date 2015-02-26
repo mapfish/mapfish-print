@@ -75,8 +75,8 @@ public class MapfishParserTest {
         TestChoiceClass p = new TestChoiceClass();
         PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"choiceA\":1}");
 
-        //noinspection NullArgumentToVariableArgMethod
-        this.mapfishJsonParser.parse(true, json, p, null);
+        String[] ignore = null; // done this way to remove compiler warning.
+        this.mapfishJsonParser.parse(true, json, p, ignore);
         Assert.assertEquals(1, p.choiceA);
         Assert.assertEquals(0.0, p.choiceB, 0.0000000001);
         Assert.assertEquals(0, p.choiceC);

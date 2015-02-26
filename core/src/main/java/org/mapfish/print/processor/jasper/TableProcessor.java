@@ -22,6 +22,7 @@ package org.mapfish.print.processor.jasper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.io.Resources;
 import net.sf.jasperreports.engine.JRBand;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRException;
@@ -58,6 +59,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -93,6 +95,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
 
     @Autowired
     private JasperReportBuilder jasperReportBuilder;
+    private boolean defaultTemplate;
 
     /**
      * Constructor.
@@ -107,7 +110,6 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
      * <p>
      * If dynamic is true then the template will be used to obtain the column styles and the size of the subreport.  The
      * actual field and column definitions will be dynamically generated from the table data that is provided.
-     * This is required if dynamic is true.
      * </p>
      * This may be null if dynamic is false.  If it is null then the main template will likely use the generated
      * table datasource directly as its datasource for use in its detail section and the table will be directly in the main template's
@@ -308,7 +310,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     private String generateSubReport(
             final Input input,
             final Map<String, Class<?>> columns) throws JRException, ClassNotFoundException, IOException {
-        byte[] bytes = input.template.getConfiguration().loadFile(this.jasperTemplate);
+        byte[] bytes = loadJasperTemplate(input.template.getConfiguration());
         final JasperDesign templateDesign = JRXmlLoader.load(new ByteArrayInputStream(bytes));
         int headerHeight = templateDesign.getColumnHeader().getHeight();
         final JRDesignSection detailSection = (JRDesignSection) templateDesign.getDetailSection();
@@ -510,8 +512,19 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         }
         if (this.dynamic) {
             if (this.jasperTemplate == null) {
-                validationErrors.add(new ConfigurationException(
-                        "'jasperTemplate' property must be declared if !tableProcessor is dynamic."));
+                try {
+                    this.jasperTemplate = TableProcessor.class.getResource("dynamic-table-default.jrxml").toURI().toString();
+                    this.firstDetailStyle = "column_style_1";
+                    this.detailStyle = "column_style_2";
+                    this.lastDetailStyle = "column_style_3";
+                    this.firstHeaderStyle = "header_style_1";
+                    this.headerStyle = "header_style_2";
+                    this.lastHeaderStyle = "header_style_3";
+                    this.defaultTemplate = true;
+
+                } catch (URISyntaxException e) {
+                    throw new Error(e);
+                }
             }
             if (this.headerStyle == null) {
                 validationErrors.add(new ConfigurationException(
@@ -523,7 +536,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
             }
 
             try {
-                byte[] bytes = configuration.loadFile(this.jasperTemplate);
+                byte[] bytes = loadJasperTemplate(configuration);
                 final JasperDesign templateDesign = JRXmlLoader.load(new ByteArrayInputStream(bytes));
                 final Map<String, JRStyle> stylesMap = templateDesign.getStylesMap();
                 if (templateDesign.getColumnHeader() == null) {
@@ -553,6 +566,14 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
                 validationErrors.add(e);
             }
 
+        }
+    }
+
+    private byte[] loadJasperTemplate(final Configuration configuration) throws IOException {
+        if (this.defaultTemplate) {
+            return Resources.toByteArray(new URL(this.jasperTemplate));
+        } else {
+            return configuration.loadFile(this.jasperTemplate);
         }
     }
 
