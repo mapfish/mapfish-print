@@ -165,6 +165,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             throw new CancellationException();
         }
 
+        ValuesLogger.log(templateName, template, values);
         JasperFillManager fillManager = getJasperFillManager(config);
 
         checkRequiredValues(config, values, template.getReportTemplate());
