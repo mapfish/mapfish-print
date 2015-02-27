@@ -66,6 +66,7 @@ public abstract class BaseMapServlet extends HttpServlet {
         //String debugPath = "";
 
         if (app == null) {
+            LOGGER.info("app is null, setting it as default configPath: " + configPath);
             app = configPath;
         }
 
@@ -75,10 +76,21 @@ public abstract class BaseMapServlet extends HttpServlet {
 
         File configFile = new File(app);
 
-        if (!configFile.isAbsolute()) {
-            configFile = new File(getServletContext().getRealPath(app));
+        if (!configFile.isAbsolute() || !configFile.exists()) {
+
+            LOGGER.info("Attempting to locate app config file: '" + app + " in the webapplication.");
+            String realPath = getServletContext().getRealPath(app);
+
+            if (realPath != null) {
+                configFile = new File(realPath);
+            } else {
+                LOGGER.info("Unable to find config file in web application using getRealPath.  Adding a / because that is often dropped");
+                realPath = getServletContext().getRealPath("/" + app);
+                configFile = new File(realPath);
+            }
         }
 
+        LOGGER.info("Loading app from: " + configFile);
         MapPrinter printer;
         final String configFileCanonicalPath;
         try {
