@@ -21,9 +21,11 @@ package org.mapfish.print.processor.jasper;
 
 import com.google.common.base.Predicate;
 import com.google.common.io.Resources;
+
 import jsr166y.ForkJoinPool;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -41,6 +43,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.mock.http.client.MockClientHttpResponse;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -48,6 +51,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Map;
+
 import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
@@ -55,6 +59,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author Jesse on 4/10/2014.
  */
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class TableProcessorTest extends AbstractMapfishSpringTest {
     public static final String BASIC_BASE_DIR = "table/";
     public static final String DYNAMIC_BASE_DIR = "table-dynamic/";

@@ -25,6 +25,7 @@ import com.google.common.io.ByteSource;
 import com.google.common.io.CharSource;
 import com.google.common.io.Closeables;
 import com.vividsolutions.jts.util.Assert;
+
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
@@ -32,12 +33,21 @@ import org.mapfish.print.Constants;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 /**
  * Basic implementation for loading and parsing an SLD style.
@@ -105,19 +115,32 @@ public class SLDParserPlugin implements StyleParserPlugin {
         Assert.isTrue(styleIndex == null || styleIndex > -1, "styleIndex must be > -1 but was: " + styleIndex);
 
         final CharSource charSource = byteSource.asCharSource(Constants.DEFAULT_CHARSET);
-        BufferedReader reader = null;
+        BufferedReader readerXML = null;
+        BufferedReader readerSLD = null;
         final Style[] styles;
         try {
-            reader = charSource.openBufferedStream();
+            readerXML = charSource.openBufferedStream();
 
+            // check if the XML is valid
+            // this is only done in a separate step to avoid that fatal errors show up in the logs
+            // by setting a custom error handler.
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            db.setErrorHandler(new ErrorHandler());
+            db.parse(new InputSource(readerXML));
+
+            // then read the styles
+            readerSLD = charSource.openBufferedStream();
             final SLDParser sldParser = new SLDParser(CommonFactoryFinder.getStyleFactory());
-            sldParser.setInput(reader);
+            sldParser.setInput(readerSLD);
             styles = sldParser.readXML();
 
         } catch (Throwable e) {
             return Optional.absent();
         } finally {
-            Closeables.close(reader, true);
+            Closeables.close(readerXML, true);
+            Closeables.close(readerSLD, true);
         }
 
         if (styleIndex != null) {
@@ -136,4 +159,35 @@ public class SLDParserPlugin implements StyleParserPlugin {
         }
     }
 
+    /**
+     * A default error handler to avoid that error messages like "[Fatal Error] :1:1: Content is not allowed in prolog."
+     * are directly printed to STDERR.
+     */
+    public static class ErrorHandler extends DefaultHandler {
+
+        private static final Logger LOGGER = LoggerFactory.getLogger(StyleParser.class);
+
+        /**
+         * @param e Exception
+         */
+        public final void error(final SAXParseException e) throws SAXException {
+            LOGGER.debug(e.getLocalizedMessage());
+            super.error(e);
+        }
+
+        /**
+         * @param e Exception
+         */
+        public final void fatalError(final SAXParseException e) throws SAXException {
+            LOGGER.debug(e.getLocalizedMessage());
+            super.fatalError(e);
+        }
+
+        /**
+         * @param e Exception
+         */
+        public final void warning(final SAXParseException e) throws SAXException {
+            //ignore
+        }
+    }
 }
