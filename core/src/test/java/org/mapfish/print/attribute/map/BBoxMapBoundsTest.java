@@ -145,4 +145,17 @@ public class BBoxMapBoundsTest {
         assertEquals(20, envelope.getMaxY(), 0.001);
         assertEquals(WGS84, envelope.getCoordinateReferenceSystem());
     }
+
+    @Test
+    public void testReproject() throws Exception {
+        BBoxMapBounds bboxMapBounds = new BBoxMapBounds(WGS84, -10, -10, 10, 10);
+        BBoxMapBounds bounds = (BBoxMapBounds) bboxMapBounds.reproject(CH1903);
+
+        ReferencedEnvelope envelope = bounds.toReferencedEnvelope(null, 0.0);
+        assertEquals(-2706005.1578699085, envelope.getMinX(), 0.001);
+        assertEquals(1111326.771905501, envelope.getMaxX(), 0.001);
+        assertEquals(-7494592.542399973, envelope.getMinY(), 0.001);
+        assertEquals(-3891497.032543205, envelope.getMaxY(), 0.001);
+        assertEquals(CH1903, bounds.getProjection());
+    }
 }

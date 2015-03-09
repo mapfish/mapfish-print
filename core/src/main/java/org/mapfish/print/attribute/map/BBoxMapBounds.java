@@ -236,6 +236,20 @@ public final class BBoxMapBounds extends MapBounds {
                 minGeoX, minGeoY, maxGeoX, maxGeoY);
     }
 
+    @Override
+    public MapBounds reproject(final CoordinateReferenceSystem targetProjection) {
+        ReferencedEnvelope newEnvelope = null;
+
+        try {
+            ReferencedEnvelope envelope = toReferencedEnvelope(null, 0.0);
+            newEnvelope = envelope.transform(targetProjection, true);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to reproject bounds", e);
+        }
+
+        return new BBoxMapBounds(newEnvelope);
+    }
+
     // CHECKSTYLE:OFF
     @Override
     public boolean equals(Object o) {
