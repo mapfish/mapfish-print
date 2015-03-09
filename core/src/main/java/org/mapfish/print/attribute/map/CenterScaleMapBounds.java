@@ -130,7 +130,6 @@ public final class CenterScaleMapBounds extends MapBounds {
         Coordinate newCenter = null;
 
         try {
-
             MathTransform transform = CRS.findMathTransform(getProjection(), targetProjection);
             newCenter = JTS.transform(this.center, null, transform);
         } catch (Exception e) {
