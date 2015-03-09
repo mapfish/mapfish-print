@@ -19,18 +19,46 @@
 
 package org.mapfish.print.map.tiled.wmts;
 
+import com.google.common.base.Function;
+import com.google.common.base.Strings;
+import com.google.common.collect.Multimap;
 import com.vividsolutions.jts.util.Assert;
+
 import org.mapfish.print.Constants;
 import org.mapfish.print.map.tiled.AbstractWMXLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.wrapper.json.PJsonObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+
+import javax.annotation.Nullable;
 
 /**
  * The parameters for configuration a WMTS layer.
  */
 public final class WMTSLayerParam extends AbstractWMXLayerParams {
     /**
-     * the ‘ResourceURL’ available in the WMTS capabilities.
+     * The ‘ResourceURL’ available in the WMTS capabilities.
+     * <p/>
+     * Example (for <code>requestEncoding: "KVP"</code>):
+     * <pre><code>
+     * baseUrl: "http://domain.com/wmts"
+     * </code></pre>
+     * <p/>
+     * Example (for <code>requestEncoding: "REST"</code>):
+     * <pre><code>
+     * baseUrl: "http://domain.com/wmts/roads/{TileMatrixSet}/{TileMatrix}/{TileCol}/{TileRow}.png"
+     * </code></pre>
+     * The following URL template variables are replaced:
+     * <ul>
+     *  <li>{style}</li>
+     *  <li>{TileMatrixSet}</li>
+     *  <li>{TileMatrix}</li>
+     *  <li>{TileRow}</li>
+     *  <li>{TileCol}</li>
+     *  <li>{[DIMENSION.IDENTIFIER]}</li>
+     * </ul>
      */
     public String baseURL;
     /**
@@ -43,7 +71,7 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
     @HasDefaultValue
     public String version = "1.0.0";
     /**
-     * The way to make the requests.
+     * The way to make the requests. Either <code>KVP</code> or <code>REST</code> (default).
      */
     @HasDefaultValue
     public RequestEncoding requestEncoding = RequestEncoding.REST;
@@ -105,5 +133,42 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
      */
     public void postConstruct() {
         Assert.isTrue(validateBaseUrl(), "invalid baseURL");
+    }
+
+
+    @Override
+    public String createCommonUrl(
+            @Nullable final Function<Multimap<String, String>, Multimap<String, String>> queryParamCustomization)
+            throws URISyntaxException, UnsupportedEncodingException {
+        if (RequestEncoding.REST == this.requestEncoding) {
+            return getBaseUrl();
+        } else {
+            return super.createCommonUrl(queryParamCustomization);
+        }
+    }
+
+    @Override
+    public boolean validateBaseUrl() {
+        String url = getBaseUrl();
+        if (Strings.isNullOrEmpty(url)) {
+            return false;
+        }
+
+        if (RequestEncoding.REST == this.requestEncoding) {
+            if (!containsVariables(url)) {
+                return false;
+            }
+            try {
+                return WMTSLayer.createRestURI(url, "matrix", 0, 0, this) != null;
+            } catch (URISyntaxException exc) {
+                return false;
+            }
+        } else {
+            return super.validateBaseUrl();
+        }
+    }
+
+    private boolean containsVariables(final String url) {
+       return url.contains("{TileMatrix}") && url.contains("{TileRow}") && url.contains("{TileCol}");
     }
 }
