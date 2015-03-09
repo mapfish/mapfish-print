@@ -116,12 +116,12 @@ public class WMTSLayer extends AbstractTiledLayer {
                                                 final int column,
                                                 final int row)
                 throws URISyntaxException, IOException {
-            URI commonUri = new URI(commonUrl);
             URI uri;
             final WMTSLayerParam layerParam = WMTSLayer.this.param;
             if (RequestEncoding.REST == layerParam.requestEncoding) {
-                uri = createRestURI(commonUri, row, column, layerParam);
+                uri = createRestURI(commonUrl, this.matrix.identifier, row, column, layerParam);
             } else {
+                URI commonUri = new URI(commonUrl);
                 uri = createKVPUri(commonUri, row, column, layerParam);
             }
             return httpRequestFactory.createRequest(uri, HttpMethod.GET);
@@ -152,24 +152,6 @@ public class WMTSLayer extends AbstractTiledLayer {
             return uri;
         }
 
-        private URI createRestURI(final URI commonURI, final int row, final int col,
-                                  final WMTSLayerParam layerParam) throws URISyntaxException {
-            URI uri;
-            String path = layerParam.baseURL;
-            for (int i = 0; i < layerParam.dimensions.length; i++) {
-                String dimension = layerParam.dimensions[i];
-                final String value = layerParam.dimensionParams.getString(dimension.toUpperCase());
-                path = path.replace("{" + dimension + "}", value);
-            }
-            path = path.replace("{TileMatrixSet}", layerParam.matrixSet);
-            path = path.replace("{TileMatrix}", this.matrix.identifier);
-            path = path.replace("{TileRow}", String.valueOf(row));
-            path = path.replace("{TileCol}", String.valueOf(col));
-
-            uri = URIUtils.setPath(commonURI, path);
-            return uri;
-        }
-
         @Override
         protected void customizeQueryParams(final Multimap<String, String> result) {
             //no common params for this protocol.
@@ -184,5 +166,32 @@ public class WMTSLayer extends AbstractTiledLayer {
         public Double getLayerDpi() {
             return WMTSLayer.this.param.dpi;
         }
+    }
+
+    /**
+     * Prepare the baseURL to make a request.
+     *
+     * @param commonURL Base URL
+     * @param matrixId matrixId
+     * @param row row
+     * @param col cold
+     * @param layerParam layerParam
+     */
+    public static URI createRestURI(final String commonURL, final String matrixId, final int row, final int col,
+                              final WMTSLayerParam layerParam) throws URISyntaxException {
+        String path = layerParam.baseURL;
+        if (layerParam.dimensions != null) {
+            for (int i = 0; i < layerParam.dimensions.length; i++) {
+                String dimension = layerParam.dimensions[i];
+                final String value = layerParam.dimensionParams.getString(dimension.toUpperCase());
+                path = path.replace("{" + dimension + "}", value);
+            }
+        }
+        path = path.replace("{TileMatrixSet}", layerParam.matrixSet);
+        path = path.replace("{TileMatrix}", matrixId);
+        path = path.replace("{TileRow}", String.valueOf(row));
+        path = path.replace("{TileCol}", String.valueOf(col));
+
+        return new URI(path);
     }
 }

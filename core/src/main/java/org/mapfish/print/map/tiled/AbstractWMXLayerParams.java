@@ -115,8 +115,10 @@ public abstract class AbstractWMXLayerParams extends AbstractTiledLayerParams {
     }
 
 
+    //CSOFF: DesignForExtension
     @Override
-    public final String createCommonUrl(
+    //CSON: DesignForExtension
+    public String createCommonUrl(
             @Nullable final Function<Multimap<String, String>, Multimap<String, String>> queryParamCustomization)
             throws URISyntaxException, UnsupportedEncodingException {
         Multimap<String, String> queryParams = HashMultimap.create();
@@ -143,8 +145,10 @@ public abstract class AbstractWMXLayerParams extends AbstractTiledLayerParams {
         this.additionalCustomParam.put(name, value);
     }
 
+    //CSOFF: DesignForExtension
     @Override
-    public final boolean validateBaseUrl() {
+    //CSON: DesignForExtension
+    public boolean validateBaseUrl() {
         try {
             return new URI(getBaseUrl()) != null;
         } catch (URISyntaxException exc) {
