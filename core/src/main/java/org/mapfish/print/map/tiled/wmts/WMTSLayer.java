@@ -191,6 +191,7 @@ public class WMTSLayer extends AbstractTiledLayer {
         path = path.replace("{TileMatrix}", matrixId);
         path = path.replace("{TileRow}", String.valueOf(row));
         path = path.replace("{TileCol}", String.valueOf(col));
+        path = path.replace("{style}", layerParam.style);
 
         return new URI(path);
     }

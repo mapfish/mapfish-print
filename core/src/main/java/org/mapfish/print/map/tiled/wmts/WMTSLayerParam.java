@@ -50,6 +50,15 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
      * <pre><code>
      * baseUrl: "http://domain.com/wmts/roads/{TileMatrixSet}/{TileMatrix}/{TileCol}/{TileRow}.png"
      * </code></pre>
+     * The following URL template variables are replaced:
+     * <ul>
+     *  <li>{style}</li>
+     *  <li>{TileMatrixSet}</li>
+     *  <li>{TileMatrix}</li>
+     *  <li>{TileRow}</li>
+     *  <li>{TileCol}</li>
+     *  <li>{[DIMENSION.IDENTIFIER]}</li>
+     * </ul>
      */
     public String baseURL;
     /**

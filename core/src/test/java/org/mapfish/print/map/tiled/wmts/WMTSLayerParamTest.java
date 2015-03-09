@@ -23,6 +23,12 @@ public class WMTSLayerParamTest {
         params.matrixSet = "basemap";
         params.baseURL = "http://center_wmts_fixedscale_rest.com:1234/wmts/tiger-ny/{TileMatrixSet}/{TileMatrix}/{TileCol}/{TileRow}.tiff";
         assertTrue(params.validateBaseUrl());
+
+        params.requestEncoding = RequestEncoding.REST;
+        params.matrixSet = "basemap";
+        params.style = "default";
+        params.baseURL = "http://center_wmts_fixedscale_rest.com:1234/wmts/tiger-ny/{style}/{TileMatrixSet}/{TileMatrix}/{TileCol}/{TileRow}.tiff";
+        assertTrue(params.validateBaseUrl());
     }
 
 }
