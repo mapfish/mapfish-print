@@ -1,0 +1,24 @@
+throwErrorOnExtraParameters: true
+
+templates:
+    A4 portrait: !template
+        reportTemplate: A4_Portrait.jrxml
+        tableData: jrDataSource
+        attributes:
+            title: !string {}
+            comments: !string {}
+            datasource: !datasource
+                attributes:
+                    title: !string {}
+                    description: !string {}
+                    map: !map
+                        maxDpi: 254
+                        width: 200
+                        height: 200
+
+        processors:
+        - !reportBuilder # compile all reports in current directory
+            directory: '.'
+        - !createDataSource
+            processors:
+            - !createMap {}
