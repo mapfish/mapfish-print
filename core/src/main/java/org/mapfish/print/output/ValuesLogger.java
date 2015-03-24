@@ -67,7 +67,11 @@ public final class ValuesLogger {
             }
         }
 
-        this.builder.append(" (").append(parameter.getValue().getClass().getName()).append(")\n");
+        if (parameter.getValue() == null) {
+            this.builder.append(" (null)\n");
+        } else {
+            this.builder.append(" (").append(parameter.getValue().getClass().getName()).append(")\n");
+        }
         if (parameter.getValue() instanceof JRDataSource) {
             String section = isTableDataKey ? "'Top-level' template" : "sub-template";
 
@@ -85,9 +89,18 @@ public final class ValuesLogger {
                 this.indent += STANDARD_INDENT_SIZE;
                 Map<String, Object> columns = Maps.newHashMap();
 
+                // loop the source to get all columns of the table
                 for (Map<String, ?> row : source.getData()) {
                     for (Map.Entry<String, ?> column : row.entrySet()) {
-                        columns.put(column.getKey(), column.getValue());
+                        if (!columns.containsKey(column.getKey())) {
+                            columns.put(column.getKey(), column.getValue());
+                        } else {
+                            // if the value for this key is null, let's take the next value so that we
+                            // eventually get the type of the column
+                            if (columns.get(column.getKey()) == null) {
+                                columns.put(column.getKey(), column.getValue());
+                            }
+                        }
                     }
                 }
 

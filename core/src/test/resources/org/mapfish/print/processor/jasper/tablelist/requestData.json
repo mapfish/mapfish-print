@@ -6,13 +6,12 @@
         "table": {
           "columns": ["id", "name", "icon"],
           "data": [
-            [1, "blah", "icon_pan"],
+            [1, "blah", null],
             [2, "blip", "icon_zoomin"]
           ]
         }
       },
       {
-        "id": "f2",
         "table": {
           "columns": ["id", "name", "icon"],
           "data": [

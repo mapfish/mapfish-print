@@ -42,6 +42,8 @@ import net.sf.jasperreports.engine.type.ScaleImageEnum;
 import net.sf.jasperreports.engine.type.StretchTypeEnum;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
+
+import org.json.JSONObject;
 import org.mapfish.print.Constants;
 import org.mapfish.print.PrintException;
 import org.mapfish.print.attribute.TableAttribute.TableAttributeValue;
@@ -257,6 +259,9 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
             for (int j = 0; j < jsonRow.size(); j++) {
                 final String columnName = columnNames[j];
                 Object rowValue = jsonRow.get(j);
+                if (rowValue == JSONObject.NULL) {
+                    rowValue = null;
+                }
                 TableColumnConverter<?> converter = this.columnConverterMap.get(columnName);
                 if (converter != null) {
                     rowValue = converter.resolve(values.clientHttpRequestFactory, (String) rowValue);
