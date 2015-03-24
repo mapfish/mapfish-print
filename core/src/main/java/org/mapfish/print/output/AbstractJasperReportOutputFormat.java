@@ -188,22 +188,22 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             JRDataSource dataSource;
             if (template.getTableDataKey() != null) {
                 final Object dataSourceObj = values.getObject(template.getTableDataKey(), Object.class);
-            if (dataSourceObj instanceof JRDataSource) {
-                dataSource = (JRDataSource) dataSourceObj;
-            } else if (dataSourceObj instanceof Iterable) {
-                Iterable sourceObj = (Iterable) dataSourceObj;
-                dataSource = toJRDataSource(sourceObj.iterator());
+                if (dataSourceObj instanceof JRDataSource) {
+                    dataSource = (JRDataSource) dataSourceObj;
+                } else if (dataSourceObj instanceof Iterable) {
+                    Iterable sourceObj = (Iterable) dataSourceObj;
+                    dataSource = toJRDataSource(sourceObj.iterator());
                 } else if (dataSourceObj instanceof Iterator) {
-                Iterator sourceObj = (Iterator) dataSourceObj;
-                dataSource = toJRDataSource(sourceObj);
+                    Iterator sourceObj = (Iterator) dataSourceObj;
+                    dataSource = toJRDataSource(sourceObj);
                 } else if (dataSourceObj.getClass().isArray()) {
-                Object[] sourceObj = (Object[]) dataSourceObj;
-                dataSource = toJRDataSource(Arrays.asList(sourceObj).iterator());
-            } else {
-                throw new AssertionError("Objects of type: " + dataSourceObj.getClass() + " cannot be converted to a row in a " +
+                    Object[] sourceObj = (Object[]) dataSourceObj;
+                    dataSource = toJRDataSource(Arrays.asList(sourceObj).iterator());
+                } else {
+                    throw new AssertionError("Objects of type: " + dataSourceObj.getClass() + " cannot be converted to a row in a " +
                                          "JRDataSource");
-            }
-        } else {
+                }
+            } else {
                 dataSource = new JREmptyDataSource();
             }
             checkRequiredFields(config, dataSource, template.getReportTemplate());
@@ -237,7 +237,6 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                         if (record != null) {
                             final String type = param.getAttribute("class");
                             Class<?> clazz = Class.forName(type);
-
                             if (!clazz.isInstance(record)) {
                                 wrongType.append("\t* ").append(name).append(" : ").append(record.getClass().getName());
                                 wrongType.append(" expected type: ").append(type).append("\n");
