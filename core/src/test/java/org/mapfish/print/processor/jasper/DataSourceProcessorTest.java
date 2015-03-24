@@ -102,7 +102,7 @@ public class DataSourceProcessorTest extends AbstractMapfishSpringTest {
 //            ImageIO.write(reportImage, "png", output);
 
         File expectedImage = getFile(BASE_DIR + "expected-page.png");
-        new ImageSimilarity(reportImage, 5).assertSimilarity(expectedImage, 10);
+        new ImageSimilarity(reportImage, 50).assertSimilarity(expectedImage, 10);
 
     }
 

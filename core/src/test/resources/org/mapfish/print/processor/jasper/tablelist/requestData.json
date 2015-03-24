@@ -12,7 +12,6 @@
         }
       },
       {
-        "id": "f2",
         "table": {
           "columns": ["id", "name", "icon"],
           "data": [
