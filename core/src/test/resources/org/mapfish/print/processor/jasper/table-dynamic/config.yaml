@@ -19,7 +19,7 @@ templates:
       headerStyle: header_style_2
       lastHeaderStyle: header_style_3
       dynamic: true
-      maxColumns: 3
+      maxColumns: 4
       excludeColumns: ["exclude"]
       inputMapper: {table: table}
       outputMapper: {table: table}
