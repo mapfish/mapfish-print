@@ -889,6 +889,7 @@ public class MapPrinterServlet extends BaseMapServlet {
         job.setReferenceId(ref);
         job.setRequestData(specJson);
         job.setSecurityContext(SecurityContextHolder.getContext());
+        job.setCreateTime(System.currentTimeMillis());
 
         // check that we have authorization and configure the job so it can only be access by users with sufficient authorization
         final String templateName = specJson.getString(Constants.JSON_LAYOUT_KEY);
