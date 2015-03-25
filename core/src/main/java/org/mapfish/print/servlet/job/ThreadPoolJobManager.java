@@ -20,6 +20,8 @@
 package org.mapfish.print.servlet.job;
 
 import com.google.common.base.Optional;
+import com.google.common.primitives.Longs;
+
 import org.json.JSONException;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.config.access.AccessAssertionPersister;
@@ -36,15 +38,19 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
@@ -122,7 +128,7 @@ public class ThreadPoolJobManager implements JobManager {
     private Comparator<PrintJob> jobPriorityComparator = new Comparator<PrintJob>() {
         @Override
         public int compare(final PrintJob o1, final PrintJob o2) {
-            return 0;
+            return Longs.compare(o1.getCreateTime(), o2.getCreateTime());
         }
     };
 
@@ -185,13 +191,18 @@ public class ThreadPoolJobManager implements JobManager {
         this.queue = new PriorityBlockingQueue<Runnable>(this.maxNumberOfWaitingJobs, new Comparator<Runnable>() {
             @Override
             public int compare(final Runnable o1, final Runnable o2) {
-                if (o1 instanceof PrintJob) {
-                    if (o2 instanceof PrintJob) {
-                        return ThreadPoolJobManager.this.jobPriorityComparator.compare((PrintJob) o1, (PrintJob) o2);
+                if (o1 instanceof JobFutureTask<?> && o2 instanceof JobFutureTask<?>) {
+                    Callable<?> callable1 = ((JobFutureTask<?>) o1).getCallable();
+                    Callable<?> callable2 = ((JobFutureTask<?>) o2).getCallable();
+
+                    if (callable1 instanceof PrintJob) {
+                        if (callable2 instanceof PrintJob) {
+                            return ThreadPoolJobManager.this.jobPriorityComparator.compare((PrintJob) callable1, (PrintJob) callable2);
+                        }
+                        return 1;
+                    } else if (callable2 instanceof PrintJob) {
+                        return -1;
                     }
-                    return 1;
-                } else if (o2 instanceof PrintJob) {
-                    return -1;
                 }
                 return 0;
             }
@@ -202,7 +213,12 @@ public class ThreadPoolJobManager implements JobManager {
          * consequence, the `maxIdleTime` will be ignored, idle threads will not be terminated.
          */
         this.executor = new ThreadPoolExecutor(this.maxNumberOfRunningPrintJobs, this.maxNumberOfRunningPrintJobs,
-                this.maxIdleTime, TimeUnit.SECONDS, this.queue, threadFactory);
+                this.maxIdleTime, TimeUnit.SECONDS, this.queue, threadFactory) {
+            @Override
+            protected <T> RunnableFuture<T> newTaskFor(final Callable<T> callable) {
+                return new JobFutureTask<T>(callable);
+            }
+        };
 
         this.timer = Executors.newScheduledThreadPool(1, new ThreadFactory() {
             @Override
@@ -421,6 +437,24 @@ public class ThreadPoolJobManager implements JobManager {
                         + "last " + ThreadPoolJobManager.this.abandonedTimeout + " seconds)");
             }
             return abandoned;
+        }
+    }
+
+    /**
+     * A custom FutureTask implementation which allows to retrieve the
+     * wrapped Callable.
+     */
+    private static final class JobFutureTask<V> extends FutureTask<V> {
+
+        private final Callable<V> callable;
+
+        public JobFutureTask(final Callable<V> callable) {
+            super(callable);
+            this.callable = callable;
+        }
+
+        public Callable<V> getCallable() {
+            return this.callable;
         }
     }
 }
