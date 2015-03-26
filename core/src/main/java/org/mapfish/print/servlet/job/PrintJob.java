@@ -57,6 +57,7 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
     private String referenceId;
     private PJsonObject requestData;
     private AccessAssertion access;
+    private Long createTime;
 
     @Autowired
     private MapPrinterFactory mapPrinterFactory;
@@ -82,6 +83,21 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
     public final void setReferenceId(final String referenceId) {
         this.referenceId = referenceId;
     }
+
+    /*
+     * The timestamp when the job was created.
+     */
+    public final Long getCreateTime() {
+        return this.createTime;
+    }
+
+    /*
+     * Set the timestamp when the job was created.
+     */
+    public final void setCreateTime(final Long createTime) {
+        this.createTime = createTime;
+    }
+
 
     /**
      * Set the data from the client making the request.
