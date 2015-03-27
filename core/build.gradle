@@ -230,6 +230,7 @@ task libSourcesJar(type: Jar) {
 
 gradle.taskGraph.whenReady {taskGraph ->
     if (taskGraph.hasTask(run)) {
+        mainClassName = "org.mapfish.print.cli.Main"
         if (project.hasProperty("printArgs")) {
             run.args printArgs.toString().split(" ").toList()
         } else {

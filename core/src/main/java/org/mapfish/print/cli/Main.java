@@ -82,6 +82,13 @@ public final class Main {
      * @throws Exception
      */
     public static void main(final String[] args) throws Exception {
+        final CliHelpDefinition helpCli = new CliHelpDefinition();
+
+        Args.parse(helpCli, args);
+        if (helpCli.help) {
+            printUsage(0);
+            return;
+        }
 
         final CliDefinition cli = new CliDefinition();
         try {
@@ -90,10 +97,6 @@ public final class Main {
             if (!unusedArguments.isEmpty()) {
                 System.out.println("\n\nThe following arguments are not recognized: " + unusedArguments);
                 printUsage(1);
-                return;
-            }
-            if (cli.help) {
-                printUsage(0);
                 return;
             }
         } catch (IllegalArgumentException invalidOption) {
