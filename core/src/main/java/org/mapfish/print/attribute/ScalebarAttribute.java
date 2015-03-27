@@ -129,6 +129,16 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
         public String unit = null;
 
         /**
+         * The projection to use for measurement calculations of the scalebar.
+         * <p/>
+         * By default the calculations for the scalebar will be done in the projection of the map. Depending
+         * on the projection and the position, the measurements might be distorted. That's why a more appropriate
+         * projection can be set with this property.
+         */
+        @HasDefaultValue
+        public String projection = null;
+
+        /**
          * Force that the given unit is used (default: false).
          * For example if the unit is set to meters and `lockUnits` is enabled,
          * then meters is always used, even when kilometers would create nicer

@@ -123,4 +123,12 @@ public class CenterScaleMapBoundsTest {
         assertEquals(envelope.getMaxY() * 2, newEnvelope.getMaxY(), delta);
     }
 
+    @Test
+    public void reproject() throws Exception {
+        final Scale scale = new Scale(2500.0);
+        final CenterScaleMapBounds centerBounds = new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 0.0, 0.0, scale);
+        CenterScaleMapBounds bounds = (CenterScaleMapBounds) centerBounds.reproject(CH1903);
+        assertEquals(CH1903, bounds.getProjection());
+    }
+
 }

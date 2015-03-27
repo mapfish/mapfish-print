@@ -338,22 +338,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
          * @return the crs
          */
         protected final CoordinateReferenceSystem parseProjection() {
-            String epsgCode = getProjection();
-            if (epsgCode.equalsIgnoreCase("EPSG:900913")) {
-                epsgCode = "EPSG:3857";
-            }
-
-            try {
-                if (this.longitudeFirst == null) {
-                    return CRS.decode(epsgCode);
-                } else {
-                    return CRS.decode(epsgCode, this.longitudeFirst);
-                }
-            } catch (NoSuchAuthorityCodeException e) {
-                throw new RuntimeException(epsgCode + "was not recognized as a crs code", e);
-            } catch (FactoryException e) {
-                throw new RuntimeException("Error occurred while parsing: " + epsgCode, e);
-            }
+            return GenericMapAttribute.parseProjection(getProjection(), this.longitudeFirst);
         }
 
         /**
@@ -463,6 +448,31 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
             } else {
                 return defaultValue;
             }
+        }
+    }
+
+    /**
+     * Parse the given projection.
+     *
+     * @param projection The projection string.
+     * @param longitudeFirst longitudeFirst
+     */
+    public static CoordinateReferenceSystem parseProjection(final String projection, final Boolean longitudeFirst) {
+        String epsgCode = projection;
+        if (epsgCode.equalsIgnoreCase("EPSG:900913")) {
+            epsgCode = "EPSG:3857";
+        }
+
+        try {
+            if (longitudeFirst == null) {
+                return CRS.decode(epsgCode);
+            } else {
+                return CRS.decode(epsgCode, longitudeFirst);
+            }
+        } catch (NoSuchAuthorityCodeException e) {
+            throw new RuntimeException(epsgCode + " was not recognized as a crs code", e);
+        } catch (FactoryException e) {
+            throw new RuntimeException("Error occurred while parsing: " + epsgCode, e);
         }
     }
 }

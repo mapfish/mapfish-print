@@ -23,12 +23,14 @@ import com.google.common.annotations.VisibleForTesting;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.geotools.referencing.GeodeticCalculator;
 import org.mapfish.print.attribute.ScalebarAttribute.ScalebarAttributeValues;
+import org.mapfish.print.attribute.map.GenericMapAttribute;
 import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.Scale;
 import org.mapfish.print.processor.map.CreateMapProcessor;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +46,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.imageio.ImageIO;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -76,6 +79,10 @@ public class ScalebarGraphic {
         bounds = CreateMapProcessor.adjustBoundsToScaleAndMapSize(
                 mapParams, mapParams.getRequestorDPI(), paintArea, bounds);
         paintArea.setBounds(0, 0, (int) (paintArea.width * dpiRatio), (int) (paintArea.height * dpiRatio));
+
+        if (scalebarParams.projection != null) {
+            bounds = reprojectBounds(bounds, scalebarParams.projection, mapParams.longitudeFirst);
+        }
 
         final DistanceUnit mapUnit = getUnit(bounds);
         // to calculate the scale the requestor DPI is used , because the paint area is already adjusted
@@ -135,6 +142,12 @@ public class ScalebarGraphic {
         }
 
         return path.toURI();
+    }
+
+    private MapBounds reprojectBounds(final MapBounds bounds, final String projection,
+            final Boolean longitudeFirst) {
+        CoordinateReferenceSystem targetCrs = GenericMapAttribute.parseProjection(projection, longitudeFirst);
+        return bounds.reproject(targetCrs);
     }
 
     private DistanceUnit getUnit(final MapBounds bounds) {
