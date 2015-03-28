@@ -84,10 +84,14 @@ public final class Main {
     public static void main(final String[] args) throws Exception {
         final CliHelpDefinition helpCli = new CliHelpDefinition();
 
-        Args.parse(helpCli, args);
-        if (helpCli.help) {
-            printUsage(0);
-            return;
+        try {
+            Args.parse(helpCli, args);
+            if (helpCli.help) {
+                printUsage(0);
+                return;
+            }
+        } catch (IllegalArgumentException invalidOption) {
+            // Ignore because it is probably one of the non-help options.
         }
 
         final CliDefinition cli = new CliDefinition();

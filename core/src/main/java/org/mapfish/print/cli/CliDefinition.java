@@ -24,7 +24,7 @@ import com.sampullara.cli.Argument;
 /**
  * The CLI API definition.
  */
-public final class CliDefinition {
+public final class CliDefinition extends CliHelpDefinition {
     CliDefinition() {
         // this is intentionally empty
     }

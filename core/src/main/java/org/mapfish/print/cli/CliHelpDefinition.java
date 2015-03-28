@@ -24,7 +24,7 @@ import com.sampullara.cli.Argument;
 /**
  * The Cli definition for when the user wants to print the cli usage/options.
  */
-public final class CliHelpDefinition {
+public class CliHelpDefinition {
     CliHelpDefinition() {
         // this is intentionally empty
     }
