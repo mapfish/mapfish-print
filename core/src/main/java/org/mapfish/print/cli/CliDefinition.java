@@ -22,10 +22,9 @@ package org.mapfish.print.cli;
 import com.sampullara.cli.Argument;
 
 /**
- * A shell version of the MapPrinter. Can be used for testing or for calling
- * from other languages than Java.
+ * The CLI API definition.
  */
-public final class CliDefinition {
+public final class CliDefinition extends CliHelpDefinition {
     CliDefinition() {
         // this is intentionally empty
     }
@@ -53,7 +52,4 @@ public final class CliDefinition {
 
     @Argument(description = "If true then request data (spec) is in a old api request data (Mapfish v2 compatible).", alias = "v2")
     public boolean v2Api = false;
-
-    @Argument(description = "Print all the commandline options.", alias = "?")
-    public boolean help = false;
 }

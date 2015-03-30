@@ -64,6 +64,11 @@ To list all the commandline options then execute:
 
   > ./gradlew run -PprintArgs="-config examples/config.yaml -spec examples/spec.json -output ./output.pdf"
 
+If you want to run in debug mode you can do the following:
+
+.. code::
+  > ./gradlew run --debug-jvm -PprintArgs="-config examples/config.yaml -spec examples/spec.json -output ./output.pdf"
+
 
 Run in Eclipse
 --------------
