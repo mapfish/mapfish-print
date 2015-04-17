@@ -1,0 +1,13 @@
+{
+  "layout": "PDF Preview portrait",
+  "title": "dm[geo] map print",
+  "outputFilename": "dmgeo-print",
+  "outputFormat": "pdf",
+  "attributes": {
+    "mainMap": {
+      "dpi": "72",
+      "center": [-8235878.4938425, 4979784.7605681],
+      "scale": 15000
+    }
+  }
+}

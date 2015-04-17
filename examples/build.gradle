@@ -87,6 +87,7 @@ jettyRun {
     stopKey = "e2e-tests-geoserver"
     stopPort = 9877
     reload = 'manual'
+    System.properties.setProperty("org.mortbay.jetty.Request.maxFormContentSize", "1048576")
 }
 
 task jettyRunBackground (dependsOn: jettyRun) << {

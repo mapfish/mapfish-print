@@ -1,0 +1,25 @@
+{
+  "layout": "PDF Preview portrait",
+  "title": "dm[geo] map print",
+  "outputFilename": "dmgeo-print",
+  "outputFormat": "pdf",
+  "attributes": {
+    "mainMap": {
+      "dpi": "72",
+      "center": [-8235878.4938425, 4979784.7605681],
+      "scale": 26000,
+      "layers": [{
+          "baseURL": "http://localhost:9876/e2egeoserver/wms",
+          "opacity": 1,
+          "type": "WMS",
+          "layers": ["tiger:tiger_roads"],
+          "imageFormat": "image/png",
+          "styles": ["line"],
+          "customParams": {
+            "TRANSPARENT": "true"
+          }
+        }
+      ]
+    }
+  }
+}
