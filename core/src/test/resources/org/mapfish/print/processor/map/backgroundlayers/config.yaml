@@ -1,0 +1,41 @@
+templates:
+  main: !template
+    reportTemplate: "dummy.jxml"
+    attributes:
+      map: !map
+        width: 630
+        height: 294
+        maxDpi: 400
+        zoomSnapTolerance: 0.025
+        zoomLevelSnapStrategy: CLOSEST_LOWER_SCALE_ON_TIE
+        zoomLevels: !zoomLevels
+          scales: [5000, 10000, 50000, 110000, 500000, 1000000]
+      overviewMapDef: !overviewMap
+        width: 300
+        height: 200
+        maxDpi: 400
+      backgroundLayers: !backgroundLayers
+        default:
+          layers:
+            - type: "wms"
+              baseURL: "http://center_wms1_0_0_flexiblescale.wms:1234/wms"
+              opacity: 1.0
+              layers: ["tiger-ny"]
+              styles: ["line"]
+              version: "1.0.0"
+              imageFormat: "tiff"
+    processors:
+    - !addBackgroundLayers {}
+    - !createMap
+        outputMapper: {mapSubReport: mapOut}
+    - !createOverviewMap
+        inputMapper: {
+            overviewMapDef: overviewMap
+        }
+        outputMapper: {
+            overviewMapSubReport: overviewMapOut,
+            layerGraphics: overviewMapLayerGraphics
+        }
+
+
+
