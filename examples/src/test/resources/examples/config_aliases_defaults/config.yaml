@@ -1,0 +1,60 @@
+throwErrorOnExtraParameters: true
+
+templates:
+  #===========================================================================
+  PDF Preview portrait: !template
+  #===========================================================================
+    reportTemplate: pdf-preview-portrait.jrxml
+    attributes:
+      mapTitle: !string
+        default: "Default Title"
+      mainMap: !map
+        maxDpi: &MAX_DPI 254
+        dpiSuggestions: &DPI [56, 72, 127, 190, 254]
+        width: 555
+        height: 711
+        default: &DEFAULT_MAP
+          projection: "EPSG:3857"
+          rotation: 0
+          layers:
+            - type: WMS
+              baseURL: "http://localhost:9876/e2egeoserver/wms"
+              opacity: 1
+              layers: ["tiger:tiger_roads"]
+              imageFormat: "image/png"
+              styles: ["line"]
+              customParams:
+                TRANSPARENT: "true"
+            - type: "OSM"
+              baseURL: "http://localhost:9876/e2egeoserver/www/osm"
+              imageFormat: "png"
+    processors: &PROCESSORS
+      - !restrictUris
+        matchers:
+         - !localMatch {}
+         - !dnsMatch
+           host: demo.mapfish.org
+           port: 80
+      - !reportBuilder # compile all reports in current directory
+        directory: '.'
+      - !createMap
+        inputPrefix: main
+        outputPrefix: main
+
+  #===========================================================================
+  PDF Preview: !template
+  #===========================================================================
+    pdfConfig: !pdfConfig
+      title: "PDF Preview"
+      keywords: ["Preview", "Landscape"]
+    reportTemplate: pdf-preview-landscape.jrxml
+    attributes:
+      mapTitle: !string
+        default: "Default Title"
+      mainMap: !map
+        maxDpi: *MAX_DPI
+        dpiSuggestions: *DPI
+        width: 1151
+        height: 711
+        default: *DEFAULT_MAP
+    processors: *PROCESSORS
