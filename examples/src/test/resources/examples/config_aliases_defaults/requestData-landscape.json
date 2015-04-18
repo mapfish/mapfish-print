@@ -1,5 +1,5 @@
 {
-  "layout": "PDF Preview portrait",
+  "layout": "PDF Preview",
   "title": "dm[geo] map print",
   "outputFilename": "dmgeo-print",
   "outputFormat": "pdf",
