@@ -46,7 +46,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Basic test of the Map processor.
+ * Basic test of the background-layer processor.
  * <p/>
  * Created by Jesse on 3/26/14.
  */

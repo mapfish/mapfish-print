@@ -59,7 +59,10 @@ templates:
                   tileSize: [256, 256]
                   topLeftCorner: [-2.003750834E7, 2.0037508E7]
     processors:
-    - !addBackgroundLayers {}
+    - !addBackgroundLayers
+      inputMapper:
+          backgroundLayers: backgroundLayers
+          map: map
     - !reportBuilder # compile all reports in current directory
       directory: '.'
     - !createMap {}
