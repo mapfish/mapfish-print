@@ -20,7 +20,6 @@
 package org.mapfish.print.map.geotools;
 
 import com.google.common.collect.Sets;
-import jsr166y.ForkJoinPool;
 import org.geotools.data.FeatureSource;
 import org.geotools.styling.Style;
 import org.mapfish.print.attribute.map.MapfishMapContext;
@@ -31,6 +30,7 @@ import org.mapfish.print.map.style.StyleParser;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Abstract class for FeatureSource based {@link org.mapfish.print.map.MapLayerFactoryPlugin} objects.
@@ -52,7 +52,7 @@ public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFac
      * A fork join pool for running async tasks.
      */
     @Autowired
-    protected ForkJoinPool forkJoinPool;
+    protected ExecutorService forkJoinPool;
 
     private final Set<String> typeNames;
 
