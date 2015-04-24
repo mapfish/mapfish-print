@@ -23,7 +23,6 @@ import com.google.common.base.Function;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closer;
-import jsr166y.ForkJoinPool;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.mapfish.print.Constants;
@@ -75,7 +74,7 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
      */
     public static final class Plugin extends AbstractGridCoverageLayerPlugin implements MapLayerFactoryPlugin<GeotiffParam> {
         @Autowired
-        private ForkJoinPool forkJoinPool;
+        private ExecutorService forkJoinPool;
 
         private Set<String> typeNames = Sets.newHashSet("geotiff");
 
