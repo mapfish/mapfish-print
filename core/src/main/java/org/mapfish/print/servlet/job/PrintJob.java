@@ -30,6 +30,7 @@ import org.mapfish.print.config.access.AccessAssertion;
 import org.mapfish.print.config.access.AndAccessAssertion;
 import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.servlet.MapPrinterServlet;
+import org.mapfish.print.servlet.NoSuchAppException;
 import org.mapfish.print.servlet.ServletMapPrinterFactory;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
@@ -42,6 +43,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.Date;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
@@ -234,6 +236,22 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
         AndAccessAssertion accessAssertion = this.applicationContext.getBean(AndAccessAssertion.class);
         accessAssertion.setPredicates(configuration.getAccessAssertion(), template.getAccessAssertion());
         this.access = accessAssertion;
+    }
+
+    void initForTesting(ApplicationContext context) {
+        this.applicationContext = context;
+        this.metricRegistry = context.getBean(MetricRegistry.class);
+        this.mapPrinterFactory = new MapPrinterFactory() {
+            @Override
+            public MapPrinter create(String app) throws NoSuchAppException {
+                return null;
+            }
+
+            @Override
+            public Set<String> getAppIds() {
+                return null;
+            }
+        };
     }
 
     /**
