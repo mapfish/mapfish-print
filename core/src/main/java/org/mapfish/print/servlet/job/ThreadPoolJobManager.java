@@ -392,6 +392,7 @@ public class ThreadPoolJobManager implements JobManager {
                         printJob.getReportFuture().get().store(registryRef, this.assertionPersister);
                         registryRef.incrementInt(NB_PRINT_DONE, 1);
                         registryRef.incrementLong(TOTAL_PRINT_TIME, printJob.getTimeSinceStart());
+                        registryRef.incrementInt(LAST_PRINT_COUNT, 1);
                     } catch (InterruptedException e) {
                         // if this happens, the timer task was interrupted. restore the interrupted
                         // status to not lose the information.
