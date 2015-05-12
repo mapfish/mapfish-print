@@ -2,7 +2,6 @@
 templates:
   main: !template
     processors:
-      - !mapUriTestProcessor {}
       - !configureHttpRequests
          httpProcessors:
           - !mapUri
@@ -13,3 +12,4 @@ templates:
               - geomapfish.demo-camptocamp.com
             portMapping:
               443: 80
+      - !createNorthArrow {}

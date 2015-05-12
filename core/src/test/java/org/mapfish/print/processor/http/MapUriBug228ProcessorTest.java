@@ -19,27 +19,25 @@
 
 package org.mapfish.print.processor.http;
 
-import com.google.common.base.Predicate;
 import jsr166y.ForkJoinPool;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mapfish.print.AbstractMapfishSpringTest;
-import org.mapfish.print.TestHttpClientFactory;
+import org.mapfish.print.attribute.NorthArrowAttribute;
+import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.http.ConfigFileResolvingHttpRequestFactory;
+import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
 import org.mapfish.print.output.Values;
-import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.ProcessorGraphNode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.net.URI;
 import java.util.List;
-import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
 
@@ -50,77 +48,53 @@ public class MapUriBug228ProcessorTest extends AbstractMapfishSpringTest {
     @Autowired
     ConfigurationFactory configurationFactory;
     @Autowired
-    TestHttpClientFactory httpClientFactory;
+    MfClientHttpRequestFactoryImpl httpClientFactory;
     @Autowired
     ForkJoinPool forkJoinPool;
 
+
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     protected String baseDir() {
         return "map-uri";
     }
     @Test
     public void bug228FixMapUri() throws Exception {
-        this.httpClientFactory.registerHandler(new Predicate<URI>() {
-            @Override
-            public boolean apply(@Nullable URI input) {
-                return true;
-            }
-        }, new TestHttpClientFactory.Handler() {
-            @Override
-            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
-                return new MockClientHttpRequest(httpMethod, uri);
-            }
-        });
-
-
         this.configurationFactory.setDoValidation(false);
         final Configuration config = configurationFactory.getConfig(getFile(baseDir() + "/map-uri-228-bug-fix-config.yaml"));
         final Template template = config.getTemplate("main");
 
+        ConfigFileResolvingHttpRequestFactory requestFactory = new ConfigFileResolvingHttpRequestFactory(this.httpClientFactory, config);
         ProcessorDependencyGraph graph = template.getProcessorGraph();
         List<ProcessorGraphNode> roots = graph.getRoots();
 
         assertEquals(1, roots.size());
 
         Values values = new Values();
-        values.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, this.httpClientFactory);
+        values.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, requestFactory);
+        values.put(Values.TASK_DIRECTORY_KEY, temporaryFolder.getRoot());
+        MapAttribute.MapAttributeValues map = getMapValue(template);
+        values.put("map", map);
+        NorthArrowAttribute.NorthArrowAttributeValues northArrow = getNorthArrowValue(template);
+        values.put("northArrow", northArrow);
         forkJoinPool.invoke(graph.createTask(values));
     }
 
-    public static class TestProcessor extends AbstractProcessor<AbstractHttpProcessorTest.TestParam, Void> {
-        /**
-         * Constructor.
-         */
-        protected TestProcessor() {
-            super(Void.class);
-        }
+    private NorthArrowAttribute.NorthArrowAttributeValues getNorthArrowValue(Template template) {
+        NorthArrowAttribute northArrowAttribute = new NorthArrowAttribute();
+        northArrowAttribute.setSize(64);
+        NorthArrowAttribute.NorthArrowAttributeValues value = northArrowAttribute.createValue(template);
+        value.graphic = "NorthArrow.png";
+        return value;
+    }
 
-        @Override
-        protected void extraValidation(List<Throwable> validationErrors, final Configuration configuration) {
-            // do nothing
-        }
-
-        @Nullable
-        @Override
-        public AbstractHttpProcessorTest.TestParam createInputParameter() {
-            return new AbstractHttpProcessorTest.TestParam();
-        }
-
-        @Nullable
-        @Override
-        public Void execute(AbstractHttpProcessorTest.TestParam values, ExecutionContext context) throws Exception {
-            final URI uri = new URI("http://geomapfish.demo-camptocamp.com/path?query#fragment");
-            final ClientHttpRequest request = values.clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
-            final URI finalUri = request.getURI();
-
-            assertEquals("http", finalUri.getScheme());
-            assertEquals("127.0.0.1", finalUri.getHost());
-            assertEquals("/path", finalUri.getPath());
-            assertEquals(-1, finalUri.getPort());
-            assertEquals("query", finalUri.getQuery());
-            assertEquals("fragment", finalUri.getFragment());
-
-            return null;
-        }
+    private MapAttribute.MapAttributeValues getMapValue(Template template) {
+        MapAttribute mapAttribute = new MapAttribute();
+        mapAttribute.setWidth(500);
+        mapAttribute.setHeight(500);
+        MapAttribute.MapAttributeValues value = mapAttribute.createValue(template);
+        value.dpi = 72;
+        return value;
     }
 }
