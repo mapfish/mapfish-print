@@ -1,8 +1,9 @@
 package org.mapfish.print.map.tiled.wmts;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class WMTSLayerParamTest {
 
@@ -11,6 +12,7 @@ public class WMTSLayerParamTest {
         WMTSLayerParam params = new WMTSLayerParam();
 
         params.requestEncoding = RequestEncoding.KVP;
+        params.layer = "Layer";
         params.baseURL = "http://center_wmts_fixedscale_rest.com:1234/wmts";
         assertTrue(params.validateBaseUrl());
 

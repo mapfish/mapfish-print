@@ -238,12 +238,12 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
         this.access = accessAssertion;
     }
 
-    void initForTesting(ApplicationContext context) {
+    final void initForTesting(final ApplicationContext context) {
         this.applicationContext = context;
         this.metricRegistry = context.getBean(MetricRegistry.class);
         this.mapPrinterFactory = new MapPrinterFactory() {
             @Override
-            public MapPrinter create(String app) throws NoSuchAppException {
+            public MapPrinter create(final String app) throws NoSuchAppException {
                 return null;
             }
 
