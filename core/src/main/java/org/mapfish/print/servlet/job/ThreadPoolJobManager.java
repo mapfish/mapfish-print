@@ -259,10 +259,8 @@ public class ThreadPoolJobManager implements JobManager {
         } catch (JSONException e) {
             throw ExceptionUtils.getRuntimeException(e);
         } finally {
-            synchronized (this.runningTasksFutures) {
-                this.runningTasksFutures.put(job.getReferenceId(), new SubmittedPrintJob(future, job.getReferenceId(), job.getAppId(),
-                        job.getAccess()));
-            }
+            this.runningTasksFutures.put(job.getReferenceId(), new SubmittedPrintJob(future, job.getReferenceId(), job.getAppId(),
+                    job.getAccess()));
         }
     }
 
