@@ -19,6 +19,7 @@
 
 package org.mapfish.print.servlet.job;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.primitives.Longs;
 
@@ -258,8 +259,10 @@ public class ThreadPoolJobManager implements JobManager {
         } catch (JSONException e) {
             throw ExceptionUtils.getRuntimeException(e);
         } finally {
-            this.runningTasksFutures.put(job.getReferenceId(), new SubmittedPrintJob(future, job.getReferenceId(), job.getAppId(),
-                    job.getAccess()));
+            synchronized (this.runningTasksFutures) {
+                this.runningTasksFutures.put(job.getReferenceId(), new SubmittedPrintJob(future, job.getReferenceId(), job.getAppId(),
+                        job.getAccess()));
+            }
         }
     }
 
@@ -345,7 +348,8 @@ public class ThreadPoolJobManager implements JobManager {
      * This timer task changes the status of finished jobs in the registry.
      * Also it stops jobs that have been running for too long (timeout).
      */
-    private class PostResultToRegistryTask implements Runnable {
+    @VisibleForTesting
+    class PostResultToRegistryTask implements Runnable {
 
         private static final int CHECK_INTERVAL = 500;
         private final AccessAssertionPersister assertionPersister;
@@ -392,12 +396,14 @@ public class ThreadPoolJobManager implements JobManager {
                         printJob.getReportFuture().get().store(registryRef, this.assertionPersister);
                         registryRef.incrementInt(NB_PRINT_DONE, 1);
                         registryRef.incrementLong(TOTAL_PRINT_TIME, printJob.getTimeSinceStart());
+                        registryRef.incrementInt(LAST_PRINT_COUNT, 1);
                     } catch (InterruptedException e) {
                         // if this happens, the timer task was interrupted. restore the interrupted
                         // status to not lose the information.
                         Thread.currentThread().interrupt();
                     } catch (ExecutionException e) {
                         // TODO check if in this case the job remains in the registry with status pending!
+                        LOGGER.debug("Error occurred while running PrintJob: " + e.getMessage(), e);
                         registryRef.incrementInt(LAST_PRINT_COUNT, 1);
                     } catch (JSONException e) {
                         registryRef.incrementInt(LAST_PRINT_COUNT, 1);
@@ -456,5 +462,6 @@ public class ThreadPoolJobManager implements JobManager {
         public Callable<V> getCallable() {
             return this.callable;
         }
+
     }
 }

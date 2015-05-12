@@ -73,7 +73,7 @@ public class BasicRegistry implements Registry {
 
     @Override
     public final synchronized int incrementInt(final String key, final int amount) {
-        int newValue = opt(key, amount);
+        int newValue = opt(key, 0) + amount;
         put(key, newValue);
         return newValue;
     }

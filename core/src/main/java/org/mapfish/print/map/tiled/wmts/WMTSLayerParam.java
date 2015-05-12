@@ -52,6 +52,7 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
      * </code></pre>
      * The following URL template variables are replaced:
      * <ul>
+     *  <li>{Layer}</li>
      *  <li>{style}</li>
      *  <li>{TileMatrixSet}</li>
      *  <li>{TileMatrix}</li>

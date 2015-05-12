@@ -84,7 +84,7 @@ public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFac
             protected ClientHttpRequest createRequest(final URI uri,
                                                       final HttpMethod httpMethod,
                                                       final MfClientHttpRequestFactory requestFactory) throws IOException {
-                if (uri.getScheme().equals("https")) {
+                if (uri.getScheme() != null && uri.getScheme().equals("https")) {
                     try {
                         URI httpUri = uri;
                         if (uri.getHost() == null && uri.getAuthority() != null) {
