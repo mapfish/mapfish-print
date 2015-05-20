@@ -47,7 +47,6 @@ import javax.annotation.Nonnull;
  *
  * @author Jesse on 8/28/2014.
  */
-@SuppressWarnings("deprecation")
 class MapfishPrintRepositoryService implements StreamRepositoryService {
 
     private final ConfigFileResolvingHttpRequestFactory httpRequestFactory;
@@ -57,16 +56,6 @@ class MapfishPrintRepositoryService implements StreamRepositoryService {
                                   @Nonnull final MfClientHttpRequestFactoryImpl httpRequestFactory) {
         this.httpRequestFactory = new ConfigFileResolvingHttpRequestFactory(httpRequestFactory, configuration);
         this.jasperReportsContext = DefaultJasperReportsContext.getInstance();
-    }
-
-    @Override
-    public void setContext(final net.sf.jasperreports.repo.RepositoryContext context) {
-        // deprecated method so nothing to do
-    }
-
-    @Override
-    public void revertContext() {
-        // deprecated method so nothing to do
     }
 
     @Override
