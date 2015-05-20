@@ -21,10 +21,11 @@ package org.mapfish.print.test.util;
 
 import com.google.common.collect.FluentIterable;
 import com.google.common.io.Files;
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.JRGraphics2DExporter;
-import net.sf.jasperreports.engine.export.JRGraphics2DExporterParameter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleGraphics2DExporterOutput;
+import net.sf.jasperreports.export.SimpleGraphics2DReportConfiguration;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
@@ -33,6 +34,7 @@ import org.apache.batik.transcoder.image.TIFFTranscoder;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -291,9 +293,17 @@ public final class ImageSimilarity {
         BufferedImage pageImage = new BufferedImage(jasperPrint.getPageWidth(), jasperPrint.getPageHeight(), BufferedImage.TYPE_INT_RGB);
 
         JRGraphics2DExporter exporter = new JRGraphics2DExporter();
-        exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
-        exporter.setParameter(JRGraphics2DExporterParameter.GRAPHICS_2D, pageImage.getGraphics());
-        exporter.setParameter(JRExporterParameter.PAGE_INDEX, page);
+
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+
+        SimpleGraphics2DExporterOutput output = new SimpleGraphics2DExporterOutput();
+        output.setGraphics2D((Graphics2D)pageImage.getGraphics());
+        exporter.setExporterOutput(output);
+
+        SimpleGraphics2DReportConfiguration configuration = new SimpleGraphics2DReportConfiguration();
+        configuration.setPageIndex(page);
+        exporter.setConfiguration(configuration);
+
         exporter.exportReport();
 
         return pageImage;
