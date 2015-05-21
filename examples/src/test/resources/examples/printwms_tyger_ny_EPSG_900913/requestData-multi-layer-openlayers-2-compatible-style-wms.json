@@ -14,9 +14,10 @@
           "opacity": 1,
           "type": "WMS",
           "layers": [
-            "tiger:poi",
+            "nurc:Img_Sample",
+            "tiger:poly_landmarks",
             "tiger:tiger_roads",
-            "tiger:poly_landmarks"
+            "tiger:poi"
           ],
 
           "imageFormat": "image/png",
