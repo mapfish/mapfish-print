@@ -20,9 +20,11 @@
 package org.mapfish.print.output;
 
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
+import net.sf.jasperreports.export.type.PdfVersionEnum;
 import org.mapfish.print.config.PDFConfig;
 
 import java.io.OutputStream;
@@ -50,16 +52,22 @@ public final class JasperReportPDFOutputFormat extends AbstractJasperReportOutpu
 
         JRPdfExporter exporter = new JRPdfExporter(print.context);
 
-        exporter.setParameter(JRExporterParameter.JASPER_PRINT, print.print);
-        exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, outputStream);
-        exporter.setParameter(JRPdfExporterParameter.PDF_VERSION, JRPdfExporterParameter.PDF_VERSION_1_7);
+        exporter.setExporterInput(new SimpleExporterInput(print.print));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
+
+        SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+        configuration.setPdfVersion(PdfVersionEnum.VERSION_1_7);
+
         final PDFConfig pdfConfig = print.values.getObject(Values.PDF_CONFIG, PDFConfig.class);
-        exporter.setParameter(JRPdfExporterParameter.IS_COMPRESSED, pdfConfig.isCompressed());
-        exporter.setParameter(JRPdfExporterParameter.METADATA_AUTHOR, pdfConfig.getAuthor());
-        exporter.setParameter(JRPdfExporterParameter.METADATA_CREATOR, pdfConfig.getCreator());
-        exporter.setParameter(JRPdfExporterParameter.METADATA_SUBJECT, pdfConfig.getSubject());
-        exporter.setParameter(JRPdfExporterParameter.METADATA_TITLE, pdfConfig.getTitle());
-        exporter.setParameter(JRPdfExporterParameter.METADATA_KEYWORDS, pdfConfig.getKeywordsAsString());
+
+        configuration.setCompressed(pdfConfig.isCompressed());
+        configuration.setMetadataAuthor(pdfConfig.getAuthor());
+        configuration.setMetadataCreator(pdfConfig.getCreator());
+        configuration.setMetadataSubject(pdfConfig.getSubject());
+        configuration.setMetadataTitle(pdfConfig.getTitle());
+        configuration.setMetadataKeywords(pdfConfig.getKeywordsAsString());
+
+        exporter.setConfiguration(configuration);
 
         exporter.exportReport();
     }

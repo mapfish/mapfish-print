@@ -28,7 +28,7 @@ allprojects {
     version = '3.3-SNAPSHOT'
     ext.junitVersion = "4.11"
     ext.springVersion = "3.2.8.RELEASE"
-    ext.jasperReportVersion = "5.5.0"
+    ext.jasperReportVersion = "5.6.1"
     ext.groovyVersion = "2.3.3"
     ext."signing.keyId" = signing_keyId
     ext."signing.secretKeyRingFile" = signing_secretKeyRingFile
