@@ -41,7 +41,7 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
      * request.
      *
      * As with the WMS specification, the first layer will be the first layer drawn on the map (the bottom/base layer) of the map.  This
-     * means that layer at position 0 in the array will covered by layer 1 and so on.
+     * means that layer at position 0 in the array will covered by layer 1 (where not transparent) and so on.
      */
     public String[] layers;
 

@@ -106,7 +106,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
          * therefore this field should not normally be accessed.
          *
          * The first layer in the array will be the top layer in the map.  The last layer in the array will be the bottom
-         * layer in the map.  There for the last layer will be hidden by the first layer.
+         * layer in the map.  There for the last layer will be hidden by the first layer (where not transparent).
          */
         public PArray layers;
 
