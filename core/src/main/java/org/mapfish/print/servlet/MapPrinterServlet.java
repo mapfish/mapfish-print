@@ -154,6 +154,10 @@ public class MapPrinterServlet extends BaseMapServlet {
      */
     public static final String JSON_PRINT_JOB_REF = "ref";
     /**
+     * The key containing the print job global queue position in the create report response.
+     */
+    public static final String JSON_PRINT_JOB_POSITION = "position";
+    /**
      * The json key in the create report response containing a link to get the status of the print job.
      */
     public static final String JSON_STATUS_LINK = "statusURL";
@@ -322,6 +326,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             json.object();
             {
                 json.key(JSON_PRINT_JOB_REF).value(ref);
+                json.key(JSON_PRINT_JOB_POSITION).value(this.jobManager.getNumberOfRequestsMade());
                 String statusURL = getBaseUrl(createReportRequest) + STATUS_URL + "/" + ref + ".json";
                 json.key(JSON_STATUS_LINK).value(statusURL);
                 addDownloadLinkToJson(createReportRequest, ref, json);
