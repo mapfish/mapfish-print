@@ -4,6 +4,8 @@
 Please read the documentation available here:
 http://mapfish.github.io/mapfish-print/
 
+For support or questions post on the mailing list: 
+https://groups.google.com/forum/#!forum/mapfish-print-users
 
 Build
 -----
