@@ -30,6 +30,7 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.servlet.MapPrinterServletTest;
 import org.mapfish.print.servlet.NoSuchAppException;
 import org.mapfish.print.servlet.ServletMapPrinterFactory;
+import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -45,7 +46,7 @@ import static org.junit.Assert.assertTrue;
 
 
 @ContextConfiguration(locations = {
-        MapPrinterServletTest.PRINT_CONTEXT,
+        MapPrinterServletTest.PRINT_CONTEXT
 })
 public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
     @Autowired
@@ -187,6 +188,26 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
 
         JSONArray data = table.getJSONArray("data");
         assertEquals(0, data.length());
+    }
+
+    @Test
+    public void testWmsLayer() throws IOException, JSONException, NoSuchAppException, URISyntaxException {
+        setUpConfigFiles();
+        PJsonObject oldApiJSON = parseJSONObjectFromFile(OldAPIRequestConverterTest.class, "wms-layer-order.json");
+        Configuration configuration = printerFactory.create("default").getConfiguration();
+        PJsonObject jsonObject = OldAPIRequestConverter.convert(oldApiJSON, configuration);
+
+        PJsonArray layers = jsonObject.getJSONObject("attributes").getJSONObject("geojsonMap").getJSONArray("layers");
+        assertEquals(2, layers.size());
+        PJsonArray wmsLayer1 = layers.getJSONObject(0).getJSONArray("layers");
+        assertEquals(2, wmsLayer1.size());
+        assertEquals("tiger:tiger_roads", wmsLayer1.getString(0));
+        assertEquals("tiger:poi", wmsLayer1.getString(1));
+
+        PJsonArray wmsLayer2 = layers.getJSONObject(1).getJSONArray("layers");
+        assertEquals(2, wmsLayer2.size());
+        assertEquals("nurc:Img_Sample", wmsLayer2.getString(0));
+        assertEquals("tiger:poly_landmarks", wmsLayer2.getString(1));
     }
 
     @Test(expected = IllegalArgumentException.class)

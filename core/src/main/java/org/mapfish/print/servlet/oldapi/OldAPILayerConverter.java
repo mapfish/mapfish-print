@@ -114,7 +114,7 @@ public final class OldAPILayerConverter {
                 layer.put("opacity", oldLayer.getDouble("opacity"));
             }
             if (oldLayer.has("layers")) {
-                layer.put("layers", oldLayer.getInternalObj().getJSONArray("layers"));
+                layer.put("layers", reverse(oldLayer.getInternalObj().getJSONArray("layers")));
             }
             if (oldLayer.has("format")) {
                 layer.put("imageFormat", oldLayer.getString("format"));
@@ -138,6 +138,14 @@ public final class OldAPILayerConverter {
             }
             
             return layer;
+        }
+
+        private JSONArray reverse(final JSONArray oldApiLayers) throws JSONException {
+            JSONArray newApiLayers = new JSONArray();
+            for (int i = oldApiLayers.length(); i > 0; i--) {
+                newApiLayers.put(oldApiLayers.get(i - 1));
+            }
+            return newApiLayers;
         }
     }
     

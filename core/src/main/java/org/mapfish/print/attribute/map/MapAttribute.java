@@ -104,6 +104,9 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
         /**
          * The json with all the layer information.  This will be parsed in postConstruct into a list of layers and
          * therefore this field should not normally be accessed.
+         *
+         * The first layer in the array will be the top layer in the map.  The last layer in the array will be the bottom
+         * layer in the map.  There for the last layer will be hidden by the first layer (where not transparent).
          */
         public PArray layers;
 
