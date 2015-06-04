@@ -340,8 +340,6 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
             final PJsonObject statusJson = parseJSONObjectFromString(contentAsString);
             assertTrue(statusJson.toString(), statusJson.has(MapPrinterServlet.JSON_DONE));
-            assertTrue(statusJson.toString(), statusJson.has(MapPrinterServlet.JSON_TIME));
-            assertTrue(statusJson.toString(), statusJson.has(MapPrinterServlet.JSON_COUNT));
 
             downloadURL = createResponseJson.getString(MapPrinterServlet.JSON_DOWNLOAD_LINK);
             assertEquals("/print/report/" + ref, downloadURL);

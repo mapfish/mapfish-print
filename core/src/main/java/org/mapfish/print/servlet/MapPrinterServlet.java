@@ -125,13 +125,6 @@ public class MapPrinterServlet extends BaseMapServlet {
      */
     public static final String JSON_APP = "app";
     /**
-     * The number of print jobs done by the cluster (or this server if count is not shared through-out cluster).
-     * <p/>
-     * Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)}
-     * response
-     */
-    public static final String JSON_COUNT = "count";
-    /**
      * The json property name of the property that contains the request spec.
      */
     public static final String JSON_SPEC = "spec";
@@ -142,13 +135,6 @@ public class MapPrinterServlet extends BaseMapServlet {
      * response
      */
     public static final String JSON_DONE = "done";
-    /**
-     * The time taken for the job to complete.
-     * <p/>
-     * Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)}
-     * response
-     */
-    public static final String JSON_TIME = "time";
     /**
      * The key containing the print job reference ID in the create report response.
      */
@@ -251,8 +237,6 @@ public class MapPrinterServlet extends BaseMapServlet {
                 if (metadata.isPresent() && metadata.get() instanceof FailedPrintJob) {
                     json.key(JSON_ERROR).value(((FailedPrintJob) metadata.get()).getError());
                 }
-                json.key(JSON_COUNT).value(this.jobManager.getLastPrintCount());
-                json.key(JSON_TIME).value(this.jobManager.getAverageTimeSpentPrinting());
 
                 addDownloadLinkToJson(statusRequest, referenceId, json);
             }
