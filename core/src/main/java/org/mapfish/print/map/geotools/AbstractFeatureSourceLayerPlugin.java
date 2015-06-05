@@ -20,6 +20,8 @@
 package org.mapfish.print.map.geotools;
 
 import com.google.common.collect.Sets;
+import com.vividsolutions.jts.geom.Geometry;
+
 import org.geotools.data.FeatureSource;
 import org.geotools.styling.Style;
 import org.mapfish.print.attribute.map.MapfishMapContext;
@@ -89,7 +91,10 @@ public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFac
                     throw new IllegalArgumentException("Feature source cannot be null");
                 }
 
-                String geomType = featureSource.getSchema().getGeometryDescriptor().getType().getBinding().getSimpleName();
+                String geomType = Geometry.class.getSimpleName().toLowerCase();
+                if (featureSource.getSchema() != null) {
+                    geomType = featureSource.getSchema().getGeometryDescriptor().getType().getBinding().getSimpleName();
+                }
                 String styleRef = styleString;
 
                 if (styleRef == null) {
