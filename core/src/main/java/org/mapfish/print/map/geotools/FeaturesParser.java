@@ -177,6 +177,11 @@ public class FeaturesParser {
                 builder.setName("GeosjonFeatureType");
                 final JSONArray features = geojson.getJSONArray("features");
 
+                if (features.length() == 0) {
+                    // do not try to build the feature type if there are no features
+                    return null;
+                }
+
                 Set<String> allAttributes = Sets.newHashSet();
                 Class<Geometry> geomType = null;
                 for (int i = 0; i < features.length(); i++) {

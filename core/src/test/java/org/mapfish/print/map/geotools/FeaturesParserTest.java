@@ -80,6 +80,17 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
         }
     }
 
+    @Test
+    public void testTreatStringAsGeoJsonEmptyCollection() throws Exception {
+        Configuration configuration = configurationFactory.getConfig(getFile("geojson/config.yaml"));
+        MfClientHttpRequestFactory configRequestFactory = new ConfigFileResolvingHttpRequestFactory(requestFactory, configuration);
+        FeaturesParser featuresParser = new FeaturesParser( configRequestFactory, false);
+
+        final String geojson = "{\"type\": \"FeatureCollection\", \"features\": []}";
+        final SimpleFeatureCollection simpleFeatureCollection = featuresParser.treatStringAsGeoJson(geojson);
+        assertEquals(0, simpleFeatureCollection.size());
+    }
+
     private int getNumExpectedFeatures(File geojsonExample) {
         final Pattern numExpectedFilesPattern = Pattern.compile(".*-(\\d+)\\.json");
 
