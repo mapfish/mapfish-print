@@ -150,7 +150,7 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
             String mimeType = outputFormat.getContentType();
             String fileExtension = outputFormat.getFileSuffix();
 
-            return new SuccessfulPrintJob(this.referenceId, reportURI, getAppId(), getCreateTimeAsDate(), new Date(),
+            return new SuccessfulPrintJob(this.referenceId, reportURI, getAppId(), getCreateTimeAsDate(), new Date(), 0L,
                     fileName, mimeType, fileExtension, this.access);
         } catch (Throwable e) {
             String canceledText = "";
@@ -164,7 +164,7 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
                 fileName = getFileName(mapPrinter, spec);
             }
             final Throwable rootCause = getRootCause(e);
-            return new FailedPrintJob(this.referenceId, getAppId(), getCreateTimeAsDate(), new Date(),
+            return new FailedPrintJob(this.referenceId, getAppId(), getCreateTimeAsDate(), new Date(), 0L,
                     fileName, rootCause.toString(), false, this.access);
         } finally {
             final long stop = TimeUnit.MILLISECONDS.convert(timer.stop(), TimeUnit.NANOSECONDS);

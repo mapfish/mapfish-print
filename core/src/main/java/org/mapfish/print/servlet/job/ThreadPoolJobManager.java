@@ -283,7 +283,8 @@ public class ThreadPoolJobManager implements JobManager {
         this.registry.incrementInt(NEW_PRINT_COUNT, 1);
         try {
             final Date startDate = job.getCreateTimeAsDate();
-            final PendingPrintJob pendingPrintJob = new PendingPrintJob(job.getReferenceId(), job.getAppId(), startDate, job.getAccess());
+            final PendingPrintJob pendingPrintJob = new PendingPrintJob(
+                    job.getReferenceId(), job.getAppId(), startDate, getNumberOfRequestsMade(), job.getAccess());
             pendingPrintJob.assertAccess();
             pendingPrintJob.store(this.registry, this.assertionPersister);
             this.registry.put(LAST_POLL + job.getReferenceId(), new Date().getTime());
@@ -336,7 +337,7 @@ public class ThreadPoolJobManager implements JobManager {
         // so that all subsequent status requests return "cancelled"
         final FailedPrintJob failedJob = new FailedPrintJob(
                 referenceId, jobStatus.get().getAppId(), jobStatus.get().getStartDate(), new Date(),
-                "", "task cancelled", true,
+                jobStatus.get().getRequestCount(), "", "task cancelled", true,
                 jobStatus.get().getAccess());
         try {
             synchronized (this.registry) {
@@ -393,6 +394,7 @@ public class ThreadPoolJobManager implements JobManager {
         boolean done = true;
         String error = "";
         long elapsedTime = jobStatus.getElapsedTime();
+        long waitingTime = 0L;
         Status status = Status.FINISHED;
 
         if (jobStatus instanceof PendingPrintJob) {
@@ -405,7 +407,18 @@ public class ThreadPoolJobManager implements JobManager {
             status = failedJob.getCancelled() ? Status.CANCELLED : Status.ERROR;
         }
 
-        return new JobStatus(done, error, elapsedTime, status);
+        if (status == Status.WAITING) {
+            // calculate an estimate for how long the job still has to wait
+            // before it starts running
+            long requestsMadeAtStart = jobStatus.getRequestCount();
+            long finishedJobs = getLastPrintCount();
+            long jobsRunningOrInQueue = requestsMadeAtStart - finishedJobs;
+            long jobsInQueue = jobsRunningOrInQueue - this.maxNumberOfRunningPrintJobs;
+            long queuePosition = jobsInQueue / this.maxNumberOfRunningPrintJobs;
+            waitingTime = Math.max(0L, queuePosition * getAverageTimeSpentPrinting());
+        }
+
+        return new JobStatus(done, error, elapsedTime, status, waitingTime);
     }
 
     /**
@@ -480,7 +493,7 @@ public class ThreadPoolJobManager implements JobManager {
                     } catch (CancellationException e) {
                         try {
                             final FailedPrintJob failedJob = new FailedPrintJob(
-                                    printJob.getReportRef(), printJob.getAppId(), printJob.getStartDate(), new Date(),
+                                    printJob.getReportRef(), printJob.getAppId(), printJob.getStartDate(), new Date(), 0L,
                                     "", "task cancelled (timeout)",
                                     true, printJob.getAccessAssertion());
                             synchronized (registryRef) {

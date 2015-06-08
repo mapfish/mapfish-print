@@ -43,6 +43,7 @@ public class FailedPrintJob extends PrintJobStatus {
      * @param appId          the appId used for loading the configuration.
      * @param startDate      the date when the print job started
      * @param completionDate the date when the print job completed
+     * @param requestCount   the total number of requests made when the job was submitted.
      * @param fileName       the fileName to send to the client.
      * @param error          the error that occurred during running.
      * @param cancelled      if the job was cancelled.
@@ -51,9 +52,10 @@ public class FailedPrintJob extends PrintJobStatus {
      */
     //CSOFF: ParameterNumber
     public FailedPrintJob(final String referenceId, final String appId, final Date startDate, final Date completionDate,
-                          final String fileName, final String error, final boolean cancelled, final AccessAssertion access) {
+            final long requestCount, final String fileName, final String error, final boolean cancelled,
+            final AccessAssertion access) {
     //CSON: ParameterNumber
-        super(referenceId, appId, startDate, completionDate, fileName, access);
+        super(referenceId, appId, startDate, completionDate, requestCount, fileName, access);
         this.error = error;
         this.cancelled = cancelled;
     }
@@ -73,20 +75,26 @@ public class FailedPrintJob extends PrintJobStatus {
      * @param appId          the appId used for loading the configuration.
      * @param startDate      the date when the print job started.
      * @param completionDate the date when the print job completed.
+     * @param requestCount   the total number of requests made when the job was submitted.
      * @param fileName       the fileName to send to the client.
      * @param reportAccess   the access/roles required to download this report.  Typically this is all the roles in the template and
      *                       the configuration.
      */
+    //CSOFF: ParameterNumber
     public static FailedPrintJob load(final JSONObject metadata,
                                       final String referenceId,
                                       final String appId,
                                       final Date startDate,
-                                      final Date completionDate, final String fileName,
+                                      final Date completionDate,
+                                      final long requestCount,
+                                      final String fileName,
                                       final AccessAssertion reportAccess) throws JSONException {
+        //CSON: ParameterNumber
         String error = metadata.getString(JSON_ERROR);
         boolean cancelled = metadata.getBoolean(JSON_CANCELLED);
 
-        return new FailedPrintJob(referenceId, appId, startDate, completionDate, fileName, error, cancelled, reportAccess);
+        return new FailedPrintJob(
+                referenceId, appId, startDate, completionDate, requestCount, fileName, error, cancelled, reportAccess);
     }
 
     public final String getError() {

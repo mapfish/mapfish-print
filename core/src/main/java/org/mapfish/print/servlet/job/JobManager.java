@@ -96,6 +96,7 @@ public interface JobManager {
         private String error;
         private long elapsedTime;
         private Status status;
+        private long waitingTime;
 
         /**
          * Constructor.
@@ -103,13 +104,16 @@ public interface JobManager {
          * @param error Possible error message.
          * @param elapsedTime Elapsed time between job creation and end.
          * @param status The status.
+         * @param waitingTime A rough estimate for the time in ms the job still has to wait in the queue
+         *      until it starts processing.
          */
         public JobStatus(final boolean isDone, final String error, final long elapsedTime,
-                final Status status) {
+                final Status status, final long waitingTime) {
             this.isDone = isDone;
             this.error = error;
             this.elapsedTime = elapsedTime;
             this.status = status;
+            this.waitingTime = waitingTime;
         }
 
         public final boolean isDone() {
@@ -126,6 +130,10 @@ public interface JobManager {
 
         public final Status getStatus() {
             return this.status;
+        }
+
+        public final long getWaitingTime() {
+            return this.waitingTime;
         }
 
         /**

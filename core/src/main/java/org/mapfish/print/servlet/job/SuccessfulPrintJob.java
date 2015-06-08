@@ -48,7 +48,8 @@ public final class SuccessfulPrintJob extends PrintJobStatus {
      * @param reportURI      the uri for fetching the report.
      * @param appId          the appId used for loading the configuration.
      * @param startDate      the date when the print job started.
-     * @param completionDate the date when the print job completed
+     * @param completionDate the date when the print job completed.
+     * @param requestCount   the total number of requests made when the job was submitted.
      * @param fileName       the fileName to send to the client.
      * @param mimeType       the mimetype of the printed file
      * @param fileExtension  the file extension (to be added to the filename)
@@ -57,10 +58,10 @@ public final class SuccessfulPrintJob extends PrintJobStatus {
      */
     // CSOFF: ParameterNumber
     public SuccessfulPrintJob(final String referenceId, final URI reportURI, final String appId, final Date startDate,
-                              final Date completionDate, final String fileName, final String mimeType, final String fileExtension,
-                              final AccessAssertion access) {
+                              final Date completionDate, final long requestCount, final String fileName, final String mimeType,
+                              final String fileExtension, final AccessAssertion access) {
         // CSON: ParameterNumber
-        super(referenceId, appId, startDate, completionDate, fileName, access);
+        super(referenceId, appId, startDate, completionDate, requestCount, fileName, access);
         this.reportURI = reportURI;
         this.mimeType = mimeType;
         this.fileExtension = fileExtension;
@@ -86,14 +87,17 @@ public final class SuccessfulPrintJob extends PrintJobStatus {
      * @param referenceId    reference of the report.
      * @param appId          the appId used for loading the configuration.
      * @param startDate      the start date.
-     * @param completionDate the date when the print job completed
+     * @param completionDate the date when the print job completed.
+     * @param requestCount   the total number of requests made when the job was submitted.
      * @param fileName       the fileName to send to the client.
      * @param reportAccess   the an access control object for downloading this report.  Typically this is combined access of the
      *                       template and the configuration.
      */
+    // CSOFF: ParameterNumber
     public static SuccessfulPrintJob load(final JSONObject metadata, final String referenceId, final String appId,
-                                          final Date startDate, final Date completionDate, final String fileName,
-                                          final AccessAssertion reportAccess)
+                                          final Date startDate, final Date completionDate, final long requestCount,
+                                          final String fileName, final AccessAssertion reportAccess)
+    // CSON: ParameterNumber
             throws JSONException {
         try {
             URI reportURI = new URI(metadata.getString(JSON_REPORT_URI));
@@ -101,7 +105,7 @@ public final class SuccessfulPrintJob extends PrintJobStatus {
             String mimeType = metadata.getString(JSON_MIME_TYPE);
 
             return new SuccessfulPrintJob(
-                    referenceId, reportURI, appId, startDate, completionDate, fileName, mimeType, fileExt, reportAccess);
+                    referenceId, reportURI, appId, startDate, completionDate, requestCount, fileName, mimeType, fileExt, reportAccess);
         } catch (URISyntaxException e) {
             throw ExceptionUtils.getRuntimeException(e);
         }

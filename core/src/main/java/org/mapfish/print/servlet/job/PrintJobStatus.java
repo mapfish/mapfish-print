@@ -44,11 +44,13 @@ public abstract class PrintJobStatus {
     private static final String JSON_ACCESS_ASSERTION = "access";
     private static final String JSON_START_DATE = "startDate";
     private static final String JSON_COMPLETION_DATE = "completionDate";
+    private static final String JSON_REQUEST_COUNT = "requestCount";
     private final String referenceId;
     private final String appId;
     private final String fileName;
     private Date startDate;
     private Date completionDate;
+    private long requestCount;
     private final AccessAssertion access;
 
     /**
@@ -59,20 +61,25 @@ public abstract class PrintJobStatus {
      * @param fileName    the fileName to send to the client.
      * @param startDate the time when the print job started.
      * @param completionDate the time when the print job ended.
+     * @param requestCount the total number of requests made when the job was submitted.
      * @param accessAssertion the an access control object for downloading this report.  Typically this is combined access of the
      *                        template and the configuration.
      */
     public PrintJobStatus(final String referenceId, final String appId, final Date startDate, final Date completionDate,
-            final String fileName, final AccessAssertion accessAssertion) {
+            final long requestCount, final String fileName, final AccessAssertion accessAssertion) {
         this.referenceId = referenceId;
         this.appId = appId;
         this.startDate = startDate;
         this.completionDate = completionDate;
+        this.requestCount = requestCount;
         this.fileName = fileName;
         this.access = accessAssertion;
     }
 
-    public void assertAccess() {
+    /**
+     * Assert that the current is authorized to access this job.
+     */
+    public final void assertAccess() {
         this.access.assertAccess(
                 getClass().getSimpleName() + " for app '" + this.appId + "' for print job '" + this.referenceId + "'", this);
     }
@@ -89,6 +96,7 @@ public abstract class PrintJobStatus {
         metadata.put(JSON_FILENAME, this.fileName);
         metadata.put(JSON_SUCCESS, this instanceof SuccessfulPrintJob);
         metadata.put(JSON_START_DATE, this.startDate.getTime());
+        metadata.put(JSON_REQUEST_COUNT, this.requestCount);
         if (this.completionDate != null) {
             metadata.put(JSON_COMPLETION_DATE, this.completionDate.getTime());
         }
@@ -119,20 +127,23 @@ public abstract class PrintJobStatus {
 
             String appId = metadata.optString(JSON_APP, null);
             Date startDate = new Date(metadata.getLong(JSON_START_DATE));
+            long requestCount = metadata.getLong(JSON_REQUEST_COUNT);
 
             JSONObject accessJSON = metadata.getJSONObject(JSON_ACCESS_ASSERTION);
             final AccessAssertion accessAssertion = persister.unmarshal(accessJSON);
 
             PrintJobStatus report;
             if (!metadata.has(JSON_COMPLETION_DATE)) {
-                report = PendingPrintJob.load(metadata, referenceId, appId, startDate, accessAssertion);
+                report = PendingPrintJob.load(metadata, referenceId, appId, startDate, requestCount, accessAssertion);
             } else {
                 String fileName = metadata.getString(JSON_FILENAME);
                 Date completionDate = new Date(metadata.getLong(JSON_COMPLETION_DATE));
                 if (metadata.getBoolean(JSON_SUCCESS)) {
-                    report = SuccessfulPrintJob.load(metadata, referenceId, appId, startDate, completionDate, fileName, accessAssertion);
+                    report = SuccessfulPrintJob.load(
+                            metadata, referenceId, appId, startDate, completionDate, requestCount, fileName, accessAssertion);
                 } else {
-                    report = FailedPrintJob.load(metadata, referenceId, appId, startDate, completionDate, fileName, accessAssertion);
+                    report = FailedPrintJob.load(
+                            metadata, referenceId, appId, startDate, completionDate, requestCount, fileName, accessAssertion);
                 }
             }
             return Optional.of(report);
@@ -163,6 +174,10 @@ public abstract class PrintJobStatus {
 
     public final Date getCompletionDate() {
         return this.completionDate;
+    }
+
+    public final long getRequestCount() {
+        return this.requestCount;
     }
 
     public final AccessAssertion getAccess() {

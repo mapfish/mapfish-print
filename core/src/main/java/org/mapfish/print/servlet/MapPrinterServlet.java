@@ -135,7 +135,7 @@ public class MapPrinterServlet extends BaseMapServlet {
      * If the job is done (value is true) or not (value is false).
      * <p/>
      * Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)}
-     * response
+     * response.
      */
     public static final String JSON_DONE = "done";
     /**
@@ -156,9 +156,16 @@ public class MapPrinterServlet extends BaseMapServlet {
      * this is the duration it took to process the job.
      * <p/>
      * Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)}
-     * response
+     * response.
      */
     public static final String JSON_ELAPSED_TIME = "elapsedTime";
+    /**
+     * A rough estimate for the time in ms the job still has to wait in the queue until it starts processing.
+     * <p/>
+     * Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)}
+     * response.
+     */
+    public static final String JSON_WAITING_TIME = "waitingTime";
     /**
      * The key containing the print job reference ID in the create report response.
      */
@@ -259,6 +266,7 @@ public class MapPrinterServlet extends BaseMapServlet {
                 json.key(JSON_DONE).value(status.isDone());
                 json.key(JSON_STATUS).value(status.getStatus().toString().toLowerCase());
                 json.key(JSON_ELAPSED_TIME).value(status.getElapsedTime());
+                json.key(JSON_WAITING_TIME).value(status.getWaitingTime());
                 if (!Strings.isNullOrEmpty(status.getError())) {
                     json.key(JSON_ERROR).value(status.getError());
                 }
