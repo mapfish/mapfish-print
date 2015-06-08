@@ -70,8 +70,11 @@ public abstract class PrintJobStatus {
         this.completionDate = completionDate;
         this.fileName = fileName;
         this.access = accessAssertion;
+    }
 
-        accessAssertion.assertAccess(getClass().getSimpleName() + " for app '" + appId + "' for print job '" + referenceId + "'", this);
+    public void assertAccess() {
+        this.access.assertAccess(
+                getClass().getSimpleName() + " for app '" + this.appId + "' for print job '" + this.referenceId + "'", this);
     }
 
     /**

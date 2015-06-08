@@ -284,6 +284,7 @@ public class ThreadPoolJobManager implements JobManager {
         try {
             final Date startDate = job.getCreateTimeAsDate();
             final PendingPrintJob pendingPrintJob = new PendingPrintJob(job.getReferenceId(), job.getAppId(), startDate, job.getAccess());
+            pendingPrintJob.assertAccess();
             pendingPrintJob.store(this.registry, this.assertionPersister);
             this.registry.put(LAST_POLL + job.getReferenceId(), new Date().getTime());
         } catch (JSONException e) {
@@ -370,6 +371,7 @@ public class ThreadPoolJobManager implements JobManager {
                 // not yet completed
                 return Optional.absent();
             } else {
+                jobStatus.get().assertAccess();
                 return jobStatus;
             }
         } catch (JSONException e) {
@@ -383,6 +385,7 @@ public class ThreadPoolJobManager implements JobManager {
         try {
             // check if the reference id is valid
             jobStatus = PrintJobStatus.load(referenceId, this.registry, this.assertionPersister).get();
+            jobStatus.assertAccess();
         } catch (JSONException e) {
             throw ExceptionUtils.getRuntimeException(e);
         }
