@@ -34,11 +34,13 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
         assertRegistryValues(null, 0, 0, true);
 
         TestPrintJob printJob = new TestPrintJob();
+        printJob.setCreateTime(System.currentTimeMillis());
         jobManager.submit(printJob);
 
         assertRegistryValues(printJob, 1, 1, false);
 
         printJob = new FailingPrintJob();
+        printJob.setCreateTime(System.currentTimeMillis());
         jobManager.submit(printJob);
 
         assertRegistryValues(printJob, 2, 2, false);
@@ -54,6 +56,7 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
                 return super.withOpenOutputStream(function);
             }
         };
+        printJob.setCreateTime(System.currentTimeMillis());
         jobManager.submit(printJob);
 
         assertRegistryValues(printJob, 2, 3, false);

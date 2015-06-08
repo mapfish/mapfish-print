@@ -82,6 +82,13 @@ public class SubmittedPrintJob {
         return System.currentTimeMillis() - this.startTime;
     }
 
+    /**
+     * @return The start date.
+     */
+    public final Date getStartDate() {
+        return new Date(this.startTime);
+    }
+
     public final AccessAssertion getAccessAssertion() {
         return this.accessAssertion;
     }

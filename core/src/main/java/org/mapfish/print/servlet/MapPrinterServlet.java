@@ -22,6 +22,7 @@ package org.mapfish.print.servlet;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
+
 import org.jfree.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,6 +34,7 @@ import org.mapfish.print.MapPrinterFactory;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.servlet.job.FailedPrintJob;
 import org.mapfish.print.servlet.job.JobManager;
+import org.mapfish.print.servlet.job.JobManager.JobStatus;
 import org.mapfish.print.servlet.job.NoSuchReferenceException;
 import org.mapfish.print.servlet.job.PrintJob;
 import org.mapfish.print.servlet.job.PrintJobStatus;
@@ -69,6 +71,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -135,6 +138,27 @@ public class MapPrinterServlet extends BaseMapServlet {
      * response
      */
     public static final String JSON_DONE = "done";
+    /**
+     * The status of the job. One of the following values:
+     * <ul>
+     *  <li>waiting</li>
+     *  <li>running</li>
+     *  <li>finished</li>
+     *  <li>cancelled</li>
+     *  <li>error</li>
+     * </ul>
+     * Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)}
+     * response
+     */
+    public static final String JSON_STATUS = "status";
+    /**
+     * The elapsed time in ms from the point the job started. If the job is finished,
+     * this is the duration it took to process the job.
+     * <p/>
+     * Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)}
+     * response
+     */
+    public static final String JSON_ELAPSED_TIME = "elapsedTime";
     /**
      * The key containing the print job reference ID in the create report response.
      */
@@ -223,7 +247,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             final HttpServletResponse statusResponse) {
         PrintWriter writer = null;
         try {
-            boolean done = this.jobManager.isDone(referenceId);
+            JobStatus status = this.jobManager.getStatus(referenceId);
 
             setContentType(statusResponse, jsonpCallback);
             writer = statusResponse.getWriter();
@@ -232,10 +256,11 @@ public class MapPrinterServlet extends BaseMapServlet {
             JSONWriter json = new JSONWriter(writer);
             json.object();
             {
-                json.key(JSON_DONE).value(done);
-                Optional<? extends PrintJobStatus> metadata = this.jobManager.getCompletedPrintJob(referenceId);
-                if (metadata.isPresent() && metadata.get() instanceof FailedPrintJob) {
-                    json.key(JSON_ERROR).value(((FailedPrintJob) metadata.get()).getError());
+                json.key(JSON_DONE).value(status.isDone());
+                json.key(JSON_STATUS).value(status.getStatus().toString().toLowerCase());
+                json.key(JSON_ELAPSED_TIME).value(status.getElapsedTime());
+                if (!Strings.isNullOrEmpty(status.getError())) {
+                    json.key(JSON_ERROR).value(status.getError());
                 }
 
                 addDownloadLinkToJson(statusRequest, referenceId, json);

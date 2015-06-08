@@ -94,6 +94,13 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
     }
 
     /*
+     * The date when the job was created.
+     */
+    public final Date getCreateTimeAsDate() {
+        return new Date(this.createTime);
+    }
+
+    /*
      * Set the timestamp when the job was created.
      */
     public final void setCreateTime(final Long createTime) {
@@ -143,8 +150,8 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
             String mimeType = outputFormat.getContentType();
             String fileExtension = outputFormat.getFileSuffix();
 
-            return new SuccessfulPrintJob(this.referenceId, reportURI, getAppId(), new Date(), fileName, mimeType,
-                    fileExtension, this.access);
+            return new SuccessfulPrintJob(this.referenceId, reportURI, getAppId(), getCreateTimeAsDate(), new Date(),
+                    fileName, mimeType, fileExtension, this.access);
         } catch (Throwable e) {
             String canceledText = "";
             if (Thread.currentThread().isInterrupted()) {
@@ -157,7 +164,8 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
                 fileName = getFileName(mapPrinter, spec);
             }
             final Throwable rootCause = getRootCause(e);
-            return new FailedPrintJob(this.referenceId, getAppId(), new Date(), fileName, rootCause.toString(), this.access);
+            return new FailedPrintJob(this.referenceId, getAppId(), getCreateTimeAsDate(), new Date(),
+                    fileName, rootCause.toString(), false, this.access);
         } finally {
             final long stop = TimeUnit.MILLISECONDS.convert(timer.stop(), TimeUnit.NANOSECONDS);
             LOGGER.debug("Print Job " + PrintJob.this.referenceId + " completed in " + stop + "ms");

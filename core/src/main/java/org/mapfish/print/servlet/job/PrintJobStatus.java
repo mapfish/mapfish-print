@@ -42,10 +42,12 @@ public abstract class PrintJobStatus {
     private static final String JSON_FILENAME = "fileName";
     private static final String JSON_SUCCESS = "success";
     private static final String JSON_ACCESS_ASSERTION = "access";
+    private static final String JSON_START_DATE = "startDate";
     private static final String JSON_COMPLETION_DATE = "completionDate";
     private final String referenceId;
     private final String appId;
     private final String fileName;
+    private Date startDate;
     private Date completionDate;
     private final AccessAssertion access;
 
@@ -55,14 +57,16 @@ public abstract class PrintJobStatus {
      * @param referenceId reference of the report.
      * @param appId       the appId used for loading the configuration.
      * @param fileName    the fileName to send to the client.
+     * @param startDate the time when the print job started.
      * @param completionDate the time when the print job ended.
      * @param accessAssertion the an access control object for downloading this report.  Typically this is combined access of the
      *                        template and the configuration.
      */
-    public PrintJobStatus(final String referenceId, final String appId, final Date completionDate, final String fileName,
-                          final AccessAssertion accessAssertion) {
+    public PrintJobStatus(final String referenceId, final String appId, final Date startDate, final Date completionDate,
+            final String fileName, final AccessAssertion accessAssertion) {
         this.referenceId = referenceId;
         this.appId = appId;
+        this.startDate = startDate;
         this.completionDate = completionDate;
         this.fileName = fileName;
         this.access = accessAssertion;
@@ -81,6 +85,7 @@ public abstract class PrintJobStatus {
         metadata.put(JSON_APP, this.appId);
         metadata.put(JSON_FILENAME, this.fileName);
         metadata.put(JSON_SUCCESS, this instanceof SuccessfulPrintJob);
+        metadata.put(JSON_START_DATE, this.startDate.getTime());
         if (this.completionDate != null) {
             metadata.put(JSON_COMPLETION_DATE, this.completionDate.getTime());
         }
@@ -110,20 +115,21 @@ public abstract class PrintJobStatus {
             JSONObject metadata = registry.getJSON(RESULT_METADATA + referenceId);
 
             String appId = metadata.optString(JSON_APP, null);
+            Date startDate = new Date(metadata.getLong(JSON_START_DATE));
 
             JSONObject accessJSON = metadata.getJSONObject(JSON_ACCESS_ASSERTION);
             final AccessAssertion accessAssertion = persister.unmarshal(accessJSON);
 
             PrintJobStatus report;
             if (!metadata.has(JSON_COMPLETION_DATE)) {
-                report = PendingPrintJob.load(metadata, referenceId, appId, accessAssertion);
+                report = PendingPrintJob.load(metadata, referenceId, appId, startDate, accessAssertion);
             } else {
                 String fileName = metadata.getString(JSON_FILENAME);
                 Date completionDate = new Date(metadata.getLong(JSON_COMPLETION_DATE));
                 if (metadata.getBoolean(JSON_SUCCESS)) {
-                    report = SuccessfulPrintJob.load(metadata, referenceId, appId, completionDate, fileName, accessAssertion);
+                    report = SuccessfulPrintJob.load(metadata, referenceId, appId, startDate, completionDate, fileName, accessAssertion);
                 } else {
-                    report = FailedPrintJob.load(metadata, referenceId, appId, completionDate, fileName, accessAssertion);
+                    report = FailedPrintJob.load(metadata, referenceId, appId, startDate, completionDate, fileName, accessAssertion);
                 }
             }
             return Optional.of(report);
@@ -144,11 +150,30 @@ public abstract class PrintJobStatus {
         return this.fileName;
     }
 
+    public final Date getStartDate() {
+        return this.startDate;
+    }
+
+    public final void setCompletionDate(final Date completionDate) {
+        this.completionDate = completionDate;
+    }
+
     public final Date getCompletionDate() {
         return this.completionDate;
     }
 
     public final AccessAssertion getAccess() {
         return this.access;
+    }
+
+    /**
+     * Get the elapsed time in ms.
+     */
+    public final long getElapsedTime() {
+        if (this.completionDate == null) {
+            return new Date().getTime() - this.startDate.getTime();
+        } else {
+            return this.completionDate.getTime() - this.startDate.getTime();
+        }
     }
 }

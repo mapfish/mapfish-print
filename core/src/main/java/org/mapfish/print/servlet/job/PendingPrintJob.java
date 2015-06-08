@@ -23,22 +23,27 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.config.access.AccessAssertion;
 
+import java.util.Date;
+
 /**
  * Represents a pending print job.
  *
  */
 public class PendingPrintJob extends PrintJobStatus {
+    private static final String JSON_RUNNING = "running";
+    private boolean running = false;
 
     /**
      * Constructor.
      *
      * @param referenceId    reference of the report.
      * @param appId          the appId used for loading the configuration.
+     * @param startDate      the start date.
      * @param access         the an access control object for downloading this report.  Typically this is combined access of the
      *                       template and the configuration.
      */
-    public PendingPrintJob(final String referenceId, final String appId, final AccessAssertion access) {
-        super(referenceId, appId, null, null, access);
+    public PendingPrintJob(final String referenceId, final String appId, final Date startDate, final AccessAssertion access) {
+        super(referenceId, appId, startDate, null, null, access);
     }
 
     /**
@@ -48,17 +53,28 @@ public class PendingPrintJob extends PrintJobStatus {
      *                       parent class.
      * @param referenceId    reference of the report.
      * @param appId          the appId used for loading the configuration.
+     * @param startDate      the start date.
      * @param reportAccess   the an access control object for downloading this report.  Typically this is combined access of the
      *                        template and the configuration.
      */
     public static PendingPrintJob load(final JSONObject metadata, final String referenceId, final String appId,
-                                       final AccessAssertion reportAccess)
+                                       final Date startDate, final AccessAssertion reportAccess)
             throws JSONException {
-        return new PendingPrintJob(referenceId, appId, reportAccess);
+        PendingPrintJob job = new PendingPrintJob(referenceId, appId, startDate, reportAccess);
+        job.setRunning(metadata.getBoolean(JSON_RUNNING));
+        return job;
     }
 
     @Override
-    protected void addExtraParameters(final JSONObject metadata) throws JSONException {
+    protected final void addExtraParameters(final JSONObject metadata) throws JSONException {
+        metadata.put(JSON_RUNNING, this.running);
     }
 
+    public final boolean isRunning() {
+        return this.running;
+    }
+
+    public final void setRunning(final boolean running) {
+        this.running = running;
+    }
 }

@@ -75,8 +75,83 @@ public interface JobManager {
     /**
      * Cancel a job.
      *
-     * @param referenceId the referenceId od the job to cancel.
+     * @param referenceId The referenceId of the job to cancel.
      * @throws NoSuchReferenceException 
      */
     void cancel(String referenceId) throws NoSuchReferenceException;
+
+    /**
+     * Get the status for a job.
+     *
+     * @param referenceId The referenceId of the job to check.
+     * @throws NoSuchReferenceException
+     */
+    JobStatus getStatus(String referenceId) throws NoSuchReferenceException;
+
+    /**
+     * The job status.
+     */
+    public class JobStatus {
+        private boolean isDone;
+        private String error;
+        private long elapsedTime;
+        private Status status;
+
+        /**
+         * Constructor.
+         * @param isDone Is done?
+         * @param error Possible error message.
+         * @param elapsedTime Elapsed time between job creation and end.
+         * @param status The status.
+         */
+        public JobStatus(final boolean isDone, final String error, final long elapsedTime,
+                final Status status) {
+            this.isDone = isDone;
+            this.error = error;
+            this.elapsedTime = elapsedTime;
+            this.status = status;
+        }
+
+        public final boolean isDone() {
+            return this.isDone;
+        }
+
+        public final String getError() {
+            return this.error;
+        }
+
+        public final long getElapsedTime() {
+            return this.elapsedTime;
+        }
+
+        public final Status getStatus() {
+            return this.status;
+        }
+
+        /**
+         * The job status.
+         */
+        public enum Status {
+            /**
+             * The job hasn't yet started processing.
+             */
+            WAITING,
+            /**
+             * The job is currently being processed.
+             */
+            RUNNING,
+            /**
+             * The job has finished processing.
+             */
+            FINISHED,
+            /**
+             * The job was cancelled.
+             */
+            CANCELLED,
+            /**
+             * There was an error executing the job.
+             */
+            ERROR
+        };
+    }
 }
