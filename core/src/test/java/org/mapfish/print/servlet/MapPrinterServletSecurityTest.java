@@ -49,6 +49,7 @@ import java.util.HashMap;
 import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @ContextConfiguration(locations = {
@@ -125,6 +126,25 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
         final JSONObject response = new JSONObject(servletCreateResponse.getContentAsString());
 
         final String ref = response.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
+        String statusURL = response.getString(MapPrinterServlet.JSON_STATUS_LINK);
+
+        // wait until job is done
+        boolean done = false;
+        while (!done) {
+            MockHttpServletRequest servletStatusRequest = new MockHttpServletRequest("GET", statusURL);
+            MockHttpServletResponse servletStatusResponse = new MockHttpServletResponse();
+            servlet.getStatus(ref, null, servletStatusRequest, servletStatusResponse);
+
+            String contentAsString = servletStatusResponse.getContentAsString();
+
+            final PJsonObject statusJson = parseJSONObjectFromString(contentAsString);
+            assertTrue(statusJson.toString(), statusJson.has(MapPrinterServlet.JSON_DONE));
+
+            done = statusJson.getBool(MapPrinterServlet.JSON_DONE);
+            if (!done) {
+                Thread.sleep(500);
+            }
+        }
 
         try {
             AccessAssertionTestUtil.setCreds("ROLE_USER");
