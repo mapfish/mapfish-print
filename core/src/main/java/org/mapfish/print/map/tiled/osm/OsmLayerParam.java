@@ -25,7 +25,9 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.util.Assert;
+
 import org.mapfish.print.map.tiled.AbstractTiledLayerParams;
+import org.mapfish.print.parser.CanSatisfyOneOf;
 import org.mapfish.print.parser.HasDefaultValue;
 
 import java.awt.Dimension;
@@ -91,8 +93,24 @@ public final class OsmLayerParam extends AbstractTiledLayerParams {
     public Double dpi = null;
 
     /**
+     * The image extension.  for example png, jpg, etc...
+     */
+    @HasDefaultValue
+    @CanSatisfyOneOf("extension")
+    public String imageExtension = "png";
+
+
+    /**
+     * Deprecated, replaced by imageExtension.
+     * @deprecated
+     */
+    @CanSatisfyOneOf("extension")
+    @Deprecated
+    public String imageFormat = null;
+
+    /**
      * Validate the properties have the correct values.
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      */
     public void postConstruct() throws URISyntaxException {
         Assert.equals(NUMBER_OF_EXTENT_COORDS, this.maxExtent.length, "maxExtent must have exactly 4 elements to the array.  Was: " +

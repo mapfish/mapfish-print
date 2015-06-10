@@ -40,13 +40,6 @@ public abstract class AbstractTiledLayerParams extends AbstractLayerParams {
      */
     @HasDefaultValue
     public String rasterStyle = "raster";
-    /**
-     * The format of the image.  It is not a mimetype just the part after the image.  for example png, gif, tiff, tif, bmp, etc...
-     * <p/>
-     * If a protocol needs a mimetype it can add the prefix
-     */
-    @HasDefaultValue
-    public String imageFormat = "png";
 
     /**
      * Get the base url for all tile requests.  For example it might be 'http://server.com/geoserver/gwc/service/wmts'.

@@ -29,6 +29,8 @@ import org.mapfish.print.map.Scale;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.tiled.AbstractTiledLayer;
 import org.mapfish.print.map.tiled.TileCacheInformation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 
@@ -45,6 +47,7 @@ import javax.annotation.Nonnull;
  * @author Jesse on 4/11/2014.
  */
 public final class OsmLayer extends AbstractTiledLayer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(OsmLayer.class);
     private final OsmLayerParam param;
 
     /**
@@ -115,6 +118,11 @@ public final class OsmLayer extends AbstractTiledLayer {
                 }
                 uri  = new URI(url);
             } else {
+                if (OsmLayer.this.param.imageFormat != null) {
+                    LOGGER.warn("The imageFormat is deprecated, " +
+                            "replaced by imageExtension should be a mime type");
+                    OsmLayer.this.param.imageExtension = OsmLayer.this.param.imageFormat;
+                }
                 StringBuilder path = new StringBuilder();
                 if (!commonUrl.endsWith("/")) {
                     path.append('/');
@@ -122,7 +130,7 @@ public final class OsmLayer extends AbstractTiledLayer {
                 path.append(String.format("%02d", this.resolutionIndex));
                 path.append('/').append(column);
                 path.append('/').append(row);
-                path.append('.').append(OsmLayer.this.param.imageFormat);
+                path.append('.').append(OsmLayer.this.param.imageExtension);
 
                 uri  = new URI(commonUrl + path.toString());
             }

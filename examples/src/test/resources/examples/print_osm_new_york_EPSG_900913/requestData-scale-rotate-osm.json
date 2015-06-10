@@ -36,7 +36,7 @@
 				{
 					"baseURL": "http://localhost:9876/e2egeoserver/www/osm",
 					"type": "OSM",
-					"imageFormat": "png"
+					"imageExtension": "png"
 				}
 			]
 		}
