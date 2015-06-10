@@ -140,7 +140,11 @@ public class WMTSLayer extends AbstractTiledLayer {
             queryParams.put("TILEMATRIX", this.matrix.identifier);
             queryParams.put("TILEROW", String.valueOf(row));
             queryParams.put("TILECOL", String.valueOf(col));
-            queryParams.put("FORMAT", "image/" + layerParam.imageFormat);
+            if (layerParam.imageFormat.indexOf('/') > 0) {
+                queryParams.put("FORMAT", layerParam.imageFormat);
+            } else {
+                queryParams.put("FORMAT", "image/" + layerParam.imageFormat);
+            }
             if (layerParam.dimensions != null) {
                 for (int i = 0; i < layerParam.dimensions.length; i++) {
                     String d = layerParam.dimensions[i];
