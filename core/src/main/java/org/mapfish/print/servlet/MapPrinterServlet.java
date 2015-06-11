@@ -34,7 +34,7 @@ import org.mapfish.print.MapPrinterFactory;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.servlet.job.FailedPrintJob;
 import org.mapfish.print.servlet.job.JobManager;
-import org.mapfish.print.servlet.job.JobManager.JobStatus;
+import org.mapfish.print.servlet.job.JobStatus;
 import org.mapfish.print.servlet.job.NoSuchReferenceException;
 import org.mapfish.print.servlet.job.PrintJob;
 import org.mapfish.print.servlet.job.PrintJobStatus;

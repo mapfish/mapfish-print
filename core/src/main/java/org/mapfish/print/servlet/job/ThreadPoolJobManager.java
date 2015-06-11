@@ -26,7 +26,7 @@ import com.google.common.primitives.Longs;
 import org.json.JSONException;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.config.access.AccessAssertionPersister;
-import org.mapfish.print.servlet.job.JobManager.JobStatus.Status;
+import org.mapfish.print.servlet.job.JobStatus.Status;
 import org.mapfish.print.servlet.registry.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
