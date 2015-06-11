@@ -1,5 +1,290 @@
 <p>
-    The API is the web/http protocol allowing a client to interact with the print service via the web.</p>
-<p>
-    Each
+  The API is the web/HTTP protocol allowing a client to interact with the print service via the web.
 </p>
+<p>
+  <ul>
+    <li>List available print configurations</li>
+    <li>Get the capabilities for a print configuration</li>
+    <li>Create a print job</li>
+    <li>Get the status for a print job</li>
+    <li>Download the report for a print job</li>
+    <li>Cancel a print job</li>
+    <!-- <li>Create and get report</li> -->
+  </ul>
+</p>
+
+<h3 id="apps">List available print configurations</h3>
+<p>
+  Lists the identifiers of all print configurations that are available in the MapFish Print
+  instance.
+</p>
+<h4>URI</h4>
+<p>
+  <code>GET /apps.json</code>
+</p>
+
+<h4>Response Sample</h4>
+<p>
+  <pre>
+[<br>
+"simple",<br>
+"default"<br>
+]
+  </pre>
+</p>
+
+<h3 id="capabilities">Get the capabilities for a print configuration</h3>
+<p>
+  Return the capabilities for a specific print configuration.
+</p>
+<h4>URI</h4>
+<p>
+  <code>GET /:appId/capabilities.json</code>
+</p>
+<p>
+  <code>:appId</code> should be the identifier of one of the available print
+  configurations.
+</p>
+
+<h4>Response Sample</h4>
+<p>
+  Request URI: <code>GET /simple/capabilities.json</code>
+</p>
+<p>
+  <pre>
+{<br>
+    "app": "simple",<br>
+    "layouts": [<br>
+        {<br>
+            "name": "A4 Portrait",<br>
+            "attributes": [<br>
+                ...<br>
+            ]<br>
+        }<br>
+    ],<br>
+    "formats": [<br>
+        "bmp",<br>
+        "gif",<br>
+        "pdf",<br>
+        "png",<br>
+        "tif",<br>
+        "tiff"<br>
+    ]<br>
+}
+  </pre>
+</p>
+
+<h3 id="create">Create a print job</h3>
+<p>
+  Lists the identifiers of all print configurations that are available in the MapFish Print
+  instance.
+</p>
+<h4>URI</h4>
+<p>
+  <code>POST /:appId/report.:format</code>
+</p>
+<p>
+  <code>:appId</code> should be the identifier of one of the available print
+  configurations.
+</p>
+<p>
+  <code>:format</code> should be one of the formats supported by the specified
+  print configuration (e.g. <code>pdf</code> or <code>png</code>).
+</p>
+
+<h4>Request</h4>
+<p>
+  The POST body must be either a print request encoded as JSON, or a form-encoded
+  request where the field <code>spec</code> contains the print request encoded as
+  JSON.
+</p>
+<p>
+  The print request must contain the following properties:
+  <ul>
+    <li>
+      <code>layout</code>: One of the available layouts of the specified print
+      configuration.
+    </li>
+    <li>
+      <code>attributes</code>: A list of attributes that are required by the
+      specified layout.
+    </li>
+  </ul>
+</p>
+
+<h4>Response</h4>
+<p>
+  The JSON response contains the following properties:
+  <ul>
+    <li>
+      <code>ref</code>: A reference id that can be used to request the status
+      for the print job or to download the finished report.
+    </li>
+    <li>
+      <code>statusURL</code>: The URL to request the status.
+    </li>
+    <li>
+      <code>downloadURL</code>: The URL under which the report will be available
+      once the print job has finished.
+    </li>
+  </ul>
+</p>
+
+<h4>Request Sample</h4>
+<p>
+  Request URI: <code>POST /simple/report.pdf</code>
+</p>
+<p>
+  Request body
+  <pre>
+{<br>
+    "layout": "A4 Portrait",<br>
+    "attributes": {<br>
+        "map": {<br>
+            "center": [<br>
+                957352.8034848921,<br>
+                5936844.140278816<br>
+            ],<br>
+            "dpi": 72,<br>
+            "layers": [<br>
+              ...<br>
+            ],<br>
+            "projection": "EPSG:3857",<br>
+            "rotation": 0,<br>
+            "scale": 25000<br>
+        },<br>
+        "scalebar": {<br>
+            "projection": "EPSG:21781"<br>
+        },<br>
+        "title": "Sample Print"<br>
+    }<br>
+}
+  </pre>
+</p>
+
+<h4>Response Sample</h4>
+<p>
+  <pre>
+{<br>
+    "ref": "15179fee-618d-4356-8114-cfd8f146e273@3067ade6-0768-4fc6-b41d-40422d0cdb8b",<br>
+    "statusURL": "/print/status/15179fee-618d-4356-8114-cfd8f146e273.json",<br>
+    "downloadURL": "/print/report/15179fee-618d-4356-8114-cfd8f146e273"<br>
+}
+  </pre>
+</p>
+
+<h3 id="status">Get the status for a print job</h3>
+<p>
+  Returns the status for a print job.
+</p>
+<h4>URI</h4>
+<p>
+  <code>GET /status/:referenceId.json</code>
+</p>
+<p>
+  <code>:referenceId</code> should be the reference id of a print job, which
+  is returned when creating a job.
+</p>
+
+<h4>Response</h4>
+<p>
+  The JSON response contains the following properties:
+  <ul>
+    <li>
+      <code>done</code>: <code>true</code> if the print job has finished (either
+      successful or not). Otherwise <code>false</code>.
+    </li>
+    <li>
+      <code>status</code>: One of the following values:
+        <ul>
+          <li>
+            <code>waiting</code>: The job hasn't yet started processing and is
+            waiting in a queue.
+          </li>
+          <li><code>running</code>: The job is currently being processed.</li>
+          <li><code>finished</code>: The job has finished processing.</li>
+          <li><code>cancelled</code>: The job was cancelled.</li>
+          <li><code>error</code>: There was an error executing the job.</li>
+        </ul>
+    </li>
+    <li>
+      <code>elapsedTime</code>: The elapsed time in ms from the point the job started.
+      If the job is done, this is the duration it took to process the job.
+    </li>
+    <li>
+      <code>waitingTime</code>: A rough estimate for the time in ms the job still
+      has to wait in the queue until it starts processing. Only set when the status
+      is <code>waiting</code>.
+    </li>
+    <li>
+      <code>error</code>: An error message, if an error occurred.
+    </li>
+    <li>
+      <code>downloadURL</code>: The URL under which the report will be available
+      once the print job has finished.
+    </li>
+  </ul>
+</p>
+
+<h4>Response Sample</h4>
+<p>
+  Request URI: <code>GET /status/15179fee-618d-4356-8114-cfd8f146e273.json</code>
+</p>
+<p>
+  <pre>
+{<br>
+    "done": false,<br>
+    "status": "running",<br>
+    "elapsedTime": 507,<br>
+    "waitingTime": 0,<br>
+    "downloadURL": "/print/report/15179fee-618d-4356-8114-cfd8f146e273"<br>
+}
+  </pre>
+</p>
+
+<h3 id="download">Download the report for a print job</h3>
+<p>
+  Downloads a finished print job.
+</p>
+<h4>URI</h4>
+<p>
+  <code>GET /report/:referenceId</code>
+</p>
+<p>
+  <code>:referenceId</code> should be the reference id of a print job, which
+  is returned when creating a job.
+</p>
+
+<h4>Response</h4>
+<p>
+  Returns the report in the format that was requested when created the print job.
+</p>
+
+<h4>Request Sample</h4>
+<p>
+  Request URI: <code>GET /report/15179fee-618d-4356-8114-cfd8f146e273</code>
+</p>
+
+<h3 id="cancel">Cancel a print job</h3>
+<p>
+  Request the cancellation of a print job.
+</p>
+<h4>URI</h4>
+<p>
+  <code>DELETE /cancel/:referenceId</code>
+</p>
+<p>
+  <code>:referenceId</code> should be the reference id of a print job, which
+  is returned when creating a job.
+</p>
+
+<h4>Response</h4>
+<p>
+  Status: <code>200 OK</code>
+</p>
+
+<h4>Request Sample</h4>
+<p>
+  Request URI: <code>DELETE /cancel/15179fee-618d-4356-8114-cfd8f146e273</code>
+</p>
+

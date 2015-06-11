@@ -57,7 +57,7 @@ task copySite(type: Copy) {
         exclude "strings-en.json", "*.html", "*.js", "long-strings/*", "long-strings"
     }
     from (sourceSets.main.output.resourcesDir) {
-        include "*.html", "*.js"
+        include "*.html", "*.js", "*.css"
         exclude "long-strings/*", "long-strings"
         String repoUrl;
         if (version.endsWith("-SNAPSHOT")) {
