@@ -66,7 +66,7 @@ public class BasicRegistry implements Registry {
 
     @Override
     public final synchronized long incrementLong(final String key, final long amount) {
-        long newValue = opt(key, amount);
+        long newValue = opt(key, 0L) + amount;
         put(key, newValue);
         return newValue;
     }
