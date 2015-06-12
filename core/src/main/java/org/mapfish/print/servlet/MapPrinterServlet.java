@@ -53,7 +53,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.awt.GraphicsEnvironment;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -116,6 +118,10 @@ public class MapPrinterServlet extends BaseMapServlet {
      * The url path to create a print task and to get a finished print.
      */
     public static final String REPORT_URL = "/report";
+    /**
+     * The url path to create a print task and to get a finished print.
+     */
+    public static final String FONTS_URL = "/fonts";
 
     /* Registry keys */
 
@@ -751,6 +757,24 @@ public class MapPrinterServlet extends BaseMapServlet {
                 writer.close();
             }
         }
+    }
+
+    /**
+     * List the available fonts on the system.
+     *
+     * @return the list of available fonts in the system.
+     */
+    @RequestMapping(value = FONTS_URL)
+    @ResponseBody
+    public final String listAvailableFonts() {
+        GraphicsEnvironment e = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        StringBuilder availableFonts = new StringBuilder();
+        availableFonts.append("<html><body><h2>Available Fonts</h2><ul>");
+        for (String font : e.getAvailableFontFamilyNames()) {
+            availableFonts.append("<li>").append(font).append("</li>");
+        }
+        availableFonts.append("</ul></body></html>");
+        return availableFonts.toString();
     }
 
     /**
