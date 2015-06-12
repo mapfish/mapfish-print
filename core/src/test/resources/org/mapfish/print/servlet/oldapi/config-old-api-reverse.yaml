@@ -1,0 +1,33 @@
+throwErrorOnExtraParameters: true
+oldApi: !oldApi
+  layersFirstIsBaseLayer: false
+
+templates:
+  A4 Portrait: !template
+    reportTemplate: MapOnly_A4-old-api.jrxml
+    attributes:
+      geojsonMap: !map
+        width: 802
+        height: 210
+        maxDpi: 400
+        zoomLevels: !zoomLevels
+          scales: [5000, 10000, 25000, 50000, 100000, 500000, 1000000, 2000000, 5000000, 10000000]
+      entries: !table {}
+      legend1: !legend {}
+      legend2: !legend {}
+    processors:
+    - !reportBuilder # compile all reports in current directory
+        directory: '.'
+    - !createMap
+        inputMapper: {geojsonMap: map}
+        outputMapper: {mapSubReport: geojsonMap}
+    - !prepareTable
+      inputMapper: {entries: table}
+      outputMapper: {table: table}
+    - !prepareLegend
+      inputMapper: {legend1: legend}
+      outputPrefix: legend1
+    - !prepareLegend
+      inputMapper: {legend2: legend}
+      outputPrefix: legend2
+

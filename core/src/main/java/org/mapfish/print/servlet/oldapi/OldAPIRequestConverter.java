@@ -27,6 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.OldApiConfig;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.jasper.LegendProcessor;
@@ -153,7 +154,7 @@ public final class OldAPIRequestConverter {
             map.put("center", oldMapPage.getInternalObj().getJSONArray("center"));
             map.put("scale", oldMapPage.getDouble("scale"));
         }
-        setMapLayers(map, oldRequest);
+        setMapLayers(map, oldRequest, template.getConfiguration().getOldApi());
     }
 
     private static CreateMapProcessor getMapProcessor(final Template template) {
@@ -200,7 +201,7 @@ public final class OldAPIRequestConverter {
         return false;
     }
 
-    private static void setMapLayers(final JSONObject map, final PJsonObject oldRequest) throws JSONException {
+    private static void setMapLayers(final JSONObject map, final PJsonObject oldRequest, final OldApiConfig oldApi) throws JSONException {
         final JSONArray layers = new JSONArray();
         map.put("layers", layers);
 
@@ -209,9 +210,17 @@ public final class OldAPIRequestConverter {
         }
 
         PArray oldLayers = oldRequest.getArray("layers");
-        for (int i = oldLayers.size() - 1; i > -1; i--) {
-            PJsonObject oldLayer = (PJsonObject) oldLayers.getObject(i);
-            layers.put(OldAPILayerConverter.convert(oldLayer));
+
+        if (oldApi.isLayersFirstIsBaseLayer()) {
+            for (int i = oldLayers.size() - 1; i > -1; i--) {
+                PJsonObject oldLayer = (PJsonObject) oldLayers.getObject(i);
+                layers.put(OldAPILayerConverter.convert(oldLayer));
+            }
+        } else {
+            for (int i = 0; i < oldLayers.size(); i++) {
+                PJsonObject oldLayer = (PJsonObject) oldLayers.getObject(i);
+                layers.put(OldAPILayerConverter.convert(oldLayer));
+            }
         }
     }
 
