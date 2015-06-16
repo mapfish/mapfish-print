@@ -302,7 +302,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     @Test
     public void testListFonts() throws Exception {
         String fonts = servlet.listAvailableFonts();
-        assertTrue(fonts, fonts.split("<li>").length > 0);
+        JSONArray fontsJson = new JSONArray(fonts);
+        assertTrue(fonts, fontsJson.length() > 0);
     }
 
     private String doCreateAndPollAndGetReport(Function<MockHttpServletRequest, MockHttpServletResponse> createReport, boolean checkJsonp)

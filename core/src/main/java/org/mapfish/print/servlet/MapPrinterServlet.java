@@ -24,6 +24,7 @@ import com.google.common.base.Strings;
 import com.google.common.io.Files;
 
 import org.jfree.util.Log;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
@@ -762,18 +763,16 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * List the available fonts on the system.
      *
-     * @return the list of available fonts in the system.
+     * @return the list of available fonts in the system.  The result is a JSON Array that just lists the font family names available.
      */
     @RequestMapping(value = FONTS_URL)
     @ResponseBody
     public final String listAvailableFonts() {
         GraphicsEnvironment e = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        StringBuilder availableFonts = new StringBuilder();
-        availableFonts.append("<html><body><h2>Available Fonts</h2><ul>");
+        JSONArray availableFonts = new JSONArray();
         for (String font : e.getAvailableFontFamilyNames()) {
-            availableFonts.append("<li>").append(font).append("</li>");
+            availableFonts.put(font);
         }
-        availableFonts.append("</ul></body></html>");
         return availableFonts.toString();
     }
 
