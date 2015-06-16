@@ -31,5 +31,6 @@
     <bean id="!proxy" class="org.mapfish.print.http.HttpProxy" scope="prototype" />
     <bean id="!credential" class="org.mapfish.print.http.HttpCredential" scope="prototype" />
     <bean id="!certificateStore" class="org.mapfish.print.http.CertificateStore" scope="prototype" />
+    <bean id="!oldApi" class="org.mapfish.print.config.OldApiConfig" scope="prototype" />
 
 </beans>

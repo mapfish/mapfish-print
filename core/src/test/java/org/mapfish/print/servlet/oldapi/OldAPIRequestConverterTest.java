@@ -210,6 +210,25 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertEquals("tiger:poly_landmarks", wmsLayer2.getString(1));
     }
 
+    @Test
+    public void testReverseLayerOrder() throws IOException, JSONException, NoSuchAppException, URISyntaxException {
+        setUpConfigFiles();
+        Configuration configuration = printerFactory.create("reverseLayers").getConfiguration();
+        final PJsonObject v2ApiRequest = loadRequestDataAsJson("requestData-old-api-all.json");
+        JSONObject request = OldAPIRequestConverter.convert(v2ApiRequest, configuration).getInternalObj();
+
+        assertTrue(request.has("attributes"));
+        JSONObject attributes = request.getJSONObject("attributes");
+
+        JSONArray layers = attributes.getJSONObject("geojsonMap").getJSONArray("layers");
+
+        assertEquals("geojson", layers.getJSONObject(0).getString("type"));
+        assertEquals("geojson", layers.getJSONObject(1).getString("type"));
+        assertEquals("wms", layers.getJSONObject(2).getString("type"));
+        assertEquals("osm", layers.getJSONObject(3).getString("type"));
+        assertEquals(4, layers.length());
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testConvertInvalidTemplate() throws IOException, JSONException, NoSuchAppException, URISyntaxException {
         setUpConfigFiles();
@@ -222,6 +241,7 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
     private void setUpConfigFiles() throws URISyntaxException {
         final HashMap<String, String> configFiles = Maps.newHashMap();
         configFiles.put("default", getFile(OldAPIMapPrinterServletTest.class, "config-old-api.yaml").getAbsolutePath());
+        configFiles.put("reverseLayers", getFile(OldAPIMapPrinterServletTest.class, "config-old-api-reverse.yaml").getAbsolutePath());
         configFiles.put("wrong-layout", getFile(MapPrinterServletTest.class, "config.yaml").getAbsolutePath());
         printerFactory.setConfigurationFiles(configFiles);
     }

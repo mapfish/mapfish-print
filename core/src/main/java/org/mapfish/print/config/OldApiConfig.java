@@ -1,0 +1,32 @@
+package org.mapfish.print.config;
+
+import java.util.List;
+
+/**
+ * Configuration options for how requests to the old api are handled.
+ *
+ * @author Jesse on 6/12/2015.
+ */
+public final class OldApiConfig implements ConfigurationObject {
+    private boolean layersFirstIsBaseLayer = true;
+
+    /**
+     * If true then the first layer in the layers array in the JSON request is the bottom layer of the map.
+     */
+    public boolean isLayersFirstIsBaseLayer() {
+        return this.layersFirstIsBaseLayer;
+    }
+
+    /**
+     * If true then the first layer in the layers array in the JSON request is the bottom layer of the map.
+     * @param layersFirstIsBaseLayer If true then the first layer in the layers array in the JSON request is the bottom layer of the map.
+     */
+    public void setLayersFirstIsBaseLayer(final boolean layersFirstIsBaseLayer) {
+        this.layersFirstIsBaseLayer = layersFirstIsBaseLayer;
+    }
+
+    @Override
+    public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
+        // nothing to do
+    }
+}
