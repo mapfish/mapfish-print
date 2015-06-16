@@ -24,6 +24,7 @@ import com.google.common.base.Strings;
 import com.google.common.io.Files;
 
 import org.jfree.util.Log;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
@@ -53,7 +54,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.awt.GraphicsEnvironment;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -116,6 +119,10 @@ public class MapPrinterServlet extends BaseMapServlet {
      * The url path to create a print task and to get a finished print.
      */
     public static final String REPORT_URL = "/report";
+    /**
+     * The url path to create a print task and to get a finished print.
+     */
+    public static final String FONTS_URL = "/fonts";
 
     /* Registry keys */
 
@@ -751,6 +758,22 @@ public class MapPrinterServlet extends BaseMapServlet {
                 writer.close();
             }
         }
+    }
+
+    /**
+     * List the available fonts on the system.
+     *
+     * @return the list of available fonts in the system.  The result is a JSON Array that just lists the font family names available.
+     */
+    @RequestMapping(value = FONTS_URL)
+    @ResponseBody
+    public final String listAvailableFonts() {
+        GraphicsEnvironment e = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        JSONArray availableFonts = new JSONArray();
+        for (String font : e.getAvailableFontFamilyNames()) {
+            availableFonts.put(font);
+        }
+        return availableFonts.toString();
     }
 
     /**

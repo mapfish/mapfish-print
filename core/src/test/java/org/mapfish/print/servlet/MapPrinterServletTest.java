@@ -299,6 +299,13 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertArrayEquals(new Object[]{"CookieValue", "CookieValue2"}, request.getHeaders().get("Cookies").toArray());
     }
 
+    @Test
+    public void testListFonts() throws Exception {
+        String fonts = servlet.listAvailableFonts();
+        JSONArray fontsJson = new JSONArray(fonts);
+        assertTrue(fonts, fontsJson.length() > 0);
+    }
+
     private String doCreateAndPollAndGetReport(Function<MockHttpServletRequest, MockHttpServletResponse> createReport, boolean checkJsonp)
             throws URISyntaxException, IOException, InterruptedException, ServletException {
         setUpConfigFiles();
