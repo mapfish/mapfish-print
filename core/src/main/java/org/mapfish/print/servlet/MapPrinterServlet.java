@@ -299,6 +299,22 @@ public class MapPrinterServlet extends BaseMapServlet {
 
     /**
      * Cancel a job.
+     *
+     * Even if a job was already finished, subsequent status requests will
+     * return that the job was canceled.
+     *
+     * @param referenceId    the job reference
+     * @param statusResponse the response object
+     */
+    @RequestMapping(value = "/{appId}" + CANCEL_URL + "/{referenceId:\\S+}", method = RequestMethod.DELETE)
+    public final void cancelSpecificAppId(
+            @PathVariable final String referenceId,
+            final HttpServletResponse statusResponse) {
+        cancel(referenceId, statusResponse);
+    }
+
+    /**
+     * Cancel a job.
      * 
      * Even if a job was already finished, subsequent status requests will
      * return that the job was canceled.

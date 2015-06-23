@@ -556,6 +556,36 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     }
 
     @Test(timeout = 60000)
+    public void testCancelSpecificAppId() throws Exception {
+        setUpConfigFiles();
+
+        final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
+        final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+
+        String requestData = loadRequestDataAsString();
+        servlet.createReport("png", requestData, servletCreateRequest, servletCreateResponse);
+        final PJsonObject createResponseJson = parseJSONObjectFromString(servletCreateResponse.getContentAsString());
+        assertTrue(createResponseJson.has(MapPrinterServlet.JSON_PRINT_JOB_REF));
+        assertEquals(HttpStatus.OK.value(), servletCreateResponse.getStatus());
+
+        String ref = createResponseJson.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
+
+        // cancel directly after starting the print
+        MockHttpServletResponse servletCancelResponse = new MockHttpServletResponse();
+        servlet.cancelSpecificAppId(ref, servletCancelResponse);
+        assertEquals(HttpStatus.OK.value(), servletCancelResponse.getStatus());
+
+        final MockHttpServletRequest statusRequest = new MockHttpServletRequest();
+        final MockHttpServletResponse statusResponse = new MockHttpServletResponse();
+        servlet.getStatus(ref, "", statusRequest, statusResponse);
+
+        final PJsonObject statusJson = parseJSONObjectFromString(statusResponse.getContentAsString());
+        assertEquals("true", statusJson.getString(MapPrinterServlet.JSON_DONE));
+        assertEquals("task cancelled", statusJson.getString(MapPrinterServlet.JSON_ERROR));
+        assertEquals("cancelled", statusJson.getString(MapPrinterServlet.JSON_STATUS));
+    }
+
+    @Test(timeout = 60000)
     @DirtiesContext
     public void testCreateReport_Timeout() throws Exception {
         jobManager.setTimeout(1L);
