@@ -566,6 +566,13 @@ public class Configuration {
      * </code>
      * </pre>
      *
+     * or
+     *
+     * <pre><code>
+     *     jdbcDrivers:
+     *       - org.postgresql.Driver
+     * </code></pre>
+     *
      * @param jdbcDrivers the set of JDBC drivers to load before performing a print (this ensures they are
      *                    registered with the JVM)
      */
