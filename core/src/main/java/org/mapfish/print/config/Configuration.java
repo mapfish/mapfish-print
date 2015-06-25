@@ -576,7 +576,7 @@ public class Configuration {
      * @param jdbcDrivers the set of JDBC drivers to load before performing a print (this ensures they are
      *                    registered with the JVM)
      */
-    public void setJdbcDrivers(Set<String> jdbcDrivers) {
+    public final void setJdbcDrivers(final Set<String> jdbcDrivers) {
         this.jdbcDrivers = jdbcDrivers;
     }
 
