@@ -21,6 +21,7 @@ package org.mapfish.print.config;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.LineSymbolizer;
@@ -38,6 +39,7 @@ import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.junit.After;
 import org.junit.Test;
+import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.Constants;
 import org.mockito.Mockito;
 import org.springframework.security.access.AccessDeniedException;
@@ -49,6 +51,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.StringWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
@@ -348,6 +351,29 @@ public class ConfigurationTest {
         assertTrue(config.renderAsSvg(null));
         assertFalse(config.renderAsSvg(false));
         assertTrue(config.renderAsSvg(true));
+    }
+
+    @Test
+    public void testJdbcDrivers() throws Exception {
+        final Configuration config = new Configuration();
+        Map<String, Template> templates = new HashMap<String, Template>();
+        config.setTemplates(templates);
+        config.setConfigurationFile(AbstractMapfishSpringTest.getFile(ConfigurationTest.class, "/org/mapfish/print/config/config-test-application-context.xml"));
+        List<Throwable> errors = config.validate();
+
+        assertEquals(1, errors.size()); // no templates error
+
+        config.setJdbcDrivers(Sets.newHashSet("non.existant.driver.Driver"));
+        errors = config.validate();
+
+        assertEquals(2, errors.size());
+
+        config.setJdbcDrivers(Sets.newHashSet("org.hsqldb.jdbc.JDBCDriver"));
+        errors = config.validate();
+
+        assertEquals(1, errors.size());
+
+
     }
 
     private void assertStyleType(Class<?> expectedSymbolizerType, Style style) {
