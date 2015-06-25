@@ -23,6 +23,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
@@ -67,6 +68,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -116,6 +118,7 @@ public class Configuration {
     private OldApiConfig oldApi = new OldApiConfig();
     private String outputFilename;
     private boolean defaultToSvg = false;
+    private Set<String> jdbcDrivers = Sets.newHashSet();
 
     @Autowired
     private StyleParser styleParser;
@@ -487,6 +490,19 @@ public class Configuration {
         List<Throwable> validationErrors = Lists.newArrayList();
         this.accessAssertion.validate(validationErrors, this);
 
+        for (String jdbcDriver : this.jdbcDrivers) {
+            try {
+                Class.forName(jdbcDriver);
+            } catch (ClassNotFoundException e) {
+                try {
+                    Configuration.class.getClassLoader().loadClass(jdbcDriver);
+                } catch (ClassNotFoundException e1) {
+                    validationErrors.add(new ConfigurationException("Unable to load JDBC driver: " + jdbcDriver +
+                                                                    " ensure that the web application has the jar on its classpath"));
+                }
+            }
+        }
+
         if (this.configurationFile == null) {
             validationErrors.add(new ConfigurationException("Configuration file is field on configuration object is null"));
         }
@@ -534,6 +550,35 @@ public class Configuration {
      */
     public final void setFileLoaderManager(final ConfigFileLoaderManager fileLoaderManager) {
         this.fileLoaderManager = fileLoaderManager;
+    }
+
+    /**
+     * Set the JDBC drivers that are required to connect to the databases in the configuration.  JDBC drivers are needed (for example)
+     * when database sources are used in templates.  For example if in one of the template you have:
+     *
+     * <pre><code>
+     *     jdbcUrl: "jdbc:postgresql://localhost:5432/morges_dpfe"
+     * </code></pre>
+     *
+     * then you need to add:
+     *
+     * <pre><code>
+     *     jdbcDrivers: [org.postgresql.Driver]
+     * </code>
+     * </pre>
+     *
+     * or
+     *
+     * <pre><code>
+     *     jdbcDrivers:
+     *       - org.postgresql.Driver
+     * </code></pre>
+     *
+     * @param jdbcDrivers the set of JDBC drivers to load before performing a print (this ensures they are
+     *                    registered with the JVM)
+     */
+    public final void setJdbcDrivers(final Set<String> jdbcDrivers) {
+        this.jdbcDrivers = jdbcDrivers;
     }
 
     /**
