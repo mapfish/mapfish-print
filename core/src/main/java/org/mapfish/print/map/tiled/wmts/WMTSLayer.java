@@ -30,6 +30,8 @@ import org.mapfish.print.map.Scale;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.tiled.AbstractTiledLayer;
 import org.mapfish.print.map.tiled.TileCacheInformation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 
@@ -38,7 +40,9 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+
 import javax.annotation.Nonnull;
+
 
 /**
  * Class for loading data from a WMTS.
@@ -46,6 +50,7 @@ import javax.annotation.Nonnull;
  * @author Jesse on 4/3/14.
  */
 public class WMTSLayer extends AbstractTiledLayer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(WMTSLayer.class);
     private final WMTSLayerParam param;
 
     /**
@@ -140,7 +145,12 @@ public class WMTSLayer extends AbstractTiledLayer {
             queryParams.put("TILEMATRIX", this.matrix.identifier);
             queryParams.put("TILEROW", String.valueOf(row));
             queryParams.put("TILECOL", String.valueOf(col));
-            queryParams.put("FORMAT", "image/" + layerParam.imageFormat);
+            if (layerParam.imageFormat.indexOf('/') > 0) {
+                queryParams.put("FORMAT", layerParam.imageFormat);
+            } else {
+                LOGGER.warn("The format should be a mime type");
+                queryParams.put("FORMAT", "image/" + layerParam.imageFormat);
+            }
             if (layerParam.dimensions != null) {
                 for (int i = 0; i < layerParam.dimensions.length; i++) {
                     String d = layerParam.dimensions[i];

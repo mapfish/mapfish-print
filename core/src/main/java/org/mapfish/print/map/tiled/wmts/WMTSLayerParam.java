@@ -104,6 +104,13 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
      */
     @HasDefaultValue
     public PJsonObject dimensionParams;
+
+    /**
+     * The format of the image. for example image/png, image/jpeg, etc...
+     */
+    @HasDefaultValue
+    public String imageFormat = "image/png";
+
     /**
      * Reference/Identifier to a tileMatrixSet and limits.
      */

@@ -27,7 +27,7 @@ templates:
                 TRANSPARENT: "true"
             - type: "OSM"
               baseURL: "http://localhost:9876/e2egeoserver/www/osm"
-              imageFormat: "png"
+              imageExtension: "png"
     processors: &PROCESSORS
       - !restrictUris
         matchers:

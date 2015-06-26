@@ -20,11 +20,15 @@
 package org.mapfish.print.map.image.wms;
 
 import com.vividsolutions.jts.util.Assert;
+
 import org.mapfish.print.map.tiled.AbstractWMXLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URISyntaxException;
 import java.util.Arrays;
+
 
 /**
  * Layer parameters for WMS layer.
@@ -32,6 +36,8 @@ import java.util.Arrays;
  * @author Jesse on 4/10/2014.
  */
 public class WmsLayerParam extends AbstractWMXLayerParams {
+    private static final Logger LOGGER = LoggerFactory.getLogger(WmsLayerParam.class);
+
     /**
      * The base URL for the WMS.  Used for making WMS requests.
      */
@@ -71,6 +77,13 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
     @HasDefaultValue
     public ServerType serverType;
 
+    /**
+     * The format of the image. for example image/png, image/jpeg, etc...
+     */
+    @HasDefaultValue
+    public String imageFormat = "image/png";
+
+
     @Override
     public final String getBaseUrl() {
         return this.baseURL;
@@ -96,7 +109,8 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
                     "If styles are defined then there must be one for each layer.  Number of layers: " + this.layers.length + "\nStyles: "
                     + Arrays.toString(this.styles));
         }
-        if (!this.imageFormat.startsWith("image/")) {
+        if (this.imageFormat.indexOf('/') < 0) {
+            LOGGER.warn("The format should be a mime type");
             this.imageFormat = "image/" + this.imageFormat;
         }
     }
