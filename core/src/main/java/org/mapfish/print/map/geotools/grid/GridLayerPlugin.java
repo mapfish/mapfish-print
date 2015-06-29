@@ -232,9 +232,9 @@ public final class GridLayerPlugin extends AbstractFeatureSourceLayerPlugin<Grid
             featureBuilder.add(-(mapContext.getMapSize().width / 2) + indentAmount); // x displacement
             featureBuilder.add(0); // y displacement
         } else {
-            featureBuilder.add(0); // rotation
-            featureBuilder.add(0); // x displacement
-            featureBuilder.add(-(mapContext.getMapSize().height / 2) + indentAmount); // y1displacement
+            featureBuilder.add(270); // rotation
+            featureBuilder.add(-(mapContext.getMapSize().height / 2) + indentAmount); // x displacement
+            featureBuilder.add(0); // y1displacement
         }
 
         return featureBuilder.buildFeature("grid." + (ordinate == 1 ? 'x' : 'y') + "." + i);
