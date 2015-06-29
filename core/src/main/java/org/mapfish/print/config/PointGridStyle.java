@@ -1,7 +1,7 @@
 package org.mapfish.print.config;
 
 import org.geotools.styling.Graphic;
-import org.geotools.styling.SLD;
+import org.geotools.styling.Mark;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.Symbolizer;
@@ -21,17 +21,18 @@ public final class PointGridStyle {
     }
 
     /**
-     *
-     * @return
+     * Create the Grid Point style.
      */
     public static Style get() {
         StyleBuilder builder = new StyleBuilder();
 
+        final Color textColor = Color.darkGray;
+        final Color pointColor = Color.gray;
+        Mark cross = builder.createMark("shape://plus", pointColor, pointColor, 1);
+        Graphic graphic = builder.createGraphic(null, cross, null);
+
         //CSOFF:MagicNumber
-        final Color textColor = new Color(50, 50, 255);
-        final Color pointColor = SLD.toColor("dddddd");
-        Graphic graphic = builder.createGraphic(null, builder.createMark("cross", pointColor, 1), null);
-        graphic.setSize(builder.literalExpression(12));
+        graphic.setSize(builder.literalExpression(10));
         //CSON:MagicNumber
 
         Symbolizer pointSymbolizer = builder.createPointSymbolizer(graphic);

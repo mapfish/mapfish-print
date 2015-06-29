@@ -1,5 +1,6 @@
 package org.mapfish.print.config;
 
+import org.geotools.styling.AnchorPoint;
 import org.geotools.styling.Displacement;
 import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.PointPlacement;
@@ -49,11 +50,12 @@ public final class LineGridStyle {
         Expression xDisplacement = builder.attributeExpression(Constants.Style.Grid.ATT_X_DISPLACEMENT);
         Expression yDisplacement = builder.attributeExpression(Constants.Style.Grid.ATT_Y_DISPLACEMENT);
         Expression xAnchor = builder.attributeExpression(Constants.Style.Grid.ATT_ANCHOR_X);
-        Expression yAnchor = builder.literalExpression(0);
+        Expression yAnchor = builder.literalExpression(0.5);
         Displacement displacement = builder.createDisplacement(xDisplacement, yDisplacement);
         Expression rotation = builder.attributeExpression(Constants.Style.Grid.ATT_ROTATION);
 
-        PointPlacement text1Placement = builder.createPointPlacement(builder.createAnchorPoint(xAnchor, yAnchor), displacement, rotation);
+        AnchorPoint anchorPoint = builder.createAnchorPoint(xAnchor, yAnchor);
+        PointPlacement text1Placement = builder.createPointPlacement(anchorPoint, displacement, rotation);
         final TextSymbolizer text1 = builder.createTextSymbolizer();
         text1.setFill(builder.createFill(color));
         text1.setLabelPlacement(text1Placement);

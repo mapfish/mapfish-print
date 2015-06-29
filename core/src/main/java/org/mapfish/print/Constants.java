@@ -101,7 +101,7 @@ public interface Constants {
              */
             String ATT_Y_DISPLACEMENT = "yDisplacement";
             /**
-             * Name of the grid feature attribute containing the y-displacement of one of the labels.
+             * Name of the grid feature attribute containing the x-anchor of one of the labels.
              */
             String ATT_ANCHOR_X = "xAnchor";
             /**

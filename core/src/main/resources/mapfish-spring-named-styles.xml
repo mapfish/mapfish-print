@@ -24,5 +24,5 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
   <bean id="grid" class="org.mapfish.print.config.LineGridStyle" factory-method="get" />
-  <bean id="pointGrid" class="org.mapfish.print.config.PointGridStyle" factory-method="get" />
+  <bean id="grid_points" class="org.mapfish.print.config.PointGridStyle" factory-method="get" />
 </beans>
