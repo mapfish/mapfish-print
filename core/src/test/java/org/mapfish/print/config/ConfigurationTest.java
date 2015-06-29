@@ -169,14 +169,14 @@ public class ConfigurationTest {
         assertStyleType(Symbolizer.class, configuration.getDefaultStyle("geometry"));
         assertStyleType(Symbolizer.class, configuration.getDefaultStyle("geometryCollection"));
         assertStyleType(Symbolizer.class, configuration.getDefaultStyle("MultiGeometry"));
-        assertStyleType(Symbolizer.class, configuration.getDefaultStyle(Constants.Style.Grid.NAME));
+        assertStyleType(Symbolizer.class, configuration.getDefaultStyle(Constants.Style.Grid.NAME_LINES));
         assertStyleType(Symbolizer.class, configuration.getDefaultStyle(Constants.Style.Raster.NAME));
     }
 
     @Test
     public void testGridStyle() throws Exception {
         final Configuration configuration = new Configuration();
-        final Style gridStyle = configuration.getDefaultStyle(Constants.Style.Grid.NAME);
+        final Style gridStyle = configuration.getDefaultStyle(Constants.Style.Grid.NAME_LINES);
         final AtomicInteger foundLineSymb = new AtomicInteger(0);
         final AtomicInteger foundTextSymb = new AtomicInteger(0);
 

@@ -34,6 +34,12 @@ import java.util.Arrays;
  */
 public final class GridParam extends AbstractLayerParams {
     private static final int DEFAULT_POINTS_IN_GRID_LINE = 10000;
+
+    /**
+     * The type of grid to render.
+     */
+    @HasDefaultValue
+    public GridType gridType = GridType.LINES;
     /**
      * The x,y spacing between grid lines.
      * <p/>
@@ -116,7 +122,7 @@ public final class GridParam extends AbstractLayerParams {
                 Arrays.toString(this.numberOfLines));
         Assert.isTrue(this.pointsInLine > 2, "There must be at least 2 points in a line.  There were: " + this.pointsInLine);
         if (this.style == null) {
-            this.style = Constants.Style.Grid.NAME;
+            this.style = Constants.Style.Grid.NAME_LINES;
         }
     }
 }

@@ -83,7 +83,7 @@ public interface Constants {
             /**
              * The name of the style for the default grid style.
              */
-            String NAME = "grid";
+            String NAME_LINES = "grid";
             /**
              * Name of the grid feature attribute containing the rotation of the label.
              */

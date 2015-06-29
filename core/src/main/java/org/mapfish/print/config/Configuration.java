@@ -365,7 +365,7 @@ public class Configuration {
                 symbolizer = builder.createPolygonSymbolizer(Color.lightGray, Color.black, 2);
             } else if (normalizedGeomName.equalsIgnoreCase(Constants.Style.Raster.NAME)) {
                 symbolizer = builder.createRasterSymbolizer();
-            } else if (normalizedGeomName.equalsIgnoreCase(Constants.Style.Grid.NAME)) {
+            } else if (normalizedGeomName.equalsIgnoreCase(Constants.Style.Grid.NAME_LINES)) {
                 return createGridStyle(builder);
             } else if (normalizedGeomName.startsWith(Constants.Style.OverviewMap.NAME)) {
                 symbolizer = createMapOverviewStyle(normalizedGeomName, builder);
