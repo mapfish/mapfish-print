@@ -29,4 +29,5 @@
     <bean id="osmLayerParser" class="org.mapfish.print.map.tiled.osm.OsmLayerParserPlugin" />
     <bean id="gridLayerParser" class="org.mapfish.print.map.geotools.grid.GridLayerPlugin" />
     <bean id="featureLayerParser" class="org.mapfish.print.map.geotools.FeatureLayer$Plugin" />
+    <bean id="xyzLayerParser" class="org.mapfish.print.map.tiled.xyz.XyzLayerParserPlugin" />
 </beans>
