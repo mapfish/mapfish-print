@@ -32,24 +32,26 @@ import java.util.Map;
  */
 public final class OldAPILayerConverter {
 
-    private OldAPILayerConverter() { }
-    
+    private OldAPILayerConverter() {
+    }
+
     private static Map<String, LayerConverter> converters = new HashMap<String, LayerConverter>();
+
     static {
         converters.put("osm", new OSMConverter());
         converters.put("wms", new WMSConverter());
         converters.put("vector", new GeoJsonConverter());
     }
-    
+
     /**
      * Convert a layer definition of the old API.
-     * 
+     *
      * @param oldLayer the old layer definition
      * @return the converted layer definition
      */
     public static JSONObject convert(final PJsonObject oldLayer) throws JSONException {
         final String layerType = oldLayer.optString("type", "").toLowerCase();
-        
+
         if (!converters.containsKey(layerType)) {
             throw new UnsupportedOperationException("Layer type '" + layerType + "' is "
                     + "not supported by the legacy API.");
@@ -60,23 +62,23 @@ public final class OldAPILayerConverter {
     private interface LayerConverter {
         JSONObject convert(final PJsonObject oldLayer) throws JSONException;
     }
-    
+
     private abstract static class AbstractLayerConverter implements LayerConverter {
 
         @Override
         public JSONObject convert(final PJsonObject oldLayer) throws JSONException {
             return new JSONObject();
         }
-        
+
     }
-    
+
     private static class OSMConverter extends AbstractLayerConverter {
 
         @Override
         public final JSONObject convert(final PJsonObject oldLayer) throws JSONException {
             final JSONObject layer = super.convert(oldLayer);
             layer.put("type", "osm");
-            
+
             if (oldLayer.has("baseURL")) {
                 layer.put("baseURL", oldLayer.getString("baseURL"));
             }
@@ -95,18 +97,24 @@ public final class OldAPILayerConverter {
             if (oldLayer.has("resolutions")) {
                 layer.put("resolutions", oldLayer.getInternalObj().getJSONArray("resolutions"));
             }
-            
+
             return layer;
         }
     }
-    
+
     private static class WMSConverter extends AbstractLayerConverter {
 
         @Override
         public final JSONObject convert(final PJsonObject oldLayer) throws JSONException {
             final JSONObject layer = super.convert(oldLayer);
             layer.put("type", "wms");
-            
+            if (oldLayer.has("isTiled") && oldLayer.getInternalObj().getBoolean("isTiled")) {
+                layer.put("type", "tiledwms");
+                if (oldLayer.has("tileSize")) {
+                    layer.put("tileSize", oldLayer.getInternalObj().getJSONArray("tileSize"));
+                }
+            }
+
             if (oldLayer.has("baseURL")) {
                 layer.put("baseURL", oldLayer.getString("baseURL"));
             }
@@ -116,6 +124,7 @@ public final class OldAPILayerConverter {
             if (oldLayer.has("layers")) {
                 layer.put("layers", reverse(oldLayer.getInternalObj().getJSONArray("layers")));
             }
+
             if (oldLayer.has("format")) {
                 layer.put("imageFormat", oldLayer.getString("format"));
             }
@@ -136,7 +145,7 @@ public final class OldAPILayerConverter {
             if (oldLayer.has("useNativeAngle")) {
                 layer.put("useNativeAngle", oldLayer.getBool("useNativeAngle"));
             }
-            
+
             return layer;
         }
 
@@ -148,14 +157,14 @@ public final class OldAPILayerConverter {
             return newApiLayers;
         }
     }
-    
+
     private static class GeoJsonConverter extends AbstractLayerConverter {
 
         @Override
         public final JSONObject convert(final PJsonObject oldLayer) throws JSONException {
             final JSONObject layer = super.convert(oldLayer);
             layer.put("type", "geojson");
-            
+
             if (oldLayer.has("geoJson")) {
                 // the GeoJSON can either be given directly inline, or as URL to a file 
                 try {
@@ -176,7 +185,7 @@ public final class OldAPILayerConverter {
                 layer.put("style", styles);
                 oldLayer.getInternalObj().remove("styles");
             }
-            
+
             return layer;
         }
     }

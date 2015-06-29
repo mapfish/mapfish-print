@@ -1,0 +1,29 @@
+{
+  "units": "m",
+  "srs": "EPSG:900913",
+  "layout": "A4 Portrait",
+  "dpi": 72,
+  "outputFormat" : "pdf",
+  "layers":[
+    {
+      "baseURL":"http://localhost:9876/e2egeoserver/wms",
+      "opacity" : 1,
+      "type":"WMS",
+      "layers": [
+        "tiger:poly_landmarks",
+        "nurc:Img_Sample"
+      ],
+      "format": "image/png",
+      "isTiled": true,
+      "tileSize" : [256, 256],
+      "userNativeAngle": true
+    }
+  ],
+  "pages": [
+    {
+      "center": [-8239000,4969880, -8235548,4973782],
+      "rotation": 0,
+      "scale": 10000
+    }
+  ]
+}
