@@ -32,24 +32,27 @@ import java.util.Map;
  */
 public final class OldAPILayerConverter {
 
-    private OldAPILayerConverter() { }
-    
+    private OldAPILayerConverter() {
+    }
+
     private static Map<String, LayerConverter> converters = new HashMap<String, LayerConverter>();
+
     static {
         converters.put("osm", new OSMConverter());
         converters.put("wms", new WMSConverter());
+        converters.put("wmts", new WMSTConverter());
         converters.put("vector", new GeoJsonConverter());
     }
-    
+
     /**
      * Convert a layer definition of the old API.
-     * 
+     *
      * @param oldLayer the old layer definition
      * @return the converted layer definition
      */
     public static JSONObject convert(final PJsonObject oldLayer) throws JSONException {
         final String layerType = oldLayer.optString("type", "").toLowerCase();
-        
+
         if (!converters.containsKey(layerType)) {
             throw new UnsupportedOperationException("Layer type '" + layerType + "' is "
                     + "not supported by the legacy API.");
@@ -60,23 +63,23 @@ public final class OldAPILayerConverter {
     private interface LayerConverter {
         JSONObject convert(final PJsonObject oldLayer) throws JSONException;
     }
-    
+
     private abstract static class AbstractLayerConverter implements LayerConverter {
 
         @Override
         public JSONObject convert(final PJsonObject oldLayer) throws JSONException {
             return new JSONObject();
         }
-        
+
     }
-    
+
     private static class OSMConverter extends AbstractLayerConverter {
 
         @Override
         public final JSONObject convert(final PJsonObject oldLayer) throws JSONException {
             final JSONObject layer = super.convert(oldLayer);
             layer.put("type", "osm");
-            
+
             if (oldLayer.has("baseURL")) {
                 layer.put("baseURL", oldLayer.getString("baseURL"));
             }
@@ -95,18 +98,18 @@ public final class OldAPILayerConverter {
             if (oldLayer.has("resolutions")) {
                 layer.put("resolutions", oldLayer.getInternalObj().getJSONArray("resolutions"));
             }
-            
+
             return layer;
         }
     }
-    
+
     private static class WMSConverter extends AbstractLayerConverter {
 
         @Override
         public final JSONObject convert(final PJsonObject oldLayer) throws JSONException {
             final JSONObject layer = super.convert(oldLayer);
             layer.put("type", "wms");
-            
+
             if (oldLayer.has("baseURL")) {
                 layer.put("baseURL", oldLayer.getString("baseURL"));
             }
@@ -136,7 +139,7 @@ public final class OldAPILayerConverter {
             if (oldLayer.has("useNativeAngle")) {
                 layer.put("useNativeAngle", oldLayer.getBool("useNativeAngle"));
             }
-            
+
             return layer;
         }
 
@@ -148,14 +151,14 @@ public final class OldAPILayerConverter {
             return newApiLayers;
         }
     }
-    
+
     private static class GeoJsonConverter extends AbstractLayerConverter {
 
         @Override
         public final JSONObject convert(final PJsonObject oldLayer) throws JSONException {
             final JSONObject layer = super.convert(oldLayer);
             layer.put("type", "geojson");
-            
+
             if (oldLayer.has("geoJson")) {
                 // the GeoJSON can either be given directly inline, or as URL to a file 
                 try {
@@ -176,8 +179,113 @@ public final class OldAPILayerConverter {
                 layer.put("style", styles);
                 oldLayer.getInternalObj().remove("styles");
             }
-            
+
             return layer;
+        }
+    }
+
+    private static class WMSTConverter extends AbstractLayerConverter {
+
+        @Override
+        public final JSONObject convert(final PJsonObject oldLayer) throws JSONException {
+            final JSONObject layer = super.convert(oldLayer);
+            layer.put("type", "wmts");
+
+            if (oldLayer.has("baseURL")) {
+                layer.put("baseURL", oldLayer.getString("baseURL"));
+            }
+            if (oldLayer.has("opacity")) {
+                layer.put("opacity", oldLayer.getDouble("opacity"));
+            }
+            if (oldLayer.has("layer")) {
+                layer.put("layer", oldLayer.getString("layer"));
+            }
+
+            if (oldLayer.has("format")) {
+                String format = oldLayer.getString("format");
+                if (format.toLowerCase().startsWith("image/")) {
+                    layer.put("imageFormat", format);
+                } else {
+                    layer.put("imageFormat", "image/" + format);
+                }
+
+            }
+            if (oldLayer.has("style")) {
+                layer.put("style", oldLayer.getString("style"));
+            }
+            if (oldLayer.has("requestEncoding")) {
+                layer.put("requestEncoding", oldLayer.getString("requestEncoding"));
+            }
+
+            if (oldLayer.has("customParams")) {
+                JSONObject customParams = oldLayer.getInternalObj().getJSONObject("customParams");
+                if (customParams.has("version")) {
+                    layer.put("version", customParams.getString("version"));
+                    customParams.remove("version");
+                }
+                layer.put("customParams", customParams);
+            }
+            layer.put("dimensions", JSONObject.NULL);
+            layer.put("dimensionParams", new JSONObject());
+            if (oldLayer.has("matrixSet")) {
+                layer.put("matrixSet", oldLayer.getString("matrixSet"));
+            }
+            if (oldLayer.has("matrixSet")) {
+                layer.put("matrices", convertMatrices(oldLayer.getInternalObj().getJSONArray("matrixIds")));
+            }
+            return layer;
+        }
+
+        private JSONArray convertMatrices(JSONArray oldMatrices) {
+            JSONArray matrices = new JSONArray();
+            if (oldMatrices != null && oldMatrices.length() > 0) {
+                for (int i = 0; i < oldMatrices.length(); i++) {
+                    JSONObject matrix = convertMatrix(oldMatrices.optJSONObject(i));
+                    if (matrix != null) {
+                        matrices.put(matrix);
+                    }
+                }
+            }
+            return matrices;
+        }
+
+        private JSONObject convertMatrix(JSONObject old) {
+            JSONObject matrix = null;
+            try {
+                if (old != null) {
+
+                    matrix = new JSONObject();
+                    if (old.has("identifier")) {
+                        matrix.put("identifier", old.optString("identifier"));
+                    }
+                    if (old.has("matrixSize")) {
+                        matrix.put("matrixSize", old.optJSONArray("matrixSize"));
+                    }
+                    if (old.has("scaleDenominator")) {
+                        matrix.put("scaleDenominator", old.optDouble("scaleDenominator", 0.0D));
+                    }
+                    if (old.has("resolution") && !old.has("scaleDenominator")) {
+
+                        Double scaleDenominator = 0.0D;
+                        Double resolution = old.optDouble("resolution", 0.0D);
+                        if (resolution != 0.0D) {
+                            //works with meter based srs
+                            scaleDenominator = resolution / 0.00028D;
+                        }
+                        matrix.put("scaleDenominator", scaleDenominator);
+                    }
+                    if (old.has("tileSize")) {
+                        matrix.put("tileSize", old.optJSONArray("tileSize"));
+                    }
+                    if (old.has("topLeftCorner")) {
+                        matrix.put("topLeftCorner", old.optJSONArray("topLeftCorner"));
+                    }
+
+                }
+            } catch (JSONException e) {
+                //RAS
+            }
+            return matrix;
         }
     }
 }

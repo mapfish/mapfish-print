@@ -80,9 +80,27 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         
         assertTrue(map.has("layers"));
         JSONArray layers = map.getJSONArray("layers");
-        assertEquals(4, layers.length());
+        assertEquals(5, layers.length());
+
+        JSONObject wmtsLayer = layers.getJSONObject(0);
+        assertEquals("wmts", wmtsLayer.getString("type"));
+        assertEquals("http://center_wmts_fixedscale.com:1234/wmts", wmtsLayer.getString("baseURL"));
+        assertEquals(0.5, wmtsLayer.getDouble("opacity"), 0.1);
+        assertEquals("image/tiff", wmtsLayer.getString("imageFormat"));
+        assertEquals("EPSG:900913", wmtsLayer.getString("matrixSet"));
+        assertEquals("normal", wmtsLayer.getString("style"));
+        JSONArray matrices =  wmtsLayer.getJSONArray("matrices");
+        assertEquals(6,matrices.length());
+        JSONObject matrix = matrices.getJSONObject(0);
+        assertEquals("EPSG:900913:12",matrix.getString("identifier"));
+        assertEquals(136494.69334738597,matrix.getDouble("scaleDenominator"),0.00001);
+        assertEquals(256, matrix.getJSONArray("tileSize").getInt(0));
+        assertEquals(4096, matrix.getJSONArray("matrixSize").getInt(0));
+        assertEquals(-2.003750834E7, matrix.getJSONArray("topLeftCorner").getDouble(0),0.00001);
+
+
         
-        JSONObject osmLayer = layers.getJSONObject(0);
+        JSONObject osmLayer = layers.getJSONObject(1);
         assertEquals("osm", osmLayer.getString("type"));
         assertEquals("http://tile.openstreetmap.org/", osmLayer.getString("baseURL"));
         assertEquals(1.0, osmLayer.getDouble("opacity"), 0.1);
@@ -91,7 +109,7 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertEquals(256, osmLayer.getJSONArray("tileSize").getInt(0));
         assertEquals(156543.03390625, osmLayer.getJSONArray("resolutions").getDouble(0), 0.1);
         
-        JSONObject wmsLayer = layers.getJSONObject(1);
+        JSONObject wmsLayer = layers.getJSONObject(2);
         assertEquals("wms", wmsLayer.getString("type"));
         assertEquals("http://demo.mapfish.org/mapfishsample/2.2/mapserv", wmsLayer.getString("baseURL"));
         assertEquals(1.0, wmsLayer.getDouble("opacity"), 0.1);
@@ -101,14 +119,14 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertEquals(false, wmsLayer.getJSONObject("customParams").has("version"));
         assertEquals("1.1.1", wmsLayer.getString("version"));
         
-        JSONObject geojsonLayer1 = layers.getJSONObject(2);
+        JSONObject geojsonLayer1 = layers.getJSONObject(3);
         assertEquals("geojson", geojsonLayer1.getString("type"));
         JSONObject geoJson = geojsonLayer1.getJSONObject("geoJson");
         assertEquals(1, geoJson.getJSONArray("features").length());
         assertTrue(geojsonLayer1.has("style"));
         assertEquals("1", geojsonLayer1.getJSONObject("style").getString("version"));
 
-        JSONObject geojsonLayer2 = layers.getJSONObject(3);
+        JSONObject geojsonLayer2 = layers.getJSONObject(4);
         assertEquals("geojson", geojsonLayer2.getString("type"));
         assertEquals("http://xyz.com/places.json", geojsonLayer2.getString("geoJson"));
         assertFalse(geojsonLayer2.has("style"));
@@ -226,7 +244,8 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertEquals("geojson", layers.getJSONObject(1).getString("type"));
         assertEquals("wms", layers.getJSONObject(2).getString("type"));
         assertEquals("osm", layers.getJSONObject(3).getString("type"));
-        assertEquals(4, layers.length());
+        assertEquals("wmts", layers.getJSONObject(4).getString("type"));
+        assertEquals(5, layers.length());
     }
 
     @Test(expected = IllegalArgumentException.class)
