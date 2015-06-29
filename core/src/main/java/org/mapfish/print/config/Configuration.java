@@ -32,17 +32,13 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import org.geotools.styling.Displacement;
 import org.geotools.styling.Fill;
 import org.geotools.styling.Graphic;
-import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.Mark;
-import org.geotools.styling.PointPlacement;
 import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.Symbolizer;
-import org.geotools.styling.TextSymbolizer;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
@@ -55,7 +51,6 @@ import org.mapfish.print.http.HttpCredential;
 import org.mapfish.print.http.HttpProxy;
 import org.mapfish.print.map.style.StyleParser;
 import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
-import org.opengis.filter.expression.Expression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.security.access.AccessDeniedException;
@@ -126,6 +121,8 @@ public class Configuration {
     private ClientHttpRequestFactory clientHttpRequestFactory;
     @Autowired
     private ConfigFileLoaderManager fileLoaderManager;
+    @Autowired
+    private Map<String, Style> namedStyles;
 
     final PDFConfig getPdfConfig() {
         return this.pdfConfig;
@@ -355,6 +352,10 @@ public class Configuration {
         }
         Style style = this.defaultStyle.get(normalizedGeomName.toLowerCase());
         if (style == null) {
+            style = this.namedStyles.get(normalizedGeomName.toLowerCase());
+        }
+
+        if (style == null) {
             StyleBuilder builder = new StyleBuilder();
             final Symbolizer symbolizer;
             if (isPointType(normalizedGeomName)) {
@@ -365,8 +366,6 @@ public class Configuration {
                 symbolizer = builder.createPolygonSymbolizer(Color.lightGray, Color.black, 2);
             } else if (normalizedGeomName.equalsIgnoreCase(Constants.Style.Raster.NAME)) {
                 symbolizer = builder.createRasterSymbolizer();
-            } else if (normalizedGeomName.equalsIgnoreCase(Constants.Style.Grid.NAME_LINES)) {
-                return createGridStyle(builder);
             } else if (normalizedGeomName.startsWith(Constants.Style.OverviewMap.NAME)) {
                 symbolizer = createMapOverviewStyle(normalizedGeomName, builder);
             } else {
@@ -419,37 +418,6 @@ public class Configuration {
             return builder.createLineSymbolizer(stroke);
         }
         return builder.createPolygonSymbolizer(stroke, fill);
-    }
-
-    private Style createGridStyle(final StyleBuilder builder) {
-        final LineSymbolizer lineSymbolizer = builder.createLineSymbolizer();
-        //CSOFF:MagicNumber
-        final Color strokeColor = new Color(127, 127, 255);
-        final Color textColor = new Color(50, 50, 255);
-        lineSymbolizer.setStroke(builder.createStroke(strokeColor, 1, new float[]{4f, 4f}));
-        //CSON:MagicNumber
-
-        final Style style = builder.createStyle(lineSymbolizer);
-        final List<Symbolizer> symbolizers = style.featureTypeStyles().get(0).rules().get(0).symbolizers();
-        symbolizers.add(0, createGridTextSymbolizer(builder, textColor));
-        return style;
-    }
-
-    private TextSymbolizer createGridTextSymbolizer(final StyleBuilder builder,
-                                                    final Color color) {
-        Expression xDisplacement = builder.attributeExpression(Constants.Style.Grid.ATT_X_DISPLACEMENT);
-        Expression yDisplacement = builder.attributeExpression(Constants.Style.Grid.ATT_Y_DISPLACEMENT);
-        Displacement displacement = builder.createDisplacement(xDisplacement, yDisplacement);
-        Expression rotation = builder.attributeExpression(Constants.Style.Grid.ATT_ROTATION);
-
-        PointPlacement text1Placement = builder.createPointPlacement(builder.createAnchorPoint(0, 0), displacement, rotation);
-        final TextSymbolizer text1 = builder.createTextSymbolizer();
-        text1.setFill(builder.createFill(color));
-        text1.setLabelPlacement(text1Placement);
-        final double opacity = 0.8;
-        text1.setHalo(builder.createHalo(Color.white, opacity, 2));
-        text1.setLabel(builder.attributeExpression(Constants.Style.Grid.ATT_LABEL));
-        return text1;
     }
 
     /**
