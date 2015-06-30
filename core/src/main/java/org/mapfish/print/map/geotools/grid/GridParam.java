@@ -20,7 +20,6 @@
 package org.mapfish.print.map.geotools.grid;
 
 import com.vividsolutions.jts.util.Assert;
-import org.mapfish.print.Constants;
 import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.OneOf;
@@ -36,7 +35,7 @@ public final class GridParam extends AbstractLayerParams {
     private static final int DEFAULT_POINTS_IN_GRID_LINE = 10000;
 
     /**
-     * The type of grid to render.
+     * The type of grid to render.  By default it is LINES
      */
     @HasDefaultValue
     public GridType gridType = GridType.LINES;
@@ -102,7 +101,7 @@ public final class GridParam extends AbstractLayerParams {
     public Boolean renderAsSvg = false;
 
     /**
-     * The number of points that will be in the grid line.  If the line will be curved (for certain projections) then the more
+     * The number of points that will be in the grid line (if the gridType is LINES).  If the line will be curved (for certain projections) then the more
      * points the smoother the curve.
      * <p/>
      * The default number of points is {@value #DEFAULT_POINTS_IN_GRID_LINE}.
@@ -121,8 +120,5 @@ public final class GridParam extends AbstractLayerParams {
                 GridLayer.class.getSimpleName() + ".numberOfLines has the wrong number of elements.  Expected 2 (x,y) but was: " +
                 Arrays.toString(this.numberOfLines));
         Assert.isTrue(this.pointsInLine > 2, "There must be at least 2 points in a line.  There were: " + this.pointsInLine);
-        if (this.style == null) {
-            this.style = Constants.Style.Grid.NAME_LINES;
-        }
     }
 }
