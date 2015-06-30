@@ -1,0 +1,24 @@
+{
+  "attributes": {
+    "mapDef": {
+      "center": [-8235878.4938425, 4979784.7605681],
+      "scale": 26000,
+      "projection": "EPSG:900913",
+      "dpi": 72,
+      "layers": [
+        {
+          "type": "grid",
+          "gridType": "points",
+          "spacing": [1000,1000],
+          "origin": [8200000, 4980000],
+          "renderAsSvg": false
+        },{
+          "type": "osm",
+          "baseURL": "http://center_osm_fixedscale.osm:1234",
+          "imageFormat": "tiff"
+        }
+
+      ]
+    }
+  }
+}
