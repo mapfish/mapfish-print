@@ -6,17 +6,15 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
-import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.styling.Style;
-import org.mapfish.print.Constants;
+import org.mapfish.print.Constants.Style.Grid;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.FeatureSourceSupplier;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.cs.AxisDirection;
 
 import javax.annotation.Nonnull;
@@ -29,7 +27,7 @@ import javax.annotation.Nonnull;
 final class LineGridStrategy implements GridType.GridTypeStrategy {
     @Override
     public Style defaultStyle(final Template template, final GridParam layerData) {
-        return template.getConfiguration().getDefaultStyle(Constants.Style.Grid.NAME_LINES);
+        return template.getConfiguration().getDefaultStyle(Grid.NAME_LINES);
     }
 
     @Override
@@ -39,16 +37,7 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
             @Override
             public FeatureSource load(@Nonnull final MfClientHttpRequestFactory requestFactory,
                                       @Nonnull final MapfishMapContext mapContext) {
-                final SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
-                CoordinateReferenceSystem projection = mapContext.getBounds().getProjection();
-                typeBuilder.add(Constants.Style.Grid.ATT_GEOM, LineString.class, projection);
-                typeBuilder.add(Constants.Style.Grid.ATT_LABEL, String.class);
-                typeBuilder.add(Constants.Style.Grid.ATT_ROTATION, Double.class);
-                typeBuilder.add(Constants.Style.Grid.ATT_X_DISPLACEMENT, Double.class);
-                typeBuilder.add(Constants.Style.Grid.ATT_Y_DISPLACEMENT, Double.class);
-                typeBuilder.setName(Constants.Style.Grid.NAME_LINES);
-
-                SimpleFeatureType featureType = typeBuilder.buildFeatureType();
+                SimpleFeatureType featureType = GridType.createGridFeatureType(mapContext, LineString.class);
                 SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(featureType);
                 final DefaultFeatureCollection features;
                 if (layerData.numberOfLines != null) {
@@ -60,7 +49,6 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
             }
         };
     }
-
 
     @Nonnull
     private DefaultFeatureCollection createFeaturesFromNumberOfLines(@Nonnull final MapfishMapContext mapContext,
@@ -162,43 +150,23 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
                 setSpacing(spacing).
                 setOrdinate0AxisDirection(direction);
         LineString geom = geometryFactory.createLineString(coordinateSequence);
-        featureBuilder.add(geom);
-        featureBuilder.add(createLabel(ordinate == 1 ? x : y, unit));
+        featureBuilder.set(Grid.ATT_GEOM, geom);
+        featureBuilder.set(Grid.ATT_LABEL, GridType.createLabel(ordinate == 1 ? x : y, unit));
 
         int indentAmount = (int) (mapContext.getDPI() / 8); // 1/8 inch indent
         if (ordinate == 0) {
-            featureBuilder.add(0); // rotation
-            featureBuilder.add(-(mapContext.getMapSize().width / 2) + indentAmount); // x displacement
-            featureBuilder.add(0); // y displacement
+            featureBuilder.set(Grid.ATT_ROTATION, 0);
+            featureBuilder.set(Grid.ATT_X_DISPLACEMENT,  - (mapContext.getMapSize().width / 2) + indentAmount);
+            featureBuilder.set(Grid.ATT_Y_DISPLACEMENT, 0);
         } else {
-            featureBuilder.add(270); // rotation
-            featureBuilder.add(-(mapContext.getMapSize().height / 2) + indentAmount); // x displacement
-            featureBuilder.add(0); // y1displacement
+            featureBuilder.set(Grid.ATT_ROTATION, 270);
+            featureBuilder.set(Grid.ATT_X_DISPLACEMENT, -(mapContext.getMapSize().height / 2) + indentAmount);
+            featureBuilder.set(Grid.ATT_Y_DISPLACEMENT, 0);
         }
+        featureBuilder.set(Grid.ATT_ANCHOR_X, 0);
 
         return featureBuilder.buildFeature("grid." + (ordinate == 1 ? 'x' : 'y') + "." + i);
     }
     // CHECKSTYLE:ON
-
-    private String createLabel(final double x, final String unit) {
-        final double zero = 0.000000001;
-        final int maxBeforeNoDecimals = 1000000;
-        final double minBeforeScientific = 0.0001;
-        final int maxWithDecimals = 1000;
-
-        if (Math.abs(x - Math.round(x)) < zero) {
-            return String.format("%d %s", Math.round(x), unit);
-        } else {
-            if (x > maxBeforeNoDecimals || x < minBeforeScientific) {
-                return String.format("%1.0f %s", x, unit);
-            } else if (x < maxWithDecimals) {
-                return String.format("%f1.2 %s", x, unit);
-            } else if (x > minBeforeScientific) {
-                return String.format("%1.4f %s", x, unit);
-            } else {
-                return String.format("%e %s", x, unit);
-            }
-        }
-    }
 
 }
