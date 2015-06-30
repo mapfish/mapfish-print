@@ -45,11 +45,12 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class GridLayerPluginTest {
+public class LineGridStrategyTest {
 
     @Test
     public void testParseSpacingAndOrigin() throws Throwable {
         final GridParam layerData = new GridParam();
+        layerData.gridType = GridType.LINES;
         layerData.spacing = new double[]{20, 30};
         layerData.origin = new double[]{10, 20};
         layerData.pointsInLine = 10;
@@ -87,6 +88,7 @@ public class GridLayerPluginTest {
     @Test
     public void testParseNumLines() throws Throwable {
         final GridParam layerData = new GridParam();
+        layerData.gridType = GridType.LINES;
         layerData.numberOfLines = new int[]{3, 2};
         layerData.pointsInLine = 10;
 
