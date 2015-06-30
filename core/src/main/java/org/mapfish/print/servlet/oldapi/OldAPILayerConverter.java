@@ -39,6 +39,7 @@ public final class OldAPILayerConverter {
         converters.put("osm", new OSMConverter());
         converters.put("wms", new WMSConverter());
         converters.put("vector", new GeoJsonConverter());
+        converters.put("xyz", new XyzConverter());
     }
     
     /**
@@ -96,6 +97,43 @@ public final class OldAPILayerConverter {
                 layer.put("resolutions", oldLayer.getInternalObj().getJSONArray("resolutions"));
             }
             
+            return layer;
+        }
+    }
+
+    private static class XyzConverter extends AbstractLayerConverter {
+
+        @Override
+        public final JSONObject convert(final PJsonObject oldLayer) throws JSONException {
+            final JSONObject layer = super.convert(oldLayer);
+            layer.put("type", "xyz");
+
+            if (oldLayer.has("baseURL")) {
+                layer.put("baseURL", oldLayer.getString("baseURL"));
+            }
+            if (oldLayer.has("opacity")) {
+                layer.put("opacity", oldLayer.getDouble("opacity"));
+            }
+            if (oldLayer.has("extension")) {
+                layer.put("imageExtension", oldLayer.getString("extension"));
+            }
+            if (oldLayer.has("maxExtent")) {
+                layer.put("maxExtent", oldLayer.getInternalObj().getJSONArray("maxExtent"));
+            }
+            if (oldLayer.has("tileSize")) {
+                layer.put("tileSize", oldLayer.getInternalObj().getJSONArray("tileSize"));
+            }
+            if (oldLayer.has("resolutions")) {
+                layer.put("resolutions", oldLayer.getInternalObj().getJSONArray("resolutions"));
+            }
+            if (oldLayer.has("customParams")) {
+                JSONObject customParams = oldLayer.getInternalObj().getJSONObject("customParams");
+                if (customParams.has("version")) {
+                    layer.put("version", customParams.getString("version"));
+                    customParams.remove("version");
+                }
+                layer.put("customParams", customParams);
+            }
             return layer;
         }
     }
