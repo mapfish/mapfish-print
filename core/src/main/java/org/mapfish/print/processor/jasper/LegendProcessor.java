@@ -175,7 +175,6 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
                     image = this.getMissingImage();
                 }
 
-                        ImageIO.write(image, "png", new File("E:\\tmp\\examples_test\\baselstadt\\expected_output\\legend.png"));
                 String report = null;
                 if (this.maxWidth != null) {
                     // if a max width is given, create a sub-report containing the cropped graphic
