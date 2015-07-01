@@ -211,6 +211,25 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
     }
 
     @Test
+    public void testTiledWmsLayer() throws IOException, JSONException, NoSuchAppException, URISyntaxException {
+        setUpConfigFiles();
+        PJsonObject oldApiJSON = parseJSONObjectFromFile(OldAPIRequestConverterTest.class, "wms-tiled.json");
+        Configuration configuration = printerFactory.create("default").getConfiguration();
+        PJsonObject jsonObject = OldAPIRequestConverter.convert(oldApiJSON, configuration);
+
+        PJsonArray layers = jsonObject.getJSONObject("attributes").getJSONObject("geojsonMap").getJSONArray("layers");
+        assertEquals(1, layers.size());
+        PJsonObject wmsLayer = layers.getJSONObject(0);
+        assertEquals("tiledwms", wmsLayer.getString("type"));
+        assertEquals("http://localhost:9876/e2egeoserver/wms", wmsLayer.getString("baseURL"));
+        assertEquals(1.0, wmsLayer.getDouble("opacity"), 0.1);
+        assertEquals("image/png", wmsLayer.getString("imageFormat"));
+        assertEquals(2,wmsLayer.getJSONArray("tileSize").size());
+        assertEquals(256,wmsLayer.getJSONArray("tileSize").getInt(0));
+
+    }
+
+    @Test
     public void testReverseLayerOrder() throws IOException, JSONException, NoSuchAppException, URISyntaxException {
         setUpConfigFiles();
         Configuration configuration = printerFactory.create("reverseLayers").getConfiguration();
