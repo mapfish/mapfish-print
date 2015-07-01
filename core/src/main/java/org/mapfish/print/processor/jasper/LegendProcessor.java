@@ -148,10 +148,10 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
                             final File tempTaskDirectory) throws IOException, URISyntaxException, JRException {
         int insertNameIndex = legendList.size();
         final URL[] icons = legendAttributes.icons;
-        if (icons != null) {
-            for (URL icon : icons) {
-                BufferedImage image = null;
                 Closer closer = Closer.create();
+                if (icons != null) {
+                    for (URL icon : icons) {
+                        BufferedImage image = null;
                 try {
                     checkCancelState(context);
                     final ClientHttpRequest request = clientHttpRequestFactory.createRequest(icon.toURI(), HttpMethod.GET);
@@ -175,6 +175,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
                     image = this.getMissingImage();
                 }
 
+                        ImageIO.write(image, "png", new File("E:\\tmp\\examples_test\\baselstadt\\expected_output\\legend.png"));
                 String report = null;
                 if (this.maxWidth != null) {
                     // if a max width is given, create a sub-report containing the cropped graphic

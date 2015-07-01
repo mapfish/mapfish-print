@@ -214,12 +214,12 @@ public final class OldAPIRequestConverter {
         if (oldApi.isLayersFirstIsBaseLayer()) {
             for (int i = oldLayers.size() - 1; i > -1; i--) {
                 PJsonObject oldLayer = (PJsonObject) oldLayers.getObject(i);
-                layers.put(OldAPILayerConverter.convert(oldLayer));
+                layers.put(OldAPILayerConverter.convert(oldLayer, oldApi));
             }
         } else {
             for (int i = 0; i < oldLayers.size(); i++) {
                 PJsonObject oldLayer = (PJsonObject) oldLayers.getObject(i);
-                layers.put(OldAPILayerConverter.convert(oldLayer));
+                layers.put(OldAPILayerConverter.convert(oldLayer, oldApi));
             }
         }
     }
