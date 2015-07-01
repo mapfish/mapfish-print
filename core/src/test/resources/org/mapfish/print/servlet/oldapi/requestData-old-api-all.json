@@ -141,7 +141,57 @@
         1.194328566789627,
         0.5971642833948135
       ]
+    },{
+      "type": "WMTS",
+      "baseURL": "http://center_wmts_fixedscale.com:1234/wmts",
+      "opacity": 0.5,
+      "layer": "tiger-ny",
+      "version": "1.0.0",
+      "requestEncoding": "KVP",
+      "dimensions": null,
+      "dimensionParams": {},
+      "format": "image/tiff",
+      "style" : "normal",
+      "matrixSet": "EPSG:900913",
+      "matrixIds": [{
+        "identifier": "EPSG:900913:12",
+        "matrixSize": [4096, 4096],
+        "resolution": 38.21851414,
+        "tileSize": [256, 256],
+        "topLeftCorner": [-2.003750834E7, 2.0037508E7]
+      },{
+        "identifier": "EPSG:900913:13",
+        "matrixSize": [8192, 8192],
+        "resolution": 19.10925707,
+        "tileSize": [256, 256],
+        "topLeftCorner": [-2.003750834E7, 2.0037508E7]
+      },{
+        "identifier": "EPSG:900913:14",
+        "matrixSize": [16384, 16384],
+        "resolution": 9.554628534,
+        "tileSize": [256, 256],
+        "topLeftCorner": [-2.003750834E7, 2.0037508E7]
+      },{
+        "identifier": "EPSG:900913:15",
+        "matrixSize": [32768, 32768],
+        "resolution": 4.777314267,
+        "tileSize": [256, 256],
+        "topLeftCorner": [-2.003750834E7, 2.0037508E7]
+      },{
+        "identifier": "EPSG:900913:16",
+        "matrixSize": [65536, 65536],
+        "resolution": 2.388657134,
+        "tileSize": [256, 256],
+        "topLeftCorner": [-2.003750834E7, 2.0037508E7]
+      },{
+        "identifier": "EPSG:900913:17",
+        "matrixSize": [131072, 131072],
+        "resolution": 1.194328567,
+        "tileSize": [256, 256],
+        "topLeftCorner": [-2.003750834E7, 2.0037508E7]
+      }]
     }
+
   ],
   "pages": [
     {
