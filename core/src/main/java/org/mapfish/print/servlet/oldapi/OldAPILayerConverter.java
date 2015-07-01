@@ -243,7 +243,7 @@ public final class OldAPILayerConverter {
             return layer;
         }
 
-        private JSONArray convertMatrices(JSONArray oldMatrices) {
+        private JSONArray convertMatrices(final JSONArray oldMatrices) {
             JSONArray matrices = new JSONArray();
             if (oldMatrices != null && oldMatrices.length() > 0) {
                 for (int i = 0; i < oldMatrices.length(); i++) {
@@ -256,7 +256,7 @@ public final class OldAPILayerConverter {
             return matrices;
         }
 
-        private JSONObject convertMatrix(JSONObject old) {
+        private JSONObject convertMatrix(final JSONObject old) {
             JSONObject matrix = null;
             try {
                 if (old != null) {
@@ -277,7 +277,8 @@ public final class OldAPILayerConverter {
                         Double resolution = old.optDouble("resolution", 0.0D);
                         if (resolution != 0.0D) {
                             //works with meter based srs
-                            scaleDenominator = resolution / 0.00028D;
+                            final double conversionRatio = 0.00028D;
+                            scaleDenominator = resolution / conversionRatio;
                         }
                         matrix.put("scaleDenominator", scaleDenominator);
                     }
