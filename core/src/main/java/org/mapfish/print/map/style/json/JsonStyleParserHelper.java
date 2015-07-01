@@ -99,6 +99,8 @@ public final class JsonStyleParserHelper {
     static final String JSON_HALO_RADIUS = "haloRadius";
     static final String JSON_HALO_COLOR = "haloColor";
     static final String JSON_HALO_OPACITY = "haloOpacity";
+    static final String JSON_LABEL_OUTLINE_COLOR = "labelOutlineColor";
+    static final String JSON_LABEL_OUTLINE_WIDTH = "labelOutlineWidth";
     static final String JSON_FONT_COLOR = "fontColor";
     static final String JSON_FONT_OPACITY = "fontOpacity";
     static final String JSON_GRAPHIC_FORMAT = "graphicFormat";
@@ -334,7 +336,9 @@ public final class JsonStyleParserHelper {
 
         if (!Strings.isNullOrEmpty(styleJson.optString(JSON_HALO_RADIUS)) ||
             !Strings.isNullOrEmpty(styleJson.optString(JSON_HALO_COLOR)) ||
-            !Strings.isNullOrEmpty(styleJson.optString(JSON_HALO_OPACITY))) {
+            !Strings.isNullOrEmpty(styleJson.optString(JSON_HALO_OPACITY)) ||
+            !Strings.isNullOrEmpty(styleJson.optString(JSON_LABEL_OUTLINE_WIDTH)) ||
+            !Strings.isNullOrEmpty(styleJson.optString(JSON_LABEL_OUTLINE_COLOR))) {
             textSymbolizer.setHalo(createHalo(styleJson));
         }
 
@@ -530,6 +534,19 @@ public final class JsonStyleParserHelper {
                 fill = addFill(styleJson.optString(JSON_HALO_COLOR, "white"), styleJson.optString(JSON_HALO_OPACITY, "1.0"));
                 return this.styleBuilder.createHalo(fill, radius);
             }
+        }
+
+        // labelOutlineColor and labelOutlineWidth are aliases for halo that is used by some V2 Clients
+        if (styleJson.has(JSON_LABEL_OUTLINE_COLOR) || styleJson.has(JSON_LABEL_OUTLINE_WIDTH)) {
+            Expression radius = parseExpression(1.0, styleJson, JSON_LABEL_OUTLINE_WIDTH, new Function<String, Double>() {
+                @Nullable
+                @Override
+                public Double apply(final String input) {
+                    return Double.parseDouble(input);
+                }
+            });
+            Fill fill = addFill(styleJson.optString(JSON_LABEL_OUTLINE_COLOR, "white"), "1.0");
+            return this.styleBuilder.createHalo(fill, radius);
         }
 
         return null;
