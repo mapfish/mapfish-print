@@ -10,10 +10,10 @@
       "opacity" : 1,
       "type":"WMS",
       "layers": [
-        "tiger:poi",
-        "tiger:tiger_roads",
+        "nurc:Img_Sample",
         "tiger:poly_landmarks",
-        "nurc:Img_Sample"
+        "tiger:tiger_roads",
+        "tiger:poi"
       ],
       "format": "image/png",
       "singleTile": true,

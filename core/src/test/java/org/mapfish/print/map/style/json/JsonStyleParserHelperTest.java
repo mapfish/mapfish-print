@@ -252,6 +252,28 @@ public class JsonStyleParserHelperTest {
     }
 
     @Test
+    public void testHaloAliasLabelOutline() throws Exception {
+        final String haloColor = "#123456";
+        final String haloRadius = "3.0";
+
+
+        JSONObject style = new JSONObject();
+        style.put("label", "name");
+        style.put(JsonStyleParserHelper.JSON_LABEL_OUTLINE_COLOR, haloColor);
+        style.put(JsonStyleParserHelper.JSON_LABEL_OUTLINE_WIDTH, haloRadius);
+
+        final PJsonObject pStyle = new PJsonObject(style, null);
+        TextSymbolizer symbolizer = helper.createTextSymbolizer(pStyle);
+        assertNotNull(symbolizer);
+
+        transformer.transform(symbolizer);  // test that it can be written to xml correctly
+
+        Halo halo = symbolizer.getHalo();
+        assertFill(1.0, haloColor, halo.getFill());
+        assertEquals(haloRadius, valueOf(halo.getRadius()).toString());
+    }
+
+    @Test
     public void testCreateStroke_DashStyle() throws Exception {
 
         assertDashStyle("5 4 3 4", new float[]{5f, 4f, 3f, 4f});

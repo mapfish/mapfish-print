@@ -22,6 +22,7 @@ package org.mapfish.print.servlet.oldapi;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.mapfish.print.config.OldApiConfig;
 import org.mapfish.print.wrapper.json.PJsonObject;
 
 import java.util.HashMap;
@@ -48,26 +49,27 @@ public final class OldAPILayerConverter {
      * Convert a layer definition of the old API.
      * 
      * @param oldLayer the old layer definition
+     * @param oldApi configuration for oldApi to newAPI conversion
      * @return the converted layer definition
      */
-    public static JSONObject convert(final PJsonObject oldLayer) throws JSONException {
+    public static JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi) throws JSONException {
         final String layerType = oldLayer.optString("type", "").toLowerCase();
         
         if (!converters.containsKey(layerType)) {
             throw new UnsupportedOperationException("Layer type '" + layerType + "' is "
                     + "not supported by the legacy API.");
         }
-        return converters.get(layerType).convert(oldLayer);
+        return converters.get(layerType).convert(oldLayer, oldApi);
     }
 
     private interface LayerConverter {
-        JSONObject convert(final PJsonObject oldLayer) throws JSONException;
+        JSONObject convert(final PJsonObject oldLayer, OldApiConfig oldApi) throws JSONException;
     }
 
     private abstract static class AbstractLayerConverter implements LayerConverter {
 
         @Override
-        public JSONObject convert(final PJsonObject oldLayer) throws JSONException {
+        public JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi) throws JSONException {
             return new JSONObject();
         }
 
@@ -76,8 +78,8 @@ public final class OldAPILayerConverter {
     private static class OSMConverter extends AbstractLayerConverter {
 
         @Override
-        public final JSONObject convert(final PJsonObject oldLayer) throws JSONException {
-            final JSONObject layer = super.convert(oldLayer);
+        public final JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi) throws JSONException {
+            final JSONObject layer = super.convert(oldLayer, oldApi);
             layer.put("type", "osm");
 
             if (oldLayer.has("baseURL")) {
@@ -106,8 +108,8 @@ public final class OldAPILayerConverter {
     private static class WMSConverter extends AbstractLayerConverter {
 
         @Override
-        public final JSONObject convert(final PJsonObject oldLayer) throws JSONException {
-            final JSONObject layer = super.convert(oldLayer);
+        public final JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi) throws JSONException {
+            final JSONObject layer = super.convert(oldLayer, oldApi);
             layer.put("type", "wms");
             if (oldLayer.has("isTiled") && oldLayer.getInternalObj().getBoolean("isTiled")) {
                 layer.put("type", "tiledwms");
@@ -123,7 +125,11 @@ public final class OldAPILayerConverter {
                 layer.put("opacity", oldLayer.getDouble("opacity"));
             }
             if (oldLayer.has("layers")) {
-                layer.put("layers", reverse(oldLayer.getInternalObj().getJSONArray("layers")));
+                if (oldApi.isWmsReverseLayers()) {
+                    layer.put("layers", reverse(oldLayer.getInternalObj().getJSONArray("layers")));
+                } else {
+                    layer.put("layers", oldLayer.getInternalObj().getJSONArray("layers"));
+                }
             }
 
             if (oldLayer.has("format")) {
@@ -162,8 +168,8 @@ public final class OldAPILayerConverter {
     private static class GeoJsonConverter extends AbstractLayerConverter {
 
         @Override
-        public final JSONObject convert(final PJsonObject oldLayer) throws JSONException {
-            final JSONObject layer = super.convert(oldLayer);
+        public final JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi) throws JSONException {
+            final JSONObject layer = super.convert(oldLayer, oldApi);
             layer.put("type", "geojson");
 
             if (oldLayer.has("geoJson")) {
@@ -194,8 +200,8 @@ public final class OldAPILayerConverter {
     private static class WMSTConverter extends AbstractLayerConverter {
 
         @Override
-        public final JSONObject convert(final PJsonObject oldLayer) throws JSONException {
-            final JSONObject layer = super.convert(oldLayer);
+        public final JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi) throws JSONException {
+            final JSONObject layer = super.convert(oldLayer, oldApi);
             layer.put("type", "wmts");
 
             if (oldLayer.has("baseURL")) {
