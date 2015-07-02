@@ -96,6 +96,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
      * If this parameter is set, the legend graphics are cropped to the given maximum
      * width. In this case a sub-report is created containing the graphic.
      * For reference see the example `legend_dynamic`.
+     *
      * @param maxWidth The max. width.
      */
     public void setMaxWidth(final Integer maxWidth) {
@@ -105,6 +106,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     /**
      * The DPI value that is used for the legend graphics.
      * Note: This parameter is only considered when `maxWidth` is set.
+     *
      * @param dpi The DPI value.
      */
     public void setDpi(final Double dpi) {
@@ -148,10 +150,10 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
                             final File tempTaskDirectory) throws IOException, URISyntaxException, JRException {
         int insertNameIndex = legendList.size();
         final URL[] icons = legendAttributes.icons;
-                Closer closer = Closer.create();
-                if (icons != null) {
-                    for (URL icon : icons) {
-                        BufferedImage image = null;
+        Closer closer = Closer.create();
+        if (icons != null) {
+            for (URL icon : icons) {
+                BufferedImage image = null;
                 try {
                     checkCancelState(context);
                     final ClientHttpRequest request = clientHttpRequestFactory.createRequest(icon.toURI(), HttpMethod.GET);
@@ -197,7 +199,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     }
 
     private URI createSubReport(final BufferedImage originalImage,
-            final File tempTaskDirectory) throws IOException, JRException {
+                                final File tempTaskDirectory) throws IOException, JRException {
         assert (this.maxWidth != null);
 
         double scaleFactor = getScaleFactor();
