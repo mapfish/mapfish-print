@@ -122,7 +122,7 @@ public class Configuration {
     @Autowired
     private ConfigFileLoaderManager fileLoaderManager;
     @Autowired
-    private Map<String, Style> namedStyles;
+    private Map<String, Style> namedStyles = Maps.newHashMap();
 
     final PDFConfig getPdfConfig() {
         return this.pdfConfig;

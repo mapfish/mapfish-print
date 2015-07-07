@@ -41,7 +41,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
 
@@ -94,7 +93,7 @@ public class CreateMapProcessorFixedScaleCenterGridFixedSpacingPointTest extends
 
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
 
-        ImageIO.write(referenceImage, "png", new File("e:/tmp/expectedSimpleImage.png"));
+//        ImageIO.write(referenceImage, "png", new File("e:/tmp/expectedSimpleImage.png"));
 
         assertEquals(2, layerGraphics.size());
         new ImageSimilarity(referenceImage, 2)

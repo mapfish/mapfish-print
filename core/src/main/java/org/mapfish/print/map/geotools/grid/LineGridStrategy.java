@@ -80,10 +80,16 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
         return sharedCreateFeatures(featureBuilder, layerData, mapContext, xSpace, ySpace, minX, minY);
     }
 
-    private double calculateFirstLine(final ReferencedEnvelope bounds,
+    static double calculateFirstLine(final ReferencedEnvelope bounds,
                                       final GridParam layerData,
                                       final int ordinal) {
-        double spaceFromOrigin = bounds.getMinimum(ordinal) - layerData.origin[ordinal];
+        return calculateFirstLine(bounds, layerData, ordinal, 0);
+    }
+    static double calculateFirstLine(final ReferencedEnvelope bounds,
+                                     final GridParam layerData,
+                                     final int ordinal,
+                                     final int indent) {
+        double spaceFromOrigin = bounds.getMinimum(ordinal) + indent - layerData.origin[ordinal];
         double linesBetweenOriginAndMap = Math.ceil(spaceFromOrigin / layerData.spacing[ordinal]);
 
         return linesBetweenOriginAndMap * layerData.spacing[ordinal] + layerData.origin[ordinal];

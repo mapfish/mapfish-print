@@ -173,34 +173,6 @@ public class ConfigurationTest {
         assertStyleType(Symbolizer.class, configuration.getDefaultStyle(Constants.Style.Raster.NAME));
     }
 
-    @Test
-    public void testGridStyle() throws Exception {
-        final Configuration configuration = new Configuration();
-        final Style gridStyle = configuration.getDefaultStyle(Constants.Style.Grid.NAME_LINES);
-        final AtomicInteger foundLineSymb = new AtomicInteger(0);
-        final AtomicInteger foundTextSymb = new AtomicInteger(0);
-
-        final AbstractStyleVisitor styleValidator = new AbstractStyleVisitor() {
-            @Override
-            public void visit(LineSymbolizer line) {
-                foundLineSymb.incrementAndGet();
-                super.visit(line);
-            }
-
-            @Override
-            public void visit(TextSymbolizer text) {
-                foundTextSymb.incrementAndGet();
-                final PointPlacement labelPlacement = (PointPlacement) text.getLabelPlacement();
-                assertNotNull(labelPlacement.getDisplacement());
-                super.visit(text);
-            }
-        };
-
-        styleValidator.visit(gridStyle);
-
-        assertEquals(1, foundLineSymb.intValue());
-        assertEquals(1, foundTextSymb.intValue());
-    }
 
     @Test
     public void testTemplateAccess() throws Exception {

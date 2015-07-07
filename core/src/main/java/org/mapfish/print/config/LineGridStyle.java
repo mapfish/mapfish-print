@@ -47,10 +47,11 @@ public final class LineGridStyle {
 
     static TextSymbolizer createGridTextSymbolizer(final StyleBuilder builder,
                                                     final Color color) {
+        final double yAnchorPixels = 0.5;
         Expression xDisplacement = builder.attributeExpression(Constants.Style.Grid.ATT_X_DISPLACEMENT);
         Expression yDisplacement = builder.attributeExpression(Constants.Style.Grid.ATT_Y_DISPLACEMENT);
         Expression xAnchor = builder.attributeExpression(Constants.Style.Grid.ATT_ANCHOR_X);
-        Expression yAnchor = builder.literalExpression(0.5);
+        Expression yAnchor = builder.literalExpression(yAnchorPixels);
         Displacement displacement = builder.createDisplacement(xDisplacement, yDisplacement);
         Expression rotation = builder.attributeExpression(Constants.Style.Grid.ATT_ROTATION);
 

@@ -139,7 +139,6 @@ public class LineGridStrategyTest {
         assertEquals(layerData.pointsInLine + 1, defaultGeometry.getCoordinates().length);
         assertEquals(minCoord, defaultGeometry.getCoordinates()[0]);
         assertEquals(maxCoord, defaultGeometry.getCoordinates()[10]);
-        assertEquals(label, f1.getAttribute(1));
-        assertEquals(0.0, (Double)f1.getAttribute(2), 0.00001);
+        assertEquals(label, f1.getAttribute(Constants.Style.Grid.ATT_LABEL));
     }
 }

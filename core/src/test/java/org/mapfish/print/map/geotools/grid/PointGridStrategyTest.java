@@ -48,7 +48,6 @@ public class PointGridStrategyTest extends AbstractMapfishSpringTest {
         layerData.name = "grid";
         layerData.postConstruct();
 
-
         MapBounds bounds = new BBoxMapBounds(DefaultEngineeringCRS.GENERIC_2D, 100, 200, 500, 800);
         Dimension mapSize = new Dimension(400, 600);
         double rotation = 0;
@@ -93,12 +92,11 @@ public class PointGridStrategyTest extends AbstractMapfishSpringTest {
         PointGridStrategy pointGridStrategy = new PointGridStrategy();
         GridParam layerData = new GridParam();
         layerData.spacing = new double[]{10, 15};
-        layerData.origin = new double[]{0, 0};
-        layerData.pointsInLine = 10;
+        layerData.origin = new double[]{5, 5};
         layerData.postConstruct();
 
 
-        MapBounds bounds = new BBoxMapBounds(DefaultEngineeringCRS.GENERIC_2D, 10, 20, 50, 80);
+        MapBounds bounds = new BBoxMapBounds(DefaultEngineeringCRS.GENERIC_2D, 10, 20, 55, 80);
         Dimension mapSize = new Dimension(400, 600);
         double rotation = 0;
         double dpi = 72;
@@ -110,14 +108,12 @@ public class PointGridStrategyTest extends AbstractMapfishSpringTest {
         SimpleFeatureIterator features = featureSource.getFeatures().features();
 
         List<Coordinate> expectedPoints = Lists.newArrayList(
-                                        new Coordinate(20, 20), new Coordinate(30, 20), new Coordinate(40, 20), new Coordinate(50, 20),
-                new Coordinate(10, 30), new Coordinate(20, 30), new Coordinate(30, 30), new Coordinate(40, 30), new Coordinate(50, 30),
-                new Coordinate(10, 45), new Coordinate(20, 45), new Coordinate(30, 45), new Coordinate(40, 45), new Coordinate(50, 45),
-                new Coordinate(10, 60), new Coordinate(20, 60), new Coordinate(30, 60), new Coordinate(40, 60), new Coordinate(50, 60),
-                new Coordinate(10, 75), new Coordinate(20, 75), new Coordinate(30, 75), new Coordinate(40, 75), new Coordinate(50, 75),
-                                        new Coordinate(20, 80), new Coordinate(30, 80), new Coordinate(40, 80), new Coordinate(50, 80)
+                new Coordinate(25, 30), new Coordinate(35, 30),
+                new Coordinate(20, 35), new Coordinate(25, 35), new Coordinate(35, 35), new Coordinate(45, 35),
+                new Coordinate(20, 50), new Coordinate(25, 50), new Coordinate(35, 50), new Coordinate(45, 50),
+                new Coordinate(20, 65), new Coordinate(25, 65), new Coordinate(35, 65), new Coordinate(45, 65),
+                new Coordinate(25, 70), new Coordinate(35, 70)
                 );
-        assertEquals(expectedPoints.size(), featureSource.getFeatures().size());
         while (features.hasNext()) {
             SimpleFeature next = features.next();
             assertTrue(next.getDefaultGeometry().getClass().getName(), next.getDefaultGeometry() instanceof Point);
@@ -125,16 +121,17 @@ public class PointGridStrategyTest extends AbstractMapfishSpringTest {
             assertTrue(coord + " is not one of the expected points", expectedPoints.contains(coord));
 
             String label = (String) next.getAttribute(Constants.Style.Grid.ATT_LABEL);
-            if (coord.x == 10 + TEXT_DISPLACEMENT || coord.x == 50 - TEXT_DISPLACEMENT) {
+            if (coord.x == 10 + TEXT_DISPLACEMENT || coord.x == 55 - TEXT_DISPLACEMENT) {
                 assertEquals(GridType.createLabel(coord.y, "m"), label);
             } else if (coord.y == 20 + TEXT_DISPLACEMENT || coord.y == 80 - TEXT_DISPLACEMENT) {
                 assertEquals(GridType.createLabel(coord.x, "m"), label);
             } else {
-                assertEquals("", label);
+                assertEquals("" + coord.x + "," + coord.y, "", label);
             }
 
         }
         features.close();
+        assertEquals(expectedPoints.size(), featureSource.getFeatures().size());
     }
 
 

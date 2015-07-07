@@ -101,8 +101,8 @@ public final class GridParam extends AbstractLayerParams {
     public Boolean renderAsSvg = false;
 
     /**
-     * The number of points that will be in the grid line (if the gridType is LINES).  If the line will be curved (for certain projections) then the more
-     * points the smoother the curve.
+     * The number of points that will be in the grid line (if the gridType is LINES).  If the line will be curved
+     * (for certain projections) then the more points the smoother the curve.
      * <p/>
      * The default number of points is {@value #DEFAULT_POINTS_IN_GRID_LINE}.
      */
