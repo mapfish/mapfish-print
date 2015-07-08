@@ -21,9 +21,11 @@ package org.mapfish.print.processor.map;
 
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
+
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
@@ -108,6 +110,9 @@ public class CreateMapProcessorFixedScaleCenterOsmDpiTest extends AbstractMapfis
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(2, layerGraphics.size());
+
+        MapfishMapContext mapContext = values.getObject("mapContext", MapfishMapContext.class);
+        assertEquals(25000.0, mapContext.getScale().getDenominator(), 1E-6);
 
 //        Files.copy(new File(layerGraphics.get(0)), new File("/tmp/0_"+getClass().getSimpleName()+".tiff"));
 //        Files.copy(new File(layerGraphics.get(1)), new File("/tmp/1_"+getClass().getSimpleName()+".tiff"));

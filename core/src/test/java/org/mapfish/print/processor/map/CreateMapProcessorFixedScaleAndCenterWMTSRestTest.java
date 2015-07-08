@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
@@ -123,6 +124,9 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSRestTest extends AbstractM
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(2, layerGraphics.size());
+
+        MapfishMapContext mapContext = values.getObject("mapContext", MapfishMapContext.class);
+        assertEquals(110000.0, mapContext.getScale().getDenominator(), 1E-6);
 
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 630, 294);
         // ImageIO.write(referenceImage, "tif", new File("/tmp/expectedSimpleImage.tiff"));

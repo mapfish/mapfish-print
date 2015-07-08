@@ -243,13 +243,13 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         final double dpi = mapValues.getDpi();
         final double dpiOfRequestor = mapValues.getRequestorDPI();
 
-        MapBounds bounds = mapValues.getMapBounds();
-        bounds = adjustBoundsToScaleAndMapSize(mapValues, dpi, paintArea, bounds);
-
         // if the DPI is higher than the PDF DPI we need to make the image larger so the image put in the PDF is large enough for the
         // higher DPI printer
         final double dpiRatio = dpi / dpiOfRequestor;
         paintArea.setBounds(0, 0, (int) (mapSize.getWidth() * dpiRatio), (int) (mapSize.getHeight() * dpiRatio));
+
+        MapBounds bounds = mapValues.getMapBounds();
+        bounds = adjustBoundsToScaleAndMapSize(mapValues, dpi, paintArea, bounds);
 
         return new MapfishMapContext(bounds, paintArea.getSize(),
                 mapValues.getRotation(), dpi, mapValues.getRequestorDPI(), mapValues.longitudeFirst, mapValues.isDpiSensitiveStyle());
