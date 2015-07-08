@@ -154,12 +154,13 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         if (mapValues.zoomToFeatures != null) {
             zoomToFeatures(param.tempTaskDirectory, param.clientHttpRequestFactory, mapValues, context);
         }
+        final MapfishMapContext mapContext = createMapContext(mapValues);
         final List<URI> graphics = createLayerGraphics(param.tempTaskDirectory, param.clientHttpRequestFactory,
-                mapValues, context);
+                mapValues, context, mapContext);
         checkCancelState(context);
         final URI mapSubReport = createMapSubReport(param.tempTaskDirectory, mapValues.getMapSize(), graphics, mapValues.getDpi());
 
-        return new Output(graphics, mapSubReport.toString(), createMapContext(mapValues));
+        return new Output(graphics, mapSubReport.toString(), mapContext);
     }
 
     @Override
@@ -185,10 +186,9 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
     private List<URI> createLayerGraphics(final File printDirectory,
                                           final MfClientHttpRequestFactory clientHttpRequestFactory,
                                           final MapAttribute.MapAttributeValues mapValues,
-                                          final ExecutionContext context)
+                                          final ExecutionContext context,
+                                          final MapfishMapContext mapContext)
             throws Exception {
-        final MapfishMapContext transformer = createMapContext(mapValues);
-
         // reverse layer list to draw from bottom to top.  normally position 0 is top-most layer.
         final List<MapLayer> layers = Lists.reverse(Lists.newArrayList(mapValues.getLayers()));
 
@@ -204,11 +204,11 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             File path = null;
             if (renderAsSvg(layer)) {
                 // render layer as SVG
-                final SVGGraphics2D graphics2D = getSvgGraphics(transformer.getMapSize());
+                final SVGGraphics2D graphics2D = getSvgGraphics(mapContext.getMapSize());
 
                 try {
-                    Graphics2D clippedGraphics2D = createClippedGraphics(transformer, areaOfInterest, graphics2D);
-                    layer.render(clippedGraphics2D, clientHttpRequestFactory, transformer, isFirstLayer);
+                    Graphics2D clippedGraphics2D = createClippedGraphics(mapContext, areaOfInterest, graphics2D);
+                    layer.render(clippedGraphics2D, clientHttpRequestFactory, mapContext, isFirstLayer);
 
                     path = new File(printDirectory, mapKey + "_layer_" + i + ".svg");
                     saveSvgFile(graphics2D, path);
@@ -217,11 +217,11 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 }
             } else {
                 // render layer as raster graphic
-                final BufferedImage bufferedImage = new BufferedImage(transformer.getMapSize().width,
-                        transformer.getMapSize().height, this.imageType.value);
-                Graphics2D graphics2D = createClippedGraphics(transformer, areaOfInterest, bufferedImage.createGraphics());
+                final BufferedImage bufferedImage = new BufferedImage(mapContext.getMapSize().width,
+                        mapContext.getMapSize().height, this.imageType.value);
+                Graphics2D graphics2D = createClippedGraphics(mapContext, areaOfInterest, bufferedImage.createGraphics());
                 try {
-                    layer.render(graphics2D, clientHttpRequestFactory, transformer, isFirstLayer);
+                    layer.render(graphics2D, clientHttpRequestFactory, mapContext, isFirstLayer);
 
                     path = new File(printDirectory, mapKey + "_layer_" + i + ".png");
                     ImageIO.write(bufferedImage, "png", path);
@@ -244,12 +244,13 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         final double dpiOfRequestor = mapValues.getRequestorDPI();
 
         MapBounds bounds = mapValues.getMapBounds();
-        bounds = adjustBoundsToScaleAndMapSize(mapValues, dpiOfRequestor, paintArea, bounds);
+        bounds = adjustBoundsToScaleAndMapSize(mapValues, dpi, paintArea, bounds);
 
         // if the DPI is higher than the PDF DPI we need to make the image larger so the image put in the PDF is large enough for the
         // higher DPI printer
         final double dpiRatio = dpi / dpiOfRequestor;
         paintArea.setBounds(0, 0, (int) (mapSize.getWidth() * dpiRatio), (int) (mapSize.getHeight() * dpiRatio));
+
         return new MapfishMapContext(bounds, paintArea.getSize(),
                 mapValues.getRotation(), dpi, mapValues.getRequestorDPI(), mapValues.longitudeFirst, mapValues.isDpiSensitiveStyle());
     }
