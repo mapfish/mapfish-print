@@ -41,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
 
@@ -49,8 +50,8 @@ import static org.junit.Assert.assertEquals;
  * <p/>
  * Created by Jesse on 3/26/14.
  */
-public class CreateMapProcessorFixedScaleCenterGridFixedNumlinesTest extends AbstractMapfishSpringTest {
-    public static final String BASE_DIR = "center_osm_grid_numlines_fixedscale/";
+public class CreateMapProcessorGridFixedNumlinesPointRotatedTest extends AbstractMapfishSpringTest {
+    public static final String BASE_DIR = "grid_numlines_points_fixedscale_rotated/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
@@ -90,19 +91,19 @@ public class CreateMapProcessorFixedScaleCenterGridFixedNumlinesTest extends Abs
 
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
-        assertEquals(2, layerGraphics.size());
 
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
 
-//        ImageIO.write(referenceImage, "png", new File("e:/tmp/expectedSimpleImage.png"));
+        ImageIO.write(referenceImage, "png", new File("e:/tmp/expectedSimpleImage.png"));
 
+        assertEquals(2, layerGraphics.size());
         new ImageSimilarity(referenceImage, 2)
                 .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 30);
 
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleCenterGridFixedNumlinesTest.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateMapProcessorGridFixedNumlinesPointRotatedTest.class, BASE_DIR + "requestData.json");
     }
 
 }

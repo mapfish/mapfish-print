@@ -84,6 +84,53 @@ public class PointGridStrategyTest extends AbstractMapfishSpringTest {
     }
 
     @Test
+    public void testNumLinesRotated45() throws Exception {
+        Configuration config = new Configuration();
+        Template template = new Template();
+        template.setConfiguration(config);
+
+        PointGridStrategy pointGridStrategy = new PointGridStrategy();
+        GridParam layerData = new GridParam();
+        layerData.numberOfLines = new int[]{3, 2};
+        layerData.name = "grid";
+        layerData.postConstruct();
+
+        MapBounds bounds = new BBoxMapBounds(DefaultEngineeringCRS.GENERIC_2D, 100, 200, 500, 800);
+        Dimension mapSize = new Dimension(400, 600);
+        double rotation = 45;
+        double dpi = 72;
+        MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, Constants.PDF_DPI, null, true);
+
+        FeatureSourceSupplier supplier = pointGridStrategy.createFeatureSource(template, layerData);
+        SimpleFeatureSource featureSource = (SimpleFeatureSource) supplier.load(requestFactory, context);
+        assertEquals(16, featureSource.getFeatures().size());
+
+        SimpleFeatureIterator features = featureSource.getFeatures().features();
+        List<Coordinate> expectedPoints = Lists.newArrayList(
+                new Coordinate(200,200 + TEXT_DISPLACEMENT),new Coordinate(300,200 + TEXT_DISPLACEMENT),new Coordinate(400,200 + TEXT_DISPLACEMENT),
+                new Coordinate(100 + TEXT_DISPLACEMENT,400),new Coordinate(200,400),new Coordinate(300,400),new Coordinate(400,400),new Coordinate(500 - TEXT_DISPLACEMENT, 400),
+                new Coordinate(100 + TEXT_DISPLACEMENT,600),new Coordinate(200,600),new Coordinate(300,600),new Coordinate(400,600),new Coordinate(500 - TEXT_DISPLACEMENT, 600),
+                new Coordinate(200,800 - TEXT_DISPLACEMENT),new Coordinate(300,800 - TEXT_DISPLACEMENT),new Coordinate(400,800 - TEXT_DISPLACEMENT)
+                );
+        while (features.hasNext()) {
+            SimpleFeature next = features.next();
+            assertTrue(next.getDefaultGeometry().getClass().getName(), next.getDefaultGeometry() instanceof Point);
+            Coordinate coord = ((Point) next.getDefaultGeometry()).getCoordinate();
+            assertTrue(coord + " is not one of the expected points", expectedPoints.contains(coord));
+
+            String label = (String) next.getAttribute(Constants.Style.Grid.ATT_LABEL);
+            if (coord.x == 100 + TEXT_DISPLACEMENT || coord.x == 500 - TEXT_DISPLACEMENT) {
+                assertEquals(GridType.createLabel(coord.y, "m"), label);
+            } else if (coord.y == 200 + TEXT_DISPLACEMENT || coord.y == 800 - TEXT_DISPLACEMENT) {
+                assertEquals(GridType.createLabel(coord.x, "m"), label);
+            } else {
+                assertEquals("", label);
+            }
+        }
+        features.close();
+    }
+
+    @Test
     public void testParseSpacingAndOrigin() throws Exception {
         Configuration config = new Configuration();
         Template template = new Template();
