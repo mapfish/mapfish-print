@@ -41,7 +41,7 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
             @Override
             public FeatureSource load(@Nonnull final MfClientHttpRequestFactory requestFactory,
                                       @Nonnull final MapfishMapContext mapContext) {
-                SimpleFeatureType featureType = GridType.createGridFeatureType(mapContext, Point.class);
+                SimpleFeatureType featureType = GridUtils.createGridFeatureType(mapContext, Point.class);
                 SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(featureType);
                 final DefaultFeatureCollection features;
                 if (layerData.numberOfLines != null) {
@@ -64,8 +64,8 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
 
         final double incrementX = layerData.spacing[0];
         final double incrementY = layerData.spacing[1];
-        double minX = LineGridStrategy.calculateFirstLine(bounds, layerData, 0, TEXT_DISPLACEMENT);
-        double minY = LineGridStrategy.calculateFirstLine(bounds, layerData, 1, TEXT_DISPLACEMENT);
+        double minX = GridUtils.calculateFirstLine(bounds, layerData, 0, TEXT_DISPLACEMENT);
+        double minY = GridUtils.calculateFirstLine(bounds, layerData, 1, TEXT_DISPLACEMENT);
 
         DefaultFeatureCollection features = new DefaultFeatureCollection();
         int i = 0;
@@ -162,7 +162,7 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
         featureBuilder.set(Grid.ATT_ROTATION, -NINTY_DEGREES);
         featureBuilder.set(Grid.ATT_ANCHOR_X, 1.0);
         featureBuilder.set(Grid.ATT_X_DISPLACEMENT, -TEXT_DISPLACEMENT);
-        featureBuilder.set(Grid.ATT_LABEL, GridType.createLabel(x, unit));
+        featureBuilder.set(Grid.ATT_LABEL, GridUtils.createLabel(x, unit));
         Point geom = geometryFactory.createPoint(new Coordinate(x, maxY - TEXT_DISPLACEMENT));
         featureBuilder.set(Grid.ATT_GEOM, geom);
         return featureBuilder.buildFeature(fid);
@@ -174,7 +174,7 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
         featureBuilder.set(Grid.ATT_ROTATION, -NINTY_DEGREES);
         featureBuilder.set(Grid.ATT_ANCHOR_X, 0.0);
         featureBuilder.set(Grid.ATT_X_DISPLACEMENT, TEXT_DISPLACEMENT);
-        featureBuilder.set(Grid.ATT_LABEL, GridType.createLabel(x, unit));
+        featureBuilder.set(Grid.ATT_LABEL, GridUtils.createLabel(x, unit));
         Point geom = geometryFactory.createPoint(new Coordinate(x, minY + TEXT_DISPLACEMENT));
         featureBuilder.set(Grid.ATT_GEOM, geom);
         return featureBuilder.buildFeature(fid);
@@ -183,7 +183,7 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
     private SimpleFeature rightBorderFeature(final SimpleFeatureBuilder featureBuilder, final GeometryFactory geometryFactory,
                                              final String fid, final String unit, final double maxX, final double y) {
         zeroFeatureBuilder(featureBuilder);
-        featureBuilder.set(Grid.ATT_LABEL, GridType.createLabel(y, unit));
+        featureBuilder.set(Grid.ATT_LABEL, GridUtils.createLabel(y, unit));
         featureBuilder.set(Grid.ATT_X_DISPLACEMENT, -TEXT_DISPLACEMENT);
         featureBuilder.set(Grid.ATT_ANCHOR_X, 1);
         Point geom = geometryFactory.createPoint(new Coordinate(maxX - TEXT_DISPLACEMENT, y));
@@ -194,7 +194,7 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
     private SimpleFeature leftBorderFeature(final SimpleFeatureBuilder featureBuilder, final GeometryFactory geometryFactory,
                                             final String fid, final String unit, final double minX, final double y) {
         zeroFeatureBuilder(featureBuilder);
-        featureBuilder.set(Grid.ATT_LABEL, GridType.createLabel(y, unit));
+        featureBuilder.set(Grid.ATT_LABEL, GridUtils.createLabel(y, unit));
         featureBuilder.set(Grid.ATT_X_DISPLACEMENT, TEXT_DISPLACEMENT);
         featureBuilder.set(Grid.ATT_ANCHOR_X, 0);
         Point geom = geometryFactory.createPoint(new Coordinate(minX + TEXT_DISPLACEMENT, y));

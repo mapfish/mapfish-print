@@ -37,7 +37,7 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
             @Override
             public FeatureSource load(@Nonnull final MfClientHttpRequestFactory requestFactory,
                                       @Nonnull final MapfishMapContext mapContext) {
-                SimpleFeatureType featureType = GridType.createGridFeatureType(mapContext, LineString.class);
+                SimpleFeatureType featureType = GridUtils.createGridFeatureType(mapContext, LineString.class);
                 SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(featureType);
                 final DefaultFeatureCollection features;
                 if (layerData.numberOfLines != null) {
@@ -74,25 +74,10 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
 
         final double xSpace = layerData.spacing[0];
         final double ySpace = layerData.spacing[1];
-        double minX = calculateFirstLine(bounds, layerData, 0);
-        double minY = calculateFirstLine(bounds, layerData, 1);
+        double minX = GridUtils.calculateFirstLine(bounds, layerData, 0);
+        double minY = GridUtils.calculateFirstLine(bounds, layerData, 1);
 
         return sharedCreateFeatures(featureBuilder, layerData, mapContext, xSpace, ySpace, minX, minY);
-    }
-
-    static double calculateFirstLine(final ReferencedEnvelope bounds,
-                                      final GridParam layerData,
-                                      final int ordinal) {
-        return calculateFirstLine(bounds, layerData, ordinal, 0);
-    }
-    static double calculateFirstLine(final ReferencedEnvelope bounds,
-                                     final GridParam layerData,
-                                     final int ordinal,
-                                     final int indent) {
-        double spaceFromOrigin = bounds.getMinimum(ordinal) + indent - layerData.origin[ordinal];
-        double linesBetweenOriginAndMap = Math.ceil(spaceFromOrigin / layerData.spacing[ordinal]);
-
-        return linesBetweenOriginAndMap * layerData.spacing[ordinal] + layerData.origin[ordinal];
     }
 
     private DefaultFeatureCollection sharedCreateFeatures(final SimpleFeatureBuilder featureBuilder,
@@ -157,7 +142,7 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
                 setOrdinate0AxisDirection(direction);
         LineString geom = geometryFactory.createLineString(coordinateSequence);
         featureBuilder.set(Grid.ATT_GEOM, geom);
-        featureBuilder.set(Grid.ATT_LABEL, GridType.createLabel(ordinate == 1 ? x : y, unit));
+        featureBuilder.set(Grid.ATT_LABEL, GridUtils.createLabel(ordinate == 1 ? x : y, unit));
 
         int indentAmount = (int) (mapContext.getDPI() / 8); // 1/8 inch indent
         if (ordinate == 0) {

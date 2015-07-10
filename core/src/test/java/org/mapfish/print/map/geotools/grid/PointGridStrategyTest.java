@@ -73,9 +73,9 @@ public class PointGridStrategyTest extends AbstractMapfishSpringTest {
 
             String label = (String) next.getAttribute(Constants.Style.Grid.ATT_LABEL);
             if (coord.x == 100 + TEXT_DISPLACEMENT || coord.x == 500 - TEXT_DISPLACEMENT) {
-                assertEquals(GridType.createLabel(coord.y, "m"), label);
+                assertEquals(GridUtils.createLabel(coord.y, "m"), label);
             } else if (coord.y == 200 + TEXT_DISPLACEMENT || coord.y == 800 - TEXT_DISPLACEMENT) {
-                assertEquals(GridType.createLabel(coord.x, "m"), label);
+                assertEquals(GridUtils.createLabel(coord.x, "m"), label);
             } else {
                 assertEquals("", label);
             }
@@ -120,9 +120,9 @@ public class PointGridStrategyTest extends AbstractMapfishSpringTest {
 
             String label = (String) next.getAttribute(Constants.Style.Grid.ATT_LABEL);
             if (coord.x == 100 + TEXT_DISPLACEMENT || coord.x == 500 - TEXT_DISPLACEMENT) {
-                assertEquals(GridType.createLabel(coord.y, "m"), label);
+                assertEquals(GridUtils.createLabel(coord.y, "m"), label);
             } else if (coord.y == 200 + TEXT_DISPLACEMENT || coord.y == 800 - TEXT_DISPLACEMENT) {
-                assertEquals(GridType.createLabel(coord.x, "m"), label);
+                assertEquals(GridUtils.createLabel(coord.x, "m"), label);
             } else {
                 assertEquals("", label);
             }
@@ -169,9 +169,9 @@ public class PointGridStrategyTest extends AbstractMapfishSpringTest {
 
             String label = (String) next.getAttribute(Constants.Style.Grid.ATT_LABEL);
             if (coord.x == 10 + TEXT_DISPLACEMENT || coord.x == 55 - TEXT_DISPLACEMENT) {
-                assertEquals(GridType.createLabel(coord.y, "m"), label);
+                assertEquals(GridUtils.createLabel(coord.y, "m"), label);
             } else if (coord.y == 20 + TEXT_DISPLACEMENT || coord.y == 80 - TEXT_DISPLACEMENT) {
-                assertEquals(GridType.createLabel(coord.x, "m"), label);
+                assertEquals(GridUtils.createLabel(coord.x, "m"), label);
             } else {
                 assertEquals("" + coord.x + "," + coord.y, "", label);
             }
