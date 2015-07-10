@@ -1,9 +1,6 @@
 package org.mapfish.print.map.geotools.grid;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Polygon;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.Constants;
@@ -11,7 +8,6 @@ import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import java.awt.geom.AffineTransform;
 import javax.annotation.Nonnull;
 
 /**

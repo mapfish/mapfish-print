@@ -147,7 +147,7 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
         int indentAmount = (int) (mapContext.getDPI() / 8); // 1/8 inch indent
         if (ordinate == 0) {
             featureBuilder.set(Grid.ATT_ROTATION, 0);
-            featureBuilder.set(Grid.ATT_X_DISPLACEMENT,  - (mapContext.getMapSize().width / 2) + indentAmount);
+            featureBuilder.set(Grid.ATT_X_DISPLACEMENT, -(mapContext.getMapSize().width / 2) + indentAmount);
             featureBuilder.set(Grid.ATT_Y_DISPLACEMENT, 0);
         } else {
             featureBuilder.set(Grid.ATT_ROTATION, 270);

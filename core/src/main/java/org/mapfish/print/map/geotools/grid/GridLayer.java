@@ -40,7 +40,7 @@ public class GridLayer extends AbstractFeatureSourceLayer {
      * @param featureSourceSupplier a function that creates the feature source.  This will only be called once.
      * @param styleSupplier         a function that creates the style for styling the features. This will only be called once.
      * @param renderAsSvg           is the layer rendered as SVG?
-     * @param params the parameters for this layer
+     * @param params                the parameters for this layer
      */
     public GridLayer(final ExecutorService executorService,
                      final FeatureSourceSupplier featureSourceSupplier,
