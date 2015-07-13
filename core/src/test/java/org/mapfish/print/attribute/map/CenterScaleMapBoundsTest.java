@@ -36,11 +36,13 @@ import static org.junit.Assert.assertEquals;
  */
 public class CenterScaleMapBoundsTest {
     static final double OPENLAYERS_2_DPI = 72;
+    public static final CoordinateReferenceSystem SPHERICAL_MERCATOR;
     public static final CoordinateReferenceSystem CH1903;
     public static final CoordinateReferenceSystem LAMBERT;
 
     static {
         try {
+            SPHERICAL_MERCATOR = CRS.decode("EPSG:3857");
             CH1903 = CRS.decode("EPSG:21781");
             LAMBERT = CRS.decode("EPSG:2154");
         } catch (Throwable e) {
@@ -104,7 +106,7 @@ public class CenterScaleMapBoundsTest {
         final CenterScaleMapBounds bounds = new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 0.0, 0.0, scale);
         final Rectangle paintArea = new Rectangle(400, 200);
         final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea, OPENLAYERS_2_DPI);
-        
+
         CenterScaleMapBounds newBounds = bounds.zoomOut(1);
         ReferencedEnvelope newEnvelope = newBounds.toReferencedEnvelope(paintArea, OPENLAYERS_2_DPI);
 
@@ -113,7 +115,7 @@ public class CenterScaleMapBoundsTest {
         assertEquals(envelope.getMaxX(), newEnvelope.getMaxX(), delta);
         assertEquals(envelope.getMinY(), newEnvelope.getMinY(), delta);
         assertEquals(envelope.getMaxY(), newEnvelope.getMaxY(), delta);
-        
+
         newBounds = bounds.zoomOut(2);
         newEnvelope = newBounds.toReferencedEnvelope(paintArea, OPENLAYERS_2_DPI);
 
@@ -131,4 +133,15 @@ public class CenterScaleMapBoundsTest {
         assertEquals(CH1903, bounds.getProjection());
     }
 
+    @Test
+    public void geodetic() throws Exception {
+        final Scale scale = new Scale(15432.0);
+        final CenterScaleMapBounds centerBounds = new CenterScaleMapBounds(SPHERICAL_MERCATOR, 682433.0, 6379270.0, scale);
+        assertEquals(
+                centerBounds.getScaleDenominator(new Rectangle(715, 395), 254).getDenominator(),
+                15432.0, 1.0);
+        assertEquals(
+                centerBounds.getGeodeticScaleDenominator(new Rectangle(715, 395), 254).getDenominator(),
+                10019.0, 1.0);
+    }
 }

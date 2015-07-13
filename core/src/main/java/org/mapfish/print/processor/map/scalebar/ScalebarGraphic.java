@@ -85,8 +85,13 @@ public class ScalebarGraphic {
         }
 
         final DistanceUnit mapUnit = getUnit(bounds);
-        // to calculate the scale the requestor DPI is used , because the paint area is already adjusted
-        final Scale scale = bounds.getScaleDenominator(paintArea, mapParams.getRequestorDPI());
+        Scale scale;
+        if (scalebarParams.geodetic) {
+            // to calculate the scale the requestor DPI is used , because the paint area is already adjusted
+            scale = bounds.getGeodeticScaleDenominator(paintArea, mapParams.getRequestorDPI());
+        } else {
+            scale = bounds.getScaleDenominator(paintArea, mapParams.getRequestorDPI());
+        }
 
         DistanceUnit scaleUnit = scalebarParams.getUnit();
         if (scaleUnit == null) {

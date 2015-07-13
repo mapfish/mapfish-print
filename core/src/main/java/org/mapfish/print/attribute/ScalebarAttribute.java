@@ -98,7 +98,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
 
         /**
          * The scalebar type.
-         * 
+         *
          * <p>Available types:</p>
          * <ul>
          *      <li>"line": A simple line with graduations.</li>
@@ -137,6 +137,12 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
          */
         @HasDefaultValue
         public String projection = null;
+
+        /**
+         * Use geodetic measurement calculations for the scalebar.
+         */
+        @HasDefaultValue
+        public boolean geodetic = false;
 
         /**
          * Force that the given unit is used (default: false).
