@@ -60,7 +60,7 @@ public class ScalebarGraphic {
 
     /**
      * Render the scalebar.
-     *  @param mapParams        The parameters of the map for which the scalebar is created.
+     * @param mapParams         The parameters of the map for which the scalebar is created.
      * @param scalebarParams    The scalebar parameters.
      * @param tempFolder        The directory in which the graphic file is created.
      * @param template          The template that containts the scalebar processor
@@ -85,8 +85,13 @@ public class ScalebarGraphic {
         }
 
         final DistanceUnit mapUnit = getUnit(bounds);
-        // to calculate the scale the requestor DPI is used , because the paint area is already adjusted
-        final Scale scale = bounds.getScaleDenominator(paintArea, mapParams.getRequestorDPI());
+        Scale scale;
+        if (scalebarParams.geodetic) {
+            // to calculate the scale the requestor DPI is used , because the paint area is already adjusted
+            scale = bounds.getGeodeticScaleDenominator(paintArea, mapParams.getRequestorDPI());
+        } else {
+            scale = bounds.getScaleDenominator(paintArea, mapParams.getRequestorDPI());
+        }
 
         DistanceUnit scaleUnit = scalebarParams.getUnit();
         if (scaleUnit == null) {
@@ -99,7 +104,7 @@ public class ScalebarGraphic {
         final int maxLengthInPixelAdjusted = (scalebarParams.getOrientation().isHorizontal()) ?
                 maxWidthInPixelAdjusted : maxHeightInPixelAdjusted;
 
-        final double maxIntervalLengthInWorldUnits = DistanceUnit.PX.convertTo(maxLengthInPixelAdjusted, scaleUnit) 
+        final double maxIntervalLengthInWorldUnits = DistanceUnit.PX.convertTo(maxLengthInPixelAdjusted, scaleUnit)
                 * scale.getDenominator() / scalebarParams.intervals;
         final double niceIntervalLengthInWorldUnits =
                 getNearestNiceValue(maxIntervalLengthInWorldUnits, scaleUnit, scalebarParams.lockUnits);
