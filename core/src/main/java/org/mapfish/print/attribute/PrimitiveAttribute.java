@@ -79,6 +79,13 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
         // no checks required
     }
 
+    /**
+     * Validation of the value from a request.
+     * @param value The value from a request.
+     */
+    public void validateValue(final Object value) {
+    }
+
     @Override
     public final void printClientConfig(final JSONWriter json, final Template template) throws JSONException {
         json.key(ReflectiveAttribute.JSON_NAME).value(this.configName);

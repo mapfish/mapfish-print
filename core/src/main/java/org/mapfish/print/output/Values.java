@@ -161,7 +161,7 @@ public final class Values {
                     PObject[] pValues = new PObject[]{requestJsonAttributes, new PJsonObject(obj, "default_" + attributeName)};
                     jsonToUse = new PMultiObject(pValues);
                 }
-                value = parser.parsePrimitive(attributeName, pAtt.getValueClass(), jsonToUse);
+                value = parser.parsePrimitive(attributeName, pAtt, jsonToUse);
             } else if (attribute instanceof DataSourceAttribute) {
                 DataSourceAttribute dsAttribute = (DataSourceAttribute) attribute;
                 value = dsAttribute.parseAttribute(parser, template, requestJsonAttributes.optArray(attributeName));
