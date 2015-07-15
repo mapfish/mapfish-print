@@ -1,0 +1,8 @@
+{
+  "layout": "main",
+  "outputFormat": "pdf",
+  "attributes": {
+    "field1": true,
+    "field2": false
+  }
+}

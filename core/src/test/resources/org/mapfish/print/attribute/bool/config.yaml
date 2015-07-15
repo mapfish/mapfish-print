@@ -1,0 +1,11 @@
+throwErrorOnExtraParameters: true
+templates:
+  main: !template
+    reportTemplate: simple-map.jrxml
+    attributes:
+      field1: !boolean {}
+      field2: !boolean {}
+      field3: !boolean {default: false}
+    processors:
+    - !reportBuilder
+        directory: "."
