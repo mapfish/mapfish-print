@@ -22,9 +22,11 @@ package org.mapfish.print.parser;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.ExtraPropertyException;
 import org.mapfish.print.MissingPropertyException;
+import org.mapfish.print.attribute.PrimitiveAttribute;
 import org.mapfish.print.wrapper.ObjectMissingException;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PObject;
@@ -317,13 +319,15 @@ public final class MapfishParser {
     /**
      * Get the value of a primitive type from the request data.
      *
-     * @param fieldName   the name of th attribute to get from the request data.
-     * @param valueClass  the type to get
-     * @param requestData the data to retrieve the value from
+     * @param fieldName     the name of the attribute to get from the request data.
+     * @param pAtt          the primitive attribute.
+     * @param requestData   the data to retrieve the value from.
      */
-    public Object parsePrimitive(final String fieldName, final Class valueClass, final PObject requestData) {
+    public Object parsePrimitive(final String fieldName, final PrimitiveAttribute<?> pAtt, final PObject requestData) {
+        Class<?> valueClass = pAtt.getValueClass();
+        Object value;
         try {
-            return parseValue(false, new String[0], valueClass, fieldName, requestData);
+            value = parseValue(false, new String[0], valueClass, fieldName, requestData);
         } catch (UnsupportedTypeException e) {
             String type = e.type.getName();
             if (e.type.isArray()) {
@@ -334,6 +338,9 @@ public final class MapfishParser {
                                        + "\n\nTo support more types add the type to " +
                                        "parseValue and parseArrayValue in this class and add a test to the test class", e);
         }
+        pAtt.validateValue(value);
+
+        return value;
     }
 
     /**
