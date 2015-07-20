@@ -25,6 +25,7 @@ import com.google.common.primitives.Longs;
 
 import org.json.JSONException;
 import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.config.access.AccessAssertionPersister;
 import org.mapfish.print.servlet.job.JobStatus.Status;
 import org.mapfish.print.servlet.registry.Registry;
@@ -93,6 +94,8 @@ public class ThreadPoolJobManager implements JobManager {
     private static final long DEFAULT_THREAD_IDLE_TIME = 60L;
     private static final long DEFAULT_TIMEOUT_IN_SECONDS = 600L;
     private static final long DEFAULT_ABANDONED_TIMEOUT_IN_SECONDS = 120L;
+    private static final boolean DEFAULT_OLD_FILES_CLEAN_UP = true;
+    private static final long DEFAULT_CLEAN_UP_INTERVAL_IN_SECONDS = 86400;
 
     /**
      * The maximum number of threads that will be used for print jobs, this is not the number of threads
@@ -121,6 +124,14 @@ public class ThreadPoolJobManager implements JobManager {
      */
     private long abandonedTimeout = DEFAULT_ABANDONED_TIMEOUT_IN_SECONDS;
     /**
+     * Delete old report files?
+     */
+    private boolean oldFileCleanUp = DEFAULT_OLD_FILES_CLEAN_UP;
+    /**
+     * The interval at which old reports are deleted (in seconds).
+     */
+    private long oldFileCleanupInterval = DEFAULT_CLEAN_UP_INTERVAL_IN_SECONDS;
+    /**
      * A comparator for comparing {@link org.mapfish.print.servlet.job.SubmittedPrintJob}s and
      * prioritizing them.
      * <p/>
@@ -147,9 +158,12 @@ public class ThreadPoolJobManager implements JobManager {
 
     private PriorityBlockingQueue<Runnable> queue;
     private ScheduledExecutorService timer;
+    private ScheduledExecutorService cleanUpTimer;
     @Qualifier("accessAssertionPersister")
     @Autowired
     private AccessAssertionPersister assertionPersister;
+    @Autowired
+    private WorkingDirectories workingDirectories;
 
     public final void setMaxNumberOfRunningPrintJobs(final int maxNumberOfRunningPrintJobs) {
         this.maxNumberOfRunningPrintJobs = maxNumberOfRunningPrintJobs;
@@ -169,6 +183,14 @@ public class ThreadPoolJobManager implements JobManager {
 
     public final void setJobPriorityComparator(final Comparator<PrintJob> jobPriorityComparator) {
         this.jobPriorityComparator = jobPriorityComparator;
+    }
+
+    public final void setOldFileCleanUp(final boolean oldFileCleanUp) {
+        this.oldFileCleanUp = oldFileCleanUp;
+    }
+
+    public final void setOldFileCleanupInterval(final long oldFileCleanupInterval) {
+        this.oldFileCleanupInterval = oldFileCleanupInterval;
     }
 
     /**
@@ -243,6 +265,20 @@ public class ThreadPoolJobManager implements JobManager {
         });
         this.timer.scheduleAtFixedRate(new PostResultToRegistryTask(this.assertionPersister), PostResultToRegistryTask.CHECK_INTERVAL,
                 PostResultToRegistryTask.CHECK_INTERVAL, TimeUnit.MILLISECONDS);
+
+        if (this.oldFileCleanUp) {
+            this.cleanUpTimer = Executors.newScheduledThreadPool(0, new ThreadFactory() {
+                @Override
+                public Thread newThread(final Runnable timerTask) {
+                    final Thread thread = new Thread(timerTask, "Clean up old files");
+                    thread.setDaemon(true);
+                    return thread;
+                }
+            });
+            this.cleanUpTimer.scheduleAtFixedRate(
+                    this.workingDirectories.getCleanUpTask(), this.oldFileCleanupInterval,
+                    this.oldFileCleanupInterval, TimeUnit.SECONDS);
+        }
     }
 
     private void markAsRunning(final String referenceId) {

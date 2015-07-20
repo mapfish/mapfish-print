@@ -19,12 +19,17 @@
 
 package org.mapfish.print.config;
 
+
+import com.google.common.annotations.VisibleForTesting;
+
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
+
 import javax.annotation.PostConstruct;
 
 import static com.google.common.io.Files.getNameWithoutExtension;
@@ -36,9 +41,10 @@ import static com.google.common.io.Files.getNameWithoutExtension;
  */
 public class WorkingDirectories {
     private static final Logger LOGGER = LoggerFactory.getLogger(WorkingDirectories.class);
-    
+
     private File working;
     private File reports;
+    private int maxAge;
 
     public final void setWorking(final File working) {
         this.working = working;
@@ -46,6 +52,10 @@ public class WorkingDirectories {
 
     public final File getWorking() {
         return this.working;
+    }
+
+    public final void setMaxAge(final int maxAge) {
+        this.maxAge = maxAge;
     }
 
     /**
@@ -148,4 +158,57 @@ public class WorkingDirectories {
         return new File(this.working, configuration.getDirectory().getName());
     }
 
+    public final Runnable getCleanUpTask() {
+        return new CleanUpTask(this.maxAge);
+    }
+
+    /**
+     * A task that deletes old reports.
+     */
+    @VisibleForTesting
+    class CleanUpTask implements Runnable {
+
+        /**
+         * The maximum age for a report in seconds. Files older
+         * than that age will be deleted.
+         */
+        private final long maxAge;
+
+        /**
+         * @param maxAge The maximum age for a report in seconds.
+         */
+        public CleanUpTask(final long maxAge) {
+            this.maxAge = maxAge;
+        }
+
+        @Override
+        public void run() {
+            try {
+                removeOldFiles();
+            } catch (Exception e) {
+                LOGGER.error("error running file clean-up task", e);
+            }
+        }
+
+        private void removeOldFiles() {
+            final File reportsDir = WorkingDirectories.this.reports;
+            //CSOFF: MagicNumber
+            final long ageThreshold = new Date().getTime() - this.maxAge * 1000;
+            //CSON: MagicNumber
+
+            int deletedReports = 0;
+            if (reportsDir.exists()) {
+                for (File file : reportsDir.listFiles()) {
+                    if (file.lastModified() < ageThreshold) {
+                        if (!file.delete()) {
+                            LOGGER.warn("failed to delete report " + file.getAbsolutePath());
+                        } else {
+                            deletedReports++;
+                        }
+                    }
+                }
+            }
+            LOGGER.info("deleted " + deletedReports + " old report(s)");
+        }
+    }
 }
