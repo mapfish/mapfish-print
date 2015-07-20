@@ -39,7 +39,6 @@ public class WorkingDirectories {
     
     private File working;
     private File reports;
-    private File reportsOldApi;
 
     public final void setWorking(final File working) {
         this.working = working;
@@ -55,7 +54,6 @@ public class WorkingDirectories {
     @PostConstruct
     public final void init() {
         this.reports = new File(this.working, "reports");
-        this.reportsOldApi = new File(this.working, "reports-old-api");
     }
     /**
      * Get the directory where the compiled jasper reports should be put.
@@ -90,14 +88,6 @@ public class WorkingDirectories {
         } catch (IOException e) {
             throw new AssertionError("Unable to create temporary directory in '" + this.working + "'");
         }
-    }
-
-    /**
-     * Get the directory where the reports of the old API servlet are written to.
-     */
-    public final File getReportsOldApi() {
-        createIfMissing(this.reportsOldApi, "Reports-Old-API");
-        return this.reportsOldApi;
     }
 
     /**
