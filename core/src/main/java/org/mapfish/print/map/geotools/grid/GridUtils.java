@@ -1,6 +1,9 @@
 package org.mapfish.print.map.geotools.grid;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Polygon;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.Constants;
@@ -8,6 +11,7 @@ import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
+import java.awt.geom.AffineTransform;
 import javax.annotation.Nonnull;
 
 /**
@@ -16,6 +20,29 @@ import javax.annotation.Nonnull;
 public final class GridUtils {
     private GridUtils() {
         // do nothing
+    }
+
+    static Polygon calculateBounds(final MapfishMapContext context) {
+        double rotation = context.getRotation();
+        ReferencedEnvelope env = context.toReferencedEnvelope();
+
+        Coordinate centre = env.centre();
+        AffineTransform rotateInstance = AffineTransform.getRotateInstance(rotation, centre.x, centre.y);
+
+        // CSOFF: MagicNumber
+        double[] dstPts = new double[8];
+        double[] srcPts = {
+                env.getMinX(), env.getMinY(), env.getMinX(), env.getMaxY(),
+                env.getMaxX(), env.getMaxY(), env.getMaxX(), env.getMinY()};
+
+        rotateInstance.transform(srcPts, 0, dstPts, 0, 4);
+
+        return new GeometryFactory().createPolygon(new Coordinate[]{
+                new Coordinate(dstPts[0], dstPts[1]), new Coordinate(dstPts[2], dstPts[3]),
+                new Coordinate(dstPts[4], dstPts[5]), new Coordinate(dstPts[6], dstPts[7]),
+                new Coordinate(dstPts[0], dstPts[1])
+        });
+        // CSON: MagicNumber
     }
 
     static double calculateFirstLine(final ReferencedEnvelope bounds,
