@@ -101,15 +101,29 @@ public final class BBoxMapBounds extends MapBounds {
     }
 
     @Override
-    public MapBounds adjustBoundsToNearestScale(final ZoomLevels zoomLevels, final double tolerance,
-                                                final ZoomLevelSnapStrategy zoomLevelSnapStrategy, final Rectangle paintArea,
-                                                final double dpi) {
-        final Scale scale = getScaleDenominator(paintArea, dpi);
-        final ZoomLevelSnapStrategy.SearchResult result = zoomLevelSnapStrategy.search(scale, tolerance, zoomLevels);
+    public MapBounds adjustBoundsToNearestScale(
+            final ZoomLevels zoomLevels, final double tolerance,
+            final ZoomLevelSnapStrategy zoomLevelSnapStrategy,
+            final boolean geodetic,
+            final Rectangle paintArea, final double dpi) {
+
+        Scale scale;
+        if (geodetic) {
+            final Scale currentScale = getScaleDenominator(paintArea, dpi);
+            final Scale geodeticScale = getGeodeticScaleDenominator(paintArea, dpi);
+            final ZoomLevelSnapStrategy.SearchResult result = zoomLevelSnapStrategy.search(
+                    geodeticScale, tolerance, zoomLevels);
+            scale = new Scale(result.getScale().getDenominator() *
+                    currentScale.getDenominator() / geodeticScale.getDenominator());
+        } else {
+            final Scale currentScale = getScaleDenominator(paintArea, dpi);
+            final ZoomLevelSnapStrategy.SearchResult result = zoomLevelSnapStrategy.search(
+                    currentScale, tolerance, zoomLevels);
+            scale = result.getScale();
+        }
+
         Coordinate center = this.bbox.centre();
-
-
-        return new CenterScaleMapBounds(getProjection(), center.x, center.y, result.getScale());
+        return new CenterScaleMapBounds(getProjection(), center.x, center.y, scale);
 
     }
 

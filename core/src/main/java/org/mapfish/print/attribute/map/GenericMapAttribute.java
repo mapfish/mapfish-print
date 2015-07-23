@@ -83,6 +83,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
     private ZoomLevels zoomLevels = null;
     private Double zoomSnapTolerance = null;
     private ZoomLevelSnapStrategy zoomLevelSnapStrategy = null;
+    private Boolean zoomSnapGeodetic = null;
 
     private Integer width = null;
     private Integer height = null;
@@ -145,6 +146,10 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
 
     public final void setZoomLevelSnapStrategy(final ZoomLevelSnapStrategy zoomLevelSnapStrategy) {
         this.zoomLevelSnapStrategy = zoomLevelSnapStrategy;
+    }
+
+    public final void setZoomSnapGeodetic(final Boolean zoomSnapGeodetic) {
+        this.zoomSnapGeodetic = zoomSnapGeodetic;
     }
 
     //CSOFF: DesignForExtension
@@ -420,6 +425,12 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
         public ZoomLevelSnapStrategy getZoomLevelSnapStrategy() {
         //CSON: DesignForExtension
             return GenericMapAttribute.this.zoomLevelSnapStrategy;
+        }
+
+        //CSOFF: DesignForExtension
+        public Boolean getZoomSnapGeodetic() {
+        //CSON: DesignForExtension
+            return GenericMapAttribute.this.zoomSnapGeodetic;
         }
 
         //CSOFF: DesignForExtension

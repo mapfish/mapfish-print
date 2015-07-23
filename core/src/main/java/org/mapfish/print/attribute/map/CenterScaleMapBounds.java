@@ -89,11 +89,26 @@ public final class CenterScaleMapBounds extends MapBounds {
     }
 
     @Override
-    public MapBounds adjustBoundsToNearestScale(final ZoomLevels zoomLevels, final double tolerance,
-                                                final ZoomLevelSnapStrategy zoomLevelSnapStrategy,
-                                                final Rectangle paintArea, final double dpi) {
-        final ZoomLevelSnapStrategy.SearchResult result = zoomLevelSnapStrategy.search(this.scale, tolerance, zoomLevels);
-        return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y, result.getScale());
+    public MapBounds adjustBoundsToNearestScale(
+            final ZoomLevels zoomLevels, final double tolerance,
+            final ZoomLevelSnapStrategy zoomLevelSnapStrategy,
+            final boolean geodetic,
+            final Rectangle paintArea, final double dpi) {
+
+        Scale resultScale;
+        if (geodetic) {
+            final Scale currentScale = getScaleDenominator(paintArea, dpi);
+            final Scale geodeticScale = getGeodeticScaleDenominator(paintArea, dpi);
+            final ZoomLevelSnapStrategy.SearchResult result = zoomLevelSnapStrategy.search(
+                    geodeticScale, tolerance, zoomLevels);
+            resultScale = new Scale(result.getScale().getDenominator() *
+                    currentScale.getDenominator() / geodeticScale.getDenominator());
+        } else {
+            final ZoomLevelSnapStrategy.SearchResult result = zoomLevelSnapStrategy.search(this.scale, tolerance, zoomLevels);
+            resultScale = result.getScale();
+        }
+
+        return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y, resultScale);
     }
 
     @Override

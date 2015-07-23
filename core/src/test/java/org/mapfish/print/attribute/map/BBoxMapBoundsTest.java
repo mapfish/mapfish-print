@@ -20,8 +20,10 @@
 package org.mapfish.print.attribute.map;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.junit.Test;
 import org.mapfish.print.map.Scale;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.awt.Rectangle;
 
@@ -33,6 +35,15 @@ import static org.mapfish.print.attribute.map.CenterScaleMapBoundsTest.CH1903;
  * @author Jesse on 3/27/14.
  */
 public class BBoxMapBoundsTest {
+    public static final CoordinateReferenceSystem SPHERICAL_MERCATOR;
+
+    static {
+        try {
+            SPHERICAL_MERCATOR = CRS.decode("EPSG:3857");
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Test
     public void testToReferencedEnvelope() throws Exception {
@@ -76,7 +87,7 @@ public class BBoxMapBoundsTest {
                 originalBBox.getMaxX(), originalBBox.getMaxY());
 
         final MapBounds newMapBounds = linear.adjustBoundsToNearestScale(zoomLevels, 0.05,
-                ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE, screen, dpi);
+                ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE, false, screen, dpi);
         ReferencedEnvelope newBBox = newMapBounds.toReferencedEnvelope(screen, dpi);
 
         final double delta = 0.00001;
@@ -104,7 +115,8 @@ public class BBoxMapBoundsTest {
                 originalBBox.getMaxX(), originalBBox.getMaxY());
 
         final MapBounds newMapBounds = linear.adjustBoundsToNearestScale(zoomLevels, 0.05,
-                ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE, screen, dpi);
+                ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE, false,
+                screen, dpi);
         ReferencedEnvelope newBBox = newMapBounds.toReferencedEnvelope(screen, dpi);
 
         final double delta = 0.00001;
@@ -144,5 +156,34 @@ public class BBoxMapBoundsTest {
         assertEquals(-20, envelope.getMinY(), 0.001);
         assertEquals(20, envelope.getMaxY(), 0.001);
         assertEquals(WGS84, envelope.getCoordinateReferenceSystem());
+    }
+
+    @Test
+    public void testAdjustToGeodeticScale() throws Exception {
+        int scale = 24000;
+        double dpi = 100;
+        Rectangle screen = new Rectangle(100, 100);
+        ZoomLevels zoomLevels = new ZoomLevels(15000, 20000, 25000, 30000, 350000);
+
+        final CenterScaleMapBounds mapBounds = new CenterScaleMapBounds(SPHERICAL_MERCATOR, 400000, 5000000, new Scale(scale));
+        final ReferencedEnvelope originalBBox = mapBounds.toReferencedEnvelope(screen, dpi);
+
+        BBoxMapBounds linear = new BBoxMapBounds(SPHERICAL_MERCATOR, originalBBox.getMinX(), originalBBox.getMinY(),
+                originalBBox.getMaxX(), originalBBox.getMaxY());
+
+        final MapBounds newMapBounds = linear.adjustBoundsToNearestScale(zoomLevels, 0.05,
+                ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE, true, screen, dpi);
+        ReferencedEnvelope newBBox = newMapBounds.toReferencedEnvelope(screen, dpi);
+
+        final double delta = 0.00001;
+        assertEquals(originalBBox.getMedian(0), newBBox.getMedian(0), delta);
+        assertEquals(originalBBox.getMedian(1), newBBox.getMedian(1), delta);
+
+        assertEquals(399664, newBBox.getMinX(), 1);
+        assertEquals(4999664, newBBox.getMinY(), 1);
+        assertEquals(400335, newBBox.getMaxX(), 1);
+        assertEquals(5000335, newBBox.getMaxY(), 1);
+        assertEquals(26428, newMapBounds.getScaleDenominator(screen, dpi).getDenominator(), 1);
+        assertEquals(20000, newMapBounds.getGeodeticScaleDenominator(screen, dpi).getDenominator(), delta);
     }
 }
