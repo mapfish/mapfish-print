@@ -194,32 +194,6 @@ public class ScalebarGraphicTest {
         new ImageSimilarity(ImageSimilarity.convertFromSvg(file, 300, 40), 4).assertSimilarity(getFile("expected-scalebar-graphic-svg.tiff"), 15);
     }
 
-    @Test
-    public void testRenderProjection() throws Exception {
-        MapAttribute mapAttribute = new MapAttribute();
-        mapAttribute.setWidth(780);
-        mapAttribute.setHeight(330);
-        mapAttribute.setMaxDpi(600.0);
-        MapAttributeValues mapParams = mapAttribute.createValue(null);
-        mapParams.dpi = 72;
-        mapParams.center = new double[]{-8235878.4938425, 4979784.7605681};
-        mapParams.scale = 26000.0;
-        mapParams.layers = new PJsonArray(null, new JSONArray(), "");
-        mapParams.postConstruct();
-
-        ScalebarAttribute scalebarAttibute = new ScalebarAttribute();
-        scalebarAttibute.setWidth(300);
-        scalebarAttibute.setHeight(40);
-        ScalebarAttributeValues scalebarParams = scalebarAttibute.createValue(null);
-        scalebarParams.verticalAlign = VerticalAlign.TOP.getLabel();
-        scalebarParams.projection = "EPSG:3748";
-
-        ScalebarGraphic scalebar = new ScalebarGraphic();
-        URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);
-//        Files.copy(new File(file), new File("/tmp/" + getClass().getSimpleName() + "expected-scalebar-graphic-projection.tiff"));
-        new ImageSimilarity(new File(file), 4).assertSimilarity(getFile("expected-scalebar-graphic-projection.tiff"), 15);
-    }
-
     private File getFile(String fileName) {
         return AbstractMapfishSpringTest.getFile(getClass(), fileName);
     }

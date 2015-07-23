@@ -168,14 +168,6 @@ public abstract class MapBounds {
      */
     public abstract MapBounds zoomToScale(final double scale);
 
-    /**
-     * Reproject the bounds to the given projection.
-     *
-     * @param targetProjection The target projection.
-     * @return The reprojected bounds.
-     */
-    public abstract MapBounds reproject(final CoordinateReferenceSystem targetProjection);
-
     // CHECKSTYLE:OFF
     @Override
     public boolean equals(Object o) {
