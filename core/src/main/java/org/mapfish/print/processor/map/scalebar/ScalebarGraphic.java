@@ -20,11 +20,12 @@
 package org.mapfish.print.processor.map.scalebar;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.geotools.referencing.GeodeticCalculator;
 import org.mapfish.print.attribute.ScalebarAttribute.ScalebarAttributeValues;
-import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.attribute.map.MapBounds;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.Scale;
@@ -57,33 +58,30 @@ public class ScalebarGraphic {
 
     /**
      * Render the scalebar.
-     * @param mapParams         The parameters of the map for which the scalebar is created.
+     * @param mapContext        The context of the map for which the scalebar is created.
      * @param scalebarParams    The scalebar parameters.
      * @param tempFolder        The directory in which the graphic file is created.
      * @param template          The template that containts the scalebar processor
      */
-    public final URI render(final MapAttributeValues mapParams,
+    public final URI render(final MapfishMapContext mapContext,
                             final ScalebarAttributeValues scalebarParams,
                             final File tempFolder,
                             final Template template)
             throws IOException, ParserConfigurationException {
-        final double dpi = mapParams.getDpi();
-        final double dpiRatio = dpi / mapParams.getRequestorDPI();
+        final double dpi = mapContext.getDPI();
+        final double dpiRatio = dpi / mapContext.getRequestorDPI();
 
         // get the map bounds
-        final Rectangle paintArea = new Rectangle(mapParams.getMapSize());
-        MapBounds bounds = mapParams.getMapBounds();
-        bounds = CreateMapProcessor.adjustBoundsToScaleAndMapSize(
-                mapParams, mapParams.getRequestorDPI(), paintArea, bounds);
-        paintArea.setBounds(0, 0, (int) (paintArea.width * dpiRatio), (int) (paintArea.height * dpiRatio));
+        final Rectangle paintArea = new Rectangle(mapContext.getMapSize());
+        MapBounds bounds = mapContext.getBounds();
 
         final DistanceUnit mapUnit = getUnit(bounds);
         Scale scale;
         if (scalebarParams.geodetic) {
             // to calculate the scale the requestor DPI is used , because the paint area is already adjusted
-            scale = bounds.getGeodeticScaleDenominator(paintArea, mapParams.getRequestorDPI());
+            scale = bounds.getGeodeticScaleDenominator(paintArea, mapContext.getRequestorDPI());
         } else {
-            scale = bounds.getScaleDenominator(paintArea, mapParams.getRequestorDPI());
+            scale = bounds.getScaleDenominator(paintArea, mapContext.getRequestorDPI());
         }
 
         DistanceUnit scaleUnit = scalebarParams.getUnit();

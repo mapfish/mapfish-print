@@ -1,6 +1,6 @@
 package org.mapfish.print.processor.map.scalebar;
 
-import org.json.JSONArray;
+import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -8,13 +8,14 @@ import org.junit.rules.TemporaryFolder;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.attribute.ScalebarAttribute;
 import org.mapfish.print.attribute.ScalebarAttribute.ScalebarAttributeValues;
-import org.mapfish.print.attribute.map.MapAttribute;
-import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
+import org.mapfish.print.attribute.map.CenterScaleMapBounds;
+import org.mapfish.print.attribute.map.MapBounds;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.DistanceUnit;
+import org.mapfish.print.map.Scale;
 import org.mapfish.print.test.util.ImageSimilarity;
-import org.mapfish.print.wrapper.json.PJsonArray;
 
 import java.awt.Dimension;
 import java.io.File;
@@ -118,16 +119,10 @@ public class ScalebarGraphicTest {
 
     @Test
     public void testRender() throws Exception {
-        MapAttribute mapAttribute = new MapAttribute();
-        mapAttribute.setWidth(780);
-        mapAttribute.setHeight(330);
-        mapAttribute.setMaxDpi(600.0);
-        MapAttributeValues mapParams = mapAttribute.createValue(null);
-        mapParams.dpi = 72;
-        mapParams.center = new double[]{-8235878.4938425, 4979784.7605681};
-        mapParams.scale = 26000.0;
-        mapParams.layers = new PJsonArray(null, new JSONArray(), "");
-        mapParams.postConstruct();
+        MapBounds bounds = new CenterScaleMapBounds(
+                CRS.decode("EPSG:3857"), -8235878.4938425, 4979784.7605681, new Scale(26000));
+        MapfishMapContext mapParams = new MapfishMapContext(
+                bounds, new Dimension(780, 330), 0, 72, 72, true, false);
 
         ScalebarAttribute scalebarAttibute = new ScalebarAttribute();
         scalebarAttibute.setWidth(300);
@@ -143,17 +138,10 @@ public class ScalebarGraphicTest {
 
     @Test
     public void testRenderDoubleDpi() throws Exception {
-        MapAttribute mapAttribute = new MapAttribute();
-        mapAttribute.setWidth(780);
-        mapAttribute.setHeight(330);
-        mapAttribute.setMaxDpi(600.0);
-        MapAttributeValues mapParams = mapAttribute.createValue(null);
-        // use a dpi of 144, this will create a scale bar graphic of 600x80 px
-        mapParams.dpi = 144;
-        mapParams.center = new double[]{-8235878.4938425, 4979784.7605681};
-        mapParams.scale = 26000.0;
-        mapParams.layers = new PJsonArray(null, new JSONArray(), "");
-        mapParams.postConstruct();
+        MapBounds bounds = new CenterScaleMapBounds(
+                CRS.decode("EPSG:3857"), -8235878.4938425, 4979784.7605681, new Scale(26000));
+        MapfishMapContext mapParams = new MapfishMapContext(
+                bounds, new Dimension(780, 330), 0, 144, 72, true, false);
 
         ScalebarAttribute scalebarAttibute = new ScalebarAttribute();
         scalebarAttibute.setWidth(300);
@@ -168,16 +156,10 @@ public class ScalebarGraphicTest {
 
     @Test
     public void testRenderSvg() throws Exception {
-        MapAttribute mapAttribute = new MapAttribute();
-        mapAttribute.setWidth(780);
-        mapAttribute.setHeight(330);
-        mapAttribute.setMaxDpi(600.0);
-        MapAttributeValues mapParams = mapAttribute.createValue(null);
-        mapParams.dpi = 72;
-        mapParams.center = new double[]{-8235878.4938425, 4979784.7605681};
-        mapParams.scale = 26000.0;
-        mapParams.layers = new PJsonArray(null, new JSONArray(), "");
-        mapParams.postConstruct();
+        MapBounds bounds = new CenterScaleMapBounds(
+                CRS.decode("EPSG:3857"), -8235878.4938425, 4979784.7605681, new Scale(26000));
+        MapfishMapContext mapParams = new MapfishMapContext(
+                bounds, new Dimension(780, 330), 0, 72, 72, true, false);
 
         ScalebarAttribute scalebarAttibute = new ScalebarAttribute();
         scalebarAttibute.setWidth(300);
