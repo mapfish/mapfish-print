@@ -21,6 +21,7 @@ package org.mapfish.print.processor.jasper;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.Files;
+
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.Renderable;
@@ -40,17 +41,17 @@ import java.util.List;
 
 /**
  * Creates a Jasper containing overlaid images, which is supposed to
- * be embedded into an another report as sub-report. 
- * 
+ * be embedded into an another report as sub-report.
+ *
  * @author tsauerwein
  */
 public class ImagesSubReport {
-    
+
     private final JasperDesign reportDesign;
 
     /**
      * Constructor.
-     * 
+     *
      * @param graphics A list of graphic files.
      * @param size The size of the report in pixel.
      * @param dpi the dpi of the report
@@ -72,13 +73,13 @@ public class ImagesSubReport {
         design.setRightMargin(0);
         design.setTopMargin(0);
         design.setBottomMargin(0);
-        
+
         JRDesignBand band = new JRDesignBand();
         band.setHeight(size.height);
 
         // add layer graphics to report
         addGraphics(graphics, band, size, design);
-        
+
         // note that the images are added to the "NoData" band, this ensures
         // that they are displayed even if no data connection is passed to the
         // sub-report
@@ -92,7 +93,7 @@ public class ImagesSubReport {
             final Dimension size, final JasperDesign design) {
         for (URI graphicFile : graphics) {
             String imageExpression;
-            
+
             final String fileName = new File(graphicFile).getAbsolutePath().replace('\\', '/');
             if (Files.getFileExtension(fileName).equals("svg")) {
                 imageExpression = "net.sf.jasperreports.renderers.BatikRenderer.getInstance(new java.io.File(\""
@@ -100,7 +101,7 @@ public class ImagesSubReport {
             } else {
                 imageExpression = "\"" + fileName + "\"";
             }
-            
+
             band.addElement(getImage(imageExpression, size, design));
         }
     }
@@ -108,24 +109,24 @@ public class ImagesSubReport {
     private JRDesignElement getImage(final String imageExpression, final Dimension mapSize,
             final JasperDesign design) {
         final JRDesignImage image = new JRDesignImage(design);
-        
+
         image.setHorizontalAlignment(HorizontalAlignEnum.CENTER);
         image.setX(0);
         image.setY(0);
         image.setWidth(mapSize.width);
         image.setHeight(mapSize.height);
         image.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
-        
+
         final JRDesignExpression expression = new JRDesignExpression();
         expression.setText(imageExpression);
         image.setExpression(expression);
-        
+
         return image;
     }
 
     /**
      * Compiles the report into a <code>*.jasper</code> file.
-     * 
+     *
      * @param compiledReportFile The destination file.
      * @throws JRException
      */

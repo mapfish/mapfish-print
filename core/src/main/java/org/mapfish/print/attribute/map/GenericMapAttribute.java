@@ -21,6 +21,7 @@ package org.mapfish.print.attribute.map;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+
 import org.geotools.referencing.CRS;
 import org.json.JSONException;
 import org.json.JSONObject;
