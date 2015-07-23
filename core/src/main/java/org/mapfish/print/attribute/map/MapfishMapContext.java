@@ -82,6 +82,9 @@ public class MapfishMapContext {
     public final Scale getScale() {
         return this.bounds.getScaleDenominator(getPaintArea(), this.dpi);
     }
+    public final Scale getGeodeticScale() {
+        return this.bounds.getGeodeticScaleDenominator(getPaintArea(), this.dpi);
+    }
 
     /**
      * Get a nicely rounded scale for to use for displaying the map scale.
@@ -92,7 +95,26 @@ public class MapfishMapContext {
      * </p>
      */
     public final double getRoundedScale() {
-        double scale = this.bounds.getScaleDenominator(getPaintArea(), this.dpi).getDenominator();
+        return getRoundedScale(false);
+    }
+
+    /**
+     * Get a nicely rounded scale for to use for displaying the map scale.
+     * <p>
+     *     One of the output parameters of the {@link org.mapfish.print.processor.map.CreateMapProcessor} is 'mapContext' which can
+     *     be accessed in a template.  If the scale is required in the template then it can be accessed via:
+     *     <code>$P{mapContext}.getRoundedScale()</code>
+     * </p>
+     *
+     * @param geodetic Get geodetic scale
+     */
+    public final double getRoundedScale(final boolean geodetic) {
+        double scale;
+        if (geodetic) {
+            scale = this.bounds.getGeodeticScaleDenominator(getPaintArea(), this.dpi).getDenominator();
+        } else {
+            scale = this.bounds.getScaleDenominator(getPaintArea(), this.dpi).getDenominator();
+        }
 
         final int numChars = String.format("%d", Math.round(scale)).length();
         if (numChars > 2) {
