@@ -321,7 +321,9 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             newBounds = newBounds.adjustBoundsToNearestScale(
                     mapValues.getZoomLevels(),
                     mapValues.getZoomSnapTolerance(),
-                    mapValues.getZoomLevelSnapStrategy(), paintArea, dpiOfRequestor);
+                    mapValues.getZoomLevelSnapStrategy(),
+                    mapValues.getZoomSnapGeodetic(),
+                    paintArea, dpiOfRequestor);
         }
 
         newBounds = new BBoxMapBounds(newBounds.toReferencedEnvelope(paintArea, dpiOfRequestor));
@@ -429,9 +431,10 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                     if (mapValues.isUseNearestScale()) {
                         // if fixed scales are used, take next higher scale
                         mapBounds = mapBounds.adjustBoundsToNearestScale(
-                                mapValues.getZoomLevels(),
-                                0.0,
-                                ZoomLevelSnapStrategy.HIGHER_SCALE, paintArea, mapValues.getRequestorDPI());
+                                mapValues.getZoomLevels(), 0.0,
+                                ZoomLevelSnapStrategy.HIGHER_SCALE,
+                                mapValues.getZoomSnapGeodetic(),
+                                paintArea, mapValues.getRequestorDPI());
                     }
 
                     mapValues.setMapBounds(mapBounds);

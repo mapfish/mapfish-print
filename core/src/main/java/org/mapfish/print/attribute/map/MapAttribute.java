@@ -47,6 +47,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
 
     private static final double DEFAULT_SNAP_TOLERANCE = 0.05;
     private static final ZoomLevelSnapStrategy DEFAULT_SNAP_STRATEGY = ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE;
+    private static final boolean DEFAULT_SNAP_GEODETIC = false;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -226,6 +227,11 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
         @Override
         public ZoomLevelSnapStrategy getZoomLevelSnapStrategy() {
             return getValueOr(super.getZoomLevelSnapStrategy(), DEFAULT_SNAP_STRATEGY);
+        }
+
+        @Override
+        public Boolean getZoomSnapGeodetic() {
+            return getValueOr(super.getZoomSnapGeodetic(), DEFAULT_SNAP_GEODETIC);
         }
 
         @Override

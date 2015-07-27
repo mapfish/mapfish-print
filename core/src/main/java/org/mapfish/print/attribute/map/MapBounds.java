@@ -86,12 +86,15 @@ public abstract class MapBounds {
      * @param tolerance the tolerance to use when considering if two values are equal.  For example if 12.0 == 12.001.
      *                  The tolerance is a percentage
      * @param zoomLevelSnapStrategy the strategy to use for snapping to the nearest zoom level.
+     * @param geodetic snap to geodetic scales.
      * @param paintArea the paint area of the map.
      * @param dpi the dpi of the map
      */
-    public abstract MapBounds adjustBoundsToNearestScale(final ZoomLevels zoomLevels, final double tolerance,
-                                                         final ZoomLevelSnapStrategy zoomLevelSnapStrategy,
-                                                         final Rectangle paintArea, final double dpi);
+    public abstract MapBounds adjustBoundsToNearestScale(
+            final ZoomLevels zoomLevels, final double tolerance,
+            final ZoomLevelSnapStrategy zoomLevelSnapStrategy,
+            final boolean geodetic,
+            final Rectangle paintArea, final double dpi);
 
     /**
      * Calculate and return the scale of the map bounds.
@@ -167,14 +170,6 @@ public abstract class MapBounds {
      * @return Bounds adjusted to the scale.
      */
     public abstract MapBounds zoomToScale(final double scale);
-
-    /**
-     * Reproject the bounds to the given projection.
-     *
-     * @param targetProjection The target projection.
-     * @return The reprojected bounds.
-     */
-    public abstract MapBounds reproject(final CoordinateReferenceSystem targetProjection);
 
     // CHECKSTYLE:OFF
     @Override

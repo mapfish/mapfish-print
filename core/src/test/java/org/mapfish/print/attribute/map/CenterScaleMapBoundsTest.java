@@ -126,14 +126,6 @@ public class CenterScaleMapBoundsTest {
     }
 
     @Test
-    public void reproject() throws Exception {
-        final Scale scale = new Scale(2500.0);
-        final CenterScaleMapBounds centerBounds = new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 0.0, 0.0, scale);
-        CenterScaleMapBounds bounds = (CenterScaleMapBounds) centerBounds.reproject(CH1903);
-        assertEquals(CH1903, bounds.getProjection());
-    }
-
-    @Test
     public void geodetic() throws Exception {
         final Scale scale = new Scale(15432.0);
         final CenterScaleMapBounds centerBounds = new CenterScaleMapBounds(SPHERICAL_MERCATOR, 682433.0, 6379270.0, scale);

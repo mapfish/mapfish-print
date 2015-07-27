@@ -21,15 +21,12 @@ package org.mapfish.print.attribute.map;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import org.geotools.geometry.DirectPosition2D;
-import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
 import org.geotools.referencing.GeodeticCalculator;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.Scale;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
 import java.awt.Rectangle;
@@ -92,11 +89,26 @@ public final class CenterScaleMapBounds extends MapBounds {
     }
 
     @Override
-    public MapBounds adjustBoundsToNearestScale(final ZoomLevels zoomLevels, final double tolerance,
-                                                final ZoomLevelSnapStrategy zoomLevelSnapStrategy,
-                                                final Rectangle paintArea, final double dpi) {
-        final ZoomLevelSnapStrategy.SearchResult result = zoomLevelSnapStrategy.search(this.scale, tolerance, zoomLevels);
-        return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y, result.getScale());
+    public MapBounds adjustBoundsToNearestScale(
+            final ZoomLevels zoomLevels, final double tolerance,
+            final ZoomLevelSnapStrategy zoomLevelSnapStrategy,
+            final boolean geodetic,
+            final Rectangle paintArea, final double dpi) {
+
+        Scale resultScale;
+        if (geodetic) {
+            final Scale currentScale = getScaleDenominator(paintArea, dpi);
+            final Scale geodeticScale = getGeodeticScaleDenominator(paintArea, dpi);
+            final ZoomLevelSnapStrategy.SearchResult result = zoomLevelSnapStrategy.search(
+                    geodeticScale, tolerance, zoomLevels);
+            resultScale = new Scale(result.getScale().getDenominator() *
+                    currentScale.getDenominator() / geodeticScale.getDenominator());
+        } else {
+            final ZoomLevelSnapStrategy.SearchResult result = zoomLevelSnapStrategy.search(this.scale, tolerance, zoomLevels);
+            resultScale = result.getScale();
+        }
+
+        return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y, resultScale);
     }
 
     @Override
@@ -123,20 +135,6 @@ public final class CenterScaleMapBounds extends MapBounds {
     @Override
     public MapBounds zoomToScale(final double newScale) {
         return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y, new Scale(newScale));
-    }
-
-    @Override
-    public MapBounds reproject(final CoordinateReferenceSystem targetProjection) {
-        Coordinate newCenter = null;
-
-        try {
-            MathTransform transform = CRS.findMathTransform(getProjection(), targetProjection);
-            newCenter = JTS.transform(this.center, null, transform);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to reproject bounds", e);
-        }
-
-        return new CenterScaleMapBounds(targetProjection, newCenter.x, newCenter.y, this.scale);
     }
 
     private ReferencedEnvelope computeGeodeticBBox(final double geoWidthInInches, final double geoHeightInInches) {
@@ -230,5 +228,4 @@ public final class CenterScaleMapBounds extends MapBounds {
                '}';
     }
     // CHECKSTYLE:ON
-
 }

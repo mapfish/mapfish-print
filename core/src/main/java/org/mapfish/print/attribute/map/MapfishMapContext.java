@@ -67,20 +67,23 @@ public class MapfishMapContext {
     public final double getRotation() {
         return this.rotation;
     }
-    
+
     public final MapBounds getBounds() {
         return this.bounds;
     }
-    
+
     public final MapBounds getRotatedBounds() {
         return this.bounds.adjustBoundsToRotation(this.rotation);
     }
-    
+
     public final Dimension getMapSize() {
         return this.mapSize;
     }
     public final Scale getScale() {
         return this.bounds.getScaleDenominator(getPaintArea(), this.dpi);
+    }
+    public final Scale getGeodeticScale() {
+        return this.bounds.getGeodeticScaleDenominator(getPaintArea(), this.dpi);
     }
 
     /**
@@ -92,7 +95,26 @@ public class MapfishMapContext {
      * </p>
      */
     public final double getRoundedScale() {
-        double scale = this.bounds.getScaleDenominator(getPaintArea(), this.dpi).getDenominator();
+        return getRoundedScale(false);
+    }
+
+    /**
+     * Get a nicely rounded scale for to use for displaying the map scale.
+     * <p>
+     *     One of the output parameters of the {@link org.mapfish.print.processor.map.CreateMapProcessor} is 'mapContext' which can
+     *     be accessed in a template.  If the scale is required in the template then it can be accessed via:
+     *     <code>$P{mapContext}.getRoundedScale()</code>
+     * </p>
+     *
+     * @param geodetic Get geodetic scale
+     */
+    public final double getRoundedScale(final boolean geodetic) {
+        double scale;
+        if (geodetic) {
+            scale = this.bounds.getGeodeticScaleDenominator(getPaintArea(), this.dpi).getDenominator();
+        } else {
+            scale = this.bounds.getScaleDenominator(getPaintArea(), this.dpi).getDenominator();
+        }
 
         final int numChars = String.format("%d", Math.round(scale)).length();
         if (numChars > 2) {
@@ -114,33 +136,33 @@ public class MapfishMapContext {
         if (this.rotation == 0.0) {
             return this.mapSize;
         }
-        
+
         final int rotatedWidth = getRotatedMapWidth();
         final int rotatedHeight = getRotatedMapHeight();
-        
+
         return new Dimension(rotatedWidth, rotatedHeight);
     }
-    
+
     /**
      * Returns an {@link AffineTransform} taking the rotation into account.
-     * 
+     *
      * @return an affine transformation
      */
     public final AffineTransform getTransform() {
         if (this.rotation == 0.0) {
             return null;
         }
-        
+
         final Dimension rotatedMapSize = getRotatedMapSize();
-        
+
         final AffineTransform transform = AffineTransform.getTranslateInstance(0.0, 0.0);
-        // move to the center of the original map rectangle (this is the actual 
+        // move to the center of the original map rectangle (this is the actual
         // size of the graphic)
         transform.translate(this.mapSize.width / 2, this.mapSize.height / 2);
-        
+
         // then rotate around this center
         transform.rotate(this.rotation);
-        
+
         // then move to an artificial origin (0,0) which might be outside of the actual
         // painting area. this origin still keeps the center of the original map area
         // at the center of the rotated map area.

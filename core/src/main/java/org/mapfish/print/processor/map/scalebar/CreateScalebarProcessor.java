@@ -24,7 +24,7 @@ import com.google.common.collect.Lists;
 import net.sf.jasperreports.engine.JRException;
 
 import org.mapfish.print.attribute.ScalebarAttribute;
-import org.mapfish.print.attribute.map.MapAttribute;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.processor.AbstractProcessor;
@@ -70,14 +70,14 @@ public class CreateScalebarProcessor extends AbstractProcessor<CreateScalebarPro
         checkCancelState(context);
         final URI scalebarSubReport = createScalebarSubReport(
                 values.tempTaskDirectory, values.scalebar.getSize(),
-                Lists.newArrayList(scalebarGraphicFile), values.map.getDpi());
+                Lists.newArrayList(scalebarGraphicFile), values.mapContext.getDPI());
 
         return new Output(scalebarGraphicFile, scalebarSubReport.toString());
     }
 
     private URI createScalebarGraphic(final Input values) throws IOException, ParserConfigurationException {
         final ScalebarGraphic scalebar = new ScalebarGraphic();
-        return scalebar.render(values.map, values.scalebar, values.tempTaskDirectory, values.template);
+        return scalebar.render(values.mapContext, values.scalebar, values.tempTaskDirectory, values.template);
     }
 
     private URI createScalebarSubReport(final File printDirectory,
@@ -101,7 +101,7 @@ public class CreateScalebarProcessor extends AbstractProcessor<CreateScalebarPro
         /**
          * The map the scalebar is created for.
          */
-        public MapAttribute.MapAttributeValues map;
+        public MapfishMapContext mapContext;
 
         /**
          * The parameters for the scalebar.
