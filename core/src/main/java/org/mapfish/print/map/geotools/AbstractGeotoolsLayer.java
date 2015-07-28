@@ -178,4 +178,8 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
     public final String getName() {
         return this.params.name;
     }
+
+    public final boolean getFailOnError() {
+        return this.params.failOnError;
+    }
 }

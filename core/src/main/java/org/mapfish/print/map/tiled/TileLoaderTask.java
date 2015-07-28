@@ -68,6 +68,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
     private final TileCacheInformation tiledLayer;
     private final BufferedImage errorImage;
     private final MfClientHttpRequestFactory httpRequestFactory;
+    private final boolean failOnError;
     private Optional<Geometry> cachedRotatedMapBounds = null;
 
     /**
@@ -76,17 +77,20 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
      * @param dpi                the DPI to render at
      * @param transformer        a transformer for making calculations
      * @param tileCacheInfo      the object used to create the tile requests
+     * @param failOnError        fail on tile download error
      */
     public TileLoaderTask(final MfClientHttpRequestFactory httpRequestFactory,
                           final double dpi,
                           final MapfishMapContext transformer,
-                          final TileCacheInformation tileCacheInfo) {
+                          final TileCacheInformation tileCacheInfo,
+                          final boolean failOnError) {
         this.bounds = transformer.getBounds();
         this.paintArea = new Rectangle(transformer.getMapSize());
         this.dpi = dpi;
         this.httpRequestFactory = httpRequestFactory;
         this.transformer = transformer;
         this.tiledLayer = tileCacheInfo;
+        this.failOnError = failOnError;
         final Dimension tileSize = this.tiledLayer.getTileSize();
         this.errorImage = new BufferedImage(tileSize.width, tileSize.height, BufferedImage.TYPE_4BYTE_ABGR);
         Graphics2D graphics = this.errorImage.createGraphics();
@@ -155,7 +159,9 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
 
                     if (isInTileCacheBounds(tileCacheBounds, tileBounds)) {
                         if (isTileVisible(tileBounds)) {
-                            final SingleTileLoaderTask task = new SingleTileLoaderTask(tileRequest, this.errorImage, xIndex, yIndex);
+                            final SingleTileLoaderTask task = new SingleTileLoaderTask(
+                                    tileRequest, this.errorImage, xIndex, yIndex,
+                                    this.failOnError);
                             loaderTasks.add(task);
                         }
                     } else {
@@ -269,12 +275,14 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
 
         private final ClientHttpRequest tileRequest;
         private final BufferedImage errorImage;
+        private final boolean failOnError;
 
         public SingleTileLoaderTask(final ClientHttpRequest tileRequest, final BufferedImage errorImage, final int tileIndexX,
-                                    final int tileIndexY) {
+                                    final int tileIndexY, final boolean failOnError) {
             super(tileIndexX, tileIndexY);
             this.tileRequest = tileRequest;
             this.errorImage = errorImage;
+            this.failOnError = failOnError;
         }
 
         @Override
@@ -285,8 +293,12 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
                 response = this.tileRequest.execute();
                 final HttpStatus statusCode = response.getStatusCode();
                 if (statusCode != HttpStatus.OK) {
-                    LOGGER.error("Error making tile request: " + this.tileRequest.getURI() + "\n\tStatus: " + statusCode +
-                                 "\n\tMessage: " + response.getStatusText());
+                    String errorMessage = "Error making tile request: " + this.tileRequest.getURI() + "\n\tStatus: " + statusCode +
+                            "\n\toutMessage: " + response.getStatusText();
+                    LOGGER.error(errorMessage);
+                    if (this.failOnError) {
+                        throw new RuntimeException(errorMessage);
+                    }
                     return new Tile(this.errorImage, getTileIndexX(), getTileIndexY());
                 }
 
