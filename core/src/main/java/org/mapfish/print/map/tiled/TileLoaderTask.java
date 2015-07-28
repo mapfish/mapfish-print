@@ -72,7 +72,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
 
     /**
      * Constructor.
-     *  @param httpRequestFactory the factory to use for making http requests
+     * @param httpRequestFactory the factory to use for making http requests
      * @param dpi                the DPI to render at
      * @param transformer        a transformer for making calculations
      * @param tileCacheInfo      the object used to create the tile requests
