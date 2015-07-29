@@ -19,10 +19,8 @@
 
 package org.mapfish.print.map.tiled;
 
-import com.google.common.base.Function;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import org.mapfish.print.URIUtils;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PObject;
@@ -32,7 +30,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
-import javax.annotation.Nullable;
 
 /**
  * An abstract layers params class for WM* layers (e.g. WMS or WMTS).
@@ -118,22 +115,9 @@ public abstract class AbstractWMXLayerParams extends AbstractTiledLayerParams {
     //CSOFF: DesignForExtension
     @Override
     //CSON: DesignForExtension
-    public String createCommonUrl(
-            @Nullable final Function<Multimap<String, String>, Multimap<String, String>> queryParamCustomization)
+    public String createCommonUrl()
             throws URISyntaxException, UnsupportedEncodingException {
-        Multimap<String, String> queryParams = HashMultimap.create();
-
-        queryParams.putAll(getCustomParams());
-        queryParams.putAll(getMergeableParams());
-
-        if (queryParamCustomization != null) {
-            Multimap<String, String> result = queryParamCustomization.apply(queryParams);
-            if (result != null) {
-                queryParams = result;
-            }
-        }
-        final URI baseUri = new URI(getBaseUrl());
-        return URIUtils.addParams(getBaseUrl(), queryParams, URIUtils.getParameters(baseUri).keySet());
+        return getBaseUrl();
     }
 
     /**

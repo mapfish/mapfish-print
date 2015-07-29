@@ -19,7 +19,6 @@
 
 package org.mapfish.print.map.tiled.wms;
 
-import com.google.common.collect.Multimap;
 import jsr166y.ForkJoinPool;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -104,11 +103,6 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
                     makeWmsGetLayerRequest(httpRequestFactory, TiledWmsLayer.this.param,
                             new URI(commonUrl), tileSizeOnScreen, this.dpi, tileBounds);
             return httpRequestFactory.createRequest(uri, HttpMethod.GET);
-        }
-
-        @Override
-        protected void customizeQueryParams(final Multimap<String, String> result) {
-            //not much query params for this protocol...
         }
 
         @Override

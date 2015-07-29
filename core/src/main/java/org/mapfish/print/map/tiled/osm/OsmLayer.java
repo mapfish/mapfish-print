@@ -19,7 +19,6 @@
 
 package org.mapfish.print.map.tiled.osm;
 
-import com.google.common.collect.Multimap;
 import jsr166y.ForkJoinPool;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -136,11 +135,6 @@ public final class OsmLayer extends AbstractTiledLayer {
             }
 
             return httpRequestFactory.createRequest(uri, HttpMethod.GET);
-        }
-
-        @Override
-        protected void customizeQueryParams(final Multimap<String, String> result) {
-            //not much query params for this protocol...
         }
 
         @Override

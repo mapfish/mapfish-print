@@ -19,8 +19,6 @@
 
 package org.mapfish.print.map.tiled;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Multimap;
 import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
 
@@ -55,11 +53,7 @@ public abstract class AbstractTiledLayerParams extends AbstractLayerParams {
     /**
      * Create a URL that is common to all image requests for this layer.  It will take the base url and append all mergeable and
      * custom params to the base url.
-     *
-     * @param queryParamCustomization a function that can optionally modify the Multimap passed into the function and returns the
-     *                                Multimap that will contain all the query params that will be part of the URI.  If the function
-     *                                returns null then the original map will be used as the params.
      */
-    public abstract String createCommonUrl(Function<Multimap<String, String>, Multimap<String, String>> queryParamCustomization)
+    public abstract String createCommonUrl()
             throws URISyntaxException, UnsupportedEncodingException;
 }
