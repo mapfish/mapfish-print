@@ -17,6 +17,7 @@
           "labelColor":"black",
           "indent": 10,
           "font": {
+            "name" : ["Verdana"],
             "style": "BOLD",
             "size": 8
           }

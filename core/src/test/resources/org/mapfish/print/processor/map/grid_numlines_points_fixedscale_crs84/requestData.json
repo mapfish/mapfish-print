@@ -14,7 +14,11 @@
                 "gridType": "points",
                 "numberOfLines": [5,5],
                 "labelColor": "green",
-                "renderAsSvg": false
+                "renderAsSvg": false,
+                "font": {
+                    "name" : ["Purisa"],
+                    "size" : "10"
+                }
             },{
                 "type": "tiledwms",
                 "layers": ["topp:states"],

@@ -36,6 +36,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -93,10 +94,9 @@ public class CreateMapProcessorGridFixedNumlinesPointCRS84Test extends AbstractM
         assertEquals(2, layerGraphics.size());
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
 
-//        ImageIO.write(referenceImage, "png", new File("e:/tmp/expectedSimpleImage.png"));
+        String imageName = getExpectedImageName("", referenceImage, BASE_DIR);
 
-        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 30);
-
+        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + imageName), 30);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

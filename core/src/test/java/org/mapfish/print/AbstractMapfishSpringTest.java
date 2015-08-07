@@ -31,7 +31,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.imageio.ImageIO;
 import java.awt.Dimension;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -117,6 +119,33 @@ public abstract class AbstractMapfishSpringTest {
         } catch (Throwable e) {
             throw new Error(e);
         }
+    }
+
+    public static String normalizedOSName() {
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {
+            return "win";
+        } else if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+            return "mac";
+        } else {
+            return "linux";
+        }
+    }
+    protected String getExpectedImageName(String classifier, BufferedImage actualImage, String baseDir) throws IOException {
+        String platformName = "expectedSimpleImage" + classifier + "-" + normalizedOSName() + ".png";
+        String defaultName = "expectedSimpleImage" + classifier + ".png";
+
+        new File("/tmp/" + baseDir).mkdirs();
+        ImageIO.write(actualImage, "png", new File("/tmp/" + baseDir + "/" + platformName));
+        ImageIO.write(actualImage, "png", new File("/tmp/" + baseDir + "/" + defaultName));
+
+        String imageName;
+        try {
+            getFile(baseDir + platformName);
+            imageName = platformName;
+        } catch (AssertionError e) {
+            imageName = defaultName;
+        }
+        return imageName;
     }
 
 }

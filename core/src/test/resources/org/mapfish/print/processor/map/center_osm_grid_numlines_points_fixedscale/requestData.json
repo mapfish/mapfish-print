@@ -10,7 +10,11 @@
           "type": "grid",
           "gridType": "points",
           "numberOfLines": [5,5],
-          "renderAsSvg": false
+          "renderAsSvg": false,
+          "font": {
+            "name" : ["Verdana"],
+            "size" : "10"
+          }
         },{
           "type": "osm",
           "baseURL": "http://center_osm_fixedscale.osm:1234",

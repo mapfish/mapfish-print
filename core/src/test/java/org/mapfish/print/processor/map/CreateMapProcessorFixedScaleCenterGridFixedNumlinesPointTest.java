@@ -93,11 +93,11 @@ public class CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest extend
 
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
 
-//        ImageIO.write(referenceImage, "png", new File("e:/tmp/expectedSimpleImage.png"));
-
         assertEquals(2, layerGraphics.size());
-        new ImageSimilarity(referenceImage, 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 30);
+
+        String imageName = getExpectedImageName("", referenceImage, BASE_DIR);
+
+        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + imageName), 30);
 
     }
 

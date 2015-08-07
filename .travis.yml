@@ -1,4 +1,5 @@
 language: java
+sudo: false
 
 jdk:
 - oraclejdk7
@@ -8,4 +9,4 @@ jdk:
 script:
 - ./gradlew --no-color build
 
-after_failure: print-examples-test-output.sh
+after_failure: sh print-examples-test-output.sh

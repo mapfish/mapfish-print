@@ -98,6 +98,7 @@ public final class GridLayer implements MapLayer {
             }
         }
 
+        graphics2D.setFont(baseFont);
         int charHeight = (graphics2D.getFontMetrics().getAscent() / 2);
         Stroke baseStroke = graphics2D.getStroke();
         AffineTransform baseTransform = graphics2D.getTransform();

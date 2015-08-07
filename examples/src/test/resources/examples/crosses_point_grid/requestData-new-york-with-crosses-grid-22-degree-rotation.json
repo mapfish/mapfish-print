@@ -13,7 +13,10 @@
           "type": "grid",
           "gridType": "points",
           "numberOfLines": [5,5],
-          "renderAsSvg": true
+          "renderAsSvg": true,
+          "font" : {
+            "name" : ["Arial", "Helvetica", "Nimbus Sans L", "Liberation Sans", "FreeSans", "Sans-serif"]
+          }
         },
         {
           "baseURL": "http://localhost:9876/e2egeoserver/wms",
