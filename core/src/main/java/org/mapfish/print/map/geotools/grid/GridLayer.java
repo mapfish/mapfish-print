@@ -23,6 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import org.geotools.data.FeatureSource;
 import org.geotools.map.Layer;
+import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
@@ -84,12 +85,20 @@ public final class GridLayer implements MapLayer {
                        final MapfishMapContext transformer, final boolean isFirstLayer) {
         Graphics2D graphics2D = (Graphics2D) graphics.create();
         int haloRadius = this.params.haloRadius;
-        int charHeight = (graphics2D.getFontMetrics().getAscent() / 2);
+        double dpiScaling = transformer.getDPI() / Constants.PDF_DPI;
+
         this.grid.render(graphics2D, clientHttpRequestFactory, transformer, isFirstLayer);
-        Font baseFont = graphics2D.getFont();
-        if (this.params.font != null) {
-            baseFont = new Font(this.params.font.name, this.params.font.style.styleId, this.params.font.size);
+        Font baseFont = null;
+        for (String fontName : this.params.font.name) {
+            try {
+                baseFont = new Font(fontName, this.params.font.style.styleId, (int) (this.params.font.size * dpiScaling));
+                break;
+            } catch (Exception e) {
+                // try next font in list
+            }
         }
+
+        int charHeight = (graphics2D.getFontMetrics().getAscent() / 2);
         Stroke baseStroke = graphics2D.getStroke();
         AffineTransform baseTransform = graphics2D.getTransform();
         Color haloColor = ColorParser.toColor(this.params.haloColor);
