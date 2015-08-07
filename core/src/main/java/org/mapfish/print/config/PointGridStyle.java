@@ -29,7 +29,7 @@ public final class PointGridStyle {
     public static Style get() {
         StyleBuilder builder = new StyleBuilder();
 
-        Symbolizer pointSymbolizer = crossSymbolizer("shape://plus", builder, CROSS_SIZE, Color.gray);
+        Symbolizer pointSymbolizer = crossSymbolizer("shape://plus", builder, CROSS_SIZE, LineGridStyle.GRID_COLOR);
         Symbolizer halo = crossSymbolizer("cross", builder, HALO_SIZE, Color.white);
         final Style style = builder.createStyle(pointSymbolizer);
         final List<Symbolizer> symbolizers = style.featureTypeStyles().get(0).rules().get(0).symbolizers();

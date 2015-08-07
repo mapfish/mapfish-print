@@ -71,24 +71,6 @@ public final class GridParam extends AbstractLayerParams {
      * <p/>
      * If no style is defined then the default grid style will be used.
      * <p/>
-     * The feature for the grid will have a line geometry and will have the following attributes:
-     * <ul>
-     *     <li>
-     *         {@value org.mapfish.print.Constants.Style.Grid#ATT_ROTATION} -- the rotation for a label that is perpendicular
-     *         to the line
-     *     </li>
-     *     <li>
-     *         {@value org.mapfish.print.Constants.Style.Grid#ATT_LABEL} -- The suggested text of the label
-     *     </li>
-     *     <li>
-     *         {@value org.mapfish.print.Constants.Style.Grid#ATT_X_DISPLACEMENT} -- The x-displacement of one of the labels (might
-     *         be top or left) the unit is pixels.
-     *     </li>
-     *     <li>
-     *         {@value org.mapfish.print.Constants.Style.Grid#ATT_Y_DISPLACEMENT} -- The y-displacement of one of the labels (might
-     *         be top or left) the unit is pixels.
-     *     </li>
-     * </ul>
      */
     @HasDefaultValue
     public String style;

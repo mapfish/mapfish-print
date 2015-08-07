@@ -89,26 +89,6 @@ public interface Constants {
              */
             String NAME_POINTS = "grid_points";
             /**
-             * Name of the grid feature attribute containing the rotation of the label.
-             */
-            String ATT_ROTATION = "rotation";
-            /**
-             * Name of the grid feature attribute containing the x-displacement of one of the labels.
-             */
-            String ATT_X_DISPLACEMENT = "xDisplacement";
-            /**
-             * Name of the grid feature attribute containing the y-displacement of one of the labels.
-             */
-            String ATT_Y_DISPLACEMENT = "yDisplacement";
-            /**
-             * Name of the grid feature attribute containing the x-anchor of one of the labels.
-             */
-            String ATT_ANCHOR_X = "xAnchor";
-            /**
-             * The text to put in the labels.
-             */
-            String ATT_LABEL = "label";
-            /**
              * The geometry attribute name.
              */
             String ATT_GEOM = "geom";
