@@ -106,7 +106,7 @@ public final class OsmLayer extends AbstractTiledLayer {
                 throws IOException, URISyntaxException {
 
             final URI uri;
-            if (commonUrl.contains("{x}") && commonUrl.contains("{z}") 
+            if (commonUrl.contains("{x}") && commonUrl.contains("{z}")
                     && (commonUrl.contains("{y}") || commonUrl.contains("{-y}"))) {
                 String url = commonUrl
                         .replace("{z}", String.format("%02d", this.resolutionIndex))

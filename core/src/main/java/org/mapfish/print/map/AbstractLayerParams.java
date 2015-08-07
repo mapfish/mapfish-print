@@ -18,4 +18,10 @@ public class AbstractLayerParams {
      */
     @HasDefaultValue
     public String name = "";
+
+    /**
+     * Fail if a tile return an error.
+     */
+    @HasDefaultValue
+    public boolean failOnError = false;
 }
