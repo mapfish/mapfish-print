@@ -73,4 +73,8 @@ public abstract class MapTileTask implements OrderedResultsExecutor.Task<MapTile
             //nothing to do
         }
     }
+    
+    public Exception getException() {
+    	return readException;
+    }
 }

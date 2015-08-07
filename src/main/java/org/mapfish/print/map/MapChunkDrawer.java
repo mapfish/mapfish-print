@@ -214,6 +214,11 @@ public class MapChunkDrawer extends ChunkDrawer {
             //END of the parallel world !!!!!!!!!!!!!!!!!!!!!!!!!!
 
             dc.restoreState();
+            
+            Exception e = parallelMapTileLoader.getException();
+            if (e != null) {
+            	throw new RuntimeException(e);
+            }
         }
 
 
