@@ -163,11 +163,6 @@ public class WMTSLayer extends AbstractTiledLayer {
         }
 
         @Override
-        protected void customizeQueryParams(final Multimap<String, String> result) {
-            //no common params for this protocol.
-        }
-
-        @Override
         public Scale getScale() {
             return new Scale(this.matrix.scaleDenominator);
         }

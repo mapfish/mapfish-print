@@ -19,8 +19,6 @@
 
 package org.mapfish.print.map.tiled;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Multimap;
 import com.vividsolutions.jts.geom.Coordinate;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.attribute.map.MapBounds;
@@ -97,13 +95,6 @@ public abstract class TileCacheInformation {
             throws Exception;
 
     /**
-     * Adds the query parameters common to every tile.
-     *
-     * @param result the query params added because of customParams or mergeableQueryParams.
-     */
-    protected abstract void customizeQueryParams(Multimap<String, String> result);
-
-    /**
      * Get the scale that the layer uses for its calculations.  The map isn't always at a resolution that a tiled layer
      * supports so a scale is chosen for the layer that is close to the map scale. This method returns the layer's scale.
      * <p/>
@@ -174,14 +165,7 @@ public abstract class TileCacheInformation {
     // CSOFF:DesignForExtension
     protected String createCommonUrl() throws URISyntaxException, UnsupportedEncodingException {
         // CSOFF:DesignForExtension
-        return this.params.createCommonUrl(new Function<Multimap<String, String>, Multimap<String, String>>() {
-            @Nullable
-            @Override
-            public Multimap<String, String> apply(@Nullable final Multimap<String, String> input) {
-                customizeQueryParams(input);
-                return input;
-            }
-        });
+        return this.params.createCommonUrl();
     }
 
     /**

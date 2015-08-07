@@ -19,20 +19,21 @@
 
 package org.mapfish.print.map.tiled.wmts;
 
-import com.google.common.base.Function;
 import com.google.common.base.Strings;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.vividsolutions.jts.util.Assert;
 
 import org.mapfish.print.Constants;
+import org.mapfish.print.URIUtils;
 import org.mapfish.print.map.tiled.AbstractWMXLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.wrapper.json.PJsonObject;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.annotation.Nullable;
 
 /**
  * The parameters for configuration a WMTS layer.
@@ -143,15 +144,19 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
         Assert.isTrue(validateBaseUrl(), "invalid baseURL");
     }
 
-
     @Override
-    public String createCommonUrl(
-            @Nullable final Function<Multimap<String, String>, Multimap<String, String>> queryParamCustomization)
+    public String createCommonUrl()
             throws URISyntaxException, UnsupportedEncodingException {
         if (RequestEncoding.REST == this.requestEncoding) {
             return getBaseUrl();
         } else {
-            return super.createCommonUrl(queryParamCustomization);
+            Multimap<String, String> queryParams = HashMultimap.create();
+
+            queryParams.putAll(getCustomParams());
+            queryParams.putAll(getMergeableParams());
+
+            final URI baseUri = new URI(getBaseUrl());
+            return URIUtils.addParams(getBaseUrl(), queryParams, URIUtils.getParameters(baseUri).keySet());
         }
     }
 
