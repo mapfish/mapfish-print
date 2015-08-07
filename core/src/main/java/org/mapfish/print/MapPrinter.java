@@ -20,7 +20,6 @@
 package org.mapfish.print;
 
 import com.google.common.io.Files;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
@@ -42,9 +41,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.annotation.PostConstruct;
-import javax.imageio.ImageIO;
-
 /**
  * The main class for printing maps. Will parse the spec, create the PDF
  * document and generate it.
@@ -63,15 +59,6 @@ public class MapPrinter {
     private File configFile;
     @Autowired
     private WorkingDirectories workingDirectories;
-
-    /**
-     * Ensure that extensions for ImageIO (like the reader and writer for TIFF) are registered.
-     * This is required for certain Windows systems.
-     */
-    @PostConstruct
-    public final void initImageIO() {
-        ImageIO.scanForPlugins();
-    }
 
     /**
      * Set the configuration file and update the configuration for this printer.
