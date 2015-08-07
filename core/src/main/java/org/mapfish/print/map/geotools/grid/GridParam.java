@@ -33,6 +33,10 @@ import java.util.Arrays;
  */
 public final class GridParam extends AbstractLayerParams {
     private static final int DEFAULT_POINTS_IN_GRID_LINE = 10000;
+    private static final int DEFAULT_HALO_RADIUS = 2;
+    private static final int DEFAULT_INDENT = 5;
+    private static final String DEFAULT_HALO_COLOR = "#FFF";
+    private static final String DEFAULT_LABEL_COLOR = "#444";
 
     /**
      * The type of grid to render.  By default it is LINES
@@ -92,6 +96,33 @@ public final class GridParam extends AbstractLayerParams {
     public int pointsInLine = DEFAULT_POINTS_IN_GRID_LINE;
 
     /**
+     * The size of the halo around the Grid Labels. The default is {@value #DEFAULT_HALO_RADIUS}.
+     */
+    @HasDefaultValue
+    public int haloRadius = DEFAULT_HALO_RADIUS;
+    /**
+     * The color of the halo around grid label text. The color is defined the same as colors in CSS. Default is white
+     * ({@value #DEFAULT_HALO_COLOR})
+     */
+    @HasDefaultValue
+    public String haloColor = DEFAULT_HALO_COLOR;
+    /**
+     * The color of the grid label text.  Default is dark gray ({@value #DEFAULT_LABEL_COLOR})
+     */
+    @HasDefaultValue
+    public String labelColor = DEFAULT_LABEL_COLOR;
+    /**
+     * Configuration for the font of the grid labels.  The default is the default system font.
+     */
+    @HasDefaultValue
+    public GridFontParam font = new GridFontParam();
+    /**
+     * The number of pixels to indent the grid labels from the end of the map.  The default is {@value #DEFAULT_INDENT}.
+     */
+    @HasDefaultValue
+    public int indent = DEFAULT_INDENT;
+
+    /**
      * Initialize default values and validate that config is correct.
      */
     public void postConstruct() {
@@ -102,5 +133,9 @@ public final class GridParam extends AbstractLayerParams {
                 GridLayer.class.getSimpleName() + ".numberOfLines has the wrong number of elements.  Expected 2 (x,y) but was: " +
                 Arrays.toString(this.numberOfLines));
         Assert.isTrue(this.pointsInLine > 2, "There must be at least 2 points in a line.  There were: " + this.pointsInLine);
+        Assert.isTrue(this.indent >= 0, "The indent is not permitted to be negative: " + this.indent);
+        Assert.isTrue(this.labelColor != null, "labelColor should not be null");
+        Assert.isTrue(this.haloColor != null, "haloColor should not be null");
     }
+
 }
