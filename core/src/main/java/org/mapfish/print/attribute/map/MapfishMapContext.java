@@ -106,7 +106,7 @@ public final class MapfishMapContext {
     public Scale getScale() {
         return this.bounds.getScaleDenominator(getPaintArea(), this.dpi);
     }
-    public final Scale getGeodeticScale() {
+    public Scale getGeodeticScale() {
         return this.bounds.getGeodeticScaleDenominator(getPaintArea(), this.dpi);
     }
 
@@ -118,7 +118,7 @@ public final class MapfishMapContext {
      *     <code>$P{mapContext}.getRoundedScale()</code>
      * </p>
      */
-    public final double getRoundedScale() {
+    public double getRoundedScale() {
         return getRoundedScale(false);
     }
 
@@ -132,7 +132,7 @@ public final class MapfishMapContext {
      *
      * @param geodetic Get geodetic scale
      */
-    public final double getRoundedScale(final boolean geodetic) {
+    public double getRoundedScale(final boolean geodetic) {
         double scale;
         if (geodetic) {
             scale = this.bounds.getGeodeticScaleDenominator(getPaintArea(), this.dpi).getDenominator();
