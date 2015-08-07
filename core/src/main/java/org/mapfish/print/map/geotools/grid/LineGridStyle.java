@@ -1,8 +1,9 @@
-package org.mapfish.print.config;
+package org.mapfish.print.map.geotools.grid;
 
 import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
+import org.mapfish.print.map.style.json.ColorParser;
 
 import java.awt.Color;
 
@@ -12,11 +13,6 @@ import java.awt.Color;
  * @author Jesse on 6/29/2015.
  */
 public final class LineGridStyle {
-    /**
-     * Default GRID COLOR.
-     */
-    static final Color GRID_COLOR = Color.gray;
-
     private LineGridStyle() {
         // do nothing
     }
@@ -24,14 +20,15 @@ public final class LineGridStyle {
     /**
      * Gets the line grid style.
      */
-    public static Style get() {
-        return createGridStyle(new StyleBuilder());
+    static Style get(final GridParam params) {
+        return createGridStyle(params, new StyleBuilder());
     }
 
-    private static Style createGridStyle(final StyleBuilder builder) {
+    private static Style createGridStyle(final GridParam params, final StyleBuilder builder) {
         final LineSymbolizer lineSymbolizer = builder.createLineSymbolizer();
+        final Color strokeColor = ColorParser.toColor(params.gridColor);
+
         //CSOFF:MagicNumber
-        final Color strokeColor = GRID_COLOR;
         lineSymbolizer.setStroke(builder.createStroke(strokeColor, 1, new float[]{4f, 4f}));
         //CSON:MagicNumber
 

@@ -29,7 +29,7 @@ import javax.annotation.Nonnull;
 final class LineGridStrategy implements GridType.GridTypeStrategy {
     @Override
     public Style defaultStyle(final Template template, final GridParam layerData) {
-        return template.getConfiguration().getDefaultStyle(Grid.NAME_LINES);
+        return LineGridStyle.get(layerData);
     }
 
     @Override

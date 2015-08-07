@@ -37,6 +37,7 @@ public final class GridParam extends AbstractLayerParams {
     private static final int DEFAULT_INDENT = 5;
     private static final String DEFAULT_HALO_COLOR = "#FFF";
     private static final String DEFAULT_LABEL_COLOR = "#444";
+    private static final String DEFAULT_GRID_COLOR = "gray";
 
     /**
      * The type of grid to render.  By default it is LINES
@@ -73,7 +74,10 @@ public final class GridParam extends AbstractLayerParams {
      * The style name of a style to apply to the features during rendering.  The style name must map to a style in the
      * template or the configuration objects.
      * <p/>
-     * If no style is defined then the default grid style will be used.
+     * If no style is defined then the default grid style will be used.  The default will depend if the type is point or line and will
+     * respect {@link #gridColor} and {@link #haloColor} and {@link #haloRadius}.  If {@link #gridType} is {@link GridType#POINTS}
+     * then the style will be crosses with a haloRadius sized halo around the cross.  If {@link GridType#LINES} then the style will
+     * be a dashed line with no halo.
      * <p/>
      */
     @HasDefaultValue
@@ -112,6 +116,12 @@ public final class GridParam extends AbstractLayerParams {
     @HasDefaultValue
     public String labelColor = DEFAULT_LABEL_COLOR;
     /**
+     * The color of the grid points or lines.  Default is gray ({@value #DEFAULT_GRID_COLOR})
+     */
+    @HasDefaultValue
+    public String gridColor = DEFAULT_GRID_COLOR;
+
+    /**
      * Configuration for the font of the grid labels.  The default is the default system font.
      */
     @HasDefaultValue
@@ -136,6 +146,7 @@ public final class GridParam extends AbstractLayerParams {
         Assert.isTrue(this.indent >= 0, "The indent is not permitted to be negative: " + this.indent);
         Assert.isTrue(this.labelColor != null, "labelColor should not be null");
         Assert.isTrue(this.haloColor != null, "haloColor should not be null");
+        Assert.isTrue(this.font != null, "font should not be null");
     }
 
 }

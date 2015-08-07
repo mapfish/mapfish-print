@@ -1,10 +1,11 @@
-package org.mapfish.print.config;
+package org.mapfish.print.map.geotools.grid;
 
 import org.geotools.styling.Graphic;
 import org.geotools.styling.Mark;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.Symbolizer;
+import org.mapfish.print.map.style.json.ColorParser;
 
 import java.awt.Color;
 import java.util.List;
@@ -17,7 +18,6 @@ import java.util.List;
 public final class PointGridStyle {
 
     private static final int CROSS_SIZE = 10;
-    private static final int HALO_SIZE = 12;
 
     private PointGridStyle() {
         // do nothing
@@ -26,11 +26,11 @@ public final class PointGridStyle {
     /**
      * Create the Grid Point style.
      */
-    public static Style get() {
+    static Style get(final GridParam params) {
         StyleBuilder builder = new StyleBuilder();
 
-        Symbolizer pointSymbolizer = crossSymbolizer("shape://plus", builder, CROSS_SIZE, LineGridStyle.GRID_COLOR);
-        Symbolizer halo = crossSymbolizer("cross", builder, HALO_SIZE, Color.white);
+        Symbolizer pointSymbolizer = crossSymbolizer("shape://plus", builder, CROSS_SIZE, ColorParser.toColor(params.gridColor));
+        Symbolizer halo = crossSymbolizer("cross", builder, CROSS_SIZE + params.haloRadius, ColorParser.toColor(params.haloColor));
         final Style style = builder.createStyle(pointSymbolizer);
         final List<Symbolizer> symbolizers = style.featureTypeStyles().get(0).rules().get(0).symbolizers();
         symbolizers.add(0, halo);

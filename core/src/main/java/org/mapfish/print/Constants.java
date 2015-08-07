@@ -81,13 +81,9 @@ public interface Constants {
         interface Grid {
 
             /**
-             * The name of the style for the default grid style when the grid is rendered as lines.
+             * The name of the grid feature type name.
              */
             String NAME_LINES = "grid";
-            /**
-             * The name of the style for the default grid style when the grid are intersection points.
-             */
-            String NAME_POINTS = "grid_points";
             /**
              * The geometry attribute name.
              */
