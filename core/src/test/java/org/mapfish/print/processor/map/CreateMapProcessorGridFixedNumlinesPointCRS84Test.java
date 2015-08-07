@@ -49,8 +49,8 @@ import static org.junit.Assert.assertEquals;
  * <p/>
  * Created by Jesse on 3/26/14.
  */
-public class CreateMapProcessorFlexibleScaleCenterTiledWmsTest extends AbstractMapfishSpringTest {
-    public static final String BASE_DIR = "center_tiledwms_flexiblescale/";
+public class CreateMapProcessorGridFixedNumlinesPointCRS84Test extends AbstractMapfishSpringTest {
+    public static final String BASE_DIR = "grid_numlines_points_fixedscale_crs84/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
@@ -62,7 +62,7 @@ public class CreateMapProcessorFlexibleScaleCenterTiledWmsTest extends AbstractM
     @Test
     @DirtiesContext
     public void testExecute() throws Exception {
-        final String host = "center_tiledwms_flexiblescale";
+        final String host = "grid_numlines_points_fixedscale_crs84";
         TiledWMSUtil.registerTiledWmsHandler(requestFactory, host);
         requestFactory.registerHandler(
                 new Predicate<URI>() {
@@ -102,4 +102,5 @@ public class CreateMapProcessorFlexibleScaleCenterTiledWmsTest extends AbstractM
     private static PJsonObject loadJsonRequestData() throws IOException {
         return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleCenterTiledWmsTest.class, BASE_DIR + "requestData.json");
     }
+
 }

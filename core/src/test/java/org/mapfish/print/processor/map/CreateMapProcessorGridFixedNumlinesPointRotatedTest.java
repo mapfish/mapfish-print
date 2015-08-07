@@ -41,7 +41,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
 
@@ -86,20 +85,30 @@ public class CreateMapProcessorGridFixedNumlinesPointRotatedTest extends Abstrac
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
-        template.getProcessorGraph().createTask(values).invoke();
+        PJsonObject mapDef = requestData.getJSONObject("attributes").getJSONObject("mapDef");
+        int[] rotationsToTest = {23, 90, 123, 180, 203, 270, 310, 360};
 
-        @SuppressWarnings("unchecked")
-        List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
+        for (int rotation : rotationsToTest) {
+            mapDef.getInternalObj().put("rotation", rotation);
+            Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
+            template.getProcessorGraph().createTask(values).invoke();
 
-        final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
+            @SuppressWarnings("unchecked")
+            List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
 
-        ImageIO.write(referenceImage, "png", new File("e:/tmp/expectedSimpleImage.png"));
+            final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
 
-        assertEquals(2, layerGraphics.size());
-        new ImageSimilarity(referenceImage, 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 30);
+            String imageName = "expectedSimpleImage_" + rotation +".png";
+//            ImageIO.write(referenceImage, "png", new File("e:/tmp/" + imageName));
 
+            assertEquals(2, layerGraphics.size());
+            try {
+                new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + imageName), 30);
+            } catch (AssertionError e) {
+                throw new AssertionError("Image Similarity test failed for the rotation: " + rotation);
+            }
+
+        }
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

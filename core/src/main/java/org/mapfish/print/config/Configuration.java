@@ -135,7 +135,7 @@ public class Configuration {
      * Initialize some optionally wired fields.
      */
     @PostConstruct
-    public final void init(){
+    public final void init() {
         this.namedStyles = this.context.getBeansOfType(Style.class);
     }
 
