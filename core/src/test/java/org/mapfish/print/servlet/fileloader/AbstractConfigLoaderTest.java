@@ -60,7 +60,6 @@ public abstract class AbstractConfigLoaderTest extends AbstractMapfishSpringTest
         assertAccessible(this.workingDirectories.getReports());
         assertAccessible(this.workingDirectories.getWorking(configuration));
         assertAccessible(this.workingDirectories.getJasperCompilation(configuration));
-        assertAccessible(this.workingDirectories.getReportsOldApi());
         assertAccessible(this.workingDirectories.getTaskDirectory());
     }
 
@@ -80,7 +79,6 @@ public abstract class AbstractConfigLoaderTest extends AbstractMapfishSpringTest
         assertLoadable(bytes, this.workingDirectories.getReports());
         assertLoadable(bytes, this.workingDirectories.getWorking(configuration));
         assertLoadable(bytes, this.workingDirectories.getJasperCompilation(configuration));
-        assertLoadable(bytes, this.workingDirectories.getReportsOldApi());
         assertLoadable(bytes, this.workingDirectories.getTaskDirectory());
     }
 

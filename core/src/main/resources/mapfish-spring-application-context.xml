@@ -46,6 +46,7 @@
     </bean>
     <bean id="workingDirectories" class="org.mapfish.print.config.WorkingDirectories">
         <property name="working" value="${workingDir}" />
+        <property name="maxAge" value="${fileCleanUpMaxAge}" />
     </bean>
 
     <bean id="configurationFactory" class="org.mapfish.print.config.ConfigurationFactory"/>
@@ -62,6 +63,8 @@
         <property name="timeout" value="600" />
         <!-- Timeout after which a print job is canceled, if the status has not been checked (in seconds). -->
         <property name="abandonedTimeout" value="120" />
+        <property name="oldFileCleanUp" value="${fileCleanUp}" />
+        <property name="oldFileCleanupInterval" value="${fileCleanUpInterval}" />
     </bean>
     <bean id="printJobPrototype" class="org.mapfish.print.servlet.job.FilePrintJob" scope="prototype"/>
     <bean id="fileReportLoader" class="org.mapfish.print.servlet.job.loader.FileReportLoader"/>
