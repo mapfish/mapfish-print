@@ -70,8 +70,9 @@ public final class MapfishMapContext {
      * @param dpiSensitiveStyle Scale the vector styles?
      */
     // CSOFF: ParameterNumber
-    public MapfishMapContext(final MapfishMapContext parent, final MapBounds bounds, final Dimension mapSize, final double rotationInDegree, final double dpi,
-                             final double requestorDpi, final Boolean forceLongitudeFirst, final boolean dpiSensitiveStyle) {
+    public MapfishMapContext(final MapfishMapContext parent, final MapBounds bounds, final Dimension mapSize,
+                             final double rotationInDegree, final double dpi, final double requestorDpi,
+                             final Boolean forceLongitudeFirst, final boolean dpiSensitiveStyle) {
         // CSON: ParameterNumber
         this.parent = parent;
         this.bounds = bounds;
