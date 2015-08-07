@@ -52,6 +52,7 @@ import org.mapfish.print.http.HttpProxy;
 import org.mapfish.print.map.style.StyleParser;
 import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -66,6 +67,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.PostConstruct;
 
 
 /**
@@ -114,6 +116,7 @@ public class Configuration {
     private String outputFilename;
     private boolean defaultToSvg = false;
     private Set<String> jdbcDrivers = Sets.newHashSet();
+    private Map<String, Style> namedStyles = Maps.newHashMap();
 
     @Autowired
     private StyleParser styleParser;
@@ -122,10 +125,18 @@ public class Configuration {
     @Autowired
     private ConfigFileLoaderManager fileLoaderManager;
     @Autowired
-    private Map<String, Style> namedStyles = Maps.newHashMap();
+    private ApplicationContext context;
 
     final PDFConfig getPdfConfig() {
         return this.pdfConfig;
+    }
+
+    /**
+     * Initialize some optionally wired fields.
+     */
+    @PostConstruct
+    public final void init(){
+        this.namedStyles = this.context.getBeansOfType(Style.class);
     }
 
     /**
