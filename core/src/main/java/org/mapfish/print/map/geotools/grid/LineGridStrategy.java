@@ -2,6 +2,7 @@ package org.mapfish.print.map.geotools.grid;
 
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Polygon;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.feature.DefaultFeatureCollection;
@@ -17,6 +18,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.cs.AxisDirection;
 
+import java.awt.geom.AffineTransform;
 import javax.annotation.Nonnull;
 
 /**
@@ -31,7 +33,9 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
     }
 
     @Override
-    public FeatureSourceSupplier createFeatureSource(final Template template, final GridParam layerData) {
+    public FeatureSourceSupplier createFeatureSource(final Template template,
+                                                     final GridParam layerData,
+                                                     final LabelPositionCollector labels) {
         return new FeatureSourceSupplier() {
             @Nonnull
             @Override
@@ -41,9 +45,9 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
                 SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(featureType);
                 final DefaultFeatureCollection features;
                 if (layerData.numberOfLines != null) {
-                    features = createFeaturesFromNumberOfLines(mapContext, featureBuilder, layerData);
+                    features = createFeaturesFromNumberOfLines(mapContext, featureBuilder, layerData, labels);
                 } else {
-                    features = createFeaturesFromSpacing(mapContext, featureBuilder, layerData);
+                    features = createFeaturesFromSpacing(mapContext, featureBuilder, layerData, labels);
                 }
                 return new CollectionFeatureSource(features);
             }
@@ -53,7 +57,8 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
     @Nonnull
     private DefaultFeatureCollection createFeaturesFromNumberOfLines(@Nonnull final MapfishMapContext mapContext,
                                                                      @Nonnull final SimpleFeatureBuilder featureBuilder,
-                                                                     @Nonnull final GridParam layerData) {
+                                                                     @Nonnull final GridParam layerData,
+                                                                     @Nonnull final LabelPositionCollector labels) {
 
         ReferencedEnvelope bounds = mapContext.toReferencedEnvelope();
 
@@ -62,13 +67,14 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
         double minX = bounds.getMinimum(0) + xSpace;
         double minY = bounds.getMinimum(1) + ySpace;
 
-        return sharedCreateFeatures(featureBuilder, layerData, mapContext, xSpace, ySpace, minX, minY);
+        return sharedCreateFeatures(labels, featureBuilder, layerData, mapContext, xSpace, ySpace, minX, minY);
     }
 
     @Nonnull
     private DefaultFeatureCollection createFeaturesFromSpacing(@Nonnull final MapfishMapContext mapContext,
                                                                @Nonnull final SimpleFeatureBuilder featureBuilder,
-                                                               @Nonnull final GridParam layerData) {
+                                                               @Nonnull final GridParam layerData,
+                                                               @Nonnull final LabelPositionCollector labels) {
 
         ReferencedEnvelope bounds = mapContext.toReferencedEnvelope();
 
@@ -77,16 +83,19 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
         double minX = GridUtils.calculateFirstLine(bounds, layerData, 0);
         double minY = GridUtils.calculateFirstLine(bounds, layerData, 1);
 
-        return sharedCreateFeatures(featureBuilder, layerData, mapContext, xSpace, ySpace, minX, minY);
+        return sharedCreateFeatures(labels, featureBuilder, layerData, mapContext, xSpace, ySpace, minX, minY);
     }
 
-    private DefaultFeatureCollection sharedCreateFeatures(final SimpleFeatureBuilder featureBuilder,
+    // CSOFF: ParameterNumber
+    private DefaultFeatureCollection sharedCreateFeatures(final LabelPositionCollector labels,
+                                                          final SimpleFeatureBuilder featureBuilder,
                                                           final GridParam layerData,
                                                           final MapfishMapContext mapContext,
                                                           final double xSpace,
                                                           final double ySpace,
                                                           final double minX,
                                                           final double minY) {
+        // CSON: ParameterNumber
         GeometryFactory geometryFactory = new GeometryFactory();
 
         ReferencedEnvelope bounds = mapContext.toReferencedEnvelope();
@@ -94,6 +103,8 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
         String unit = bounds.getCoordinateReferenceSystem().getCoordinateSystem().getAxis(0).getUnit().toString();
         final AxisDirection direction = bounds.getCoordinateReferenceSystem().getCoordinateSystem().getAxis(0).getDirection();
         int numDimensions = bounds.getCoordinateReferenceSystem().getCoordinateSystem().getDimension();
+        Polygon rotatedBounds = GridUtils.calculateBounds(mapContext);
+        AffineTransform worldToScreenTransform = GridUtils.getWorldToScreenTransform(mapContext);
 
         DefaultFeatureCollection features = new DefaultFeatureCollection();
 
@@ -101,29 +112,32 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
         int i = 0;
         for (double x = minX; x < bounds.getMaxX(); x += xSpace) {
             i++;
-            final SimpleFeature feature = createFeature(mapContext, featureBuilder, geometryFactory, layerData,
-                    unit, direction, numDimensions, pointSpacing, x, bounds.getMinimum(1), i, 1);
+            final SimpleFeature feature = createFeature(featureBuilder, geometryFactory, layerData,
+                    direction, numDimensions, pointSpacing, x, bounds.getMinimum(1), i, 1);
             features.add(feature);
+            GridUtils.topBorderLabel(labels, geometryFactory, rotatedBounds, unit, x, worldToScreenTransform);
+            GridUtils.bottomBorderLabel(labels, geometryFactory, rotatedBounds, unit, x, worldToScreenTransform);
         }
 
         pointSpacing = bounds.getSpan(0) / layerData.pointsInLine;
         int j = 0;
         for (double y = minY; y < bounds.getMaxY(); y += ySpace) {
             j++;
-            final SimpleFeature feature = createFeature(mapContext, featureBuilder, geometryFactory, layerData,
-                    unit, direction, numDimensions, pointSpacing, bounds.getMinimum(0), y, j, 0);
+            final SimpleFeature feature = createFeature(featureBuilder, geometryFactory, layerData,
+                    direction, numDimensions, pointSpacing, bounds.getMinimum(0), y, j, 0);
             features.add(feature);
+            GridUtils.rightBorderLabel(labels, geometryFactory, rotatedBounds, unit, y, worldToScreenTransform);
+            GridUtils.leftBorderLabel(labels, geometryFactory, rotatedBounds, unit, y, worldToScreenTransform);
+
         }
 
         return features;
     }
 
-    // CHECKSTYLE:OFF
-    private org.opengis.feature.simple.SimpleFeature createFeature(final MapfishMapContext mapContext,
-                                                                   final SimpleFeatureBuilder featureBuilder,
+    // CSOFF: ParameterNumber
+    private org.opengis.feature.simple.SimpleFeature createFeature(final SimpleFeatureBuilder featureBuilder,
                                                                    final GeometryFactory geometryFactory,
                                                                    final GridParam layerData,
-                                                                   final String unit,
                                                                    final AxisDirection direction,
                                                                    final int numDimensions,
                                                                    final double spacing,
@@ -131,6 +145,8 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
                                                                    final double y,
                                                                    final int i,
                                                                    final int ordinate) {
+        // CSON: ParameterNumber
+
         featureBuilder.reset();
         final int numPoints = layerData.pointsInLine + 1; // add 1 for the last point
         final LinearCoordinateSequence coordinateSequence = new LinearCoordinateSequence().
@@ -142,22 +158,8 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
                 setOrdinate0AxisDirection(direction);
         LineString geom = geometryFactory.createLineString(coordinateSequence);
         featureBuilder.set(Grid.ATT_GEOM, geom);
-        featureBuilder.set(Grid.ATT_LABEL, GridUtils.createLabel(ordinate == 1 ? x : y, unit));
-
-        int indentAmount = (int) (mapContext.getDPI() / 8); // 1/8 inch indent
-        if (ordinate == 0) {
-            featureBuilder.set(Grid.ATT_ROTATION, 0);
-            featureBuilder.set(Grid.ATT_X_DISPLACEMENT, -(mapContext.getMapSize().width / 2) + indentAmount);
-            featureBuilder.set(Grid.ATT_Y_DISPLACEMENT, 0);
-        } else {
-            featureBuilder.set(Grid.ATT_ROTATION, 270);
-            featureBuilder.set(Grid.ATT_X_DISPLACEMENT, -(mapContext.getMapSize().height / 2) + indentAmount);
-            featureBuilder.set(Grid.ATT_Y_DISPLACEMENT, 0);
-        }
-        featureBuilder.set(Grid.ATT_ANCHOR_X, 0);
 
         return featureBuilder.buildFeature("grid." + (ordinate == 1 ? 'x' : 'y') + "." + i);
     }
-    // CHECKSTYLE:ON
 
 }

@@ -56,12 +56,12 @@ public final class GridLayerPlugin extends AbstractFeatureSourceLayerPlugin<Grid
     @Nonnull
     @Override
     public GridLayer parse(@Nonnull final Template template, @Nonnull final GridParam layerData) throws Throwable {
-
-        FeatureSourceSupplier featureSource = createFeatureSourceFunction(template, layerData);
+        LabelPositionCollector labels = new LabelPositionCollector();
+        FeatureSourceSupplier featureSource = createFeatureSourceFunction(template, layerData, labels);
         final StyleSupplier<FeatureSource> styleFunction = createStyleSupplier(template, layerData);
         return new GridLayer(this.pool, featureSource, styleFunction,
                 template.getConfiguration().renderAsSvg(layerData.renderAsSvg),
-                layerData);
+                layerData, labels);
     }
 
     private StyleSupplier<FeatureSource> createStyleSupplier(final Template template, final GridParam layerData) {
@@ -82,9 +82,10 @@ public final class GridLayerPlugin extends AbstractFeatureSourceLayerPlugin<Grid
     }
 
     private FeatureSourceSupplier createFeatureSourceFunction(final Template template,
-                                                              final GridParam layerData) {
+                                                              final GridParam layerData,
+                                                              final LabelPositionCollector labels) {
 
-        return layerData.gridType.strategy.createFeatureSource(template, layerData);
+        return layerData.gridType.strategy.createFeatureSource(template, layerData, labels);
     }
 
 }
