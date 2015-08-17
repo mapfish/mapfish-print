@@ -16,7 +16,7 @@
                 "labelColor": "green",
                 "renderAsSvg": false,
                 "font": {
-                    "name" : ["Purisa"],
+                    "name" : ["Arial"],
                     "size" : "10"
                 }
             },{

@@ -12,7 +12,7 @@
           "numberOfLines": [5,5],
           "renderAsSvg": false,
           "font": {
-            "name" : ["Verdana"],
+            "name" : ["Arial"],
             "size" : "10"
           }
         },{
