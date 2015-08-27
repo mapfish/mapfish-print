@@ -203,6 +203,12 @@ docsApp.hashPathSeparator = '__';
 docsApp.controller('RecordCtrl', function ($scope, $location) {
   var title = $scope.record.title;
   $scope.expanded = $location.hash() === title || $location.hash().indexOf(title + docsApp.hashPathSeparator) === 0;
+  $scope.$watch('expanded', function(expanded){
+    if (expanded) {
+      $scope.setLocationHash();
+    }
+  });
+
 
   $scope.setLocationHash = function() {
     $location.hash($scope.record.title);

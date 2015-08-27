@@ -24,3 +24,11 @@ code, pre {
   text-transform: uppercase;
   letter-spacing: 1px;
 }
+
+h5 {
+  font-weight: bold;
+}
+
+.accordion-toggle, .panel-configuration h5, .panel-input h5, .panel-output h5 {
+  cursor: pointer;
+}
