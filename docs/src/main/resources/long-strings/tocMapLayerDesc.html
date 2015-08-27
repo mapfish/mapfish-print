@@ -1,9 +1,38 @@
-The Maplayers are the geospatial data types supported by Mapfish Print. Maplayers are typically defined in the request JSON as part of
-the map attribute. Since Maplayers are essentially attribute data specific to the Map attribute, the follow the same pattern as all
+The map layers are the geospatial data types supported by Mapfish Print. Map layers are typically defined in the request JSON as part of
+the map attribute. Since map layers are essentially attribute data specific to the map attribute, they follow the same pattern as all
 other attributes in that they have attribute values.
 <p>
-    The documentation below describes each Maplayer selling with its required and optional attributes. Here are a few examples of map
-    attribute with Maplayers defined.
+    The documentation below describes each map layer listing its required and optional attributes. Here is an example of a map
+    attribute with map layers defined.
 </p>
-<p>Example 1:TODO: Fill in description
+<p>
+  <strong>Example <code>request.json</code></strong>
+</p><p>
+  <pre>
+{<br>
+  "attributes": {<br>
+    "map": {<br>
+      "layers": [<br>
+        {<br>
+          "geoJson": "http://host.org/data.geojson",<br>
+          "type": "geojson"<br>
+        },<br>
+        {<br>
+          "baseURL": "http://host.org/tiles",<br>
+          "type": "OSM",<br>
+          "imageExtension": "png"<br>
+        }<br>
+      ],<br>
+      "projection": "EPSG:900913",<br>
+      "dpi": 128,<br>
+      "scale": 100000,<br>
+      "center": [<br>
+        -8233518.5005945,<br>
+        4980320.4059228<br>
+      ]<br>
+    }<br>
+  },<br>
+  "layout": "A4 landscape"<br>
+}
+  </pre>
 </p>

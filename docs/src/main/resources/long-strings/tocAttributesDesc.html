@@ -1,5 +1,5 @@
 <p>
-    An Attribute is a value the that a processor requires as its input (if it is not satisfied by the output of another processor) or the
+    An Attribute is a value that a processor requires as its input (if it is not satisfied by the output of another processor) or the
     report template. An attribute represents one or more values. Usually simple values (numbers, strings, etc...) are values required by
     the report template but on occasion they might be required by a processor. Typically a processor will require a specific attribute
     type, for example the <a href="#/processors#!createMap">!createMap</a> processor requires a <a href="#/attributes#!map">!map</a>
@@ -16,4 +16,40 @@
     multiple values the default block may only provide defaults for a subset of the values (the client must supply the rest).
 </p><p>
     Defaults provide a way to make the API the client must use to be very simple (when designing a custom client) but remain flexible.
+</p><p>
+  <strong>Example</strong>
+</p><p>
+  <code>config.yaml</code>
+  <pre>
+templates:<br>
+  A4 portrait: !template<br>
+    reportTemplate: simpleReport.jrxml<br>
+    attributes:<br>
+      number: !integer {}<br>
+      title: !string {}<br>
+      description: !string {}<br>
+      map: !map<br>
+        height: 200<br>
+        width: 400
+  </pre>
+</p><p>
+  <code>request.json</code>
+  <pre>
+{<br>
+    "layout": "A4 portrait",<br>
+    "outputFormat": "pdf",<br>
+    "attributes": {<br>
+        "number": 45,<br>
+        "name": "The map",<br>
+        "description": "A map showing..."<br>
+        },<br>
+        "map": {<br>
+          "bbox": [100, -1, 106, 2],<br>
+          "projection": "CRS:84",<br>
+          "dpi": 72,<br>
+          ...<br>
+        }<br>
+    }<br>
+}
+  </pre>
 </p>
