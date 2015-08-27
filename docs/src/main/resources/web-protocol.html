@@ -1,14 +1,16 @@
+<div class="api">
 <p>
   The API is the web/HTTP protocol allowing a client to interact with the print service via the web.
 </p>
 <p>
   <ul>
-    <li>List available print configurations</li>
-    <li>Get the capabilities for a print configuration</li>
-    <li>Create a print job</li>
-    <li>Get the status for a print job</li>
-    <li>Download the report for a print job</li>
-    <li>Cancel a print job</li>
+    <li><a href="#/API#apps">List available print configurations</a></li>
+    <li><a href="#/API#capabilities">Get the capabilities for a print configuration</a></li>
+    <li><a href="#/API#create">Create a print job</a></li>
+    <li><a href="#/API#status">Get the status for a print job</a></li>
+    <li><a href="#/API#download">Download the report for a print job</a></li>
+    <li><a href="#/API#cancel">Cancel a print job</a></li>
+    <li><a href="#/API#listFonts">List available fonts</a></li>
     <!-- <li>Create and get report</li> -->
   </ul>
 </p>
@@ -26,9 +28,9 @@
 <h4>Response Sample</h4>
 <p>
   <pre>
-[<br>
-"simple",<br>
-"default"<br>
+[
+"simple",
+"default"
 ]
   </pre>
 </p>
@@ -52,24 +54,24 @@
 </p>
 <p>
   <pre>
-{<br>
-    "app": "simple",<br>
-    "layouts": [<br>
-        {<br>
-            "name": "A4 Portrait",<br>
-            "attributes": [<br>
-                ...<br>
-            ]<br>
-        }<br>
-    ],<br>
-    "formats": [<br>
-        "bmp",<br>
-        "gif",<br>
-        "pdf",<br>
-        "png",<br>
-        "tif",<br>
-        "tiff"<br>
-    ]<br>
+{
+    "app": "simple",
+    "layouts": [
+        {
+            "name": "A4 Portrait",
+            "attributes": [
+                ...
+            ]
+        }
+    ],
+    "formats": [
+        "bmp",
+        "gif",
+        "pdf",
+        "png",
+        "tif",
+        "tiff"
+    ]
 }
   </pre>
 </p>
@@ -137,27 +139,27 @@
 <p>
   Request body
   <pre>
-{<br>
-    "layout": "A4 Portrait",<br>
-    "attributes": {<br>
-        "map": {<br>
-            "center": [<br>
-                957352.8034848921,<br>
-                5936844.140278816<br>
-            ],<br>
-            "dpi": 72,<br>
-            "layers": [<br>
-              ...<br>
-            ],<br>
-            "projection": "EPSG:3857",<br>
-            "rotation": 0,<br>
-            "scale": 25000<br>
-        },<br>
-        "scalebar": {<br>
-            "projection": "EPSG:21781"<br>
-        },<br>
-        "title": "Sample Print"<br>
-    }<br>
+{
+    "layout": "A4 Portrait",
+    "attributes": {
+        "map": {
+            "center": [
+                957352.8034848921,
+                5936844.140278816
+            ],
+            "dpi": 72,
+            "layers": [
+              ...
+            ],
+            "projection": "EPSG:3857",
+            "rotation": 0,
+            "scale": 25000
+        },
+        "scalebar": {
+            "projection": "EPSG:21781"
+        },
+        "title": "Sample Print"
+    }
 }
   </pre>
 </p>
@@ -165,10 +167,10 @@
 <h4>Response Sample</h4>
 <p>
   <pre>
-{<br>
-    "ref": "15179fee-618d-4356-8114-cfd8f146e273@3067ade6-0768-4fc6-b41d-40422d0cdb8b",<br>
-    "statusURL": "/print/status/15179fee-618d-4356-8114-cfd8f146e273.json",<br>
-    "downloadURL": "/print/report/15179fee-618d-4356-8114-cfd8f146e273"<br>
+{
+    "ref": "15179fee-618d-4356-8114-cfd8f146e273@3067ade6-0768-4fc6-b41d-40422d0cdb8b",
+    "statusURL": "/print/status/15179fee-618d-4356-8114-cfd8f146e273.json",
+    "downloadURL": "/print/report/15179fee-618d-4356-8114-cfd8f146e273"
 }
   </pre>
 </p>
@@ -232,12 +234,12 @@
 </p>
 <p>
   <pre>
-{<br>
-    "done": false,<br>
-    "status": "running",<br>
-    "elapsedTime": 507,<br>
-    "waitingTime": 0,<br>
-    "downloadURL": "/print/report/15179fee-618d-4356-8114-cfd8f146e273"<br>
+{
+    "done": false,
+    "status": "running",
+    "elapsedTime": 507,
+    "waitingTime": 0,
+    "downloadURL": "/print/report/15179fee-618d-4356-8114-cfd8f146e273"
 }
   </pre>
 </p>
@@ -307,4 +309,4 @@
 <p>
   Request URI: <code>GET /fonts</code>
 </p>
-
+</div>

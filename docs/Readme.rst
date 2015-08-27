@@ -1,5 +1,9 @@
 The docs module is responsible for generating a documentation website.
 
+To build the docs run:
+
+    ./gradlew buildDocs
+
 The output (IE the generated site) is in the folder docs/build/site.
 
 The documentation is compiled from several sources:
