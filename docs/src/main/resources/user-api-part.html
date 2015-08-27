@@ -28,8 +28,10 @@
              ng-controller="DetailCtrl">
             <a id="{{anchorId(input, 'input')}}"></a>
             <div>
-                <i  x-ng-if="input.required" style="color: red;font-size: 15">*&nbsp;</i>
-                <h5 ng-click="setLocationHash(anchorId(input, 'input'), $event)">{{getTitle(input)}}</h5>
+                <h5 ng-click="setLocationHash(anchorId(input, 'input'), $event)">
+                    <i  x-ng-if="input.required" style="color: red;font-size: 15">*&nbsp;</i>
+                    {{getTitle(input)}}
+                </h5>
             </div>
             <p ng-bind-html="renderHtml(input.desc)"></p>
         </div>

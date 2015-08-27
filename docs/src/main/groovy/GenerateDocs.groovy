@@ -236,7 +236,7 @@ class GenerateDocs {
     }
 
     static def escape(String string) {
-        return string.replaceAll("\\r|\\n|\"|\\\\") {it == "\n" || it == "\r" ? " <br/>" : "\\$it"}
+        return string.replaceAll("\\r|\\n|\"|\\\\") {it == "\n" || it == "\r" ? " " : "\\$it"}
     }
     static String escapeTranslationId(id) {
         return id.replace("\\", "")
