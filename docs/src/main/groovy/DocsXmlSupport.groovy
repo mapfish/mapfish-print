@@ -42,10 +42,10 @@ class DocsXmlSupport {
             node.attributes().each { name, value ->
 
 
-                def hrefPrefixIndicatingJavadocLink = '../../../../../org/mapfish/'
-                if (node.name() == 'a' && name == 'href' && value.startsWith(hrefPrefixIndicatingJavadocLink)) {
-
-                    value = "javadoc/org/mapfish/" + value.substring(hrefPrefixIndicatingJavadocLink.length())
+                def hrefPrefixIndicatingJavadocLink = 'org/mapfish/print'
+                if (node.name() == 'a' && name == 'href' && value.contains(hrefPrefixIndicatingJavadocLink)) {
+                    def pos = value.indexOf(hrefPrefixIndicatingJavadocLink) + hrefPrefixIndicatingJavadocLink.length()
+                    value = "javadoc/org/mapfish/print" + value.substring(pos)
                     stringBuilder.append(' target="javadocsTab"')
                 }
 
@@ -58,25 +58,25 @@ class DocsXmlSupport {
 
             stringBuilder.append(">")
 
-            def children;
+            def children
             // need to access inner node because children on this node object only returns children that are nodes.
             // We also want the text elements.  So we get inner node via reflection and execute children on that.
-            // if for some reason we can't get the inner node then we will just get the local strings and add then before the
-            // nodes.  All the data will be there but possibly in a different order.
+            // if for some reason we can't get the inner node then we will use "children()".
             try {
                 Field nodeField = node.getClass().getDeclaredField("node")
                 nodeField.setAccessible(true)
                 def innerNode = nodeField.get(node)
                 children = innerNode.children()
             } catch (Throwable) {
-                children = node.childNodes()
-                node.localText().each {
-                    stringBuilder.append("\n").append(it)
-                }
+                children = node.children()
             }
             children.each { child ->
                 if (child instanceof String) {
-                    stringBuilder.append(child)
+                    if (node.name() == 'code') {
+                        stringBuilder.append(child.replaceAll("\\r|\\n") {"<br>"})
+                    } else {
+                        stringBuilder.append(child)
+                    }
                 } else {
                     appendXmlToBuilder(child, stringBuilder)
                 }

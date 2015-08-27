@@ -47,9 +47,8 @@ docsApp.controller('DocsCtrl', function ($scope, $rootScope, $sce, $translate, $
     'API': {
       order: 10,
       title: 'tocApiTitle',
-      html: 'user-api-part.html',
-      setRecords: function() {$scope.records = docs.api},
-      desc: 'tocApiDesc'
+      html: 'web-protocol.html',
+      setRecords: function() {}
     },
     'configuration': {
       order: 20,
@@ -114,6 +113,9 @@ docsApp.controller('DocsCtrl', function ($scope, $rootScope, $sce, $translate, $
   $scope.page = 'overview';
   $scope.records = docs.api;
   $scope.select = function (page) {
+    if (page === '') {
+      page = 'overview';
+    }
     $scope.page = page;
     $scope.pages[page].setRecords()
   };
@@ -189,7 +191,6 @@ docsApp.filter('sortTableOfContents', function(){
 });
 docsApp.filter('sortRecords', function($translate){
   return function (items) {
-
     items.sort(function(a,b) {
       return $translate.instant(a.title) < $translate.instant(b.title)  ? -1 : 1;
     });
@@ -202,6 +203,12 @@ docsApp.hashPathSeparator = '__';
 docsApp.controller('RecordCtrl', function ($scope, $location) {
   var title = $scope.record.title;
   $scope.expanded = $location.hash() === title || $location.hash().indexOf(title + docsApp.hashPathSeparator) === 0;
+  $scope.$watch('expanded', function(expanded){
+    if (expanded) {
+      $scope.setLocationHash();
+    }
+  });
+
 
   $scope.setLocationHash = function() {
     $location.hash($scope.record.title);

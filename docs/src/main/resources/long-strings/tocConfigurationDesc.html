@@ -1,1 +1,24 @@
-TODO: Fill in description
+<p>This section lists the available configuration components that can be
+used in the YAML configuration file.</p>
+<p>
+  <strong>Example <code>config.yaml</code></strong>
+</p><p>
+  <pre>
+throwErrorOnExtraParameters: true<br>
+<br>
+certificateStore: !certificateStore<br>
+  ...<br>
+<br>
+credentials:<br>
+  - !credential<br>
+    ...<br>
+<br>
+proxies:<br>
+  - !proxy<br>
+    ...<br>
+<br>
+templates:<br>
+  A4 Landscape: !template<br>
+    ...<br>
+  </pre>
+</p>

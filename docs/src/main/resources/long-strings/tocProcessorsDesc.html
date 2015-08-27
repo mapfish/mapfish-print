@@ -2,7 +2,7 @@
     This page lists all the <em>processors </em> available in the Mapfish distribution. The documentation consists of several parts:
 <ul>
     <li>Summary: all the processors are listed with the name/id and a short description of the processor. The name is the value that is
-        put in the config file when configuring Mapfish print.
+        put in the config file when configuring Mapfish Print.
     </li>
     <li>Description: the full description for each processor can be found by expanding one of the list elements.</li>
     <li>Configuration: the configuration options are also listed when a processor element is expanded. A configuration option is a value
@@ -41,16 +41,16 @@ A processor's main responsibility is to take the <a
 </p>
 <p>
     InputMapper and outputMapper configuration parameters can be configured as follows:
-<pre><code>
+<pre>
 - !createMap<br/>
     inputMapper: { attributeName : defaultInputParamName}<br/>
     outputMapper: { defaultOutputName : templateParamName}<br/>
-</code></pre>
+</pre>
 
 Or if the there are multiple mappings that need to be made :
-<pre><code>
+<pre>
 - processorName<br/>
     inputMapper :<br/>
     attributeName1 : inputName1<br/>
     attributeName2 : inputName2<br/>
-</code></pre>
+</pre>

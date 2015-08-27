@@ -6,7 +6,6 @@ code {
   color: #d14;
   white-space: nowrap;
   background-color: #f7f7f9;
-  border: 1px solid #e1e1e8;
 }
 code, pre {
   padding: 0 3px 2px;
@@ -17,10 +16,18 @@ code, pre {
   -moz-border-radius: 3px;
   border-radius: 3px;
 }
-h4{
+.api h4{
   font-size: 14px;
   font-weight: 700;
   color: #959595;
   text-transform: uppercase;
   letter-spacing: 1px;
+}
+
+h5 {
+  font-weight: bold;
+}
+
+.accordion-toggle, .panel-configuration h5, .panel-input h5, .panel-output h5 {
+  cursor: pointer;
 }
