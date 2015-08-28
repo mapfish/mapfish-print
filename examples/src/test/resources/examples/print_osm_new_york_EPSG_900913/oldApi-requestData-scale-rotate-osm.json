@@ -1,0 +1,34 @@
+{
+  "units": "m",
+  "srs": "EPSG:900913",
+  "layout": "A4 landscape",
+  "dpi": 72,
+  "outputFormat" : "pdf",
+  "layers":[
+    {
+	  "baseURL": "http://localhost:9876/e2egeoserver/www/osm",
+	  "type": "OSM",
+	  "extension": "png"
+	},
+    {
+      "baseURL":"http://localhost:9876/e2egeoserver/wms",
+      "opacity" : 1,
+      "type":"WMS",
+      "layers": [
+        "tiger:tiger_roads"
+      ],
+      "format": "image/png",
+      "singleTile": true,
+	  "customParams": {
+	    "TRANSPARENT": "true"
+	  }
+    }
+  ],
+  "pages": [
+    {
+      "center": [-8235878.4938425, 4979784.7605681],
+      "rotation": -45,
+      "scale": 26000
+    }
+  ]
+}

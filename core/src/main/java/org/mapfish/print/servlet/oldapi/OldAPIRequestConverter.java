@@ -146,7 +146,8 @@ public final class OldAPIRequestConverter {
             map.put("dpi", oldRequest.getInt("dpi"));
         }
         if (oldMapPage.has("rotation")) {
-            map.put("rotation", oldMapPage.getDouble("rotation"));
+            // rotation must be inverted
+            map.put("rotation", -oldMapPage.getDouble("rotation"));
         }
         if (oldMapPage.has("bbox")) {
             map.put("bbox", oldMapPage.getInternalObj().getJSONArray("bbox"));

@@ -76,7 +76,7 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertEquals(5000.0, map.getDouble("scale"), 0.1);
         assertEquals(659307.58735556, map.getJSONArray("center").getDouble(0), 0.1);
         assertEquals(5711360.4205031, map.getJSONArray("center").getDouble(1), 0.1);
-        assertEquals(0.0, map.getDouble("rotation"), 0.1);
+        assertEquals(-45.0, map.getDouble("rotation"), 0.1);
         
         assertTrue(map.has("layers"));
         JSONArray layers = map.getJSONArray("layers");
