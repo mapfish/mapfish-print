@@ -1,0 +1,15 @@
+
+templates:
+  main: !template
+    attributes:
+      scalebar: !scalebar
+        width: 500
+        height: 100
+        default:
+          type: line
+          unit: m
+          geodetic: true
+          lockUnits: true
+          intervals: 4
+          font: Arial
+          fontColor: "#cccccc"
