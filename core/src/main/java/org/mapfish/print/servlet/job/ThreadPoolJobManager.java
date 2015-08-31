@@ -267,7 +267,7 @@ public class ThreadPoolJobManager implements JobManager {
                 PostResultToRegistryTask.CHECK_INTERVAL, TimeUnit.MILLISECONDS);
 
         if (this.oldFileCleanUp) {
-            this.cleanUpTimer = Executors.newScheduledThreadPool(0, new ThreadFactory() {
+            this.cleanUpTimer = Executors.newScheduledThreadPool(1, new ThreadFactory() {
                 @Override
                 public Thread newThread(final Runnable timerTask) {
                     final Thread thread = new Thread(timerTask, "Clean up old files");
