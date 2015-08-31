@@ -20,6 +20,8 @@
 package org.mapfish.print.attribute;
 
 import com.google.common.collect.Lists;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.junit.Test;
@@ -43,17 +45,20 @@ public abstract class AbstractAttributeTest {
 
     @Test
     public void testPrintClientConfig() throws Exception {
-        final StringWriter jsonOutput = new StringWriter();
-        JSONWriter json = new JSONWriter(jsonOutput);
-        Template template = Mockito.mock(Template.class);
-        // verify there is no error
-        json.object();
         final Attribute attribute = createAttribute();
-        attribute.printClientConfig(json, template);
-        json.endObject();
-        JSONObject capabilities = new JSONObject(jsonOutput.toString());
+        Template template = Mockito.mock(Template.class);
+        JSONObject capabilities = getClientConfig(attribute, template);
         assertTrue("Missing " + JSON_NAME + " in: \n" + capabilities.toString(2), capabilities.has(JSON_NAME));
         assertTrue("Missing " + JSON_ATTRIBUTE_TYPE + " in: \n" + capabilities.toString(2), capabilities.has(JSON_ATTRIBUTE_TYPE));
+    }
+
+    public static JSONObject getClientConfig(Attribute attribute, Template template) throws JSONException {
+        final StringWriter jsonOutput = new StringWriter();
+        JSONWriter json = new JSONWriter(jsonOutput);
+        json.object();
+        attribute.printClientConfig(json, template);
+        json.endObject();
+        return new JSONObject(jsonOutput.toString());
     }
 
     @Test
