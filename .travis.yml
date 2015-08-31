@@ -1,4 +1,10 @@
 language: java
+sudo: true
+
+before_install:
+  - sudo apt-get update -yq
+  - sudo sh -c "echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections"
+  - sudo apt-get install msttcorefonts -qq
 
 jdk:
 - oraclejdk7
@@ -8,4 +14,4 @@ jdk:
 script:
 - ./gradlew --no-color build
 
-after_failure: print-examples-test-output.sh
+after_failure: sh print-examples-test-output.sh

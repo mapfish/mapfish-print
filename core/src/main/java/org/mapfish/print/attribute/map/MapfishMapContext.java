@@ -25,12 +25,14 @@ import org.mapfish.print.map.Scale;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Utility class that adjusts the bounds and the map size in case a rotation
  * is set. Also it provides an {@link AffineTransform} to render the layer graphics.
  */
-public class MapfishMapContext {
+public final class MapfishMapContext {
 
     private final MapBounds bounds;
     private final Dimension mapSize;
@@ -39,6 +41,7 @@ public class MapfishMapContext {
     private final double requestorDpi;
     private final boolean forceLongitudeFirst;
     private final boolean dpiSensitiveStyle;
+    private final MapfishMapContext parent;
 
     /**
      * Constructor.
@@ -52,6 +55,26 @@ public class MapfishMapContext {
      */
     public MapfishMapContext(final MapBounds bounds, final Dimension mapSize, final double rotationInDegree, final double dpi,
                              final double requestorDpi, final Boolean forceLongitudeFirst, final boolean dpiSensitiveStyle) {
+        this(null, bounds, mapSize, rotationInDegree, dpi, requestorDpi, forceLongitudeFirst, dpiSensitiveStyle);
+    }
+
+    /**
+     * Constructor.
+     * @param parent the context that this context is derived from
+     * @param bounds the map bounds
+     * @param mapSize the map size
+     * @param rotationInDegree the rotation in degree
+     * @param dpi the dpi of the printed map
+     * @param requestorDpi the dpi of the client map
+     * @param forceLongitudeFirst If true then force longitude coordinates as the first coordinate.
+     * @param dpiSensitiveStyle Scale the vector styles?
+     */
+    // CSOFF: ParameterNumber
+    public MapfishMapContext(final MapfishMapContext parent, final MapBounds bounds, final Dimension mapSize,
+                             final double rotationInDegree, final double dpi, final double requestorDpi,
+                             final Boolean forceLongitudeFirst, final boolean dpiSensitiveStyle) {
+        // CSON: ParameterNumber
+        this.parent = parent;
         this.bounds = bounds;
         this.mapSize = mapSize;
         this.rotation = Math.toRadians(rotationInDegree);
@@ -64,25 +87,26 @@ public class MapfishMapContext {
     /**
      * @return The rotation in radians.
      */
-    public final double getRotation() {
+    public double getRotation() {
         return this.rotation;
     }
-
-    public final MapBounds getBounds() {
+    
+    public MapBounds getBounds() {
         return this.bounds;
     }
-
-    public final MapBounds getRotatedBounds() {
+    
+    public MapBounds getRotatedBounds() {
         return this.bounds.adjustBoundsToRotation(this.rotation);
     }
-
-    public final Dimension getMapSize() {
+    
+    public Dimension getMapSize() {
         return this.mapSize;
     }
-    public final Scale getScale() {
+
+    public Scale getScale() {
         return this.bounds.getScaleDenominator(getPaintArea(), this.dpi);
     }
-    public final Scale getGeodeticScale() {
+    public Scale getGeodeticScale() {
         return this.bounds.getGeodeticScaleDenominator(getPaintArea(), this.dpi);
     }
 
@@ -94,7 +118,7 @@ public class MapfishMapContext {
      *     <code>$P{mapContext}.getRoundedScale()</code>
      * </p>
      */
-    public final double getRoundedScale() {
+    public double getRoundedScale() {
         return getRoundedScale(false);
     }
 
@@ -108,7 +132,7 @@ public class MapfishMapContext {
      *
      * @param geodetic Get geodetic scale
      */
-    public final double getRoundedScale(final boolean geodetic) {
+    public double getRoundedScale(final boolean geodetic) {
         double scale;
         if (geodetic) {
             scale = this.bounds.getGeodeticScaleDenominator(getPaintArea(), this.dpi).getDenominator();
@@ -132,37 +156,37 @@ public class MapfishMapContext {
     /**
      * @return The new map size taking the rotation into account.
      */
-    public final Dimension getRotatedMapSize() {
+    public Dimension getRotatedMapSize() {
         if (this.rotation == 0.0) {
             return this.mapSize;
         }
-
+        
         final int rotatedWidth = getRotatedMapWidth();
         final int rotatedHeight = getRotatedMapHeight();
-
+        
         return new Dimension(rotatedWidth, rotatedHeight);
     }
-
+    
     /**
      * Returns an {@link AffineTransform} taking the rotation into account.
-     *
+     * 
      * @return an affine transformation
      */
-    public final AffineTransform getTransform() {
+    public AffineTransform getTransform() {
         if (this.rotation == 0.0) {
             return null;
         }
-
+        
         final Dimension rotatedMapSize = getRotatedMapSize();
-
+        
         final AffineTransform transform = AffineTransform.getTranslateInstance(0.0, 0.0);
-        // move to the center of the original map rectangle (this is the actual
+        // move to the center of the original map rectangle (this is the actual 
         // size of the graphic)
         transform.translate(this.mapSize.width / 2, this.mapSize.height / 2);
-
+        
         // then rotate around this center
         transform.rotate(this.rotation);
-
+        
         // then move to an artificial origin (0,0) which might be outside of the actual
         // painting area. this origin still keeps the center of the original map area
         // at the center of the rotated map area.
@@ -171,11 +195,11 @@ public class MapfishMapContext {
         return transform;
     }
 
-    public final double getDPI() {
+    public double getDPI() {
         return this.dpi;
     }
 
-    public final double getRequestorDPI() {
+    public double getRequestorDPI() {
         return this.requestorDpi;
     }
 
@@ -199,15 +223,16 @@ public class MapfishMapContext {
         return (int) Math.round(height);
     }
 
-    public final Rectangle getPaintArea() {
+    public Rectangle getPaintArea() {
         return new Rectangle(this.mapSize);
     }
 
-    public final Boolean isForceLongitudeFirst() {
+    @Nullable
+    public Boolean isForceLongitudeFirst() {
         return this.forceLongitudeFirst;
     }
 
-    public final Boolean isDpiSensitiveStyle() {
+    public Boolean isDpiSensitiveStyle() {
         return this.dpiSensitiveStyle;
     }
 
@@ -216,7 +241,32 @@ public class MapfishMapContext {
      *
      * @return bounds as a referenced envelope.
      */
-    public final ReferencedEnvelope toReferencedEnvelope() {
+    public ReferencedEnvelope toReferencedEnvelope() {
         return this.bounds.toReferencedEnvelope(getPaintArea(), this.dpi);
+    }
+
+    /**
+     * Get the parent context if there is one.  A parent context is the context that this context is derived from.
+     * Normally there are some parameters that have been changed for this context from the parent.  An example of when
+     * there might be a parent is when the child has been rotated and has a bounds to envelope the original bounds.  It can be
+     * useful in some cases to be able to access the parent (and original bounds).
+     *
+     * @return the parent context or null if there is no parent.
+     */
+    @Nullable
+    public MapfishMapContext getParentContext() {
+        return this.parent;
+    }
+
+    /**
+     * Return the root context which is this context or the context found by recursively calling parent.getRootContext().
+     * @return
+     */
+    @Nonnull
+    public MapfishMapContext getRootContext() {
+        if (this.parent != null) {
+            return this.parent.getRootContext();
+        }
+        return this;
     }
 }

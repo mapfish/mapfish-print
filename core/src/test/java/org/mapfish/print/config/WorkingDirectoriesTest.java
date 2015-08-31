@@ -1,14 +1,16 @@
 package org.mapfish.print.config;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.mapfish.print.AbstractMapfishSpringTest;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
-import org.mapfish.print.AbstractMapfishSpringTest;
-import org.springframework.beans.factory.annotation.Autowired;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class WorkingDirectoriesTest extends AbstractMapfishSpringTest {
 
@@ -19,7 +21,7 @@ public class WorkingDirectoriesTest extends AbstractMapfishSpringTest {
     public void testCleanUp() throws IOException {
         File reportDir = this.workingDirectories.getReports();
 
-        long oldDate = new Date().getTime() - 86400;
+        long oldDate = new Date().getTime() - TimeUnit.DAYS.toMillis(1);
 
         // old file, should be deleted
         new File(reportDir, "1").createNewFile();
@@ -30,7 +32,11 @@ public class WorkingDirectoriesTest extends AbstractMapfishSpringTest {
         // new file, should be kept
         new File(reportDir, "3").createNewFile();
 
-        int maxAgeInSeconds = 5;
+        assertTrue(new File(reportDir, "1").exists());
+        assertTrue(new File(reportDir, "2").exists());
+        assertTrue(new File(reportDir, "3").exists());
+
+        int maxAgeInSeconds = 1000 ;
         this.workingDirectories.new CleanUpTask(maxAgeInSeconds).run();
 
         assertFalse(new File(reportDir, "1").exists());

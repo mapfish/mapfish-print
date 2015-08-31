@@ -53,6 +53,7 @@
                         "pointerEvents": "visiblePainted",
                         "cursor": "inherit",
                         "fontColor": "#000000",
+                        "fontFamily": "Arial",
                         "labelAlign": "cm",
                         "labelOutlineColor": "white",
                         "labelOutlineWidth": 3
@@ -156,18 +157,6 @@
             }, {
               "name": "hotel",
               "icons": ["http://localhost:9876/e2egeoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=tiger-ny"]
-            }, {
-              "name": "information",
-              "icons": ["http://localhost:9876/e2egeoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=tiger:tiger_roads"]
-            }, {
-              "name": "cinema",
-              "icons": ["http://localhost:9876/e2egeoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=tiger:poly_landmarks"]
-            }, {
-              "name": "alpin_hut",
-              "icons": ["http://localhost:9876/e2egeoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=sf:bugsites"]
-            }, {
-              "name": "bank",
-              "icons": ["http://localhost:9876/e2egeoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=nurc:Arc_Sample"]
             }]
           }]
         }

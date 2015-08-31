@@ -13,6 +13,8 @@ templates:
       scalebar: !scalebar
         width: 300
         height: 40
+        default:
+          font: Arial
     processors:
     - !createMap
         outputMapper: {mapSubReport: mapOut}

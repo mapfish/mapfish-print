@@ -1,5 +1,11 @@
 package org.mapfish.print.processor.map.scalebar;
 
+import static org.junit.Assert.assertEquals;
+
+import java.awt.Dimension;
+import java.io.File;
+import java.net.URI;
+
 import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.junit.Rule;
@@ -17,11 +23,6 @@ import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.Scale;
 import org.mapfish.print.test.util.ImageSimilarity;
 
-import java.awt.Dimension;
-import java.io.File;
-import java.net.URI;
-
-import static org.junit.Assert.assertEquals;
 
 public class ScalebarGraphicTest {
 
@@ -129,10 +130,11 @@ public class ScalebarGraphicTest {
         scalebarAttibute.setHeight(40);
         ScalebarAttributeValues scalebarParams = scalebarAttibute.createValue(null);
         scalebarParams.verticalAlign = VerticalAlign.TOP.getLabel();
+        scalebarParams.font = "Arial";
 
         ScalebarGraphic scalebar = new ScalebarGraphic();
         URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);
-//      Files.copy(new File(file), new File("/tmp/" + getClass().getSimpleName() + "expected-scalebar-graphic.tiff"));
+//      Files.copy(new File(file), new File("/tmp/expected-scalebar-graphic.tiff"));
         new ImageSimilarity(new File(file), 4).assertSimilarity(getFile("expected-scalebar-graphic.tiff"), 15);
     }
 
@@ -147,10 +149,11 @@ public class ScalebarGraphicTest {
         scalebarAttibute.setWidth(300);
         scalebarAttibute.setHeight(40);
         ScalebarAttributeValues scalebarParams = scalebarAttibute.createValue(null);
+        scalebarParams.font = "Arial";
 
         ScalebarGraphic scalebar = new ScalebarGraphic();
         URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);
-//      Files.copy(new File(file), new File("/tmp/" + getClass().getSimpleName() + "expected-scalebar-graphic-dpi.tiff"));
+//      Files.copy(new File(file), new File("/tmp/expected-scalebar-graphic-dpi.tiff"));
         new ImageSimilarity(new File(file), 4).assertSimilarity(getFile("expected-scalebar-graphic-dpi.tiff"), 15);
     }
 
@@ -167,6 +170,7 @@ public class ScalebarGraphicTest {
         ScalebarAttributeValues scalebarParams = scalebarAttibute.createValue(null);
         scalebarParams.verticalAlign = VerticalAlign.TOP.getLabel();
         scalebarParams.renderAsSvg = true;
+        scalebarParams.font = "Arial";
 
         ScalebarGraphic scalebar = new ScalebarGraphic();
         URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);

@@ -20,7 +20,6 @@
 package org.mapfish.print.map.geotools.grid;
 
 import com.vividsolutions.jts.util.Assert;
-import org.mapfish.print.Constants;
 import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.OneOf;
@@ -34,6 +33,17 @@ import java.util.Arrays;
  */
 public final class GridParam extends AbstractLayerParams {
     private static final int DEFAULT_POINTS_IN_GRID_LINE = 10000;
+    private static final int DEFAULT_HALO_RADIUS = 2;
+    private static final int DEFAULT_INDENT = 5;
+    private static final String DEFAULT_HALO_COLOR = "#FFF";
+    private static final String DEFAULT_LABEL_COLOR = "#444";
+    private static final String DEFAULT_GRID_COLOR = "gray";
+
+    /**
+     * The type of grid to render.  By default it is LINES
+     */
+    @HasDefaultValue
+    public GridType gridType = GridType.LINES;
     /**
      * The x,y spacing between grid lines.
      * <p/>
@@ -64,26 +74,11 @@ public final class GridParam extends AbstractLayerParams {
      * The style name of a style to apply to the features during rendering.  The style name must map to a style in the
      * template or the configuration objects.
      * <p/>
-     * If no style is defined then the default grid style will be used.
+     * If no style is defined then the default grid style will be used.  The default will depend if the type is point or line and will
+     * respect {@link #gridColor} and {@link #haloColor} and {@link #haloRadius}.  If {@link #gridType} is {@link GridType#POINTS}
+     * then the style will be crosses with a haloRadius sized halo around the cross.  If {@link GridType#LINES} then the style will
+     * be a dashed line with no halo.
      * <p/>
-     * The feature for the grid will have a line geometry and will have the following attributes:
-     * <ul>
-     *     <li>
-     *         {@value org.mapfish.print.Constants.Style.Grid#ATT_ROTATION} -- the rotation for a label that is perpendicular
-     *         to the line
-     *     </li>
-     *     <li>
-     *         {@value org.mapfish.print.Constants.Style.Grid#ATT_LABEL} -- The suggested text of the label
-     *     </li>
-     *     <li>
-     *         {@value org.mapfish.print.Constants.Style.Grid#ATT_X_DISPLACEMENT} -- The x-displacement of one of the labels (might
-     *         be top or left) the unit is pixels.
-     *     </li>
-     *     <li>
-     *         {@value org.mapfish.print.Constants.Style.Grid#ATT_Y_DISPLACEMENT} -- The y-displacement of one of the labels (might
-     *         be top or left) the unit is pixels.
-     *     </li>
-     * </ul>
      */
     @HasDefaultValue
     public String style;
@@ -96,13 +91,46 @@ public final class GridParam extends AbstractLayerParams {
     public Boolean renderAsSvg = false;
 
     /**
-     * The number of points that will be in the grid line.  If the line will be curved (for certain projections) then the more
-     * points the smoother the curve.
+     * The number of points that will be in the grid line (if the gridType is LINES).  If the line will be curved
+     * (for certain projections) then the more points the smoother the curve.
      * <p/>
      * The default number of points is {@value #DEFAULT_POINTS_IN_GRID_LINE}.
      */
     @HasDefaultValue
     public int pointsInLine = DEFAULT_POINTS_IN_GRID_LINE;
+
+    /**
+     * The size of the halo around the Grid Labels. The default is {@value #DEFAULT_HALO_RADIUS}.
+     */
+    @HasDefaultValue
+    public int haloRadius = DEFAULT_HALO_RADIUS;
+    /**
+     * The color of the halo around grid label text. The color is defined the same as colors in CSS. Default is white
+     * ({@value #DEFAULT_HALO_COLOR})
+     */
+    @HasDefaultValue
+    public String haloColor = DEFAULT_HALO_COLOR;
+    /**
+     * The color of the grid label text.  Default is dark gray ({@value #DEFAULT_LABEL_COLOR})
+     */
+    @HasDefaultValue
+    public String labelColor = DEFAULT_LABEL_COLOR;
+    /**
+     * The color of the grid points or lines.  Default is gray ({@value #DEFAULT_GRID_COLOR})
+     */
+    @HasDefaultValue
+    public String gridColor = DEFAULT_GRID_COLOR;
+
+    /**
+     * Configuration for the font of the grid labels.  The default is the default system font.
+     */
+    @HasDefaultValue
+    public GridFontParam font = new GridFontParam();
+    /**
+     * The number of pixels to indent the grid labels from the end of the map.  The default is {@value #DEFAULT_INDENT}.
+     */
+    @HasDefaultValue
+    public int indent = DEFAULT_INDENT;
 
     /**
      * Initialize default values and validate that config is correct.
@@ -115,8 +143,10 @@ public final class GridParam extends AbstractLayerParams {
                 GridLayer.class.getSimpleName() + ".numberOfLines has the wrong number of elements.  Expected 2 (x,y) but was: " +
                 Arrays.toString(this.numberOfLines));
         Assert.isTrue(this.pointsInLine > 2, "There must be at least 2 points in a line.  There were: " + this.pointsInLine);
-        if (this.style == null) {
-            this.style = Constants.Style.Grid.NAME;
-        }
+        Assert.isTrue(this.indent >= 0, "The indent is not permitted to be negative: " + this.indent);
+        Assert.isTrue(this.labelColor != null, "labelColor should not be null");
+        Assert.isTrue(this.haloColor != null, "haloColor should not be null");
+        Assert.isTrue(this.font != null, "font should not be null");
     }
+
 }

@@ -81,25 +81,9 @@ public interface Constants {
         interface Grid {
 
             /**
-             * The name of the style for the default grid style.
+             * The name of the grid feature type name.
              */
-            String NAME = "grid";
-            /**
-             * Name of the grid feature attribute containing the rotation of the label.
-             */
-            String ATT_ROTATION = "rotation";
-            /**
-             * Name of the grid feature attribute containing the x-displacement of one of the labels.
-             */
-            String ATT_X_DISPLACEMENT = "xDisplacement";
-            /**
-             * Name of the grid feature attribute containing the y-displacement of one of the labels.
-             */
-            String ATT_Y_DISPLACEMENT = "yDisplacement";
-            /**
-             * The text to put in the labels.
-             */
-            String ATT_LABEL = "label";
+            String NAME_LINES = "grid";
             /**
              * The geometry attribute name.
              */

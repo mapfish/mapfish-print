@@ -45,11 +45,12 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class GridLayerPluginTest {
+public class LineGridStrategyTest {
 
     @Test
     public void testParseSpacingAndOrigin() throws Throwable {
         final GridParam layerData = new GridParam();
+        layerData.gridType = GridType.LINES;
         layerData.spacing = new double[]{20, 30};
         layerData.origin = new double[]{10, 20};
         layerData.pointsInLine = 10;
@@ -79,14 +80,15 @@ public class GridLayerPluginTest {
         assertEquals(3, features.size());
 
         Map<String, SimpleFeature> idToFeature = idToFeatureMap(features);
-        checkFeature(layerData, idToFeature.get("grid.y.1"), new Coordinate(100, 110), new Coordinate(140, 110), "110 m");
-        checkFeature(layerData, idToFeature.get("grid.x.1"), new Coordinate(110, 100), new Coordinate(110, 140), "110 m");
-        checkFeature(layerData, idToFeature.get("grid.x.2"), new Coordinate(130, 100), new Coordinate(130, 140), "130 m");
+        checkFeature(layerData, idToFeature.get("grid.y.1"), new Coordinate(100, 110), new Coordinate(140, 110));
+        checkFeature(layerData, idToFeature.get("grid.x.1"), new Coordinate(110, 100), new Coordinate(110, 140));
+        checkFeature(layerData, idToFeature.get("grid.x.2"), new Coordinate(130, 100), new Coordinate(130, 140));
     }
 
     @Test
     public void testParseNumLines() throws Throwable {
         final GridParam layerData = new GridParam();
+        layerData.gridType = GridType.LINES;
         layerData.numberOfLines = new int[]{3, 2};
         layerData.pointsInLine = 10;
 
@@ -114,11 +116,11 @@ public class GridLayerPluginTest {
         assertEquals(5, features.size());
 
         Map<String, SimpleFeature> idToFeature = idToFeatureMap(features);
-        checkFeature(layerData, idToFeature.get("grid.x.1"), new Coordinate(120, 90), new Coordinate(120, 132), "120 m");
-        checkFeature(layerData, idToFeature.get("grid.x.2"), new Coordinate(130, 90), new Coordinate(130, 132), "130 m");
-        checkFeature(layerData, idToFeature.get("grid.x.3"), new Coordinate(140, 90), new Coordinate(140, 132), "140 m");
-        checkFeature(layerData, idToFeature.get("grid.y.1"), new Coordinate(110, 104), new Coordinate(150, 104), "104 m");
-        checkFeature(layerData, idToFeature.get("grid.y.2"), new Coordinate(110, 118), new Coordinate(150, 118), "118 m");
+        checkFeature(layerData, idToFeature.get("grid.x.1"), new Coordinate(120, 90), new Coordinate(120, 132));
+        checkFeature(layerData, idToFeature.get("grid.x.2"), new Coordinate(130, 90), new Coordinate(130, 132));
+        checkFeature(layerData, idToFeature.get("grid.x.3"), new Coordinate(140, 90), new Coordinate(140, 132));
+        checkFeature(layerData, idToFeature.get("grid.y.1"), new Coordinate(110, 104), new Coordinate(150, 104));
+        checkFeature(layerData, idToFeature.get("grid.y.2"), new Coordinate(110, 118), new Coordinate(150, 118));
     }
 
     private Map<String, SimpleFeature> idToFeatureMap(SimpleFeatureCollection features) {
@@ -132,12 +134,10 @@ public class GridLayerPluginTest {
         return result;
     }
 
-    private void checkFeature(GridParam layerData, SimpleFeature f1, Coordinate minCoord, Coordinate maxCoord, String label) {
+    private void checkFeature(GridParam layerData, SimpleFeature f1, Coordinate minCoord, Coordinate maxCoord) {
         LineString defaultGeometry = (LineString) f1.getDefaultGeometry();
         assertEquals(layerData.pointsInLine + 1, defaultGeometry.getCoordinates().length);
         assertEquals(minCoord, defaultGeometry.getCoordinates()[0]);
         assertEquals(maxCoord, defaultGeometry.getCoordinates()[10]);
-        assertEquals(label, f1.getAttribute(1));
-        assertEquals(0.0, (Double)f1.getAttribute(2), 0.00001);
     }
 }

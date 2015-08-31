@@ -8,7 +8,7 @@
       "layers": [
         {
           "type": "grid",
-          "numberOfLines": [10,8],
+          "numberOfLines": [8,8],
           "pointsInLine": 100,
           "renderAsSvg": false
         },{

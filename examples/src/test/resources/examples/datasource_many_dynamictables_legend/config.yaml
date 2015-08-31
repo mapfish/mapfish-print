@@ -15,6 +15,8 @@ templates:
             scalebar: !scalebar
                 width: 230
                 height: 40
+                default:
+                  font: Arial
             map: !map
                 maxDpi: 254
                 dpiSuggestions: [254]
