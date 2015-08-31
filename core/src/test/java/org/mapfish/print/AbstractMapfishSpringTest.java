@@ -31,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.imageio.ImageIO;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -134,9 +133,9 @@ public abstract class AbstractMapfishSpringTest {
         String platformName = "expectedSimpleImage" + classifier + "-" + normalizedOSName() + ".png";
         String defaultName = "expectedSimpleImage" + classifier + ".png";
 
-        new File("/tmp/" + baseDir).mkdirs();
-        ImageIO.write(actualImage, "png", new File("/tmp/" + baseDir + "/" + platformName));
-        ImageIO.write(actualImage, "png", new File("/tmp/" + baseDir + "/" + defaultName));
+//        new File("/tmp/" + baseDir).mkdirs();
+//        ImageIO.write(actualImage, "png", new File("/tmp/" + baseDir + "/" + platformName));
+//        ImageIO.write(actualImage, "png", new File("/tmp/" + baseDir + "/" + defaultName));
 
         String imageName;
         try {
