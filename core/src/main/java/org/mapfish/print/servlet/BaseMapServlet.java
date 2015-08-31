@@ -40,7 +40,7 @@ public abstract class BaseMapServlet {
     /**
      * A logger for logging the print specifications.
      */
-    protected static final Logger SPEC_LOGGER = LoggerFactory.getLogger(BaseMapServlet.class.getPackage().toString() + ".spec");
+    protected static final Logger SPEC_LOGGER = LoggerFactory.getLogger(BaseMapServlet.class.getPackage().getName() + ".spec");
 
     /**
      * Remove commas and whitespace from a string.
