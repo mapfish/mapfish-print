@@ -324,6 +324,7 @@ public class ThreadPoolJobManager implements JobManager {
             pendingPrintJob.assertAccess();
             pendingPrintJob.store(this.registry, this.assertionPersister);
             this.registry.put(LAST_POLL + job.getReferenceId(), new Date().getTime());
+            LOGGER.info("Submitted print job " + job.getReferenceId());
         } catch (JSONException e) {
             throw ExceptionUtils.getRuntimeException(e);
         } finally {

@@ -132,6 +132,7 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
         PJsonObject spec = null;
         MapPrinter mapPrinter = null;
         try {
+            LOGGER.info("Starting print job " + this.referenceId);
             spec = PrintJob.this.requestData;
             mapPrinter = PrintJob.this.mapPrinterFactory.create(getAppId());
             final MapPrinter finalMapPrinter = mapPrinter;
@@ -143,7 +144,8 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
             });
 
             this.metricRegistry.counter(getClass().getName() + "success").inc();
-            LOGGER.debug("Successfully completed print job" + this.referenceId + "\n" + this.requestData);
+            LOGGER.info("Successfully completed print job " + this.referenceId);
+            LOGGER.debug("Job " + this.referenceId + "\n" + this.requestData);
             String fileName = getFileName(mapPrinter, spec);
 
             final OutputFormat outputFormat = mapPrinter.getOutputFormat(spec);
