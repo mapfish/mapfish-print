@@ -19,6 +19,7 @@
 
 package org.mapfish.print.attribute;
 
+import org.json.JSONObject;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -57,6 +58,13 @@ public class BooleanAttributeTest extends AbstractMapfishSpringTest {
         assertTrue(values.getBoolean("field1"));
         assertFalse(values.getBoolean("field2"));
         assertFalse(values.getBoolean("field3"));
+
+        JSONObject field2Config = AbstractAttributeTest.getClientConfig(template.getAttributes().get("field2"), template);
+        assertFalse(field2Config.has(ReflectiveAttribute.JSON_ATTRIBUTE_DEFAULT));
+
+        JSONObject field3Config = AbstractAttributeTest.getClientConfig(template.getAttributes().get("field3"), template);
+        assertTrue(field3Config.has(ReflectiveAttribute.JSON_ATTRIBUTE_DEFAULT));
+        assertFalse(field3Config.getBoolean(ReflectiveAttribute.JSON_ATTRIBUTE_DEFAULT));
     }
 
     private PJsonObject loadJsonRequestData() throws IOException {

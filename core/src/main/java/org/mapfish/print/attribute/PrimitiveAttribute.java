@@ -90,6 +90,9 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
     public final void printClientConfig(final JSONWriter json, final Template template) throws JSONException {
         json.key(ReflectiveAttribute.JSON_NAME).value(this.configName);
         json.key(ReflectiveAttribute.JSON_ATTRIBUTE_TYPE).value(clientConfigTypeDescription());
+        if (getDefault() != null) {
+            json.key(ReflectiveAttribute.JSON_ATTRIBUTE_DEFAULT).value(getDefault());
+        }
     }
 
     /**
