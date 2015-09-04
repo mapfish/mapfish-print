@@ -14,7 +14,7 @@ templates:
         width: 300
         height: 200
         maxDpi: 400
-      backgroundLayers: !backgroundLayers
+      staticLayers: !staticLayers
         default:
           layers:
             - type: "wms"

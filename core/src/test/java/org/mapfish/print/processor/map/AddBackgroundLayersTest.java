@@ -50,8 +50,8 @@ import static org.junit.Assert.assertEquals;
  * <p/>
  * Created by Jesse on 3/26/14.
  */
-public class BackgroundLayersProcessorTest extends AbstractMapfishSpringTest {
-    public static final String BASE_DIR = "backgroundlayers/";
+public class AddBackgroundLayersTest extends AbstractMapfishSpringTest {
+    public static final String BASE_DIR = "add-background-layers/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
@@ -121,6 +121,6 @@ public class BackgroundLayersProcessorTest extends AbstractMapfishSpringTest {
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(BackgroundLayersProcessorTest.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(AddBackgroundLayersTest.class, BASE_DIR + "requestData.json");
     }
 }
