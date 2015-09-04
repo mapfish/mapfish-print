@@ -14,7 +14,7 @@ templates:
         height: 150
         maxDpi: 400
         zoomFactor: 7
-      backgroundLayers: !backgroundLayers
+      backgroundLayers: !staticLayers
         default:
           layers:
             - type: "WMTS"
@@ -61,7 +61,7 @@ templates:
     processors:
     - !addBackgroundLayers
       inputMapper:
-          backgroundLayers: backgroundLayers
+          backgroundLayers: staticLayers
           map: map
     - !reportBuilder # compile all reports in current directory
       directory: '.'
