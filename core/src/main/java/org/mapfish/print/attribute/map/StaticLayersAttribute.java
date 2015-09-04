@@ -8,22 +8,22 @@ import org.mapfish.print.wrapper.PArray;
 import java.util.List;
 
 /**
- * The attributes for the {@link org.mapfish.print.processor.map.BackgroundLayersProcessor} which adds the layers in this
- * attribute to the layers in the map.  The typical use is to add the background layers as the "default" in the config.yaml file
- * if the client desires it can override those values.
+ * The attributes for the {@link org.mapfish.print.processor.map.AddStaticLayersProcessor} which adds the layers in this
+ * attribute to the layers in the map.  The typical use is to add the background or overlay layers as the "default"
+ * in the config.yaml file if the client desires it can override those values.
  *
  * @author Jesse on 4/18/2015.
  */
-public final class BackgroundLayersAttribute extends ReflectiveAttribute<BackgroundLayersAttribute.BackgroundLayersAttributeValue> {
+public final class StaticLayersAttribute extends ReflectiveAttribute<StaticLayersAttribute.StaticLayersAttributeValue> {
 
     @Override
     protected Class getValueType() {
-        return BackgroundLayersAttributeValue.class;
+        return StaticLayersAttributeValue.class;
     }
 
     @Override
-    public BackgroundLayersAttributeValue createValue(final Template template) {
-        return new BackgroundLayersAttributeValue();
+    public StaticLayersAttributeValue createValue(final Template template) {
+        return new StaticLayersAttributeValue();
     }
 
     @Override
@@ -34,11 +34,11 @@ public final class BackgroundLayersAttribute extends ReflectiveAttribute<Backgro
     /**
      * The object used to parse the input parameters for this attribute object.
      */
-    public static final class BackgroundLayersAttributeValue {
+    public static final class StaticLayersAttributeValue {
         /**
          * An array of layers (the same as for {@link org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues#layers}).
          *
-         * These layers will be added to the map as the bottom layers in the map.
+         * These layers will be added to the map.
          */
         public PArray layers;
     }

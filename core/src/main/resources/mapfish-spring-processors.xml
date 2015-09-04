@@ -30,7 +30,12 @@
     <bean id="!createOverviewMap" class="org.mapfish.print.processor.map.CreateOverviewMapProcessor" scope="prototype" />
     <bean id="!createScalebar" class="org.mapfish.print.processor.map.scalebar.CreateScalebarProcessor" scope="prototype" />
     <bean id="!createNorthArrow" class="org.mapfish.print.processor.map.CreateNorthArrowProcessor" scope="prototype" />
-    <bean id="!addBackgroundLayers" class="org.mapfish.print.processor.map.BackgroundLayersProcessor" scope="prototype" />
+    <bean id="!addBackgroundLayers" class="org.mapfish.print.processor.map.AddStaticLayersProcessor" scope="prototype">
+        <property name="position" value="BOTTOM"/>
+    </bean>
+    <bean id="!addOverlayLayers" class="org.mapfish.print.processor.map.AddStaticLayersProcessor" scope="prototype">
+        <property name="position" value="TOP"/>
+    </bean>
 
     <bean id="!prepareLegend" class="org.mapfish.print.processor.jasper.LegendProcessor" scope="prototype" />
     <bean id="!prepareTable" class="org.mapfish.print.processor.jasper.TableProcessor" scope="prototype" />
@@ -81,7 +86,7 @@
     </bean>
 
     <bean class="org.mapfish.print.processor.ProcessorDependency">
-        <constructor-arg name="required" value="org.mapfish.print.processor.map.BackgroundLayersProcessor" />
+        <constructor-arg name="required" value="org.mapfish.print.processor.map.AddStaticLayersProcessor" />
         <constructor-arg name="dependent" value="org.mapfish.print.processor.map.CreateMapProcessor"/>
         <constructor-arg name="commonInputs">
             <util:list>
@@ -91,7 +96,7 @@
     </bean>
 
     <bean class="org.mapfish.print.processor.ProcessorDependency">
-        <constructor-arg name="required" value="org.mapfish.print.processor.map.BackgroundLayersProcessor" />
+        <constructor-arg name="required" value="org.mapfish.print.processor.map.AddStaticLayersProcessor" />
         <constructor-arg name="dependent" value="org.mapfish.print.processor.map.CreateOverviewMapProcessor"/>
         <constructor-arg name="commonInputs">
             <util:list>
@@ -101,7 +106,7 @@
     </bean>
 
     <bean class="org.mapfish.print.processor.ProcessorDependency">
-        <constructor-arg name="required" value="org.mapfish.print.processor.map.BackgroundLayersProcessor" />
+        <constructor-arg name="required" value="org.mapfish.print.processor.map.AddStaticLayersProcessor" />
         <constructor-arg name="dependent" value="org.mapfish.print.processor.map.SetStyleProcessor"/>
         <constructor-arg name="commonInputs">
             <util:list>
@@ -111,7 +116,7 @@
     </bean>
 
     <bean class="org.mapfish.print.processor.ProcessorDependency">
-        <constructor-arg name="required" value="org.mapfish.print.processor.map.BackgroundLayersProcessor" />
+        <constructor-arg name="required" value="org.mapfish.print.processor.map.AddStaticLayersProcessor" />
         <constructor-arg name="dependent" value="org.mapfish.print.processor.map.SetFeaturesProcessor"/>
         <constructor-arg name="commonInputs">
             <util:list>
@@ -121,7 +126,7 @@
     </bean>
 
     <bean class="org.mapfish.print.processor.ProcessorDependency">
-        <constructor-arg name="required" value="org.mapfish.print.processor.map.BackgroundLayersProcessor" />
+        <constructor-arg name="required" value="org.mapfish.print.processor.map.AddStaticLayersProcessor" />
         <constructor-arg name="dependent" value="org.mapfish.print.processor.map.SetWmsCustomParamProcessor"/>
         <constructor-arg name="commonInputs">
             <util:list>
