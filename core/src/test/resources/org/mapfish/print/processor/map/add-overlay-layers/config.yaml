@@ -1,0 +1,38 @@
+templates:
+  main: !template
+    reportTemplate: "dummy.jxml"
+    attributes:
+      map: !map
+        width: 630
+        height: 294
+        maxDpi: 400
+        zoomSnapTolerance: 0.025
+        zoomLevelSnapStrategy: CLOSEST_LOWER_SCALE_ON_TIE
+        zoomLevels: !zoomLevels
+          scales: [5000, 10000, 50000, 110000, 500000, 1000000]
+      overviewMapDef: !overviewMap
+        width: 300
+        height: 200
+        maxDpi: 400
+      staticLayers: !staticLayers
+        default:
+          layers:
+            - type: "grid"
+              numberOfLines: [10, 10]
+              labelColor: rgba(0,0,0,0)
+              haloColor: rgba(0,0,0,0)
+    processors:
+    - !addOverlayLayers {}
+    - !createMap
+        outputMapper: {mapSubReport: mapOut}
+    - !createOverviewMap
+        inputMapper: {
+            overviewMapDef: overviewMap
+        }
+        outputMapper: {
+            overviewMapSubReport: overviewMapOut,
+            layerGraphics: overviewMapLayerGraphics
+        }
+
+
+
