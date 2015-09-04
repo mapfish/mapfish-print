@@ -1,0 +1,32 @@
+
+templates:
+  #===========================================================================
+  A4 landscape: !template
+  #===========================================================================
+    reportTemplate: simpleReport.jrxml
+    attributes:
+      map: !map
+        maxDpi: 400
+        width: 780
+        height: 330
+      overviewMap: !overviewMap
+        width: 300
+        height: 150
+        maxDpi: 400
+        zoomFactor: 7
+      overlayLayers: !staticLayers
+        default:
+          layers:
+            - type: "grid"
+              numberOfLines: [10, 10]
+              labelColor: rgba(0,0,0,0)
+              haloColor: rgba(0,0,0,0)
+    processors:
+    - !addBackgroundLayers
+      inputMapper:
+          overlayLayers: staticLayers
+          map: map
+    - !reportBuilder # compile all reports in current directory
+      directory: '.'
+    - !createMap {}
+    - !createOverviewMap {}
