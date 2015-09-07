@@ -18,22 +18,19 @@
  */
 
 package org.mapfish.print.map.tiled.wmts;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.vividsolutions.jts.util.Assert;
-
 import org.mapfish.print.Constants;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.map.tiled.AbstractWMXLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
-import org.mapfish.print.wrapper.json.PJsonObject;
+import org.mapfish.print.wrapper.PObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 
 /**
  * The parameters for configuration a WMTS layer.
@@ -104,14 +101,13 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
      * Dictionary of dimensions name (Must be uppercase) => value.
      */
     @HasDefaultValue
-    public PJsonObject dimensionParams;
+    public PObject dimensionParams;
 
     /**
      * The format of the image. for example image/png, image/jpeg, etc...
      */
     @HasDefaultValue
     public String imageFormat = "image/png";
-
     /**
      * Reference/Identifier to a tileMatrixSet and limits.
      */
