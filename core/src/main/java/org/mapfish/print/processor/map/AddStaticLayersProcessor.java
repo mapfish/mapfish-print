@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 /**
  * This processor adds the configured set of layers to the map.
  *
- * This is useful when all maps should have a default set of background layers or overlayers
+ * This is useful when all maps should have a default set of background layers or overlays
  * added to those that the client sends for printing.
  *
  * This can simplify the client so the client only needs to be concerned with the data layers.
