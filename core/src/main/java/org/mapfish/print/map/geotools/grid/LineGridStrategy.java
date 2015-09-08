@@ -16,7 +16,9 @@ import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.FeatureSourceSupplier;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.cs.AxisDirection;
+import org.opengis.referencing.operation.MathTransform;
 
 import java.awt.geom.AffineTransform;
 import javax.annotation.Nonnull;
@@ -100,7 +102,10 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
 
         ReferencedEnvelope bounds = mapContext.toReferencedEnvelope();
 
-        String unit = bounds.getCoordinateReferenceSystem().getCoordinateSystem().getAxis(0).getUnit().toString();
+        CoordinateReferenceSystem mapCrs = bounds.getCoordinateReferenceSystem();
+        String unit = layerData.calculateLabelUnit(mapCrs);
+        MathTransform labelTransform = layerData.calculateLabelTransform(mapCrs);
+
         final AxisDirection direction = bounds.getCoordinateReferenceSystem().getCoordinateSystem().getAxis(0).getDirection();
         int numDimensions = bounds.getCoordinateReferenceSystem().getCoordinateSystem().getDimension();
         Polygon rotatedBounds = GridUtils.calculateBounds(mapContext);
@@ -115,8 +120,10 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
             final SimpleFeature feature = createFeature(featureBuilder, geometryFactory, layerData,
                     direction, numDimensions, pointSpacing, x, bounds.getMinimum(1), i, 1);
             features.add(feature);
-            GridUtils.topBorderLabel(labels, geometryFactory, rotatedBounds, unit, x, worldToScreenTransform);
-            GridUtils.bottomBorderLabel(labels, geometryFactory, rotatedBounds, unit, x, worldToScreenTransform);
+            GridUtils.topBorderLabel(labels, geometryFactory, rotatedBounds, unit, x,
+                    worldToScreenTransform, labelTransform);
+            GridUtils.bottomBorderLabel(labels, geometryFactory, rotatedBounds, unit, x,
+                    worldToScreenTransform, labelTransform);
         }
 
         pointSpacing = bounds.getSpan(0) / layerData.pointsInLine;
@@ -126,8 +133,10 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
             final SimpleFeature feature = createFeature(featureBuilder, geometryFactory, layerData,
                     direction, numDimensions, pointSpacing, bounds.getMinimum(0), y, j, 0);
             features.add(feature);
-            GridUtils.rightBorderLabel(labels, geometryFactory, rotatedBounds, unit, y, worldToScreenTransform);
-            GridUtils.leftBorderLabel(labels, geometryFactory, rotatedBounds, unit, y, worldToScreenTransform);
+            GridUtils.rightBorderLabel(labels, geometryFactory, rotatedBounds, unit, y,
+                    worldToScreenTransform, labelTransform);
+            GridUtils.leftBorderLabel(labels, geometryFactory, rotatedBounds, unit, y,
+                    worldToScreenTransform, labelTransform);
 
         }
 
