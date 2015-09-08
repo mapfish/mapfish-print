@@ -36,7 +36,7 @@ public class Matrix {
     /**
      * A 2 dimensional array containing number of tiles in the matrix for the columns (0) and rows (1).
      */
-    public int[] matrixSize;
+    public double[] matrixSize;
     /**
      * The scale of the matrix.
      */
