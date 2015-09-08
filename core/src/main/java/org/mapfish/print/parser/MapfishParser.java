@@ -201,6 +201,8 @@ public final class MapfishParser {
             value = layer.getString(name);
         } else if (type == Integer.class || type == int.class) {
             value = layer.getInt(name);
+        } else if (type == Long.class || type == long.class) {
+            value = layer.getLong(name);
         } else if (type == Double.class || type == double.class) {
             value = layer.getDouble(name);
         } else if (type == Float.class || type == float.class) {
@@ -283,6 +285,8 @@ public final class MapfishParser {
             value = array.getString(i);
         } else if (type == Integer.class || type == int.class) {
             value = array.getInt(i);
+        } else if (type == Long.class || type == long.class) {
+            value = array.getLong(i);
         } else if (type == Double.class || type == double.class) {
             value = array.getDouble(i);
         } else if (type == Float.class || type == float.class) {

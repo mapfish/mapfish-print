@@ -86,6 +86,11 @@ public class PYamlArray extends PElement implements PArray {
     }
 
     @Override
+    public final long getLong(final int i) {
+        return (Long) this.array.get(i);
+    }
+
+    @Override
     public final float getFloat(final int i) {
         Number result = (Number) this.array.get(i);
         return result.floatValue();

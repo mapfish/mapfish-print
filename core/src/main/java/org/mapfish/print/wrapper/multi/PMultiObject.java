@@ -102,6 +102,17 @@ public class PMultiObject extends PAbstractObject {
     }
 
     @Override
+    public final Long optLong(final String key) {
+        for (PObject obj : this.objs) {
+            Long result = obj.optLong(key);
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public final Double optDouble(final String key) {
         for (PObject obj : this.objs) {
             Double result = obj.optDouble(key);

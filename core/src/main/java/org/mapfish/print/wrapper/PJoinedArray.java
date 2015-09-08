@@ -60,6 +60,11 @@ public final class PJoinedArray implements PArray {
     }
 
     @Override
+    public long getLong(final int i) {
+        return (Long) get(i);
+    }
+
+    @Override
     public float getFloat(final int i) {
         return (Float) get(i);
     }

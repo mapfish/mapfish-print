@@ -50,6 +50,12 @@ public interface PArray {
     int getInt(final int i);
 
     /**
+     * Get the element at the index as a long.
+     * @param i the index of the element to access
+     */
+    long getLong(final int i);
+
+    /**
      * Get the element at the index as a float.
      * @param i the index of the element to access
      */
