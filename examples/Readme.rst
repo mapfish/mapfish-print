@@ -20,7 +20,7 @@ The test server includes a client which can be used for testing. To start the se
      ./gradlew examples:jettyRun
 
 
-This will start a GeoServer at localhost:9876 but also a MapFish Print with a simple client that can accessed
+This will start a GeoServer at localhost:9876 but also a MapFish Print with a simple client that can be accessed
 at http://localhost:8080/print-servlet/
 
 
