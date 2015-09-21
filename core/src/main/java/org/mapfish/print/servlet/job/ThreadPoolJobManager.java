@@ -276,7 +276,7 @@ public class ThreadPoolJobManager implements JobManager {
                 }
             });
             this.cleanUpTimer.scheduleAtFixedRate(
-                    this.workingDirectories.getCleanUpTask(), this.oldFileCleanupInterval,
+                    this.workingDirectories.getCleanUpTask(), 0,
                     this.oldFileCleanupInterval, TimeUnit.SECONDS);
         }
     }
