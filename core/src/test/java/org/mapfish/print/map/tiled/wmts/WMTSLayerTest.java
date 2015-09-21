@@ -21,7 +21,7 @@ public class WMTSLayerTest {
     public void testTileBoundsCalculation() throws Exception {
         WMTSLayerParam params = new WMTSLayerParam();
         Matrix matrix = new Matrix();
-        matrix.matrixSize = new double[]{67108864, 67108864};
+        matrix.matrixSize = new long[]{67108864, 67108864};
         matrix.tileSize = new int[]{256, 256};
         matrix.topLeftCorner = new double[]{420000, 350000};
         matrix.scaleDenominator = 7500;

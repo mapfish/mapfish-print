@@ -109,9 +109,11 @@ public class WMTSLayer extends AbstractTiledLayer {
             double scaleDenominator = new Scale(this.matrix.scaleDenominator).toResolution(this.bounds.getProjection(), getLayerDpi());
             double minX = this.matrix.topLeftCorner[0];
             double tileHeight = this.matrix.getTileHeight();
-            double minY = this.matrix.topLeftCorner[1] - (tileHeight * this.matrix.matrixSize[1] * scaleDenominator);
+            double numYTiles = this.matrix.matrixSize[1];
+            double minY = this.matrix.topLeftCorner[1] - (tileHeight * numYTiles * scaleDenominator);
             double tileWidth = this.matrix.getTileWidth();
-            double maxX = this.matrix.topLeftCorner[0] + (tileWidth * this.matrix.matrixSize[0] * scaleDenominator);
+            double numXTiles = this.matrix.matrixSize[0];
+            double maxX = this.matrix.topLeftCorner[0] + (tileWidth * numXTiles * scaleDenominator);
             double maxY = this.matrix.topLeftCorner[1];
             return new ReferencedEnvelope(minX, maxX, minY, maxY, bounds.getProjection());
         }
