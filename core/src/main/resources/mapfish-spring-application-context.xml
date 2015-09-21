@@ -47,7 +47,8 @@
     </bean>
     <bean id="workingDirectories" class="org.mapfish.print.config.WorkingDirectories">
         <property name="working" value="${workingDir}" />
-        <property name="maxAge" value="${fileCleanUpMaxAge}" />
+        <property name="maxAgeReport" value="${fileCleanUpMaxAgeReport}" />
+        <property name="maxAgeTaskDir" value="${fileCleanUpMaxAgeTaskDir}" />
     </bean>
 
     <bean id="configurationFactory" class="org.mapfish.print.config.ConfigurationFactory"/>

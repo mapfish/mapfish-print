@@ -40,11 +40,14 @@ import static com.google.common.io.Files.getNameWithoutExtension;
  * @author jesseeichar on 3/25/14.
  */
 public class WorkingDirectories {
+    private static final String TASK_DIR_PREFIX = "task-";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(WorkingDirectories.class);
 
     private File working;
     private File reports;
-    private int maxAge;
+    private int maxAgeReport;
+    private int maxAgeTaskDir;
 
     public final void setWorking(final File working) {
         this.working = working;
@@ -54,8 +57,12 @@ public class WorkingDirectories {
         return this.working;
     }
 
-    public final void setMaxAge(final int maxAge) {
-        this.maxAge = maxAge;
+    public final void setMaxAgeReport(final int maxAgeReport) {
+        this.maxAgeReport = maxAgeReport;
+    }
+
+    public final void setMaxAgeTaskDir(final int maxAgeTaskDir) {
+        this.maxAgeTaskDir = maxAgeTaskDir;
     }
 
     /**
@@ -90,7 +97,7 @@ public class WorkingDirectories {
     public final File getTaskDirectory() {
         createIfMissing(this.working, "Working");
         try {
-            File file = File.createTempFile("task-", "tmp", this.working);
+            File file = File.createTempFile(TASK_DIR_PREFIX, "tmp", this.working);
             if (!file.delete() || !file.mkdirs()) {
                 throw new IOException("Unable to make temporary directory: " + file);
             }
@@ -159,11 +166,11 @@ public class WorkingDirectories {
     }
 
     public final Runnable getCleanUpTask() {
-        return new CleanUpTask(this.maxAge);
+        return new CleanUpTask(this.maxAgeReport, this.maxAgeTaskDir);
     }
 
     /**
-     * A task that deletes old reports.
+     * A task that deletes old reports and task directories.
      */
     @VisibleForTesting
     class CleanUpTask implements Runnable {
@@ -172,43 +179,53 @@ public class WorkingDirectories {
          * The maximum age for a report in seconds. Files older
          * than that age will be deleted.
          */
-        private final long maxAge;
+        private final long maxAgeReport;
 
         /**
-         * @param maxAge The maximum age for a report in seconds.
+         * The maximum age for a task directory in seconds. Directories older
+         * than that age will be deleted.
          */
-        public CleanUpTask(final long maxAge) {
-            this.maxAge = maxAge;
+        private final long maxAgeTaskDir;
+
+        /**
+         * @param maxAgeReport The maximum age for a report in seconds.
+         * @param maxAgeTaskDir The maximum age for a task directory in seconds.
+         */
+        public CleanUpTask(final long maxAgeReport, final long maxAgeTaskDir) {
+            this.maxAgeReport = maxAgeReport;
+            this.maxAgeTaskDir = maxAgeTaskDir;
         }
 
         @Override
         public void run() {
             try {
-                removeOldFiles();
+                removeOldFiles(WorkingDirectories.this.reports, null, this.maxAgeReport);
+                removeOldFiles(WorkingDirectories.this.working, TASK_DIR_PREFIX, this.maxAgeTaskDir);
             } catch (Exception e) {
                 LOGGER.error("error running file clean-up task", e);
             }
         }
 
-        private void removeOldFiles() {
-            final File reportsDir = WorkingDirectories.this.reports;
+        private void removeOldFiles(final File dir, final String prefix, final long maxAge) {
             //CSOFF: MagicNumber
-            final long ageThreshold = new Date().getTime() - this.maxAge * 1000;
+            final long ageThreshold = new Date().getTime() - maxAge * 1000;
             //CSON: MagicNumber
 
-            int deletedReports = 0;
-            if (reportsDir.exists()) {
-                for (File file : reportsDir.listFiles()) {
-                    if (file.lastModified() < ageThreshold) {
-                        if (!file.delete()) {
-                            LOGGER.warn("failed to delete report " + file.getAbsolutePath());
-                        } else {
-                            deletedReports++;
+            int deletedFiles = 0;
+            if (dir.exists()) {
+                for (File file : dir.listFiles()) {
+                    if (prefix == null || file.getName().startsWith(prefix)) {
+                        if (file.lastModified() < ageThreshold) {
+                            if (!FileUtils.deleteQuietly(file)) {
+                                LOGGER.warn("failed to delete file " + file.getAbsolutePath());
+                            } else {
+                                deletedFiles++;
+                            }
                         }
                     }
                 }
             }
-            LOGGER.info("deleted " + deletedReports + " old report(s)");
+            LOGGER.info("deleted " + deletedFiles + " old file(s) in " + dir.getPath());
         }
     }
 }
