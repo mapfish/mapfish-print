@@ -81,6 +81,12 @@ public class PJsonObject extends PAbstractObject {
         return result == Integer.MIN_VALUE ? null : result;
     }
 
+    @Override
+    public final Long optLong(final String key) {
+        final long result = this.obj.optLong(key, Long.MIN_VALUE);
+        return result == Long.MIN_VALUE ? null : result;
+    }
+
     /**
      * Get a property as a double or null.
      * @param key the property name

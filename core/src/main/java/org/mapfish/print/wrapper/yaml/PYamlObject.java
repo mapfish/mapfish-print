@@ -90,6 +90,11 @@ public class PYamlObject extends PAbstractObject {
     }
 
     @Override
+    public final Long optLong(final String key) {
+        return (Long) this.obj.get(key);
+    }
+
+    @Override
     public final Double optDouble(final String key) {
         Number result = (Number) this.obj.get(key);
         return result == null ? null : result.doubleValue();

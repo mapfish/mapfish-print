@@ -19,6 +19,7 @@
 
 package org.mapfish.print.map.tiled.wmts;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Multimap;
 import jsr166y.ForkJoinPool;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -73,7 +74,8 @@ public class WMTSLayer extends AbstractTiledLayer {
         return new WMTSTileCacheInfo(bounds, paintArea, dpi);
     }
 
-    private final class WMTSTileCacheInfo extends TileCacheInformation {
+    @VisibleForTesting
+    final class WMTSTileCacheInfo extends TileCacheInformation {
         private Matrix matrix;
 
         public WMTSTileCacheInfo(final MapBounds bounds, final Rectangle paintArea, final double dpi) {
@@ -106,8 +108,12 @@ public class WMTSLayer extends AbstractTiledLayer {
         protected ReferencedEnvelope getTileCacheBounds() {
             double scaleDenominator = new Scale(this.matrix.scaleDenominator).toResolution(this.bounds.getProjection(), getLayerDpi());
             double minX = this.matrix.topLeftCorner[0];
-            double minY = this.matrix.topLeftCorner[1] - (this.matrix.getTileHeight() * this.matrix.matrixSize[1] * scaleDenominator);
-            double maxX = this.matrix.topLeftCorner[0] + (this.matrix.getTileWidth() * this.matrix.matrixSize[0] * scaleDenominator);
+            double tileHeight = this.matrix.getTileHeight();
+            double numYTiles = this.matrix.matrixSize[1];
+            double minY = this.matrix.topLeftCorner[1] - (tileHeight * numYTiles * scaleDenominator);
+            double tileWidth = this.matrix.getTileWidth();
+            double numXTiles = this.matrix.matrixSize[0];
+            double maxX = this.matrix.topLeftCorner[0] + (tileWidth * numXTiles * scaleDenominator);
             double maxY = this.matrix.topLeftCorner[1];
             return new ReferencedEnvelope(minX, maxX, minY, maxY, bounds.getProjection());
         }

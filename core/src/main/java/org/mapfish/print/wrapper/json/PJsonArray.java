@@ -110,6 +110,15 @@ public class PJsonArray extends PElement implements PArray {
         return val;
     }
 
+    @Override
+    public final long getLong(final int i) {
+        long val = this.array.optLong(i, Long.MIN_VALUE);
+        if (val == Long.MIN_VALUE) {
+            throw new ObjectMissingException(this, "[" + i + "]");
+        }
+        return val;
+    }
+
     /**
      * Get the element at the index as a float.
      * @param i the index of the element to access

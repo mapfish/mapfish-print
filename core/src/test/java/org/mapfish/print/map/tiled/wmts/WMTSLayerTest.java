@@ -1,13 +1,55 @@
 package org.mapfish.print.map.tiled.wmts;
 
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.junit.Test;
+import org.mapfish.print.attribute.map.CenterScaleMapBounds;
+import org.mapfish.print.attribute.map.MapBounds;
+import org.mapfish.print.map.Scale;
+
+import java.awt.Rectangle;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Jesse on 5/11/2015.
  */
 public class WMTSLayerTest {
+    @Test
+    public void testTileBoundsCalculation() throws Exception {
+        WMTSLayerParam params = new WMTSLayerParam();
+        Matrix matrix = new Matrix();
+        matrix.matrixSize = new long[]{67108864, 67108864};
+        matrix.tileSize = new int[]{256, 256};
+        matrix.topLeftCorner = new double[]{420000, 350000};
+        matrix.scaleDenominator = 7500;
+        params.matrices = new Matrix[] {matrix};
+
+        WMTSLayer wmtsLayer = new WMTSLayer(null, null, params);
+
+        Rectangle paintArea = new Rectangle(0,0,256,256);
+        MapBounds bounds = new CenterScaleMapBounds(CRS.decode("EPSG:21781"), 595217.02, 236708.54, new Scale(7500));
+        WMTSLayer.WMTSTileCacheInfo tileInformation =
+                (WMTSLayer.WMTSTileCacheInfo) wmtsLayer.createTileInformation(bounds, paintArea, 256, false);
+
+        ReferencedEnvelope tileCacheBounds = tileInformation.getTileCacheBounds();
+
+        assertEquals(tileCacheBounds.getMinX(), 420000, 0.00001);
+        assertFalse ("" + tileCacheBounds.getMinX(), Double.isInfinite(tileCacheBounds.getMinX()));
+        assertFalse("" + tileCacheBounds.getMinX(), Double.isNaN(tileCacheBounds.getMinX()));
+        assertTrue("" + tileCacheBounds.getMinY(), tileCacheBounds.getMinY() < 350000);
+        assertFalse ("" + tileCacheBounds.getMinY(), Double.isInfinite(tileCacheBounds.getMinY()));
+        assertFalse("" + tileCacheBounds.getMinY(), Double.isNaN(tileCacheBounds.getMinY()));
+        assertTrue("" + tileCacheBounds.getMaxX(), tileCacheBounds.getMaxX() > 420000);
+        assertFalse ("" + tileCacheBounds.getMaxX(), Double.isInfinite(tileCacheBounds.getMaxX()));
+        assertFalse("" + tileCacheBounds.getMaxX(), Double.isNaN(tileCacheBounds.getMaxX()));
+        assertEquals(tileCacheBounds.getMaxY(), 350000, 0.00001);
+        assertFalse ("" + tileCacheBounds.getMaxY(), Double.isInfinite(tileCacheBounds.getMaxY()));
+        assertFalse("" + tileCacheBounds.getMaxY(), Double.isNaN(tileCacheBounds.getMaxY()));
+
+    }
 
     @Test
     public void testCreateRestURI() throws Exception {

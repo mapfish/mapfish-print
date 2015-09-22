@@ -73,7 +73,23 @@ public interface PObject {
      * @param defaultValue the default value
      */
     Integer optInt(final String key, final Integer defaultValue);
+    /**
+     * Get a property as a long or throw an exception.
+     * @param key the property name
+     */
+     long getLong(String key);
+    /**
+     * Get a property as a long or MIN_VALUE.
+     * @param key the property name
+     */
+    Long optLong(final String key);
 
+    /**
+     * Get a property as a long or default value.
+     * @param key the property name
+     * @param defaultValue the default value
+     */
+    long optLong(final String key, final long defaultValue);
     /**
      * Get a property as a double or throw an exception.
      * @param key the property name

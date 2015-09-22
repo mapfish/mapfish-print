@@ -86,6 +86,28 @@ public abstract class PAbstractObject extends PElement implements PObject {
     }
 
     /**
+     * Get a property as an long or throw an exception.
+     * @param key the property name
+     */
+    @Override
+    public final long getLong(final String key) {
+        Long result = optLong(key);
+        if (result == null) {
+            throw new ObjectMissingException(this, key);
+        }
+        return result;
+    }
+    /**
+     * Get a property as an long or default value.
+     * @param key the property name
+     * @param defaultValue the default value
+     */
+    @Override
+    public final long optLong(final String key, final long defaultValue) {
+        Long result = optLong(key);
+        return result == null ? defaultValue : result;
+    }
+    /**
      * Get a property as a double or throw an exception.
      * @param key the property name
      */
