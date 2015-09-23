@@ -19,7 +19,6 @@
 
 package org.mapfish.print.map.tiled.osm;
 
-import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -183,8 +182,7 @@ public final class OsmLayerParam extends AbstractTiledLayerParams {
     }
 
     @Override
-    public String createCommonUrl(
-            final Function<Multimap<String, String>, Multimap<String, String>> function) {
+    public String createCommonUrl() {
         return getBaseUrl();
     }
 
