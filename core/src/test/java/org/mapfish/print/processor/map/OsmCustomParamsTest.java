@@ -118,7 +118,7 @@ public class OsmCustomParamsTest extends AbstractMapfishSpringTest {
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
         String expectedSimpleImage = getExpectedImageName("", referenceImage, BASE_DIR);
 
-        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(expectedSimpleImage), 30);
+        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + expectedSimpleImage), 30);
 
     }
 
