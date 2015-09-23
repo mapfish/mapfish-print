@@ -13,6 +13,8 @@ import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 
 import java.awt.geom.AffineTransform;
 import javax.annotation.Nonnull;
@@ -140,8 +142,9 @@ final class GridUtils {
      * @param worldToScreenTransform the transform for mapping from world to screen(pixel)
      */
     public static void topBorderLabel(final LabelPositionCollector labels, final GeometryFactory geometryFactory,
-                               final Polygon rotatedBounds, final String unit, final double x,
-                               final AffineTransform worldToScreenTransform) {
+                                      final Polygon rotatedBounds, final String unit, final double x,
+                                      final AffineTransform worldToScreenTransform,
+                                      final MathTransform toLabelProjection) {
         Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
         LineString lineString = geometryFactory.createLineString(new Coordinate[]{
                 new Coordinate(x, envelopeInternal.centre().y),
@@ -153,7 +156,8 @@ final class GridUtils {
             double[] screenPoints = new double[2];
             worldToScreenTransform.transform(new double[]{borderIntersection.x, borderIntersection.y}, 0, screenPoints, 0, 1);
 
-            labels.add(new GridLabel(createLabel(x, unit), (int) screenPoints[0], (int) screenPoints[1], TOP));
+            double[] labelProj = transformToLabelProjection(toLabelProjection, borderIntersection);
+            labels.add(new GridLabel(createLabel(labelProj[0], unit), (int) screenPoints[0], (int) screenPoints[1], TOP));
         }
     }
 
@@ -168,8 +172,9 @@ final class GridUtils {
      * @param worldToScreenTransform the transform for mapping from world to screen(pixel)
      */
     public static void bottomBorderLabel(final LabelPositionCollector labels, final GeometryFactory geometryFactory,
-                                  final Polygon rotatedBounds, final String unit, final double x,
-                                  final AffineTransform worldToScreenTransform) {
+                                         final Polygon rotatedBounds, final String unit, final double x,
+                                         final AffineTransform worldToScreenTransform,
+                                         final MathTransform toLabelProjection) {
         Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
         LineString lineString = geometryFactory.createLineString(new Coordinate[]{
                 new Coordinate(x, envelopeInternal.getMinY()),
@@ -182,7 +187,8 @@ final class GridUtils {
             double[] screenPoints = new double[2];
             worldToScreenTransform.transform(new double[]{borderIntersection.x, borderIntersection.y}, 0, screenPoints, 0, 1);
 
-            labels.add(new GridLabel(createLabel(x, unit), (int) screenPoints[0], (int) screenPoints[1], BOTTOM));
+            double[] labelProj = transformToLabelProjection(toLabelProjection, borderIntersection);
+            labels.add(new GridLabel(createLabel(labelProj[0], unit), (int) screenPoints[0], (int) screenPoints[1], BOTTOM));
         }
     }
 
@@ -197,8 +203,9 @@ final class GridUtils {
      * @param worldToScreenTransform the transform for mapping from world to screen(pixel)
      */
     public static void rightBorderLabel(final LabelPositionCollector labels, final GeometryFactory geometryFactory,
-                                 final Polygon rotatedBounds, final String unit, final double y,
-                                 final AffineTransform worldToScreenTransform) {
+                                        final Polygon rotatedBounds, final String unit, final double y,
+                                        final AffineTransform worldToScreenTransform,
+                                        final MathTransform toLabelProjection) {
         Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
         LineString lineString = geometryFactory.createLineString(new Coordinate[]{
                 new Coordinate(envelopeInternal.centre().x, y),
@@ -211,7 +218,8 @@ final class GridUtils {
             double[] screenPoints = new double[2];
             worldToScreenTransform.transform(new double[]{borderIntersection.x, borderIntersection.y}, 0, screenPoints, 0, 1);
 
-            labels.add(new GridLabel(createLabel(y, unit), (int) screenPoints[0], (int) screenPoints[1], RIGHT));
+            double[] labelProj = transformToLabelProjection(toLabelProjection, borderIntersection);
+            labels.add(new GridLabel(createLabel(labelProj[1], unit), (int) screenPoints[0], (int) screenPoints[1], RIGHT));
         }
     }
     /**
@@ -226,7 +234,8 @@ final class GridUtils {
      */
     static void leftBorderLabel(final LabelPositionCollector labels, final GeometryFactory geometryFactory,
                                 final Polygon rotatedBounds, final String unit, final double y,
-                                final AffineTransform worldToScreenTransform) {
+                                final AffineTransform worldToScreenTransform,
+                                final MathTransform toLabelProjection) {
         Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
         LineString lineString = geometryFactory.createLineString(new Coordinate[]{
                 new Coordinate(envelopeInternal.getMinX(), y),
@@ -238,7 +247,20 @@ final class GridUtils {
             Coordinate borderIntersection = intersections.getGeometryN(0).getCoordinates()[0];
             worldToScreenTransform.transform(new double[]{borderIntersection.x, borderIntersection.y}, 0, screenPoints, 0, 1);
 
-            labels.add(new GridLabel(createLabel(y, unit), (int) screenPoints[0], (int) screenPoints[1], LEFT));
+            double[] labelProj = transformToLabelProjection(toLabelProjection, borderIntersection);
+
+            labels.add(new GridLabel(createLabel(labelProj[1], unit), (int) screenPoints[0], (int) screenPoints[1], LEFT));
+        }
+    }
+
+    private static double[] transformToLabelProjection(final MathTransform toLabelProjection,
+                                                       final Coordinate borderIntersection) {
+        try {
+            double[] labelProj = new double[2];
+            toLabelProjection.transform(new double[]{borderIntersection.x, borderIntersection.y}, 0, labelProj, 0, 1);
+            return labelProj;
+        } catch (TransformException e) {
+            throw new RuntimeException(e);
         }
     }
 }

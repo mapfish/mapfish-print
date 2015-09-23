@@ -16,6 +16,8 @@ import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.FeatureSourceSupplier;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
 
 import java.awt.geom.AffineTransform;
 import javax.annotation.Nonnull;
@@ -60,7 +62,10 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
                                                                final LabelPositionCollector labels) {
         GeometryFactory geometryFactory = new GeometryFactory();
         ReferencedEnvelope bounds = mapContext.toReferencedEnvelope();
-        String unit = bounds.getCoordinateReferenceSystem().getCoordinateSystem().getAxis(0).getUnit().toString();
+
+        CoordinateReferenceSystem mapCrs = bounds.getCoordinateReferenceSystem();
+        String unit = layerData.calculateLabelUnit(mapCrs);
+        MathTransform labelTransform = layerData.calculateLabelTransform(mapCrs);
 
         final double incrementX = layerData.spacing[0];
         final double incrementY = layerData.spacing[1];
@@ -81,15 +86,15 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
             j = 0;
 
             if (!onRightBorder(bounds, x)) { // don't add the border features twice.
-                GridUtils.bottomBorderLabel(labels, geometryFactory, rotatedBounds, unit, x, worldToScreenTransform);
-                GridUtils.topBorderLabel(labels, geometryFactory, rotatedBounds, unit, x, worldToScreenTransform);
+                GridUtils.bottomBorderLabel(labels, geometryFactory, rotatedBounds, unit, x, worldToScreenTransform, labelTransform);
+                GridUtils.topBorderLabel(labels, geometryFactory, rotatedBounds, unit, x, worldToScreenTransform, labelTransform);
             }
             for (double y = minY; y < bounds.getMaxY(); y += incrementY) {
                 j++;
 
                 if (addBorderFeatures && !onRightBorder(bounds, x) && !onTopBorder(bounds, y)) {
-                    GridUtils.leftBorderLabel(labels, geometryFactory, rotatedBounds, unit, y, worldToScreenTransform);
-                    GridUtils.rightBorderLabel(labels, geometryFactory, rotatedBounds, unit, y, worldToScreenTransform);
+                    GridUtils.leftBorderLabel(labels, geometryFactory, rotatedBounds, unit, y, worldToScreenTransform, labelTransform);
+                    GridUtils.rightBorderLabel(labels, geometryFactory, rotatedBounds, unit, y, worldToScreenTransform, labelTransform);
                 }
                 if (!onTopBorder(bounds, y) && !onBottomBorder(bounds, y) &&
                     !onLeftBorder(bounds, x) && !onRightBorder(bounds, x)) { // don't add the border features twice.
@@ -103,6 +108,7 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
         }
         return features;
     }
+
 
     private boolean onRightBorder(final ReferencedEnvelope bounds, final double x) {
         return x >= bounds.getMaxX();
@@ -131,7 +137,10 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
         Polygon rotatedBounds = GridUtils.calculateBounds(rootContext);
         AffineTransform worldToScreenTransform = GridUtils.getWorldToScreenTransform(mapContext);
 
-        String unit = bounds.getCoordinateReferenceSystem().getCoordinateSystem().getAxis(0).getUnit().toString();
+        CoordinateReferenceSystem mapCrs = bounds.getCoordinateReferenceSystem();
+        String unit = layerData.calculateLabelUnit(mapCrs);
+        MathTransform labelTransform = layerData.calculateLabelTransform(mapCrs);
+
         double incrementX = bounds.getWidth() / (layerData.numberOfLines[0] + 1);
         double incrementY = bounds.getHeight() / (layerData.numberOfLines[1] + 1);
 
@@ -145,13 +154,17 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
                     (i != 0 || j != layerData.numberOfLines[1] + 1) && (i != layerData.numberOfLines[0] + 1 || j != 0)) {
 
                     if (i == 0) {
-                        GridUtils.leftBorderLabel(labels, geometryFactory, rotatedBounds, unit, y, worldToScreenTransform);
+                        GridUtils.leftBorderLabel(labels, geometryFactory, rotatedBounds, unit, y,
+                                worldToScreenTransform, labelTransform);
                     } else if (i == layerData.numberOfLines[0] + 1) {
-                        GridUtils.rightBorderLabel(labels, geometryFactory, rotatedBounds, unit, y, worldToScreenTransform);
+                        GridUtils.rightBorderLabel(labels, geometryFactory, rotatedBounds, unit, y,
+                                worldToScreenTransform, labelTransform);
                     } else if (j == 0) {
-                        GridUtils.bottomBorderLabel(labels, geometryFactory, rotatedBounds, unit, x, worldToScreenTransform);
+                        GridUtils.bottomBorderLabel(labels, geometryFactory, rotatedBounds, unit, x,
+                                worldToScreenTransform, labelTransform);
                     } else if (j == layerData.numberOfLines[1] + 1) {
-                        GridUtils.topBorderLabel(labels, geometryFactory, rotatedBounds, unit, x, worldToScreenTransform);
+                        GridUtils.topBorderLabel(labels, geometryFactory, rotatedBounds, unit, x,
+                                worldToScreenTransform, labelTransform);
                     } else {
                         featureBuilder.reset();
                         Point geom = geometryFactory.createPoint(new Coordinate(x, y));

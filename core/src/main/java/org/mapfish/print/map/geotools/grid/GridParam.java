@@ -20,10 +20,15 @@
 package org.mapfish.print.map.geotools.grid;
 
 import com.vividsolutions.jts.util.Assert;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.operation.transform.IdentityTransform;
 import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.OneOf;
 import org.mapfish.print.parser.Requires;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
 
 import java.util.Arrays;
 
@@ -131,6 +136,20 @@ public final class GridParam extends AbstractLayerParams {
      */
     @HasDefaultValue
     public int indent = DEFAULT_INDENT;
+    /**
+     * The projection code to use for the labels.  The value should be the string <code>authority:code</code> form identifying the
+     * projection.  By default it will be the same projection as the map.
+     */
+    @HasDefaultValue
+    public String labelProjection = null;
+    /**
+     * By default the normal axis order as specified in EPSG code will be used when parsing projections.  However
+     * the requestor can override this by explicitly declaring that longitude axis is first.
+     */
+    @HasDefaultValue
+    public Boolean longitudeFirst = null;
+
+    private CoordinateReferenceSystem labelCRS;
 
     /**
      * Initialize default values and validate that config is correct.
@@ -147,6 +166,54 @@ public final class GridParam extends AbstractLayerParams {
         Assert.isTrue(this.labelColor != null, "labelColor should not be null");
         Assert.isTrue(this.haloColor != null, "haloColor should not be null");
         Assert.isTrue(this.font != null, "font should not be null");
+
+        try {
+            if (this.labelProjection != null) {
+                if (this.longitudeFirst != null) {
+                    this.labelCRS = CRS.decode(this.labelProjection, this.longitudeFirst);
+                } else {
+                    this.labelCRS = CRS.decode(this.labelProjection);
+                }
+            }
+        } catch (FactoryException e) {
+            throw new IllegalArgumentException("The projection code: " + this.labelProjection +
+                                               " is not valid. Error message when parsing code: " + e.getMessage());
+        }
     }
 
+    /**
+     * Determine which unit to use when creating grid labels.
+     *
+     * @param mapCrs the crs of the map, used if the {@link #labelProjection} is not defined.
+     */
+    public String calculateLabelUnit(final CoordinateReferenceSystem mapCrs) {
+        String unit;
+        if (this.labelProjection != null) {
+            unit = this.labelCRS.getCoordinateSystem().getAxis(0).getUnit().toString();
+        } else {
+            unit = mapCrs.getCoordinateSystem().getAxis(0).getUnit().toString();
+        }
+
+        return unit;
+    }
+
+    /**
+     * Determine which math transform to use when creating the coordinate of the label.
+     *
+     * @param mapCrs the crs of the map, used if the {@link #labelProjection} is not defined.
+     */
+    public MathTransform calculateLabelTransform(final CoordinateReferenceSystem mapCrs) {
+        MathTransform labelTransform;
+        if (this.labelProjection != null) {
+            try {
+                labelTransform = CRS.findMathTransform(mapCrs, this.labelCRS, true);
+            } catch (FactoryException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            labelTransform = IdentityTransform.create(2);
+        }
+
+        return labelTransform;
+    }
 }

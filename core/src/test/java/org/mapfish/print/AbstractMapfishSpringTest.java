@@ -19,6 +19,7 @@
 
 package org.mapfish.print;
 
+import com.google.common.base.Optional;
 import com.google.common.io.Files;
 import org.geotools.referencing.CRS;
 import org.junit.runner.RunWith;
@@ -31,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.imageio.ImageIO;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -130,21 +132,41 @@ public abstract class AbstractMapfishSpringTest {
         }
     }
     protected String getExpectedImageName(String classifier, BufferedImage actualImage, String baseDir) throws IOException {
+        int javaVersion;
+
+        String fullVersion = System.getProperty("java.specification.version");
+
+        if (fullVersion.startsWith("1.6")) {
+            javaVersion = 6;
+        } else if (fullVersion.startsWith("1.7")) {
+            javaVersion = 7;
+        } else if (fullVersion.startsWith("1.8")) {
+            javaVersion = 8;
+        } else {
+            throw new RuntimeException(fullVersion + " is not yet supported in the tests.  Update this switch");
+        }
+
+        String platformVersionName = "expectedSimpleImage" + classifier + "-" + normalizedOSName() +
+                "-jdk" + javaVersion + ".png";
         String platformName = "expectedSimpleImage" + classifier + "-" + normalizedOSName() + ".png";
         String defaultName = "expectedSimpleImage" + classifier + ".png";
 
 //        new File("/tmp/" + baseDir).mkdirs();
+//        ImageIO.write(actualImage, "png", new File("/tmp/" + baseDir + "/" + platformVersionName));
 //        ImageIO.write(actualImage, "png", new File("/tmp/" + baseDir + "/" + platformName));
 //        ImageIO.write(actualImage, "png", new File("/tmp/" + baseDir + "/" + defaultName));
 
-        String imageName;
+
+        return findImage(baseDir, platformVersionName).or(findImage(baseDir, platformName)).or(defaultName);
+    }
+
+    private Optional<String> findImage(final String baseDir, final String fileName) {
         try {
-            getFile(baseDir + platformName);
-            imageName = platformName;
+            getFile(baseDir + fileName);
+            return Optional.of(fileName);
         } catch (AssertionError e) {
-            imageName = defaultName;
+            return Optional.absent();
         }
-        return imageName;
     }
 
 }
