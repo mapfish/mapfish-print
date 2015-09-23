@@ -40,6 +40,7 @@ public final class OldAPILayerConverter {
 
     static {
         converters.put("osm", new OSMConverter());
+        converters.put("xyz", new OSMConverter());
         converters.put("wms", new WMSConverter());
         converters.put("wmts", new WMSTConverter());
         converters.put("vector", new GeoJsonConverter());
@@ -100,7 +101,14 @@ public final class OldAPILayerConverter {
             if (oldLayer.has("resolutions")) {
                 layer.put("resolutions", oldLayer.getInternalObj().getJSONArray("resolutions"));
             }
-
+            if (oldLayer.has("customParams")) {
+                JSONObject customParams = oldLayer.getInternalObj().getJSONObject("customParams");
+                if (customParams.has("version")) {
+                    layer.put("version", customParams.getString("version"));
+                    customParams.remove("version");
+                }
+                layer.put("customParams", customParams);
+            }
             return layer;
         }
     }
