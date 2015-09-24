@@ -93,6 +93,9 @@ configure(subprojects.findAll {['core', 'examples'].contains(it.name)}) {
     }
 
     test {
+        jvmArgs '-XX:MaxPermSize=256m', '-XX:+UseConcMarkSweepGC', '-XX:+CMSClassUnloadingEnabled'
+        minHeapSize = "128m"
+        maxHeapSize = "512m"
         testLogging {
             exceptionFormat = 'full'
         }
