@@ -60,7 +60,7 @@ public final class MapfishPrintConstructor extends Constructor {
                 LOGGER.error(message);
                 throw new AssertionError(message);
             }
-            addTypeDescription(new TypeDescription(entry.getValue().getClass(), entry.getKey()));
+            addTypeDescription(new TypeDescription(entry.getValue().getClass(), "!" + entry.getKey()));
         }
 
         MapfishPrintConstruct construct = new MapfishPrintConstruct(context);
@@ -91,7 +91,7 @@ public final class MapfishPrintConstructor extends Constructor {
             }
             Object bean;
             try {
-                bean = this.applicationContext.getBean(node.getTag().getValue());
+                bean = this.applicationContext.getBean(node.getTag().getValue().substring(1));
             } catch (NoSuchBeanDefinitionException e) {
                 bean = this.applicationContext.getBean(node.getType());
             }
