@@ -57,13 +57,13 @@ class GenerateDocs {
         springAppContext.refresh()
         springAppContext.start()
         springAppContext.getBeansOfType(MapLayerFactoryPlugin.class, true, true).entrySet().each {entry ->
-            handleMapLayerFactoryPlugin(entry.getValue(), entry.getKey())
+            handleMapLayerFactoryPlugin(entry.getValue(), "!" + entry.getKey())
         }
         springAppContext.getBeansOfType(Attribute.class, true, true).entrySet().each { entry ->
-            handleAttribute(entry.getValue(), entry.getKey())
+            handleAttribute(entry.getValue(), "!" + entry.getKey())
         }
         springAppContext.getBeansOfType(Processor.class, true, true).entrySet().each { entry ->
-            handleProcessor(entry.getValue(), entry.getKey())
+            handleProcessor(entry.getValue(), "!" + entry.getKey())
         }
         springAppContext.getBeansOfType(StyleParserPlugin.class).entrySet().each { entry ->
             handleSimplePlugin(entry.getValue(), 'styles', entry.getKey())
@@ -84,7 +84,7 @@ class GenerateDocs {
         springAppContext.getBeansOfType(ConfigurationObject.class, true, true).entrySet().each { entry ->
             def bean = entry.getValue()
             if (!(bean instanceof Attribute || bean instanceof MapLayerFactoryPlugin || bean instanceof Processor)) {
-                handleConfigurationObject(entry.getValue(), entry.getKey())
+                handleConfigurationObject(entry.getValue(),"!" + entry.getKey())
             }
         }
 
