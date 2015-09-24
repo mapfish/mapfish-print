@@ -20,6 +20,8 @@
 package org.mapfish.print.map.tiled.osm;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.util.Assert;
@@ -27,11 +29,14 @@ import com.vividsolutions.jts.util.Assert;
 import org.mapfish.print.map.tiled.AbstractTiledLayerParams;
 import org.mapfish.print.parser.CanSatisfyOneOf;
 import org.mapfish.print.parser.HasDefaultValue;
+import org.mapfish.print.wrapper.PArray;
+import org.mapfish.print.wrapper.PObject;
 
 import java.awt.Dimension;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * The parameters for configuration an OSM layer.
@@ -97,7 +102,6 @@ public final class OsmLayerParam extends AbstractTiledLayerParams {
     @CanSatisfyOneOf("extension")
     public String imageExtension = "png";
 
-
     /**
      * Deprecated, replaced by imageExtension.
      * @deprecated
@@ -105,6 +109,41 @@ public final class OsmLayerParam extends AbstractTiledLayerParams {
     @CanSatisfyOneOf("extension")
     @Deprecated
     public String imageFormat = null;
+
+    /**
+     * Custom query parameters to use when making http requests.
+     * {@link #customParams}.
+     * <p/>
+     * The json should look something like:
+     * <pre><code>
+     * {
+     *     "param1Name": "value",
+     *     "param2Name": ["value1", "value2"]
+     * }
+     * </code></pre>
+     */
+    @HasDefaultValue
+    public PObject customParams;
+    private final Multimap<String, String> additionalCustomParam = HashMultimap.create();
+
+    /**
+     * Read the {@link #customParams} into a Multimap.
+     */
+    public  Multimap<String, String> getCustomParams() {
+        Multimap<String, String> result = convertToMultiMap(this.customParams);
+        result.putAll(this.additionalCustomParam);
+        return result;
+    }
+
+    /**
+     * Set a custom parameter.
+     *
+     * @param name  the parameter name
+     * @param value the parameter value
+     */
+    public  void setCustomParam(final String name, final String value) {
+        this.additionalCustomParam.put(name, value);
+    }
 
     /**
      * Validate the properties have the correct values.
@@ -166,5 +205,30 @@ public final class OsmLayerParam extends AbstractTiledLayerParams {
         } catch (URISyntaxException exc) {
             return false;
         }
+    }
+
+    /**
+     * convert a param object to a multimap.
+     * @param objectParams the parameters to convert.
+     * @return the corresponding Multimap.
+     */
+    public static Multimap<String, String> convertToMultiMap(final PObject objectParams) {
+        Multimap<String, String> params = HashMultimap.create();
+        if (objectParams != null) {
+            Iterator<String> customParamsIter = objectParams.keys();
+            while (customParamsIter.hasNext()) {
+                String key = customParamsIter.next();
+                if (objectParams.isArray(key)) {
+                    final PArray array = objectParams.optArray(key);
+                    for (int i = 0; i < array.size(); i++) {
+                        params.put(key, array.getString(i));
+                    }
+                } else {
+                    params.put(key, objectParams.optString(key, ""));
+                }
+            }
+        }
+
+        return params;
     }
 }

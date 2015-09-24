@@ -22,6 +22,7 @@ package org.mapfish.print.map.tiled.osm;
 import jsr166y.ForkJoinPool;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.mapfish.print.URIUtils;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.Scale;
@@ -134,7 +135,9 @@ public final class OsmLayer extends AbstractTiledLayer {
                 uri  = new URI(commonUrl + path.toString());
             }
 
-            return httpRequestFactory.createRequest(uri, HttpMethod.GET);
+            return httpRequestFactory.createRequest(
+                    URIUtils.addParams(uri, OsmLayerParam.convertToMultiMap(OsmLayer.this.param.customParams),
+                    URIUtils.getParameters(uri).keySet()), HttpMethod.GET);
         }
 
         @Override
