@@ -29,7 +29,7 @@ docsApp.config(function($translateProvider) {
   $translateProvider.preferredLanguage('en');
 });
 
-docsApp.controller('DocsCtrl', function ($scope, $rootScope, $sce, $translate, $location, $anchorScroll, $timeout) {
+docsApp.controller('DocsCtrl', function ($scope, $rootScope, $sce, $translate, $location, $timeout, $window) {
 
   $scope.pages = {
     overview: {
@@ -140,8 +140,17 @@ docsApp.controller('DocsCtrl', function ($scope, $rootScope, $sce, $translate, $
 
     $timeout(function () {
       // wait until page is rendered then scroll to correct element
-      console.log($location.hash());
-      $anchorScroll();
+      var location = $location.search().location;
+      console.log(location);
+      if (!location) {
+        $window.scroll(0,0);
+      } else {
+        var el = document.getElementById(location);
+        if (el) {
+          el.scrollIntoView();
+        }
+      }
+
     }, 500);
   });
 
@@ -164,8 +173,8 @@ docsApp.controller('DocsCtrl', function ($scope, $rootScope, $sce, $translate, $
 
     $translate(toTranslate).then(function (translations) {
       angular.forEach($scope.pages, function (p){
-          var titleKey = p.title;
-          p.title = translations[titleKey];
+        var titleKey = p.title;
+        p.title = translations[titleKey];
       });
     });
   };
@@ -208,25 +217,29 @@ docsApp.filter('sortRecords', function($translate){
 docsApp.hashPathSeparator = '__';
 docsApp.controller('RecordCtrl', function ($scope, $location) {
   var title = $scope.record.title;
-  $scope.expanded = $location.hash() === title || $location.hash().indexOf(title + docsApp.hashPathSeparator) === 0;
+  var location = $location.search().location;
+  if (!location) {
+    location = "";
+  }
+  $scope.expanded = location === title || location.indexOf(title + docsApp.hashPathSeparator) === 0;
   $scope.$watch('expanded', function(expanded){
     if (expanded) {
-      $scope.setLocationHash();
+      $scope.setLocationParam();
     }
   });
 
 
-  $scope.setLocationHash = function() {
-    $location.hash($scope.record.title);
+  $scope.setLocationParam = function() {
+    $location.search("location", $scope.record.title);
   };
 });
 
 
 
 docsApp.controller('DetailCtrl', function ($scope, $location) {
-  $scope.setLocationHash = function(id, $event) {
+  $scope.setLocationParam = function(id, $event) {
     $event.stopPropagation();
-    $location.hash(id);
+    $location.search("location", id);
   };
   $scope.anchorId = function (detail, type) {
     var id = $scope.record.title + docsApp.hashPathSeparator + type + docsApp.hashPathSeparator + detail.title;
