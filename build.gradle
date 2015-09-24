@@ -28,13 +28,22 @@ allprojects {
     version = '3.3-SNAPSHOT'
     ext.junitVersion = "4.11"
     ext.springVersion = "3.2.8.RELEASE"
-    ext.jasperReportVersion = "5.6.1"
+    ext.jasperReportVersion = "6.1.1"
     ext.groovyVersion = "2.3.3"
     ext."signing.keyId" = signing_keyId
     ext."signing.secretKeyRingFile" = signing_secretKeyRingFile
     ext."signing.password" = signing_password
 }
 
+configure(subprojects.findAll {['core', 'examples', 'docs'].contains(it.name)}) {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven {url "http://dev.mapfish.org/maven/repository"}
+        maven {url "http://download.osgeo.org/webdav/geotools"}
+        maven {url "http://jasperreports.sourceforge.net/maven2"}
+    }
+}
 configure(subprojects.findAll {['core', 'examples'].contains(it.name)}) {
     apply plugin: 'java'
     apply plugin: 'findbugs'
@@ -45,12 +54,6 @@ configure(subprojects.findAll {['core', 'examples'].contains(it.name)}) {
 
     jar.dependsOn(checkstyleMain, findbugsMain)
 
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        maven {url "http://dev.mapfish.org/maven/repository"}
-        maven {url "http://download.osgeo.org/webdav/geotools"}
-    }
     checkstyle {
         configFile = file("$rootProject.rootDir/checkstyle_checks.xml")
         configProperties = ['basedir': project.rootDir.path]
@@ -60,7 +63,7 @@ configure(subprojects.findAll {['core', 'examples'].contains(it.name)}) {
     checkstyleTest.enabled = false
 
     findbugs {
-        toolVersion = "2.0.3"
+        toolVersion = "3.0.1"
         ignoreFailures = false
         reportsDir = file("$project.buildDir/reports/findbugsReports")
         effort = "max"
