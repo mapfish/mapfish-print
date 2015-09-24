@@ -54,11 +54,11 @@ import static org.mapfish.print.servlet.MapPrinterServlet.JSON_REQUEST_HEADERS;
 
 /**
  * To run this test make sure that the test GeoServer is running:
- * <p/>
+ * <p></p>
  * ./gradlew examples:jettyRun
- * <p/>
+ * <p></p>
  * Or run the tests with the following task (which automatically starts the server):
- * <p/>
+ * <p></p>
  * ./gradlew examples:test
  *
  * @author Jesse on 3/31/14.

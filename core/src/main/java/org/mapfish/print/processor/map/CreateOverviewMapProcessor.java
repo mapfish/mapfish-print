@@ -51,7 +51,7 @@ import java.util.List;
 
 /**
  * Processor to create overview maps. Internally {@link CreateMapProcessor} is used.
- * <p/>
+ * <p></p>
  * Example Configuration:
  * <pre><code>
  * attributes:
@@ -72,13 +72,13 @@ import java.util.List;
  *        layerGraphics: overviewMapLayerGraphics
  *      }
  * </code></pre>
- * <p/>
+ * <p></p>
  * <strong>Features:</strong>
- * <p/>
+ * <p></p>
  * The attribute overviewMap allows to overwrite all properties of the main map, for example to use different layers.
  * The overview map can have a different rotation than the main map. For example the main map is rotated and the overview map faces
  * north. But the overview map can also be rotated.
- * <p/>
+ * <p></p>
  * The style of the bbox rectangle can be changed.
  */
 public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverviewMapProcessor.Input, CreateOverviewMapProcessor.Output> {

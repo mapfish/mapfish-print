@@ -51,7 +51,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Basic test of the set param to WMS layers processor.
- * <p/>
+ * <p></p>
  * Created by Jesse on 3/26/14.
  */
 public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
@@ -95,7 +95,8 @@ public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
                         assertTrue("LAYERS != TIGER-NY: " + uppercaseParams.get("LAYERS"), uppercaseParams.containsEntry("LAYERS",
                                 "TIGER-NY"));
                         assertTrue("STYLES != LINE: " + uppercaseParams.get("STYLES"), uppercaseParams.containsEntry("STYLES", "LINE"));
-                        assertTrue("CUSTOMP1 != 1", uppercaseParams.containsEntry("CUSTOMP1", "1"));
+                        assertTrue("CUSTOMP1 != 1 it equals: " + uppercaseParams.get("CUSTOMP1"),
+                                uppercaseParams.containsEntry("CUSTOMP1", "1"));
                         assertTrue("CUSTOMP2 != 2", uppercaseParams.containsEntry("CUSTOMP2", "2"));
                         assertTrue("BBOX is missing", uppercaseParams.containsKey("BBOX"));
                         assertTrue("EXCEPTIONS is missing", uppercaseParams.containsKey("EXCEPTIONS"));

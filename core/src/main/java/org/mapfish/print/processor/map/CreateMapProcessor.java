@@ -483,7 +483,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
 
     /**
      * Set the type of buffered image rendered to.  See {@link org.mapfish.print.processor.map.CreateMapProcessor.BufferedImageType}.
-     * <p/>
+     * <p></p>
      * Default is {@link org.mapfish.print.processor.map.CreateMapProcessor.BufferedImageType#TYPE_4BYTE_ABGR}.
      *
      * @param imageType one of the {@link org.mapfish.print.processor.map.CreateMapProcessor.BufferedImageType} values.

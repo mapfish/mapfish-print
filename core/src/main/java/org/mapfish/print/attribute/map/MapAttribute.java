@@ -72,15 +72,15 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
 
         /**
          * An array of 4 doubles, minX, minY, maxX, maxY.  The bounding box of the map.
-         * <p/>
+         * <p></p>
          * Either the bbox or the center + scale must be defined
-         * <p/>
+         * <p></p>
          */
         @OneOf("MapBounds")
         public double[] bbox;
         /**
          * A GeoJSON geometry that is essentially the area of the area to draw on the map.
-         * <p/>
+         * <p></p>
          */
         @CanSatisfyOneOf("MapBounds")
         public AreaOfInterest areaOfInterest;

@@ -41,7 +41,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Represents one node in the Processor dependency graph ({@link ProcessorDependencyGraph}).
- * <p/>
+ * <p></p>
  *
  * @param <In>  Same as {@link org.mapfish.print.processor.Processor} <em>In</em> parameter
  * @param <Out> Same as {@link org.mapfish.print.processor.Processor} <em>Out</em> parameter

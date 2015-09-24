@@ -238,7 +238,7 @@ public class ScalebarGraphic {
 
     /**
      * Called when the position of the labels and their content is known.
-     * <p/>
+     * <p></p>
      * Creates the drawer which draws the scalebar.
      */
     private void doLayout(final Graphics2D graphics2d, final ScalebarAttributeValues scalebarParams,

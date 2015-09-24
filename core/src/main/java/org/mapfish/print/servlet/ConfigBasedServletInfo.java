@@ -23,7 +23,7 @@ import java.util.UUID;
 
 /**
  * A servlet info that can be configured through the spring configuration (or programmatically).
- * <p/>
+ * <p></p>
  * A default random id will be created by default.
  *
  * @author Jesse on 4/26/2014.

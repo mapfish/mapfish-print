@@ -57,6 +57,7 @@ import javax.annotation.Nullable;
  * </p>
  * <p>
  * Example configuration:
+ * </p>
  * <pre><code>
  * datasource: !datasource
  *   table: !table
@@ -64,9 +65,9 @@ import javax.annotation.Nullable;
  *     width: 200
  *     height: 100
  * </code></pre>
- * </p>
  * <p>
  * Example request data:
+ * </p>
  * <pre><code>
  * datasource: [
  *   {
@@ -86,7 +87,6 @@ import javax.annotation.Nullable;
  *   }
  * ]
  * </code></pre>
- * </p>
  *
  * @author Jesse on 9/5/2014.
  */

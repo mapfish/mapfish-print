@@ -30,7 +30,7 @@ import java.util.List;
  * Attribute that defines how a map is displayed across many pages.
  *
  * <p>
- *     This is used by the <a href="#/processors#!paging">Paging Processor</a>.
+ *     This is used by the <a href="index.html#/processors?location=!paging">Paging Processor</a>.
  * </p>
  *
  * @author Jesse on 8/27/2014.
@@ -81,7 +81,8 @@ public final class PagingAttribute extends ReflectiveAttribute<PagingAttribute.P
          *     For options see: {@link org.mapfish.print.attribute.map.AreaOfInterest.AoiDisplay}
          * </p>
          * <p>
-         *     By default the rendering in the <a href="#/attributes#!map">map attribute's</a> area of interest will be used
+         *     By default the rendering in the <a href="index.html#/attributes?location=!map">map attribute's</a>
+         *     area of interest will be used
          * </p>
          */
         @HasDefaultValue
@@ -90,7 +91,7 @@ public final class PagingAttribute extends ReflectiveAttribute<PagingAttribute.P
 
         /**
          * If this is defined it will override the style used for rendering the Area Of Interest in the
-         * main <a href="#/attributes#!map">map attribute's</a> Area of Interest definition.
+         * main <a href="index.html#/attributes?location=!map">map attribute's</a> Area of Interest definition.
          */
         @HasDefaultValue
         public String aoiStyle = null;

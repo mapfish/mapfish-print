@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
 
 /**
  * Represents a set of credentials to use for an http request.  These can be configured in the Configuration yaml file.
- * <p/>
+ * <p></p>
  * <p>
  * <em>Note: proxies are also HttpCredentials and when searching for credentials, the proxies will also be searched
  * for credentials.</em>

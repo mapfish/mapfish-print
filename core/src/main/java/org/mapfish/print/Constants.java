@@ -26,7 +26,7 @@ import java.nio.charset.Charset;
  * User: jeichar
  * Date: Sep 30, 2010
  * Time: 4:27:46 PM
- * <p/>
+ * <p></p>
  * CSOFF:MagicNumber
  * CSOFF:RequireThis
  */
@@ -43,9 +43,9 @@ public interface Constants {
 
     /**
      * The default encoding to use throughout the system.  This can be set by setting the system property:
-     * <p/>
+     * <p></p>
      * <em>mapfish.file.encoding</em>
-     * <p/>
+     * <p></p>
      * before starting the JVM.
      */
     String DEFAULT_ENCODING = System.getProperty("mapfish.file.encoding", "UTF-8");

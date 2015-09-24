@@ -43,7 +43,7 @@ import com.google.common.io.Files;
 
 /**
  * Basic test of the Map processor.
- * <p/>
+ * <p></p>
  * Created by Jesse on 3/26/14.
  */
 public class CreateMapProcessorCenterGeoJsonZoomToExtentTest extends AbstractMapfishSpringTest {

@@ -55,7 +55,7 @@ import static org.mapfish.print.attribute.map.AreaOfInterest.AoiDisplay.RENDER;
 
 /**
  * Basic test of the Map processor.
- * <p/>
+ * <p></p>
  * Created by Jesse on 3/26/14.
  */
 public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {

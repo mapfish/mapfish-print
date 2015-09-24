@@ -21,7 +21,6 @@ package org.mapfish.print.processor.jasper;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.Files;
-
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.Renderable;
@@ -30,7 +29,7 @@ import net.sf.jasperreports.engine.design.JRDesignElement;
 import net.sf.jasperreports.engine.design.JRDesignExpression;
 import net.sf.jasperreports.engine.design.JRDesignImage;
 import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.type.HorizontalAlignEnum;
+import net.sf.jasperreports.engine.type.HorizontalImageAlignEnum;
 import net.sf.jasperreports.engine.type.ScaleImageEnum;
 import net.sf.jasperreports.engine.type.WhenNoDataTypeEnum;
 
@@ -110,7 +109,7 @@ public class ImagesSubReport {
             final JasperDesign design) {
         final JRDesignImage image = new JRDesignImage(design);
 
-        image.setHorizontalAlignment(HorizontalAlignEnum.CENTER);
+        image.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
         image.setX(0);
         image.setY(0);
         image.setWidth(mapSize.width);

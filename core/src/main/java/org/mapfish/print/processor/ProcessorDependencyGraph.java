@@ -44,7 +44,7 @@ import static org.mapfish.print.parser.ParserUtils.getAttributeNames;
 /**
  * Represents a graph of the processors dependencies.  The root nodes can execute in parallel but processors with
  * dependencies must wait for their dependencies to complete before execution.
- * <p/>
+ * <p></p>
  *
  * @author jesseeichar on 3/24/14.
  */

@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 /**
  * Indicates that the annotated field or can satisfy the {@link org.mapfish.print.parser.OneOf} requirements or
  * can co-exist with that requirement.
- * <p/>
+ * <p></p>
  * If this annotation is present then {@link org.mapfish.print.parser.HasDefaultValue} is not required.
  *
  * @author Jesse on 4/9/2014.

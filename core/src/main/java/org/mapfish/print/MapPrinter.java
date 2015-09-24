@@ -44,7 +44,7 @@ import java.util.TreeSet;
 /**
  * The main class for printing maps. Will parse the spec, create the PDF
  * document and generate it.
- * <p/>
+ * <p></p>
  * This class should not be directly created but rather obtained from an application
  * context object so that all plugins and dependencies are correctly injected into it
  */

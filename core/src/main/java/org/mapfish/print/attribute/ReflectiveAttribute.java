@@ -176,15 +176,15 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
 
     /**
      * Create an instance of a attribute value object.  Each instance must be new and unique. Instances must <em>NOT</em> be shared.
-     * <p/>
+     * <p></p>
      * The object will be populated from the json.  Each public field will be populated by looking up the value in the json.
-     * <p/>
+     * <p></p>
      * If a field in the object has the {@link org.mapfish.print.parser.HasDefaultValue} annotation then no exception
      * will be thrown if the json does not contain a value.
-     * <p/>
+     * <p></p>
      * Fields in the object with the {@link org.mapfish.print.parser.OneOf} annotation must have one of the fields in the
      * request data.
-     * <p/>
+     * <p></p>
      * <ul>
      * <li>{@link java.lang.String}</li>
      * <li>{@link java.lang.Integer}</li>
@@ -202,14 +202,14 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
      * <li>any type with a 0 argument constructor</li>
      * <li>array of any of the above (String[], boolean[], PJsonObject[], ...)</li>
      * </ul>
-     * <p/>
+     * <p></p>
      * If there is a public <code>{@value org.mapfish.print.parser.MapfishParser#POST_CONSTRUCT_METHOD_NAME}()</code>
      * method then it will be called after the fields are all set.
-     * <p/>
+     * <p></p>
      * In the case where the a parameter type is a normal POJO (not a special case like PJsonObject, URL, enum, double, etc...)
      * then it will be assumed that the json data is a json object and the parameters will be recursively parsed into the new
      * object as if it is also MapLayer parameter object.
-     * <p/>
+     * <p></p>
      * It is important to put values in the value object as public fields because reflection is used when printing client config
      * as well as generating documentation.  If a field is intended for the client software as information but is not intended
      * to be set (or sent as part of the request data), the field can be a final field.
@@ -220,12 +220,12 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
 
     /**
      * Uses reflection on the object created by {@link #createValue(org.mapfish.print.config.Template)} to create the options.
-     * <p/>
+     * <p></p>
      * The public final fields are written as the field name as the key and the value as the value.
-     * <p/>
+     * <p></p>
      * The public (non-final) mandatory fields are written as part of clientParams and are written with the field name as the key and
      * the field type as the value.
-     * <p/>
+     * <p></p>
      * The public (non-final) {@link org.mapfish.print.parser.HasDefaultValue} fields are written as part of clientOptions and are
      * written with the field name as the key and an object as a value with a type property with the type and a default property
      * containing the default value.

@@ -33,7 +33,7 @@ import java.awt.Rectangle;
 
 /**
  * Represent Map Bounds with a center location and a scale of the map.
- * <p/>
+ * <p></p>
  * Created by Jesse on 3/26/14.
  */
 public final class CenterScaleMapBounds extends MapBounds {

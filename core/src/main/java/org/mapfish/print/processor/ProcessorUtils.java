@@ -50,7 +50,7 @@ public final class ProcessorUtils {
 
     /**
      * Create the input object required by the processor and populate all the fields from the values object.
-     * <p/>
+     * <p></p>
      * If {@link Processor#createInputParameter()} returns an instance of values then the values object will be returned.
      *
      * @param processor the processor that the input object will be for.

@@ -46,11 +46,9 @@ import java.util.List;
  *     - localMatch
  *       port : 80
  * </code></pre>
+ * <p>Example 4: Accept localhost urls with paths that start with /print/.</p>
  * <p>
- * Example 4: Accept localhost urls with paths that start with /print/.
- * <p>
- * If the regular expression give does not start with / then it will be added because all paths start with /
- * </p>
+ * If the regular expression given does not start with / then it will be added because all paths start with /.
  * </p>
  * <pre><code>
  *     - localMatch

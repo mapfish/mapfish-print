@@ -35,10 +35,10 @@ import org.mapfish.print.config.ConfigurationObject;
 public interface AccessAssertion extends ConfigurationObject {
     /**
      * Checks that the user can access the resource.
-     * <p/>
+     * <p></p>
      * Will throw {@link org.springframework.security.authentication.AuthenticationCredentialsNotFoundException} if the user has
      * not logged in or supplied credentials.
-     * <p/>
+     * <p></p>
      * Will throw {@link org.springframework.security.access.AccessDeniedException} if the user is logged in but may not access
      * the resource.
      *

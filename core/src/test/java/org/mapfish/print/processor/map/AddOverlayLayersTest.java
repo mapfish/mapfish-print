@@ -47,7 +47,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Basic test of the background-layer processor.
- * <p/>
+ * <p></p>
  * Created by Jesse on 3/26/14.
  */
 public class AddOverlayLayersTest extends AbstractMapfishSpringTest {

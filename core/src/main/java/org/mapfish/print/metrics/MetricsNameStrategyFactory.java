@@ -24,7 +24,7 @@ import com.codahale.metrics.httpclient.HttpClientMetricNameStrategy;
 
 /**
  * Used as a factory for the spring configuration for configuring the {@link com.codahale.metrics.httpclient.InstrumentedHttpClient}.
- * <p/>
+ * <p></p>
  * @author jesseeichar on 3/21/14.
  */
 public final class MetricsNameStrategyFactory {

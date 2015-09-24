@@ -46,7 +46,7 @@ import javax.annotation.PostConstruct;
 /**
  * A {@link org.mapfish.print.MapPrinterFactory} that reads configuration from files and uses servlet's methods for resolving
  * the paths to the files.
- * <p/>
+ * <p></p>
  *
  * @author jesseeichar on 3/18/14.
  */

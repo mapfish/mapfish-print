@@ -44,7 +44,7 @@ import static org.mapfish.print.parser.ParserUtils.getAllAttributes;
 
 /**
  * Class for constructing {@link org.mapfish.print.processor.ProcessorDependencyGraph} instances.
- * <p/>
+ * <p></p>
  *
  * @author jesseeichar on 3/24/14.
  */
@@ -56,8 +56,8 @@ public final class ProcessorDependencyGraphFactory {
     /**
      * External dependencies between processor types.
      */
-    @Autowired
-    private List<ProcessorDependency> dependencies;
+    @Autowired(required = false)
+    private List<ProcessorDependency> dependencies = Lists.newArrayList();
 
     /**
      * Sets the external dependencies between processors. Usually configured in

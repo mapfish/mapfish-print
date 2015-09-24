@@ -51,7 +51,7 @@ public final class URIUtils {
     }
 
     /**
-     * Parse the URI and get all the parameters in map form.  Query name -> List of Query values.
+     * Parse the URI and get all the parameters in map form.  Query name -&gt; List of Query values.
      *
      * @param uri uri to analyze
      */
@@ -60,7 +60,7 @@ public final class URIUtils {
     }
 
     /**
-     * Parse the URI and get all the parameters in map form.  Query name -> List of Query values.
+     * Parse the URI and get all the parameters in map form.  Query name -&gt; List of Query values.
      *
      * @param rawQuery query portion of the uri to analyze.
      */

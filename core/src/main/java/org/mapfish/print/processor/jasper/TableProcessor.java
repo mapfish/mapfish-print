@@ -37,7 +37,8 @@ import net.sf.jasperreports.engine.design.JRDesignImage;
 import net.sf.jasperreports.engine.design.JRDesignSection;
 import net.sf.jasperreports.engine.design.JRDesignTextField;
 import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.type.HorizontalAlignEnum;
+import net.sf.jasperreports.engine.type.HorizontalImageAlignEnum;
+import net.sf.jasperreports.engine.type.HorizontalTextAlignEnum;
 import net.sf.jasperreports.engine.type.ScaleImageEnum;
 import net.sf.jasperreports.engine.type.StretchTypeEnum;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
@@ -146,10 +147,10 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
 
     /**
      * Set strategies for converting the textual representation of each column to some other object (image, other text, etc...).
-     * <p/>
+     * <p></p>
      * Note: The type returned by the column converter must match the type in the jasper template.
      *
-     * @param columnConverters Map from column name -> {@link TableColumnConverter}
+     * @param columnConverters Map from column name -&gt; {@link TableColumnConverter}
      */
     public void setColumns(final Map<String, TableColumnConverter<?>> columnConverters) {
         this.columnConverterMap = columnConverters;
@@ -157,7 +158,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
 
     /**
      * Set strategies for converting the textual representation of each cell to some other object (image, other text, etc...).
-     * <p/>
+     * <p></p>
      * This is similar to the converters specified for a particular column. The difference is that these converters are applied
      * to every cell of the table (except for the cells of those columns that are assigned a specific converter).
      * @param converters A list of {@link TableColumnConverter}s.
@@ -400,7 +401,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
             colHeaderField.setY(headerPosY);
             colHeaderField.setWidth(columnWidth);
             colHeaderField.setHeight(headerHeight);
-            colHeaderField.setHorizontalAlignment(HorizontalAlignEnum.LEFT);
+            colHeaderField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
             colHeaderField.setStyle(columnHeaderStyle);
             colHeaderField.setStretchWithOverflow(true);
             colHeaderField.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
@@ -461,7 +462,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
 
     private JRDesignTextField createTextField(final String columnName) {
         JRDesignTextField textField = new JRDesignTextField();
-        textField.setHorizontalAlignment(HorizontalAlignEnum.LEFT);
+        textField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
         JRDesignExpression expression = new JRDesignExpression();
         expression.setText("$F{" + columnName + "}");
         textField.setExpression(expression);
@@ -473,7 +474,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
             final String columnName) {
         JRDesignImage designImage = new JRDesignImage(templateDesign);
         designImage.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
-        designImage.setHorizontalAlignment(HorizontalAlignEnum.LEFT);
+        designImage.setHorizontalImageAlign(HorizontalImageAlignEnum.LEFT);
         JRDesignExpression expression = new JRDesignExpression();
         expression.setText("$F{" + columnName + "}");
         designImage.setExpression(expression);
