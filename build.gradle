@@ -62,8 +62,14 @@ configure(subprojects.findAll {['core', 'examples'].contains(it.name)}) {
     }
     checkstyleTest.enabled = false
 
+    String fullVersion = System.getProperty("java.specification.version");
+    String findbugsToolVersion = "3.0.1"
+    if (fullVersion.startsWith("1.6")) {
+        findbugsToolVersion = "2.0.3"
+    }
+
     findbugs {
-        toolVersion = "3.0.1"
+        toolVersion = findbugsToolVersion
         ignoreFailures = false
         reportsDir = file("$project.buildDir/reports/findbugsReports")
         effort = "max"
