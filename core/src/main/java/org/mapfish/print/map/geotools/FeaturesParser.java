@@ -19,7 +19,9 @@
 
 package org.mapfish.print.map.geotools;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Sets;
+import com.google.common.io.ByteStreams;
 import com.google.common.io.CharSource;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Closer;
@@ -46,6 +48,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
 import java.io.BufferedReader;
@@ -55,6 +59,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Iterator;
@@ -172,7 +177,8 @@ public class FeaturesParser {
         try {
             JSONObject geojson = new JSONObject(geojsonData);
             if (geojson.has("type") && geojson.getString("type").equalsIgnoreCase("FeatureCollection")) {
-                CoordinateReferenceSystem crs = parseCoordinateReferenceSystem(geojson);
+                CoordinateReferenceSystem crs = parseCoordinateReferenceSystem(this.httpRequestFactory, geojson,
+                        this.forceLongitudeFirst);
                 SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
                 builder.setName("GeosjonFeatureType");
                 final JSONArray features = geojson.getJSONArray("features");
@@ -237,32 +243,63 @@ public class FeaturesParser {
         }
     }
 
-    private CoordinateReferenceSystem parseCoordinateReferenceSystem(final JSONObject geojson) {
+    @VisibleForTesting
+    static final CoordinateReferenceSystem parseCoordinateReferenceSystem(final MfClientHttpRequestFactory requestFactory,
+                                                                          final JSONObject geojson,
+                                                                          final boolean forceLongitudeFirst) {
         CoordinateReferenceSystem crs = DefaultEngineeringCRS.GENERIC_2D;
         StringBuilder code = new StringBuilder();
         try {
             if (geojson.has("crs")) {
                 JSONObject crsJson = geojson.getJSONObject("crs");
-                if (crsJson.has("type")) {
-                    code.append(crsJson.getString("type"));
+                String type = crsJson.optString("type", "");
+
+                if (type.equalsIgnoreCase("EPSG") || type.equalsIgnoreCase("CRS")) {
+                    code.append(type);
+                    String propCode = getProperty(crsJson, "code");
+                    if (propCode != null) {
+                        code.append(":").append(propCode);
+                    }
+                } else if (type.equalsIgnoreCase("name")) {
+                    String propCode = getProperty(crsJson, "name");
+                    if (propCode != null) {
+                        code.append(propCode);
+                    }
+                } else if (type.equals("link")) {
+                    String linkType = getProperty(crsJson, "type");
+                    if (linkType != null && (linkType.equalsIgnoreCase("esriwkt") || linkType.equalsIgnoreCase("ogcwkt"))) {
+                        String uri = getProperty(crsJson, "href");
+                        if (uri != null) {
+                            ClientHttpRequest request = requestFactory.createRequest(new URI(uri), HttpMethod.GET);
+                            ClientHttpResponse response = request.execute();
+
+                            if (response.getStatusCode() == HttpStatus.OK) {
+                                String wkt = new String(ByteStreams.toByteArray(response.getBody()), Constants.DEFAULT_ENCODING);
+                                try {
+                                    return CRS.parseWKT(wkt);
+                                } catch (FactoryException e) {
+                                    LOGGER.warn("Unable to load linked CRS from geojson: \n" + crsJson + "\n\nWKT loaded from:\n" + wkt);
+                                }
+                            }
+                        }
+                    } else {
+                        LOGGER.warn("Unable to load linked CRS from geojson: \n" + crsJson);
+                    }
+                } else {
+                    code.append(getProperty(crsJson, "code"));
                 }
 
-                if (crsJson.has("properties")) {
-                    final JSONObject propertiesJson = crsJson.getJSONObject("properties");
-                    if (propertiesJson.has("code")) {
-                        if (code.length() > 0) {
-                            code.append(":");
-                        }
-                        code.append(propertiesJson.getString("code"));
-                    }
-                }
             }
         } catch (JSONException e) {
+            LOGGER.warn("Error reading the required elements to parse crs of the geojson: \n" + geojson, e);
+        } catch (URISyntaxException e) {
+            LOGGER.warn("Error reading the required elements to parse crs of the geojson: \n" + geojson, e);
+        } catch (IOException e) {
             LOGGER.warn("Error reading the required elements to parse crs of the geojson: \n" + geojson, e);
         }
         try {
             if (code.length() > 0) {
-                crs = CRS.decode(code.toString(), this.forceLongitudeFirst);
+                crs = CRS.decode(code.toString(), forceLongitudeFirst);
             }
         } catch (NoSuchAuthorityCodeException e) {
             LOGGER.warn("No CRS with code: " + code + ".\nRead from geojson: \n" + geojson);
@@ -270,5 +307,15 @@ public class FeaturesParser {
             LOGGER.warn("Error loading CRS with code: " + code + ".\nRead from geojson: \n" + geojson);
         }
         return crs;
+    }
+
+    private static String getProperty(final JSONObject crsJson, final String nameCode) throws JSONException {
+        if (crsJson.has("properties")) {
+            final JSONObject propertiesJson = crsJson.getJSONObject("properties");
+            if (propertiesJson.has(nameCode)) {
+                return propertiesJson.getString(nameCode);
+            }
+        }
+        return null;
     }
 }
