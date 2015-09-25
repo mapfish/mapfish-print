@@ -151,53 +151,74 @@ public final class Values {
         for (String attributeName : attributes.keySet()) {
             final Attribute attribute = attributes.get(attributeName);
             final Object value;
-            if (attribute instanceof PrimitiveAttribute) {
-                PrimitiveAttribute<?> pAtt = (PrimitiveAttribute<?>) attribute;
-                Object defaultVal = pAtt.getDefault();
-                PObject jsonToUse = requestJsonAttributes;
-                if (defaultVal != null) {
-                    final JSONObject obj = new JSONObject();
-                    obj.put(attributeName, defaultVal);
-                    PObject[] pValues = new PObject[]{requestJsonAttributes, new PJsonObject(obj, "default_" + attributeName)};
-                    jsonToUse = new PMultiObject(pValues);
-                }
-                value = parser.parsePrimitive(attributeName, pAtt, jsonToUse);
-            } else if (attribute instanceof DataSourceAttribute) {
-                DataSourceAttribute dsAttribute = (DataSourceAttribute) attribute;
-                value = dsAttribute.parseAttribute(parser, template, requestJsonAttributes.optArray(attributeName));
-            } else if (attribute instanceof ReflectiveAttribute) {
-                boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
-                ReflectiveAttribute<?> rAtt = (ReflectiveAttribute<?>) attribute;
-                value = rAtt.createValue(template);
-                PObject pValue = requestJsonAttributes.optObject(attributeName);
-
-                if (pValue != null) {
-                    PObject[] pValues = new PObject[]{pValue, rAtt.getDefaultValue()};
-                    pValue = new PMultiObject(pValues);
-                } else {
-                    final Object valueOpt = requestJsonAttributes.opt(attributeName);
-                    if (valueOpt != null) {
-                        String valueAsString;
-                        if (valueOpt instanceof PJsonArray) {
-                            valueAsString = ((PJsonArray) valueOpt).getInternalArray().toString(2);
-                        } else if (valueOpt instanceof JSONArray) {
-                            valueAsString = ((JSONArray) valueOpt).toString(2);
-                        } else {
-                            valueAsString = valueOpt.toString();
-                        }
-                        final String message = "Expected a JSON Object as the value for the element with the path: '" +
-                                               requestJsonAttributes.getPath(attributeName) + "' but instead "
-                                               + "got a '" + valueOpt.getClass().toString() +
-                                               "'.\nThe value is: \n" + valueAsString;
-                        throw new IllegalArgumentException(message);
+            try {
+                if (attribute instanceof PrimitiveAttribute) {
+                    PrimitiveAttribute<?> pAtt = (PrimitiveAttribute<?>) attribute;
+                    Object defaultVal = pAtt.getDefault();
+                    PObject jsonToUse = requestJsonAttributes;
+                    if (defaultVal != null) {
+                        final JSONObject obj = new JSONObject();
+                        obj.put(attributeName, defaultVal);
+                        PObject[] pValues = new PObject[]{requestJsonAttributes, new PJsonObject(obj, "default_" + attributeName)};
+                        jsonToUse = new PMultiObject(pValues);
                     }
-                    pValue = rAtt.getDefaultValue();
+                    value = parser.parsePrimitive(attributeName, pAtt, jsonToUse);
+                } else if (attribute instanceof DataSourceAttribute) {
+                    DataSourceAttribute dsAttribute = (DataSourceAttribute) attribute;
+                    value = dsAttribute.parseAttribute(parser, template, requestJsonAttributes.optArray(attributeName));
+                } else if (attribute instanceof ReflectiveAttribute) {
+                    boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
+                    ReflectiveAttribute<?> rAtt = (ReflectiveAttribute<?>) attribute;
+                    value = rAtt.createValue(template);
+                    PObject pValue = requestJsonAttributes.optObject(attributeName);
+
+                    if (pValue != null) {
+                        PObject[] pValues = new PObject[]{pValue, rAtt.getDefaultValue()};
+                        pValue = new PMultiObject(pValues);
+                    } else {
+                        final Object valueOpt = requestJsonAttributes.opt(attributeName);
+                        if (valueOpt != null) {
+                            String valueAsString;
+                            if (valueOpt instanceof PJsonArray) {
+                                valueAsString = ((PJsonArray) valueOpt).getInternalArray().toString(2);
+                            } else if (valueOpt instanceof JSONArray) {
+                                valueAsString = ((JSONArray) valueOpt).toString(2);
+                            } else {
+                                valueAsString = valueOpt.toString();
+                            }
+                            final String message = "Expected a JSON Object as the value for the element with the path: '" +
+                                                   requestJsonAttributes.getPath(attributeName) + "' but instead "
+                                                   + "got a '" + valueOpt.getClass().toString() +
+                                                   "'.\nThe value is: \n" + valueAsString;
+                            throw new IllegalArgumentException(message);
+                        }
+                        pValue = rAtt.getDefaultValue();
+                    }
+                    parser.parse(errorOnExtraParameters, pValue, value);
+                } else {
+                    throw new IllegalArgumentException("Unsupported attribute type: " + attribute);
                 }
-                parser.parse(errorOnExtraParameters, pValue, value);
-            } else {
-                throw new IllegalArgumentException("Unsupported attribute type: " + attribute);
+                put(attributeName, value);
+            } catch (Throwable e) {
+                String templateName = "unknown";
+                for (Map.Entry<String, Template> entry : template.getConfiguration().getTemplates().entrySet()) {
+                    if (entry.getValue() == template) {
+                        templateName = entry.getKey();
+                    }
+                }
+
+                String defaults = "";
+
+                if (attribute instanceof ReflectiveAttribute<?>) {
+                    ReflectiveAttribute<?> reflectiveAttribute = (ReflectiveAttribute<?>) attribute;
+                    defaults = "\n\n The attribute defaults are: " + reflectiveAttribute.getDefaultValue();
+                }
+
+                String errorMsg = "An error occurred when creating a value from the '" + attributeName + "' attribute for the '" +
+                                  templateName + "' template.\n\nThe JSON is: \n" + requestJsonAttributes + defaults;
+
+                throw new RuntimeException(errorMsg, e);
             }
-            put(attributeName, value);
         }
     }
 
