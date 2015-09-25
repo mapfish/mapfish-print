@@ -54,7 +54,7 @@ import java.net.URI;
  *       host: www.geocat.ch
  *       port: 80
  * </code></pre>
- * <p/>
+ * <p></p>
  * <p>
  *     By default a matcher allows the URL, but it can be setup to reject the URL (by setting reject to true).
  *     The first matcher that matches will be the one picking the final outcome. If no matcher matches,
@@ -69,7 +69,7 @@ import java.net.URI;
  *       reject: true
  *     - !acceptAll
  * </code></pre>
- * <p/>
+ * <p></p>
  * <p>
  *     If the Print service is in your DMZ and needs to allow access to any WMS server, it is strongly
  *     recommended to have a configuration like the previous one in order to avoid having the Print
