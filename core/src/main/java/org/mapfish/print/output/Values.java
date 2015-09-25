@@ -37,6 +37,7 @@ import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
 import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.servlet.MapPrinterServlet;
+import org.mapfish.print.wrapper.ObjectMissingException;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -199,6 +200,10 @@ public final class Values {
                     throw new IllegalArgumentException("Unsupported attribute type: " + attribute);
                 }
                 put(attributeName, value);
+            } catch (ObjectMissingException e) {
+                throw e;
+            } catch (IllegalArgumentException e) {
+                throw e;
             } catch (Throwable e) {
                 String templateName = "unknown";
                 for (Map.Entry<String, Template> entry : template.getConfiguration().getTemplates().entrySet()) {
@@ -217,7 +222,7 @@ public final class Values {
                 String errorMsg = "An error occurred when creating a value from the '" + attributeName + "' attribute for the '" +
                                   templateName + "' template.\n\nThe JSON is: \n" + requestJsonAttributes + defaults;
 
-                throw new RuntimeException(errorMsg, e);
+                throw new AttributeParsingException(errorMsg, e);
             }
         }
     }
