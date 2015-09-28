@@ -60,6 +60,7 @@ import javax.annotation.Nullable;
  * @author Jesse on 9/3/2014.
  */
 public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequestFactory {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MfClientHttpRequestFactoryImpl.class);
     private static final ThreadLocal<Configuration> CURRENT_CONFIGURATION = new InheritableThreadLocal<Configuration>();
 
     @Nullable
@@ -147,11 +148,13 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
         protected Response executeInternal(@Nonnull final HttpHeaders headers) throws IOException {
             CURRENT_CONFIGURATION.set(this.configuration);
 
+            LOGGER.debug("Preparing request " + this.getMethod() + " -- " + this.getURI());
             for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
                 String headerName = entry.getKey();
                 if (!headerName.equalsIgnoreCase(HTTP.CONTENT_LEN) &&
                     !headerName.equalsIgnoreCase(HTTP.TRANSFER_ENCODING)) {
                     for (String headerValue : entry.getValue()) {
+                        LOGGER.debug("Setting header: " + headerName + " : " + headerValue);
                         this.request.addHeader(headerName, headerValue);
                     }
                 }

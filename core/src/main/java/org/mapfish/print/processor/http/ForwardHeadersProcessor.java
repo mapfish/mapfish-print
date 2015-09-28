@@ -21,14 +21,17 @@ package org.mapfish.print.processor.http;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
 import org.mapfish.print.attribute.HttpRequestHeadersAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.AbstractProcessor;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.Nullable;
 
 /**
@@ -67,7 +70,12 @@ public final class ForwardHeadersProcessor
      * @param names the header names.
      */
     public void setHeaders(final Set<String> names) {
-        this.headerNames = names;
+        // transform to lower-case because header names should be case-insensitive
+        Set<String> lowerCaseNames = new HashSet<String>();
+        for (String name : names) {
+            lowerCaseNames.add(name.toLowerCase());
+        }
+        this.headerNames = lowerCaseNames;
     }
 
     /**
@@ -96,7 +104,8 @@ public final class ForwardHeadersProcessor
         Map<String, Object> headers = Maps.newHashMap();
 
         for (Map.Entry<String, List<String>> entry : param.requestHeaders.getHeaders().entrySet()) {
-            if (ForwardHeadersProcessor.this.forwardAll || ForwardHeadersProcessor.this.headerNames.contains(entry.getKey())) {
+            if (ForwardHeadersProcessor.this.forwardAll ||
+                    ForwardHeadersProcessor.this.headerNames.contains(entry.getKey().toLowerCase())) {
                 headers.put(entry.getKey(), entry.getValue());
             }
         }
