@@ -152,7 +152,8 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
             for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
                 String headerName = entry.getKey();
                 if (!headerName.equalsIgnoreCase(HTTP.CONTENT_LEN) &&
-                    !headerName.equalsIgnoreCase(HTTP.TRANSFER_ENCODING)) {
+                    !headerName.equalsIgnoreCase(HTTP.TRANSFER_ENCODING) &&
+                    !headerName.equalsIgnoreCase(HTTP.TARGET_HOST)) {
                     for (String headerValue : entry.getValue()) {
                         LOGGER.debug("Setting header: " + headerName + " : " + headerValue);
                         this.request.addHeader(headerName, headerValue);
