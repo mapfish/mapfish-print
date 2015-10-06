@@ -201,6 +201,8 @@ public class WorkingDirectories {
             try {
                 removeOldFiles(WorkingDirectories.this.reports, null, this.maxAgeReport);
                 removeOldFiles(WorkingDirectories.this.working, TASK_DIR_PREFIX, this.maxAgeTaskDir);
+                // temporary "fix" for https://github.com/mapfish/mapfish-print/issues/317
+                removeOldFiles(new File(System.getProperty("java.io.tmpdir")), "+~JF", this.maxAgeTaskDir);
             } catch (Exception e) {
                 LOGGER.error("error running file clean-up task", e);
             }
