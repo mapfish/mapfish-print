@@ -25,12 +25,6 @@
 FROM debian:latest
 MAINTAINER dustin@intevation.de
 
-#Only in Intevation: use apt proxy
-RUN echo 'deb http://apt-proxy.hq.intevation.de/security/    jessie/updates    main contrib non-free'  > /etc/apt/sources.list && \
-    echo 'deb http://apt-proxy.hq.intevation.de/debian/      jessie            main contrib non-free' >> /etc/apt/sources.list && \
-    echo 'deb http://apt-proxy.hq.intevation.de/debian/      jessie-updates    main contrib non-free' >> /etc/apt/sources.list
-
-
 RUN apt-get update && \
     apt-get -y install tomcat7 openjdk-7-jdk
 
