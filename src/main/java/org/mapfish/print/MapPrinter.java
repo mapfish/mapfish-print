@@ -88,6 +88,8 @@ public class MapPrinter {
     private MetricRegistry metricRegistry;
 
     private volatile boolean fontsInitialized = false;
+    
+    private int usages = 0;
 
     static {
         //configure iText to use a higher precision for floats
@@ -202,11 +204,17 @@ public class MapPrinter {
      * Stop the thread pool or others.
      */
     @PreDestroy
-    public void stop() {
-        if (config != null) {
+    public synchronized void stop() {
+    	usages--;
+        if (config != null && usages <= 0) {
+        	usages = 0;
             config.close();
             config = null;
         }
+    }
+    
+    public synchronized void start() {
+    	usages++;
     }
 
     public String getOutputFilename(String layout, String defaultName) {
