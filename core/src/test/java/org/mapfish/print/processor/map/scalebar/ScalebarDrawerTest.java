@@ -141,7 +141,7 @@ public class ScalebarDrawerTest {
         drawer.draw();
 
 //        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-bar-text-above.tiff");
-        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile(expectedDir + "expected-scalebar-bar-text-above.tiff"), 44);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile(expectedDir + "expected-scalebar-bar-text-above.tiff"), 52);
     }
 
     @Test
