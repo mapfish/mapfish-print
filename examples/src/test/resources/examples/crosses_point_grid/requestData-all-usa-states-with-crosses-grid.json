@@ -19,6 +19,7 @@
           "renderAsSvg": true,
           "haloColor" : "#CCFFCC", // most css color definitions supported
           "labelColor" : "black",
+          "labelFomat": "%1.0f %s",
           "indent": 10,
           "haloRadius" : 4,
           "font" : {
