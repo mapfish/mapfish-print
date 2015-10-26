@@ -193,7 +193,7 @@ public class JsonStyleParserHelperTest {
     public void testCreateTextSymbolizer() throws Exception {
         final String fontColor = "#333333";
         final String fontStyle = "normal";
-        final String fontFamily = "sans-serif";
+        final String fontFamily = "Arial, sans-serif";
         final String fontWeight = "bold";
         final String labelXOffset = "-25.0";
         final String labelYOffset = "-35.0";
@@ -227,8 +227,9 @@ public class JsonStyleParserHelperTest {
 
         final Font font = symbolizer.getFont();
         final List<Expression> family = font.getFamily();
-        assertEquals(1, family.size());
-        assertEquals(fontFamily, valueOf(family.get(0)));
+        assertEquals(2, family.size());
+        assertEquals("Arial", valueOf(family.get(0)));
+        assertEquals("SansSerif", valueOf(family.get(1)));
         assertEquals(12, valueOf(font.getSize()));
         assertEquals(fontStyle, valueOf(font.getStyle()));
         assertEquals(fontWeight, valueOf(font.getWeight()));
