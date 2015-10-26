@@ -292,7 +292,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
                 LOGGER.debug("\n\t" + this.tileRequest.getMethod() + " -- " + this.tileRequest.getURI());
                 response = this.tileRequest.execute();
                 final HttpStatus statusCode = response.getStatusCode();
-                if (statusCode != HttpStatus.OK) {
+                if (statusCode != HttpStatus.OK && statusCode != HttpStatus.NO_CONTENT) {
                     String errorMessage = "Error making tile request: " + this.tileRequest.getURI() + "\n\tStatus: " + statusCode +
                             "\n\toutMessage: " + response.getStatusText();
                     LOGGER.error(errorMessage);
@@ -300,6 +300,9 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
                         throw new RuntimeException(errorMessage);
                     }
                     return new Tile(this.errorImage, getTileIndexX(), getTileIndexY());
+                } else if (statusCode == HttpStatus.NO_CONTENT) {
+                    // Empty response, nothing special to do
+                    return new Tile(null, getTileIndexX(), getTileIndexY());
                 }
 
                 BufferedImage image = ImageIO.read(response.getBody());
