@@ -20,6 +20,7 @@
 package org.mapfish.print.map.geotools.grid;
 
 import com.vividsolutions.jts.util.Assert;
+
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.IdentityTransform;
 import org.mapfish.print.map.AbstractLayerParams;
@@ -31,6 +32,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
 import java.util.Arrays;
+import java.util.IllegalFormatException;
 
 /**
  * Parameters relevant to creating Grid layers.
@@ -143,6 +145,12 @@ public final class GridParam extends AbstractLayerParams {
     @HasDefaultValue
     public String labelProjection = null;
     /**
+     * The formatting string used to format the label (for example "%1.2f %s"). By default the label is formatted
+     * according to the unit and label value.
+     */
+    @HasDefaultValue
+    public String labelFomat = null;
+    /**
      * By default the normal axis order as specified in EPSG code will be used when parsing projections.  However
      * the requestor can override this by explicitly declaring that longitude axis is first.
      */
@@ -178,6 +186,13 @@ public final class GridParam extends AbstractLayerParams {
         } catch (FactoryException e) {
             throw new IllegalArgumentException("The projection code: " + this.labelProjection +
                                                " is not valid. Error message when parsing code: " + e.getMessage());
+        }
+        if (this.labelFomat != null) {
+            try {
+                String.format(this.labelFomat, 2.0, "m");
+            } catch (IllegalFormatException e) {
+                throw new IllegalArgumentException("Invalid label format: " + this.labelFomat);
+            }
         }
     }
 

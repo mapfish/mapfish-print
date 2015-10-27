@@ -86,15 +86,19 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
             j = 0;
 
             if (!onRightBorder(bounds, x)) { // don't add the border features twice.
-                GridUtils.bottomBorderLabel(labels, geometryFactory, rotatedBounds, unit, x, worldToScreenTransform, labelTransform);
-                GridUtils.topBorderLabel(labels, geometryFactory, rotatedBounds, unit, x, worldToScreenTransform, labelTransform);
+                GridUtils.bottomBorderLabel(
+                        labels, geometryFactory, rotatedBounds, unit, x, worldToScreenTransform, labelTransform, layerData.labelFomat);
+                GridUtils.topBorderLabel(
+                        labels, geometryFactory, rotatedBounds, unit, x, worldToScreenTransform, labelTransform, layerData.labelFomat);
             }
             for (double y = minY; y < bounds.getMaxY(); y += incrementY) {
                 j++;
 
                 if (addBorderFeatures && !onRightBorder(bounds, x) && !onTopBorder(bounds, y)) {
-                    GridUtils.leftBorderLabel(labels, geometryFactory, rotatedBounds, unit, y, worldToScreenTransform, labelTransform);
-                    GridUtils.rightBorderLabel(labels, geometryFactory, rotatedBounds, unit, y, worldToScreenTransform, labelTransform);
+                    GridUtils.leftBorderLabel(
+                            labels, geometryFactory, rotatedBounds, unit, y, worldToScreenTransform, labelTransform, layerData.labelFomat);
+                    GridUtils.rightBorderLabel(
+                            labels, geometryFactory, rotatedBounds, unit, y, worldToScreenTransform, labelTransform, layerData.labelFomat);
                 }
                 if (!onTopBorder(bounds, y) && !onBottomBorder(bounds, y) &&
                     !onLeftBorder(bounds, x) && !onRightBorder(bounds, x)) { // don't add the border features twice.
@@ -155,16 +159,16 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
 
                     if (i == 0) {
                         GridUtils.leftBorderLabel(labels, geometryFactory, rotatedBounds, unit, y,
-                                worldToScreenTransform, labelTransform);
+                                worldToScreenTransform, labelTransform, layerData.labelFomat);
                     } else if (i == layerData.numberOfLines[0] + 1) {
                         GridUtils.rightBorderLabel(labels, geometryFactory, rotatedBounds, unit, y,
-                                worldToScreenTransform, labelTransform);
+                                worldToScreenTransform, labelTransform, layerData.labelFomat);
                     } else if (j == 0) {
                         GridUtils.bottomBorderLabel(labels, geometryFactory, rotatedBounds, unit, x,
-                                worldToScreenTransform, labelTransform);
+                                worldToScreenTransform, labelTransform, layerData.labelFomat);
                     } else if (j == layerData.numberOfLines[1] + 1) {
                         GridUtils.topBorderLabel(labels, geometryFactory, rotatedBounds, unit, x,
-                                worldToScreenTransform, labelTransform);
+                                worldToScreenTransform, labelTransform, layerData.labelFomat);
                     } else {
                         featureBuilder.reset();
                         Point geom = geometryFactory.createPoint(new Coordinate(x, y));

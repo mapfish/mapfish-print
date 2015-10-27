@@ -121,9 +121,9 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
                     direction, numDimensions, pointSpacing, x, bounds.getMinimum(1), i, 1);
             features.add(feature);
             GridUtils.topBorderLabel(labels, geometryFactory, rotatedBounds, unit, x,
-                    worldToScreenTransform, labelTransform);
+                    worldToScreenTransform, labelTransform, layerData.labelFomat);
             GridUtils.bottomBorderLabel(labels, geometryFactory, rotatedBounds, unit, x,
-                    worldToScreenTransform, labelTransform);
+                    worldToScreenTransform, labelTransform, layerData.labelFomat);
         }
 
         pointSpacing = bounds.getSpan(0) / layerData.pointsInLine;
@@ -134,9 +134,9 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
                     direction, numDimensions, pointSpacing, bounds.getMinimum(0), y, j, 0);
             features.add(feature);
             GridUtils.rightBorderLabel(labels, geometryFactory, rotatedBounds, unit, y,
-                    worldToScreenTransform, labelTransform);
+                    worldToScreenTransform, labelTransform, layerData.labelFomat);
             GridUtils.leftBorderLabel(labels, geometryFactory, rotatedBounds, unit, y,
-                    worldToScreenTransform, labelTransform);
+                    worldToScreenTransform, labelTransform, layerData.labelFomat);
 
         }
 

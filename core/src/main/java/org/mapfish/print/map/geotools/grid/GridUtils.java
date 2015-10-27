@@ -6,6 +6,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
+
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.renderer.lite.RendererUtilities;
@@ -17,7 +18,9 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
 import java.awt.geom.AffineTransform;
+
 import javax.annotation.Nonnull;
+import javax.measure.unit.NonSI;
 
 import static org.mapfish.print.map.geotools.grid.GridLabel.Side.BOTTOM;
 import static org.mapfish.print.map.geotools.grid.GridLabel.Side.LEFT;
@@ -101,23 +104,21 @@ final class GridUtils {
      * @param value the value of the line
      * @param unit  the unit that the value is in
      */
-    public static String createLabel(final double value, final String unit) {
+    public static String createLabel(final double value, final String unit, final String format) {
         final double zero = 0.000000001;
-        final int maxBeforeNoDecimals = 1000000;
-        final double minBeforeScientific = 0.0001;
-        final int maxWithDecimals = 1000;
-
         if (Math.abs(value - Math.round(value)) < zero) {
             return String.format("%d %s", Math.round(value), unit);
         } else {
-            if (value > maxBeforeNoDecimals || value < minBeforeScientific) {
+            if (format != null) {
+                return String.format(format, value, unit);
+            } else if ("m".equals(unit)) {
+                // meter: no decimals
                 return String.format("%1.0f %s", value, unit);
-            } else if (value < maxWithDecimals) {
-                return String.format("%1.2f %s", value, unit);
-            } else if (value > minBeforeScientific) {
-                return String.format("%1.4f %s", value, unit);
+            } else if (NonSI.DEGREE_ANGLE.toString().equals(unit)) {
+                // degree: by default 6 decimals
+                return String.format("%1.6f %s", value, unit);
             } else {
-                return String.format("%e %s", value, unit);
+                return String.format("%f %s", value, unit);
             }
         }
     }
@@ -141,10 +142,12 @@ final class GridUtils {
      * @param x the x coordinate where the grid line is.
      * @param worldToScreenTransform the transform for mapping from world to screen(pixel)
      */
+    // CSOFF: ParameterNumber
     public static void topBorderLabel(final LabelPositionCollector labels, final GeometryFactory geometryFactory,
                                       final Polygon rotatedBounds, final String unit, final double x,
                                       final AffineTransform worldToScreenTransform,
-                                      final MathTransform toLabelProjection) {
+                                      final MathTransform toLabelProjection,
+                                      final String labelFormat) {
         Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
         LineString lineString = geometryFactory.createLineString(new Coordinate[]{
                 new Coordinate(x, envelopeInternal.centre().y),
@@ -157,9 +160,10 @@ final class GridUtils {
             worldToScreenTransform.transform(new double[]{borderIntersection.x, borderIntersection.y}, 0, screenPoints, 0, 1);
 
             double[] labelProj = transformToLabelProjection(toLabelProjection, borderIntersection);
-            labels.add(new GridLabel(createLabel(labelProj[0], unit), (int) screenPoints[0], (int) screenPoints[1], TOP));
+            labels.add(new GridLabel(createLabel(labelProj[0], unit, labelFormat), (int) screenPoints[0], (int) screenPoints[1], TOP));
         }
     }
+    // CSON: ParameterNumber
 
     /**
      * Calculate the position and label of the bottom grid label and add it to the label collector.
@@ -171,10 +175,12 @@ final class GridUtils {
      * @param x the x coordinate where the grid line is.
      * @param worldToScreenTransform the transform for mapping from world to screen(pixel)
      */
+    // CSOFF: ParameterNumber
     public static void bottomBorderLabel(final LabelPositionCollector labels, final GeometryFactory geometryFactory,
                                          final Polygon rotatedBounds, final String unit, final double x,
                                          final AffineTransform worldToScreenTransform,
-                                         final MathTransform toLabelProjection) {
+                                         final MathTransform toLabelProjection,
+                                         final String labelFormat) {
         Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
         LineString lineString = geometryFactory.createLineString(new Coordinate[]{
                 new Coordinate(x, envelopeInternal.getMinY()),
@@ -188,9 +194,10 @@ final class GridUtils {
             worldToScreenTransform.transform(new double[]{borderIntersection.x, borderIntersection.y}, 0, screenPoints, 0, 1);
 
             double[] labelProj = transformToLabelProjection(toLabelProjection, borderIntersection);
-            labels.add(new GridLabel(createLabel(labelProj[0], unit), (int) screenPoints[0], (int) screenPoints[1], BOTTOM));
+            labels.add(new GridLabel(createLabel(labelProj[0], unit, labelFormat), (int) screenPoints[0], (int) screenPoints[1], BOTTOM));
         }
     }
+    // CSON: ParameterNumber
 
     /**
      * Calculate the position and label of the right side grid label and add it to the label collector.
@@ -202,10 +209,12 @@ final class GridUtils {
      * @param y the y coordinate where the grid line is.
      * @param worldToScreenTransform the transform for mapping from world to screen(pixel)
      */
+    // CSOFF: ParameterNumber
     public static void rightBorderLabel(final LabelPositionCollector labels, final GeometryFactory geometryFactory,
                                         final Polygon rotatedBounds, final String unit, final double y,
                                         final AffineTransform worldToScreenTransform,
-                                        final MathTransform toLabelProjection) {
+                                        final MathTransform toLabelProjection,
+                                        final String labelFormat) {
         Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
         LineString lineString = geometryFactory.createLineString(new Coordinate[]{
                 new Coordinate(envelopeInternal.centre().x, y),
@@ -219,9 +228,11 @@ final class GridUtils {
             worldToScreenTransform.transform(new double[]{borderIntersection.x, borderIntersection.y}, 0, screenPoints, 0, 1);
 
             double[] labelProj = transformToLabelProjection(toLabelProjection, borderIntersection);
-            labels.add(new GridLabel(createLabel(labelProj[1], unit), (int) screenPoints[0], (int) screenPoints[1], RIGHT));
+            labels.add(new GridLabel(createLabel(labelProj[1], unit, labelFormat), (int) screenPoints[0], (int) screenPoints[1], RIGHT));
         }
     }
+    // CSON: ParameterNumber
+
     /**
      * Calculate the position and label of the left side grid label and add it to the label collector.
      *
@@ -232,10 +243,12 @@ final class GridUtils {
      * @param y the y coordinate where the grid line is.
      * @param worldToScreenTransform the transform for mapping from world to screen(pixel)
      */
+    // CSOFF: ParameterNumber
     static void leftBorderLabel(final LabelPositionCollector labels, final GeometryFactory geometryFactory,
                                 final Polygon rotatedBounds, final String unit, final double y,
                                 final AffineTransform worldToScreenTransform,
-                                final MathTransform toLabelProjection) {
+                                final MathTransform toLabelProjection,
+                                final String labelFormat) {
         Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
         LineString lineString = geometryFactory.createLineString(new Coordinate[]{
                 new Coordinate(envelopeInternal.getMinX(), y),
@@ -249,9 +262,10 @@ final class GridUtils {
 
             double[] labelProj = transformToLabelProjection(toLabelProjection, borderIntersection);
 
-            labels.add(new GridLabel(createLabel(labelProj[1], unit), (int) screenPoints[0], (int) screenPoints[1], LEFT));
+            labels.add(new GridLabel(createLabel(labelProj[1], unit, labelFormat), (int) screenPoints[0], (int) screenPoints[1], LEFT));
         }
     }
+    // CSON: ParameterNumber
 
     private static double[] transformToLabelProjection(final MathTransform toLabelProjection,
                                                        final Coordinate borderIntersection) {
