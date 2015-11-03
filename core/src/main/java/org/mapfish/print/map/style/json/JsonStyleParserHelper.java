@@ -24,6 +24,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.styling.AnchorPoint;
@@ -55,8 +56,10 @@ import org.opengis.filter.expression.Literal;
 import java.awt.Color;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
@@ -361,6 +364,7 @@ public final class JsonStyleParserHelper {
         if (fontFamily == null) {
             fontFamily = defaultFont.getFamily().get(0);
         }
+        List<Expression> fontFamilies = getFontExpressions(fontFamily);
 
         Expression fontSize = parseExpression(null, styleJson, JSON_FONT_SIZE, new Function<String, Object>() {
             @Nullable
@@ -387,7 +391,37 @@ public final class JsonStyleParserHelper {
             fontStyle = defaultFont.getStyle();
         }
 
-        return this.styleBuilder.createFont(fontFamily, fontStyle, fontWeight, fontSize);
+        Font font = this.styleBuilder.createFont(fontFamilies.get(0), fontStyle, fontWeight, fontSize);
+        if (fontFamilies.size() > 1) {
+            // add remaining "fallback" fonts
+            for (int i = 1; i < fontFamilies.size(); i++) {
+                font.getFamily().add(fontFamilies.get(i));
+            }
+        }
+
+        return font;
+    }
+
+    private List<Expression> getFontExpressions(final Expression fontFamily) {
+        List<Expression> fontFamilies = new LinkedList<Expression>();
+        if (fontFamily instanceof Literal) {
+            String fonts = (String) ((Literal) fontFamily).getValue();
+            for (String font : fonts.split(",")) {
+                font = font.trim();
+                // translate SVG/CSS font expressions to Java logical fonts
+                if (font.equalsIgnoreCase("serif")) {
+                    font = "Serif";
+                } else if (font.equalsIgnoreCase("sans-serif")) {
+                    font = "SansSerif";
+                } else if (font.equalsIgnoreCase("monospace")) {
+                    font = "Monospaced";
+                }
+                fontFamilies.add(this.styleBuilder.literalExpression(font));
+            }
+        } else {
+            fontFamilies.add(fontFamily);
+        }
+        return fontFamilies;
     }
 
     private LabelPlacement createLabelPlacement(final PJsonObject styleJson) {
