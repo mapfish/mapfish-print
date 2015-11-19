@@ -71,4 +71,4 @@ Publish Workflow
 12. Click the _Release_ button
   It can take several hours for the artifacts to show up on Maven Central after being released.  You will just have to keep checking http://search.maven.org/ (or http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.mapfish.print%22) and see if the new version is available.
   
-  
+More information about the release procedure on Sonatype can be found here: http://central.sonatype.org/pages/releasing-the-deployment.html
