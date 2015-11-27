@@ -283,11 +283,20 @@ docker {
     maintainer 'Camptocamp "info@camptocamp.com"'
 }
 
-task createDocker(type: Docker, dependsOn: 'war') {
+task unzipWar(type: Copy, dependsOn: 'war') {
+    def targetDir = new File(project.buildDir, "webapp")
+    if (!targetDir.exists()) {
+        targetDir.mkdirs()
+    }
+    from zipTree(war.archivePath)
+    into targetDir
+}
+
+task createDocker(type: Docker, dependsOn: 'unzipWar') {
     applicationName = "mapfish_print"
     tagVersion = getVersionName()
     tag = "camptocamp/${applicationName}"
 
-    addFile war.archivePath, '${CATALINA_HOME}/print.war'
-    runCommand 'cd ${CATALINA_HOME} && rm -rf webapps/* && mkdir webapps/ROOT && unzip -q ${CATALINA_HOME}/print.war -d webapps/ROOT && rm print.war'
+    runCommand 'rm -rf ${CATALINA_HOME}/webapps/*'
+    addFile new File(project.buildDir, "webapp"), '${CATALINA_HOME}/webapps/ROOT'
 }
