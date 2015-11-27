@@ -3,8 +3,16 @@ import org.apache.tools.ant.taskdefs.condition.Os
 apply plugin: 'war'
 apply plugin: 'application'
 apply plugin: 'jetty'
+apply plugin: 'docker'
 
 defaultTasks 'build'
+
+buildscript {
+    repositories { jcenter() }
+    dependencies {
+        classpath 'se.transmode.gradle:gradle-docker:1.2'
+    }
+}
 
 def appDir = new File(project.buildDir, "install")
 installApp.doFirst {
@@ -256,4 +264,30 @@ startScripts {
             file.setText(file.getText(encoding).replace(jar.archivePath.name, '*'), encoding)
         }
     }
+}
+
+def getVersionName = { ->
+    if (System.getenv("DOCKER_VERSION")) {
+        return System.getenv("DOCKER_VERSION")
+    }
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'sh', '-c', 'git describe --tags --first-parent || echo "0"'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim().replace("release/", "").replaceAll("/", "_")
+}
+
+docker {
+    baseImage "tomcat:8-jre7"
+    maintainer 'Camptocamp "info@camptocamp.com"'
+}
+
+task createDocker(type: Docker, dependsOn: 'war') {
+    applicationName = "mapfish_print"
+    tagVersion = getVersionName()
+    tag = "camptocamp/${applicationName}"
+
+    addFile war.archivePath, '${CATALINA_HOME}/print.war'
+    runCommand 'cd ${CATALINA_HOME} && rm -rf webapps/* && mkdir webapps/ROOT && unzip -q ${CATALINA_HOME}/print.war -d webapps/ROOT && rm print.war'
 }

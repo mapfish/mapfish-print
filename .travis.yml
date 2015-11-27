@@ -1,17 +1,27 @@
 language: java
 sudo: true
+services:
+- docker
 
 before_install:
+  - echo "deb http://us-central1.gce.archive.ubuntu.com/ubuntu/ trusty multiverse" | sudo tee /etc/apt/sources.list.d/print.list
   - sudo apt-get update -yq
   - sudo sh -c "echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections"
-  - sudo apt-get install msttcorefonts -qq
+  - sudo apt-get install -y ttf-mscorefonts-installer -qq
+  #we have to change the hostname to work around a bug in openjdk7 that crashes when the hostname is
+  #too long.
+  - export OLD_HOSTNAME=`hostname` && sudo sed -i -e "s/$OLD_HOSTNAME/test/g" /etc/hosts && sudo hostname test
 
 jdk:
 - oraclejdk7
-- openjdk6
 - openjdk7
 
-script:
+# We shift the steps up (usage of before_script and script instead of script and deploy) because
+# a failure in deploy is not notified.
+before_script:
 - ./gradlew --no-color build
 
-after_failure: sh print-examples-test-output.sh
+script:
+- ./travis/publish.sh
+
+after_failure: sh ./travis/print-examples-test-output.sh
