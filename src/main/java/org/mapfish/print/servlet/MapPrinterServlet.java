@@ -245,8 +245,8 @@ public class MapPrinterServlet extends BaseMapServlet {
      */
     protected String getEncoding() {
         if (encoding == null) {
-        	encoding = getInitParameter("encoding");
-        	LOGGER.debug("Using '" + encoding + "' to encode Inputcontent.");
+            encoding = getInitParameter("encoding");
+            LOGGER.debug("Using '" + encoding + "' to encode Inputcontent.");
         }
         if (encoding == null) {
             return "UTF-8";
@@ -279,45 +279,45 @@ public class MapPrinterServlet extends BaseMapServlet {
 
         MapPrinter printer = getMapPrinter(app);
         try {
-	        resp.setContentType("application/json; charset=utf-8");
-	        final PrintWriter writer = resp.getWriter();
-	
-	        try {
-	            final String var = req.getParameter("var");
-	            if (var != null) {
-	                writer.print(var + "=");
-	            }
-	
-	            JSONWriter json = new JSONWriter(writer);
-	            try {
-	                json.object();
-	                {
-	                    printer.printClientConfig(json);
-	                    String urlToUseInSpec = basePath;
-	
-	                    String proxyUrl = printer.getConfig().getProxyBaseUrl();
-	                    if (proxyUrl != null) {
-	                        urlToUseInSpec = proxyUrl;
-	                    }
-	                    json.key("printURL").value(urlToUseInSpec + PRINT_URL);
-	                    json.key("createURL").value(urlToUseInSpec + CREATE_URL);
-	                    if (app != null) {
-	                        json.key("app").value(app);
-	                    }
-	                }
-	                json.endObject();
-	            } catch (JSONException e) {
-	                throw new ServletException(e);
-	            }
-	            if (var != null) {
-	                writer.print(";");
-	            }
-	        } finally {
-	            writer.close();
-	        }
+            resp.setContentType("application/json; charset=utf-8");
+            final PrintWriter writer = resp.getWriter();
+    
+            try {
+                final String var = req.getParameter("var");
+                if (var != null) {
+                    writer.print(var + "=");
+                }
+    
+                JSONWriter json = new JSONWriter(writer);
+                try {
+                    json.object();
+                    {
+                        printer.printClientConfig(json);
+                        String urlToUseInSpec = basePath;
+    
+                        String proxyUrl = printer.getConfig().getProxyBaseUrl();
+                        if (proxyUrl != null) {
+                            urlToUseInSpec = proxyUrl;
+                        }
+                        json.key("printURL").value(urlToUseInSpec + PRINT_URL);
+                        json.key("createURL").value(urlToUseInSpec + CREATE_URL);
+                        if (app != null) {
+                            json.key("app").value(app);
+                        }
+                    }
+                    json.endObject();
+                } catch (JSONException e) {
+                    throw new ServletException(e);
+                }
+                if (var != null) {
+                    writer.print(";");
+                }
+            } finally {
+                writer.close();
+            }
         }
         finally {
-        	if(printer != null) {
+            if(printer != null) {
                 printer.stop();
             }
         }
@@ -346,49 +346,49 @@ public class MapPrinterServlet extends BaseMapServlet {
 
         MapPrinter mapPrinter = getMapPrinter(app);
         try {
-	        Map<String, String> headers = new HashMap<String, String>();
-	        TreeSet<String> configHeaders = mapPrinter.getConfig().getHeaders();
-	        if (configHeaders == null) {
-	            configHeaders = new TreeSet<String>();
-	            configHeaders.add("Referer");
-	            configHeaders.add("Cookie");
-	        }
-	        for (Iterator<String> header_iter = configHeaders.iterator() ; header_iter.hasNext() ; ) {
-	            String header = header_iter.next();
-	            if (httpServletRequest.getHeader(header) != null) {
-	                headers.put(header, httpServletRequest.getHeader(header));
-	            }
-	        }
-	
-	        final OutputFormat outputFormat = mapPrinter.getOutputFormat(specJson);
-	        //create a temporary file that will contain the PDF
-	        final File tempJavaFile = File.createTempFile(TEMP_FILE_PREFIX, "."+outputFormat.getFileSuffix()+TEMP_FILE_SUFFIX, getTempDir());
-	        TempFile tempFile = new TempFile(tempJavaFile, specJson, outputFormat);
-	
-	        FileOutputStream out = null;
-	        try {
-	            out = new FileOutputStream(tempFile);
-	            mapPrinter.print(specJson, out, headers);
-	
-	            return tempFile;
-	        } catch (IOException e) {
-	            deleteFile(tempFile);
-	            throw e;
-	        } catch (DocumentException e) {
-	            deleteFile(tempFile);
-	            throw e;
-	        } catch (InterruptedException e) {
-	            deleteFile(tempFile);
-	            throw e;
-	        } finally {
-	            if (out != null) {
-	                out.close();
-	            }
-	        }
+            Map<String, String> headers = new HashMap<String, String>();
+            TreeSet<String> configHeaders = mapPrinter.getConfig().getHeaders();
+            if (configHeaders == null) {
+                configHeaders = new TreeSet<String>();
+                configHeaders.add("Referer");
+                configHeaders.add("Cookie");
+            }
+            for (Iterator<String> header_iter = configHeaders.iterator() ; header_iter.hasNext() ; ) {
+                String header = header_iter.next();
+                if (httpServletRequest.getHeader(header) != null) {
+                    headers.put(header, httpServletRequest.getHeader(header));
+                }
+            }
+    
+            final OutputFormat outputFormat = mapPrinter.getOutputFormat(specJson);
+            //create a temporary file that will contain the PDF
+            final File tempJavaFile = File.createTempFile(TEMP_FILE_PREFIX, "."+outputFormat.getFileSuffix()+TEMP_FILE_SUFFIX, getTempDir());
+            TempFile tempFile = new TempFile(tempJavaFile, specJson, outputFormat);
+    
+            FileOutputStream out = null;
+            try {
+                out = new FileOutputStream(tempFile);
+                mapPrinter.print(specJson, out, headers);
+    
+                return tempFile;
+            } catch (IOException e) {
+                deleteFile(tempFile);
+                throw e;
+            } catch (DocumentException e) {
+                deleteFile(tempFile);
+                throw e;
+            } catch (InterruptedException e) {
+                deleteFile(tempFile);
+                throw e;
+            } finally {
+                if (out != null) {
+                    out.close();
+                }
+            }
         } finally {
-        	if(mapPrinter != null) {
-        		mapPrinter.stop();
-        	}
+            if(mapPrinter != null) {
+                mapPrinter.stop();
+            }
         }
     }
 
@@ -407,7 +407,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             }
             FileUtilities.copyStream(pdf, response);
         } finally {
-        	if(mapPrinter != null) {
+            if(mapPrinter != null) {
                 mapPrinter.stop();
             }
             try {

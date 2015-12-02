@@ -205,16 +205,16 @@ public class MapPrinter {
      */
     @PreDestroy
     public synchronized void stop() {
-    	usages--;
+        usages--;
         if (config != null && usages <= 0) {
-        	usages = 0;
+            usages = 0;
             config.close();
             config = null;
         }
     }
     
     public synchronized void start() {
-    	usages++;
+        usages++;
     }
 
     public String getOutputFilename(String layout, String defaultName) {
