@@ -38,6 +38,14 @@ The following command will build and upload all artifacts to the maven central r
 
   > ./gradlew uploadArchives -DsshPassphrase=...
 
+You can as well generate a docker image using this command:
+
+.. code::
+
+  > ./gradlew createDocker
+
+If you want to force the version to something custom, you can define the DOCKER_VERSION environment
+variable.
 
 To use in Eclipse
 -----------------
