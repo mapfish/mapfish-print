@@ -23,7 +23,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.http.matcher.AcceptAllMatcher;
-import org.mapfish.print.processor.http.matcher.HostMatcher;
 import org.mapfish.print.processor.http.matcher.MatchInfo;
 import org.mapfish.print.processor.http.matcher.URIMatcher;
 import org.springframework.http.HttpMethod;
@@ -61,6 +60,27 @@ import java.util.List;
  *       host: www.geocat.ch
  *       port: 80
  * </code></pre>
+ *
+ * <p>
+ *     By default a matcher allows the URL, but it can be setup to reject the URL (by setting reject to true).
+ *     The first matcher that matches will be the one picking the final outcome. If no matcher matches,
+ *     the URI is rejected. So, for example, you can allow every URLs apart from the internal URLs like that:
+ * </p>
+ * <pre><code>
+ * - !restrictUris
+ *   matchers:
+ *     - !ipMatch
+ *       ip : 192.178.0.0
+ *       mask : 255.255.0.0
+ *       reject: true
+ *     - !acceptAll
+ * </code></pre>
+ *
+ * <p>
+ *     If the Print service is in your DMZ and needs to allow access to any WMS server, it is strongly
+ *     recommended to have a configuration like the previous one in order to avoid having the Print
+ *     service being used as a proxy to access your internal servers.
+ * </p>
  *
  * <p>
  *     <strong>Note:</strong> if this class is part of a CompositeClientHttpRequestFactoryProcessor (!configureHttpRequests) then
@@ -104,7 +124,7 @@ public final class RestrictUrisProcessor extends AbstractClientHttpRequestFactor
      *
      * @param matchers the list of matcher to use to check if a url is permitted
      */
-    public void setMatchers(final List<? extends HostMatcher> matchers) {
+    public void setMatchers(final List<? extends URIMatcher> matchers) {
         this.matchers = matchers;
     }
 
@@ -128,7 +148,10 @@ public final class RestrictUrisProcessor extends AbstractClientHttpRequestFactor
                                                       final HttpMethod httpMethod,
                                                       final MfClientHttpRequestFactory requestFactory) throws IOException {
                 for (URIMatcher matcher : RestrictUrisProcessor.this.matchers) {
-                    if (matcher.accepts(MatchInfo.fromUri(uri, httpMethod))) {
+                    if (matcher.matches(MatchInfo.fromUri(uri, httpMethod))) {
+                        if (matcher.isReject()) {
+                            throw new IllegalArgumentException(uri + " is one of the denied urls.");
+                        }
                         return requestFactory.createRequest(uri, httpMethod);
                     }
                 }

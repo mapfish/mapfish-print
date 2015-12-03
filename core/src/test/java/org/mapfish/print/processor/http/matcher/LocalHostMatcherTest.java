@@ -47,11 +47,11 @@ public class LocalHostMatcherTest {
         }
 
 
-        assertTrue(localHostMatcher.accepts(MatchInfo.fromAuthScope(
+        assertTrue(localHostMatcher.matches(MatchInfo.fromAuthScope(
                 new AuthScope(AuthScope.ANY_HOST, 80, AuthScope.ANY_REALM, "http"))));
-        assertTrue(localHostMatcher.accepts(MatchInfo.fromAuthScope(
+        assertTrue(localHostMatcher.matches(MatchInfo.fromAuthScope(
                 new AuthScope("127.0.0.1", AuthScope.ANY_PORT, AuthScope.ANY_REALM, "http"))));
-        assertTrue(localHostMatcher.accepts(MatchInfo.fromAuthScope(
+        assertTrue(localHostMatcher.matches(MatchInfo.fromAuthScope(
                 new AuthScope("127.0.0.1", 80, AuthScope.ANY_REALM, AuthScope.ANY_SCHEME))));
 
         assertMatch(localHostMatcher, false, new URI("http://www.camptocamp.com/"), HttpMethod.GET);

@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 /**
  * Used to validate the access to a map service host.
  */
-public abstract class HostMatcher implements URIMatcher {
+public abstract class HostMatcher extends AbstractMatcher {
     /**
      * The request port.  -1 is the unset/default number
      * CSOFF: VisibilityModifier
@@ -43,7 +43,7 @@ public abstract class HostMatcher implements URIMatcher {
     // CSON: VisibilityModifier
 
     @Override
-    public final boolean accepts(final MatchInfo matchInfo) throws UnknownHostException, SocketException,
+    public final boolean matches(final MatchInfo matchInfo) throws UnknownHostException, SocketException,
             MalformedURLException {
         Optional<Boolean> overridden = tryOverrideValidation(matchInfo);
         if (overridden.isPresent()) {

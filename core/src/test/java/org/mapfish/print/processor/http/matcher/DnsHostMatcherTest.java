@@ -43,11 +43,11 @@ public class DnsHostMatcherTest {
         assertMatch(dnsHostMatcher, true, new URI("https://localhost/print-servlet"), HttpMethod.GET);
         assertMatch(dnsHostMatcher, false, new URI("https://www.camptocamp.com/print-servlet"), HttpMethod.GET);
         assertMatch(dnsHostMatcher, false, new URI("https://127.1.1.1/print-servlet"), HttpMethod.GET);
-        assertTrue(dnsHostMatcher.accepts(MatchInfo.fromAuthScope(
+        assertTrue(dnsHostMatcher.matches(MatchInfo.fromAuthScope(
                 new AuthScope(AuthScope.ANY_HOST, 80, AuthScope.ANY_REALM, "http"))));
-        assertTrue(dnsHostMatcher.accepts(MatchInfo.fromAuthScope(
+        assertTrue(dnsHostMatcher.matches(MatchInfo.fromAuthScope(
                 new AuthScope("localhost", AuthScope.ANY_PORT, AuthScope.ANY_REALM, "http"))));
-        assertTrue(dnsHostMatcher.accepts(MatchInfo.fromAuthScope(
+        assertTrue(dnsHostMatcher.matches(MatchInfo.fromAuthScope(
                 new AuthScope("127.0.0.1", 80, AuthScope.ANY_REALM, AuthScope.ANY_SCHEME))));
 
         dnsHostMatcher.setPort(8080);

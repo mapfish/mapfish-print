@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @author jesseeichar on 1/20/14.
  */
-public final class AcceptAllMatcher implements URIMatcher {
+public final class AcceptAllMatcher extends AbstractMatcher {
     /**
      * A singleton instance to reduce creating unnecessary instances.
      */
@@ -48,7 +48,7 @@ public final class AcceptAllMatcher implements URIMatcher {
     }
 
     @Override
-    public boolean accepts(final MatchInfo matchInfo) throws UnknownHostException, SocketException, MalformedURLException {
+    public boolean matches(final MatchInfo matchInfo) throws UnknownHostException, SocketException, MalformedURLException {
         return true;
     }
 }
