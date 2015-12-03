@@ -77,3 +77,13 @@ These examples are also used as continuous integration test.
     also available which is the war wrapped in a debian package.  It will install the war at:
     <code>/srv/tomcat/tomcat1/webapps</code> for the moment.
 </p>
+
+<h4>Docker Image</h4>
+<p>
+    Docker Hub contains a <a href="https://hub.docker.com/r/camptocamp/mapfish_print/">repository with images</a> that can be used.
+    You can use it directly or derive another image from it and add your own configurations in it with a <code>Dockerfile</code> like that:
+</p>
+<pre>
+FROM camptocamp/mapfish_print:{version}
+ADD {MyApps} ${CATALINA_HOME}/webapps/ROOT/print-apps/
+</pre>

@@ -23,13 +23,13 @@ then
     exit 0
 fi
 
-if [ "${TRAVIS_PULL_REQUEST}" == "true" ]
+if [ "${TRAVIS_PULL_REQUEST}" != "false" ]
 then
     echo "Not deploying image for pull requests"
     exit 0
 fi
 
-if [ "${TRAVIS_BRANCH}" == "development" ] || [ "${TRAVIS_BRANCH}" == "docker" ]
+if [ "${TRAVIS_BRANCH}" == "development" ]
 then
   publish latest
 elif [ ! -z "${TRAVIS_TAG}" ]
