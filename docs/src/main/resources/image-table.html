@@ -1,0 +1,45 @@
+<p>
+    This section explains how tho add one or multiple images to a table subreport.<br/>
+    In a first step a table needs to be configured for the process !preparTable is used. To be able to resolve an image within the table the column containing the image is defined in the column element as image.
+    The following example shows a configuration of a table where the column with the title "icon" contains the URL to the image. The column name depends on the title that is used in the interface and therefore can be the translation of the underlying database column name (if a database is used).<br/>
+    In the example below all columns from the original table are included in the printed table with out formating.<br/>
+
+    <pre>
+        - !prepareTable<br/>
+          dynamic: true<br/>
+          columns:<br/>
+            icon: !urlImage<br/>
+              urlExtractor: (.*)<br/>               #use Regex expression to retrieve the URL of the image
+              urlGroup: 1<br/>
+    </pre>
+
+    <br/>
+
+    To add formating styles to the printed table there are two possibilities:
+    <ol>
+        <li>
+            To add a rubreport in form of a jasperreport template containing all of the columns that are to be included in the printed report. This requires the dynamic flac in the process !prepareTabel to be false.
+        </li>
+        <li>
+            Use the styling from a subreport template but generate the columns dynamically. An example for this type of configuration is given below.
+        </li>
+    </ol>
+    <pre>
+        - !prepareTable<br/>
+             excludeColumns:<br/>
+               - "not_shown_in_print"<br/>
+             maxColumns: 8<br/>
+             dynamic: true<br/>
+             jasperTemplate: table_a4_portrait.jrxml   #- If dynamic is true this template will be used to obtain the column styles and the size of the subreport.<br/>
+             firstDetailStyle: column_style_1          #- optional<br/>
+             detailStyle: column_style_2               #- required when dynamic = true<br/>
+             lastDetailStyle: column_style_3           #- optional<br/>
+             firstHeaderStyle: header_style_1          #- optional<br/>
+             headerStyle: header_style_2               #- required when dynamic = true<br/>
+             lastHeaderStyle: header_style_3           #- optional<br/>
+             columns:<br/>
+               Signal: !urlImage<br/>
+                 urlExtractor: (.*)<br/>
+                 urlGroup: 1<br/>
+    </pre>
+</p>
