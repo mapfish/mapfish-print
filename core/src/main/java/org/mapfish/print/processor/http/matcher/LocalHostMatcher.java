@@ -21,7 +21,7 @@ package org.mapfish.print.processor.http.matcher;
 
 import org.mapfish.print.config.Configuration;
 
-import java.net.InetAddress;
+import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -47,10 +47,10 @@ import java.util.List;
  *       port : 80
  * </code></pre>
  * <p>
- *     Example 4: Accept localhost urls with paths that start with /print/.
- *     <p>
- *         If the regular expression give does not start with / then it will be added because all paths start with /
- *     </p>
+ * Example 4: Accept localhost urls with paths that start with /print/.
+ * <p>
+ * If the regular expression give does not start with / then it will be added because all paths start with /
+ * </p>
  * </p>
  * <pre><code>
  *     - localMatch
@@ -60,21 +60,15 @@ import java.util.List;
 public class LocalHostMatcher extends InetHostMatcher {
 
     @Override
-    protected final byte[][] getAuthorizedIPs(final InetAddress mask) throws UnknownHostException, SocketException {
-        if (authorizedIPs == null) {
-            InetAddress[] result;
-            Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
-            ArrayList<InetAddress> addresses = new ArrayList<InetAddress>();
-            while (ifaces.hasMoreElements()) {
-                NetworkInterface networkInterface = ifaces.nextElement();
-                Enumeration<InetAddress> addrs = networkInterface.getInetAddresses();
-                while (addrs.hasMoreElements()) {
-                    addresses.add(addrs.nextElement());
-                }
+    protected final List<AddressMask> createAuthorizedIPs() throws UnknownHostException, SocketException {
+        List<AddressMask> authorizedIPs = new ArrayList<AddressMask>();
+        Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
+        while (ifaces.hasMoreElements()) {
+            NetworkInterface networkInterface = ifaces.nextElement();
+            final List<InterfaceAddress> addrs = networkInterface.getInterfaceAddresses();
+            for (InterfaceAddress netAddr : addrs) {
+                authorizedIPs.add(new AddressMask(netAddr.getAddress()));
             }
-            result = addresses.toArray(new InetAddress[addresses.size()]);
-
-            this.authorizedIPs = buildMaskedAuthorizedIPs(result);
         }
         return authorizedIPs;
     }
@@ -98,10 +92,5 @@ public class LocalHostMatcher extends InetHostMatcher {
         }
         sb.append('}');
         return sb.toString();
-    }
-
-    @Override
-    protected final InetAddress getMaskAddress() throws UnknownHostException {
-        return null;
     }
 }
