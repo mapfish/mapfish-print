@@ -1,14 +1,14 @@
 #!/bin/bash -e
 
-# Setup login
-openssl aes-256-cbc -K $encrypted_fb15e83f0f9f_key -iv $encrypted_fb15e83f0f9f_iv \
-    -in .dockercfg.enc -out ~/.dockercfg -d
-
 
 JDK="oraclejdk7"   # what JDK we use to build the WAR that goes in the docker image
 NAME="camptocamp/mapfish_print"
 
 function publish {
+    # Setup login
+    openssl aes-256-cbc -K $encrypted_fb15e83f0f9f_key -iv $encrypted_fb15e83f0f9f_iv \
+        -in .dockercfg.enc -out ~/.dockercfg -d
+
     local version=$1
     export DOCKER_VERSION=`echo "${version}" | sed -e 's/^release\///' | sed -e 's/\//_/g'`
 
