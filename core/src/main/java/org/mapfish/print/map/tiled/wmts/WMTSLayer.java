@@ -160,7 +160,10 @@ public class WMTSLayer extends AbstractTiledLayer {
             if (layerParam.dimensions != null) {
                 for (int i = 0; i < layerParam.dimensions.length; i++) {
                     String d = layerParam.dimensions[i];
-                    final String dimensionValue = layerParam.dimensionParams.getString(d.toUpperCase());
+                    String dimensionValue = layerParam.dimensionParams.optString(d);
+                    if (dimensionValue == null) {
+                        dimensionValue = layerParam.dimensionParams.getString(d.toUpperCase());
+                    }
                     queryParams.put(d, dimensionValue);
                 }
             }
@@ -194,7 +197,10 @@ public class WMTSLayer extends AbstractTiledLayer {
         if (layerParam.dimensions != null) {
             for (int i = 0; i < layerParam.dimensions.length; i++) {
                 String dimension = layerParam.dimensions[i];
-                final String value = layerParam.dimensionParams.getString(dimension.toUpperCase());
+                String value = layerParam.dimensionParams.optString(dimension);
+                if (value == null) {
+                    value = layerParam.dimensionParams.getString(dimension.toUpperCase());
+                }
                 path = path.replace("{" + dimension + "}", value);
             }
         }
