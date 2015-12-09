@@ -40,7 +40,8 @@
     <bean id="!prepareLegend" class="org.mapfish.print.processor.jasper.LegendProcessor" scope="prototype" />
     <bean id="!prepareTable" class="org.mapfish.print.processor.jasper.TableProcessor" scope="prototype" />
     <bean id="!reportBuilder" class="org.mapfish.print.processor.jasper.JasperReportBuilder" scope="prototype" />
-    <bean id="!useHttpForHttps" class="org.mapfish.print.processor.http.UseHttpForHttpsProcessor" scope="prototype" />
+    <bean id="!portMapping" class="org.mapfish.print.processor.http.PortMappingProcessor" scope="prototype" />
+    <bean id="!useHttpForHttps" class="org.mapfish.print.processor.http.PortMappingProcessor" scope="prototype" />
     <bean id="!mapUri" class="org.mapfish.print.processor.http.MapUriProcessor" scope="prototype" />
     <bean id="!configureHttpRequests" class="org.mapfish.print.processor.http.CompositeClientHttpRequestFactoryProcessor" scope="prototype" />
     <bean id="!addHeaders" class="org.mapfish.print.processor.http.AddHeadersProcessor" scope="prototype" />
@@ -176,7 +177,7 @@
     </bean>
 
     <bean class="org.mapfish.print.processor.ProcessorDependency">
-        <constructor-arg name="required" value="org.mapfish.print.processor.http.UseHttpForHttpsProcessor" />
+        <constructor-arg name="required" value="org.mapfish.print.processor.http.PortMappingProcessor" />
         <constructor-arg name="dependent" value="org.mapfish.print.processor.map.CreateMapProcessor"/>
         <constructor-arg name="commonInputs">
             <util:list>

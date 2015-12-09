@@ -2,8 +2,8 @@
 templates:
   main: !template
     processors:
-      - !useHttpForHttpsTestProcessor {}
-      - !useHttpForHttps
+      - !portMappingTestProcessor {}
+      - !portMapping
         portMapping:
           8443: 9999
         hosts:
