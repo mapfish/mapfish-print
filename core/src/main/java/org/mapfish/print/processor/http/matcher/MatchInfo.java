@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014  Camptocamp
+ * Copyright (C) 2014-2015  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -117,6 +117,9 @@ public final class MatchInfo {
             try {
                 newPort = uri.toURL().getDefaultPort();
             } catch (MalformedURLException e) {
+                newPort = ANY_PORT;
+            } catch (IllegalArgumentException e) {
+                //the URL is relative
                 newPort = ANY_PORT;
             }
         }

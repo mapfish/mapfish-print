@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014  Camptocamp
+ * Copyright (C) 2014-2015  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -19,6 +19,7 @@
 
 package org.mapfish.print.http;
 
+import org.mapfish.print.processor.http.matcher.UriMatchers;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.util.Assert;
@@ -32,29 +33,43 @@ import java.net.URI;
 public abstract class AbstractMfClientHttpRequestFactoryWrapper implements MfClientHttpRequestFactory {
 
     private final MfClientHttpRequestFactory wrappedFactory;
+    private final UriMatchers matchers;
+    private final boolean failIfNotMatch;
 
 
     /**
      * Creates a {@code AbstractClientHttpRequestFactoryWrapper} wrapping the given request factory.
-     * @param wrappedFactory the request factory to be wrapped
+     * @param wrappedFactory the request factory to be wrapped.
+     * @param matchers the matchers used to enable/disable the rule.
+     * @param failIfNotMatch true if the processing must fail if the matchers are not OK.
      */
-    protected AbstractMfClientHttpRequestFactoryWrapper(final MfClientHttpRequestFactory wrappedFactory) {
+    protected AbstractMfClientHttpRequestFactoryWrapper(final MfClientHttpRequestFactory wrappedFactory,
+                                                        final UriMatchers matchers, final boolean failIfNotMatch) {
         Assert.notNull(wrappedFactory, "'requestFactory' must not be null");
+        Assert.notNull(matchers, "'matchers' must not be null");
         this.wrappedFactory = wrappedFactory;
+        this.matchers = matchers;
+        this.failIfNotMatch = failIfNotMatch;
     }
 
 
     /**
      * This implementation simply calls {@link #createRequest(URI, HttpMethod, MfClientHttpRequestFactory)}
-     * with the wrapped request factory provided to the
-     * {@linkplain #AbstractMfClientHttpRequestFactoryWrapper(MfClientHttpRequestFactory) constructor}.
+     * (if the matchers are OK)  with the wrapped request factory provided to the
+     * {@linkplain #AbstractMfClientHttpRequestFactoryWrapper(MfClientHttpRequestFactory, UriMatchers, boolean) constructor}.
      *
      * @param uri the URI to create a request for
      * @param httpMethod the HTTP method to execute
      */
     public final ClientHttpRequest createRequest(final URI uri,
                                                  final HttpMethod httpMethod) throws IOException {
-        return createRequest(uri, httpMethod, this.wrappedFactory);
+        if (this.matchers.matches(uri, httpMethod)) {
+            return createRequest(uri, httpMethod, this.wrappedFactory);
+        } else if (this.failIfNotMatch) {
+            throw new IllegalArgumentException(uri + " is denied.");
+        } else {
+            return this.wrappedFactory.createRequest(uri, httpMethod);
+        }
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014  Camptocamp
+ * Copyright (C) 2014-2015  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -42,6 +42,9 @@ import java.util.Map;
  *     Cookie : [cookie-value, cookie-value2]
  *     Header2 : header2-value
  * </code></pre>
+ *
+ * Can be applied conditionally using matchers, like in {@link RestrictUrisProcessor} (!restrictUris).
+ *
  * @author Jesse on 6/26/2014.
  */
 public final class AddHeadersProcessor extends AbstractClientHttpRequestFactoryProcessor {
@@ -73,6 +76,7 @@ public final class AddHeadersProcessor extends AbstractClientHttpRequestFactoryP
 
     @Override
     protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
+        super.extraValidation(validationErrors, configuration);
         if (this.headers.isEmpty()) {
             validationErrors.add(new IllegalStateException("There are no headers defined."));
         }
@@ -81,7 +85,7 @@ public final class AddHeadersProcessor extends AbstractClientHttpRequestFactoryP
     @Override
     public MfClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
                                                          final MfClientHttpRequestFactory requestFactory) {
-        return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory) {
+        return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory, matchers, false) {
             @Override
             protected ClientHttpRequest createRequest(final URI uri,
                                                       final HttpMethod httpMethod,

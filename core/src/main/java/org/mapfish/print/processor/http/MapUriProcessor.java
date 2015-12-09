@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014  Camptocamp
+ * Copyright (C) 2014-2015  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -44,6 +44,9 @@ import java.util.regex.Pattern;
  * - !mapUri
  *   mapping: {(http)://myhost.com(.*) : "$1://localhost$2"}
  * </code></pre>
+ *
+ * Can be applied conditionally using matchers, like in {@link RestrictUrisProcessor} (!restrictUris).
+ *
  * @author Jesse on 6/25/2014.
  */
 public final class MapUriProcessor extends AbstractClientHttpRequestFactoryProcessor {
@@ -59,7 +62,7 @@ public final class MapUriProcessor extends AbstractClientHttpRequestFactoryProce
     public void setMapping(final Map<String, String> mapping) {
         this.uriMapping.clear();
         for (Map.Entry<String, String> entry: mapping.entrySet()) {
-           Pattern pattern = Pattern.compile(entry.getKey());
+            Pattern pattern = Pattern.compile(entry.getKey());
             this.uriMapping.put(pattern, entry.getValue());
         }
     }
@@ -67,7 +70,7 @@ public final class MapUriProcessor extends AbstractClientHttpRequestFactoryProce
     @Override
     public MfClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
                                                          final MfClientHttpRequestFactory requestFactory) {
-        return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory) {
+        return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory, matchers, false) {
             @Override
             protected ClientHttpRequest createRequest(final URI uri,
                                                       final HttpMethod httpMethod,
@@ -91,6 +94,7 @@ public final class MapUriProcessor extends AbstractClientHttpRequestFactoryProce
 
     @Override
     protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
+        super.extraValidation(validationErrors, configuration);
         if (this.uriMapping.isEmpty()) {
             validationErrors.add(new IllegalArgumentException("No uri mappings were defined"));
         }

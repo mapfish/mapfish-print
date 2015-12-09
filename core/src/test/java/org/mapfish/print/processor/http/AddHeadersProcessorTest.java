@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014  Camptocamp
+ * Copyright (C) 2014-2015  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -53,21 +53,29 @@ public class AddHeadersProcessorTest extends AbstractHttpProcessorTest {
         @Nullable
         @Override
         public Void execute(TestParam values, ExecutionContext context) throws Exception {
+            matching(values);
+            notMatching(values);
+            return null;
+        }
+
+        private void matching(TestParam values) throws Exception {
             final URI uri = new URI("http://localhost:8080/path?query#fragment");
             final ClientHttpRequest request = values.clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
             final URI finalUri = request.getURI();
-
-            assertEquals("http", finalUri.getScheme());
-            assertEquals("localhost", finalUri.getHost());
-            assertEquals("/path", finalUri.getPath());
-            assertEquals(8080, finalUri.getPort());
-            assertEquals("query", finalUri.getQuery());
-            assertEquals("fragment", finalUri.getFragment());
+            assertEquals(uri, finalUri);
 
             assertEquals(2, request.getHeaders().size());
             assertArrayEquals(new Object[]{"cookie-value", "cookie-value2"}, request.getHeaders().get("Cookie").toArray());
             assertArrayEquals(new Object[]{"header2-value"}, request.getHeaders().get("Header2").toArray());
-            return null;
+        }
+
+        private void notMatching(TestParam values) throws Exception {
+            final URI uri = new URI("http://195.176.255.226:8080/path?query#fragment");
+            final ClientHttpRequest request = values.clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
+            final URI finalUri = request.getURI();
+            assertEquals(uri, finalUri);
+
+            assertEquals(0, request.getHeaders().size());
         }
     }
 }
