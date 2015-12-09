@@ -23,10 +23,13 @@ import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Allows to check that a given URL matches an IP address (numeric format).
@@ -36,10 +39,62 @@ public abstract class InetHostMatcher extends HostMatcher {
 
     /**
      * The ip addresses that are considered legal.
-     * CSOFF: VisibilityModifier
      */
-    protected byte[][] authorizedIPs = null;
-    // CSON: VisibilityModifier
+    protected static class AddressMask {
+        private final byte[] address;
+        @Nullable
+        private final byte[] mask;
+
+        /**
+         * IP and mask are given.
+         *
+         * @param ip   The IP address
+         * @param mask A null mask means match all.
+         */
+        public AddressMask(final InetAddress ip, final InetAddress mask) {
+            this.mask = mask != null ? mask.getAddress() : null;
+            this.address = mask(ip.getAddress(), this.mask);
+        }
+
+        /**
+         * Guess the mask in function of the address: /8 for IPv4 loopback and full match
+         * for the rest.
+         *
+         * @param address The IP address
+         */
+        public AddressMask(final InetAddress address) {
+            if (address.isLoopbackAddress() && address instanceof Inet4Address) {
+                final byte all = (byte) 0xff;
+                this.mask = new byte[]{all, 0, 0, 0};
+            } else {
+                this.mask = null;
+            }
+            this.address = mask(address.getAddress(), this.mask);
+        }
+
+        @Override
+        public final int hashCode() {
+            final int prime = 31;
+            return Arrays.hashCode(this.address) * prime + Arrays.hashCode(this.mask);
+        }
+
+        @Override
+        public final boolean equals(final Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final AddressMask other = (AddressMask) obj;
+            return Arrays.equals(this.address, other.address) && Arrays.equals(this.mask, other.mask);
+        }
+    }
+
+    private List<AddressMask> authorizedIPs = null;
 
     @Override
     protected final Optional<Boolean> tryOverrideValidation(final MatchInfo matchInfo) throws UnknownHostException, SocketException {
@@ -48,7 +103,6 @@ public abstract class InetHostMatcher extends HostMatcher {
             return Optional.absent();
         }
 
-        final InetAddress maskAddress = getMaskAddress();
         final InetAddress[] requestedIPs;
         try {
             requestedIPs = InetAddress.getAllByName(host);
@@ -56,19 +110,19 @@ public abstract class InetHostMatcher extends HostMatcher {
             return Optional.of(false);
         }
         for (InetAddress requestedIP : requestedIPs) {
-            if (isInAuthorized(requestedIP, maskAddress)) {
+            if (isInAuthorized(requestedIP)) {
                 return Optional.absent();
             }
         }
         return Optional.of(false);
     }
 
-    private boolean isInAuthorized(final InetAddress requestedIP, final InetAddress mask) throws UnknownHostException,
+    private boolean isInAuthorized(final InetAddress requestedIP) throws UnknownHostException,
             SocketException {
-        byte[] rBytes = mask(requestedIP, mask);
-        final byte[][] finalAuthorizedIPs = getAuthorizedIPs(mask);
-        for (byte[] authorizedIP : finalAuthorizedIPs) {
-            if (compareIP(rBytes, authorizedIP)) {
+        final List<AddressMask> finalAuthorizedIPs = getAuthorizedIPs();
+        final byte[] address = requestedIP.getAddress();
+        for (AddressMask authorizedIP : finalAuthorizedIPs) {
+            if (compareIP(address, authorizedIP)) {
                 return true;
             }
         }
@@ -76,67 +130,49 @@ public abstract class InetHostMatcher extends HostMatcher {
         return false;
     }
 
-    private boolean compareIP(final byte[] rBytes, final byte[] authorizedIP) {
-        if (rBytes.length != authorizedIP.length) {
+    private boolean compareIP(final byte[] requestedIP, final AddressMask authorizedIP) {
+        if (requestedIP.length != authorizedIP.address.length) {
             return false;
         }
-        for (int j = 0; j < authorizedIP.length; ++j) {
-            byte bA = authorizedIP[j];
-            byte bR = rBytes[j];
-            if (bA != bR) {
-                return false;
-            }
-        }
-        return true;
+        byte[] maskedRequest = mask(requestedIP, authorizedIP.mask);
+        return Arrays.equals(authorizedIP.address, maskedRequest);
     }
 
-    private byte[] mask(final InetAddress address, final InetAddress mask) {
-        byte[] aBytes = address.getAddress();
+    private static byte[] mask(final byte[] address, final byte[] mask) {
         if (mask != null) {
-            byte[] mBytes = mask.getAddress();
-            if (aBytes.length != mBytes.length) {
-                LOGGER.warn("Cannot mask address [" + address + "] with :" + mask);
-                return aBytes;
+            if (address.length != mask.length) {
+                LOGGER.warn("Cannot mask address [" + Arrays.toString(address) + "] with: " + Arrays.toString(mask));
+                return address;
             } else {
-                final byte[] result = new byte[aBytes.length];
+                final byte[] result = new byte[address.length];
                 for (int i = 0; i < result.length; ++i) {
-                    result[i] = (byte) (aBytes[i] & mBytes[i]);
+                    result[i] = (byte) (address[i] & mask[i]);
                 }
                 return result;
             }
         } else {
-            return aBytes;
+            return address;
         }
     }
 
-    /**
-     * Get the mask IP address.
-     *
-     * @return the ask addresses.
-     */
-    protected abstract InetAddress getMaskAddress() throws UnknownHostException;
-
-    /**
-     * calculate the authorized Ip addresses and assign them to the field.
-     *
-     * @param ips the addresses get the IP addresses from.
-     */
-    protected final byte[][] buildMaskedAuthorizedIPs(final InetAddress[] ips) throws UnknownHostException {
-        final InetAddress maskAddress = getMaskAddress();
-        byte[][] tmpAuthorizedIPs = new byte[ips.length][];
-        for (int i = 0; i < ips.length; ++i) {
-            tmpAuthorizedIPs[i] = mask(ips[i], maskAddress);
+    private List<AddressMask> getAuthorizedIPs() throws SocketException, UnknownHostException {
+        if (this.authorizedIPs == null) {
+            this.authorizedIPs = createAuthorizedIPs();
         }
-
-        return tmpAuthorizedIPs;
+        return this.authorizedIPs;
     }
 
     /**
-     * Get the full list of authorized IP addresses for the provided mask.
-     *
-     * @param mask the mask address
+     * Get the full list of authorized IP addresses and the masks.
      */
-    protected abstract byte[][] getAuthorizedIPs(final InetAddress mask) throws UnknownHostException, SocketException;
+    protected abstract List<AddressMask> createAuthorizedIPs() throws UnknownHostException, SocketException;
+
+    /**
+     * Reset the authorized IPs cache.
+     */
+    protected final void clearAuthorizedIPs() {
+        this.authorizedIPs = null;
+    }
 
     // CHECKSTYLE:OFF
     // Don't run checkstyle on generated methods
@@ -144,7 +180,7 @@ public abstract class InetHostMatcher extends HostMatcher {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + Arrays.hashCode(authorizedIPs);
+        result = prime * result + authorizedIPs.hashCode();
         return result;
     }
 
@@ -160,10 +196,7 @@ public abstract class InetHostMatcher extends HostMatcher {
             return false;
         }
         InetHostMatcher other = (InetHostMatcher) obj;
-        if (!Arrays.equals(authorizedIPs, other.authorizedIPs)) {
-            return false;
-        }
-        return true;
+        return authorizedIPs.equals(other.authorizedIPs);
     }
     // CHECKSTYLE:ON
 
