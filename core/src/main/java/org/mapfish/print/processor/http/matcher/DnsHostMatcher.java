@@ -76,7 +76,7 @@ public class DnsHostMatcher extends HostMatcher {
     public final Optional<Boolean> tryOverrideValidation(final MatchInfo matchInfo) throws SocketException,
             UnknownHostException, MalformedURLException {
         for (AddressHostMatcher addressHostMatcher : this.matchersForHost) {
-            if (addressHostMatcher.accepts(matchInfo)) {
+            if (addressHostMatcher.matches(matchInfo)) {
                 return Optional.absent();
             }
         }

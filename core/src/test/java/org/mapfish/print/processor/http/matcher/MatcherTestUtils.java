@@ -35,6 +35,6 @@ import static org.junit.Assert.assertEquals;
 public class MatcherTestUtils {
     static void assertMatch(final URIMatcher matcher, boolean expected, final URI uri, final HttpMethod method)
             throws SocketException, UnknownHostException, MalformedURLException {
-        assertEquals(expected, matcher.accepts(MatchInfo.fromUri(uri, method)));
+        assertEquals(expected, matcher.matches(MatchInfo.fromUri(uri, method)));
     }
 }

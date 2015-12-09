@@ -25,6 +25,7 @@ import org.mapfish.print.config.ConfigurationException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -69,16 +70,17 @@ public class AddressHostMatcher extends InetHostMatcher {
     private InetAddress maskAddress = null;
 
     @Override
-    protected final byte[][] getAuthorizedIPs(final InetAddress maskForCalculation) throws UnknownHostException, SocketException {
-        if (this.authorizedIPs == null) {
-            InetAddress[] ips = InetAddress.getAllByName(this.ip);
-            this.authorizedIPs = buildMaskedAuthorizedIPs(ips);
+    protected final List<AddressMask> createAuthorizedIPs() throws UnknownHostException, SocketException {
+        InetAddress[] ips = InetAddress.getAllByName(this.ip);
+        final ArrayList<AddressMask> authorizedIPs = new ArrayList<AddressMask>(ips.length);
+        final InetAddress theMask = getMaskAddress();
+        for (InetAddress actualIp : ips) {
+            authorizedIPs.add(new AddressMask(actualIp, theMask));
         }
         return authorizedIPs;
     }
 
-    @Override
-    protected final InetAddress getMaskAddress() throws UnknownHostException {
+    private InetAddress getMaskAddress() throws UnknownHostException {
         if (this.maskAddress == null && this.mask != null) {
             this.maskAddress = InetAddress.getByName(this.mask);
         }
@@ -94,10 +96,11 @@ public class AddressHostMatcher extends InetHostMatcher {
 
     /**
      * Set the allowed ip address for this matcher.
+     *
      * @param ip the ip address.
      */
     public final void setIp(final String ip) {
-        this.authorizedIPs = null;
+        clearAuthorizedIPs();
         this.ip = ip;
     }
 
@@ -107,6 +110,7 @@ public class AddressHostMatcher extends InetHostMatcher {
      * @param mask the mask ip address.
      */
     public final void setMask(final String mask) {
+        clearAuthorizedIPs();
         this.maskAddress = null;
         this.mask = mask;
     }

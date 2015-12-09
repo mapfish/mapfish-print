@@ -37,11 +37,11 @@ public class AddressHostMatcherTest {
 
         assertMatch(addressHostMatcher, true, new URI("http://127.0.0.1"), HttpMethod.GET);
         assertMatch(addressHostMatcher, false, new URI("http://127.0.1.1"), HttpMethod.GET);
-        assertTrue(addressHostMatcher.accepts(MatchInfo.fromAuthScope(
+        assertTrue(addressHostMatcher.matches(MatchInfo.fromAuthScope(
                 new AuthScope(AuthScope.ANY_HOST, 80, AuthScope.ANY_REALM, "http"))));
-        assertTrue(addressHostMatcher.accepts(MatchInfo.fromAuthScope(
+        assertTrue(addressHostMatcher.matches(MatchInfo.fromAuthScope(
                 new AuthScope("127.0.0.1", AuthScope.ANY_PORT, AuthScope.ANY_REALM, "http"))));
-        assertTrue(addressHostMatcher.accepts(MatchInfo.fromAuthScope(
+        assertTrue(addressHostMatcher.matches(MatchInfo.fromAuthScope(
                 new AuthScope("127.0.0.1", 80, AuthScope.ANY_REALM, AuthScope.ANY_SCHEME))));
 
         addressHostMatcher.setMask("255.255.255.0");
@@ -53,11 +53,11 @@ public class AddressHostMatcherTest {
         assertMatch(addressHostMatcher, true, new URI("http://127.0.0.3"), HttpMethod.GET);
         assertMatch(addressHostMatcher, true, new URI("http://127.0.0.4"), HttpMethod.GET);
         assertMatch(addressHostMatcher, false, new URI("http://127.0.1.1"), HttpMethod.GET);
-        assertTrue(addressHostMatcher.accepts(MatchInfo.fromAuthScope(
+        assertTrue(addressHostMatcher.matches(MatchInfo.fromAuthScope(
                 new AuthScope(AuthScope.ANY_HOST, 80, AuthScope.ANY_REALM, "http"))));
-        assertTrue(addressHostMatcher.accepts(MatchInfo.fromAuthScope(
+        assertTrue(addressHostMatcher.matches(MatchInfo.fromAuthScope(
                 new AuthScope("127.0.0.1", AuthScope.ANY_PORT, AuthScope.ANY_REALM, "http"))));
-        assertTrue(addressHostMatcher.accepts(MatchInfo.fromAuthScope(
+        assertTrue(addressHostMatcher.matches(MatchInfo.fromAuthScope(
                 new AuthScope("127.0.0.1", 80, AuthScope.ANY_REALM, AuthScope.ANY_SCHEME))));
 
         addressHostMatcher.setPort(8080);
