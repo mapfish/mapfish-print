@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014  Camptocamp
+ * Copyright (C) 2014-2015  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -26,6 +26,7 @@ import org.mapfish.print.attribute.HttpRequestHeadersAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.http.matcher.URIMatcher;
 
 import java.util.HashSet;
 import java.util.List;
@@ -49,14 +50,19 @@ import javax.annotation.Nullable;
  *   headers: [header1, header2]
  * </code></pre>
  *
+ *  Can be applied conditionally using matchers, like in {@link RestrictUrisProcessor} (!restrictUris).
+ *
  * @author Jesse on 6/26/2014.
  */
 public final class ForwardHeadersProcessor
         extends AbstractProcessor<ForwardHeadersProcessor.Param, ClientHttpFactoryProcessorParam>
         implements HttpProcessor<ForwardHeadersProcessor.Param> {
 
-    Set<String> headerNames = Sets.newHashSet();
-    boolean forwardAll = false;
+    private final AddHeadersProcessor addHeadersProcessor = new AddHeadersProcessor();
+
+    private Set<String> headerNames = Sets.newHashSet();
+    private boolean forwardAll = false;
+
     /**
      * Constructor.
      */
@@ -76,6 +82,39 @@ public final class ForwardHeadersProcessor
             lowerCaseNames.add(name.toLowerCase());
         }
         this.headerNames = lowerCaseNames;
+    }
+
+    /**
+     * The matchers used to select the urls that are going to be modified by the processor.
+     * For example:
+     * <pre><code>
+     * - !restrictUris
+     *   matchers:
+     *     - !localMatch
+     *       dummy: true
+     *     - !ipMatch
+     *     ip: www.camptocamp.org
+     *     - !dnsMatch
+     *       host: mapfish-geoportal.demo-camptocamp.com
+     *       port: 80
+     *     - !dnsMatch
+     *       host: labs.metacarta.com
+     *       port: 80
+     *     - !dnsMatch
+     *       host: terraservice.net
+     *       port: 80
+     *     - !dnsMatch
+     *       host: tile.openstreetmap.org
+     *       port: 80
+     *     - !dnsMatch
+     *       host: www.geocat.ch
+     *       port: 80
+     * </code></pre>
+     *
+     * @param matchers the list of matcher to use to check if a url is permitted
+     */
+    public void setMatchers(final List<? extends URIMatcher> matchers) {
+        this.addHeadersProcessor.setMatchers(matchers);
     }
 
     /**
@@ -109,11 +148,9 @@ public final class ForwardHeadersProcessor
                 headers.put(entry.getKey(), entry.getValue());
             }
         }
+        this.addHeadersProcessor.setHeaders(headers);
 
-        final AddHeadersProcessor addHeadersProcessor = new AddHeadersProcessor();
-        addHeadersProcessor.setHeaders(headers);
-
-        return addHeadersProcessor.createFactoryWrapper(param, requestFactory);
+        return this.addHeadersProcessor.createFactoryWrapper(param, requestFactory);
     }
 
     @Nullable

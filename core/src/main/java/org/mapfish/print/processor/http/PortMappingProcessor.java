@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014  Camptocamp
+ * Copyright (C) 2014-2015  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -49,6 +49,8 @@ import java.util.regex.Pattern;
  *     8443 : 8443
  * </code></pre>
  *
+ * Can be applied conditionally using matchers, like in {@link RestrictUrisProcessor} (!restrictUris).
+ *
  * @author Jesse on 6/25/2014.
  */
 public final class PortMappingProcessor extends AbstractClientHttpRequestFactoryProcessor {
@@ -71,6 +73,7 @@ public final class PortMappingProcessor extends AbstractClientHttpRequestFactory
 
     @Override
     protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
+        super.extraValidation(validationErrors, configuration);
         if (this.hosts.isEmpty()) {
             validationErrors.add(new IllegalArgumentException("No hosts are registered"));
         }
@@ -79,7 +82,7 @@ public final class PortMappingProcessor extends AbstractClientHttpRequestFactory
     @Override
     public MfClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
                                                          final MfClientHttpRequestFactory requestFactory) {
-        return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory) {
+        return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory, matchers, false) {
             @Override
             protected ClientHttpRequest createRequest(final URI uri,
                                                       final HttpMethod httpMethod,

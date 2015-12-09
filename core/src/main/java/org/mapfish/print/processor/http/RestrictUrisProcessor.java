@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014  Camptocamp
+ * Copyright (C) 2014-2015  Camptocamp
  *
  * This file is part of MapFish Print
  *
@@ -19,19 +19,13 @@
 
 package org.mapfish.print.processor.http;
 
-import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
-import org.mapfish.print.processor.http.matcher.AcceptAllMatcher;
-import org.mapfish.print.processor.http.matcher.MatchInfo;
-import org.mapfish.print.processor.http.matcher.URIMatcher;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * This processor check urls against a set of url matchers to see if the request should be allowed or rejected.
@@ -60,7 +54,7 @@ import java.util.List;
  *       host: www.geocat.ch
  *       port: 80
  * </code></pre>
- *
+ * <p/>
  * <p>
  *     By default a matcher allows the URL, but it can be setup to reject the URL (by setting reject to true).
  *     The first matcher that matches will be the one picking the final outcome. If no matcher matches,
@@ -75,7 +69,7 @@ import java.util.List;
  *       reject: true
  *     - !acceptAll
  * </code></pre>
- *
+ * <p/>
  * <p>
  *     If the Print service is in your DMZ and needs to allow access to any WMS server, it is strongly
  *     recommended to have a configuration like the previous one in order to avoid having the Print
@@ -94,68 +88,16 @@ import java.util.List;
  * @author Jesse on 8/6/2014.
  */
 public final class RestrictUrisProcessor extends AbstractClientHttpRequestFactoryProcessor {
-    private List<? extends URIMatcher> matchers = Collections.singletonList(new AcceptAllMatcher());
-
-    /**
-     * The matchers used to select the legal urls. For example:
-     * <pre><code>
-     * - !restrictUris
-     *   matchers:
-     *     - !localMatch
-     *       dummy: true
-     *     - !ipMatch
-     *     ip: www.camptocamp.org
-     *     - !dnsMatch
-     *       host: mapfish-geoportal.demo-camptocamp.com
-     *       port: 80
-     *     - !dnsMatch
-     *       host: labs.metacarta.com
-     *       port: 80
-     *     - !dnsMatch
-     *       host: terraservice.net
-     *       port: 80
-     *     - !dnsMatch
-     *       host: tile.openstreetmap.org
-     *       port: 80
-     *     - !dnsMatch
-     *       host: www.geocat.ch
-     *       port: 80
-     * </code></pre>
-     *
-     * @param matchers the list of matcher to use to check if a url is permitted
-     */
-    public void setMatchers(final List<? extends URIMatcher> matchers) {
-        this.matchers = matchers;
-    }
-
-    @Override
-    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
-        if (this.matchers == null) {
-            validationErrors.add(new IllegalArgumentException("Matchers cannot be null.  There should be at least a !acceptAll matcher"));
-        }
-        if (this.matchers != null && this.matchers.isEmpty()) {
-            validationErrors.add(new IllegalArgumentException("There are no url matchers defined.  There should be at least a " +
-                                                              "!acceptAll matcher"));
-        }
-    }
-
     @Override
     public MfClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
-                                                         final MfClientHttpRequestFactory requestFactory) {
-        return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory) {
+                                                           final MfClientHttpRequestFactory requestFactory) {
+        return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory, matchers, true) {
             @Override
             protected ClientHttpRequest createRequest(final URI uri,
                                                       final HttpMethod httpMethod,
                                                       final MfClientHttpRequestFactory requestFactory) throws IOException {
-                for (URIMatcher matcher : RestrictUrisProcessor.this.matchers) {
-                    if (matcher.matches(MatchInfo.fromUri(uri, httpMethod))) {
-                        if (matcher.isReject()) {
-                            throw new IllegalArgumentException(uri + " is one of the denied urls.");
-                        }
-                        return requestFactory.createRequest(uri, httpMethod);
-                    }
-                }
-                throw new IllegalArgumentException(uri + " is not one of the permitted urls.");
+                //Everything is already done by the caller
+                return requestFactory.createRequest(uri, httpMethod);
             }
         };
     }
