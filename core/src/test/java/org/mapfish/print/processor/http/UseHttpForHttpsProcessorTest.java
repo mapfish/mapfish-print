@@ -33,7 +33,7 @@ import static org.junit.Assert.assertEquals;
 @ContextConfiguration(locations = {
         "classpath:org/mapfish/print/processor/http/use-http-for-https/add-custom-processor-application-context.xml"
 })
-public class PortMappingProcessorTest extends AbstractHttpProcessorTest {
+public class UseHttpForHttpsProcessorTest extends AbstractHttpProcessorTest {
 
     @Override
     protected String baseDir() {
@@ -47,7 +47,7 @@ public class PortMappingProcessorTest extends AbstractHttpProcessorTest {
 
     @Override
     protected Class<? extends AbstractClientHttpRequestFactoryProcessor> classUnderTest() {
-        return PortMappingProcessor.class;
+        return UseHttpForHttpsProcessor.class;
     }
 
     public static class TestProcessor extends AbstractTestProcessor {
