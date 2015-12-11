@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
  * required.
  * <p>Example: </p>
  * <pre><code>
- * - !portMapping
+ * - !useHttpForHttps
  *   hosts: [localhost, www.camptocamp.com]
  *   portMapping:
  *     443 : 80
@@ -53,7 +53,7 @@ import java.util.regex.Pattern;
  *
  * @author Jesse on 6/25/2014.
  */
-public final class PortMappingProcessor extends AbstractClientHttpRequestFactoryProcessor {
+public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFactoryProcessor {
     private static final int HTTPS_STANDARD_PORT = 443;
     private static final int HTTP_STANDARD_PORT = 80;
     private static final int JAVA_HTTPS_STANDARD_PORT = 8443;
@@ -66,7 +66,7 @@ public final class PortMappingProcessor extends AbstractClientHttpRequestFactory
     /**
      * Constructor.
      */
-    protected PortMappingProcessor() {
+    protected UseHttpForHttpsProcessor() {
         this.portMapping.put(HTTPS_STANDARD_PORT, HTTP_STANDARD_PORT);
         this.portMapping.put(JAVA_HTTPS_STANDARD_PORT, JAVA_HTTP_STANDARD_PORT);
     }
@@ -139,7 +139,7 @@ public final class PortMappingProcessor extends AbstractClientHttpRequestFactory
     }
 
     private boolean matchingHost(final String host) {
-        for (Pattern hostPattern : PortMappingProcessor.this.hosts) {
+        for (Pattern hostPattern : UseHttpForHttpsProcessor.this.hosts) {
             if (hostPattern.matcher(host).matches()) {
                 return true;
             }
@@ -150,8 +150,8 @@ public final class PortMappingProcessor extends AbstractClientHttpRequestFactory
     private URI updatePortAndScheme(final URI uri) throws URISyntaxException {
         URI httpUri;
         int port = uri.getPort();
-        if (PortMappingProcessor.this.portMapping.containsKey(port)) {
-            port = PortMappingProcessor.this.portMapping.get(port);
+        if (UseHttpForHttpsProcessor.this.portMapping.containsKey(port)) {
+            port = UseHttpForHttpsProcessor.this.portMapping.get(port);
         }
 
         httpUri = new URI("http", uri.getUserInfo(), uri.getHost(), port,
@@ -169,8 +169,8 @@ public final class PortMappingProcessor extends AbstractClientHttpRequestFactory
             int port = Integer.parseInt(matcher.group(2));
             authority = authority.substring(0, matcher.start(2));
 
-            if (PortMappingProcessor.this.portMapping.containsKey(port)) {
-                port = PortMappingProcessor.this.portMapping.get(port);
+            if (UseHttpForHttpsProcessor.this.portMapping.containsKey(port)) {
+                port = UseHttpForHttpsProcessor.this.portMapping.get(port);
             }
 
             authority = authority + port;

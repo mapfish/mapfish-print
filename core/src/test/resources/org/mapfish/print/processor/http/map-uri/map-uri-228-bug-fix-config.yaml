@@ -7,7 +7,7 @@ templates:
           - !mapUri
             mapping:
               ([htps]+)://geomapfish.demo-camptocamp.com/(.*): "$1://127.0.0.1/$2"
-          - !portMapping
+          - !useHttpForHttps
             hosts:
               - geomapfish.demo-camptocamp.com
             portMapping:

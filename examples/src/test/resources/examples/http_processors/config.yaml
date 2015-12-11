@@ -15,7 +15,7 @@ templates:
     - !configureHttpRequests
       httpProcessors:
         # change all https requests to http requests for localhost and www.camptocamp.com
-        - !portMapping
+        - !useHttpForHttps
           hosts: [localhost, www.camptocamp.com]
           portMapping:
             443 : 80
