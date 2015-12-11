@@ -306,7 +306,7 @@ public class Configuration {
             this.accessAssertion.assertAccess("Configuration", this);
             template.assertAccessible(name);
         } else {
-            throw new IllegalArgumentException("Template '" + name + " does not exist.  Options are: " + this.templates.keySet());
+            throw new IllegalArgumentException("Template '" + name + "' does not exist.  Options are: " + this.templates.keySet());
         }
         return template;
     }
