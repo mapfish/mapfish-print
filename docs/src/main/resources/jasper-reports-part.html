@@ -611,12 +611,15 @@ You're not supposed to add a subreport in a template.
  You can delete subreports if, for example, you want to remove the north arrow, 
 scale bar, etc. You will have to do different manipulations:
 <br>
-<pre>
-    remove the subreports element in Jaspersoft Studio
-    remove the linked parameter
-    remove the element in the file config.yaml for example remove the two lines 
-: "northArrow: !northArrow, size: 51" 
-</pre>
+<ul>
+    <li>remove the subreports element in Jaspersoft Studio</li>
+    <li>remove the linked parameter</li>
+    <li>remove the element in the file config.yaml for example remove the two lines :
+    <pre> northArrow: !northArrow,
+          size: 51
+    </pre>
+    </li>
+</ul>
 </p>
 <h4>What is a variable ?</h4>
 <p>
