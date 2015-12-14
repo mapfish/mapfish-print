@@ -95,7 +95,7 @@ directly the preview tab in Jaspersoft Studio.
 <p>One of the most important change from version 2 to 3 of Mapfish Print, at 
 least for users, 
 is the use of jasper template (jrxml) as basis of layout. The chapter 
-“General workflow for adapting existing templates”
+"General workflow for adapting existing templates"
  provides enough information for working with Jaspersoft Studio. 
 The key point stands in the fact that Mapfish Print as NOT been developed for 
 enhancing the Studio software,
@@ -246,10 +246,8 @@ parameter is done as follow :
 </p>
 <blockquote>
 <pre>
-        &lt;parameter name="title" class="java.lang.String" 
-isForPrompting="false"&gt;
-                &lt;parameterDescription&gt;&lt;![CDATA[Title of 
-map]]&gt;&lt;/parameterDescription&gt;
+        &lt;parameter name="title" class="java.lang.String" isForPrompting="false"&gt;
+                &lt;parameterDescription&gt;&lt;![CDATA[Title of map]]&gt;&lt;/parameterDescription&gt;
         &lt;/parameter&gt;
 </pre>
 </blockquote>
@@ -280,8 +278,7 @@ title example :
 <pre>
 &lt;textField&gt;
         &lt;reportElement x="179" y="0" width="375" height="12"/&gt;
-        
-&lt;textFieldExpression>&lt;![CDATA[$P{title}]]&gt;&lt;/textFieldExpression&gt;
+        &lt;textFieldExpression>&lt;![CDATA[$P{title}]]&gt;&lt;/textFieldExpression&gt;
 &lt;/textField&gt;
 </pre>
 </blockquote>
@@ -491,8 +488,7 @@ reports, subreports are as named :
 different data source inside the same report.
  It's also with subreport that multiple database entries will be repeated
  (<a 
-href="https://community.jaspersoft.com/wiki/subreports-jaspersoft-studio">exampl
-e</a>)
+href="https://community.jaspersoft.com/wiki/subreports-jaspersoft-studio">example</a>)
 <br><br>
 Mapfish Print uses subreport elements for including maps, but doesn't use 
 "standard" subreport.
@@ -505,8 +501,10 @@ prompting behavior.
 <i>isForPrompting="false"</i>: 
 </p>
 <blockquote>
+    <pre>
 &lt;parameter name="mapSubReport" class="java.lang.String" 
 isForPrompting="false"/&gt;
+    </pre>
 </blockquote>
 <p>
 This option must be set for all parameters related to Mapfish Print (but must 
@@ -548,13 +546,11 @@ such modification for fixing this type of error:
 &lt;parameter name="mapSubReport" class="java.lang.String" 
 isForPrompting="false"/&gt;
     ...
-    &lt;textFieldExpression&gt;&lt;![CDATA[String.format("Massstab 1: %.0f", 
-$P{mapContext}.getRoundedScale())]]&gt;&lt;/textFieldExpression&gt;
+    &lt;textFieldExpression&gt;&lt;![CDATA[String.format("Massstab 1: %.0f", $P{mapContext}.getRoundedScale())]]&gt;&lt;/textFieldExpression&gt;
     ...
 ==>
     ...
-    &lt;textFieldExpression&gt;&lt;![CDATA[String.format("Massstab 1: 
-scale")]]&gt;&lt;/textFieldExpression&gt;
+    &lt;textFieldExpression&gt;&lt;![CDATA[String.format("Massstab 1: scale")]]&gt;&lt;/textFieldExpression&gt;
     ...
 </pre>
 </blockquote>
@@ -600,7 +596,8 @@ Maps are included in the report trough subreports. In standard jasper reports,
 subreports are as named :
  reports inside report. With them, it's possible to access many data different 
 data source inside the same report.
- Also, with subreports, multiple database entries will be repeated (example)
+ Also, with subreports, multiple database entries will be repeated (<a 
+href="https://community.jaspersoft.com/wiki/subreports-jaspersoft-studio">example</a>)
 <br><br>
 Mapfish Print uses subreport element for including maps, but doesn't use 
 "standard" subreport.
