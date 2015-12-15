@@ -63,7 +63,7 @@ public abstract class AbstractMfClientHttpRequestFactoryWrapper implements MfCli
      */
     public final ClientHttpRequest createRequest(final URI uri,
                                                  final HttpMethod httpMethod) throws IOException {
-        if (this.matchers.matches(uri, httpMethod)) {
+        if (uri.getScheme() == null || uri.getScheme().equals("file") || this.matchers.matches(uri, httpMethod)) {
             return createRequest(uri, httpMethod, this.wrappedFactory);
         } else if (this.failIfNotMatch) {
             throw new IllegalArgumentException(uri + " is denied.");

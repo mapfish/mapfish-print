@@ -19,6 +19,8 @@
 
 package org.mapfish.print.processor.http.matcher;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 
 import java.net.MalformedURLException;
@@ -32,6 +34,7 @@ import java.util.List;
  * Hold a list of {@link URIMatcher} and implement the logic to see if any matches an URI.
  */
 public final class UriMatchers {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UriMatchers.class);
     private List<? extends URIMatcher> matchers = Collections.singletonList(new AcceptAllMatcher());
 
     /**
@@ -49,11 +52,19 @@ public final class UriMatchers {
      */
     public boolean matches(final URI uri, final HttpMethod httpMethod)
             throws SocketException, UnknownHostException, MalformedURLException {
+        final MatchInfo matchInfo = MatchInfo.fromUri(uri, httpMethod);
         for (URIMatcher matcher : this.matchers) {
-            if (matcher.matches(MatchInfo.fromUri(uri, httpMethod))) {
-                return !matcher.isReject();
+            if (matcher.matches(matchInfo)) {
+                if (matcher.isReject()) {
+                    LOGGER.debug("Reject {} because of this rule: {}", uri, matcher);
+                    return false;
+                } else {
+                    LOGGER.debug("Accept {} because of this rule: {}", uri, matcher);
+                    return true;
+                }
             }
         }
+        LOGGER.debug("Reject {} because no rule matches", uri);
         return false;
     }
 
