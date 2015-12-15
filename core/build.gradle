@@ -66,11 +66,16 @@ configurations {
     }
     jasper {
         description = 'Dependencies for the jasper reports generation'
-}
+    }
+
+    //want to use the slf4j bridge instead
+    all*.exclude group: 'commons-logging'
 }
 
 dependencies {
     def springSecurityVersion = "3.2.5.RELEASE"
+    def slf4jVersion = '1.7.6'
+
     compile (
             "org.springframework:spring-context:$project.springVersion",
             "org.springframework:spring-web:$project.springVersion",
@@ -107,7 +112,8 @@ dependencies {
     compile fileTree(dir: "$projectDir/libs", include: '*.jar')
     compile (
             "com.google.guava:guava:16.0.1",
-            'org.slf4j:slf4j-api:1.7.6',
+            "org.slf4j:slf4j-api:${slf4jVersion}",
+            "org.slf4j:jcl-over-slf4j:${slf4jVersion}",
             'org.json:json:20080701',
             'ch.qos.logback:logback-classic:1.1.1',
             'org.yaml:snakeyaml:1.13',
