@@ -20,6 +20,8 @@
 package org.mapfish.print.processor.http.matcher;
 
 import com.google.common.base.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.net.SocketException;
@@ -31,6 +33,7 @@ import java.util.regex.Pattern;
  * Used to validate the access to a map service host.
  */
 public abstract class HostMatcher extends AbstractMatcher {
+    private static final Logger LOGGER = LoggerFactory.getLogger(HostMatcher.class);
     /**
      * The request port.  -1 is the unset/default number
      * CSOFF: VisibilityModifier
@@ -57,6 +60,8 @@ public abstract class HostMatcher extends AbstractMatcher {
             if (this.pathRegex != null && matchInfo.getPath() != MatchInfo.ANY_PATH) {
                 Matcher matcher = Pattern.compile(this.pathRegex).matcher(matchInfo.getPath());
                 if (!matcher.matches()) {
+                    LOGGER.debug("pathRegex '{}' is not matching '{}'", this.pathRegex,
+                            matchInfo.getPath());
                     return false;
                 }
             }
@@ -78,8 +83,7 @@ public abstract class HostMatcher extends AbstractMatcher {
     }
 
     /**
-     * The regular expression used to verify the path of the uri as is expected.  A / will be added to the beginning of path if
-     * it is missing because all paths start with /.
+     * The regular expression used to verify the path of the uri as is expected.  All paths start with /.
      * <p>
      * The regular expression used are the ones supported by java:
      * <a href="http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html">
@@ -90,11 +94,7 @@ public abstract class HostMatcher extends AbstractMatcher {
      * @param pathRegex the regular expression.
      */
     public final void setPathRegex(final String pathRegex) {
-        if (pathRegex.startsWith("/")) {
-            this.pathRegex = pathRegex;
-        } else {
-            this.pathRegex = "/" + pathRegex;
-        }
+        this.pathRegex = pathRegex;
     }
 
     @Override

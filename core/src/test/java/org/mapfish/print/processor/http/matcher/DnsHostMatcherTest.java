@@ -60,18 +60,7 @@ public class DnsHostMatcherTest {
         assertMatch(dnsHostMatcher, false, new URI("https://www.camptocamp.com:8080/print-servlet"), HttpMethod.GET);
 
         dnsHostMatcher.setPort(-1);
-        dnsHostMatcher.setPathRegex("/print.*");
-
-        assertMatch(dnsHostMatcher, true, new URI("http://localhost:8080/print-servlet"), HttpMethod.GET);
-        assertMatch(dnsHostMatcher, true, new URI("http://localhost:80/print-servlet"), HttpMethod.GET);
-        assertMatch(dnsHostMatcher, true, new URI("http://localhost:80/print"), HttpMethod.GET);
-        assertMatch(dnsHostMatcher, true, new URI("http://localhost:80/print/anotherpath"), HttpMethod.GET);
-        assertMatch(dnsHostMatcher, false, new URI("http://localhost:80/pdf"), HttpMethod.GET);
-        assertMatch(dnsHostMatcher, false, new URI("http://localhost:80"), HttpMethod.GET);
-        assertMatch(dnsHostMatcher, false, new URI("http://www.camptocamp.com:80/print"), HttpMethod.GET);
-        assertMatch(dnsHostMatcher, false, new URI("http://www.camptocamp.com:80"), HttpMethod.GET);
-
-        dnsHostMatcher.setPathRegex("print.*");
+        dnsHostMatcher.setPathRegex("^/print.*");
 
         assertMatch(dnsHostMatcher, true, new URI("http://localhost:8080/print-servlet"), HttpMethod.GET);
         assertMatch(dnsHostMatcher, true, new URI("http://localhost:80/print-servlet"), HttpMethod.GET);

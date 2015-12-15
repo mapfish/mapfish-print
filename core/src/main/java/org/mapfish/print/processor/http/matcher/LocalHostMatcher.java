@@ -90,6 +90,7 @@ public class LocalHostMatcher extends InetHostMatcher {
         if (pathRegex != null) {
             sb.append(", pathRegexp=").append(pathRegex);
         }
+        sb.append(", reject=").append(isReject());
         sb.append('}');
         return sb.toString();
     }
