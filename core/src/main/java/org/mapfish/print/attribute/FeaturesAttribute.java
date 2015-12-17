@@ -32,10 +32,11 @@ import java.util.List;
 
 /**
  * Attribute for GeoJson features collection.
- * <p/>
- * Created by Stéphane Brunner on 16/4/14.
+ *
+ * @author Stéphane Brunner
  */
 public final class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribute.FeaturesAttributeValues> {
+
     @Override
     protected Class<FeaturesAttributeValues> getValueType() {
         return FeaturesAttributeValues.class;

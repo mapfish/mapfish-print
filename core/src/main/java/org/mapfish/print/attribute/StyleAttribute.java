@@ -36,8 +36,8 @@ import javax.annotation.Nonnull;
 
 /**
  * Attribute for GeoJson Styles collection.
- * <p/>
- * Created by Stéphane Brunner on 24/4/14.
+ * 
+ * @author Stéphane Brunner
  */
 public final class StyleAttribute extends ReflectiveAttribute<StylesAttributeValues> {
 
