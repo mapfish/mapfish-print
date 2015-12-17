@@ -85,6 +85,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     private Map<String, TableColumnConverter<?>> columnConverterMap = Maps.newHashMap();
     private List<TableColumnConverter<?>> converters = Lists.newArrayList();
     private boolean dynamic = false;
+    private Integer reportWidth = null;
     private String jasperTemplate = null;
     private String firstHeaderStyle;
     private String lastHeaderStyle;
@@ -107,11 +108,12 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     }
 
     /**
-     * The path to the jasper template that contains the template for the sub-report.  If dynamic is false then the template
-     * will be used without any changes.  It will simply be compiled and used as is.
+     * The path to the JasperReports template that contains the template for the sub-report. If dynamic is false then the template
+     * will be used without any changes. It will simply be compiled and used as is.
      * <p>
-     * If dynamic is true then the template will be used to obtain the column styles and the size of the subreport.  The
-     * actual field and column definitions will be dynamically generated from the table data that is provided.
+     * If dynamic is true then the template will be used to obtain the column styles and the size of the subreport and to
+     * get the position of the first header and field element.
+     * The actual field and column definitions will be dynamically generated from the table data that is provided.
      * </p>
      * This may be null if dynamic is false.  If it is null then the main template will likely use the generated
      * table datasource directly as its datasource for use in its detail section and the table will be directly in the main template's
@@ -124,13 +126,22 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     }
 
     /**
-     * If true then the Jasper Report Template will be generated dynamically based on the columns in the table attribute.
-     * <p>By default this is false because width is required if it is true</p>
+     * If true then the JasperReport template will be generated dynamically based on the columns in the table attribute.
+     * <p>Default: false</p>
      *
      * @param dynamic indicate if the template should be dynamically generated for each print request.
      */
     public void setDynamic(final boolean dynamic) {
         this.dynamic = dynamic;
+    }
+
+    /**
+     * If dynamic is true, the page width of the table report can be adjusted with this property.
+     *
+     * @param reportWidth The report width to use.
+     */
+    public void setReportWidth(final Integer reportWidth) {
+        this.reportWidth = reportWidth;
     }
 
     /**
@@ -317,6 +328,11 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
             final Map<String, Class<?>> columns) throws JRException, ClassNotFoundException, IOException {
         byte[] bytes = loadJasperTemplate(input.template.getConfiguration());
         final JasperDesign templateDesign = JRXmlLoader.load(new ByteArrayInputStream(bytes));
+
+        if (this.reportWidth != null) {
+          templateDesign.setPageWidth(this.reportWidth);
+        }
+
         int headerHeight = templateDesign.getColumnHeader().getHeight();
         final JRDesignSection detailSection = (JRDesignSection) templateDesign.getDetailSection();
         int detailHeight = detailSection.getBands()[0].getHeight();
