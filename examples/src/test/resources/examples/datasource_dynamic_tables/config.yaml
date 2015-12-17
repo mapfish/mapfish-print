@@ -1,0 +1,51 @@
+throwErrorOnExtraParameters: true
+
+templates:
+    A4 portrait: !template
+        reportTemplate: A4_Portrait.jrxml
+        attributes:
+            title: !string
+                default: ""
+            map: !map
+                maxDpi: 254
+                width: 555
+                height: 160
+            datasource: !datasource
+                attributes:
+                    title: !string {}
+                    table: !table {}
+
+        processors:
+        - !reportBuilder
+            directory: '.'
+        - !createMap {}
+        - !createDataSource
+            processors:
+            - !prepareTable
+                dynamic: true
+
+    A4 landscape: !template
+        reportTemplate: A4_landscape.jrxml
+        attributes:
+            title: !string
+                default: ""
+            map: !map
+                maxDpi: 254
+                width: 800
+                height: 160
+            datasource: !datasource
+                attributes:
+                    title: !string {}
+                    table: !table {}
+
+        processors:
+        - !reportBuilder
+            directory: '.'
+        - !createMap {}
+        - !createDataSource
+            processors:
+            - !prepareTable
+                dynamic: true
+                # adjust the table report width to the landscape format
+                reportWidth: 800
+
