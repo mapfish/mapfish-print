@@ -31,7 +31,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
- * The Plugin for creating WMTS layers.
+ * The Plugin for creating WMS layers.
  *
  * @author Stéphane Brunner on 22/07/2014.
  */

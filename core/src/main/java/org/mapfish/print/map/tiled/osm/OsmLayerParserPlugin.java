@@ -32,7 +32,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
- * The Plugin for creating WMTS layers.
+ * The Plugin for creating OSM layers.
  *
 * @author Jesse on 4/3/14.
 */

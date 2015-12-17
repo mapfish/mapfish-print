@@ -25,7 +25,7 @@ A processor's main responsibility is to take the <a
 <p>
     While many processors are responsible for directly producing the parameters required by the <a href="outputFormat"> outputFormat</a>,
     some processors be considered <em>support</em> processors. A support processor is a processor that in some way prepares attributes for
-    for the </em>primary</em> processors. For example, there are processors that can add layers to the map so that all maps will have the
+    the </em>primary</em> processors. For example, there are processors that can add layers to the map so that all maps will have the
     layers (reducing the data the client needs to send.) Another example are several processors which configure how http requests are make
     (add cookies, headers, remap URLs, etc...)
 </p>
@@ -50,7 +50,8 @@ A processor's main responsibility is to take the <a
 Or if the there are multiple mappings that need to be made :
 <pre>
 - processorName<br/>
-    inputMapper :<br/>
-    attributeName1 : inputName1<br/>
-    attributeName2 : inputName2<br/>
+    inputMapper : {<br/>
+      attributeName1 : inputName1<br/>
+      attributeName2 : inputName2<br/>
+    }
 </pre>
