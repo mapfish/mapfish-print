@@ -120,6 +120,7 @@ public final class Main {
         } finally {
             context.destroy();
         }
+        System.exit(0);
     }
 
     private static void printUsage(final int exitCode) {

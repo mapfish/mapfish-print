@@ -115,6 +115,7 @@ class GenerateDocs {
                 strings.append("\n}")
             }
         }
+        System.exit(0)
     }
     static void write (Collection<Record> records, PrintWriter printWriter, PrintWriter strings, String varName) {
         printWriter.append("docs.")
