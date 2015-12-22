@@ -16,4 +16,5 @@
   "headerTitle": "Mapfish Print Documentation",
   "contentsTitle": "Contents",
   "configuration" : "Configuration",
-  "configurationDescription": "Configuration elements are to be put in the config.yaml"
+  "configurationDescription": "Configuration elements are to be put in the config.yaml",
+  "image-table": "Config. of Tables with HTML Images"

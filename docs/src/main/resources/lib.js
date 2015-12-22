@@ -108,6 +108,12 @@ docsApp.controller('DocsCtrl', function ($scope, $rootScope, $sce, $translate, $
       title: 'tocDownloads',
       html: 'downloads-part.html',
       setRecords: function() {}
+    },
+    'image-table': {
+      order: 40,
+      title: 'image-table',
+      html: 'image-table.html',
+      setRecords: function() {}
     }
   };
   $scope.page = 'overview';
