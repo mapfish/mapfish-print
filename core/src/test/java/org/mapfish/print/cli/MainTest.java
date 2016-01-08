@@ -53,7 +53,7 @@ public class MainTest {
                 "-config", this.configFile.getAbsolutePath(),
                 "-spec", this.v3ApiRequestFile.getAbsolutePath(),
                 "-output", this.outputFile.getAbsolutePath()};
-        Main.main(args);
+        Main.runMain(args);
 
         new ImageSimilarity(getFile("expectedV3Image.png"), 1).assertSimilarity(this.outputFile, 70);
     }
@@ -65,7 +65,7 @@ public class MainTest {
                 "-config", this.configFile.getAbsolutePath(),
                 "-spec", this.v2ApiRequestFile.getAbsolutePath(),
                 "-output", this.outputFile.getAbsolutePath()};
-        Main.main(args);
+        Main.runMain(args);
 
         new ImageSimilarity(getFile("expectedV2Image.png"), 1).assertSimilarity(this.outputFile, 70);
     }
@@ -76,7 +76,7 @@ public class MainTest {
                 "-config", this.configFile.getAbsolutePath(),
                 "-spec", this.v2ApiRequestFile.getAbsolutePath(),
                 "-output", this.outputFile.getAbsolutePath()};
-        Main.main(args);
+        Main.runMain(args);
     }
 
     @Test(expected = Exception.class)
@@ -86,6 +86,6 @@ public class MainTest {
                 "-config", this.configFile.getAbsolutePath(),
                 "-spec", this.v3ApiRequestFile.getAbsolutePath(),
                 "-output", this.outputFile.getAbsolutePath()};
-        Main.main(args);
+        Main.runMain(args);
     }
 }
