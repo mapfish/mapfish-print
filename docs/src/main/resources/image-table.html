@@ -1,6 +1,6 @@
 <p>
     This section explains how to add one or multiple images to a table subreport.<br/>
-    In a first step a table needs to be configured. For this, the processor <a href="#/processors#!prepareTable">!preparTable</a> is used. The column containing the image needs to be defined which is done using <br/>
+    In a first step a table needs to be configured. For this, the processor <a href="#/processors#!prepareTable">!prepareTable</a> is used. The column containing the image needs to be defined which is done using <br/>
 
     <pre><code>
         ...
@@ -29,7 +29,7 @@
     To add formating styles to the printed table there are two possibilities:
     <ol>
         <li>
-            To add a subreport in form of a jasperreport template containing all of the columns that are to be included in the printed report. This requires the dynamic flag in the processor !prepareTable to be false.
+            To add a subreport in form of a JasperReport template containing all of the columns that are to be included in the printed report. This requires the dynamic flag in the processor !prepareTable to be false.
         </li>
         <li>
             Use the styling from a subreport template but generate the columns dynamically. In this case the JasperReports template (table_a4_portrait.jrxml) must contain one element. An example for this type of configuration is given below.
@@ -57,24 +57,24 @@
        ...
     </code></pre>
 
-   For the case that multiple columns with different titles contain images each column has to be configured in the config.yaml. Below is an example where two columns <code>Art</code> and <code>Eigentümmer</code> contain images. The columns can be in the same table  and/or they can be in different tables. This means if two columns <code>Art</code> and <code>Eigentümmer</code> are configured to contain images (as in the example below), it is possible to have two tables, one table with the column <code>Art</code> and the other table with the columns <code>Art</code> and <code>Eigentümmer</code>. In the print all tree columns contain images in the print.<br/>
+   For the case that multiple columns with different titles contain images each column has to be configured in the config.yaml. Below is an example where two columns <code>Art</code> and <code>Eigentümer</code> contain images. The columns can be in the same table  and/or they can be in different tables. This means if two columns <code>Art</code> and <code>Eigentümer</code> are configured to contain images (as in the example below), it is possible to have two tables, one table with the column <code>Art</code> and the other table with the columns <code>Art</code> and <code>Eigentümer</code>. In the print all tree columns contain images in the print.<br/>
 
    <code>config.yaml</code>
    <pre><code>
        ...
        - !prepareTable
              excludeColumns:
-               - "not_shown_in_print"             #columns that will not be shown in the printed table
+               - "not_shown_in_print"     #columns that will not be shown in the printed table
              maxColumns: 10
              dynamic: true
              jasperTemplate: table_a4_portrait.jrxml
              detailStyle: column_style_2
              headerStyle: header_style_2
              columns:
-               Art: !urlImage                         #Declare the column icon to contain an image
+               Art: !urlImage             #Declare the column icon to contain an image
                  urlExtractor: (.*)
                  urlGroup: 1
-               Eigentümer: !urlImage                         #Declare the column image to contain an image
+               Eigentümer: !urlImage      #Declare the column image to contain an image
                  urlExtractor: (.*)
                  urlGroup: 1
              inputMapper: {tableData: table}
@@ -99,5 +99,5 @@
    </code></pre>
    </br>
    The resulting output of the above configuration is shown in the figure below.
-   <img src=./images/image_table.png>
 </p>
+<img src="./images/image_table.png" width="800">
