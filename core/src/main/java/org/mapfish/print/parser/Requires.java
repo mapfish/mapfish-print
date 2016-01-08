@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 
 /**
  * Indicates that if one field in a value/param object, then one or more other attributes are required.
- * <p/>
+ * <p></p>
  * Note: If the field with the {@link org.mapfish.print.parser.Requires} annotation is NOT in the json
  * then the required are not required as long as they have the {@link org.mapfish.print.parser.HasDefaultValue} annotation.
  *

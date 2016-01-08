@@ -19,7 +19,7 @@
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
     <bean id="mapfishPrintServlet" class="org.mapfish.print.servlet.MapPrinterServlet">
         <property name="maxCreateAndGetWaitTimeInSeconds" value="30" />
     </bean>
@@ -34,5 +34,5 @@
         </property>
     </bean>
 
-    <bean id="!sleeper" class="org.mapfish.print.servlet.MapPrinterServletTest.SleepProcessor" scope="prototype" />
+    <bean id="sleeper" class="org.mapfish.print.servlet.MapPrinterServletTest.SleepProcessor" scope="prototype" />
 </beans>

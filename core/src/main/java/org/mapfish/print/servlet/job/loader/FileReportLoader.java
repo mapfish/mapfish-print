@@ -30,7 +30,7 @@ import java.nio.channels.FileChannel;
 
 /**
  * Loads reports from file uris.
- * <p/>
+ * <p></p>
  * @author jesseeichar on 3/18/14.
  */
 public class FileReportLoader implements ReportLoader {

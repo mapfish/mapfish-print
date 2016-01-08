@@ -32,7 +32,7 @@ import java.util.List;
 
 /**
  * Processor to set features to the vector layers.
- * <p/>
+ * <p></p>
  * Created by Stéphane Brunner on 16/4/14.
  */
 public class SetFeaturesProcessor extends

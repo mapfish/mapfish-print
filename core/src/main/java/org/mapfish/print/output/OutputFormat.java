@@ -27,7 +27,7 @@ import java.io.OutputStream;
 
 /**
  * Interface for exporting the generated PDF from MapPrinter.
- * <p/>
+ * <p></p>
  * User: jeichar
  * Date: Oct 18, 2010
  * Time: 1:49:41 PM

@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Test ConfigurationFactory.
- * <p/>
+ * <p></p>
  * @author jesseeichar on 3/25/14.
  */
 

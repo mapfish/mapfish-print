@@ -52,7 +52,7 @@ import javax.media.jai.iterator.RandomIterFactory;
  * Class for comparing an image to another image.
  *
  * @author Jesse on 3/27/14.
- *         <p/>
+ *         <p></p>
  *         CHECKSTYLE:OFF
  */
 public final class ImageSimilarity {

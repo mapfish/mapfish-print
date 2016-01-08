@@ -34,7 +34,7 @@ import java.util.List;
 
 /**
  * Processor to set a style on vector layers from the attributes.
- * <p/>
+ * <p></p>
  * Created by Stéphane Brunner on 24/4/14.
  */
 public class SetStyleProcessor extends

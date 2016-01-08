@@ -92,7 +92,7 @@ public final class OverviewMapAttribute extends GenericMapAttribute<OverviewMapA
 
         /**
          * An array of 4 doubles, minX, minY, maxX, maxY.  The bounding box of the overview-map.
-         * <p/>
+         * <p></p>
          * If a bounding box is given, the overview-map shows a fixed extent. The configuration
          * parameter <code>zoomFactor</code> is ignored in this case.
          */
@@ -101,7 +101,7 @@ public final class OverviewMapAttribute extends GenericMapAttribute<OverviewMapA
 
         /**
          * An array of 2 doubles, (x, y).  The center of the overview-map.
-         * <p/>
+         * <p></p>
          * If center and scale are given, the overview-map shows a fixed extent. The configuration
          * parameter <code>zoomFactor</code> is ignored in this case.
          */

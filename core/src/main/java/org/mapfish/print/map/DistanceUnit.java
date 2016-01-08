@@ -213,7 +213,7 @@ public enum DistanceUnit {
     }
 
     /**
-     * Return the first unit that would give a value >=1.
+     * Return the first unit that would give a value &gt;=1.
      *
      * @param value the value
      * @param unit  the unit of the value

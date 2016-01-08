@@ -48,7 +48,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * </p>
  * <h2>Mapfish JSON Style Version 1</h2>
  * <p>
- *     Version 1 is compatible with mapfish print <= v2 and is based on the OpenLayers v2 styling.  The layout is as follows:
+ *     Version 1 is compatible with mapfish print &lt;= v2 and is based on the OpenLayers v2 styling.  The layout is as follows:
  * </p>
  * <pre><code>
  * {
@@ -58,18 +58,18 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  *     "fillColor":"#FF0000",
  *     "fillOpacity":0,
  *     "rotation" : "30",
- * <p/>
+ *
  *     "externalGraphic" : "mark.png"
  *     "graphicName": "circle",
  *     "graphicOpacity": 0.4,
  *     "pointRadius": 5,
- * <p/>
+ *
  *     "strokeColor":"#FFA829",
  *     "strokeOpacity":1,
  *     "strokeWidth":5,
  *     "strokeLinecap":"round",
  *     "strokeDashstyle":"dot",
- * <p/>
+ *
  *     "fontColor":"#000000",
  *     "fontFamily": "sans-serif",
  *     "fontSize": "12px",
@@ -86,7 +86,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  *    }
  * }
  * </code></pre>
- * <p/>
+ * <p></p>
  * <h2>Mapfish JSON Style Version 2</h2>
  * <p>
  *     Version 2 uses the same property names as version 1 but has a different structure.  The layout is as follows:
@@ -99,12 +99,12 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  *   "val1" : "#FFA829",
  *   // default values for properties can be defined here
  *   " strokeDashstyle" : "dot"
- *   "[population > 300]" : {
+ *   "[population &gt; 300]" : {
  *     // default values for current rule can be defined here
  *     // they will override default values defined at
  *     // higher level
  *     "rotation" : "30",
- * <p/>
+ *
  *     //min and max scale denominator are optional
  *     "maxScale" : 1000000,
  *     "minScale" : 100000,
@@ -115,11 +115,11 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  *       "fillOpacity":0,
  *       "rotation" : "30",
  *       "externalGraphic" : "mark.png",
- * <p/>
+ *
  *       "graphicName": "circle",
  *       "graphicOpacity": 0.4,
  *       "pointRadius": 5,
- * <p/>
+ *
  *       "strokeColor":"${val1}",
  *       "strokeOpacity":1,
  *       "strokeWidth":5,
@@ -136,7 +136,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  *       "type" : "polygon",
  *       "fillColor":"#FF0000",
  *       "fillOpacity":0,
- * <p/>
+ *
  *       "strokeColor":"${val1}",
  *       "strokeOpacity":1,
  *       "strokeWidth":5,
@@ -165,78 +165,79 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * </code></pre>
  * <p>
  *     As illustrated above the style consists of:
- *     <ul>
- *         <li>The version number (2) (required)</li>
- *         <li>
- *             Common values which can be referenced in symbolizer property values.(optional)
- *             <p>Values can be referenced in the value of a property with the pattern: ${valName}</p>
- *             <p>Value names can only contain numbers, characters, _ or -</p>
- *             <p>
- *                 Values do not have to be the full property they will be interpolated.  For example:
- *                 <code>The value is ${val}</code>
- *             </p>
- *         </li>
- *         <li>
- *             Defaults property definitions(optional):
- *             <p>
- *                 In order to reduce duplication and keep the style definitions small, default values can be specified.  The
- *                 default values in the root (style level) will be used in all symbolizers if the value is not defined.  The
- *                 style level default will apply to all symbolizers defined in the system.
- *             </p>
- *             <p>
- *                 The only difference between a value and a default is that the default has a well known name, therefore defaults
- *                 can also be used as values.
- *             </p>
- *         </li>
- *         <li>
- *             All the styling rules (At least one is required)
- *             <p>
- *                 A styling rule has a key which is the filter which selects the features that the rule will be used to draw and the
- *                 rule definition object.
- *             <p>The filter is either <code>*</code> or an
- *                 <a href="http://docs.geoserver.org/stable/en/user/filter/ecql_reference.html#filter-ecql-reference">
- *                 ECQL Expression</a>) surrounded by square brackets.  For example: [att < 23].</p>
- *                 <p>
- *                     <em>WARNING:</em> At the moment DWITHIN and BEYOND spatial functions take a unit parameter.  However it
- *                     is ignored by geotools and the distance is always in the crs of the geometry projection.
- *                 </p>
- *                 The rule definition is as follows:
- *                 <ul>
- *                     <li>
- *                         Default property values (optional):
- *                         <p>
- *                             Each rule can also have defaults.  If the style and the rule have a default for the same property
- *                             the rule will override the style default.  All defaults can be (of course) overridden by a value
- *                             in a symbolizer.
- *                         </p>
- *                     </li>
- *                     <li>
- *                         minScale (optional)
- *                         <p>
- *                             The minimum scale that the rule should evaluate to true
- *                         </p>
- *                     </li>
- *                     <li>
- *                         maxScale (optional)
- *                         <p>
- *                             The maximum scale that the rule should evaluate to true
- *                         </p>
- *                     </li>
- *                     <li>
- *                         An array of symbolizers. (at least one required).
- *                         <p>
- *                             A symbolizer must have a type property (point, line, polygon, text) which indicates the type of
- *                             symbolizer and it has the attributes for that type of symbolizer.  All values have defaults
- *                             so it is possible to define a symbolizer as with only the type property. The only exception is
- *                             that the "text" symbolizer needs a label property.
- *                         </p>
- *                     </li>
- *                 </ul>
- *             </p>
- *         </li>
- *     </ul>
  * </p>
- * <p/>
+ * <ul>
+ *     <li>The version number (2) (required)</li>
+ *     <li>
+ *         Common values which can be referenced in symbolizer property values.(optional)
+ *         <p>Values can be referenced in the value of a property with the pattern: ${valName}</p>
+ *         <p>Value names can only contain numbers, characters, _ or -</p>
+ *         <p>
+ *             Values do not have to be the full property they will be interpolated.  For example:
+ *             <code>The value is ${val}</code>
+ *         </p>
+ *     </li>
+ *     <li>
+ *         Defaults property definitions(optional):
+ *         <p>
+ *             In order to reduce duplication and keep the style definitions small, default values can be specified.  The
+ *             default values in the root (style level) will be used in all symbolizers if the value is not defined.  The
+ *             style level default will apply to all symbolizers defined in the system.
+ *         </p>
+ *         <p>
+ *             The only difference between a value and a default is that the default has a well known name, therefore defaults
+ *             can also be used as values.
+ *         </p>
+ *     </li>
+ *     <li>
+ *         All the styling rules (At least one is required)
+ *         <p>
+ *             A styling rule has a key which is the filter which selects the features that the rule will be used to draw and the
+ *             rule definition object.
+ *         </p>
+ *         <p>The filter is either <code>*</code> or an
+ *             <a href="http://docs.geoserver.org/stable/en/user/filter/ecql_reference.html#filter-ecql-reference">
+ *             ECQL Expression</a>) surrounded by square brackets.  For example: [att &lt; 23].
+ *         </p>
+ *         <p>
+ *             <em>WARNING:</em> At the moment DWITHIN and BEYOND spatial functions take a unit parameter.  However it
+ *             is ignored by geotools and the distance is always in the crs of the geometry projection.
+ *         </p>
+ *         The rule definition is as follows:
+ *         <ul>
+ *                 <li>
+ *                     Default property values (optional):
+ *                 <p>
+ *                         Each rule can also have defaults.  If the style and the rule have a default for the same property
+ *                         the rule will override the style default.  All defaults can be (of course) overridden by a value
+ *                         in a symbolizer.
+ *                     </p>
+ *                 </li>
+ *                 <li>
+ *                     minScale (optional)
+ *                     <p>
+ *                         The minimum scale that the rule should evaluate to true
+ *                     </p>
+ *                 </li>
+ *                 <li>
+ *                     maxScale (optional)
+ *                     <p>
+ *                         The maximum scale that the rule should evaluate to true
+ *                     </p>
+ *                 </li>
+ *                 <li>
+ *                     An array of symbolizers. (at least one required).
+ *                     <p>
+ *                         A symbolizer must have a type property (point, line, polygon, text) which indicates the type of
+ *                         symbolizer and it has the attributes for that type of symbolizer.  All values have defaults
+ *                         so it is possible to define a symbolizer as with only the type property. The only exception is
+ *                         that the "text" symbolizer needs a label property.
+ *                     </p>
+ *                 </li>
+ *             </ul>
+ *     </li>
+ * </ul>
+ * <p></p>
  * <h2>Configuration Elements</h2>
  * The items in the list below are the properties that can be set on the different symbolizers.  In brackets list the symbolizers
  * the values can apply to.
@@ -313,22 +314,22 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  *         This property must have 2 characters, the x-align and the y-align.
  *         <p>
  *             X-Align options:
- *             <ul>
- *                 <li>l - align to the left of the geometric center</li>
- *                 <li>c - align on the center of the geometric center</li>
- *                 <li>r - align to the right of the geometric center</li>
- *             </ul>
  *         </p>
+ *         <ul>
+ *             <li>l - align to the left of the geometric center</li>
+ *             <li>c - align on the center of the geometric center</li>
+ *             <li>r - align to the right of the geometric center</li>
+ *         </ul>
  *         <p>
  *             Y-Align options:
- *             <ul>
- *                 <li>b - align to the bottom of the geometric center</li>
- *                 <li>m - align on the middle of the geometric center</li>
- *                 <li>t - align to the top of the geometric center</li>
- *             </ul>
  *         </p>
+ *         <ul>
+ *             <li>b - align to the bottom of the geometric center</li>
+ *             <li>m - align on the middle of the geometric center</li>
+ *             <li>t - align to the top of the geometric center</li>
+ *         </ul>
  *     </li>
- *     <p/>
+ *
  *     <li><strong>labelRotation</strong>(ECQL) - (Point Placement) the rotation of the label</li>
  *     <li><strong>labelXOffset</strong>(ECQL) - (Point Placement) the amount to offset the label along the x axis.  negative number
  *     offset to the left</li>
@@ -343,46 +344,48 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  *     <li><strong>labelPerpendicularOffset</strong>(ECQL) - (Line Placement) If this property is defined it will be assumed that the
  *     geometry is a line and this property defines how far from the center of the line the label should be drawn.</li>
  * </ul>
- * <p/>
+ * <p></p>
  * <h2>Labelling:</h2>
  * <p>
  *     Labelling in this style format is done by defining a text symbolizer ("type":"text").  All text sybmolizers consist of:
- *     <ul>
- *         <li>Label Property</li>
- *         <li>Halo Properties</li>
- *         <li>Font/weight/style/color/opacity</li>
- *         <li>Placement Properties</li>
- *     </ul>
  * </p>
+ * <ul>
+ *     <li>Label Property</li>
+ *     <li>Halo Properties</li>
+ *     <li>Font/weight/style/color/opacity</li>
+ *     <li>Placement Properties</li>
+ * </ul>
+ *
+ * <h3>Label Property</h3>
  * <p>
- *     <h4>Label Property</h4>
  *     The label property defines what label will be drawn for a given feature.  The value is either a string which will
  *     be the static label for all features that the symbolizer will be drawn on or a string surrounded by [] which
  *     indicates that it is an ECQL Expression.  Examples:
- *     <ul>
- *         <li>Static label</li>
- *         <li>[attributeName]</li>
- *         <li>['Static Label Again']</li>
- *         <li>[5]</li>
- *         <li>5</li>
- *         <li>env('java.home')</li>
- *         <li>centroid(geomAtt)</li>
- *     </ul>
  * </p>
+ * <ul>
+ *     <li>Static label</li>
+ *     <li>[attributeName]</li>
+ *     <li>['Static Label Again']</li>
+ *     <li>[5]</li>
+ *     <li>5</li>
+ *     <li>env('java.home')</li>
+ *     <li>centroid(geomAtt)</li>
+ * </ul>
+ *
+ * <h3>Halo Properties</h3>
  * <p>
- *     <h4>Halo Properties</h4>
  *     A halo is a space around the drawn label text that is color (using the halo properties).  A label with a halo is like
  *     the drawn label text with a buffer around the label text drawn using the halo properties.  This allows the label to
  *     be clearly visible regardless of the background.  For example if the text is black and the halo is with, then the text will
  *     always be readable thanks to the white buffer around the label text.
  * </p>
+ * <h3>Font/weight/style/color/opacity</h3>
  * <p>
- *     <h4>Font/weight/style/color/opacity</h4>
  *     The Font/weight/style/color/opacity properties define how the label text is drawn.  They are for the most part equivalent to
  *     the similarly named css and SLD properties.
  * </p>
+ * <h3>Placement Properties</h3>
  * <p>
- *     <h4>Placement Properties</h4>
  *     An important part of defining a text symbolizer is defining where the text/label will be drawn.  The placement properties
  *     are used for this purpose.  There are two types of placements, Point and Line placement and <em>only one</em> type of placement
  *     can be used. The type of placement is determined by inspecting the properties in the text symbolizer and if the
@@ -408,7 +411,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  *     There are two ways to define the anchor point, either the <em>labelAnchorPointX/Y</em> properties are set or the
  *     <em>labelAlign</em> property is set.  If both are defined then the <em>labelAlign</em> will be ignored.
  * </p>
- * <p/>
+ * <p></p>
  * <h2>ECQL references:</h2>
  * <ul>
  *     <li><a href="http://docs.geoserver.org/stable/en/user/filter/ecql_reference.html#ecql-expr">

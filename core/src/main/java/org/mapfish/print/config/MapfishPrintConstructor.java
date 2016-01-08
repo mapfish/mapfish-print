@@ -33,11 +33,11 @@ import java.util.Map;
 
 /**
  * The interface to SnakeYaml that is responsible for creating the different objects during parsing the config yaml files.
- * <p/>
+ * <p></p>
  * The objects are created using spring dependency injection so that the methods are correctly wired using spring.
- * <p/>
+ * <p></p>
  * If an object has the interface HashConfiguration then this class will inject the configuration object after creating the object.
- * <p/>
+ * <p></p>
  * @author jesseeichar on 3/24/14.
  */
 public final class MapfishPrintConstructor extends Constructor {
@@ -60,7 +60,7 @@ public final class MapfishPrintConstructor extends Constructor {
                 LOGGER.error(message);
                 throw new AssertionError(message);
             }
-            addTypeDescription(new TypeDescription(entry.getValue().getClass(), entry.getKey()));
+            addTypeDescription(new TypeDescription(entry.getValue().getClass(), "!" + entry.getKey()));
         }
 
         MapfishPrintConstruct construct = new MapfishPrintConstruct(context);
@@ -91,7 +91,7 @@ public final class MapfishPrintConstructor extends Constructor {
             }
             Object bean;
             try {
-                bean = this.applicationContext.getBean(node.getTag().getValue());
+                bean = this.applicationContext.getBean(node.getTag().getValue().substring(1));
             } catch (NoSuchBeanDefinitionException e) {
                 bean = this.applicationContext.getBean(node.getType());
             }

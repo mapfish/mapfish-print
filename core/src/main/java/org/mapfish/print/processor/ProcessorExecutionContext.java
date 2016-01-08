@@ -29,7 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Contains information shared across all nodes being executed.
- * <p/>
+ * <p></p>
  * @author jesseeichar on 3/24/14.
  */
 public final class ProcessorExecutionContext {

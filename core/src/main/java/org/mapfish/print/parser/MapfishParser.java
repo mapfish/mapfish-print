@@ -51,10 +51,10 @@ import static org.mapfish.print.parser.ParserUtils.getAttributeNames;
 /**
  * This class parses json parameter objects into the parameter object taken by {@link org.mapfish.print.map.MapLayerFactoryPlugin}
  * instances and into {@link org.mapfish.print.attribute.ReflectiveAttribute} value objects
- * <p/>
+ * <p></p>
  * Essentially it maps the keys in the json object to public fields in the object obtained from the
  * {@link org.mapfish.print.map.MapLayerFactoryPlugin#createParameter()} method.
- * <p/>
+ * <p></p>
  * There is a more explicit explanation in
  * {@link org.mapfish.print.attribute.ReflectiveAttribute#createValue(org.mapfish.print.config.Template)}
  *

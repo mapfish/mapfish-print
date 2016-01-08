@@ -113,7 +113,7 @@ public final class OsmLayerParam extends AbstractTiledLayerParams {
     /**
      * Custom query parameters to use when making http requests.
      * {@link #customParams}.
-     * <p/>
+     * <p></p>
      * The json should look something like:
      * <pre><code>
      * {

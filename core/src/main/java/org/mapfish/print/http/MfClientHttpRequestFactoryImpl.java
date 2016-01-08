@@ -95,7 +95,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
 
     /**
      * A request that can be configured at a low level.
-     * <p/>
+     * <p></p>
      * It is an http components based request.
      */
     public static final class Request extends AbstractClientHttpRequest implements ConfigurableRequest {

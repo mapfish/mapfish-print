@@ -105,7 +105,7 @@ public class ThreadPoolJobManager implements JobManager {
     private int maxNumberOfRunningPrintJobs = Runtime.getRuntime().availableProcessors();
     /**
      * The maximum number of print job requests that are waiting to be executed.
-     * <p/>
+     * <p></p>
      * This prevents spikes in requests from completely destroying the server.
      */
     private int maxNumberOfWaitingJobs = DEFAULT_MAX_WAITING_JOBS;
@@ -134,7 +134,7 @@ public class ThreadPoolJobManager implements JobManager {
     /**
      * A comparator for comparing {@link org.mapfish.print.servlet.job.SubmittedPrintJob}s and
      * prioritizing them.
-     * <p/>
+     * <p></p>
      * For example it could be that requests from certain users (like executive officers) are prioritized over requests from
      * other users.
      */

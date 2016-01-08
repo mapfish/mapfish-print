@@ -72,7 +72,7 @@ import javax.annotation.PostConstruct;
 
 /**
  * The Main Configuration Bean.
- * <p/>
+ * <p></p>
  *
  * @author jesseeichar on 2/20/14.
  */
@@ -174,8 +174,8 @@ public class Configuration {
      * {@link org.mapfish.print.config.Template#setOutputFilename(String)} and the outputFilename parameter in the request JSON.
      * <p>
      *     This can be a string and can also have a date section in the string that will be filled when the report is created for
-     *     example a section with ${&lt;dateFormatString>} will be replaced with the current date formatted in the way defined
-     *     by the &lt;dateFormatString> string.  The format rules are the rules in
+     *     example a section with ${&lt;dateFormatString&gt;} will be replaced with the current date formatted in the way defined
+     *     by the &lt;dateFormatString&gt; string.  The format rules are the rules in
      *     <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">java.text.SimpleDateFormat</a>
      *     (do a google search if the link above is broken).
      * </p>
@@ -243,7 +243,7 @@ public class Configuration {
     /**
      * Configuration for proxying http requests.  Each proxy can be configured with authentication
      * and with the uris that they apply to.
-     *<p/>
+     *<p></p>
      * See {@link org.mapfish.print.http.HttpProxy} for details on how to configure them.
      *
      * @param proxies the proxy configuration objects
@@ -563,7 +563,7 @@ public class Configuration {
     /**
      * The roles required to access this configuration/app.  If empty or not set then it is a <em>public</em> app.  If there are
      * many roles then a user must have one of the roles in order to access the configuration/app.
-     * <p/>
+     * <p></p>
      * The security (how authentication/authorization is done) is configured in the /WEB-INF/classes/mapfish-spring-security.xml
      * <p>
      * Any user without the required role will get an error when trying to access any of the templates and no templates will

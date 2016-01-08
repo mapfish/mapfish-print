@@ -41,7 +41,7 @@ public interface Processor<In, Out> extends ConfigurationObject {
 
     /**
      * Get the class of the output type.  This is used when determining the outputs this processor produces.
-     * <p/>
+     * <p></p>
      * The <em>public fields</em> of the Processor will be the output of the processor and thus can be mapped to inputs
      * of another processor.
      */
@@ -56,7 +56,7 @@ public interface Processor<In, Out> extends ConfigurationObject {
     /**
      * Returns a <em>new/clean</em> instance of a parameter object.  This instance's will be inspected using reflection to
      * find its public fields and the properties will be set from the {@link org.mapfish.print.output.Values} object.
-     * <p/>
+     * <p></p>
      * The way the properties will be looked up is to
      * <ol>
      * <li>
@@ -74,11 +74,11 @@ public interface Processor<In, Out> extends ConfigurationObject {
      * the {@link org.mapfish.print.parser.HasDefaultValue} annotation is on the field for the property.
      * </li>
      * </ol>
-     * <p/>
+     * <p></p>
      * The populated instance will be passed to the execute method.  It is <em>imperative</em> that a new instance is created
      * each time because they will be used in a multi-threaded environment and thus the same processor instance may be ran
      * in multiple threads with different instances of the parameter object.
-     * <p/>
+     * <p></p>
      * It is important to realize that super classes will also be analyzed, so care must be had with inheritance.
      */
     @Nullable

@@ -25,7 +25,7 @@ import javax.annotation.Nonnull;
 /**
  * Classes that implement this interface indicate that they take responsibility for generating their dependencies as the dependency
  * graph is being created.
- * <p/>
+ * <p></p>
  * Some of their dependencies depend on which nodes are in the current template and therefore can't be declared in the spring
  * configuration file in a static way.  For example the MergeDataSourceProcessor must run after all of its source, since its sources
  * differ from one configuration to another they must be determined at runtime.

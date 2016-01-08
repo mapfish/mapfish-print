@@ -37,6 +37,7 @@ import javax.annotation.Nullable;
  *</p>
  * <p>
  *     Consider the case where you need to:
+ * </p>
  *     <ul>
  *     <li>Restrict allowed URIS using the !restrictUris processor</li>
  *     <li>Forward all headers from print request to all requests using !forwardHeaders</li>
@@ -58,7 +59,7 @@ import javax.annotation.Nullable;
  *   matchers: [!localMatch {}]
  *   inputMapper: {clientHttpRequestFactoryWithHeaders:clientHttpRequestFactory}
  *     </code></pre>
- * </p>
+ *
  * <p>
  *     The recommended way to write the above configuration is as follows:
  * </p>

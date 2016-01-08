@@ -41,7 +41,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Basic test of the set features to vector layers processor.
- * <p/>
+ * <p></p>
  * Created by Stéphane Brunner on 16/4/14.
  */
 public class SetFeaturesProcessorTest extends AbstractMapfishSpringTest {

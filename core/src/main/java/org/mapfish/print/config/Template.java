@@ -83,8 +83,8 @@ public class Template implements ConfigurationObject, HasConfiguration {
      * parameter in the request JSON.
      * <p>
      *     This can be a string and can also have a date section in the string that will be filled when the report is created for
-     *     example a section with ${&lt;dateFormatString>} will be replaced with the current date formatted in the way defined
-     *     by the &lt;dateFormatString> string.  The format rules are the rules in
+     *     example a section with ${&lt;dateFormatString&gt;} will be replaced with the current date formatted in the way defined
+     *     by the &lt;dateFormatString&gt; string.  The format rules are the rules in
      *     <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">java.text.SimpleDateFormat</a>
      *     (do a google search if the link above is broken).
      * </p>
@@ -345,7 +345,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
     /**
      * The roles required to access this template.  If empty or not set then it is a <em>public</em> template.  If there are
      * many roles then a user must have one of the roles in order to access the template.
-     * <p/>
+     * <p></p>
      * The security (how authentication/authorization is done) is configured in the /WEB-INF/classes/mapfish-spring-security.xml
      * <p>
      * Any user without the required role will get an error when trying to access the template and the template will not

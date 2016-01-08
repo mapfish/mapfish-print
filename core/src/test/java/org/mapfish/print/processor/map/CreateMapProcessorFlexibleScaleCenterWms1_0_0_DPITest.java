@@ -51,7 +51,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Basic test of the Map processor.
- * <p/>
+ * <p></p>
  * Created by Jesse on 3/26/14.
  */
 public class CreateMapProcessorFlexibleScaleCenterWms1_0_0_DPITest extends AbstractMapfishSpringTest {

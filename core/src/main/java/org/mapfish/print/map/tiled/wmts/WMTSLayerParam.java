@@ -38,12 +38,12 @@ import java.net.URISyntaxException;
 public final class WMTSLayerParam extends AbstractWMXLayerParams {
     /**
      * The ‘ResourceURL’ available in the WMTS capabilities.
-     * <p/>
+     * <p></p>
      * Example (for <code>requestEncoding: "KVP"</code>):
      * <pre><code>
      * baseUrl: "http://domain.com/wmts"
      * </code></pre>
-     * <p/>
+     * <p></p>
      * Example (for <code>requestEncoding: "REST"</code>):
      * <pre><code>
      * baseUrl: "http://domain.com/wmts/roads/{TileMatrixSet}/{TileMatrix}/{TileCol}/{TileRow}.png"
@@ -81,10 +81,10 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
     public String style = "";
     /**
      * The "sample" dimensions or image color bands to retrieve.
-     * <p/>
+     * <p></p>
      * This can be null, if so then the default dimensions will be returned.
      * If specified they must be dimensions supported by the server.
-     * <p/>
+     * <p></p>
      * These are keys to the {@link #dimensionParams}.
      */
     @HasDefaultValue
@@ -92,13 +92,13 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
 
     /**
      * The dpi of the returned images.
-     * <p/>
+     * <p></p>
      * By default this is the OGC default DPI.
      */
     @HasDefaultValue
     public double dpi = Constants.OGC_DPI;
     /**
-     * Dictionary of dimensions name (Must be uppercase) => value.
+     * Dictionary of dimensions name (Must be uppercase) =&gt; value.
      */
     @HasDefaultValue
     public PObject dimensionParams;
@@ -114,7 +114,7 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
     public String matrixSet;
     /**
      * Array of matrix ids.
-     * <p/>
+     * <p></p>
      * Example:
      * <pre><code>
      * [{

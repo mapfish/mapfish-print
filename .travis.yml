@@ -15,6 +15,7 @@ before_install:
 jdk:
 - oraclejdk7
 - openjdk7
+- oraclejdk8
 
 # We shift the steps up (usage of before_script and script instead of script and deploy) because
 # a failure in deploy is not notified.

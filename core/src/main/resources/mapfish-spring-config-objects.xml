@@ -19,18 +19,18 @@
   -->
 
 <beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-    <bean id="!localMatch" class="org.mapfish.print.processor.http.matcher.LocalHostMatcher" scope="prototype" />
-    <bean id="!ipMatch" class="org.mapfish.print.processor.http.matcher.AddressHostMatcher" scope="prototype" />
-    <bean id="!dnsMatch" class="org.mapfish.print.processor.http.matcher.DnsHostMatcher" scope="prototype" />
-    <bean id="!acceptAll" class="org.mapfish.print.processor.http.matcher.AcceptAllMatcher" scope="prototype" />
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+    <bean id="localMatch" class="org.mapfish.print.processor.http.matcher.LocalHostMatcher" scope="prototype" />
+    <bean id="ipMatch" class="org.mapfish.print.processor.http.matcher.AddressHostMatcher" scope="prototype" />
+    <bean id="dnsMatch" class="org.mapfish.print.processor.http.matcher.DnsHostMatcher" scope="prototype" />
+    <bean id="acceptAll" class="org.mapfish.print.processor.http.matcher.AcceptAllMatcher" scope="prototype" />
 
-    <bean id="!template" class="org.mapfish.print.config.Template" scope="prototype" />
-    <bean id="!pdfConfig" class="org.mapfish.print.config.PDFConfig" scope="prototype" />
+    <bean id="template" class="org.mapfish.print.config.Template" scope="prototype" />
+    <bean id="pdfConfig" class="org.mapfish.print.config.PDFConfig" scope="prototype" />
 
-    <bean id="!proxy" class="org.mapfish.print.http.HttpProxy" scope="prototype" />
-    <bean id="!credential" class="org.mapfish.print.http.HttpCredential" scope="prototype" />
-    <bean id="!certificateStore" class="org.mapfish.print.http.CertificateStore" scope="prototype" />
-    <bean id="!oldApi" class="org.mapfish.print.config.OldApiConfig" scope="prototype" />
+    <bean id="proxy" class="org.mapfish.print.http.HttpProxy" scope="prototype" />
+    <bean id="credential" class="org.mapfish.print.http.HttpCredential" scope="prototype" />
+    <bean id="certificateStore" class="org.mapfish.print.http.CertificateStore" scope="prototype" />
+    <bean id="oldApi" class="org.mapfish.print.config.OldApiConfig" scope="prototype" />
 
 </beans>

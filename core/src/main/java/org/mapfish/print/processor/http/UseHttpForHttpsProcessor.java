@@ -123,7 +123,7 @@ public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFac
     }
 
     /**
-     * Set the patterns to use for selecting the hosts to apply the https -> http mapping to.
+     * Set the patterns to use for selecting the hosts to apply the https -&gt; http mapping to.
      * <ul>
      * <li>If the host starts and ends with / then it is compiled as a regular expression</li>
      * <li>Otherwise the hosts must exactly match</li>

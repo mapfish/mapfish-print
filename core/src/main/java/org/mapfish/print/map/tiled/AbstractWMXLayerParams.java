@@ -41,7 +41,7 @@ public abstract class AbstractWMXLayerParams extends AbstractTiledLayerParams {
      * are the parameters that will prevent two layers from the same server from being merged into a single request with both
      * layers. See {@link #mergeableParams} for a more detailed example of the difference between {@link #mergeableParams} and
      * {@link #customParams}.
-     * <p/>
+     * <p></p>
      * The json should look something like:
      * <pre><code>
      * {
@@ -56,7 +56,7 @@ public abstract class AbstractWMXLayerParams extends AbstractTiledLayerParams {
 
     /**
      * Custom query parameters that can be merged if multiple layers are merged together into a single request.
-     * <p/>
+     * <p></p>
      * The json should look something like:
      * <pre><code>
      * {
@@ -64,10 +64,10 @@ public abstract class AbstractWMXLayerParams extends AbstractTiledLayerParams {
      *     "param2Name": ["value1", "value2"]
      * }
      * </code></pre>
-     * <p/>
+     * <p></p>
      * For example in WMS the style parameter can be merged.  If there are several wms layers that can be merged
      * except they have different style parameters they can be merged because the style parameter can be merged.
-     * <p/>
+     * <p></p>
      * Compare that to DPI parameter (for QGIS wms mapserver).  if two layers have different DPI then the layers
      * cannot be merged.  In this case the DPI should <em>NOT</em> be one of the {@link #mergeableParams} it should
      * be one of the {@link #customParams}.

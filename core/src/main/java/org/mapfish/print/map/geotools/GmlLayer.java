@@ -208,7 +208,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
     public static class GmlParam extends AbstractVectorLayerParam  {
         /**
          * A url to the gml or the raw Gml data.
-         * <p/>
+         * <p></p>
          * The url can be a file url, however if it is it must be relative to the configuration directory.
          */
         public String url;

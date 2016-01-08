@@ -220,7 +220,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
         public Double rotation = null;
         /**
          * Indicates if the map should adjust its scale/zoom level to be equal to one of those defined in the configuration file.
-         * <p/>
+         * <p></p>
          *
          * @see #isUseNearestScale()
          */
@@ -229,7 +229,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
 
         /**
          * Indicates if the map should adjust its bounds.
-         * <p/>
+         * <p></p>
          *
          * @see #isUseAdjustBounds()
          */
@@ -245,11 +245,11 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
 
         /**
          * Should the vector style definitions be adapted to the target DPI resolution? (Default: true)
-         * <p/>
+         * <p></p>
          * The style definitions are often optimized for a use with OpenLayers (which uses
          * a DPI value of 72). When these styles are used to print with a higher DPI value,
          * lines often look too thin, label are too small, etc.
-         * <p/>
+         * <p></p>
          * If this property is set to `true`, the style definitions will be scaled to the target DPI value.
          */
         @HasDefaultValue

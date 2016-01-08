@@ -26,7 +26,7 @@ import org.mapfish.print.config.Template;
 
 /**
  * Represents an attribute passed in from a web-client to be used to populate the report.  It reads a value from the request data
- * <p/>
+ * <p></p>
  *
  * @author jesseeichar on 2/21/14.
  */

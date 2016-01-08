@@ -23,13 +23,6 @@ apply plugin: 'jetty'
 
 defaultTasks 'build'
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-    maven {url "http://dev.mapfish.org/maven/repository"}
-    maven {url "http://download.osgeo.org/webdav/geotools"}
-}
-
 //configurations.compile.transitive = false
 dependencies {
     compile project(':core')
