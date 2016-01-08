@@ -144,7 +144,9 @@ public abstract class BaseMapServlet extends HttpServlet {
                 throw new ServletException("Error occurred while reading configuration file '" + configFile + "': " + e );
             }
         }
-
+        if (printer != null) {
+            printer.start();
+        }
         return printer;
     }
 
