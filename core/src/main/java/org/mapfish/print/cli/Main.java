@@ -23,9 +23,11 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.CharStreams;
 import com.sampullara.cli.Args;
+
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
@@ -82,6 +84,18 @@ public final class Main {
      * @throws Exception
      */
     public static void main(final String[] args) throws Exception {
+        runMain(args);
+        System.exit(0);
+    }
+
+    /**
+     * Runs the print.
+     *
+     * @param args the cli arguments
+     * @throws Exception
+     */
+    @VisibleForTesting
+    public static void runMain(final String[] args) throws Exception {
         final CliHelpDefinition helpCli = new CliHelpDefinition();
 
         try {
@@ -120,7 +134,6 @@ public final class Main {
         } finally {
             context.destroy();
         }
-        System.exit(0);
     }
 
     private static void printUsage(final int exitCode) {
