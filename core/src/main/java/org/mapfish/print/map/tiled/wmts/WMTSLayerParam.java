@@ -27,6 +27,8 @@ import org.mapfish.print.URIUtils;
 import org.mapfish.print.map.tiled.AbstractWMXLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.wrapper.PObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -36,6 +38,8 @@ import java.net.URISyntaxException;
  * The parameters for configuration a WMTS layer.
  */
 public final class WMTSLayerParam extends AbstractWMXLayerParams {
+    private static final Logger LOGGER = LoggerFactory.getLogger(WMTSLayerParam.class);
+
     /**
      * The ‘ResourceURL’ available in the WMTS capabilities.
      * <p></p>
@@ -165,11 +169,13 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
 
         if (RequestEncoding.REST == this.requestEncoding) {
             if (!containsVariables(url)) {
+                LOGGER.warn("URL {} is missing some variables", url);
                 return false;
             }
             try {
                 return WMTSLayer.createRestURI(url, "matrix", 0, 0, this) != null;
             } catch (URISyntaxException exc) {
+                LOGGER.warn("URL {} is invalid: {}", url, exc.getMessage());
                 return false;
             }
         } else {
