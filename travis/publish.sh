@@ -29,7 +29,7 @@ then
     exit 0
 fi
 
-if [ "${TRAVIS_BRANCH}" == "development" ]
+if [ "${TRAVIS_BRANCH}" == "master" ]
 then
   publish latest
 elif [ ! -z "${TRAVIS_TAG}" ]

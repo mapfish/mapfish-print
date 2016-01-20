@@ -1,4 +1,4 @@
-.. image:: https://travis-ci.org/mapfish/mapfish-print.svg?branch=development
+.. image:: https://travis-ci.org/mapfish/mapfish-print.svg?branch=master
     :target: https://travis-ci.org/mapfish/mapfish-print
 
 Please read the documentation available here:
