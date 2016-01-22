@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+   targetNamespace="http://www.opengis.net/wfs"
+   xmlns:wfs="http://www.opengis.net/wfs"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   elementFormDefault="unqualified"
+   version="1.0.0.3">
+   
+   <xsd:annotation>
+      <xsd:documentation>All-components schema for the Web Feature Service namespace.
+         
+         WFS is an OGC Standard.
+         Copyright (c) 2002,2010 Open Geospatial Consortium.
+         To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+      </xsd:documentation>
+   </xsd:annotation>
+
+   <!-- ==================  includes and imports  ======================= -->
+   <xsd:include schemaLocation="./WFS-basic.xsd"/>
+   <xsd:include schemaLocation="./WFS-transaction.xsd"/>
+   <!-- ================================================================= -->
+</xsd:schema>

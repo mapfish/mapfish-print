@@ -19,10 +19,12 @@
 
 package org.mapfish.print.map.geotools;
 
+import org.eclipse.emf.ecore.resource.URIHandler;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.gml2.GMLConfiguration;
+import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FileUtils;
@@ -31,6 +33,7 @@ import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -49,7 +52,6 @@ import javax.xml.parsers.ParserConfigurationException;
  * @author Jesse on 3/26/14.
  */
 public final class GmlLayer extends AbstractFeatureSourceLayer {
-
     /**
      * Constructor.
      *
@@ -78,6 +80,9 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
         private static final org.geotools.gml3.GMLConfiguration GML_3_PARSER = new org.geotools.gml3.GMLConfiguration();
         private static final org.geotools.gml3.v3_2.GMLConfiguration GML_32_PARSER = new org.geotools.gml3.v3_2.GMLConfiguration(true);
 
+        @Autowired
+        private URIHandler cachingUrihandler;
+
         /**
          * Constructor.
          */
@@ -93,7 +98,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
 
         @Nonnull
         @Override
-        public GmlLayer parse(final Template template,
+        public GmlLayer parse(@Nonnull final Template template,
                               @Nonnull final GmlParam param) throws IOException {
             return new GmlLayer(
                     this.forkJoinPool,
@@ -149,7 +154,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
 
 
         private SimpleFeatureCollection parseGml3(final String gmlData) throws IOException {
-            Parser gmlV3Parser = new Parser(GML_3_PARSER);
+            Parser gmlV3Parser = createParser(GML_3_PARSER);
             gmlV3Parser.setStrict(false);
             gmlV3Parser.setRootElementType(new QName("http://www.opengis.net/wfs", "FeatureCollection"));
             try {
@@ -166,7 +171,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
         }
 
         private SimpleFeatureCollection parseGml2(final String gmlData) throws IOException {
-            Parser gmlV2Parser = new Parser(GML_2_PARSER);
+            Parser gmlV2Parser = createParser(GML_2_PARSER);
             gmlV2Parser.setStrict(false);
             gmlV2Parser.setRootElementType(new QName("http://www.opengis.net/wfs", "FeatureCollection"));
             try {
@@ -183,7 +188,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
         }
 
         private SimpleFeatureCollection parseGml32(final String gmlData) throws IOException {
-            Parser gmlV32Parser = new Parser(GML_32_PARSER);
+            Parser gmlV32Parser = createParser(GML_32_PARSER);
             gmlV32Parser.setStrict(false);
             gmlV32Parser.setRootElementType(new QName("http://www.opengis.net/wfs/2.0", "FeatureCollection"));
             try {
@@ -199,6 +204,12 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
             } catch (ParserConfigurationException e) {
                 throw ExceptionUtils.getRuntimeException(e);
             }
+        }
+
+        private Parser createParser(final Configuration configuration) {
+            final Parser parser = new Parser(configuration);
+            parser.getURIHandlers().add(0, this.cachingUrihandler);
+            return parser;
         }
     }
 
