@@ -1,0 +1,22 @@
+<p>This section lists the available configuration components that can be
+used in the YAML configuration file.</p>
+<p>
+  <strong>Example <code>config.yaml</code></strong>
+</p>
+  <div class="highlight-yaml"><div class="highlight"><pre>
+throwErrorOnExtraParameters: true
+
+certificateStore: !certificateStore
+  ...
+
+credentials:
+  - !credential
+    ...
+
+proxies:
+  - !proxy
+    ...
+
+templates:
+  A4 Landscape: !template
+    ...</pre></div></div>

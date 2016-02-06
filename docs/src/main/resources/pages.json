@@ -1,0 +1,18 @@
+{
+  "generated": {
+    "attributes": "Attributes",
+    "configuration": "Configuration",
+    "fileloaders": "File-Loaders",
+    "layers": "Map Layers",
+    "outputformats": "Output Formats",
+    "processors": "Processors",
+    "styles": "Vector Styles"
+  },
+  "pages": {
+    "index": "Overview",
+    "jasperreports": "Jasper Reports",
+    "api": "Web Protocol",
+    "tableimages": "Configuration of tables with HTML images",
+    "download": "Download"
+  }
+}

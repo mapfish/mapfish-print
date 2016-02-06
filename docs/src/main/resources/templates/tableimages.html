@@ -1,0 +1,105 @@
+<p>
+    This section explains how to add one or multiple images to a table subreport.<br/>
+    In a first step a table needs to be configured. For this, the processor <a href="processors.html#!prepareTable">!prepareTable</a> is used. The column containing the image needs to be defined which is done using:
+</p>
+    <div class="highlight"><pre>
+        ...
+        icon: !urlImage
+              urlExtractor: (.*)                 #Use regular expression (regex) to retrieve the URL of the image in the text of the icon column.
+              urlGroup: 1
+       ...
+    </pre></div>
+<p>
+    The source column may contain more text than just the URL of the image. For this reason a regex expression, passed to <a href="configuration.html#!urlImage">urlExtractor</a>, is used to filter out the URL.
+</p>
+<p>
+    The following example shows a configuration of a table where the column with the title "icon" contains the URL to the image. For GeoMapFish applications the column name depends on the title that is used in the interface and therefore can be the translation of the underlying database column name (if a database is used).<br/>
+    In the example below all columns from the original table are included in the printed table without formatting.
+</p>
+    <div class="highlight"><pre>
+       ...
+        - !prepareTable
+          dynamic: true
+          columns:
+            icon: !urlImage                       #This interprets the text contained in the column icon as an image URL.
+              urlExtractor: (.*)                 #Use Regex expression to retrieve the URL of the image in the text of the icon column.
+              urlGroup: 1
+       ...
+    </pre></div>
+<p>
+    To add formating styles to the printed table there are two possibilities:
+    <ol>
+        <li>
+            To add a subreport in form of a JasperReport template containing all of the columns that are to be included in the printed report. This requires the dynamic flag in the processor !prepareTable to be false.
+        </li>
+        <li>
+            Use the styling from a subreport template but generate the columns dynamically. In this case the JasperReports template (table_a4_portrait.jrxml) must contain one element. An example for this type of configuration is given below.
+        </li>
+    </ol>
+</p>
+    <div class="highlight"><pre>
+       ...
+        - !prepareTable
+             excludeColumns:
+               - "not_shown_in_print"             #columns that will not be shown in the printed table
+             maxColumns: 8
+             dynamic: true
+             jasperTemplate: table_a4_portrait.jrxml   #- If dynamic is true this template will be used to obtain the column styles and the size of the subreport.
+             firstDetailStyle: column_style_1          #- optional
+             detailStyle: column_style_2               #- required when dynamic = true
+             lastDetailStyle: column_style_3           #- optional
+             firstHeaderStyle: header_style_1          #- optional
+             headerStyle: header_style_2               #- required when dynamic = true
+             lastHeaderStyle: header_style_3           #- optional
+             columns:
+               icon: !urlImage                         #This interprets the text contained in the column icon as an image URL.
+                 urlExtractor: (.*)                    #Use Regex expression to retrieve the URL of the image in the text of the icon column.
+                 urlGroup: 1
+       ...
+    </pre></div>
+<p>
+   For the case that multiple columns with different titles contain images each column has to be configured in the config.yaml. Below is an example where two columns <code>Art</code> and <code>Eigentümer</code> contain images. The columns can be in the same table  and/or they can be in different tables. This means if two columns <code>Art</code> and <code>Eigentümer</code> are configured to contain images (as in the example below), it is possible to have two tables, one table with the column <code>Art</code> and the other table with the columns <code>Art</code> and <code>Eigentümer</code>. In the print all tree columns contain images in the print.<br/>
+</p>
+<p>
+   <code>config.yaml</code>
+</p>
+   <div class="highlight"><pre>
+       ...
+       - !prepareTable
+             excludeColumns:
+               - "not_shown_in_print"     #columns that will not be shown in the printed table
+             maxColumns: 10
+             dynamic: true
+             jasperTemplate: table_a4_portrait.jrxml
+             detailStyle: column_style_2
+             headerStyle: header_style_2
+             columns:
+               Art: !urlImage             #Declare the column icon to contain an image
+                 urlExtractor: (.*)
+                 urlGroup: 1
+               Eigentümer: !urlImage      #Declare the column image to contain an image
+                 urlExtractor: (.*)
+                 urlGroup: 1
+             inputMapper: {tableData: table}
+             outputMapper: {table: tableDataSource}
+       ...
+   </pre></div>
+<p>
+   <code>table_a4_portrait.jrxml</code>
+</p>
+   <div class="highlight"><pre>
+       ...
+        &lt;detail&gt;
+                &lt;band height="20"&gt;
+                        &lt;property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.HorizontalRowLayout"/&gt;
+                        &lt;textField isStretchWithOverflow="true" isBlankWhenNull="true"&gt;
+                                &lt;reportElement key="style2" style="column_style_2" positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="185" height="20" isPrintWhenDetailOverflows="true" uuid="1e0ee0ef-22a5-43d5-b8d2-a731fc573055"/&gt;
+                        &lt;/textField&gt;
+                &lt;/band&gt;
+        &lt;/detail&gt;
+       ...
+   </pre></div>
+<p>
+   The resulting output of the above configuration is shown in the figure below.
+</p>
+<img src="./images/image_table.png" width="800">
