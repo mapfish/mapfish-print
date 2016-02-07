@@ -41,8 +41,9 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 /**
- * The attributes for {@link org.mapfish.print.processor.map.CreateMapProcessor} (see
- * <a href="processors.html#!createMap">!createMap</a> processor).
+ * <p>The attributes for {@link org.mapfish.print.processor.map.CreateMapProcessor} (see
+ * <a href="processors.html#!createMap">!createMap</a> processor).</p>
+ * [[examples=verboseExample]]
  */
 public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttributeValues> {
 

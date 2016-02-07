@@ -34,6 +34,7 @@ import javax.annotation.Nonnull;
 /**
  * <p>Renders OpenStreetMap or other tiled layers.</p>
  * <p>Type: <code>osm</code></p>
+ * [[examples=print_osm_new_york_EPSG_900913]]
  *
  * @author Jesse on 4/3/14.
  */

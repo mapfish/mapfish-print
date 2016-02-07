@@ -90,6 +90,7 @@ import javax.annotation.Nullable;
  *   }
  * ]
  * </code></pre>
+ * [[examples=verboseExample,datasource_dynamic_tables,datasource_many_dynamictables_legend,datasource_multiple_maps,customDynamicReport]]
  *
  * @author Jesse on 9/5/2014.
  */

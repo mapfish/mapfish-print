@@ -69,6 +69,8 @@ import javax.annotation.Nullable;
  *     and as a result be put in the report (or one of the sub-reports) table.  One must be careful as
  *     this can result in truly giant reports.
  * </p>
+ * <p>See also: <a href="attributes.html#!paging">!paging</a> attribute</p>
+ * [[examples=paging]]
  *
  * @author Stéphane Brunner
  */

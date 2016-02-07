@@ -21,7 +21,8 @@ package org.mapfish.print.attribute;
 
 
 /**
- * An integer type attribute.
+ * <p>An integer type attribute.</p>
+ * [[examples=verboseExample]]
  */
 public class IntegerAttribute extends PrimitiveAttribute<Integer> {
 

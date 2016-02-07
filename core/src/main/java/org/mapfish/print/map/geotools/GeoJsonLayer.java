@@ -60,7 +60,8 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
     /**
       * <p>Renders GeoJSON layers.</p>
       * <p>Type: <code>geojson</code></p>
-     */
+      * [[examples=json_styling,datasource_multiple_maps,printwms_tyger_ny_EPSG_900913]]
+      */
     public static final class Plugin extends AbstractFeatureSourceLayerPlugin<GeoJsonParam> {
 
         private static final String TYPE = "geojson";

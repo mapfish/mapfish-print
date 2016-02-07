@@ -79,7 +79,9 @@ import java.util.List;
  * The overview map can have a different rotation than the main map. For example the main map is rotated and the overview map faces
  * north. But the overview map can also be rotated.
  * <p></p>
- * The style of the bbox rectangle can be changed.
+ * <p>The style of the bbox rectangle can be changed by setting the <code>style</code> property.</p>
+ * <p>See also: <a href="attributes.html#!overviewMap">!overviewMap</a> attribute</p>
+ * [[examples=verboseExample,overviewmap_tyger_ny_EPSG_900913]]
  */
 public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverviewMapProcessor.Input, CreateOverviewMapProcessor.Output> {
 

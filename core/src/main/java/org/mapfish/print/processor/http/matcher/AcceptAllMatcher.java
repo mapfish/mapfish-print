@@ -28,6 +28,7 @@ import java.util.List;
 
 /**
  * A matcher that always returns true.
+ * [[examples=http_processors]]
  *
  * @author jesseeichar on 1/20/14.
  */

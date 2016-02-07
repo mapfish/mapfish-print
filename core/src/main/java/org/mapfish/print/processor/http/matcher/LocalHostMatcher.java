@@ -54,6 +54,7 @@ import java.util.List;
  *     - localMatch
  *       pathRegex : /print/.+
  * </code></pre>
+ * [[examples=http_processors]]
  */
 public class LocalHostMatcher extends InetHostMatcher {
 

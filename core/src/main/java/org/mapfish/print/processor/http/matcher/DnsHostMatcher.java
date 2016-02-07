@@ -60,6 +60,7 @@ import java.util.List;
  *       host : www.camptocamp.com
  *       pathRegex : /print/.+
  * </code></pre>
+ * [[examples=http_processors]]
  */
 public class DnsHostMatcher extends HostMatcher {
     private List<AddressHostMatcher> matchersForHost = Lists.newArrayList();

@@ -62,6 +62,7 @@ import java.util.List;
  *       mask : 255.255.0.0
  *       pathRegex : /print/.+
  * </code></pre>
+ * [[examples=http_processors]]
  */
 public class AddressHostMatcher extends InetHostMatcher {
     private String ip = null;

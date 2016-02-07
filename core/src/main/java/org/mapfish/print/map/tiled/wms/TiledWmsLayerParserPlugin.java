@@ -33,6 +33,7 @@ import javax.annotation.Nonnull;
 /**
  * <p>Renders tiled WMS layers.</p>
  * <p>Type: <code>tiledwms</code></p>
+ * [[examples=printtiledwms]]
  *
  * @author Stéphane Brunner
  */

@@ -3,7 +3,15 @@ package org.mapfish.print.config;
 import java.util.List;
 
 /**
- * Configuration options for how requests to the old api are handled.
+ * <p>Configuration options for how requests to the old API are handled.</p>
+ * 
+ * <p>Example</p>
+ * <pre><code>
+ * oldApi: !oldApi
+ *   layersFirstIsBaseLayer: false
+ *   wmsReverseLayers: true
+ * templates:
+ *   ..</code></pre>
  *
  * @author Jesse on 6/12/2015.
  */

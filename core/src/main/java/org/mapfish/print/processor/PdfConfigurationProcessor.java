@@ -39,12 +39,14 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
- * This processor allows the dynamic configuration of the {@link org.mapfish.print.config.PDFConfig} object by obtaining data
+ * <p>This processor allows the dynamic configuration of the {@link org.mapfish.print.config.PDFConfig} object by obtaining data
  * from attributes.  For example the title and author could be string attributes posted from the client, this processor would update
  * the {@link org.mapfish.print.config.PDFConfig} object with the attribute data allowing per report PDF metadata.
- * <p></p>
+ * </p><p>
  * Note: The {@link org.mapfish.print.config.PDFConfig} can also be configured in the config.yaml either at the config or template level.
- *
+ * </p>
+ * <p>See also: <a href="attributes.html#!updatePdfConfigUpdate">!updatePdfConfigUpdate</a> attribute</p>
+ * [[examples=updatePdfMetadata]]
  * @author Jesse on 9/13/2014.
  */
 public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfigurationProcessor.In, Void> {
@@ -255,7 +257,9 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
     }
 
     /**
-     * The object that defines how to update the {@link org.mapfish.print.config.PDFConfig}.
+     * <p>The object that defines how to update the {@link org.mapfish.print.config.PDFConfig}
+     * (see <a href="processors.html#!updatePdfConfig">!updatePdfConfig</a> processor).
+     * [[examples=updatePdfMetadata]]
      */
     public static final class Update implements ConfigurationObject {
         private String property;

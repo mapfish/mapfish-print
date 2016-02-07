@@ -29,8 +29,14 @@ import java.util.List;
 import java.util.TreeSet;
 
 /**
- * Encapsulates a sorted set of scale denominators representing the allowed scales.  The scales are sorted from largest
- * to smallest and the index starts at 0, where 0 is the largest scale (most zoomed out)
+ * <p>Encapsulates a sorted set of scale denominators representing the allowed scales.</p>
+ * <p>The scales are sorted from largest to smallest and the index starts at 0,
+ * where 0 is the largest scale (most zoomed out).</p>
+ * <pre><code>
+ *   map: !map
+ *     zoomLevels: !zoomLevels
+ *        scales: [5000, 10000, 25000, 50000, 100000, 500000]</code></pre>
+ * [[examples=datasource_many_dynamictables_legend]]
  *
  * @author Jesse on 4/1/14.
  */

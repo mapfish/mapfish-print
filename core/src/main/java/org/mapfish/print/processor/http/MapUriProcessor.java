@@ -36,8 +36,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This processor maps uris submitted to the {@link org.mapfish.print.http.MfClientHttpRequestFactory} to a modified uri
- * as specified by the mapping parameter.
+ * <p>This processor maps uris submitted to the {@link org.mapfish.print.http.MfClientHttpRequestFactory} to a modified uri
+ * as specified by the mapping parameter.</p>
  * <p>Example: change the hostname of all requests that are http requests and have the hostname: myhost.com to localhost instead
  * of myhost.com</p>
  * <pre><code>
@@ -45,8 +45,9 @@ import java.util.regex.Pattern;
  *   mapping: {(http)://myhost.com(.*) : "$1://localhost$2"}
  * </code></pre>
  *
- * Can be applied conditionally using matchers, like in {@link RestrictUrisProcessor} (!restrictUris).
- *
+ * <p>Can be applied conditionally using matchers, like in {@link RestrictUrisProcessor} 
+ * (<a href="processors.html#!restrictUris">!restrictUris</a>).</p>
+ * [[examples=http_processors,osm_custom_params]]
  * @author Jesse on 6/25/2014.
  */
 public final class MapUriProcessor extends AbstractClientHttpRequestFactoryProcessor {

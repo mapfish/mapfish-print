@@ -21,7 +21,8 @@ package org.mapfish.print.attribute;
 
 
 /**
- * A float type attribute.
+ * <p>A float type attribute.</p>
+ * [[examples=verboseExample]]
  */
 public class FloatAttribute extends PrimitiveAttribute<Double> {
     /**

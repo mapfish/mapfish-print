@@ -37,8 +37,9 @@ import java.awt.Dimension;
 import java.util.List;
 
 /**
- * The attributes for {@link org.mapfish.print.processor.map.scalebar.CreateScalebarProcessor} (see
- * <a href="processors.html#!createScalebar">!createScalebar</a> processor).
+ * <p>The attributes for {@link org.mapfish.print.processor.map.scalebar.CreateScalebarProcessor} (see
+ * <a href="processors.html#!createScalebar">!createScalebar</a> processor).</p>
+ * [[examples=verboseExample,print_osm_new_york_EPSG_900913]]
  */
 public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.ScalebarAttributeValues> {
 

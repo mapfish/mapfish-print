@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This processor allows adding static headers to an http request.
+ * <p>This processor allows adding static headers to an http request.</p>
  * <p>Example: add a Cookie header with multiple header values and add header2 with only one value</p>
  * <pre><code>
  * - !addHeaders
@@ -43,7 +43,9 @@ import java.util.Map;
  *     Header2 : header2-value
  * </code></pre>
  *
- * Can be applied conditionally using matchers, like in {@link RestrictUrisProcessor} (!restrictUris).
+ * <p>Can be applied conditionally using matchers, like in {@link RestrictUrisProcessor} 
+ * (<a href="processors.html#!restrictUris">!restrictUris</a>).</p>
+ * [[examples=http_processors,osm_custom_params]]
  *
  * @author Jesse on 6/26/2014.
  */

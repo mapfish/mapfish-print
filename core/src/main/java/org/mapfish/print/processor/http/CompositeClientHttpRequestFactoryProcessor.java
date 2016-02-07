@@ -30,7 +30,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 /**
- * A processor that wraps several {@link AbstractClientHttpRequestFactoryProcessor}s.
+ * <p>A processor that wraps several {@link AbstractClientHttpRequestFactoryProcessor}s.</p>
  * <p>
  *   This makes it more convenient to configure multiple processors that modify
  *   {@link org.mapfish.print.http.MfClientHttpRequestFactory} objects.
@@ -43,9 +43,11 @@ import javax.annotation.Nullable;
  *     <li>Forward all headers from print request to all requests using !forwardHeaders</li>
  *     <li>Change the url using the !mapUri processor</li>
  *     </ul>
+ * <p>
  *     In this case the !mapUri processor must execute before the !restrictUris processor but it is difficult to enforce this, the
  *     inputMapping and outputMapping must be carefully designed in order to do it.  The following should work but compare it with
  *     the example below:
+ * </p>
  *     <pre><code>
  * - !mapUri
  *   mapping:
@@ -74,6 +76,7 @@ import javax.annotation.Nullable;
  *     - !restrictUris
  *       matchers: [!localMatch {}]
  * </code></pre>
+ * [[examples=http_processors]]
  * @author Jesse on 6/25/2014.
  */
 public final class CompositeClientHttpRequestFactoryProcessor

@@ -35,6 +35,7 @@ import javax.annotation.Nonnull;
 /**
  * <p>A layer which is a spatial grid of lines on the map.</p>
  * <p>Type: <code>grid</code></p>
+ * [[examples=crosses_point_grid]]
  */
 public final class GridLayerPlugin extends AbstractFeatureSourceLayerPlugin<GridParam> {
 
