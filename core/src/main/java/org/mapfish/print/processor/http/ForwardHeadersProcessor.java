@@ -36,7 +36,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 /**
- * This processor forwards all the headers from the print request (from the mapfish-print client) to each http request made for
+ * This processor forwards all the headers from the print request (from the Mapfish Print client) to each http request made for
  * the particular print job.  All headers can be forwarded (if forwardAll is set to true) or the specific headers to forward
  * can be specified.
  * <p>Example 1: Forward all headers from print request</p>
@@ -44,7 +44,7 @@ import javax.annotation.Nullable;
  * - !forwardHeaders
  *   all: true
  * </code></pre>
- * <p>Example 1: Forward specific headers (header1 and header2 will be forwarded)</p>
+ * <p>Example 2: Forward specific headers (header1 and header2 will be forwarded)</p>
  * <pre><code>
  * - !forwardHeaders
  *   headers: [header1, header2]

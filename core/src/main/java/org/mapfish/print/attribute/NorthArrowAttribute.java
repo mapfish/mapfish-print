@@ -30,7 +30,8 @@ import java.awt.Dimension;
 import java.util.List;
 
 /**
- * The attributes for {@link org.mapfish.print.processor.map.CreateNorthArrowProcessor}.
+ * The attributes for {@link org.mapfish.print.processor.map.CreateNorthArrowProcessor} (see
+ * <a href="processors.html#!createNorthArrow">!createNorthArrow</a> processor).
  */
 public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute.NorthArrowAttributeValues> {
 

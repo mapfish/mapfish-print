@@ -48,7 +48,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Reads a Geotiff file from a URL.
+ * <p>Reads a GeoTIFF file from an URL.</p>
  *
  * @author Jesse on 3/26/14.
  */
@@ -70,8 +70,9 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
     }
 
     /**
-     * Parser for creating {@link org.mapfish.print.map.geotools.GeotiffLayer} layers from request data.
-     */
+      * <p>Renders a GeoTIFF image as layer.</p>
+      * <p>Type: <code>geotiff</code></p>
+      */
     public static final class Plugin extends AbstractGridCoverageLayerPlugin implements MapLayerFactoryPlugin<GeotiffParam> {
         @Autowired
         private ExecutorService forkJoinPool;

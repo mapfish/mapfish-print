@@ -97,7 +97,8 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
     }
 
     /**
-     * Suggestions for dpi to use.  Typically these are used by the client to create a UI for a user.
+     * Get DPI suggestions.
+     * @return  DPI suggestions
      */
     public final double[] getDpiSuggestions() {
         if (this.dpiSuggestions == null) {
@@ -116,6 +117,10 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
         return this.dpiSuggestions;
     }
 
+    /**
+     * Suggestions for DPI values to use. Typically these are used by the client to create a UI for a user.
+     * @param dpiSuggestions DPI suggestions
+     */
     public final void setDpiSuggestions(final double[] dpiSuggestions) {
         this.dpiSuggestions = dpiSuggestions;
     }
@@ -124,6 +129,11 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
         return this.width;
     }
 
+    /**
+     * The width of the map in pixels. This value should match the width
+     * of the sub-report in the JasperReport template.
+     * @param width Width
+     */
     public final void setWidth(final Integer width) {
         this.width = width;
     }
@@ -132,6 +142,11 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
         return this.height;
     }
 
+    /**
+     * The height of the map in pixels. This value should match the height
+     * of the sub-report in the JasperReport template.
+     * @param height Height
+     */
     public final void setHeight(final Integer height) {
         this.height = height;
     }

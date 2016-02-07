@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Attribute for GeoJson features collection.
+ * Attribute for GeoJson feature collection.
  *
  * @author Stéphane Brunner
  */

@@ -31,7 +31,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.awt.Dimension;
 /**
- * The attributes for an overview map.
+ * The attributes for an overview map (see
+ * <a href="processors.html#!createOverviewMap">!createOverviewMap</a> processor).
  */
 public final class OverviewMapAttribute extends GenericMapAttribute<OverviewMapAttribute.OverviewMapAttributeValues> {
     

@@ -31,9 +31,10 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
- * The Plugin for creating WMS layers.
+ * <p>Renders tiled WMS layers.</p>
+ * <p>Type: <code>tiledwms</code></p>
  *
- * @author Stéphane Brunner on 22/07/2014.
+ * @author Stéphane Brunner
  */
 public final class TiledWmsLayerParserPlugin extends AbstractGridCoverageLayerPlugin implements MapLayerFactoryPlugin<TiledWmsLayerParam> {
 

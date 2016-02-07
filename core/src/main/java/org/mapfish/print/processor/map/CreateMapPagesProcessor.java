@@ -50,32 +50,26 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Processor used to display a map on multiple pages.
- * <p></p>
- *     This processor will take the defined <a href="#/attributes?location=!map">map attribute</a> and using the geometry defined in the
- *     <a href="#/attributes?location=!map">map attribute's</a> area of interest, will create an Iterable&lt;Values&gt; each of which
+ * <p>Processor used to display a map on multiple pages.</p>
+ * <p>
+ *     This processor will take the defined <a href="attributes.html#!map">map attribute</a> and using the geometry defined in the
+ *     <a href="attributes.html#!map">map attribute's</a> area of interest, will create an Iterable&lt;Values&gt; each of which
  *     contains:
+ * </p>
  *     <ul>
- *         <li>a new definition of a <a href="#/attributes?location=!map">map attribute</a></li>
+ *         <li>a new definition of a <a href="attributes.html#!map">map attribute</a></li>
  *         <li>name value which is a string that roughly describes which part of the main map this sub-map is</li>
  *         <li>left value which is the name of the sub-map to the left of the current map</li>
  *         <li>right value which is the name of the sub-map to the right of the current map</li>
  *         <li>top value which is the name of the sub-map to the top of the current map</li>
  *         <li>bottom value which is the name of the sub-map to the bottom of the current map</li>
  *     </ul>
- * <p></p>
- *     The iterable of values can be consumed by a <a href="#/processors?location=!dataSource">DataSource Processor</a> and as a result
- *     be put in the report (or one of the sub-reports) table.  One must be careful as this can result in truly giant reports.
- * <p></p>
- * Example Configuration:
- * <pre><code>
+ * <p>
+ *     The iterable of values can be consumed by a <a href="processors.html#!createDataSource">!createDataSource</a> processor
+ *     and as a result be put in the report (or one of the sub-reports) table.  One must be careful as
+ *     this can result in truly giant reports.
+ * </p>
  *
- * </code></pre>
- *
- * Example Request:
- * <pre><code>
- *
- * </code></pre>
  * @author Stéphane Brunner
  */
 public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesProcessor.Input, CreateMapPagesProcessor.Output> {

@@ -33,7 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.annotation.Nonnull;
 
 /**
- * The plugin for creating the grid layer.
+ * <p>A layer which is a spatial grid of lines on the map.</p>
+ * <p>Type: <code>grid</code></p>
  */
 public final class GridLayerPlugin extends AbstractFeatureSourceLayerPlugin<GridParam> {
 

@@ -32,10 +32,11 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
- * The Plugin for creating OSM layers.
+ * <p>Renders OpenStreetMap or other tiled layers.</p>
+ * <p>Type: <code>osm</code></p>
  *
-* @author Jesse on 4/3/14.
-*/
+ * @author Jesse on 4/3/14.
+ */
 public final class OsmLayerParserPlugin extends AbstractGridCoverageLayerPlugin implements MapLayerFactoryPlugin<OsmLayerParam> {
     @Autowired
     private StyleParser parser;

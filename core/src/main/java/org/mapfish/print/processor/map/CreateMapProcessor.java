@@ -94,6 +94,8 @@ import static org.geotools.renderer.lite.RendererUtilities.worldToScreenTransfor
 
 
 /**
+ * <p>A processor to render a map that can be embedded as a sub-report into a JasperReports
+ * template.</p>
  * @author jesseeichar on 3/17/14.
  * @author sbrunner
  */

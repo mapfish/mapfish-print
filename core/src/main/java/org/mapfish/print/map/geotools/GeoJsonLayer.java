@@ -33,7 +33,8 @@ import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
 
 /**
- * Parses GeoJson from the requestData.
+ * <p>Parses GeoJSON from the request data.</p>
+ * <p>Type: <code>geojson</code></p>
  *
  * @author Jesse on 3/26/14.
  */
@@ -57,7 +58,8 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
     }
 
     /**
-     * Parser for creating {@link org.mapfish.print.map.geotools.GeoJsonLayer} layers from request data.
+      * <p>Renders GeoJSON layers.</p>
+      * <p>Type: <code>geojson</code></p>
      */
     public static final class Plugin extends AbstractFeatureSourceLayerPlugin<GeoJsonParam> {
 

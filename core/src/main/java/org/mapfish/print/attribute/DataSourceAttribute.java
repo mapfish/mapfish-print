@@ -39,8 +39,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * This attribute represents a collection of attributes which can be used as the data source of a Jasper report's
- * table/detail section.
+ * <p>
+ *     This attribute represents a collection of attributes which can be used as the data source of a Jasper report's
+ *     table/detail section.
+ * </p>
  * <p>
  *     For example consider the case where the report should contain multiple tables or charts but the number of reports
  *     may change depending on the request.  In this case the client will post a datasource attribute json object containing an array
@@ -48,7 +50,8 @@ import javax.annotation.Nullable;
  *     the datasource attribute and create a Jasper datasource that contains all the tables.
  * </p>
  * <p>
- *     This datasource must be used in tandem with the {@link org.mapfish.print.processor.jasper.DataSourceProcessor} processor.
+ *     This datasource must be used in tandem with the {@link org.mapfish.print.processor.jasper.DataSourceProcessor} processor
+ *     (see <a href="processors.html#!createDataSource">!createDataSource</a> processor).
  * </p>
  * <p>
  *     The json data of this attribute is special since it represents an array of attributes, each element in the array must
@@ -97,6 +100,19 @@ public final class DataSourceAttribute implements Attribute {
     private String configName;
     private PYamlArray defaults;
 
+    /**
+     * <p>Default values for this attribute. Example:</p>
+     * <pre><code>
+     *     attributes:
+     *       datasource: !datasource
+     *         attributes:
+     *           name: !string {}
+     *           count: !integer {}
+     *         default:
+     *           - name: "name"
+     *           - count: 3</code></pre>
+     * @param defaultData The default values.
+     */
     public void setDefault(final List<Object> defaultData) {
         this.defaults = new PYamlArray(null, defaultData, "dataSource");
     }

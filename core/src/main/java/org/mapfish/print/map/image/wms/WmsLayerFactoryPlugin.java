@@ -32,7 +32,8 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
- * Layer plugin factory for creating WMS layers.
+ * <p>Renders WMS layers as single image.</p>
+ * <p>Type: <code>wms</code></p>
  *
  * @author Jesse on 4/10/2014.
  */

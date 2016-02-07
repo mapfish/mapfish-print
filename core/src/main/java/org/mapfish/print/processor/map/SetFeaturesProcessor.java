@@ -31,9 +31,9 @@ import org.mapfish.print.processor.AbstractProcessor;
 import java.util.List;
 
 /**
- * Processor to set features to the vector layers.
- * <p></p>
- * Created by Stéphane Brunner on 16/4/14.
+ * <p>Processor to set features on vector layers.
+ * </p>
+ * @author Stéphane Brunner
  */
 public class SetFeaturesProcessor extends
         AbstractProcessor<SetFeaturesProcessor.Input, Void> {

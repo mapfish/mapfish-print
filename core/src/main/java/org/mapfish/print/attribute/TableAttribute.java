@@ -26,7 +26,8 @@ import org.mapfish.print.wrapper.PArray;
 import java.util.List;
 
 /**
- * The attributes for {@link org.mapfish.print.processor.jasper.TableProcessor}.
+ * The attributes for {@link org.mapfish.print.processor.jasper.TableProcessor} (see
+ * <a href="processors.html#!prepareTable">!prepareTable</a> processor).
  */
 public final class TableAttribute extends ReflectiveAttribute<TableAttribute.TableAttributeValue> {
     @Override

@@ -30,9 +30,9 @@ import org.mapfish.print.processor.AbstractProcessor;
 import java.util.List;
 
 /**
- * Processor to set a param to the WMS layers.
- * <p></p>
- * Created by Stéphane Brunner on 16/4/14.
+ * <p>Processor to set a param on WMS layers.
+ * </p>
+ * @author Stéphane Brunner
  */
 public class SetWmsCustomParamProcessor extends AbstractProcessor<SetWmsCustomParamProcessor.Input, Void> {
 
