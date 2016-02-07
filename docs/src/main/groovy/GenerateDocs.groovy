@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.context.support.XmlWebApplicationContext
 import groovy.json.JsonSlurper
+import groovy.io.FileType
 
 /*
  * Copyright (C) 2014  Camptocamp
@@ -48,8 +49,11 @@ import groovy.json.JsonSlurper
 class GenerateDocs {
     static def javadocParser;
     static HashMultimap<String, Record> plugins = HashMultimap.create()
+    static def examplePattern = ~/\[\[examples=(.*?)]]/
+    static def Set<String> availableExamples = null
 
     public static void main(String[] args) {
+        GenerateDocs.availableExamples = initExamples()
         javadocParser = new Javadoc7Parser(javadocDir: new File(args[1]))
 
         XmlWebApplicationContext springAppContext = new XmlWebApplicationContext()
@@ -83,9 +87,6 @@ class GenerateDocs {
             if (bean.class != ConfigFileLoaderManager.class) {
                 handleSimplePlugin(bean, 'fileloaders', bean.uriScheme)
             }
-        }
-        springAppContext.getBeansWithAnnotation(Service.class).entrySet().each { entry ->
-            handleApi(entry.getValue(), entry.getKey())
         }
         springAppContext.getBeansOfType(ConfigurationObject.class, true, true).entrySet().each { entry ->
             def bean = entry.getValue()
@@ -208,7 +209,13 @@ class GenerateDocs {
         }
         List<Detail> details = findAllConfigurationDetails(bean, beanName)
         def desc = cleanUpCodeTags(javadocParser.findClassDescription(bean.getClass()))
-        plugins.put('configuration', new Record([title:beanName, desc:desc, details: details]))
+        def examples = getExamples(desc)
+        desc = desc.replaceAll(examplePattern, "")
+        plugins.put('configuration', new Record([
+          title:beanName,
+          desc:desc,
+          details: details,
+          examples: examples]))
     }
 
     private static List<Detail> findAllConfigurationDetails(bean, String beanName) {
@@ -224,7 +231,12 @@ class GenerateDocs {
 
     static void handleSimplePlugin(Object bean, String javascriptVarName, String title) {
         def desc = cleanUpCodeTags(javadocParser.findClassDescription(bean.getClass()))
-        plugins.put(javascriptVarName, new Record([title:title, desc:desc]))
+        def examples = getExamples(desc)
+        desc = desc.replaceAll(examplePattern, "")
+        plugins.put(javascriptVarName, new Record([
+          title:title,
+          desc:desc,
+          examples: examples]))
     }
 
     static void handleMapLayerFactoryPlugin(MapLayerFactoryPlugin<?> bean, String beanName) {
@@ -240,12 +252,15 @@ class GenerateDocs {
         List<Detail> details = findAllConfigurationDetails(bean, beanName)
         def desc = cleanUpCodeTags(javadocParser.findClassDescription(bean.getClass()))
         def input = findAllAttributes(bean.createParameter().class, beanName)
+        def examples = getExamples(desc)
+        desc = desc.replaceAll(examplePattern, "")
         plugins.put('layers', new Record([
                 title:layerType.simpleName.replaceAll(/([A-Z][a-z])/, ' $1').trim(),
                 desc: desc,
                 details: details,
                 input: input,
-                translateTitle: true
+                translateTitle: true,
+                examples: examples
         ]))
     }
     static void handleAttribute(Attribute bean, String beanName) {
@@ -256,7 +271,14 @@ class GenerateDocs {
         }
         List<Detail> details = findAllConfigurationDetails(bean, beanName)
         def desc = cleanUpCodeTags(javadocParser.findClassDescription(bean.getClass()))
-        plugins.put('attributes', new Record([title:beanName, desc: desc, details: details, input: input]))
+        def examples = getExamples(desc)
+        desc = desc.replaceAll(examplePattern, "")
+        plugins.put('attributes', new Record([
+            title:beanName,
+            desc: desc,
+            examples: examples,
+            details: details,
+            input: input]))
     }
 
     private static Collection<Detail> findAllAttributes(Class cls, String beanName) {
@@ -283,26 +305,31 @@ class GenerateDocs {
         List<Detail> details = findAllConfigurationDetails(bean, beanName)
         def input = findAllAttributes(bean.createInputParameter().class, beanName)
         def output = findAllAttributes(bean.outputType, beanName)
-        plugins.put('processors', new Record([title:beanName, desc: desc, details: details,  input: input, output: output]))
+        def examples = getExamples(desc)
+        desc = desc.replaceAll(examplePattern, "")
+        plugins.put('processors', new Record([
+          title:beanName,
+          desc: desc,
+          details: details,
+          input: input,
+          output: output,
+          examples: examples]))
     }
-    static void handleApi(Object bean, String beanName) {
-        def details = bean.getClass().methods.findAll{it.getAnnotation(RequestMapping.class) != null}.collectAll {apiMethod ->
-            def mapping = apiMethod.getAnnotation(RequestMapping.class)
-            def method = mapping.method().length  > 0 ? mapping.method()[0] : RequestMethod.GET
-            method = method != null ? method.name() : RequestMethod.GET.name()
-            def title =  "${mapping.value()[0]} ($method)"
-            return new Detail([
-                    title: title,
-                    desc: cleanUpCodeTags(javadocParser.findMethodDescription(beanName, bean.getClass(), apiMethod)),
-            ])
-        }
 
-        details.sort({ a, b -> a.title <=> b.title })
-        plugins.put('api', new Record([title: beanName.replaceAll(/API/, ' API'),
-                            desc: cleanUpCodeTags(javadocParser.findClassDescription(bean.getClass())),
-                            details: details,
-                            translateTitle: true
-        ]))
+    private static List<String> getExamples(String desc) {
+        def examples = new ArrayList<String>();
+        desc.find(examplePattern) { match, rawExamples ->
+           examples.addAll(rawExamples.split(","));
+        }
+        examples = examples.collect { it.trim()}
+        examples.each { example ->
+            if (! (example in GenerateDocs.availableExamples)) {
+                throw new Exception(
+                    "Example " + example + " does not exist in " +
+                    System.getProperty("path_to_examples"));
+            }
+        }
+        return examples;
     }
 
     static def escape(String string) {
@@ -318,8 +345,19 @@ class GenerateDocs {
         .replaceAll("</code></pre>", "</pre></div>")
         .replaceAll("<br> </pre></div>", "</pre></div>")
     }
+    static Set<String> initExamples() {
+        final File examplesDir = new File(System.getProperty("path_to_examples"))
+        def examples = []
+
+        examplesDir.eachFileRecurse (FileType.DIRECTORIES) { dir ->
+            examples << dir.getName()
+        }
+
+        return examples.toSet()
+    }
     static class Record {
         String title, desc
+        List<String> examples = []
         boolean translateTitle = false
         List<Detail> details = []
         List<Detail> input = []
@@ -380,6 +418,10 @@ class GenerateDocs {
 
         public boolean hasOutputs() {
             return !this.output.isEmpty();
+        }
+
+        public boolean hasExamples() {
+            return this.examples != null && !this.examples.isEmpty();
         }
     }
 

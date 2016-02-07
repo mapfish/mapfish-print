@@ -7,6 +7,17 @@
   <h1>{{title}}<a class="headerlink" href="#{{title}}" title="Permalink to this headline">¶</a></h1>
   {{desc}}
 
+  {{#hasExamples}}
+  <div class="admonition note examples">
+    <p class="first admonition-title">Example</p>
+    <p class="last">
+      {{#examples}}
+        <a href="https://github.com/mapfish/mapfish-print/tree/master/examples/src/test/resources/examples/{{.}}" target="_blank">{{.}}</a>&nbsp;
+      {{/examples}}
+    </p>
+  </div>
+  {{/hasExamples}}
+
   {{#hasDetails}}
     <h3>Configuration</h3>
   {{/hasDetails}}
