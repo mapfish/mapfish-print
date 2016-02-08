@@ -303,6 +303,9 @@ task createDocker(type: Docker, dependsOn: 'unzipWar') {
     tagVersion = getVersionName()
     tag = "camptocamp/${applicationName}"
 
-    runCommand 'rm -rf ${CATALINA_HOME}/webapps/*'
+    runCommand 'rm -rf ${CATALINA_HOME}/webapps/*'  +
+            ' && echo "tomcat.util.scan.StandardJarScanFilter.jarsToSkip=*" >> ${CATALINA_HOME}/conf/catalina.properties' +
+            ' && echo "org.apache.catalina.startup.TldConfig.jarsToSkip=*" >> ${CATALINA_HOME}/conf/catalina.properties' +
+            ' && echo "tomcat.util.scan.DefaultJarScanner.jarsToSkip=*" >> ${CATALINA_HOME}/conf/catalina.properties'
     addFile new File(project.buildDir, "webapp"), '${CATALINA_HOME}/webapps/ROOT'
 }
