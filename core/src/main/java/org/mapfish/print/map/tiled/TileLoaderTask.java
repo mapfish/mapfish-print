@@ -5,7 +5,10 @@ import com.google.common.collect.Lists;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+
+import jsr166y.ForkJoinPool;
 import jsr166y.RecursiveTask;
+
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
@@ -34,6 +37,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import javax.imageio.ImageIO;
 
 /**
@@ -50,6 +55,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
     private final BufferedImage errorImage;
     private final MfClientHttpRequestFactory httpRequestFactory;
     private final boolean failOnError;
+    private final ForkJoinPool forkJoinPool;
     private Optional<Geometry> cachedRotatedMapBounds = null;
 
     /**
@@ -59,12 +65,14 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
      * @param transformer        a transformer for making calculations
      * @param tileCacheInfo      the object used to create the tile requests
      * @param failOnError        fail on tile download error
+     * @param forkJoinPool       the pool in which the loading tasks will be executed
      */
     public TileLoaderTask(final MfClientHttpRequestFactory httpRequestFactory,
                           final double dpi,
                           final MapfishMapContext transformer,
                           final TileCacheInformation tileCacheInfo,
-                          final boolean failOnError) {
+                          final boolean failOnError,
+                          final ForkJoinPool forkJoinPool) {
         this.bounds = transformer.getBounds();
         this.paintArea = new Rectangle(transformer.getMapSize());
         this.dpi = dpi;
@@ -72,6 +80,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
         this.transformer = transformer;
         this.tiledLayer = tileCacheInfo;
         this.failOnError = failOnError;
+        this.forkJoinPool = forkJoinPool;
         final Dimension tileSize = this.tiledLayer.getTileSize();
         this.errorImage = new BufferedImage(tileSize.width, tileSize.height, BufferedImage.TYPE_4BYTE_ABGR);
         Graphics2D graphics = this.errorImage.createGraphics();
@@ -157,8 +166,9 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
             BufferedImage coverageImage = this.tiledLayer.createBufferedImage(imageWidth, imageHeight);
             Graphics2D graphics = coverageImage.createGraphics();
             try {
-                for (TileTask loaderTask : loaderTasks) {
-                    Tile tile = loaderTask.invoke();
+                List<Future<Tile>> futureTiles = this.forkJoinPool.invokeAll(loaderTasks);
+                for (Future<Tile> futureTile : futureTiles) {
+                    Tile tile = futureTile.get();
                     if (tile.image != null) {
                         graphics.drawImage(tile.image,
                                 tile.xIndex * tileSizeOnScreen.width, tile.yIndex * tileSizeOnScreen.height, null);
@@ -234,7 +244,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
         return this.cachedRotatedMapBounds;
     }
 
-    private abstract static class TileTask extends RecursiveTask<Tile> {
+    private abstract static class TileTask extends RecursiveTask<Tile> implements Callable<Tile> {
         private final int tileIndexX;
         private final int tileIndexY;
 
@@ -301,6 +311,11 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
                 }
             }
         }
+
+        @Override
+        public Tile call() throws Exception {
+            return this.compute();
+        }
     }
 
     private static class PlaceHolderImageTask extends TileTask {
@@ -315,6 +330,11 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
         @Override
         protected Tile compute() {
             return new Tile(this.placeholderImage, getTileIndexX(), getTileIndexY());
+        }
+
+        @Override
+        public Tile call() throws Exception {
+            return this.compute();
         }
     }
 

@@ -3,9 +3,9 @@ package org.mapfish.print.processor.map;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.io.Closer;
-import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Polygon;
+
+import jsr166y.ForkJoinPool;
 
 import net.sf.jasperreports.engine.JRException;
 
@@ -14,9 +14,7 @@ import org.apache.batik.svggen.SVGGeneratorContext;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.mapfish.print.Constants;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.AreaOfInterest;
@@ -39,17 +37,12 @@ import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.InternalValue;
 import org.mapfish.print.processor.jasper.ImagesSubReport;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.awt.Dimension;
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -63,15 +56,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
+import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
-import static org.geotools.renderer.lite.RendererUtilities.worldToScreenTransform;
 
 
 /**
@@ -117,6 +106,8 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
 
     @Autowired
     FeatureLayer.Plugin featureLayerPlugin;
+    @Autowired
+    private ForkJoinPool forkJoinPool;
 
     private BufferedImageType imageType = BufferedImageType.TYPE_4BYTE_ABGR;
 
@@ -180,42 +171,20 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         final AreaOfInterest areaOfInterest = addAreaOfInterestLayer(mapValues, layers);
 
         final String mapKey = UUID.randomUUID().toString();
+        LayerTaskCreator layerTaskFactory =
+                new LayerTaskCreator(printDirectory, clientHttpRequestFactory, mapContext, areaOfInterest, mapKey);
         final List<URI> graphics = new ArrayList<URI>(layers.size());
         int i = 0;
+        List<LayerTaskCreator.LayerTask> tasks = new ArrayList<LayerTaskCreator.LayerTask>();
         for (MapLayer layer : layers) {
             checkCancelState(context);
-            boolean isFirstLayer = i == 0;
-
-            File path = null;
-            if (renderAsSvg(layer)) {
-                // render layer as SVG
-                final SVGGraphics2D graphics2D = getSvgGraphics(mapContext.getMapSize());
-
-                try {
-                    Graphics2D clippedGraphics2D = createClippedGraphics(mapContext, areaOfInterest, graphics2D);
-                    layer.render(clippedGraphics2D, clientHttpRequestFactory, mapContext, isFirstLayer);
-
-                    path = new File(printDirectory, mapKey + "_layer_" + i + ".svg");
-                    saveSvgFile(graphics2D, path);
-                } finally {
-                    graphics2D.dispose();
-                }
-            } else {
-                // render layer as raster graphic
-                final BufferedImage bufferedImage = new BufferedImage(mapContext.getMapSize().width,
-                        mapContext.getMapSize().height, this.imageType.value);
-                Graphics2D graphics2D = createClippedGraphics(mapContext, areaOfInterest, bufferedImage.createGraphics());
-                try {
-                    layer.render(graphics2D, clientHttpRequestFactory, mapContext, isFirstLayer);
-
-                    path = new File(printDirectory, mapKey + "_layer_" + i + ".png");
-                    ImageIO.write(bufferedImage, "png", path);
-                } finally {
-                    graphics2D.dispose();
-                }
-            }
-            graphics.add(path.toURI());
             i++;
+            tasks.add(layerTaskFactory.create(layer, context, this.imageType.value, i));
+        }
+        List<Future<URI>> futures = this.forkJoinPool.invokeAll(tasks);
+
+        for (Future<URI> futureGraphic : futures) {
+            graphics.add(futureGraphic.get());
         }
 
         return graphics;
@@ -258,38 +227,6 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         return areaOfInterest;
     }
 
-    private Graphics2D createClippedGraphics(@Nonnull final MapfishMapContext transformer,
-                                             @Nullable final AreaOfInterest areaOfInterest,
-                                             @Nonnull final Graphics2D graphics2D) {
-        if (areaOfInterest != null && areaOfInterest.display == AreaOfInterest.AoiDisplay.CLIP) {
-            final Polygon screenGeometry = areaOfInterestInScreenCRS(transformer, areaOfInterest);
-            final ShapeWriter shapeWriter = new ShapeWriter();
-            final Shape clipShape = shapeWriter.toShape(screenGeometry);
-            return new ConstantClipGraphics2D(graphics2D, clipShape);
-        }
-
-        return graphics2D;
-    }
-
-    private Polygon areaOfInterestInScreenCRS(@Nonnull final MapfishMapContext transformer,
-                                              @Nullable final AreaOfInterest areaOfInterest) {
-        if (areaOfInterest != null) {
-            final AffineTransform worldToScreenTransform = worldToScreenTransform(transformer.toReferencedEnvelope(),
-                    transformer.getPaintArea());
-
-            MathTransform mathTransform = new AffineTransform2D(worldToScreenTransform);
-            final Polygon screenGeometry;
-            try {
-                screenGeometry = (Polygon) JTS.transform(areaOfInterest.getArea(), mathTransform);
-            } catch (TransformException e) {
-                throw new RuntimeException(e);
-            }
-            return screenGeometry;
-        }
-
-        return null;
-    }
-
     /**
      * If requested, adjust the bounds to the nearest scale and the map size.
      *
@@ -317,14 +254,6 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             newBounds = newBounds.adjustedEnvelope(paintArea);
         }
         return newBounds;
-    }
-
-    private boolean renderAsSvg(final MapLayer layer) {
-        if (layer instanceof AbstractFeatureSourceLayer) {
-            AbstractFeatureSourceLayer featureLayer = (AbstractFeatureSourceLayer) layer;
-            return featureLayer.shouldRenderAsSvg();
-        }
-        return false;
     }
 
     /**
