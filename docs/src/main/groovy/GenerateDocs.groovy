@@ -259,7 +259,6 @@ class GenerateDocs {
                 desc: desc,
                 details: details,
                 input: input,
-                translateTitle: true,
                 examples: examples
         ]))
     }
@@ -331,13 +330,6 @@ class GenerateDocs {
         }
         return examples;
     }
-
-    static def escape(String string) {
-        return string.replaceAll("\\r|\\n|\"|\\\\") {it == "\n" || it == "\r" ? " " : "\\$it"}
-    }
-    static String escapeTranslationId(id) {
-        return id.replace("\\", "")
-    }
     static String cleanUpCodeTags(String desc) {
       return desc
         .replaceAll("<pre><code>", "<div class=\"highlight\"><pre>")
@@ -358,55 +350,9 @@ class GenerateDocs {
     static class Record {
         String title, desc
         List<String> examples = []
-        boolean translateTitle = false
         List<Detail> details = []
         List<Detail> input = []
         List<Detail> output = []
-        public String json() {
-            def record = this
-            def builder = new JsonBuilder()
-            builder {
-                title (translateTitle ? translationId("title") : title)
-                desc (translationId("desc"))
-                summaryDesc (translationId("summaryDesc"))
-                details (details.collect{it.json(record, "detail")})
-                input (input.collect{it.json(record, "input")})
-                output (output.collect{it.json(record, "output")})
-                translateTitle (translateTitle)
-            }
-
-            return builder.toPrettyString()
-        }
-        private String translationId(id) {
-            escapeTranslationId("record/$title/$id")
-        }
-        public Map translations() {
-            def record = this
-            def translations = [:]
-            if (translateTitle) {
-                translations[translationId("title")] = escape(title)
-            }
-
-            translations[translationId("desc")] = escape(desc)
-            translations[translationId("summaryDesc")] = escape(summary())
-            details.each {it.translations(record, "detail", translations)}
-            input.each {it.translations(record, "input", translations)}
-            output.each {it.translations(record, "output", translations)}
-
-            return translations
-        }
-
-        private String summary() {
-            def xml = DocsXmlSupport.createHtmlSlurper().parseText(desc).body.div
-            def text = xml.text()
-            def indexOfPeriod = text.indexOf(".")
-
-            if (indexOfPeriod > -1) {
-                return text.substring(0, indexOfPeriod).replaceAll("\n", " ")
-            } else {
-                return text;
-            }
-        }
 
         public boolean hasDetails() {
             return !this.details.isEmpty();
@@ -427,30 +373,8 @@ class GenerateDocs {
 
     static class Detail {
         String title, desc
-        boolean translateTitle = false
         boolean required = false
         List<String> annotations = []
-        public Object json(record, type) {
-            def jsonObj = [
-                title : translateTitle ? translationId(record, type, "title") : title,
-                desc : translationId(record, type, "desc"),
-                required : required,
-                translateTitle: translateTitle,
-                annotations : annotations.collectAll {escape(it)}
-            ]
-            return jsonObj
-        }
-
-        private String translationId(record, type, id) {
-            escapeTranslationId("record/$record.title/$type/$title/$id")
-        }
-
-        public void translations(record, type, translations) {
-            if (translateTitle) {
-                translations[translationId(record, type, "title")] = escape(title)
-            }
-            translations[translationId(record, type, "desc")] = escape(desc)
-        }
 
     }
 
