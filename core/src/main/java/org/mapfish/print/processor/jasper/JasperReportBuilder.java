@@ -40,7 +40,13 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 /**
- * A processor that actually compiles a jasper report.
+ * <p>A processor that actually compiles a JasperReport template file.</p>
+ * <p>Example</p>
+ * <pre><code>
+ *     processors:
+ *         - !reportBuilder # compile all reports in current directory
+ *               directory: '.'</code></pre>
+ * [[examples=verboseExample]]
  *
  * @author Jesse
  * @author sbrunner

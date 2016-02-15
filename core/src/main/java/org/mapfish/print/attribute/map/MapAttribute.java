@@ -41,7 +41,9 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 /**
- * The attributes for {@link org.mapfish.print.processor.map.CreateMapProcessor}.
+ * <p>The attributes for {@link org.mapfish.print.processor.map.CreateMapProcessor} (see
+ * <a href="processors.html#!createMap">!createMap</a> processor).</p>
+ * [[examples=verboseExample]]
  */
 public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttributeValues> {
 
@@ -83,6 +85,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
          * <p></p>
          */
         @CanSatisfyOneOf("MapBounds")
+        @HasDefaultValue
         public AreaOfInterest areaOfInterest;
         /**
          * An array of 2 doubles, (x, y).  The center of the map.

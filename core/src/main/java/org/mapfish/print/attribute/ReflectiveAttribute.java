@@ -158,6 +158,15 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
         return this.defaults;
     }
 
+    /**
+     * <p>Default values for this attribute. Example:</p>
+     * <pre><code>
+     * attributes:
+     *   legend: !legend
+     *     default:
+     *       name: "Legend"</code></pre>
+     * @param defaultValue The default values.
+     */
     public final void setDefault(final Map<String, Object> defaultValue) {
         this.defaults = new PYamlObject(defaultValue, getAttributeName());
     }

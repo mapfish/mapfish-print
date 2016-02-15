@@ -27,11 +27,10 @@ import org.mapfish.print.parser.HasDefaultValue;
 import java.util.List;
 
 /**
- * Attribute that defines how a map is displayed across many pages.
+ * <p>Attribute that defines how a map is displayed across many pages.</p>
  *
- * <p>
- *     This is used by the <a href="index.html#/processors?location=!paging">Paging Processor</a>.
- * </p>
+ * <p>This is used by the <a href="processors.html#!paging">paging processor</a>.</p>
+ * [[examples=paging]]
  *
  * @author Jesse on 8/27/2014.
  */

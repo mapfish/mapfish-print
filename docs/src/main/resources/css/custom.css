@@ -1,0 +1,19 @@
+.api h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #959595;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.document h1, .document h3 {
+  margin-top: 10px;
+}
+
+.section .examples {
+  margin-top: 10px;
+}
+
+h5 {
+  font-weight: bold;
+}

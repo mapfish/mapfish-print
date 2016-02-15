@@ -41,7 +41,9 @@ import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 
 /**
- * Processor to create a scalebar for a map.
+ * <p>Processor to create a scalebar for a map.</p>
+ * <p>See also: <a href="attributes.html#!scalebar">!scalebar</a> attribute</p>
+ * [[examples=verboseExample,print_osm_new_york_EPSG_900913]]
  */
 public class CreateScalebarProcessor extends AbstractProcessor<CreateScalebarProcessor.Input, CreateScalebarProcessor.Output> {
 

@@ -47,7 +47,7 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 
 /**
- * Parses Gml from the requestData.
+ * <p>Parses GML from the request data.</p>
  *
  * @author Jesse on 3/26/14.
  */
@@ -70,7 +70,8 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
     }
 
     /**
-     * Parser for creating {@link org.mapfish.print.map.geotools.GmlLayer} layers from request data.
+     * <p>Renders GML layers.</p>
+     * <p>Type: <code>gml</code></p>
      */
     public static final class Plugin extends AbstractFeatureSourceLayerPlugin<GmlParam> {
 

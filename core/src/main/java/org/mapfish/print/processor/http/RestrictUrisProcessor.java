@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.net.URI;
 
 /**
- * This processor check urls against a set of url matchers to see if the request should be allowed or rejected.
+ * <p>This processor check urls against a set of url matchers to see if the request should be allowed or rejected.</p>
  * <p>
  *     Usage of processor is as follows:
  * </p>
@@ -80,6 +80,7 @@ import java.net.URI;
  *     <strong>Note:</strong> if this class is part of a CompositeClientHttpRequestFactoryProcessor (!configureHttpRequests) then
  *     it should be the last one so that the checks are done after all changes to the URIs
  * </p>
+ * [[examples=http_processors]]
  * @see org.mapfish.print.processor.http.matcher.AcceptAllMatcher
  * @see org.mapfish.print.processor.http.matcher.AddressHostMatcher
  * @see org.mapfish.print.processor.http.matcher.DnsHostMatcher

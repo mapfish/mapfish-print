@@ -8,9 +8,12 @@ import org.mapfish.print.wrapper.PArray;
 import java.util.List;
 
 /**
- * The attributes for the {@link org.mapfish.print.processor.map.AddStaticLayersProcessor} which adds the layers in this
+ * <p>The attributes for the {@link org.mapfish.print.processor.map.AddStaticLayersProcessor} (see
+ * <a href="processors.html#!addBackgroundLayers">!addBackgroundLayers</a> and
+ * <a href="processors.html#!addOverlayLayers">!addOverlayLayers</a> processor) which adds the layers in this
  * attribute to the layers in the map.  The typical use is to add the background or overlay layers as the "default"
- * in the config.yaml file if the client desires it can override those values.
+ * in the config.yaml file if the client desires it can override those values.</p>
+ * [[examples=add_overlay_layer]]
  *
  * @author Jesse on 4/18/2015.
  */

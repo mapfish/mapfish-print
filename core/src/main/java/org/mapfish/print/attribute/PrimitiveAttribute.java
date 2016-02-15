@@ -61,6 +61,14 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
         return this.valueClass;
     }
 
+    /**
+     * <p>A default value for this attribute. Example:</p>
+     * <pre><code>
+     *     attributes:
+     *       title: !string
+     *         default: "Report"</code></pre>
+     * @param value The default value.
+     */
     public final void setDefault(final Value value) {
         this.defaultValue = value;
     }

@@ -21,7 +21,8 @@ package org.mapfish.print.attribute;
 
 
 /**
- * Attribute that reads a string from the request data.
+ * <p>Attribute that reads a string from the request data.</p>
+ * [[examples=verboseExample]]
  */
 public class StringAttribute extends PrimitiveAttribute<String> {
 

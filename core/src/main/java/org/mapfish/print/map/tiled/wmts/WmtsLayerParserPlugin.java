@@ -31,7 +31,9 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
- * The Plugin for creating WMTS layers.
+ * <p>Renders WMTS layers.</p>
+ * <p>Type: <code>wmts</code></p>
+ * [[examples=printwmts_tyger_ny_EPSG_900913]]
  *
  * @author Jesse on 4/3/14.
  */

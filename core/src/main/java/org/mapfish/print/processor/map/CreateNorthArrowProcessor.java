@@ -38,7 +38,7 @@ import java.util.List;
 
 
 /**
- * Processor to create a north-arrow for a map.
+ * <p>Processor to create a north-arrow for a map.</p>
  *
  * <p>The north-arrow is rotated according to the rotation
  * of the associated map.</p>
@@ -64,6 +64,8 @@ import java.util.List;
  *       northArrowSubReport: northArrowSubReport
  *     }
  * </code></pre>
+ * <p>See also: <a href="attributes.html#!northArrow">!northArrow</a> attribute</p>
+ * [[examples=verboseExample]]
  */
 public class CreateNorthArrowProcessor extends AbstractProcessor<CreateNorthArrowProcessor.Input, CreateNorthArrowProcessor.Output> {
 

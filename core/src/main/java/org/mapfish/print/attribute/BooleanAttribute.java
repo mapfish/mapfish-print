@@ -21,7 +21,8 @@ package org.mapfish.print.attribute;
 
 
 /**
- * A boolean type attribute.
+ * <p>A boolean type attribute.</p>
+ * [[examples=verboseExample]]
  */
 public class BooleanAttribute extends PrimitiveAttribute<Boolean> {
 

@@ -39,7 +39,9 @@ import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 
 /**
- * Interprets the text as an image URL.
+ * <p>Interprets text in a table cell as an image URL.</p>
+ * <p>See also: <a href="tableimages.html">Configuration of tables with HTML images</a></p>
+ * [[examples=datasource_many_dynamictables_legend]]
  *
  * @author Jesse on 6/30/2014.
  */

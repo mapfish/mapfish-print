@@ -27,7 +27,9 @@ import java.net.URL;
 import java.util.List;
 
 /**
- * Objects needed by the {@link org.mapfish.print.processor.jasper.LegendProcessor}.
+ * Objects needed by the {@link org.mapfish.print.processor.jasper.LegendProcessor} (see
+ * <a href="processors.html#!prepareLegend">!prepareLegend</a> processor).
+ * [[examples=verboseExample,legend_cropped]]
  */
 public final class LegendAttribute extends ReflectiveAttribute<LegendAttribute.LegendAttributeValue> {
 

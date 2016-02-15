@@ -28,7 +28,8 @@ dependencies {
     compile project(':core')
     compile "org.codehaus.groovy:groovy-all:$project.groovyVersion",
     "org.springframework:spring-test:${springVersion}",
-    "org.ccil.cowan.tagsoup:tagsoup:1.2.1"
+    "org.ccil.cowan.tagsoup:tagsoup:1.2.1",
+    "com.samskivert:jmustache:1.12"
 }
 
 def site = new File(buildDir, "site").path
@@ -44,21 +45,9 @@ task copyJavadocs(type: Copy) {
     into new File(site, 'javadoc')
 }
 
-import org.apache.tools.ant.filters.ReplaceTokens
 task copySite(type: Copy) {
     from (sourceSets.main.output.resourcesDir) {
-        exclude "strings-en.json", "*.html", "*.js", "long-strings/*", "long-strings"
-    }
-    from (sourceSets.main.output.resourcesDir) {
-        include "*.html", "*.js", "*.css"
-        exclude "long-strings/*", "long-strings"
-        String repoUrl;
-        if (version.endsWith("-SNAPSHOT")) {
-            repoUrl = 'oss.sonatype.org/content/repositories/snapshots/'
-        } else {
-            repoUrl = 'repo1.maven.org/maven2'
-        }
-        filter(ReplaceTokens, tokens: [version: version, maven_repo_url:repoUrl])
+        exclude "pages.json", "templates/*", "templates"
     }
     from (project(':core').webAppDir) {
         include "favicon.ico", "mapfish_transparent.png"

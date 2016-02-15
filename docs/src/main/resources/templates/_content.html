@@ -1,0 +1,63 @@
+<div class="section">
+{{description}}
+</div>
+
+{{#records}}
+<div class="section" id="{{title}}">
+  <h1>{{title}}<a class="headerlink" href="#{{title}}" title="Permalink to this headline">¶</a></h1>
+  {{desc}}
+
+  {{#hasExamples}}
+  <div class="admonition note examples">
+    <p class="first admonition-title">Example</p>
+    <p class="last">
+      {{#examples}}
+        <a href="https://github.com/mapfish/mapfish-print/tree/master/examples/src/test/resources/examples/{{.}}" target="_blank" class="fa fa-book">&nbsp;{{.}}</a>&nbsp;
+      {{/examples}}
+    </p>
+  </div>
+  {{/hasExamples}}
+
+  {{#hasDetails}}
+    <h3>Configuration</h3>
+  {{/hasDetails}}
+  {{#details}}
+  <dl>
+    <dt>
+      <code>{{title}}</code>  {{#required}}required{{/required}}
+    </dt>
+    <dd>
+      {{desc}}
+    </dd>
+  </dl>
+  {{/details}}
+
+  {{#hasInputs}}
+    <h3>Inputs</h3>
+  {{/hasInputs}}
+  {{#input}}
+  <dl>
+    <dt>
+      <code>{{title}}</code>  {{#required}}required{{/required}}
+    </dt>
+    <dd>
+      {{desc}}
+    </dd>
+  </dl>
+  {{/input}}
+
+  {{#hasOutputs}}
+    <h3>Outputs</h3>
+  {{/hasOutputs}}
+  {{#output}}
+  <dl>
+    <dt>
+      <code>{{title}}</code>  {{#required}}required{{/required}}
+    </dt>
+    <dd>
+      {{desc}}
+    </dd>
+  </dl>
+  {{/output}}
+</div>
+{{/records}}

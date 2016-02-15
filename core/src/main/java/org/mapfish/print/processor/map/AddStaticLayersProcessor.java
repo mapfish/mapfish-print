@@ -13,12 +13,14 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 /**
- * This processor adds the configured set of layers to the map.
+ * <p>This processor adds the configured set of layers to the map.</p>
  *
- * This is useful when all maps should have a default set of background layers or overlays
- * added to those that the client sends for printing.
+ * <p>This is useful when all maps should have a default set of background layers or overlays
+ * added to those that the client sends for printing.</p>
  *
- * This can simplify the client so the client only needs to be concerned with the data layers.
+ * <p>This can simplify the client so the client only needs to be concerned with the data layers.</p>
+ * <p>See also: <a href="attributes.html#!staticLayers">!staticLayers</a> attribute</p>
+ * [[examples=add_overlay_layer]]
  *
  * @author Jesse on 4/18/2015.
  */

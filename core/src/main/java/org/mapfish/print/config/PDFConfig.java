@@ -24,10 +24,11 @@ import com.google.common.base.Optional;
 import java.util.List;
 
 /**
- * A Configuration object for containing metadata that will be embedded in the PDF and parameters to use when encoding the
+ * <p>A Configuration object for containing metadata that will be embedded in the PDF and parameters to use when encoding the
  * PDF.
- * <p></p>
- * Naturally this only applies to reports that are exported as PDFs.
+ * </p>
+ * <p>Naturally this only applies to reports that are exported as PDFs.</p>
+ * [[examples=config_aliases_defaults,verboseExample]]
  *
  * @author Jesse on 9/12/2014.
  */

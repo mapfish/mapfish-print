@@ -65,7 +65,7 @@ public final class StyleAttribute extends ReflectiveAttribute<StylesAttributeVal
      */
     public static final class StylesAttributeValues {
         /**
-         * The SDL string.
+         * The SLD string.
          */
         public String style;
 

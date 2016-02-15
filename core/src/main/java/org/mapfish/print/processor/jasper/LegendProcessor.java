@@ -52,7 +52,9 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 /**
- * Create a legend.
+ * <p>Create a legend.</p>
+ * <p>See also: <a href="attributes.html#!legend">!legend</a> attribute</p>
+ * [[examples=verboseExample,legend_cropped]]
  *
  * @author Jesse
  * @author sbrunner

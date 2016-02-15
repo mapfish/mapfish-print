@@ -36,22 +36,24 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 /**
- * This processor forwards all the headers from the print request (from the mapfish-print client) to each http request made for
- * the particular print job.  All headers can be forwarded (if forwardAll is set to true) or the specific headers to forward
- * can be specified.
+ * <p>This processor forwards all the headers from the print request (from the Mapfish Print client) to each http request made for
+ * the particular print job. All headers can be forwarded (if forwardAll is set to true) or the specific headers to forward
+ * can be specified.</p>
  * <p>Example 1: Forward all headers from print request</p>
  * <pre><code>
  * - !forwardHeaders
  *   all: true
  * </code></pre>
- * <p>Example 1: Forward specific headers (header1 and header2 will be forwarded)</p>
+ * <p>Example 2: Forward specific headers (header1 and header2 will be forwarded)</p>
  * <pre><code>
  * - !forwardHeaders
  *   headers: [header1, header2]
  * </code></pre>
  *
- *  Can be applied conditionally using matchers, like in {@link RestrictUrisProcessor} (!restrictUris).
- *
+ * <p>Can be applied conditionally using matchers, like in {@link RestrictUrisProcessor} 
+ * (<a href="processors.html#!restrictUris">!restrictUris</a>).</p>
+ * [[examples=http_processors,osm_custom_params]]
+ * 
  * @author Jesse on 6/26/2014.
  */
 public final class ForwardHeadersProcessor

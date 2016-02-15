@@ -53,29 +53,32 @@ import javax.annotation.Nullable;
 import static org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue;
 
 /**
- * A processor that will process a {@link org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue} and construct
+ * <p>A processor that will process a {@link org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue} and construct
  * a single Jasper DataSource from the input values in the {@link org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue}
- * input object.
+ * input object.</p>
  *
- * The {@link org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue} has an array of maps, each map in the array
- * equates to a row in the Jasper DataSource.
+ * <p>The {@link org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue} has an array of maps, each map in the array
+ * equates to a row in the Jasper DataSource.</p>
  *
- * The DataSourceProcessor can be configured with processors which will be used
- * to transform each map in the input array before constructing the final DataSource row.
+ * <p>The DataSourceProcessor can be configured with processors which will be used
+ * to transform each map in the input array before constructing the final DataSource row.</p>
  *
- * For example, each map in the array could be {@link org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues} and the
+ * <p>For example, each map in the array could be {@link org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues} and the
  * DataSourceProcessor could be configured with !createMap processor.  In this scenario each element in the array would be transformed
  * by the !createMap processor and thus each row of the resulting DataSource will contain the map subreport created by the !createMap
- * processor.
+ * processor.</p>
  *
- * An additional point to remember is that (as with the normal execution) in addition to the output of the processors, the attributes
+ * <p>An additional point to remember is that (as with the normal execution) in addition to the output of the processors, the attributes
  * in the input map will also be columns in the row.  This means that the jasper report that makes use of the resulting DataSource
- * will have access to both the results of the processor as well as the input values (unless overwritten by the processor output).
+ * will have access to both the results of the processor as well as the input values (unless overwritten by the processor output).</p>
  *
- * If the reportKey is defined (and reportTemplate) then a the reportTemplate jrxml file will be compiled (as required by all
- * jrxml files) and an additional column will be added to each row [reportKey] : [compiled reportTemplate File]
+ * <p>If the reportKey is defined (and reportTemplate) then a the reportTemplate jrxml file will be compiled (as required by all
+ * jrxml files) and an additional column will be added to each row [reportKey] : [compiled reportTemplate File]</p>
  *
- * If reportKey is defined the reportTemplate must also be defined (and vice-versa).
+ * <p>If reportKey is defined the reportTemplate must also be defined (and vice-versa).</p>
+ * 
+ * <p>See also: <a href="attributes.html#!datasource">!datasource</a> attribute</p>
+ * [[examples=verboseExample,datasource_dynamic_tables,datasource_many_dynamictables_legend,datasource_multiple_maps,customDynamicReport]]
  *
  * @author Jesse on 8/26/2014.
  */

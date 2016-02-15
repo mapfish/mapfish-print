@@ -37,7 +37,9 @@ import java.awt.Dimension;
 import java.util.List;
 
 /**
- * The attributes for {@link org.mapfish.print.processor.map.scalebar.CreateScalebarProcessor}.
+ * <p>The attributes for {@link org.mapfish.print.processor.map.scalebar.CreateScalebarProcessor} (see
+ * <a href="processors.html#!createScalebar">!createScalebar</a> processor).</p>
+ * [[examples=verboseExample,print_osm_new_york_EPSG_900913]]
  */
 public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.ScalebarAttributeValues> {
 
@@ -69,6 +71,11 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
         return this.width;
     }
 
+    /**
+     * The width of the scalebar in pixels. This value should match the width
+     * of the sub-report in the JasperReport template.
+     * @param width Width
+     */
     public final void setWidth(final Integer width) {
         this.width = width;
     }
@@ -77,6 +84,11 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
         return this.height;
     }
 
+    /**
+     * The height of the scalebar in pixels. This value should match the height
+     * of the sub-report in the JasperReport template.
+     * @param height Height
+     */
     public final void setHeight(final Integer height) {
         this.height = height;
     }
