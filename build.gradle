@@ -42,6 +42,7 @@ configure(subprojects.findAll {['core', 'examples', 'docs'].contains(it.name)}) 
         maven {url "http://dev.mapfish.org/maven/repository"}
         maven {url "http://download.osgeo.org/webdav/geotools"}
         maven {url "http://jasperreports.sourceforge.net/maven2"}
+        maven {url "https://dl.bintray.com/readytalk/maven"}
     }
 }
 configure(subprojects.findAll {['core', 'examples'].contains(it.name)}) {
