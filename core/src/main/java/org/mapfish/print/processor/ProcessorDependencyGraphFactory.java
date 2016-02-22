@@ -353,6 +353,14 @@ public final class ProcessorDependencyGraphFactory {
 
         @Override
         public boolean equals(final Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (this.getClass() != obj.getClass()) {
+                return false;
+            }
+
             return Objects.equal(this.name, ((InputValue) obj).name);
         }
 
