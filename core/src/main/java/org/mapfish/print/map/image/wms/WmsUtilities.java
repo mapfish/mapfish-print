@@ -122,9 +122,8 @@ public final class WmsUtilities {
      * Checks if a map contains a key ignoring upper/lower case.
      */
     private static boolean contains(final Multimap<String, ?> map, final String searchKey) {
-        String searchKeyLower = searchKey.toLowerCase();
         for (String key : map.keys()) {
-            if (key.toLowerCase().equals(searchKeyLower)) {
+            if (key.equalsIgnoreCase(searchKey)) {
                 return true;
             }
         }
@@ -137,7 +136,7 @@ public final class WmsUtilities {
     private static boolean isDpiSet(final Multimap<String, String> extraParams) {
         String searchKey = "FORMAT_OPTIONS";
         for (String key : extraParams.keys()) {
-            if (key.toUpperCase().equals(searchKey)) {
+            if (key.equalsIgnoreCase(searchKey)) {
                 for (String value : extraParams.get(key)) {
                     if (value.toLowerCase().contains("dpi:")) {
                         return true;
@@ -154,7 +153,7 @@ public final class WmsUtilities {
     private static void setDpiValue(final Multimap<String, String> extraParams, final int dpi) {
         String searchKey = "FORMAT_OPTIONS";
         for (String key : extraParams.keys()) {
-            if (key.toUpperCase().equals(searchKey)) {
+            if (key.equalsIgnoreCase(searchKey)) {
                 Collection<String> values = extraParams.removeAll(key);
                 List<String> newValues = new ArrayList<String>();
                 for (String value : values) {
