@@ -216,13 +216,12 @@ public class WorkingDirectories {
             int deletedFiles = 0;
             if (dir.exists()) {
                 for (File file : dir.listFiles()) {
-                    if (prefix == null || file.getName().startsWith(prefix)) {
-                        if (file.lastModified() < ageThreshold) {
-                            if (!FileUtils.deleteQuietly(file)) {
-                                LOGGER.warn("failed to delete file " + file.getAbsolutePath());
-                            } else {
-                                deletedFiles++;
-                            }
+                    if ((prefix == null || file.getName().startsWith(prefix))
+                            && file.lastModified() < ageThreshold) {
+                        if (!FileUtils.deleteQuietly(file)) {
+                            LOGGER.warn("failed to delete file " + file.getAbsolutePath());
+                        } else {
+                            deletedFiles++;
                         }
                     }
                 }

@@ -157,12 +157,11 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
                                 "When using 'zoomToFeatures.zoom.Type: center' either 'scale' " +
                                 "or 'zoomToFeatures.minScale' has to be given.");
                     }
-                } else if (this.zoomToFeatures.zoomType == ZoomType.EXTENT) {
-                    if (this.zoomToFeatures.minScale == null) {
-                        throw new IllegalArgumentException(
-                                "When using 'zoomToFeatures.zoom.Type: extent' 'zoomToFeatures.minScale'" +
-                                "has to be given.");
-                    }
+                } else if (this.zoomToFeatures.zoomType == ZoomType.EXTENT
+                            && this.zoomToFeatures.minScale == null) {
+                    throw new IllegalArgumentException(
+                            "When using 'zoomToFeatures.zoom.Type: extent' 'zoomToFeatures.minScale'" +
+                            "has to be given.");
                 }
             }
 
