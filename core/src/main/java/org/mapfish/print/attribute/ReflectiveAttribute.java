@@ -111,7 +111,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
     private void validateParamObject(final Class<?> typeToTest, final Set<Class> tested) {
         if (!tested.contains(typeToTest)) {
             final Collection<Field> allAttributes = ParserUtils.getAllAttributes(typeToTest);
-            Assert.isTrue(allAttributes.size() > 0, "An attribute value object must have at least on public field.");
+            Assert.isTrue(!allAttributes.isEmpty(), "An attribute value object must have at least on public field.");
             for (Field attribute : allAttributes) {
                 Class<?> type = attribute.getType();
                 if (type.isArray()) {

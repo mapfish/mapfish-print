@@ -97,7 +97,7 @@ final class OneOfTracker {
 
         for (OneOfGroup group : this.mapping.values()) {
 
-            if (group.satisfiedBy.size() == 0) {
+            if (group.satisfiedBy.isEmpty()) {
                 errors.append("\n");
                 errors.append("\t* The OneOf choice: ").append(group.name).append(" was not satisfied.  One (and only one) of the ");
                 errors.append("following fields is required in the request data: ").append(toNames(group.choices));

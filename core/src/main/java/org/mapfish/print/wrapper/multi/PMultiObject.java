@@ -154,7 +154,7 @@ public class PMultiObject extends PAbstractObject {
                 results.add(result);
             }
         }
-        if (results.size() == 0) {
+        if (results.isEmpty()) {
             return null;
         }
         if (results.size() == 1) {

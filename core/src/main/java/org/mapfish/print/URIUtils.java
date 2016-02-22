@@ -117,7 +117,7 @@ public final class URIUtils {
      * @return The new query
      */
     public static URI addParams(final URI uri, final Multimap<String, String> params, final Set<String> overrideParams) {
-        if (params == null || params.size() == 0) {
+        if (params == null || params.isEmpty()) {
             return uri;
         }
         final String origTxt = uri.toString();
