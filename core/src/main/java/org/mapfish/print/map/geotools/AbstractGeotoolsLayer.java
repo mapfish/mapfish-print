@@ -29,6 +29,7 @@ import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleVisitor;
 import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.attribute.map.MapfishMapContext;
@@ -80,7 +81,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
         MapBounds bounds = transformer.getBounds();
 
         MapfishMapContext layerTransformer = transformer;
-        if (transformer.getRotation() != 0.0 && !this.supportsNativeRotation()) {
+        if (!FloatingPointUtil.equals(transformer.getRotation(), 0.0) && !this.supportsNativeRotation()) {
             // if a rotation is set and the rotation can not be handled natively
             // by the layer, we have to adjust the bounds and map size
             paintArea = new Rectangle(transformer.getRotatedMapSize());

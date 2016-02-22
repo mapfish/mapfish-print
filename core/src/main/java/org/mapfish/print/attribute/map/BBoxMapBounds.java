@@ -24,6 +24,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.GeodeticCalculator;
+import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.Scale;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -154,7 +155,7 @@ public final class BBoxMapBounds extends MapBounds {
 
     @Override
     public MapBounds adjustBoundsToRotation(final double rotation) {
-        if (rotation == 0.0) {
+        if (FloatingPointUtil.equals(rotation, 0.0)) {
             return this;
         }
 
@@ -180,7 +181,7 @@ public final class BBoxMapBounds extends MapBounds {
 
     private double getRotatedWidth(final double rotation) {
         double width = this.bbox.getWidth();
-        if (rotation != 0.0) {
+        if (!FloatingPointUtil.equals(rotation, 0.0)) {
             double height = this.bbox.getHeight();
             width = (float) (Math.abs(width * Math.cos(rotation)) +
                     Math.abs(height * Math.sin(rotation)));
@@ -190,7 +191,7 @@ public final class BBoxMapBounds extends MapBounds {
 
     private double getRotatedHeight(final double rotation) {
         double height = this.bbox.getHeight();
-        if (rotation != 0.0) {
+        if (!FloatingPointUtil.equals(rotation, 0.0)) {
             double width = this.bbox.getWidth();
             height = (float) (Math.abs(height * Math.cos(rotation)) +
                     Math.abs(width * Math.sin(rotation)));
@@ -200,7 +201,7 @@ public final class BBoxMapBounds extends MapBounds {
 
     @Override
     public MapBounds zoomOut(final double factor) {
-        if (factor == 1.0) {
+        if (FloatingPointUtil.equals(factor, 1.0)) {
             return this;
         }
 

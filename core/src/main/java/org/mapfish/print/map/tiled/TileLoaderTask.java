@@ -33,6 +33,7 @@ import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
@@ -210,7 +211,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
      * if a tile is really required to draw the map.
      */
     private boolean isTileVisible(final ReferencedEnvelope tileBounds) {
-        if (this.transformer.getRotation() == 0.0) {
+        if (FloatingPointUtil.equals(this.transformer.getRotation(), 0.0)) {
             return true;
         }
 

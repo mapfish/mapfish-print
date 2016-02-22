@@ -27,6 +27,7 @@ import org.apache.batik.dom.util.DOMUtilities;
 import org.apache.batik.util.SVGConstants;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.apache.commons.io.output.FileWriterWithEncoding;
+import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.style.json.ColorParser;
 import org.slf4j.Logger;
@@ -168,7 +169,7 @@ public final class NorthArrowGraphic {
             int deltaX = (int) Math.floor((targetSize.width - newWidth) / 2.0);
             int deltaY = (int) Math.floor((targetSize.height - newHeight) / 2.0);
 
-            if (rotation != 0.0) {
+            if (!FloatingPointUtil.equals(rotation, 0.0)) {
                 final AffineTransform rotate = AffineTransform.getRotateInstance(
                         Math.toRadians(rotation), targetSize.width / 2.0, targetSize.height / 2.0);
                 graphics2d.setTransform(rotate);
