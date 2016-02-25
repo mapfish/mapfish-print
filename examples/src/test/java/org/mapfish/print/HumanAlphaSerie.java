@@ -59,7 +59,7 @@ public class HumanAlphaSerie {
     private static String convertToString(Stack<Integer> array) {
         StringBuilder sb = new StringBuilder();
 
-        while (array.size() != 0) {
+        while (!array.isEmpty()) {
             int number = array.pop();
             sb.append(numberToChar(number));
         }

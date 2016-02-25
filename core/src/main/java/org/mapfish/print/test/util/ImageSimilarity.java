@@ -220,7 +220,7 @@ public final class ImageSimilarity {
      */
     public static BufferedImage mergeImages(List<URI> graphicFiles, int width, int height)
             throws IOException, TranscoderException {
-        if (graphicFiles.size() == 0) {
+        if (graphicFiles.isEmpty()) {
             throw new IllegalArgumentException("no graphics given");
         }
 

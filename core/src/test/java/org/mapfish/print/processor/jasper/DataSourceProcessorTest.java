@@ -69,7 +69,7 @@ public class DataSourceProcessorTest extends AbstractMapfishSpringTest {
 
         final List<Throwable> validate = config.validate();
 
-        assertTrue(validate.size() > 0);
+        assertTrue(!validate.isEmpty());
     }
 
     @Test
