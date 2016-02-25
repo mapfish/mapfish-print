@@ -58,11 +58,11 @@ public abstract class BaseMapServlet {
      * @param date the date to replace the value with if the variable is a date variable.
      */
     public static String findReplacement(final String variableName, final Date date) {
-        if (variableName.toLowerCase().equals("date")) {
+        if (variableName.equalsIgnoreCase("date")) {
             return cleanUpName(DateFormat.getDateInstance().format(date));
-        } else if (variableName.toLowerCase().equals("datetime")) {
+        } else if (variableName.equalsIgnoreCase("datetime")) {
             return cleanUpName(DateFormat.getDateTimeInstance().format(date));
-        } else if (variableName.toLowerCase().equals("time")) {
+        } else if (variableName.equalsIgnoreCase("time")) {
             return cleanUpName(DateFormat.getTimeInstance().format(date));
         } else {
             try {
