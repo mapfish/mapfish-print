@@ -120,10 +120,8 @@ public class ExamplesTest {
         final File examplesDir = getFile(ExamplesTest.class, "/examples");
         StringBuilder errors = new StringBuilder();
         for (File example : Files.fileTreeTraverser().children(examplesDir)) {
-            if (example.isDirectory()) {
-                if (!examplesDir.getName().matches(namePattern)) {
-                    errors.append("\n    * ").append(examplesDir.getName());
-                }
+            if (example.isDirectory() && !examplesDir.getName().matches(namePattern)) {
+                errors.append("\n    * ").append(examplesDir.getName());
             }
         }
 
