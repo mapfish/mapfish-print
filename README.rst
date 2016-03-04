@@ -4,7 +4,7 @@
 Please read the documentation available here:
 http://mapfish.github.io/mapfish-print/
 
-For support or questions post on the mailing list: 
+For support or questions post on the mailing list:
 https://groups.google.com/forum/#!forum/mapfish-print-users
 
 Build
@@ -55,7 +55,7 @@ Create Eclipse project metadata:
 .. code::
 
   > ./gradlew eclipse
-  
+
 Import project into Eclipse
 
 
@@ -68,16 +68,16 @@ To list all the commandline options then execute:
 
 .. code::
 
- > ./gradlew run -PprintArgs="-help"
+ > ./gradlew print -PprintArgs="-help"
 
 .. code::
 
-  > ./gradlew run -PprintArgs="-config examples/config.yaml -spec examples/spec.json -output ./output.pdf"
+  > ./gradlew print -PprintArgs="-config examples/config.yaml -spec examples/spec.json -output ./output.pdf"
 
 If you want to run in debug mode you can do the following:
 
 .. code::
-  > ./gradlew run --debug-jvm -PprintArgs="-config examples/config.yaml -spec examples/spec.json -output ./output.pdf"
+  > ./gradlew print --debug-jvm -PprintArgs="-config examples/config.yaml -spec examples/spec.json -output ./output.pdf"
 
 
 Run in Eclipse

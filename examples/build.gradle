@@ -1,109 +1,50 @@
 apply plugin: 'war'
-apply plugin: 'jetty'
+apply plugin: 'org.akhikhl.gretty'
+
 
 repositories {
     maven {url "http://repo.boundlessgeo.com/main"}
     maven {url "http://maven.restlet.org"}
 }
 
-configurations {
-    geoserver
-}
-
 dependencies {
-    geoserver ('org.geoserver.web:web-app:2.4.3') {
-        transitive = false;
-    }
     testCompile (project(':core'))
 }
 
-def geoserverDir = "$buildDir/geoserver"
-def geoserverDataDir = geoserverDir+"/data"
-
-task copyTestServerSpecificFiles (type: Copy) {
-    description "Copy files from src/main/webapp into the GeoServer directory to customize the testServer"
-    from fileTree("src/main/webapp") {include '**'}
-
-    into geoserverDir
+configurations {
 }
 
-task extractGeoserver (type: Copy) {
-    description "Extract the Geoserver web app jar and files in src/main/webapp into a directory to use for the jettyRun task"
-    dependsOn tasks['copyTestServerSpecificFiles']
-    
-    from zipTree(configurations.geoserver.singleFile)
+def examplesDir = "${project(':examples').projectDir}/src/test/resources/examples"
 
-    into geoserverDir
+gretty {
+    // configuration to serve a web-app containing test data required for
+    // the integration tests
+    servletContainer = "jetty7"
+    integrationTestTask = "integrationTest"
 }
 
-extractGeoserver.doLast {
-    def offLoggingConfig = new File(geoserverDataDir, "logs/OFF_LOGGING.properties")
-    logger.info("Writing an updated Geoserver log configuration to suppress geoserver output")
-    new File(geoserverDataDir, "logging.xml").withWriter "UTF-8", { writer ->
-        def builder = new groovy.xml.MarkupBuilder(writer)
-        builder.logging {
-            level "OFF_LOGGING.properties"
-            location "${geoserverDir}/geoserver.log"
-            stdOutLogging "false"
-        }
-    }
-    offLoggingConfig.parentFile.mkdirs()
-    offLoggingConfig.setText("log4j.debug=FALSE\nlog4j.rootLogger=OFF", "UTF-8")
+farm {
+    // configuration to start a server running mfp, geoserver and the web-app
+    // containing test data. start with `./gradlew examples:farmRun`
+    systemProperty "path_to_examples", examplesDir
+    jvmArgs = ["-Xmx512M", "-XX:MaxPermSize=512m"]
 
-    new File(geoserverDir, "index.html").withWriter "UTF-8",{writer ->
-        def builder = new groovy.xml.MarkupBuilder(writer)
-        builder.html {
-            head {
-                title 'Mapfish Print 3'
-            }
-            body {
-                h1 'Mapfish Print 3'
-                a (href:"http://localhost:8080/print-servlet/", "MapFish Print Test Client")
-            }
-        }
-    }
+    // FIXME do not output geoserver logs
+    webapp "org.geoserver.web:gs-web-app:2.8.2"
+    webapp ":core"
+    webapp ":examples"
 }
 
-jettyRun {
-    dependsOn ':core:jettyRunWarBackground', tasks['extractGeoserver']
+// prevent that the tests target can be directly called. the integration tests
+// must be run with `./gradlew examples:farmIntegrationTest` to make sure the
+// server is running
+test { }
+test.onlyIf{false}
 
-    description 'Start the Geoserver Test Server in foreground mode for running local tests'
-    httpPort = 9876
-    daemon = Boolean.parseBoolean(System.getProperty("jettyDaemon", "false"))
-    contextPath = 'e2egeoserver'
-    webAppSourceDirectory = file(geoserverDir)
-    stopKey = "e2e-tests-geoserver"
-    stopPort = 9877
-    reload = 'manual'
-    System.properties.setProperty("org.mortbay.jetty.Request.maxFormContentSize", "1048576")
+task integrationTest(type: Test) {
 }
+integrationTest.dependsOn ':core:compileJava'
 
-task jettyRunBackground (dependsOn: jettyRun) << {
-    description 'Start Geoserver Test Server in background mode for running integration tests'
-    logger.info("Finished test server in daemon (background) mode")
-}
-
-gradle.taskGraph.whenReady {taskGraph ->
-    if (taskGraph.hasTask(':core:jettyRun')) {
-        jettyRun.enabled = false
-    }
-    if (taskGraph.hasTask(jettyRunBackground)) {
-        jettyRun.doFirst{
-            logger.info("Running test server in daemon (background) mode")
-        }
-
-        jettyRun.daemon = true;
-    } else {
-        jettyRun.doFirst{
-            logger.info("Running test server in non-daemon (foreground) mode")
-        }
-    }
-}
-
-String interactiveExpression = '**/*InteractiveTest.class'
-test {
-    dependsOn ':core:compileJava', 'testClasses', 'jettyRunBackground'
-    description 'Runs all automated e2e (integration) tests.'
-    maxParallelForks = Runtime.getRuntime().availableProcessors();
-    exclude interactiveExpression
+afterEvaluate {
+    build.dependsOn project.tasks['farmIntegrationTest']
 }

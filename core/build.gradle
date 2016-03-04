@@ -1,21 +1,54 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 apply plugin: 'war'
-apply plugin: 'application'
-apply plugin: 'jetty'
+apply plugin: 'distribution'
+apply plugin: 'org.akhikhl.gretty'
 apply plugin: 'docker'
 
 defaultTasks 'build'
 
 buildscript {
-    repositories { jcenter() }
+    repositories {
+        jcenter()
+    }
     dependencies {
         classpath 'se.transmode.gradle:gradle-docker:1.2'
     }
 }
 
+
+// the task `run` of the gretty plugin conflicts with the task with the same
+// name of the plugin `application`. that's why the following tasks are defined
+// manually.
+task startScripts(type: CreateStartScripts) {
+}
+task print(type: JavaExec) {
+    main = "org.mapfish.print.cli.Main"
+}
+
+// define what should be included as distribution. usually this configuration
+// is done when applying the plugin `application`. this is the default config
+// as in: https://github.com/gradle/gradle/blob/7df34b3f00e743cbd8f9398acb08e67edf86b527/subprojects/plugins/src/main/groovy/org/gradle/api/plugins/ApplicationPlugin.groovy#L123-L134
+distributions {
+    main {
+        contents {
+            from(project.file("src/dist"))
+
+            into("lib") {
+                from(jar)
+                from(project.configurations.runtime)
+            }
+            into("bin") {
+                from(startScripts)
+                fileMode = 0755
+            }
+        }
+    }
+}
+
+
 def appDir = new File(project.buildDir, "install")
-installApp.doFirst {
+installDist.doFirst {
     appDir.deleteDir()
 }
 tasks.withType(Javadoc) {
@@ -23,7 +56,7 @@ tasks.withType(Javadoc) {
     title = "Mapfish Print Core Module $version"
 }
 task testCLI(type: Exec) {
-    dependsOn installApp
+    dependsOn installDist
     workingDir new File(appDir, "core/bin")
     def cmd
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
@@ -51,7 +84,6 @@ task testCLI(type: Exec) {
         assert outputFile.length() > 0
     }
 }
-
 build.dependsOn tasks.distZip, tasks.testCLI
 
 configurations {
@@ -183,38 +215,14 @@ war {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-jettyRun {
-    contextPath = ''
-    httpPort = 8080
-    scanTargets = (fileTree("src/main/").include("webapp/WEB-INF/**") + fileTree(compileJava.destinationDir)).files
-    reload = 'manual'
-    System.properties.setProperty("path_to_examples", examplesDir)
-    System.properties.setProperty("org.mortbay.jetty.Request.maxFormContentSize", "1048576")
-}
-
-
-task jettyRunWarBackground (dependsOn: jettyRunWar) {
-    description 'Start Mapfish-print in background mode for running integration tests'
-    doLast {
-        logger.info("Finished running test server in daemon (foreground) mode")
-    }
-}
-
-gradle.taskGraph.whenReady {taskGraph ->
-    if (taskGraph.hasTask(jettyRun)) {
-        jettyRun.classpath.add(files("jettyRunExtraFiles"))
-    }
-    if (taskGraph.hasTask(jettyRunWarBackground)) {
-        jettyRunWar.doFirst{
-            logger.info("Running test server in daemon (background) mode")
-        }
-
-        jettyRunWar.daemon = true;
-    } else {
-        jettyRunWar.doFirst{
-            logger.info("Running test server in non-daemon (foreground) mode")
-        }
-    }
+gretty {
+    // configuration to serve mfp under localhost:8080/print when you run
+    // ./gradlew core:jettyRun
+    servletContainer = "jetty7"
+    contextPath = "/print"
+    classPath = [file("jettyRunExtraFiles")]
+    systemProperty "path_to_examples", examplesDir
+    systemProperty "org.mortbay.jetty.Request.maxFormContentSize", "1048576"
 }
 
 
@@ -245,12 +253,11 @@ task libSourcesJar(type: Jar) {
 
 
 gradle.taskGraph.whenReady {taskGraph ->
-    if (taskGraph.hasTask(run)) {
-        mainClassName = "org.mapfish.print.cli.Main"
+    if (taskGraph.hasTask(print)) {
         if (project.hasProperty("printArgs")) {
-            run.args printArgs.toString().split(" ").toList()
+            print.args printArgs.toString().split(" ").toList()
         } else {
-            throw new IllegalArgumentException("You must supply the -PprintArgs=\"...\" arguments.\nFor Example:\n\n./gradlew run " +
+            throw new IllegalArgumentException("You must supply the -PprintArgs=\"...\" arguments.\nFor Example:\n\n./gradlew print " +
                     "-PprintArgs=\"-config examples/config.yaml -spec examples/spec.json -output ./output.pdf\"\n\n")
         }
     }
@@ -261,6 +268,7 @@ startScripts {
     applicationName="print"
     mainClassName = "org.mapfish.print.cli.Main"
     classpath = files(jar.archivePath)
+    outputDir = new File(project.buildDir, "scripts")
 
     doLast {
         fileTree(startScripts.outputDir).each {file ->
