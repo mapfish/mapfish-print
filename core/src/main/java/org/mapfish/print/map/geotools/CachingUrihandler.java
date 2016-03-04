@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 
@@ -39,7 +40,7 @@ import javax.annotation.PostConstruct;
  * An {@link org.eclipse.emf.ecore.resource.URIHandler} for caching XSDs or using local copies.
  */
 class CachingUrihandler extends HTTPURIHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GmlLayer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CachingUrihandler.class);
 
     @Autowired
     private WorkingDirectories workingDirectories;
@@ -57,6 +58,8 @@ class CachingUrihandler extends HTTPURIHandler {
 
     @Override
     public boolean canHandle(final URI uri) {
+        // We don't cache WFS DescribeFeatureType since it can change. We'll assume the
+        // http://{...}.xsd are not changing during the lifetime of the webapp.
         return super.canHandle(uri) && uri.path().endsWith(".xsd");
     }
 
@@ -68,7 +71,12 @@ class CachingUrihandler extends HTTPURIHandler {
         if (super.canHandle(resolvedUri)) {
             return super.createInputStream(resolvedUri, options);
         } else {
-            return new FileInputStream(resolved);
+            URL resolvedUrl = new URL(resolved);
+            if (resolvedUrl.getProtocol().equals("file")) {
+                return new FileInputStream(resolvedUrl.getPath());
+            } else {
+                throw new IOException("Don't know how to handle " + resolved);
+            }
         }
     }
 }
