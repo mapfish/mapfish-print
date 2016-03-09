@@ -34,6 +34,11 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
     private String outputPrefix;
 
     /**
+     * Maximum number of requests we can do in parallel to avoid overloading servers.
+     */
+    protected final int maxNumberParallelRequets = 15;
+
+    /**
      * Constructor.
      *
      * @param outputType the type of the output of this processor.  Used to calculate processor dependencies.

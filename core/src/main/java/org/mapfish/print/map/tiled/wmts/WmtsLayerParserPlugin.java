@@ -6,7 +6,6 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.map.geotools.AbstractGridCoverageLayerPlugin;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -19,8 +18,7 @@ import javax.annotation.Nonnull;
  * @author Jesse on 4/3/14.
  */
 public final class WmtsLayerParserPlugin extends AbstractGridCoverageLayerPlugin implements MapLayerFactoryPlugin<WMTSLayerParam> {
-    @Autowired
-    private ForkJoinPool forkJoinPool;
+    private final ForkJoinPool forkJoinPool = new ForkJoinPool(this.getMaxNumberParallelRequests());
 
     private Set<String> typenames = Sets.newHashSet("wmts");
 

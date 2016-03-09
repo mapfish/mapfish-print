@@ -106,8 +106,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
 
     @Autowired
     FeatureLayer.Plugin featureLayerPlugin;
-    @Autowired
-    private ForkJoinPool forkJoinPool;
+    private final ForkJoinPool forkJoinPool = new ForkJoinPool(this.maxNumberParallelRequets);
 
     private BufferedImageType imageType = BufferedImageType.TYPE_4BYTE_ABGR;
 
