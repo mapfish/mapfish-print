@@ -30,16 +30,16 @@
             "name": "",
            "classes": [{
                 "name": "Arbres",
-                "icons": ["http://localhost:9876/e2egeoserver/www/legends/arbres.png"]
+                "icons": ["http://localhost:8080/examples/data/www/legends/arbres.png"]
             }, {
                 "name": "Peturbations",
-                "icons": ["http://localhost:9876/e2egeoserver/www/legends/perturbations.png"]
+                "icons": ["http://localhost:8080/examples/data/www/legends/perturbations.png"]
             }, {
                 "name": "Points de vente",
-                "icons": ["http://localhost:9876/e2egeoserver/www/legends/points-de-vente.png"]
+                "icons": ["http://localhost:8080/examples/data/www/legends/points-de-vente.png"]
             }, {
                 "name": "Stationement",
-                "icons": ["http://localhost:9876/e2egeoserver/www/legends/stationement.png"]
+                "icons": ["http://localhost:8080/examples/data/www/legends/stationement.png"]
             }]
         },
       "map": {
@@ -51,7 +51,7 @@
           {
             "type": "WMS",
             "layers": ["tiger-ny"],
-            "baseURL": "http://localhost:9876/e2egeoserver/wms",
+            "baseURL": "http://localhost:8080/gs-web-app/wms",
             "imageFormat": "image/png",
             "version": "1.1.1",
             "customParams": {"TRANSPARENT": "true", "EXCEPTIONS": "INIMAGE"}

@@ -55,11 +55,11 @@ import static org.mapfish.print.servlet.MapPrinterServlet.JSON_REQUEST_HEADERS;
 /**
  * To run this test make sure that the test GeoServer is running:
  * <p></p>
- * ./gradlew examples:jettyRun
+ * ./gradlew examples:farmRun
  * <p></p>
  * Or run the tests with the following task (which automatically starts the server):
  * <p></p>
- * ./gradlew examples:test
+ * ./gradlew examples:farmIntegrationTest
  *
  * @author Jesse on 3/31/14.
  */
@@ -195,7 +195,7 @@ public class ExamplesTest {
 
                         JSONObject headers = new JSONObject();
                         headers.append("Cookie", "examplesTestCookie=value");
-                        headers.append("Referer", "http://localhost:9876/print-servlet");
+                        headers.append("Referer", "http://localhost:8080/print");
                         headers.append("Host","localhost");
                         headers.append("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0");
                         headers.append("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
@@ -211,9 +211,9 @@ public class ExamplesTest {
 
                         BufferedImage image = ImageIO.read(new ByteArrayInputStream(out.toByteArray()));
 
-//                        File outDir = new File("e:/tmp/examples_test", example.getName()+"/expected_output");
-//                        outDir.mkdirs();
-//                        ImageIO.write(image, "png", new File(outDir, requestFile.getName().replace(".json", ".png")));
+                        File outDir = new File("/tmp/examples_test", example.getName()+"/expected_output");
+                        outDir.mkdirs();
+                        ImageIO.write(image, "png", new File(outDir, requestFile.getName().replace(".json", ".png")));
 
                         File expectedOutputDir = new File(example, "expected_output");
                         File expectedOutput = getExpecteOutput(requestFile, expectedOutputDir);

@@ -47,11 +47,11 @@ import static org.junit.Assert.assertTrue;
  *
  *  To run this test make sure that the test servers are running:
  *
- *      ./gradlew examples:jettyRun
+ *      ./gradlew examples:farmRun
  *
  * Or run the tests with the following task (which automatically starts the servers):
  *
- *      ./gradlew examples:test
+ *      ./gradlew examples:farmIntegrationTest
  *
  * @author Jesse on 5/9/2014.
  */
@@ -255,8 +255,8 @@ public class PrintApiTest extends AbstractApiTest {
         String ref = createResult.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
         String statusUrl = createResult.getString(MapPrinterServlet.JSON_STATUS_LINK);
         String downloadUrl = createResult.getString(MapPrinterServlet.JSON_DOWNLOAD_LINK);
-        assertEquals("/print-servlet/print/status/" + ref + ".json", statusUrl);
-        assertEquals("/print-servlet/print/report/" + ref, downloadUrl);
+        assertEquals("/print/print/status/" + ref + ".json", statusUrl);
+        assertEquals("/print/print/report/" + ref, downloadUrl);
         response.close();
 
         // check status
@@ -475,7 +475,7 @@ public class PrintApiTest extends AbstractApiTest {
         ClientHttpRequest request = getRequest(path, HttpMethod.GET);
         HttpURLConnection urlConnection = (HttpURLConnection) request.getURI().toURL().openConnection();
         assertEquals(HttpStatus.FOUND.value(), urlConnection.getResponseCode());
-        assertEquals("https://localhost:8443/print-servlet/"+path, urlConnection.getHeaderField("Location"));
+        assertEquals("https://localhost:8443/print/"+path, urlConnection.getHeaderField("Location"));
         urlConnection.disconnect();
     }
 

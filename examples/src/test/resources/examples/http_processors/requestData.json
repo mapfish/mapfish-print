@@ -15,7 +15,7 @@
 				{
 		            "type": "WMS",
 		            "layers": ["topp:states"],
-		            "baseURL": "http://myhost.com:9876/e2egeoserver/wms",
+		            "baseURL": "http://myhost.com:8080/gs-web-app/wms",
 		            "imageFormat": "image/png",
 		            "version": "1.3.0",
 		            "customParams":{"TRANSPARENT":"true","EXCEPTIONS":"INIMAGE"}
