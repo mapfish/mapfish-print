@@ -1,22 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ Copyright (C) 2014  Camptocamp
-  ~
-  ~ This file is part of MapFish Print
-  ~
-  ~ MapFish Print is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ MapFish Print is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with MapFish Print.  If not, see <http://www.gnu.org/licenses/>.
-  -->
 
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DJR_2141" pageWidth="595" pageHeight="842" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" scriptletClass="ar.com.fdvs.dj.core.DJDefaultScriptlet" whenResourceMissingType="Key" uuid="e034c6ef-7449-4a6a-9b5e-4ce04cc083b2">
 	<style name="dj_style_1_" mode="Transparent" forecolor="#000000" backcolor="#FFFFFF" radius="0" hAlign="Center" vAlign="Middle" rotation="None" isBlankWhenNull="true" fontName="DejaVu Sans" fontSize="14" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded="false">
