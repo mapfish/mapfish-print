@@ -5,7 +5,7 @@ start a Geoserver instance and run junit integration tests against the server to
 
 To run the integration tests::
 
-    ./gradlew examples:test
+    ./gradlew examples:farmIntegrationTest
 
 The task is a gradle test task and more details on how to run single tests or subgroups of tests can be understood by referring to:
 
@@ -17,11 +17,11 @@ Test client
 
 The test server includes a client which can be used for testing. To start the server, run::
 
-     ./gradlew examples:jettyRun
+     ./gradlew examples:farmRun
 
 
-This will start a GeoServer at localhost:9876 but also a MapFish Print with a simple client that can be accessed
-at http://localhost:8080/print-servlet/
+This will start a GeoServer at http://localhost:8080/gs-web-app/ but also a MapFish Print with a simple client that can be accessed
+at http://localhost:8080/print/
 
 
 Writing Tests
@@ -30,7 +30,7 @@ Writing Tests
 By default the test server is in daemon mode, which mean that the servers will be run in a background thread and be shutdown when
 the build completes.  In order to be able to run the tests in a IDE one can run::
 
-     ./gradlew examples:jettyRun
+     ./gradlew examples:farmRun
 
 This will start the test servers in non-daemon mode allowing one to start the server and then run tests in your IDE against that server for
 development.

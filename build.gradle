@@ -35,6 +35,28 @@ allprojects {
     ext."signing.password" = signing_password
 }
 
+buildscript {
+  repositories {
+    jcenter()
+  }
+
+  dependencies {
+    classpath 'org.akhikhl.gretty:gretty:+'
+  }
+}
+
+configurations.all {
+    resolutionStrategy {
+        force 'xml-apis:xml-apis:1.0.b2'
+    }
+}
+
+apply plugin: 'org.akhikhl.gretty'
+
+import org.akhikhl.gretty.AppStartTask
+task appRun(type: AppStartTask) {
+}
+
 configure(subprojects.findAll {['core', 'examples', 'docs'].contains(it.name)}) {
     repositories {
         mavenLocal()
@@ -116,4 +138,3 @@ configure(subprojects.findAll {['core', 'examples'].contains(it.name)}) {
     }
 
 }
-

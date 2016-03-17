@@ -13,7 +13,7 @@
 			"layers": 
 			[
               {
-                "baseURL": "http://localhost:9876/e2egeoserver/wms",
+                "baseURL": "http://localhost:8080/gs-web-app/wms",
                 "opacity": 1,
                 "type": "WMS",
                 "layers":
@@ -33,7 +33,7 @@
                 }
               },{
 					"type": "WMTS",
-					"baseURL": "http://localhost:9876/e2egeoserver/gwc/service/wmts",
+					"baseURL": "http://localhost:8080/gs-web-app/gwc/service/wmts",
 					"opacity": 1.0,
 					"layer": "tiger-ny",
 					"version": "1.0.0",

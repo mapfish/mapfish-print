@@ -48,7 +48,7 @@ import java.util.Map;
 })
 public abstract class AbstractApiTest {
     
-    protected static final String PRINT_SERVER = "http://localhost:8080/print-servlet/";
+    protected static final String PRINT_SERVER = "http://localhost:8080/print/";
     
     @Autowired
     protected ClientHttpRequestFactory httpRequestFactory;

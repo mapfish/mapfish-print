@@ -14,7 +14,7 @@
 			"layers": 
 			[
 				{
-					"baseURL": "http://localhost:9876/e2egeoserver/gwc/service/tms/",
+					"baseURL": "http://localhost:8080/gs-web-app/gwc/service/tms/",
 					"opacity": 1,
 					"singleTile": false,
 					"type": "TMS",
@@ -56,7 +56,7 @@
 					"format": "png"
 				},
 				{
-					"baseURL": "http://localhost:9876/e2egeoserver/wms",
+					"baseURL": "http://localhost:8080/gs-web-app/wms",
 					"opacity": 1,
 					"type": "WMS",
 					"layers": 

@@ -19,8 +19,8 @@
             "table": {
                 "columns": ["icon", "osm_id", "timestamp", "name", "Type"],
                 "data": [
-                    ["http://localhost:9876/e2egeoserver/www/icons/men-at-work.jpg", "629119177", "2010-02-04T18:42:23Z", "Oh! Liban", "restaurant"],
-                    ["http://localhost:9876/e2egeoserver/www/icons/men-at-work.jpg", "1423114737", "2011-09-04T15:05:13Z", "Restaurant Mirabeau", "restaurant"]
+                    ["http://localhost:8080/examples/data/www/icons/men-at-work.jpg", "629119177", "2010-02-04T18:42:23Z", "Oh! Liban", "restaurant"],
+                    ["http://localhost:8080/examples/data/www/icons/men-at-work.jpg", "1423114737", "2011-09-04T15:05:13Z", "Restaurant Mirabeau", "restaurant"]
                 ]
             }
         }],
@@ -130,16 +130,6 @@
                         }
                     }]
                 }
-            }, {
-              "baseURL": "http://localhost:9876/e2egeoserver/wms",
-              "opacity": 1,
-              "type": "WMS",
-              "serverType": "geoserver",
-              "layers": [
-                "nurc:Arc_Sample"
-              ],
-
-              "imageFormat": "image/png"
             }]
         },
         "legend": {
@@ -147,16 +137,16 @@
             "name": "",
             "classes": [{
               "name": "osm",
-              "icons": ["http://localhost:9876/e2egeoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:states"]
+              "icons": ["http://localhost:8080/gs-web-app/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:states"]
             }]
           }, {
             "name": "",
             "classes": [{
               "name": "fluel",
-              "icons": ["http://localhost:9876/e2egeoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:tasmania_cities"]
+              "icons": ["http://localhost:8080/gs-web-app/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:tasmania_cities"]
             }, {
               "name": "hotel",
-              "icons": ["http://localhost:9876/e2egeoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=tiger-ny"]
+              "icons": ["http://localhost:8080/gs-web-app/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=tiger-ny"]
             }]
           }]
         }

@@ -7,7 +7,7 @@
   "outputFormat": "pdf",
   "layers": [
     {
-      "baseURL": "http://localhost:9876/e2egeoserver/www/osm-custom-params/",
+      "baseURL": "http://localhost:8080/examples/data/www/osm-custom-params/",
       "type": "XYZ",
       "layers": [],
       "featureName": "",
