@@ -109,8 +109,8 @@ if (Boolean.parseBoolean(enablePublishing)) {
 
                         licenses {
                             license {
-                                name 'GNU General Public License'
-                                url 'http://www.gnu.org/licenses/#GPL'
+                                name 'BSD 2-Clause License'
+                                url 'https://opensource.org/licenses/BSD-2-Clause'
                                 distribution 'repo'
                             }
                         }
