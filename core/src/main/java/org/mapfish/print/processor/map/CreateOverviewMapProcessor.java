@@ -10,6 +10,7 @@ import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.mapfish.print.Constants;
+import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.OverviewMapAttribute;
@@ -116,7 +117,7 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
                 adjustedBounds.toReferencedEnvelope(originalPaintArea, values.map.getDpi());
 
         Geometry mapExtent = JTS.toGeometry(originalEnvelope);
-        if (values.map.getRotation() != 0.0) {
+        if (!FloatingPointUtil.equals(values.map.getRotation(), 0.0)) {
             mapExtent = rotateExtent(mapExtent, values.map.getRotation(), originalEnvelope);
         }
         

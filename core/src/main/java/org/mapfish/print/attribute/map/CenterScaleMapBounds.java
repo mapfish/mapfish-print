@@ -5,6 +5,7 @@ import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.GeodeticCalculator;
 import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.Scale;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -105,7 +106,7 @@ public final class CenterScaleMapBounds extends MapBounds {
 
     @Override
     public CenterScaleMapBounds zoomOut(final double factor) {
-        if (factor == 1.0) {
+        if (FloatingPointUtil.equals(factor, 1.0)) {
             return this;
         }
 
