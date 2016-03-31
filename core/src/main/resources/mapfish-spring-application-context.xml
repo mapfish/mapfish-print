@@ -65,10 +65,16 @@
 
     <bean id="forkJoinPool" class="jsr166y.ForkJoinPool" destroy-method="shutdownNow">
         <!--
-            Number of threads to user in pool we want a large number because http requests will block make the thread hang until
-            the request completes.  Because of this we want many threads available to the processors.
+            Thread pool used to run processors.
         -->
-        <constructor-arg index="0" value="100" />
+        <constructor-arg index="0" value="${threadsParallelProcessors}" />
+    </bean>
+
+    <bean id="requestForkJoinPool" class="jsr166y.ForkJoinPool" destroy-method="shutdownNow" autowire-candidate="false">
+        <!--
+            Thread pool used for making requests for tile/image layers.
+        -->
+        <constructor-arg index="0" value="${threadsParallelRequests}" />
     </bean>
 
     <bean id="mapPrinter" class="org.mapfish.print.MapPrinter" scope="prototype"/>
