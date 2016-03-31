@@ -1,6 +1,7 @@
 package org.mapfish.print.attribute.map;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.map.Scale;
 
 import java.awt.Dimension;
@@ -138,7 +139,7 @@ public final class MapfishMapContext {
      * @return The new map size taking the rotation into account.
      */
     public Dimension getRotatedMapSize() {
-        if (this.rotation == 0.0) {
+        if (FloatingPointUtil.equals(this.rotation, 0.0)) {
             return this.mapSize;
         }
         
@@ -154,7 +155,7 @@ public final class MapfishMapContext {
      * @return an affine transformation
      */
     public AffineTransform getTransform() {
-        if (this.rotation == 0.0) {
+        if (FloatingPointUtil.equals(this.rotation, 0.0)) {
             return null;
         }
         
@@ -186,7 +187,7 @@ public final class MapfishMapContext {
 
     private int getRotatedMapWidth() {
         double width = this.mapSize.getWidth();
-        if (this.rotation != 0.0) {
+        if (!FloatingPointUtil.equals(this.rotation, 0.0)) {
             double height = this.mapSize.getHeight();
             width = Math.abs(width * Math.cos(this.rotation))
                     + Math.abs(height * Math.sin(this.rotation));
@@ -196,7 +197,7 @@ public final class MapfishMapContext {
 
     private int getRotatedMapHeight() {
         double height = this.mapSize.getHeight();
-        if (this.rotation != 0.0) {
+        if (!FloatingPointUtil.equals(this.rotation, 0.0)) {
             double width = this.mapSize.getWidth();
             height = Math.abs(height * Math.cos(this.rotation))
                      + Math.abs(width * Math.sin(this.rotation));

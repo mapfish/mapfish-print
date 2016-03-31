@@ -3,6 +3,7 @@ package org.mapfish.print.servlet.oldapi;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.config.OldApiConfig;
 import org.mapfish.print.wrapper.json.PJsonObject;
 
@@ -270,7 +271,7 @@ public final class OldAPILayerConverter {
 
                         Double scaleDenominator = 0.0D;
                         Double resolution = old.optDouble("resolution", 0.0D);
-                        if (resolution != 0.0D) {
+                        if (!FloatingPointUtil.equals(resolution, 0.0D)) {
                             //works with meter based srs
                             final double conversionRatio = 0.00028D;
                             scaleDenominator = resolution / conversionRatio;
