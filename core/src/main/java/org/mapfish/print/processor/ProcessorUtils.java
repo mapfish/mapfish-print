@@ -51,10 +51,10 @@ public final class ProcessorUtils {
             for (Field field : fields) {
                 String name = getInputValueName(processor.getOutputPrefix(),
                         processor.getInputMapperBiMap(), field.getName());
-                Object value;
+                Object value = null;
                 if (field.getType() == Values.class) {
                     value = values;
-                } else {
+                } else if (values != null) {
                     value = values.getObject(name, Object.class);
                 }
                 if (value != null) {
@@ -67,7 +67,8 @@ public final class ProcessorUtils {
                     if (field.getAnnotation(HasDefaultValue.class) == null) {
                         throw new NoSuchElementException(name + " or " + field.getName() + " is a required property for " + processor +
                                                          " and therefore must be defined in the Request Data or be an output of one" +
-                                                         " of the other processors. Available values: " + values.asMap().keySet() + ".");
+                                                         " of the other processors. Available values: " 
+                                                         + values == null ? null : values.asMap().keySet() + ".");
                     }
                 }
             }
@@ -117,7 +118,7 @@ public final class ProcessorUtils {
                                             @Nonnull final String field) {
         String name = inputMapper == null ? null : inputMapper.inverse().get(field);
         if (name == null) {
-            if (inputMapper.containsKey(field)) {
+            if (inputMapper != null && inputMapper.containsKey(field)) {
                 throw new RuntimeException("field in keys");
             }
             final String[] defaultValues = {
