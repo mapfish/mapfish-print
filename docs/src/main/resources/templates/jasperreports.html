@@ -513,7 +513,7 @@ as false:
 <li>tableDataSource</li>
 <li>numberOfLegendRows</li>
 <li>legend</li>
-<li>calebarSubReport</li>
+<li>scalebarSubReport</li>
 <li>northArrowSubReport</li>
 </ul>
 <h4>5: logo</h4>
@@ -524,7 +524,22 @@ from the server to the same folder as the local copy of the template.
 </p>
 <h4>6: others</h4>
 <p>
-Finally, other problems arise making the preview unusable.
+In order to add a numeric scale you have to create a text field with the 
+following expression:
+</p>
+<div class="highlight"><pre>
+   String.format("Massstab 1: %.0f", $P{mapContext}.getRoundedScale())
+</pre></div>
+<p>
+Finally add the missing mapContext parameter with the following properties:
+<ul>
+    <li>Name: mapContext</li>
+    <li>Class: org.mapfish.print.attribute.map.MapfishMapContext</li>
+</ul>
+</p>
+<h4>Preview issues</h4>
+<p>
+Some problems arise making the preview unusable.
  In our example, a problem will appear due to a special parameter related to
 Mapfish Print used in text field.
  In this case, you will have to change the text field for removing the
