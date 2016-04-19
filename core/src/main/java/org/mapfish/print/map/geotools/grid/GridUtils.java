@@ -99,7 +99,7 @@ final class GridUtils {
     }
 
     /**
-     * Create the label for the a grid line.
+     * Create the label for a grid line.
      *
      * @param value the value of the line
      * @param unit  the unit that the value is in
