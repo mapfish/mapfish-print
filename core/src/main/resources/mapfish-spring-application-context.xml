@@ -15,7 +15,7 @@
     <import resource="mapfish-spring-named-styles.xml" />
 
     <context:annotation-config/>
-    <context:property-placeholder system-properties-mode="FALLBACK" file-encoding="UTF-8" location="classpath:mapfish-spring.properties"/>
+    <context:property-placeholder system-properties-mode="OVERRIDE" file-encoding="UTF-8" location="classpath:mapfish-spring.properties"/>
 
     <!--<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">-->
         <!--<property name="pathMatcher">-->
@@ -41,10 +41,10 @@
     </bean>
 
     <bean id="jobManager" class="org.mapfish.print.servlet.job.ThreadPoolJobManager">
-        <property name="maxNumberOfRunningPrintJobs" value="10" />
+        <property name="maxNumberOfRunningPrintJobs" value="${maxNumberOfRunningPrintJobs}" />
         <property name="maxNumberOfWaitingJobs" value="5000" />
         <!-- Timeout for print jobs in seconds -->
-        <property name="timeout" value="600" />
+        <property name="timeout" value="${printTimeout}" />
         <!-- Timeout after which a print job is canceled, if the status has not been checked (in seconds). -->
         <property name="abandonedTimeout" value="120" />
         <property name="oldFileCleanUp" value="${fileCleanUp}" />
