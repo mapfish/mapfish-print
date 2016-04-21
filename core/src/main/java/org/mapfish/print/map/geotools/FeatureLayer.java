@@ -144,7 +144,7 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
         /**
          * Indicates if the layer is rendered as SVG.
          * <p></p>
-         * (will default to {@link org.mapfish.print.config.Configuration#defaultStyle}).
+         * (will default to {@link org.mapfish.print.config.Configuration#defaultToSvg}).
          */
         public Boolean renderAsSvg;
     }
