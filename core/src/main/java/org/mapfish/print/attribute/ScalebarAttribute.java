@@ -239,7 +239,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
 
         /**
          * Indicates if the scalebar graphic is rendered as SVG
-         * (will default to {@link org.mapfish.print.config.Configuration#defaultStyle}).
+         * (will default to {@link org.mapfish.print.config.Configuration#defaultToSvg}).
          */
         @HasDefaultValue
         public Boolean renderAsSvg;
