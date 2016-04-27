@@ -436,6 +436,11 @@ public class ThreadPoolJobManager implements JobManager {
             waitingTime = Math.max(0L, queuePosition * getAverageTimeSpentPrinting());
         }
 
+        if (!done) {
+            // remember when the status was polled for the last time
+            this.registry.put(LAST_POLL + referenceId, new Date().getTime());
+        }
+
         return new JobStatus(done, error, elapsedTime, status, waitingTime);
     }
 

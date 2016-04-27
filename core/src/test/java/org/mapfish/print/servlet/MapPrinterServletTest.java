@@ -50,6 +50,7 @@ import javax.servlet.ServletException;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGURATION_FILE_KEY;
@@ -624,6 +625,41 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals("cancelled", statusJson.getString(MapPrinterServlet.JSON_STATUS));
     }
 
+    /**
+     * Check that a job is not cancelled, when status requests are made.
+     * Test case for: https://github.com/mapfish/mapfish-print/issues/404
+     * @throws Exception
+     */
+    @Test(timeout = 60000)
+    @DirtiesContext
+    public void testCreateReport_NotAbandonedTimeout() throws Exception {
+        jobManager.setAbandonedTimeout(1L);
+        setUpConfigFiles();
+
+        final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
+        final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+
+        String requestData = loadRequestDataAsString();
+        servlet.createReport("timeout", "png", requestData, servletCreateRequest, servletCreateResponse);
+        final PJsonObject createResponseJson = parseJSONObjectFromString(servletCreateResponse.getContentAsString());
+        assertTrue(createResponseJson.has(MapPrinterServlet.JSON_PRINT_JOB_REF));
+        assertEquals(HttpStatus.OK.value(), servletCreateResponse.getStatus());
+
+        String ref = createResponseJson.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
+
+        // check that the job is not cancelled when doing status requests
+        for (int i = 0; i < 4; i++) {
+            Thread.sleep(500);
+
+            final MockHttpServletRequest statusRequest = new MockHttpServletRequest();
+            final MockHttpServletResponse statusResponse = new MockHttpServletResponse();
+            servlet.getStatus(ref, "", statusRequest, statusResponse);
+            final PJsonObject statusJson = parseJSONObjectFromString(statusResponse.getContentAsString());
+            assertNotEquals("cancelled", statusJson.getString(MapPrinterServlet.JSON_STATUS));
+        }
+        waitForNotCanceled(ref);
+    }
+
     private void waitForCanceled(String ref) throws IOException,
             ServletException, InterruptedException,
             UnsupportedEncodingException {
@@ -638,6 +674,27 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
                 String error = servletGetReportResponse.getContentAsString();
                 assertTrue(error.contains("cancelled"));
                 return;
+            } else {
+                fail(status + " was not one of the expected response codes.  Expected: 500 or 202");
+            }
+        }
+    }
+
+    private void waitForNotCanceled(String ref) throws IOException,
+            ServletException, InterruptedException,
+            UnsupportedEncodingException {
+        while (true) {
+            MockHttpServletResponse servletGetReportResponse = new MockHttpServletResponse();
+            servlet.getReport(ref, false, servletGetReportResponse);
+            final int status = servletGetReportResponse.getStatus();
+            if (status == HttpStatus.ACCEPTED.value()) {
+                // still processing
+                Thread.sleep(500);
+            } else if (status == HttpStatus.OK.value()) {
+                // report was created, ok
+                return;
+            } else if (status == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+                fail("should not be cancelled");
             } else {
                 fail(status + " was not one of the expected response codes.  Expected: 500 or 202");
             }
