@@ -103,7 +103,9 @@ public class WorkingDirectories {
 
     private void createIfMissing(final File directory, final String name) {
         if (!directory.exists() && !directory.mkdirs()) {
-            throw new AssertionError("Unable to create working directory: '" + directory + "' it is the '" + name + "' directory");
+            if (!directory.exists()) {  // Maybe somebody else created it in the mean time
+                throw new AssertionError("Unable to create working directory: '" + directory + "' it is the '" + name + "' directory");
+            }
         }
     }
 
