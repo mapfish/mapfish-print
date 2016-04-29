@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
@@ -77,16 +79,28 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
     }
 
     File compileJasperReport(final File buildFile, final File jasperFile) throws JRException {
-
         if (!buildFile.exists() || jasperFile.lastModified() > buildFile.lastModified()) {
-            LOGGER.info("Building Jasper report: " + jasperFile.getAbsolutePath());
-            LOGGER.debug("To: " + buildFile.getAbsolutePath());
-            final Timer.Context compileJasperReport = this.metricRegistry.timer("compile_" + jasperFile).time();
             try {
-                JasperCompileManager.compileReportToFile(jasperFile.getAbsolutePath(), buildFile.getAbsolutePath());
-            } finally {
-                final long compileTime = TimeUnit.MILLISECONDS.convert(compileJasperReport.stop(), TimeUnit.NANOSECONDS);
-                LOGGER.info("Report built in " + compileTime + "ms.");
+                // May be called from multiple threads at the same time for the same report.
+                // Instead of trying to protect the compiled file against modification while
+                // another thread is reading it, use a temporary file as a target instead and
+                // move it (atomic operation) when done. Worst case: we compile a file twice instead
+                // of once.
+                File tmpBuildFile = File.createTempFile("temp_", JASPER_REPORT_COMPILED_FILE_EXT, buildFile.getParentFile());
+
+                LOGGER.info("Building Jasper report: " + jasperFile.getAbsolutePath());
+                LOGGER.debug("To: " + buildFile.getAbsolutePath());
+                final Timer.Context compileJasperReport = this.metricRegistry.timer("compile_" + jasperFile).time();
+                try {
+                    JasperCompileManager.compileReportToFile(jasperFile.getAbsolutePath(), tmpBuildFile.getAbsolutePath());
+                } finally {
+                    final long compileTime = TimeUnit.MILLISECONDS.convert(compileJasperReport.stop(), TimeUnit.NANOSECONDS);
+                    LOGGER.info("Report built in " + compileTime + "ms.");
+                }
+
+                java.nio.file.Files.move(tmpBuildFile.toPath(), buildFile.toPath(), StandardCopyOption.ATOMIC_MOVE);
+            } catch (IOException e) {
+                throw new JRException(e);
             }
         } else {
             LOGGER.debug("Destination file is already up to date: " + buildFile.getAbsolutePath());
