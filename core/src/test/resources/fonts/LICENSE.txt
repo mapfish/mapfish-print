@@ -1,0 +1,2 @@
+The font 'Coming Soon' is licensed under the Apache license, see:
+https://github.com/google/fonts/blob/master/apache/comingsoon/LICENSE.txt

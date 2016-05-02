@@ -32,11 +32,13 @@ import java.util.regex.Pattern;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         AbstractMapfishSpringTest.DEFAULT_SPRING_XML,
-        AbstractMapfishSpringTest.TEST_SPRING_XML
+        AbstractMapfishSpringTest.TEST_SPRING_XML,
+        AbstractMapfishSpringTest.TEST_SPRING_FONT_XML
 })
 public abstract class AbstractMapfishSpringTest {
     public static final String DEFAULT_SPRING_XML = "classpath:mapfish-spring-application-context.xml";
     public static final String TEST_SPRING_XML = "classpath:test-http-request-factory-application-context.xml";
+    public static final String TEST_SPRING_FONT_XML = "classpath:test-mapfish-spring-custom-fonts.xml";
     static final Pattern IMPORT_PATTERN = Pattern.compile("@@importFile\\((\\S+)\\)@@");
 
     @Autowired
