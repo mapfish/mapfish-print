@@ -19,7 +19,7 @@ Execute the following command():
 This will build three artifacts:  print-servlet-xxx.war, print-lib.jar, print-standalone.jar
 
 The `build` also builds the documentation in the `docs/build/site` folder.  To deploy the documentation it should simply be copied to the gh-pages
-branch and then committed github will automatically build the updated site at: http://mapfish.github.io/mapfish-print/#/overview
+branch and then committed GitHub will automatically build the updated site at: http://mapfish.github.io/mapfish-print/
 
 If you only want to build the docs simply run
 
@@ -86,3 +86,11 @@ Run in Eclipse
 - Create new Java Run Configuration
 - Main class is org.mapfish.print.cli.Main
 - Program arguments: -config samples/config.yaml -spec samples/spec.json -output $HOME/print.pdf
+
+Contributor License Agreement
+------------------------------
+
+Before accepting a contribution, we ask that you provide us a Contributor License Agreement.
+If you are making your contribution as part of work for your employer, please follow the
+guidelines on submitting a `Corporate Contributor License Agreement <https://github.com/mapfish/mapfish-print/wiki/C2C_Corporate-CLA_v1-0.pdf>`_.
+If you are making your contribution as an individual, you can submit a digital `Individual Contributor License Agreement <http://goo.gl/forms/QO9UELxM9m>`_.
