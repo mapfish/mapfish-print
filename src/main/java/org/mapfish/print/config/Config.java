@@ -76,6 +76,7 @@ public class Config implements Closeable {
     private boolean ignoreCapabilities = false;
     private int maxPrintTimeBeforeWarningInSeconds = 30;
     private int printTimeoutMinutes = 5;
+    private boolean disableLayersMerging = false;
 
     private ThreadResources threadResources;
 
@@ -407,6 +408,14 @@ public class Config implements Closeable {
 
     public void setConnectionTimeout(int connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
+    }
+    
+    public void setDisableLayersMerging(boolean disableLayersMerging) {
+       this.disableLayersMerging = disableLayersMerging;
+    }
+    
+    public boolean isDisableLayersMerging() {
+        return disableLayersMerging;
     }
 
     public String getOutputFilename(String layoutName) {
