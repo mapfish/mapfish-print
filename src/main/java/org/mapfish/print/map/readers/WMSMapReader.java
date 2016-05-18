@@ -211,7 +211,7 @@ public class WMSMapReader extends TileableMapReader {
     }
     @Override
     public boolean testMerge(MapReader other) {
-        if (canMerge(other)) {
+        if (!context.getConfig().isDisableLayersMerging() && canMerge(other)) {
             WMSMapReader wms = (WMSMapReader) other;
             layers.addAll(wms.layers);
             styles.addAll(wms.styles);
