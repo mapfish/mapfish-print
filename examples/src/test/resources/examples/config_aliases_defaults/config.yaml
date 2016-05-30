@@ -33,7 +33,7 @@ templates:
         matchers:
          - !localMatch {}
          - !dnsMatch
-           host: demo.mapfish.org
+           host: mapfish.org
            port: 80
       - !reportBuilder # compile all reports in current directory
         directory: '.'
