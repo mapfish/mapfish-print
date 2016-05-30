@@ -139,7 +139,7 @@ dependencies {
     jasper (
             "net.sf.jasperreports:jasperreports:$project.jasperReportVersion",
             "org.codehaus.groovy:groovy-all:$project.groovyVersion",
-            'ar.com.fdvs:DynamicJasper:5.0.0',
+            'ar.com.fdvs:DynamicJasper:5.0.7',
             'net.sf.jasperreports:jasperreports-fonts:6.0.0'
     )
     compile fileTree(dir: "$projectDir/libs", include: '*.jar')
