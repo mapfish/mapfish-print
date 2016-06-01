@@ -294,7 +294,7 @@ def getVersionName = { ->
 }
 
 docker {
-    baseImage "tomcat:8-jre7"
+    baseImage "tomcat:8-jre8"
     maintainer 'Camptocamp "info@camptocamp.com"'
 }
 
@@ -315,6 +315,9 @@ task createDocker(type: Docker, dependsOn: 'unzipWar') {
     runCommand 'rm -rf ${CATALINA_HOME}/webapps/*'  +
             ' && echo "tomcat.util.scan.StandardJarScanFilter.jarsToSkip=*" >> ${CATALINA_HOME}/conf/catalina.properties' +
             ' && echo "org.apache.catalina.startup.TldConfig.jarsToSkip=*" >> ${CATALINA_HOME}/conf/catalina.properties' +
-            ' && echo "tomcat.util.scan.DefaultJarScanner.jarsToSkip=*" >> ${CATALINA_HOME}/conf/catalina.properties'
+            ' && echo "tomcat.util.scan.DefaultJarScanner.jarsToSkip=*" >> ${CATALINA_HOME}/conf/catalina.properties' +
+            // remove access log file (we'll get it from the load balancer)
+            ' && perl -0777 -i -pe \'s/(<Valve className="org.apache.catalina.valves.AccessLogValve"[^>]*>)/<!--$1-->/s\' ${CATALINA_HOME}/conf/server.xml'
+    addFile 'logging-docker.properties', '${CATALINA_HOME}/conf/logging.properties'  // only log to stdout
     addFile new File(project.buildDir, "webapp"), '${CATALINA_HOME}/webapps/ROOT'
 }
