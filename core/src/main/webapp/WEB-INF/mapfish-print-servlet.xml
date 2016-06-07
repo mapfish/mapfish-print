@@ -12,5 +12,5 @@
     </bean>
     <bean name="DeprecatedAPI" class="org.mapfish.print.servlet.oldapi.OldAPIMapPrinterServlet"/>
 
-
+    <bean id="versionInfo" class="org.mapfish.print.VersionInfo" lazy-init="false"/>
 </beans>
