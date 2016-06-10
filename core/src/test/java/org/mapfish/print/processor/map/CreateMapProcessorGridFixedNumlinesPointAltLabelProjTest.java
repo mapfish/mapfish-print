@@ -2,6 +2,7 @@ package org.mapfish.print.processor.map;
 
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
+
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -75,8 +76,9 @@ public class CreateMapProcessorGridFixedNumlinesPointAltLabelProjTest extends Ab
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
 
         String imageName = getExpectedImageName("", referenceImage, BASE_DIR);
+//        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
 
-        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + imageName), 30);
+        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + imageName), 45);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

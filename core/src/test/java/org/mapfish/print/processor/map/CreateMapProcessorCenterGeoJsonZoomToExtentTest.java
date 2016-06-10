@@ -49,7 +49,7 @@ public class CreateMapProcessorCenterGeoJsonZoomToExtentTest extends AbstractMap
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(1, layerGraphics.size());
 
-        // Files.copy(new File(layerGraphics.get(0)), new File("/tmp/" + getClass().getSimpleName() + ".svg"));
+        // Files.copy(new File(layerGraphics.get(0)), new File(TMP, getClass().getSimpleName() + ".svg"));
         final BufferedImage referenceImage = ImageSimilarity.convertFromSvg(layerGraphics.get(0), 500, 400);
         // ImageSimilarity.writeUncompressedImage(referenceImage, "/tmp/expectedSimpleImage.tiff");
         new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 0);

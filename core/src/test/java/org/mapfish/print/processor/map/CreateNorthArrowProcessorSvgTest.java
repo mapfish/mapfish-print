@@ -69,8 +69,8 @@ public class CreateNorthArrowProcessorSvgTest extends AbstractMapfishSpringTest 
         URI northArrowGraphic = (URI) values.getObject("graphic", URI.class);
         BufferedImage graphic = ImageSimilarity.convertFromSvg(northArrowGraphic, 200, 200);
 
-//        Files.copy(new File(northArrowGraphic), new File("/tmp/" + getClass().getSimpleName() + ".svg"));
-//        ImageSimilarity.writeUncompressedImage(graphic, "/tmp/" + getClass().getSimpleName() + ".tiff");
+//        Files.copy(new File(northArrowGraphic), new File(TMP, getClass().getSimpleName() + ".svg"));
+//        ImageSimilarity.writeUncompressedImage(graphic, TMP + "/" + getClass().getSimpleName() + ".tiff");
 
         new ImageSimilarity(graphic, 2)
                 .assertSimilarity(getFile(BASE_DIR + "expectedNorthArrow.tiff"), 90);

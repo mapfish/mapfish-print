@@ -2,6 +2,7 @@ package org.mapfish.print.processor.map;
 
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
+
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -74,7 +75,7 @@ public class CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest extend
 
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
 
-//        ImageIO.write(referenceImage, "png", new File("e:/tmp/expectedSimpleImage.png"));
+//        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
 
         assertEquals(2, layerGraphics.size());
 
