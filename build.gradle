@@ -47,6 +47,7 @@ configure(subprojects.findAll {['core', 'examples', 'docs'].contains(it.name)}) 
         maven {url "http://jasperreports.sourceforge.net/maven2"}
         maven {url "https://dl.bintray.com/readytalk/maven"}
         maven {url "http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts"}
+        maven {url "http://maven.geo-solutions.it"}
     }
 }
 configure(subprojects.findAll {['core', 'examples'].contains(it.name)}) {
