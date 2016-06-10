@@ -17,6 +17,7 @@ import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.processor.http.matcher.DnsHostMatcher;
+import org.mapfish.print.processor.http.matcher.LocalHostMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -190,6 +191,34 @@ public class HttpProxyTest {
         final DnsHostMatcher dnsHostMatcher = new DnsHostMatcher();
         dnsHostMatcher.setHost("google.com");
         httpProxy.setMatchers(Lists.newArrayList(dnsHostMatcher));
+        final String message = "Target was reached without proxy";
+
+        final String path = "/nomatch";
+        targetServer.createContext(path, new HttpHandler() {
+            @Override
+            public void handle(HttpExchange httpExchange) throws IOException {
+                respond(httpExchange, message, 200);
+            }
+        });
+        proxyServer.createContext(path, new HttpHandler() {
+            @Override
+            public void handle(HttpExchange httpExchange) throws IOException {
+                String msg = "Proxy was reached but in this test the proxy should not have been used.";
+                respond(httpExchange, msg, 500);
+            }
+        });
+
+        assertCorrectResponse(httpProxy, message, "http://" + LOCALHOST + ":" + TARGET_PORT, path);
+    }
+
+    @Test
+    public void testExecuteProxyMatcherReject() throws Exception {
+        final HttpProxy httpProxy = new HttpProxy();
+        httpProxy.setHost(LOCALHOST);
+        httpProxy.setPort(PROXY_PORT);
+        final LocalHostMatcher localHostMatcher = new LocalHostMatcher();
+        localHostMatcher.setReject(true);
+        httpProxy.setMatchers(Lists.newArrayList(localHostMatcher));
         final String message = "Target was reached without proxy";
 
         final String path = "/nomatch";

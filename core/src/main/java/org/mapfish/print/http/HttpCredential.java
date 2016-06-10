@@ -98,7 +98,7 @@ public class HttpCredential implements ConfigurationObject {
     public boolean matches(final MatchInfo matchInfo) throws SocketException, UnknownHostException, MalformedURLException {
         for (URIMatcher uriMatcher : this.getMatchers()) {
             if (uriMatcher.matches(matchInfo)) {
-                return true;
+                return !uriMatcher.isReject();
             }
         }
         return false;
