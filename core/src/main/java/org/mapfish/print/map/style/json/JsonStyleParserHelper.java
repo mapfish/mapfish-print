@@ -292,6 +292,10 @@ public final class JsonStyleParserHelper {
     protected TextSymbolizer createTextSymbolizer(final PJsonObject styleJson) {
         final TextSymbolizer textSymbolizer = this.styleBuilder.createTextSymbolizer();
 
+        // make sure that labels are also rendered if a part of the text would be outside
+        // the view context, see http://docs.geoserver.org/stable/en/user/styling/sld-reference/labeling.html#partials
+        textSymbolizer.getOptions().put("partials", "true");
+
         if (styleJson.has(JSON_LABEL)) {
             final Expression label = parseExpression(null, styleJson, JSON_LABEL, new Function<String, Object>() {
                 @Nullable
