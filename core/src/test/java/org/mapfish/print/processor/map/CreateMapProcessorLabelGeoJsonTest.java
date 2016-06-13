@@ -54,7 +54,7 @@ public class CreateMapProcessorLabelGeoJsonTest extends AbstractMapfishSpringTes
         assertEquals(1, layerGraphics.size());
 
         final BufferedImage img = ImageIO.read(new File(layerGraphics.get(0)));
-//        ImageIO.write(img, "png", new File("/tmp/"+getClass().getSimpleName()+".png"));
+//        ImageIO.write(img, "png", new File(TMP, getClass().getSimpleName() + ".png"));
         new ImageSimilarity(img, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 400);
     }
 
