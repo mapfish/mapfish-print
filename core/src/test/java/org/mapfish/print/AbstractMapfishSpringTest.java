@@ -40,6 +40,7 @@ public abstract class AbstractMapfishSpringTest {
     public static final String TEST_SPRING_XML = "classpath:test-http-request-factory-application-context.xml";
     public static final String TEST_SPRING_FONT_XML = "classpath:test-mapfish-spring-custom-fonts.xml";
     static final Pattern IMPORT_PATTERN = Pattern.compile("@@importFile\\((\\S+)\\)@@");
+    public static final String TMP = System.getProperty("java.io.tmpdir");
 
     @Autowired
     private WorkingDirectories workingDirectories;
@@ -134,10 +135,10 @@ public abstract class AbstractMapfishSpringTest {
         String platformName = "expectedSimpleImage" + classifier + "-" + normalizedOSName() + ".png";
         String defaultName = "expectedSimpleImage" + classifier + ".png";
 
-//        new File("/tmp/" + baseDir).mkdirs();
-//        ImageIO.write(actualImage, "png", new File("/tmp/" + baseDir + "/" + platformVersionName));
-//        ImageIO.write(actualImage, "png", new File("/tmp/" + baseDir + "/" + platformName));
-//        ImageIO.write(actualImage, "png", new File("/tmp/" + baseDir + "/" + defaultName));
+//        new File(TMP, baseDir).mkdirs();
+//        ImageIO.write(actualImage, "png", new File(TMP, baseDir + "/" + platformVersionName));
+//        ImageIO.write(actualImage, "png", new File(TMP, baseDir + "/" + platformName));
+//        ImageIO.write(actualImage, "png", new File(TMP, baseDir + "/" + defaultName));
 
 
         return findImage(baseDir, platformVersionName).or(findImage(baseDir, platformName)).or(defaultName);

@@ -3,6 +3,7 @@ package org.mapfish.print.processor.map;
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 
 import org.junit.Test;
@@ -18,11 +19,15 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
+
 import java.io.IOException;
+
 import org.springframework.test.annotation.DirtiesContext;
+
 import java.net.URI;
 
 import static org.junit.Assert.assertEquals;
+
 import java.util.List;
 
 /**
@@ -91,9 +96,11 @@ public class CreateOverviewMapProcessorStyleTest extends AbstractMapfishSpringTe
 //        Files.copy(new File(layerGraphics.get(0)), new File("/tmp/0_ov_"+getClass().getSimpleName()+".tiff"));
 //        Files.copy(new File(layerGraphics.get(1)), new File("/tmp/1_ov_"+getClass().getSimpleName()+".tiff"));
 //        Files.copy(new File(layerGraphics.get(2)), new File("/tmp/2_ov_"+getClass().getSimpleName()+".tiff"));
-        
-        new ImageSimilarity(ImageSimilarity.mergeImages(layerGraphics, 300, 200), 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 50);
+
+        final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 300, 200);
+//        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
+        new ImageSimilarity(referenceImage, 2)
+                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 50);
 
     }
 

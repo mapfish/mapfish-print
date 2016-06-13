@@ -118,7 +118,7 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0_DPI_SVG_Test extends 
 
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 2625, 1225);
 
-//        ImageIO.write(referenceImage, "png", new File("e:/tmp/expectedSimpleImage.png"));
+//        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
 
         new ImageSimilarity(referenceImage, 2)
                 .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 20);

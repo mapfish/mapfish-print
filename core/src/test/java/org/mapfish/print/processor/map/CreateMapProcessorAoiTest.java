@@ -3,6 +3,7 @@ package org.mapfish.print.processor.map;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
+
 import org.apache.batik.transcoder.TranscoderException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -160,7 +162,7 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
         assertEquals(aoiDisplay == RENDER ? 3 : 2, layerGraphics.size());
 
         final BufferedImage actualImage = ImageSimilarity.mergeImages(layerGraphics, 630, 294);
-//        ImageIO.write(actualImage, "png", new File("e:/tmp/" + expectedImageName));
+//        ImageIO.write(actualImage, "png", new File(TMP, expectedImageName));
         File expectedImage = getFile(BASE_DIR + "/output/" + expectedImageName);
         new ImageSimilarity(actualImage, 2).assertSimilarity(expectedImage, 50);
     }

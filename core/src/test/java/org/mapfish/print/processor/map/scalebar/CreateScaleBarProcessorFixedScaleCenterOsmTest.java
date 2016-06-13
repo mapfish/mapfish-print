@@ -2,7 +2,9 @@ package org.mapfish.print.processor.map.scalebar;
 
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
+
 import jsr166y.ForkJoinPool;
+
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -96,8 +98,9 @@ public class CreateScaleBarProcessorFixedScaleCenterOsmTest extends AbstractMapf
 
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
 
+//        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
         new ImageSimilarity(referenceImage, 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 30);
+                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 30);
 
         URI scalebarGraphic = values.getObject("graphic", URI.class);
 //        Files.copy(new File(scalebarGraphic), new File("/tmp/expectedScalebar_" + getClass().getSimpleName() + ".tiff"));

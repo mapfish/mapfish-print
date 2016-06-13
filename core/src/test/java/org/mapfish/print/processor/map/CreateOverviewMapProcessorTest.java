@@ -2,6 +2,7 @@ package org.mapfish.print.processor.map;
 
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
+
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -89,9 +90,9 @@ public class CreateOverviewMapProcessorTest extends AbstractMapfishSpringTest {
         assertEquals(3, layerGraphics.size());
 
         final BufferedImage actualImage = ImageSimilarity.mergeImages(layerGraphics, 300, 200);
-//        ImageIO.write(actualImage, "tiff", new File("e:/tmp/expectedSimpleImage.tiff"));
+//        ImageIO.write(actualImage, "png", new File("/tmp/expectedSimpleImage.png"));
         new ImageSimilarity(actualImage, 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 50);
+                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 50);
 
     }
 

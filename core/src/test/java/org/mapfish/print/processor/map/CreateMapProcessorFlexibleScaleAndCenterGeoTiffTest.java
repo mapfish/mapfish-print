@@ -46,8 +46,8 @@ public class CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest extends Abstrac
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(1, layerGraphics.size());
 
-//        Files.copy(new File(layerGraphics.get(0)), new File("/tmp/"+getClass().getSimpleName()+".tiff"));
-        new ImageSimilarity(new File(layerGraphics.get(0)), 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 0);
+//        Files.copy(new File(layerGraphics.get(0)), new File(TMP, getClass().getSimpleName()+".png"));
+        new ImageSimilarity(new File(layerGraphics.get(0)), 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 0);
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {

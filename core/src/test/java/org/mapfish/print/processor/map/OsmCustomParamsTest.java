@@ -3,6 +3,7 @@ package org.mapfish.print.processor.map;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Multimap;
 import com.google.common.io.Files;
+
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -99,6 +100,7 @@ public class OsmCustomParamsTest extends AbstractMapfishSpringTest {
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
         String expectedSimpleImage = getExpectedImageName("", referenceImage, BASE_DIR);
 
+//        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
         new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + expectedSimpleImage), 30);
 
     }

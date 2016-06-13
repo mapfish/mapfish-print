@@ -99,6 +99,7 @@ public class CreateMapProcessorFixedScaleCenterOsmDpiTest extends AbstractMapfis
 //        Files.copy(new File(layerGraphics.get(1)), new File("/tmp/1_"+getClass().getSimpleName()+".tiff"));
 
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
+//        ImageIO.write(referenceImage, "tiff", new File(TMP + "/expectedSimpleImage.tiff"));
         new ImageSimilarity(referenceImage, 2)
                 .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 30);
 

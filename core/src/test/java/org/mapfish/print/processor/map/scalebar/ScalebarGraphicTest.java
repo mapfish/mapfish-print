@@ -174,9 +174,9 @@ public class ScalebarGraphicTest {
 
         ScalebarGraphic scalebar = new ScalebarGraphic();
         URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);
-//        Files.copy(new File(file), new File("/tmp/" + getClass().getSimpleName() + "expected-scalebar-graphic.svg"));
+//        Files.copy(new File(file), new File(TPM, getClass().getSimpleName() + "expected-scalebar-graphic.svg"));
 //        ImageSimilarity.writeUncompressedImage(
-//                ImageSimilarity.convertFromSvg(file, 300, 40), "/tmp/" + getClass().getSimpleName() + "expected-scalebar-graphic-svg.tiff");
+//                ImageSimilarity.convertFromSvg(file, 300, 40), TMP + "/" + getClass().getSimpleName() + "expected-scalebar-graphic-svg.tiff");
         new ImageSimilarity(ImageSimilarity.convertFromSvg(file, 300, 40), 4).assertSimilarity(getFile("expected-scalebar-graphic-svg.tiff"), 15);
     }
 

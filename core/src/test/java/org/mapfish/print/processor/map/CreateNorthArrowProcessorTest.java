@@ -65,7 +65,7 @@ public class CreateNorthArrowProcessorTest extends AbstractMapfishSpringTest {
 
         URI northArrowGraphic = (URI) values.getObject("graphic", URI.class);
 
-//        Files.copy(new File(northArrowGraphic), new File("/tmp/" + getClass().getSimpleName() + ".tiff"));
+//        Files.copy(new File(northArrowGraphic), new File(TMP, getClass().getSimpleName() + ".tiff"));
 
         new ImageSimilarity(new File(northArrowGraphic), 2)
                 .assertSimilarity(getFile(BASE_DIR + "expectedNorthArrow.tiff"), 30);

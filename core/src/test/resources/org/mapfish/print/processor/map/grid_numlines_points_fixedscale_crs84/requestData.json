@@ -15,6 +15,7 @@
                 "numberOfLines": [5,5],
                 "labelColor": "green",
                 "renderAsSvg": false,
+                "labelFomat": "%1.0f %s",
                 "font": {
                     "name" : ["Arial"],
                     "size" : "10"
