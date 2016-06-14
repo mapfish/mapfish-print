@@ -22,8 +22,7 @@ import javax.annotation.Nonnull;
 public final class OsmLayerParserPlugin extends AbstractGridCoverageLayerPlugin implements MapLayerFactoryPlugin<OsmLayerParam> {
     @Autowired
     private StyleParser parser;
-    @Autowired
-    private ForkJoinPool forkJoinPool;
+    private final ForkJoinPool forkJoinPool = new ForkJoinPool(this.getMaxNumberParallelRequests());
 
     private Set<String> typenames = Sets.newHashSet("osm");
 

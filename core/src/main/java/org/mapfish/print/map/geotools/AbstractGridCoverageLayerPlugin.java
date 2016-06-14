@@ -19,6 +19,15 @@ public abstract class AbstractGridCoverageLayerPlugin {
     private StyleParser styleParser;
 
     /**
+     * Maximum number of requests we can do in parallel to avoid overloading servers.
+     */
+    private final int maxNumberParallelRequests = 15;
+
+    public final int getMaxNumberParallelRequests() {
+        return this.maxNumberParallelRequests;
+    }
+
+    /**
      * Common method for creating styles.
      *
      * @param template the template that the map is part of

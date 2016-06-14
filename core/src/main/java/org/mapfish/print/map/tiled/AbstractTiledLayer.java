@@ -50,7 +50,7 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
         Rectangle paintArea = new Rectangle(mapContext.getMapSize());
         TileCacheInformation tileCacheInformation = createTileInformation(bounds, paintArea, dpi, isFirstLayer);
         final TileLoaderTask task = new TileLoaderTask(httpRequestFactory, dpi,
-                mapContext, tileCacheInformation, getFailOnError());
+                mapContext, tileCacheInformation, getFailOnError(), this.forkJoinPool);
         final GridCoverage2D gridCoverage2D = this.forkJoinPool.invoke(task);
 
         GridCoverageLayer layer = new GridCoverageLayer(gridCoverage2D, this.styleSupplier.load(httpRequestFactory, gridCoverage2D,
