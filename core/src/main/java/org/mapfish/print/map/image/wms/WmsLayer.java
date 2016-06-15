@@ -1,5 +1,7 @@
 package org.mapfish.print.map.image.wms;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.common.io.Closer;
 import com.vividsolutions.jts.util.Assert;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -32,6 +34,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
 public final class WmsLayer extends AbstractSingleImageLayer {
     private static final Logger LOGGER = LoggerFactory.getLogger(WmsLayer.class);
     private final WmsLayerParam params;
+    private final MetricRegistry registry;
 
     /**
      * Constructor.
@@ -39,12 +42,15 @@ public final class WmsLayer extends AbstractSingleImageLayer {
      * @param executorService the thread pool for doing the rendering.
      * @param styleSupplier   the style to use when drawing the constructed grid coverage on the map.
      * @param params          the params from the request data.
+     * @param registry        the metrics registry.
      */
     protected WmsLayer(final ExecutorService executorService,
                        final StyleSupplier<GridCoverage2D> styleSupplier,
-                       final WmsLayerParam params) {
+                       final WmsLayerParam params,
+                       final MetricRegistry registry) {
         super(executorService, styleSupplier, params);
         this.params = params;
+        this.registry = registry;
     }
 
     @Override
@@ -55,12 +61,15 @@ public final class WmsLayer extends AbstractSingleImageLayer {
         final URI commonUri = new URI(wmsLayerParam.getBaseUrl());
 
         final Rectangle paintArea = transformer.getPaintArea();
-        ReferencedEnvelope envelope = transformer.getBounds().toReferencedEnvelope(paintArea, transformer.getDPI());
-        URI uri = WmsUtilities.makeWmsGetLayerRequest(requestFactory, wmsLayerParam, commonUri, paintArea.getSize(),
+        final ReferencedEnvelope envelope = transformer.getBounds().toReferencedEnvelope(paintArea, transformer.getDPI());
+        final URI uri = WmsUtilities.makeWmsGetLayerRequest(requestFactory, wmsLayerParam, commonUri, paintArea.getSize(),
                 transformer.getDPI(), envelope);
 
-        Closer closer = Closer.create();
+        final Closer closer = Closer.create();
+        final String baseMetricName = WmsLayer.class.getName() + ".read." +
+                uri.getHost();
         try {
+            final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
             final ClientHttpResponse response = closer.register(requestFactory.createRequest(uri, HttpMethod.GET).execute());
 
             Assert.equals(HttpStatus.OK, response.getStatusCode(), "Http status code for " + uri + " was not OK.  It was: " + response
@@ -69,10 +78,16 @@ public final class WmsLayer extends AbstractSingleImageLayer {
             final BufferedImage image = ImageIO.read(response.getBody());
             if (image == null) {
                 LOGGER.warn("The URI: " + uri + " is an image format that can be decoded");
+                this.registry.counter(baseMetricName + ".error").inc();
                 return createErrorImage(paintArea);
+            } else {
+                timerDownload.stop();
             }
 
             return image;
+        } catch (Throwable e) {
+            this.registry.counter(baseMetricName + ".error").inc();
+            throw e;
         } finally {
             closer.close();
         }

@@ -1,5 +1,7 @@
 package org.mapfish.print.processor.jasper;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.common.collect.Lists;
 import com.google.common.io.Closer;
 import net.sf.jasperreports.engine.JRException;
@@ -48,6 +50,9 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     private static final String LEVEL_COLUMN = "level";
     @Autowired
     private JasperReportBuilder jasperReportBuilder;
+
+    @Autowired
+    private MetricRegistry metricRegistry;
 
     // CSOFF:MagicNumber
     private Dimension missingImageSize = new Dimension(24, 24);
@@ -137,14 +142,19 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         if (icons != null) {
             for (URL icon : icons) {
                 BufferedImage image = null;
+                final URI uri = icon.toURI();
+                final String metricName = LegendProcessor.class.getName() + ".read." + uri.getHost();
                 try {
                     checkCancelState(context);
-                    final ClientHttpRequest request = clientHttpRequestFactory.createRequest(icon.toURI(), HttpMethod.GET);
+                    final ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
+                    final Timer.Context timer = this.metricRegistry.timer(metricName).time();
                     final ClientHttpResponse httpResponse = closer.register(request.execute());
                     if (httpResponse.getStatusCode() == HttpStatus.OK) {
                         image = ImageIO.read(httpResponse.getBody());
                         if (image == null) {
                             LOGGER.warn("The URL: " + icon + " is NOT an image format that can be decoded");
+                        } else {
+                            timer.stop();
                         }
                     } else {
                         LOGGER.warn("Failed to load image from: " + icon + " due to server side error.\n\tResponse Code: " +
@@ -158,6 +168,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
 
                 if (image == null) {
                     image = this.getMissingImage();
+                    this.metricRegistry.counter(metricName + ".error").inc();
                 }
 
                 String report = null;

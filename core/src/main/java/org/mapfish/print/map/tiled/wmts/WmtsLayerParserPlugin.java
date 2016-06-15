@@ -1,5 +1,6 @@
 package org.mapfish.print.map.tiled.wmts;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Sets;
 import jsr166y.ForkJoinPool;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -21,6 +22,8 @@ import javax.annotation.Nonnull;
 public final class WmtsLayerParserPlugin extends AbstractGridCoverageLayerPlugin implements MapLayerFactoryPlugin<WMTSLayerParam> {
     @Autowired
     private ForkJoinPool forkJoinPool;
+    @Autowired
+    private MetricRegistry registry;
 
     private Set<String> typenames = Sets.newHashSet("wmts");
 
@@ -41,6 +44,6 @@ public final class WmtsLayerParserPlugin extends AbstractGridCoverageLayerPlugin
         String styleRef = param.rasterStyle;
         return new WMTSLayer(this.forkJoinPool,
                 super.<GridCoverage2D>createStyleSupplier(template, styleRef),
-                param);
+                param, this.registry);
     }
 }

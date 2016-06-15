@@ -1,5 +1,6 @@
 package org.mapfish.print.map.tiled;
 
+import com.codahale.metrics.MetricRegistry;
 import jsr166y.ForkJoinPool;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.map.GridCoverageLayer;
@@ -26,19 +27,23 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
 
     private final StyleSupplier<GridCoverage2D> styleSupplier;
     private final ForkJoinPool forkJoinPool;
+    private final MetricRegistry registry;
 
     /**
      * Constructor.
      * @param forkJoinPool the thread pool for doing the rendering.
      * @param styleSupplier strategy for loading the style for this layer
      * @param params the parameters for this layer
+     * @param registry the metrics registry
      */
     protected AbstractTiledLayer(final ForkJoinPool forkJoinPool,
                                  final StyleSupplier<GridCoverage2D> styleSupplier,
-                                 final AbstractLayerParams params) {
+                                 final AbstractLayerParams params,
+                                 final MetricRegistry registry) {
         super(forkJoinPool, params);
         this.forkJoinPool = forkJoinPool;
         this.styleSupplier = styleSupplier;
+        this.registry = registry;
     }
 
     @Override
@@ -50,7 +55,7 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
         Rectangle paintArea = new Rectangle(mapContext.getMapSize());
         TileCacheInformation tileCacheInformation = createTileInformation(bounds, paintArea, dpi, isFirstLayer);
         final TileLoaderTask task = new TileLoaderTask(httpRequestFactory, dpi,
-                mapContext, tileCacheInformation, getFailOnError());
+                mapContext, tileCacheInformation, getFailOnError(), this.registry);
         final GridCoverage2D gridCoverage2D = this.forkJoinPool.invoke(task);
 
         GridCoverageLayer layer = new GridCoverageLayer(gridCoverage2D, this.styleSupplier.load(httpRequestFactory, gridCoverage2D,
