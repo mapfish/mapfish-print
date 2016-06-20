@@ -1,5 +1,6 @@
 package org.mapfish.print.map.image.wms;
 
+import com.codahale.metrics.MetricRegistry;
 import jsr166y.ForkJoinPool;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.mapfish.print.config.Template;
@@ -25,7 +26,8 @@ public final class WmsLayerFactoryPlugin extends AbstractGridCoverageLayerPlugin
     private ForkJoinPool forkJoinPool;
     @Autowired
     private StyleParser styleParser;
-
+    @Autowired
+    private MetricRegistry metricRegistry;
 
     @Override
     public Set<String> getTypeNames() {
@@ -45,6 +47,6 @@ public final class WmsLayerFactoryPlugin extends AbstractGridCoverageLayerPlugin
         String styleRef = layerData.rasterStyle;
         return new WmsLayer(this.forkJoinPool,
                 super.<GridCoverage2D>createStyleSupplier(template, styleRef),
-                layerData);
+                layerData, this.metricRegistry);
     }
 }

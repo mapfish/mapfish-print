@@ -1,5 +1,7 @@
 package org.mapfish.print.map.tiled;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -52,6 +54,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
     private final MfClientHttpRequestFactory httpRequestFactory;
     private final boolean failOnError;
     private Optional<Geometry> cachedRotatedMapBounds = null;
+    private final MetricRegistry registry;
 
     /**
      * Constructor.
@@ -60,12 +63,14 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
      * @param transformer        a transformer for making calculations
      * @param tileCacheInfo      the object used to create the tile requests
      * @param failOnError        fail on tile download error
+     * @param registry           the metrics registry
      */
     public TileLoaderTask(final MfClientHttpRequestFactory httpRequestFactory,
                           final double dpi,
                           final MapfishMapContext transformer,
                           final TileCacheInformation tileCacheInfo,
-                          final boolean failOnError) {
+                          final boolean failOnError,
+                          final MetricRegistry registry) {
         this.bounds = transformer.getBounds();
         this.paintArea = new Rectangle(transformer.getMapSize());
         this.dpi = dpi;
@@ -73,6 +78,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
         this.transformer = transformer;
         this.tiledLayer = tileCacheInfo;
         this.failOnError = failOnError;
+        this.registry = registry;
         final Dimension tileSize = this.tiledLayer.getTileSize();
         this.errorImage = new BufferedImage(tileSize.width, tileSize.height, BufferedImage.TYPE_4BYTE_ABGR);
         Graphics2D graphics = this.errorImage.createGraphics();
@@ -143,7 +149,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
                         if (isTileVisible(tileBounds)) {
                             final SingleTileLoaderTask task = new SingleTileLoaderTask(
                                     tileRequest, this.errorImage, xIndex, yIndex,
-                                    this.failOnError);
+                                    this.failOnError, this.registry);
                             loaderTasks.add(task);
                         }
                     } else {
@@ -172,7 +178,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
             GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
             GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapProjection);
             gridEnvelope.setEnvelope(gridCoverageOrigin.x, gridCoverageOrigin.y, gridCoverageMaxX, gridCoverageMaxY);
-            return factory.create(commonUrl.toString(), coverageImage, gridEnvelope, null, null, null);
+            return factory.create(commonUrl, coverageImage, gridEnvelope, null, null, null);
         } catch (Exception e) {
             throw ExceptionUtils.getRuntimeException(e);
         }
@@ -258,26 +264,32 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
         private final ClientHttpRequest tileRequest;
         private final BufferedImage errorImage;
         private final boolean failOnError;
+        private final MetricRegistry registry;
 
         public SingleTileLoaderTask(final ClientHttpRequest tileRequest, final BufferedImage errorImage, final int tileIndexX,
-                                    final int tileIndexY, final boolean failOnError) {
+                                    final int tileIndexY, final boolean failOnError, final MetricRegistry registry) {
             super(tileIndexX, tileIndexY);
             this.tileRequest = tileRequest;
             this.errorImage = errorImage;
             this.failOnError = failOnError;
+            this.registry = registry;
         }
 
         @Override
         protected Tile compute() {
             ClientHttpResponse response = null;
+            final String baseMetricName = TileLoaderTask.class.getName() + ".read." +
+                    this.tileRequest.getURI().getHost();
             try {
                 LOGGER.debug("\n\t" + this.tileRequest.getMethod() + " -- " + this.tileRequest.getURI());
+                final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
                 response = this.tileRequest.execute();
                 final HttpStatus statusCode = response.getStatusCode();
                 if (statusCode != HttpStatus.OK && statusCode != HttpStatus.NO_CONTENT) {
                     String errorMessage = "Error making tile request: " + this.tileRequest.getURI() + "\n\tStatus: " + statusCode +
                             "\n\toutMessage: " + response.getStatusText();
                     LOGGER.error(errorMessage);
+                    this.registry.counter(baseMetricName + ".error").inc();
                     if (this.failOnError) {
                         throw new RuntimeException(errorMessage);
                     }
@@ -291,10 +303,14 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
                 if (image == null) {
                     LOGGER.warn("The URL: " + this.tileRequest.getURI() + " is an image format that can be decoded");
                     image = this.errorImage;
+                    this.registry.counter(baseMetricName + ".error").inc();
+                } else {
+                    timerDownload.stop();
                 }
 
                 return new Tile(image, getTileIndexX(), getTileIndexY());
             } catch (IOException e) {
+                this.registry.counter(baseMetricName + ".error").inc();
                 throw ExceptionUtils.getRuntimeException(e);
             } finally {
                 if (response != null) {

@@ -32,6 +32,7 @@
     <logger name="org.mapfish.print.output.ValuesLogger" level="OFF" />
     <logger name="com.codahale.metrics" level="INFO" />
     <logger name="com.codahale.metrics.JmxReporter" level="INFO" />
+    <logger name="net.sf.jasperreports" level="INFO" />
 
 
     <root level="ALL">

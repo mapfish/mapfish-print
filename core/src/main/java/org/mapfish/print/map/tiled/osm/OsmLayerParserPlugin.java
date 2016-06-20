@@ -1,5 +1,6 @@
 package org.mapfish.print.map.tiled.osm;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Sets;
 import jsr166y.ForkJoinPool;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -24,6 +25,8 @@ public final class OsmLayerParserPlugin extends AbstractGridCoverageLayerPlugin 
     private StyleParser parser;
     @Autowired
     private ForkJoinPool forkJoinPool;
+    @Autowired
+    private MetricRegistry registry;
 
     private Set<String> typenames = Sets.newHashSet("osm");
 
@@ -45,6 +48,6 @@ public final class OsmLayerParserPlugin extends AbstractGridCoverageLayerPlugin 
         String styleRef = param.rasterStyle;
         return new OsmLayer(this.forkJoinPool,
                 super.<GridCoverage2D>createStyleSupplier(template, styleRef),
-                param);
+                param, this.registry);
     }
 }
