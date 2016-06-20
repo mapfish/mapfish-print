@@ -1,14 +1,13 @@
 package org.mapfish.print.http;
 
-import com.google.common.collect.Lists;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationObject;
-import org.mapfish.print.processor.http.matcher.AcceptAllMatcher;
 import org.mapfish.print.processor.http.matcher.MatchInfo;
 import org.mapfish.print.processor.http.matcher.URIMatcher;
+import org.mapfish.print.processor.http.matcher.UriMatchers;
 
 import java.net.MalformedURLException;
 import java.net.SocketException;
@@ -30,11 +29,7 @@ import javax.annotation.Nullable;
 public class HttpCredential implements ConfigurationObject {
     private String username;
     private char[] password;
-    private List<? extends URIMatcher> matchers = Lists.newArrayList(AcceptAllMatcher.INSTANCE);
-
-    protected List<? extends URIMatcher> getMatchers() {
-        return this.matchers;
-    }
+    private UriMatchers matchers = new UriMatchers();
 
     /**
      * Matchers are used to choose which requests the credentials apply to.
@@ -45,7 +40,7 @@ public class HttpCredential implements ConfigurationObject {
      * @param matchers the matchers to use to determine which requests the credentials can be used for
      */
     public void setMatchers(final List<? extends URIMatcher> matchers) {
-        this.matchers = matchers;
+        this.matchers.setMatchers(matchers);
     }
 
     /**
@@ -96,12 +91,7 @@ public class HttpCredential implements ConfigurationObject {
      * @param matchInfo the information for making the patch
      */
     public boolean matches(final MatchInfo matchInfo) throws SocketException, UnknownHostException, MalformedURLException {
-        for (URIMatcher uriMatcher : this.getMatchers()) {
-            if (uriMatcher.matches(matchInfo)) {
-                return !uriMatcher.isReject();
-            }
-        }
-        return false;
+        return this.matchers.matches(matchInfo);
     }
 
     /**
