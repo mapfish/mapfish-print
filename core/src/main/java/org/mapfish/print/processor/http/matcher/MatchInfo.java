@@ -153,4 +153,27 @@ public final class MatchInfo {
     public String getRealm() {
         return this.realm;
     }
+
+    private static String valOrAny(final String val) {
+        return val != null ? val : "*";
+    }
+
+    /**
+     * @return A string
+     */
+    @Override
+    public String toString() {
+        String result = String.format("%s://%s:%s/%s", valOrAny(this.scheme), valOrAny(this.host),
+                this.port != ANY_PORT ? Integer.toString(this.port) : "*", valOrAny(this.path));
+        if (this.method != ANY_METHOD) {
+            result = this.method + " " + result;
+        }
+        if (this.query != ANY_QUERY) {
+            result += "?" + this.query;
+        }
+        if (this.fragment != ANY_FRAGMENT) {
+            result += "#" + this.fragment;
+        }
+        return result;
+    }
 }

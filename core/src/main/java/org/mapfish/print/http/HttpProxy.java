@@ -7,35 +7,25 @@ import org.mapfish.print.processor.http.matcher.URIMatcher;
 import java.util.List;
 
 /**
- * This configuration object configures the proxies to be used by the system.  This is configured as
+ * This configuration object configures the proxies to be used by the system. This is configured as
  * one of the root elements of the config.yaml
  *
- * <p>Example - Explicitly declare that requests to localhost or www.camptocamp.org require proxying: </p>
+ * <p>Example - Proxy all requests except localhost and www.camptocamp.org:</p>
  * <pre><code>
  * proxies:
  *   - !proxy
- *     requireProxy:
- *       - !localMatch {}
- *       - !ipMatch
- *         ip: www.camptocamp.org
- *     host: proxy.host.com
- *     port: 8888
- *     username: username
- *     password: xyzpassword
- * </code></pre>
- * <p>Example - Proxy all requests except localhost and www.camptocamp.org: </p>
- * <pre><code>
- * proxies:
- *   - !proxy
- *     noProxy:
- *       - !localMatch {}
- *       - !ipMatch
- *         ip: www.camptocamp.org
  *     scheme: http
  *     host: proxy.host.com
  *     port: 8888
  *     username: username
  *     password: xyzpassword
+ *     matchers:
+ *       - !localMatch
+ *         reject: true
+ *       - !dnsMatch
+ *         host: www.camptocamp.org
+ *         reject: true
+ *       - !acceptAll {}
  * </code></pre>
  *
  * @author Jesse on 6/25/2014.

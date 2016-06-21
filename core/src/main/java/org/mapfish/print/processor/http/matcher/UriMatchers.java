@@ -34,18 +34,27 @@ public final class UriMatchers {
     public boolean matches(final URI uri, final HttpMethod httpMethod)
             throws SocketException, UnknownHostException, MalformedURLException {
         final MatchInfo matchInfo = MatchInfo.fromUri(uri, httpMethod);
+        return matches(matchInfo);
+    }
+
+    /**
+     * @param matchInfo The info to check for matches.
+     * @return true if it's matching.
+     */
+    public boolean matches(final MatchInfo matchInfo)
+            throws SocketException, UnknownHostException, MalformedURLException {
         for (URIMatcher matcher : this.matchers) {
             if (matcher.matches(matchInfo)) {
                 if (matcher.isReject()) {
-                    LOGGER.debug("Reject {} because of this rule: {}", uri, matcher);
+                    LOGGER.debug("Reject {} because of this rule: {}", matchInfo, matcher);
                     return false;
                 } else {
-                    LOGGER.debug("Accept {} because of this rule: {}", uri, matcher);
+                    LOGGER.debug("Accept {} because of this rule: {}", matchInfo, matcher);
                     return true;
                 }
             }
         }
-        LOGGER.debug("Reject {} because no rule matches", uri);
+        LOGGER.debug("Reject {} because no rule matches", matchInfo);
         return false;
     }
 
