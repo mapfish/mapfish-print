@@ -591,7 +591,7 @@ public class MapPrinterServlet extends BaseMapServlet {
      * @param jsonpCallback        if given the result is returned with a function call wrapped around it
      * @param capabilitiesResponse the response object
      */
-    @RequestMapping(value = "/{appId:\\w+}" + CAPABILITIES_URL, method = RequestMethod.GET)
+    @RequestMapping(value = "/{appId}" + CAPABILITIES_URL, method = RequestMethod.GET)
     public final void getCapabilities(
             @PathVariable final String appId,
             @RequestParam(value = "pretty", defaultValue = "false") final boolean pretty,
