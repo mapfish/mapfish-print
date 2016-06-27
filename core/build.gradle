@@ -106,7 +106,8 @@ configurations {
 
 dependencies {
     def springSecurityVersion = "3.2.5.RELEASE"
-    def slf4jVersion = '1.7.6'
+    def slf4jVersion = '1.7.21'
+    def logbackVersion = '1.1.7'
 
     compile (
             "org.springframework:spring-context:$project.springVersion",
@@ -148,7 +149,7 @@ dependencies {
             "org.slf4j:slf4j-api:${slf4jVersion}",
             "org.slf4j:jcl-over-slf4j:${slf4jVersion}",
             'org.json:json:20080701',
-            'ch.qos.logback:logback-classic:1.1.1',
+            "ch.qos.logback:logback-classic:${logbackVersion}",
             'org.yaml:snakeyaml:1.13',
             "com.github.spullara.cli-parser:cli-parser:1.1.1",
             'org.apache.httpcomponents:httpclient:4.3.3'
@@ -294,7 +295,7 @@ def getVersionName = { ->
 }
 
 docker {
-    baseImage "tomcat:8-jre8"
+    baseImage "camptocamp/tomcat-logback:8.5-jre8"
     maintainer 'Camptocamp "info@camptocamp.com"'
 }
 
@@ -311,13 +312,18 @@ task createDocker(type: Docker, dependsOn: 'unzipWar') {
     applicationName = "mapfish_print"
     tagVersion = getVersionName()
     tag = "camptocamp/${applicationName}"
+    project.ext.set("dockerImage", "${tag}:${tagVersion}")
 
-    runCommand 'rm -rf ${CATALINA_HOME}/webapps/*'  +
-            ' && echo "tomcat.util.scan.StandardJarScanFilter.jarsToSkip=*" >> ${CATALINA_HOME}/conf/catalina.properties' +
-            ' && echo "org.apache.catalina.startup.TldConfig.jarsToSkip=*" >> ${CATALINA_HOME}/conf/catalina.properties' +
-            ' && echo "tomcat.util.scan.DefaultJarScanner.jarsToSkip=*" >> ${CATALINA_HOME}/conf/catalina.properties' +
-            // remove access log file (we'll get it from the load balancer)
-            ' && perl -0777 -i -pe \'s/(<Valve className="org.apache.catalina.valves.AccessLogValve"[^>]*>)/<!--$1-->/s\' ${CATALINA_HOME}/conf/server.xml'
-    addFile 'logging-docker.properties', '${CATALINA_HOME}/conf/logging.properties'  // only log to stdout
+    doLast {
+        System.out.println("Created docker image ${project.dockerImage}")
+    }
+
     addFile new File(project.buildDir, "webapp"), '${CATALINA_HOME}/webapps/ROOT'
+    addFile 'logback-custom.xml', '${CATALINA_HOME}/conf/logback-custom.xml'
+    //avoid a warning because logback-classic is both in tomcat and in the webapp
+    runCommand 'rm ${CATALINA_HOME}/webapps/ROOT/WEB-INF/lib/logback-*.jar ${CATALINA_HOME}/webapps/ROOT/WEB-INF/lib/slf4j-*.jar'
+    setEnvironment('LOG_LEVEL', 'INFO')
+    setEnvironment('SPRING_LOG_LEVEL', 'WARN')
+    setEnvironment('JASPER_LOG_LEVEL', 'WARN')
+    setEnvironment('APACHE_LOG_LEVEL', 'WARN')
 }
