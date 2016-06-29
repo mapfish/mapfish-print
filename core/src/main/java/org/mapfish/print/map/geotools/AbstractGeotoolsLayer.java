@@ -16,8 +16,6 @@ import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -35,7 +33,6 @@ import static org.mapfish.print.Constants.OPACITY_PRECISION;
  */
 public abstract class AbstractGeotoolsLayer implements MapLayer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGeotoolsLayer.class);
     private final ExecutorService executorService;
     private final AbstractLayerParams params;
 
@@ -120,11 +117,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
             final ReferencedEnvelope mapArea = bounds.toReferencedEnvelope(paintArea, transformer.getDPI());
             renderer.paint(graphics2D, paintArea, mapArea);
         } catch (Exception e) {
-            if (e instanceof NullPointerException || e.getCause() instanceof NullPointerException) {
-                LOGGER.info("Rendering layer failed", e);
-            } else {
-                throw ExceptionUtils.getRuntimeException(e);
-            }
+            throw ExceptionUtils.getRuntimeException(e);
         } finally {
             content.dispose();
         }
