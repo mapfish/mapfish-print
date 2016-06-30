@@ -287,6 +287,7 @@ public class ThreadPoolJobManager implements JobManager {
     public final void shutdown() {
         this.timer.shutdownNow();
         this.executor.shutdownNow();
+        this.cleanUpTimer.shutdownNow();
     }
 
     @Override
