@@ -165,6 +165,7 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
     }
 
     @Test
+    @DirtiesContext
     public void testTableConverters() throws Exception {
         httpRequestFactory.registerHandler(new Predicate<URI>() {
             @Override

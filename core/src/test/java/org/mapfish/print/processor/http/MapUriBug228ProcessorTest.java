@@ -16,6 +16,7 @@ import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.ProcessorGraphNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
@@ -41,6 +42,7 @@ public class MapUriBug228ProcessorTest extends AbstractMapfishSpringTest {
         return "map-uri";
     }
     @Test
+    @DirtiesContext
     public void bug228FixMapUri() throws Exception {
         this.configurationFactory.setDoValidation(false);
         final Configuration config = configurationFactory.getConfig(getFile(baseDir() + "/map-uri-228-bug-fix-config.yaml"));

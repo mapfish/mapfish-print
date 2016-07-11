@@ -82,6 +82,7 @@ public abstract class AbstractHttpProcessorTest extends AbstractMapfishSpringTes
     }
 
     @Test
+    @DirtiesContext
     public void testCreateMapDependency() throws Exception {
 
         this.configurationFactory.setDoValidation(false);
