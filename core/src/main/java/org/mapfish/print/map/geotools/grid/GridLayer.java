@@ -80,7 +80,7 @@ public final class GridLayer implements MapLayer {
         }
 
         graphics2D.setFont(baseFont);
-        int charHeight = (graphics2D.getFontMetrics().getAscent() / 2);
+        int halfCharHeight = (graphics2D.getFontMetrics().getAscent() / 2);
         Stroke baseStroke = graphics2D.getStroke();
         AffineTransform baseTransform = graphics2D.getTransform();
         Color haloColor = ColorParser.toColor(this.params.haloColor);
@@ -93,9 +93,12 @@ public final class GridLayer implements MapLayer {
             AffineTransform transform = new AffineTransform(baseTransform);
             transform.translate(label.x, label.y);
 
-            double rotationDegrees = Math.toDegrees(transformer.getRotation());
-            RotationQuadrant.getQuadrant(rotationDegrees).updateTransform(transform, this.params.indent, label.side,
-                    charHeight, textBounds);
+            applyOffset(transform, label.side);
+
+            final double rotationDegrees = Math.toDegrees(transformer.getRotation());
+            RotationQuadrant.getQuadrant(rotationDegrees, this.params.rotateLabels)
+                    .updateTransform(transform, this.params.indent, label.side,
+                            halfCharHeight, textBounds);
             graphics2D.setTransform(transform);
 
             if (haloRadius > 0) {
@@ -107,6 +110,17 @@ public final class GridLayer implements MapLayer {
             graphics2D.setStroke(baseStroke);
             graphics2D.setColor(labelColor);
             graphics2D.fill(textShape);
+        }
+    }
+
+    private void applyOffset(final AffineTransform transform, final GridLabel.Side side) {
+        switch (side) {
+            case BOTTOM:
+            case TOP:
+                transform.translate(this.params.verticalXOffset, 0);
+                break;
+            default:
+                transform.translate(0, this.params.horizontalYOffset);
         }
     }
 

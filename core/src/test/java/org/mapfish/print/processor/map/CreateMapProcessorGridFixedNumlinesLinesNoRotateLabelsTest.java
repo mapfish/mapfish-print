@@ -13,6 +13,7 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -26,8 +27,8 @@ import static org.junit.Assert.assertEquals;
  * <p></p>
  * Created by Jesse on 3/26/14.
  */
-public class CreateMapProcessorGridFixedNumlinesPointAltLabelProjTest extends AbstractMapfishSpringTest {
-    public static final String BASE_DIR = "grid_numlines_points_fixedscale_alt_label_proj/";
+public class CreateMapProcessorGridFixedNumlinesLinesNoRotateLabelsTest extends AbstractMapfishSpringTest {
+    public static final String BASE_DIR = "grid_numlines_lines_fixedscale_norotatelabels/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
@@ -39,7 +40,7 @@ public class CreateMapProcessorGridFixedNumlinesPointAltLabelProjTest extends Ab
     @Test
     @DirtiesContext
     public void testExecute() throws Exception {
-        final String host = "grid_numlines_points_fixedscale_alt_label_proj";
+        final String host = "grid_numlines_lines_fixedscale_norotatelabels";
         TiledWMSUtil.registerTiledWmsHandler(requestFactory, host);
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("A4 landscape");
@@ -52,10 +53,11 @@ public class CreateMapProcessorGridFixedNumlinesPointAltLabelProjTest extends Ab
         assertEquals(2, layerGraphics.size());
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
 
-        String imageName = getExpectedImageName("", referenceImage, BASE_DIR);
-//        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
+        //ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
 
-        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + imageName), 45);
+        String imageName = getExpectedImageName("", referenceImage, BASE_DIR);
+
+        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + imageName), 30);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
