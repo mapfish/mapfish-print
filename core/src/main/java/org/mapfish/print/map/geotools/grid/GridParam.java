@@ -141,6 +141,27 @@ public final class GridParam extends AbstractLayerParams {
     private CoordinateReferenceSystem labelCRS;
 
     /**
+     * If true (the default), the labels will be rotated to follow the lines they belong to.
+     * Otherwise they are orientated west to east.
+     */
+    @HasDefaultValue
+    public boolean rotateLabels = true;
+
+    /**
+     * Apply an X offset to the vertical grid line labels, relative to the vertical grid lines.
+     * Defaults to 0.
+     */
+    @HasDefaultValue
+    public double verticalXOffset = 0;
+
+    /**
+     * Apply an Y offset to horizontal grid line labels, relative to the horizontal grid lines.
+     * Defaults to 0.
+     */
+    @HasDefaultValue
+    public double horizontalYOffset = 0;
+
+    /**
      * Initialize default values and validate that config is correct.
      */
     public void postConstruct() {

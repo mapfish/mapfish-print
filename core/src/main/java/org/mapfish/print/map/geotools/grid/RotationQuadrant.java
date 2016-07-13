@@ -18,21 +18,21 @@ enum RotationQuadrant {
     QUADRANT_1 {
         @Override
         void updateTransform(final AffineTransform baseTransform, final int indent, final GridLabel.Side side,
-                             final int charHeight, final Rectangle2D textBounds) {
+                             final int halfCharHeight, final Rectangle2D textBounds) {
             switch (side) {
                 case TOP:
                     baseTransform.rotate(Constants.MINUS_NINETY_RADIANS);
-                    baseTransform.translate(-textBounds.getWidth() - indent, charHeight);
+                    baseTransform.translate(-textBounds.getWidth() - indent, halfCharHeight);
                     break;
                 case BOTTOM:
                     baseTransform.rotate(Constants.MINUS_NINETY_RADIANS);
-                    baseTransform.translate(indent, charHeight);
+                    baseTransform.translate(indent, halfCharHeight);
                     break;
                 case RIGHT:
-                    baseTransform.translate(-textBounds.getWidth() - indent, charHeight);
+                    baseTransform.translate(-textBounds.getWidth() - indent, halfCharHeight);
                     break;
                 default:
-                    baseTransform.translate(indent, charHeight);
+                    baseTransform.translate(indent, halfCharHeight);
             }
 
         }
@@ -43,23 +43,23 @@ enum RotationQuadrant {
     QUADRANT_2 {
         @Override
         void updateTransform(final AffineTransform baseTransform, final int indent, final GridLabel.Side side,
-                             final int charHeight, final Rectangle2D textBounds) {
+                             final int halfCharHeight, final Rectangle2D textBounds) {
             switch (side) {
                 case TOP:
                     baseTransform.rotate(Constants.MINUS_NINETY_RADIANS);
-                    baseTransform.translate(-textBounds.getWidth() - indent, charHeight);
+                    baseTransform.translate(-textBounds.getWidth() - indent, halfCharHeight);
                     break;
                 case BOTTOM:
                     baseTransform.rotate(Constants.MINUS_NINETY_RADIANS);
-                    baseTransform.translate(indent, charHeight);
+                    baseTransform.translate(indent, halfCharHeight);
                     break;
                 case RIGHT:
                     baseTransform.rotate(Constants.ONE_EIGHTY_RADIANS);
-                    baseTransform.translate(indent, charHeight);
+                    baseTransform.translate(indent, halfCharHeight);
                     break;
                 default:
                     baseTransform.rotate(Constants.ONE_EIGHTY_RADIANS);
-                    baseTransform.translate(-textBounds.getWidth() - indent, charHeight);
+                    baseTransform.translate(-textBounds.getWidth() - indent, halfCharHeight);
             }
 
         }
@@ -70,23 +70,23 @@ enum RotationQuadrant {
     QUADRANT_3 {
         @Override
         void updateTransform(final AffineTransform baseTransform, final int indent, final GridLabel.Side side,
-                             final int charHeight, final Rectangle2D textBounds) {
+                             final int halfCharHeight, final Rectangle2D textBounds) {
             switch (side) {
                 case TOP:
                     baseTransform.rotate(Constants.NINETY_RADIANS);
-                    baseTransform.translate(indent, charHeight);
+                    baseTransform.translate(indent, halfCharHeight);
                     break;
                 case BOTTOM:
                     baseTransform.rotate(Constants.NINETY_RADIANS);
-                    baseTransform.translate(-textBounds.getWidth() - indent, charHeight);
+                    baseTransform.translate(-textBounds.getWidth() - indent, halfCharHeight);
                     break;
                 case RIGHT:
                     baseTransform.rotate(Constants.ONE_EIGHTY_RADIANS);
-                    baseTransform.translate(indent, charHeight);
+                    baseTransform.translate(indent, halfCharHeight);
                     break;
                 default:
                     baseTransform.rotate(Constants.ONE_EIGHTY_RADIANS);
-                    baseTransform.translate(-textBounds.getWidth() - indent, charHeight);
+                    baseTransform.translate(-textBounds.getWidth() - indent, halfCharHeight);
             }
 
         }
@@ -97,21 +97,42 @@ enum RotationQuadrant {
     QUADRANT_4 {
         @Override
         void updateTransform(final AffineTransform baseTransform, final int indent, final GridLabel.Side side,
-                             final int charHeight, final Rectangle2D textBounds) {
+                             final int halfCharHeight, final Rectangle2D textBounds) {
             switch (side) {
                 case TOP:
                     baseTransform.rotate(Constants.NINETY_RADIANS);
-                    baseTransform.translate(indent, charHeight);
+                    baseTransform.translate(indent, halfCharHeight);
                     break;
                 case BOTTOM:
                     baseTransform.rotate(Constants.NINETY_RADIANS);
-                    baseTransform.translate(-textBounds.getWidth() - indent, charHeight);
+                    baseTransform.translate(-textBounds.getWidth() - indent, halfCharHeight);
                     break;
                 case RIGHT:
-                    baseTransform.translate(-textBounds.getWidth() - indent, charHeight);
+                    baseTransform.translate(-textBounds.getWidth() - indent, halfCharHeight);
                     break;
                 default:
-                    baseTransform.translate(indent, charHeight);
+                    baseTransform.translate(indent, halfCharHeight);
+            }
+
+        }
+    },
+
+    NO_ROTATION {
+      @Override
+        void updateTransform(final AffineTransform baseTransform, final int indent, final GridLabel.Side side,
+                             final int halfCharHeight, final Rectangle2D textBounds) {
+            switch (side) {
+                case TOP:
+                    baseTransform.translate(-textBounds.getWidth() / 2.0, indent + halfCharHeight * 2.0);
+                    break;
+                case BOTTOM:
+                    baseTransform.translate(-textBounds.getWidth() / 2.0, -halfCharHeight - indent);
+                    break;
+                case RIGHT:
+                    baseTransform.translate(-textBounds.getWidth() - indent, halfCharHeight);
+                    break;
+                default:
+                    baseTransform.translate(indent, halfCharHeight);
             }
 
         }
@@ -120,9 +141,13 @@ enum RotationQuadrant {
     public static final int THREE_SIXTY_DEGREES = 360;
 
     abstract void updateTransform(AffineTransform baseTransform, int indent, GridLabel.Side side,
-                                  int charHeight, Rectangle2D textBounds);
+                                  int halfCharHeight, Rectangle2D textBounds);
 
-    static RotationQuadrant getQuadrant(final double rotationDegrees) {
+    static RotationQuadrant getQuadrant(final double rotationDegrees, final boolean rotate) {
+        if (!rotate) {
+            return NO_ROTATION;
+        }
+
         double rotation = rotationDegrees;
         while (rotation > THREE_SIXTY_DEGREES) {
             rotation -= THREE_SIXTY_DEGREES;
@@ -142,7 +167,7 @@ enum RotationQuadrant {
         if (rotation > 180 && rotation <= 270) {
             return QUADRANT_3;
         }
-        // CSOFF: MagicNumber
+        // CSON: MagicNumber
         return QUADRANT_4;
     }
 
