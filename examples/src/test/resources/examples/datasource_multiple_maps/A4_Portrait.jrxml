@@ -4,7 +4,6 @@
 	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
 	<parameter name="title" class="java.lang.String"/>
 	<parameter name="comments" class="java.lang.String"/>
-	<field name="table" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
 	<field name="title" class="java.lang.String"/>
 	<field name="description" class="java.lang.String"/>
 	<field name="mapSubReport" class="java.lang.String"/>
