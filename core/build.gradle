@@ -24,6 +24,7 @@ task startScripts(type: CreateStartScripts) {
 }
 task print(type: JavaExec) {
     main = "org.mapfish.print.cli.Main"
+    classpath = sourceSets.main.runtimeClasspath
 }
 
 // define what should be included as distribution. usually this configuration
