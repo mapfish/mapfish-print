@@ -27,6 +27,7 @@ import org.geotools.styling.Rule;
 import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
+import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.config.Configuration;
@@ -67,6 +68,18 @@ public final class JsonStyleParserHelper {
     static final String JSON_LABEL_Y_OFFSET = "labelYOffset";
     static final String JSON_LABEL_ROTATION = "labelRotation";
     static final String JSON_LABEL_PERPENDICULAR_OFFSET = "labelPerpendicularOffset";
+    static final String JSON_LABEL_OUTLINE_COLOR = "labelOutlineColor";
+    static final String JSON_LABEL_OUTLINE_WIDTH = "labelOutlineWidth";
+    static final String JSON_LABEL_ALLOW_OVERRUNS = "allowOverruns";
+    static final String JSON_LABEL_AUTO_WRAP = "autoWrap";
+    static final String JSON_LABEL_CONFLICT_RESOLUTION = "conflictResolution";
+    static final String JSON_LABEL_FOLLOW_LINE = "followLine";
+    static final String JSON_LABEL_GOODNESS_OF_FIT = "goodnessOfFit";
+    static final String JSON_LABEL_GROUP = "group";
+    static final String JSON_LABEL_MAX_DISPLACEMENT = "maxDisplacement";
+    static final String JSON_LABEL_SPACE_AROUND = "spaceAround";
+    static final String JSON_FONT_COLOR = "fontColor";
+    static final String JSON_FONT_OPACITY = "fontOpacity";
     static final String JSON_FILL_COLOR = "fillColor";
     static final String JSON_STROKE_COLOR = "strokeColor";
     static final String JSON_STROKE_OPACITY = "strokeOpacity";
@@ -83,10 +96,6 @@ public final class JsonStyleParserHelper {
     static final String JSON_HALO_RADIUS = "haloRadius";
     static final String JSON_HALO_COLOR = "haloColor";
     static final String JSON_HALO_OPACITY = "haloOpacity";
-    static final String JSON_LABEL_OUTLINE_COLOR = "labelOutlineColor";
-    static final String JSON_LABEL_OUTLINE_WIDTH = "labelOutlineWidth";
-    static final String JSON_FONT_COLOR = "fontColor";
-    static final String JSON_FONT_OPACITY = "fontOpacity";
     static final String JSON_GRAPHIC_FORMAT = "graphicFormat";
     static final String STROKE_DASHSTYLE_SOLID = "solid";
     static final String STROKE_DASHSTYLE_DOT = "dot";
@@ -335,7 +344,23 @@ public final class JsonStyleParserHelper {
             textSymbolizer.setFill(addFill(styleJson.optString(JSON_FONT_COLOR, "black"), styleJson.optString(JSON_FONT_OPACITY, "1.0")));
         }
 
+        this.addVendorOptions(JSON_LABEL_ALLOW_OVERRUNS, styleJson, textSymbolizer);
+        this.addVendorOptions(JSON_LABEL_AUTO_WRAP, styleJson, textSymbolizer);
+        this.addVendorOptions(JSON_LABEL_CONFLICT_RESOLUTION, styleJson, textSymbolizer);
+        this.addVendorOptions(JSON_LABEL_FOLLOW_LINE, styleJson, textSymbolizer);
+        this.addVendorOptions(JSON_LABEL_GOODNESS_OF_FIT, styleJson, textSymbolizer);
+        this.addVendorOptions(JSON_LABEL_GROUP, styleJson, textSymbolizer);
+        this.addVendorOptions(JSON_LABEL_MAX_DISPLACEMENT, styleJson, textSymbolizer);
+        this.addVendorOptions(JSON_LABEL_SPACE_AROUND, styleJson, textSymbolizer);
+
         return textSymbolizer;
+    }
+
+    private void addVendorOptions(final String key, final PJsonObject styleJson, final Symbolizer symbolizer) {
+        final String value = styleJson.optString(key);
+        if (!Strings.isNullOrEmpty(value)) {
+            symbolizer.getOptions().put(key, value);
+        }
     }
 
     private Font createFont(final Font defaultFont, final PJsonObject styleJson) {

@@ -27,7 +27,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  *     the values of the various properties of the style but the layout differs between the two and version 2 is more flexible
  *     and powerful than version 1.
  * </p>
- * <h2>Mapfish JSON Style Version 1</h2>
+ * <h2 id="stylev1">Mapfish JSON Style Version 1 <a class="headerlink" href="#stylev1">¶</a></h2>
  * <p>
  *     Version 1 is compatible with mapfish print &lt;= v2 and is based on the OpenLayers v2 styling.  The layout is as follows:
  * </p>
@@ -68,7 +68,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * }
  * </code></pre>
  * <p></p>
- * <h2>Mapfish JSON Style Version 2</h2>
+ * <h2 id="stylev2">Mapfish JSON Style Version 2 <a class="headerlink" href="#stylev2">¶</a></h2>
  * <p>
  *     Version 2 uses the same property names as version 1 but has a different structure.  The layout is as follows:
  * </p>
@@ -219,7 +219,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  *     </li>
  * </ul>
  * <p></p>
- * <h2>Configuration Elements</h2>
+ * <h2 id="config">Configuration Elements <a class="headerlink" href="#config">¶</a></h2>
  * The items in the list below are the properties that can be set on the different symbolizers.  In brackets list the symbolizers
  * the values can apply to.
  * <p>
@@ -326,18 +326,19 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  *     geometry is a line and this property defines how far from the center of the line the label should be drawn.</li>
  * </ul>
  * <p></p>
- * <h2>Labelling:</h2>
+ * <h2 id="labels">Labelling: <a class="headerlink" href="#labels">¶</a></h2>
  * <p>
- *     Labelling in this style format is done by defining a text symbolizer ("type":"text").  All text sybmolizers consist of:
+ *     Labelling in this style format is done by defining a text symbolizer ("type":"text").  All text symbolizers consist of:
  * </p>
  * <ul>
- *     <li>Label Property</li>
- *     <li>Halo Properties</li>
- *     <li>Font/weight/style/color/opacity</li>
- *     <li>Placement Properties</li>
+ *     <li><a href="#labelproperties">Label Property</a></li>
+ *     <li><a href="#haloproperties">Halo Properties</a></li>
+ *     <li><a href="#otherproperties">Font/weight/style/color/opacity</a></li>
+ *     <li><a href="#placementproperties">Placement Properties</a></li>
+ *     <li><a href="#vendoroptions">Vendor Options</a></li>
  * </ul>
  *
- * <h3>Label Property</h3>
+ * <h3 id="labelproperties">Label Property <a class="headerlink" href="#labelproperties">¶</a></h3>
  * <p>
  *     The label property defines what label will be drawn for a given feature.  The value is either a string which will
  *     be the static label for all features that the symbolizer will be drawn on or a string surrounded by [] which
@@ -353,19 +354,21 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  *     <li>centroid(geomAtt)</li>
  * </ul>
  *
- * <h3>Halo Properties</h3>
+ * <h3 id="haloproperties">Halo Properties <a class="headerlink" href="#haloproperties">¶</a></h3>
  * <p>
  *     A halo is a space around the drawn label text that is color (using the halo properties).  A label with a halo is like
  *     the drawn label text with a buffer around the label text drawn using the halo properties.  This allows the label to
  *     be clearly visible regardless of the background.  For example if the text is black and the halo is with, then the text will
  *     always be readable thanks to the white buffer around the label text.
  * </p>
- * <h3>Font/weight/style/color/opacity</h3>
+ *
+ * <h3 id="otherproperties">Font/weight/style/color/opacity <a class="headerlink" href="#otherproperties">¶</a></h3>
  * <p>
  *     The Font/weight/style/color/opacity properties define how the label text is drawn.  They are for the most part equivalent to
  *     the similarly named css and SLD properties.
  * </p>
- * <h3>Placement Properties</h3>
+ *
+ * <h3 id="placementproperties">Placement Properties <a class="headerlink" href="#placementproperties">¶</a></h3>
  * <p>
  *     An important part of defining a text symbolizer is defining where the text/label will be drawn.  The placement properties
  *     are used for this purpose.  There are two types of placements, Point and Line placement and <em>only one</em> type of placement
@@ -391,6 +394,52 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * <p>
  *     There are two ways to define the anchor point, either the <em>labelAnchorPointX/Y</em> properties are set or the
  *     <em>labelAlign</em> property is set.  If both are defined then the <em>labelAlign</em> will be ignored.
+ * </p>
+ *
+ * <h3 id="vendoroptions">Vendor Options <a class="headerlink" href="#vendoroptions">¶</a></h3>
+ * <p>For text symbolizers the following vendor options are available:</p>
+ * <ul>
+ *  <li><strong>allowOverruns</strong> (false): When false does not allow labels on lines to get beyond the beginning/end of the line.
+ *      By default a partial overrun is tolerated, set to false to disallow it.
+ *  </li>
+ *  <li><strong>autoWrap</strong> (400): Number of pixels are which a long label should be split into multiple lines.
+ *      Works on all geometries, on lines it is mutually exclusive with the followLine option.
+ *  </li>
+ *  <li><strong>conflictResolution</strong> (true): Enables conflict resolution (default, true) meaning no two labels will be allowed to
+ *      overlap. Symbolizers with conflict resolution off are considered outside of the conflict resolution game,
+ *      they don’t reserve area and can overlap with other labels.
+ *  </li>
+ *  <li><strong>followLine</strong> (true): When true activates curved labels on linear geometries. The label will follow the
+ *      shape of the current line, as opposed to being drawn a tangent straight line
+ *  </li>
+ *  <li><strong>goodnessOfFit</strong> (90): Sets the percentage of the label that must sit inside the geometry to allow drawing
+ *      the label. Works only on polygons.
+ *  </li>
+ *  <li><strong>group</strong> (false): If true, geometries with the same labels are grouped and considered a single entity to be
+ *      labelled. This allows to avoid or control repeated labels.
+ *  </li>
+ *  <li><strong>maxDisplacement</strong> (400): The distance, in pixel, a label can be displaced from its natural position in an
+ *      attempt to find a position that does not conflict with already drawn labels.
+ *  </li>
+ *  <li><strong>spaceAround</strong> (50): The minimum distance between two labels, in pixels.</li>
+ * </ul>
+ * <p>Example</p>
+ * <pre><code>
+ * {
+ *   "version" : "2",
+ *   "*" : {
+ *     "symbolizers" : [{
+ *       "type" : "text",
+ *       "fontColor":"#000000",
+ *       "label": "[name]",
+ *       "goodnessOfFit": 0.1,
+ *       "spaceAround": 10
+ *     }
+ *   ]}
+ * }
+ * </code></pre>
+ * <p>For more information, please refer to the
+ *     <a href="http://docs.geotools.org/latest/userguide/library/render/style.html#textsymbolizer">GeoTools documentation</a>.
  * </p>
  * <p></p>
  * <h2>ECQL references:</h2>

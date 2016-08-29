@@ -196,6 +196,9 @@ public class JsonStyleParserHelperTest {
         style.put("haloColor", haloColor);
         style.put("haloOpacity", "0.7");
         style.put("haloRadius", haloRadius);
+        style.put("conflictResolution", "false");
+        style.put("goodnessOfFit", "0.6");
+        style.put("spaceAround", "10");
 
         final PJsonObject pStyle = new PJsonObject(style, null);
         TextSymbolizer symbolizer = helper.createTextSymbolizer(pStyle);
@@ -231,6 +234,9 @@ public class JsonStyleParserHelperTest {
         symbolizer = helper.createTextSymbolizer(pStyle);
         assertEquals("label", valueOf(symbolizer.getLabel()));
         assertEquals(15, valueOf(symbolizer.getFont().getSize()));
+        assertEquals("false", symbolizer.getOptions().get("conflictResolution"));
+        assertEquals("0.6", symbolizer.getOptions().get("goodnessOfFit"));
+        assertEquals("10", symbolizer.getOptions().get("spaceAround"));
     }
 
     @Test
