@@ -29,6 +29,10 @@ import static org.junit.Assert.fail;
  */
 public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl implements MfClientHttpRequestFactory {
 
+    public TestHttpClientFactory() {
+        super(20, 10);
+    }
+
     private final Map<Predicate<URI>, Handler> handlers = Maps.newConcurrentMap();
 
     public void registerHandler(Predicate<URI> matcher, Handler handler) {

@@ -56,7 +56,10 @@
 
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>
     <bean id="healthCheckRegistry" class="com.codahale.metrics.health.HealthCheckRegistry"/>
-    <bean id="httpClientFactory" class="org.mapfish.print.http.MfClientHttpRequestFactoryImpl"/>
+    <bean id="httpClientFactory" class="org.mapfish.print.http.MfClientHttpRequestFactoryImpl">
+        <constructor-arg index="0" value="${maxConnectionsTotal}" />
+        <constructor-arg index="1" value="${maxConnectionsPerRoute}" />
+    </bean>
     <bean id="metricNameStrategy" class="org.mapfish.print.metrics.MetricsNameStrategyFactory" factory-method="hostAndMethod" />
     <bean id="loggingMetricsConfigurator" class="org.mapfish.print.metrics.LoggingMetricsConfigurator" lazy-init="false"/>
     <bean id="jvmMetricsConfigurator" class="org.mapfish.print.metrics.JvmMetricsConfigurator" lazy-init="false"/>

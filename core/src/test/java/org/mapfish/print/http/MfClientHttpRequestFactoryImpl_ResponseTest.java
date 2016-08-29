@@ -51,7 +51,7 @@ public class MfClientHttpRequestFactoryImpl_ResponseTest {
         });
 
 
-        MfClientHttpRequestFactoryImpl factory = new MfClientHttpRequestFactoryImpl();
+        MfClientHttpRequestFactoryImpl factory = new MfClientHttpRequestFactoryImpl(20, 10);
         final ConfigurableRequest request = factory.createRequest(
                 new URI("http://" + HttpProxyTest.LOCALHOST + ":" + TARGET_PORT + "/request"), HttpMethod.GET);
 
