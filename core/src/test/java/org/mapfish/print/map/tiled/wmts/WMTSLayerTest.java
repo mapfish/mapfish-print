@@ -27,7 +27,7 @@ public class WMTSLayerTest {
         matrix.scaleDenominator = 7500;
         params.matrices = new Matrix[] {matrix};
 
-        WMTSLayer wmtsLayer = new WMTSLayer(null, null, params, null);
+        WMTSLayer wmtsLayer = new WMTSLayer(null, null, null, params, null);
 
         Rectangle paintArea = new Rectangle(0,0,256,256);
         MapBounds bounds = new CenterScaleMapBounds(CRS.decode("EPSG:21781"), 595217.02, 236708.54, new Scale(7500));

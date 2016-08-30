@@ -51,16 +51,20 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
 
     /**
      * Constructor.
+     * @param maxConnTotal Maximum total connections.
+     * @param maxConnPerRoute Maximum connections per route.
      */
-    public MfClientHttpRequestFactoryImpl() {
-        super(createHttpClient());
+    public MfClientHttpRequestFactoryImpl(final int maxConnTotal, final int maxConnPerRoute) {
+        super(createHttpClient(maxConnTotal, maxConnPerRoute));
     }
 
-    private static CloseableHttpClient createHttpClient() {
+    private static CloseableHttpClient createHttpClient(final int maxConnTotal, final int maxConnPerRoute) {
         final HttpClientBuilder httpClientBuilder = HttpClients.custom().
                 setRoutePlanner(new MfRoutePlanner()).
                 setSSLSocketFactory(new MfSSLSocketFactory()).
-                setDefaultCredentialsProvider(new MfCredentialsProvider());
+                setDefaultCredentialsProvider(new MfCredentialsProvider()).
+                setMaxConnTotal(maxConnTotal).
+                setMaxConnPerRoute(maxConnPerRoute);
         return httpClientBuilder.build();
     }
 
