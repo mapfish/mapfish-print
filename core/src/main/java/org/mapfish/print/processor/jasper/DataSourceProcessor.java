@@ -204,7 +204,7 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
 
     @Override
     protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
-        if (this.processorGraph == null || this.processorGraph.getAllProcessors().isEmpty()) {
+        if (this.processorGraph == null) {
             validationErrors.add(new ConfigurationException("There are child processors for this processor"));
         }
 
