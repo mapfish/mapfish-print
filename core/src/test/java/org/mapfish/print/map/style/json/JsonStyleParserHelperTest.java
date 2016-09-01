@@ -188,6 +188,75 @@ public class JsonStyleParserHelperTest {
         style.put("fontStyle", fontStyle);
         style.put("fontFamily", fontFamily);
         style.put("fontWeight", fontWeight);
+        style.put("fontSize", "12");
+        style.put("labelXOffset", labelXOffset);
+        style.put("labelYOffset", labelYOffset);
+        style.put("labelRotation", "45");
+        style.put("labelAlign", "cm");
+        style.put("haloColor", haloColor);
+        style.put("haloOpacity", "0.7");
+        style.put("haloRadius", haloRadius);
+        style.put("conflictResolution", "false");
+        style.put("goodnessOfFit", "0.6");
+        style.put("spaceAround", "10");
+
+        final PJsonObject pStyle = new PJsonObject(style, null);
+        TextSymbolizer symbolizer = helper.createTextSymbolizer(pStyle);
+        assertNotNull(symbolizer);
+
+        transformer.transform(symbolizer);  // test that it can be written to xml correctly
+
+        assertFill(1.0, fontColor, symbolizer.getFill());
+        assertEquals("name", valueOf(symbolizer.getLabel()));
+
+        final Font font = symbolizer.getFont();
+        final List<Expression> family = font.getFamily();
+        assertEquals(2, family.size());
+        assertEquals("Arial", valueOf(family.get(0)));
+        assertEquals("SansSerif", valueOf(family.get(1)));
+        assertEquals(12.0, valueOf(font.getSize()));
+        assertEquals(fontStyle, valueOf(font.getStyle()));
+        assertEquals(fontWeight, valueOf(font.getWeight()));
+
+        PointPlacement placement = (PointPlacement) symbolizer.getLabelPlacement();
+        assertEquals(45.0, valueOf(placement.getRotation()));
+        assertEquals(0.5, valueOf(placement.getAnchorPoint().getAnchorPointX()));
+        assertEquals(0.5, valueOf(placement.getAnchorPoint().getAnchorPointY()));
+        assertEquals(labelXOffset, valueOf(placement.getDisplacement().getDisplacementX()).toString());
+        assertEquals(labelYOffset, valueOf(placement.getDisplacement().getDisplacementY()).toString());
+
+        Halo halo = symbolizer.getHalo();
+        assertFill(0.7, haloColor, halo.getFill());
+        assertEquals(haloRadius, valueOf(halo.getRadius()).toString());
+
+        style.put("label", "label");
+        style.put("fontSize", "15");
+        symbolizer = helper.createTextSymbolizer(pStyle);
+        assertEquals("label", valueOf(symbolizer.getLabel()));
+        assertEquals(15.0, valueOf(symbolizer.getFont().getSize()));
+        assertEquals("false", symbolizer.getOptions().get("conflictResolution"));
+        assertEquals("0.6", symbolizer.getOptions().get("goodnessOfFit"));
+        assertEquals("10", symbolizer.getOptions().get("spaceAround"));
+    }
+
+    @Test
+    public void testCreateTextSymbolizerInPX() throws Exception {
+        final String fontColor = "#333333";
+        final String fontStyle = "normal";
+        final String fontFamily = "Arial, sans-serif";
+        final String fontWeight = "bold";
+        final String labelXOffset = "-25.0";
+        final String labelYOffset = "-35.0";
+        final String haloColor = "#123456";
+        final String haloRadius = "3.0";
+
+
+        JSONObject style = new JSONObject();
+        style.put("label", "name");
+        style.put("fontColor", fontColor);
+        style.put("fontStyle", fontStyle);
+        style.put("fontFamily", fontFamily);
+        style.put("fontWeight", fontWeight);
         style.put("fontSize", "12px");
         style.put("labelXOffset", labelXOffset);
         style.put("labelYOffset", labelYOffset);
@@ -214,7 +283,7 @@ public class JsonStyleParserHelperTest {
         assertEquals(2, family.size());
         assertEquals("Arial", valueOf(family.get(0)));
         assertEquals("SansSerif", valueOf(family.get(1)));
-        assertEquals(12, valueOf(font.getSize()));
+        assertEquals(12.0, valueOf(font.getSize()));
         assertEquals(fontStyle, valueOf(font.getStyle()));
         assertEquals(fontWeight, valueOf(font.getWeight()));
 
@@ -230,10 +299,152 @@ public class JsonStyleParserHelperTest {
         assertEquals(haloRadius, valueOf(halo.getRadius()).toString());
 
         style.put("label", "label");
-        style.put("fontSize", "15");
+        style.put("fontSize", "15px");
         symbolizer = helper.createTextSymbolizer(pStyle);
         assertEquals("label", valueOf(symbolizer.getLabel()));
-        assertEquals(15, valueOf(symbolizer.getFont().getSize()));
+        assertEquals(15.0, valueOf(symbolizer.getFont().getSize()));
+        assertEquals("false", symbolizer.getOptions().get("conflictResolution"));
+        assertEquals("0.6", symbolizer.getOptions().get("goodnessOfFit"));
+        assertEquals("10", symbolizer.getOptions().get("spaceAround"));
+    }
+
+    @Test
+    public void testCreateTextSymbolizerInPT() throws Exception {
+        final double delta = 0.00000000000001;
+
+        final String fontColor = "#333333";
+        final String fontStyle = "normal";
+        final String fontFamily = "Arial, sans-serif";
+        final String fontWeight = "bold";
+        final String labelXOffset = "-25.0";
+        final String labelYOffset = "-35.0";
+        final String haloColor = "#123456";
+        final String haloRadius = "3.0";
+
+
+        JSONObject style = new JSONObject();
+        style.put("label", "name");
+        style.put("fontColor", fontColor);
+        style.put("fontStyle", fontStyle);
+        style.put("fontFamily", fontFamily);
+        style.put("fontWeight", fontWeight);
+        style.put("fontSize", "12pt");
+        style.put("labelXOffset", labelXOffset);
+        style.put("labelYOffset", labelYOffset);
+        style.put("labelRotation", "45");
+        style.put("labelAlign", "cm");
+        style.put("haloColor", haloColor);
+        style.put("haloOpacity", "0.7");
+        style.put("haloRadius", haloRadius);
+        style.put("conflictResolution", "false");
+        style.put("goodnessOfFit", "0.6");
+        style.put("spaceAround", "10");
+
+        final PJsonObject pStyle = new PJsonObject(style, null);
+        TextSymbolizer symbolizer = helper.createTextSymbolizer(pStyle);
+        assertNotNull(symbolizer);
+
+        transformer.transform(symbolizer);  // test that it can be written to xml correctly
+
+        assertFill(1.0, fontColor, symbolizer.getFill());
+        assertEquals("name", valueOf(symbolizer.getLabel()));
+
+        final Font font = symbolizer.getFont();
+        final List<Expression> family = font.getFamily();
+        assertEquals(2, family.size());
+        assertEquals("Arial", valueOf(family.get(0)));
+        assertEquals("SansSerif", valueOf(family.get(1)));
+        assertEquals(12.0, (Double)valueOf(font.getSize()), delta);
+        assertEquals(fontStyle, valueOf(font.getStyle()));
+        assertEquals(fontWeight, valueOf(font.getWeight()));
+
+        PointPlacement placement = (PointPlacement) symbolizer.getLabelPlacement();
+        assertEquals(45.0, valueOf(placement.getRotation()));
+        assertEquals(0.5, valueOf(placement.getAnchorPoint().getAnchorPointX()));
+        assertEquals(0.5, valueOf(placement.getAnchorPoint().getAnchorPointY()));
+        assertEquals(labelXOffset, valueOf(placement.getDisplacement().getDisplacementX()).toString());
+        assertEquals(labelYOffset, valueOf(placement.getDisplacement().getDisplacementY()).toString());
+
+        Halo halo = symbolizer.getHalo();
+        assertFill(0.7, haloColor, halo.getFill());
+        assertEquals(haloRadius, valueOf(halo.getRadius()).toString());
+
+        style.put("label", "label");
+        style.put("fontSize", "15pt");
+        symbolizer = helper.createTextSymbolizer(pStyle);
+        assertEquals("label", valueOf(symbolizer.getLabel()));
+        assertEquals(15.0, (Double)valueOf(symbolizer.getFont().getSize()), delta);
+        assertEquals("false", symbolizer.getOptions().get("conflictResolution"));
+        assertEquals("0.6", symbolizer.getOptions().get("goodnessOfFit"));
+        assertEquals("10", symbolizer.getOptions().get("spaceAround"));
+    }
+
+    @Test
+    public void testCreateTextSymbolizerInPC() throws Exception {
+        final double delta = 0.00000000000001;
+
+        final String fontColor = "#333333";
+        final String fontStyle = "normal";
+        final String fontFamily = "Arial, sans-serif";
+        final String fontWeight = "bold";
+        final String labelXOffset = "-25.0";
+        final String labelYOffset = "-35.0";
+        final String haloColor = "#123456";
+        final String haloRadius = "3.0";
+
+
+        JSONObject style = new JSONObject();
+        style.put("label", "name");
+        style.put("fontColor", fontColor);
+        style.put("fontStyle", fontStyle);
+        style.put("fontFamily", fontFamily);
+        style.put("fontWeight", fontWeight);
+        style.put("fontSize", "1pc");
+        style.put("labelXOffset", labelXOffset);
+        style.put("labelYOffset", labelYOffset);
+        style.put("labelRotation", "45");
+        style.put("labelAlign", "cm");
+        style.put("haloColor", haloColor);
+        style.put("haloOpacity", "0.7");
+        style.put("haloRadius", haloRadius);
+        style.put("conflictResolution", "false");
+        style.put("goodnessOfFit", "0.6");
+        style.put("spaceAround", "10");
+
+        final PJsonObject pStyle = new PJsonObject(style, null);
+        TextSymbolizer symbolizer = helper.createTextSymbolizer(pStyle);
+        assertNotNull(symbolizer);
+
+        transformer.transform(symbolizer);  // test that it can be written to xml correctly
+
+        assertFill(1.0, fontColor, symbolizer.getFill());
+        assertEquals("name", valueOf(symbolizer.getLabel()));
+
+        final Font font = symbolizer.getFont();
+        final List<Expression> family = font.getFamily();
+        assertEquals(2, family.size());
+        assertEquals("Arial", valueOf(family.get(0)));
+        assertEquals("SansSerif", valueOf(family.get(1)));
+        assertEquals(12.0, (Double)valueOf(font.getSize()), delta);
+        assertEquals(fontStyle, valueOf(font.getStyle()));
+        assertEquals(fontWeight, valueOf(font.getWeight()));
+
+        PointPlacement placement = (PointPlacement) symbolizer.getLabelPlacement();
+        assertEquals(45.0, valueOf(placement.getRotation()));
+        assertEquals(0.5, valueOf(placement.getAnchorPoint().getAnchorPointX()));
+        assertEquals(0.5, valueOf(placement.getAnchorPoint().getAnchorPointY()));
+        assertEquals(labelXOffset, valueOf(placement.getDisplacement().getDisplacementX()).toString());
+        assertEquals(labelYOffset, valueOf(placement.getDisplacement().getDisplacementY()).toString());
+
+        Halo halo = symbolizer.getHalo();
+        assertFill(0.7, haloColor, halo.getFill());
+        assertEquals(haloRadius, valueOf(halo.getRadius()).toString());
+
+        style.put("label", "label");
+        style.put("fontSize", "1.2pc");
+        symbolizer = helper.createTextSymbolizer(pStyle);
+        assertEquals("label", valueOf(symbolizer.getLabel()));
+        assertEquals(14.4, (Double)valueOf(symbolizer.getFont().getSize()), delta);
         assertEquals("false", symbolizer.getOptions().get("conflictResolution"));
         assertEquals("0.6", symbolizer.getOptions().get("goodnessOfFit"));
         assertEquals("10", symbolizer.getOptions().get("spaceAround"));

@@ -68,7 +68,11 @@ public enum DistanceUnit {
      * Represents the pixel unit.
      * The conversion factor is the one used by JasperReports (1 inch = 72 pixel).
      */
-    PX(null, 1.0, 1 / 72.0 * (25.4 / 1000.0), new String[]{"px", "pixel"});
+    PX(null, 1.0, 1 / 72.0 * (25.4 / 1000.0), new String[]{"px", "pixel"}),
+    /** Represents the point unit. */
+    PT(DistanceUnit.IN, 1.0 / 72.0, 1.0 / 72.0 * (25.4 / 1000.0), new String[]{"pt", "point"}),
+    /** Represents the inche unit. */
+    PC(DistanceUnit.PT, 12.0, 12.0 / 72.0 * (25.4 / 1000.0), new String[]{"pc", "pica"});
 
     /**
      * If null means that this is a base unit. Otherwise, point to the base unit.

@@ -55,7 +55,7 @@ public class CreateMapProcessorGridFixedNumlinesPointAltLabelProjTest extends Ab
         String imageName = getExpectedImageName("", referenceImage, BASE_DIR);
 //        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
 
-        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + imageName), 45);
+        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + imageName), 35);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
