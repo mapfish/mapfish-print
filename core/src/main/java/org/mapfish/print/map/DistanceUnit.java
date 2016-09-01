@@ -20,59 +20,60 @@ public enum DistanceUnit {
     /**
      * Represents the meter unit.
      */
-    M(null, 1.0, 1.0, new String[]{"m", "meter", "meters"}),
+    M(1.0, new String[]{"m", "meter", "meters"}),
     /**
      * Represents the millimeter unit.
      */
-    MM(DistanceUnit.M, 0.001, 0.001, new String[]{"mm", "millimeter", "millimeters"}),
+    MM(DistanceUnit.M, 0.001, new String[]{"mm", "millimeter", "millimeters"}),
     /**
      * Represents the centimeter unit.
      */
-    CM(DistanceUnit.M, 0.01, 0.01, new String[]{"cm", "centimeter", "centimeters"}),
+    CM(DistanceUnit.M, 0.01, new String[]{"cm", "centimeter", "centimeters"}),
     /**
      * Represents the kilometer unit.
      */
-    KM(DistanceUnit.M, 1000.0, 1000.0, new String[]{"km", "kilometer", "kilometers"}),
+    KM(DistanceUnit.M, 1000.0, new String[]{"km", "kilometer", "kilometers"}),
 
     /**
      * Represents the american foot unit.
      */
-    FT(null, 1.0, 25.4 / 1000.0 * 12.0, new String[]{"ft", "foot", "feet"}),
+    FT(25.4 / 1000.0 * 12.0, new String[]{"ft", "foot", "feet"}),
     /**
      * Represents the american inch unit.
      */
-    IN(DistanceUnit.FT, 1 / 12.0, 25.4 / 1000.0, new String[]{"in", "inch"}),
+    IN(DistanceUnit.FT, 1 / 12.0, new String[]{"in", "inch"}),
     /**
      * Represents the american yard unit.
      */
-    YD(DistanceUnit.FT, 3.0, 25.4 / 1000.0 * 12.0 * 3.0, new String[]{"yd", "yard", "yards"}),
+    YD(DistanceUnit.FT, 3.0, new String[]{"yd", "yard", "yards"}),
     /**
      * Represents the american mile unit.
      */
-    MI(DistanceUnit.FT, 5280.0, 25.4 / 1000.0 * 12.0 * 5280.0, new String[]{"mi", "mile", "miles"}),
+    MI(DistanceUnit.FT, 5280.0, new String[]{"mi", "mile", "miles"}),
 
     /**
      * Represents the lat long degree unit.
      */
-    DEGREES(null, 1.0, 40041470.0 / 360.0, new String[]{"\u00B0", "dd", "degree", "degrees"}),
+    DEGREES(40041470.0 / 360.0, new String[]{"\u00B0", "dd", "degree", "degrees"}),
     /**
      * Represents the lat long minute unit.
      */
-    MINUTE(DistanceUnit.DEGREES, 1.0 / 60.0, 40041470.0 / 360.0, new String[]{"min", "minute", "minutes"}),
+    MINUTE(DistanceUnit.DEGREES, 1.0 / 60.0, new String[]{"min", "minute", "minutes"}),
     /**
      * Represents the lat long second unit.
      */
-    SECOND(DistanceUnit.DEGREES, 1.0 / 3600.0, 40041470.0 / 360.0, new String[]{"sec", "second", "seconds"}),
+    SECOND(DistanceUnit.MINUTE, 1.0 / 60.0, new String[]{"sec", "second", "seconds"}),
 
     /**
      * Represents the pixel unit.
      * The conversion factor is the one used by JasperReports (1 inch = 72 pixel).
      */
-    PX(null, 1.0, 1 / 72.0 * (25.4 / 1000.0), new String[]{"px", "pixel"}),
+    PX(1 / 72.0 * (25.4 / 1000.0), new String[]{"px", "pixel"}),
+
     /** Represents the point unit. */
-    PT(DistanceUnit.IN, 1.0 / 72.0, 1.0 / 72.0 * (25.4 / 1000.0), new String[]{"pt", "point"}),
-    /** Represents the inche unit. */
-    PC(DistanceUnit.PT, 12.0, 12.0 / 72.0 * (25.4 / 1000.0), new String[]{"pc", "pica"});
+    PT(DistanceUnit.IN, 1.0 / 72.0, new String[]{"pt", "point"}),
+    /** Represents the pica unit. */
+    PC(DistanceUnit.PT, 12.0, new String[]{"pc", "pica"});
 
     /**
      * If null means that this is a base unit. Otherwise, point to the base unit.
@@ -104,15 +105,30 @@ public enum DistanceUnit {
      */
     private static Map<String, DistanceUnit> translations = null;
 
-    DistanceUnit(final DistanceUnit baseUnit, final double baseFactor, final double metersFactor, final String[] texts) {
-        if (baseUnit == null) {
-            this.baseUnit = this;
-        } else {
-            this.baseUnit = baseUnit;
-        }
-        this.baseFactor = baseFactor;
+    /**
+     * Constructor.
+     * @param factor the factor to meter.
+     * @param texts unit representations.
+     */
+    DistanceUnit(final double factor, final String[] texts) {
+        this.baseUnit = this;
+        this.baseFactor = 1.0;
+        this.metersFactor = factor;
         this.texts = texts;
-        this.metersFactor = metersFactor;
+    }
+
+    /**
+     * Constructor.
+     * @param baseUnit the base unit.
+     * @param factor the factor to the base unit.
+     * @param texts unit representations.
+     */
+    DistanceUnit(final DistanceUnit baseUnit, final double factor, final String[] texts) {
+        // Get the real base
+        this.baseUnit = baseUnit.baseUnit;
+        this.baseFactor = factor * baseUnit.baseFactor;
+        this.metersFactor = baseUnit.metersFactor * factor;
+        this.texts = texts;
     }
 
     public boolean isBase() {
