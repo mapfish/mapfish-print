@@ -31,6 +31,7 @@ import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
@@ -41,6 +42,8 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -112,7 +115,7 @@ public final class JsonStyleParserHelper {
 
     private static final String[] SUPPORTED_MIME_TYPES = ImageIO.getReaderMIMETypes();
     private static final String DEFAULT_POINT_MARK = "circle";
-
+    private static final Pattern VALUE_UNIT_PATTERN = Pattern.compile("^([0-9.]+)([a-z]*)");
 
     private final Configuration configuration;
     private boolean allowNullSymbolizer;
@@ -363,6 +366,20 @@ public final class JsonStyleParserHelper {
         }
     }
 
+    private double getPxSize(final String size) {
+        Matcher matcher = VALUE_UNIT_PATTERN.matcher(size);
+        matcher.find();
+
+        double value = Double.parseDouble(matcher.group(1));
+        String unit = matcher.group(2);
+
+        if (unit.length() == 0) {
+            return value;
+        } else {
+            return DistanceUnit.fromString(unit).convertTo(value, DistanceUnit.PX);
+        }
+    }
+
     private Font createFont(final Font defaultFont, final PJsonObject styleJson) {
 
         Expression fontFamily = parseExpression(null, styleJson, JSON_FONT_FAMILY, new Function<String, String>() {
@@ -380,11 +397,7 @@ public final class JsonStyleParserHelper {
             @Nullable
             @Override
             public Object apply(final String input) {
-                String fontSizeString = input;
-                if (fontSizeString.endsWith("px")) {
-                    fontSizeString = fontSizeString.substring(0, fontSizeString.length() - 2);
-                }
-                return Integer.parseInt(fontSizeString);
+                return getPxSize(input);
             }
         });
         if (fontSize == null) {

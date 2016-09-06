@@ -28,6 +28,14 @@ public class DistanceUnitTest {
         assertEquals(3, DistanceUnit.YD.convertTo(1, DistanceUnit.FT), delta);
         assertEquals(72.0, DistanceUnit.IN.convertTo(1, DistanceUnit.PX), delta);
         assertEquals(2834.645669, DistanceUnit.M.convertTo(1, DistanceUnit.PX), delta);
+        assertEquals(72.0, DistanceUnit.IN.convertTo(1, DistanceUnit.PT), delta);
+        assertEquals(1.0, DistanceUnit.PT.convertTo(12, DistanceUnit.PC), delta);
+        assertEquals(12.0, DistanceUnit.PC.convertTo(72, DistanceUnit.IN), delta);
+        assertEquals(111226, DistanceUnit.DEGREES.convertTo(1, DistanceUnit.M), 1);
+        assertEquals(111226, DistanceUnit.MINUTE.convertTo(60, DistanceUnit.M), 1);
+        assertEquals(111226, DistanceUnit.SECOND.convertTo(3600, DistanceUnit.M), 1);
+        assertEquals(1, DistanceUnit.MINUTE.convertTo(60, DistanceUnit.DEGREES), delta);
+        assertEquals(1, DistanceUnit.SECOND.convertTo(60, DistanceUnit.MINUTE), delta);
     }
 
     @Test
@@ -75,12 +83,12 @@ public class DistanceUnitTest {
         assertArrayEquals(
                 new DistanceUnit[] {DistanceUnit.MM, DistanceUnit.CM, DistanceUnit.M, DistanceUnit.KM},
                 DistanceUnit.M.getAllUnits());
-        assertArrayEquals(
-                new DistanceUnit[] {DistanceUnit.IN, DistanceUnit.FT, DistanceUnit.YD, DistanceUnit.MI},
-                DistanceUnit.FT.getAllUnits());
-        assertArrayEquals(
-                new DistanceUnit[] {DistanceUnit.IN, DistanceUnit.FT, DistanceUnit.YD, DistanceUnit.MI},
-                DistanceUnit.MI.getAllUnits());
+        assertArrayEquals(new DistanceUnit[] {
+                DistanceUnit.PT, DistanceUnit.PC, DistanceUnit.IN, DistanceUnit.FT, DistanceUnit.YD, DistanceUnit.MI
+        }, DistanceUnit.FT.getAllUnits());
+        assertArrayEquals(new DistanceUnit[] {
+                DistanceUnit.PT, DistanceUnit.PC, DistanceUnit.IN, DistanceUnit.FT, DistanceUnit.YD, DistanceUnit.MI
+        }, DistanceUnit.MI.getAllUnits());
         assertArrayEquals(
                 new DistanceUnit[] {DistanceUnit.SECOND, DistanceUnit.MINUTE, DistanceUnit.DEGREES},
                 DistanceUnit.DEGREES.getAllUnits());
