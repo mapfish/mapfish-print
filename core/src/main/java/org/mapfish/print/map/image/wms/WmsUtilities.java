@@ -69,9 +69,6 @@ public final class WmsUtilities {
 
         if (wmsLayerParam.serverType != null && dpi != Constants.PDF_DPI) {
             addDpiParam(extraParams, (int) Math.round(dpi), wmsLayerParam.serverType);
-            int width = (int) (imageSize.width * dpi / Constants.PDF_DPI);
-            int height = (int) (imageSize.height * dpi / Constants.PDF_DPI);
-            getMapRequest.setDimensions(width, height);
         }
         return URIUtils.addParams(getMapUri, extraParams, Collections.<String>emptySet());
 
