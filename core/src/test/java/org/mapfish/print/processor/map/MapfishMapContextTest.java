@@ -1,18 +1,25 @@
 package org.mapfish.print.processor.map;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.BBoxMapBounds;
 import org.mapfish.print.attribute.map.CenterScaleMapBounds;
+import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.map.Scale;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CRSAuthorityFactory;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -90,6 +97,46 @@ public class MapfishMapContextTest {
         assertEquals(bounds, transformer.getRotatedBounds());
     }
 
+    /**
+     * Tests that the bounds are calculated correctly for rotations.
+     *
+     * For example when printing a map at [2742033.0, 1253823.0] at scale 25 000 with a map size of 780 x 330px
+     * at 100 DPI:
+     * - The map size is adapted to the higher resolution: 1083 x 458px
+     * - A bbox is calculated with the center coordinate, scale and map size: [2738594.475, 1252368.85, 2745471.525,  1255277.15]
+     * - The map size is rotated: 993.4847683568174 x 1150.9542483185592px (not rounded) and 993 x 1151px (rounded)
+     * - The bbox is rotated: [2738878.6857910156, 1250168.7202148438, 2745187.3142089844,1257477.2797851562]
+     * - And adapted to the rounding of the map size: [2738880.2249305826, 1250168.5749532534, 2745185.7750694174, 1257477.4250467466]
+     */
+    @Test
+    public void testGetRotatedBounds_AdaptedToPaintAreaRounding() throws NoSuchAuthorityCodeException, FactoryException {
+        CRSAuthorityFactory factory = CRS.getAuthorityFactory(true);
+        CoordinateReferenceSystem epsg2056 = factory.createCoordinateReferenceSystem("EPSG:2056");
+
+        Dimension mapSize = new Dimension(780, 330);
+        MapAttribute.MapAttributeValues mapValues = (new MapAttribute()).new MapAttributeValues(null, mapSize);
+        mapValues.dpi = 100;
+        mapValues.rotation = 55.26239249861529;
+        mapValues.setMapBounds(new CenterScaleMapBounds(epsg2056, 2742033.0, 1253823.0, new Scale(25000)));
+
+        MapBounds centerBounds = mapValues.getMapBounds();
+        Rectangle paintAreaRotated = new Rectangle(993, 1151);
+        ReferencedEnvelope optimalBbox = centerBounds.toReferencedEnvelope(paintAreaRotated, mapValues.dpi);
+
+        MapfishMapContext transformer = CreateMapProcessor.createMapContext(mapValues);
+        Rectangle2D.Double paintAreaPrecise = transformer.getRotatedMapSizePrecise();
+        Rectangle paintArea = new Rectangle(MapfishMapContext.rectangleDoubleToDimension(paintAreaPrecise));
+
+        assertEquals(paintAreaRotated, paintArea);
+        MapBounds rotatedBounds = transformer.getRotatedBounds(paintAreaPrecise, paintArea);
+        ReferencedEnvelope adaptedBbox = rotatedBounds.toReferencedEnvelope(null, -1);
+
+        assertEquals(optimalBbox.getMinX(), adaptedBbox.getMinX(), 0.001);
+        assertEquals(optimalBbox.getMaxX(), adaptedBbox.getMaxX(), 0.001);
+        assertEquals(optimalBbox.getMinY(), adaptedBbox.getMinY(), 0.001);
+        assertEquals(optimalBbox.getMaxY(), adaptedBbox.getMaxY(), 0.001);
+    }
+
     @Test
     public void testGetRotatedMapSize() {
         // no rotation
@@ -140,5 +187,4 @@ public class MapfishMapContextTest {
         transform.getMatrix(matrix);
         assertArrayEquals(new double[] {0.0, 1.0, -1.0, -0.0, 100.0, 0.0}, matrix, 1e-6);
     }
-
 }
