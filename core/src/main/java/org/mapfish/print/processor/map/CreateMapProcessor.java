@@ -1,5 +1,6 @@
 package org.mapfish.print.processor.map;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.io.Closer;
@@ -221,7 +222,12 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         return graphics;
     }
 
-    private MapfishMapContext createMapContext(final MapAttribute.MapAttributeValues mapValues) {
+    /**
+     * @param mapValues The map parameters.
+     * @return The map context.
+     */
+    @VisibleForTesting
+    public static MapfishMapContext createMapContext(final MapAttribute.MapAttributeValues mapValues) {
         final Dimension mapSize = mapValues.getMapSize();
         Rectangle paintArea = new Rectangle(mapSize);
 

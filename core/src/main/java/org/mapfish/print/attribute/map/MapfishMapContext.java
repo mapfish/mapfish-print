@@ -7,6 +7,8 @@ import org.mapfish.print.map.Scale;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -72,15 +74,50 @@ public final class MapfishMapContext {
     public double getRotation() {
         return this.rotation;
     }
-    
+
     public MapBounds getBounds() {
         return this.bounds;
     }
-    
+
+    /**
+     * Return the map bounds rotated with the set rotation.
+     * @return Rotated bounds.
+     */
     public MapBounds getRotatedBounds() {
         return this.bounds.adjustBoundsToRotation(this.rotation);
     }
-    
+
+    /**
+     * Return the map bounds rotated with the set rotation. The bounds are adapted
+     * to rounding changes of the size of the paint area.
+     * @param paintAreaPrecise The exact size of the paint area.
+     * @param paintArea The rounded size of the paint area.
+     * @return Rotated bounds.
+     */
+    public MapBounds getRotatedBounds(final Rectangle2D.Double paintAreaPrecise, final Rectangle paintArea) {
+        final MapBounds rotatedBounds = this.getRotatedBounds();
+
+        if (rotatedBounds instanceof CenterScaleMapBounds) {
+            return rotatedBounds;
+        }
+
+        final ReferencedEnvelope envelope = ((BBoxMapBounds) rotatedBounds).toReferencedEnvelope(null, -1);
+        // the paint area size and the map bounds are rotated independently. because
+        // the paint area size is rounded to integers, the map bounds have to be adjusted
+        // to these rounding changes.
+        final double widthRatio = paintArea.getWidth() / paintAreaPrecise.getWidth();
+        final double heightRatio = paintArea.getHeight() / paintAreaPrecise.getHeight();
+
+        final double adaptedWidth = envelope.getWidth() * widthRatio;
+        final double adaptedHeight = envelope.getHeight() * heightRatio;
+
+        final double widthDiff = adaptedWidth - envelope.getWidth();
+        final double heigthDiff = adaptedHeight - envelope.getHeight();
+        envelope.expandBy(widthDiff / 2.0, heigthDiff / 2.0);
+
+        return new BBoxMapBounds(envelope);
+    }
+
     public Dimension getMapSize() {
         return this.mapSize;
     }
@@ -139,16 +176,34 @@ public final class MapfishMapContext {
      * @return The new map size taking the rotation into account.
      */
     public Dimension getRotatedMapSize() {
-        if (FloatingPointUtil.equals(this.rotation, 0.0)) {
-            return this.mapSize;
-        }
-        
-        final int rotatedWidth = getRotatedMapWidth();
-        final int rotatedHeight = getRotatedMapHeight();
-        
-        return new Dimension(rotatedWidth, rotatedHeight);
+        return MapfishMapContext.rectangleDoubleToDimension(getRotatedMapSizePrecise());
     }
-    
+
+    /**
+     * @return The new map size taking the rotation into account.
+     */
+    public Rectangle2D.Double getRotatedMapSizePrecise() {
+        if (FloatingPointUtil.equals(this.rotation, 0.0)) {
+            return new Rectangle2D.Double(0, 0, this.mapSize.getWidth(), this.mapSize.getHeight());
+        }
+
+        final double rotatedWidth = getRotatedMapWidth();
+        final double rotatedHeight = getRotatedMapHeight();
+        return new Rectangle2D.Double(0, 0, rotatedWidth, rotatedHeight);
+    }
+
+
+    /**
+     * Round the size of a rectangle with double values.
+     * @param rectangle The rectangle.
+     * @return
+     */
+    public static Dimension rectangleDoubleToDimension(final Rectangle2D.Double rectangle) {
+        return new Dimension(
+                (int) Math.round(rectangle.width),
+                (int) Math.round(rectangle.height));
+    }
+
     /**
      * Returns an {@link AffineTransform} taking the rotation into account.
      * 
@@ -185,24 +240,24 @@ public final class MapfishMapContext {
         return this.requestorDpi;
     }
 
-    private int getRotatedMapWidth() {
+    private double getRotatedMapWidth() {
         double width = this.mapSize.getWidth();
         if (!FloatingPointUtil.equals(this.rotation, 0.0)) {
             double height = this.mapSize.getHeight();
             width = Math.abs(width * Math.cos(this.rotation))
                     + Math.abs(height * Math.sin(this.rotation));
         }
-        return (int) Math.round(width);
+        return width;
     }
 
-    private int getRotatedMapHeight() {
+    private double getRotatedMapHeight() {
         double height = this.mapSize.getHeight();
         if (!FloatingPointUtil.equals(this.rotation, 0.0)) {
             double width = this.mapSize.getWidth();
             height = Math.abs(height * Math.cos(this.rotation))
                      + Math.abs(width * Math.sin(this.rotation));
         }
-        return (int) Math.round(height);
+        return height;
     }
 
     public Rectangle getPaintArea() {

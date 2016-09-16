@@ -3,6 +3,7 @@ package org.mapfish.print.map.geotools;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.vividsolutions.jts.util.Assert;
+
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
@@ -21,6 +22,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.geom.Rectangle2D;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -65,8 +67,9 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
         if (!FloatingPointUtil.equals(transformer.getRotation(), 0.0) && !this.supportsNativeRotation()) {
             // if a rotation is set and the rotation can not be handled natively
             // by the layer, we have to adjust the bounds and map size
-            paintArea = new Rectangle(transformer.getRotatedMapSize());
-            bounds = transformer.getRotatedBounds();
+            final Rectangle2D.Double paintAreaPrecise = transformer.getRotatedMapSizePrecise();
+            paintArea = new Rectangle(MapfishMapContext.rectangleDoubleToDimension(paintAreaPrecise));
+            bounds = transformer.getRotatedBounds(paintAreaPrecise, paintArea);
             graphics2D.setTransform(transformer.getTransform());
             Dimension mapSize = new Dimension(paintArea.width, paintArea.height);
             layerTransformer = new MapfishMapContext(transformer, bounds, mapSize, transformer.getRotation(), transformer.getDPI(),
@@ -122,6 +125,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
             content.dispose();
         }
     }
+
 
     private void applyTransparency(final List<? extends Layer> layers) {
         final double opacity = this.params.opacity;
