@@ -317,7 +317,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
 
                 BufferedImage image = ImageIO.read(response.getBody());
                 if (image == null) {
-                    LOGGER.warn("The URL: " + this.tileRequest.getURI() + " is an image format that can be decoded");
+                    LOGGER.warn("The URL: " + this.tileRequest.getURI() + " is an image format that cannot be decoded");
                     image = this.errorImage;
                     this.registry.counter(baseMetricName + ".error").inc();
                 } else {
