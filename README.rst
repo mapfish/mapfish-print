@@ -94,3 +94,13 @@ Before accepting a contribution, we ask that you provide us a Contributor Licens
 If you are making your contribution as part of work for your employer, please follow the
 guidelines on submitting a `Corporate Contributor License Agreement <https://github.com/mapfish/mapfish-print/wiki/C2C_Corporate-CLA_v1-0.pdf>`_.
 If you are making your contribution as an individual, you can submit a digital `Individual Contributor License Agreement <http://goo.gl/forms/QO9UELxM9m>`_.
+
+
+Credits
+------------------------------
+
+.. image:: https://www.yourkit.com/images/yklogo.png
+  :target: https://www.yourkit.com/java/profiler/index.jsp
+
+Thanks to `YourKit <https://www.yourkit.com/java/profiler/index.jsp>`_ for letting
+us use their Java profiler!
