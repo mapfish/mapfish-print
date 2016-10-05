@@ -104,13 +104,13 @@ final class GridUtils {
      * @param value the value of the line
      * @param unit  the unit that the value is in
      */
-    public static String createLabel(final double value, final String unit, final String format) {
+    public static String createLabel(final double value, final String unit, final GridLabelFormat format) {
         final double zero = 0.000000001;
-        if (Math.abs(value - Math.round(value)) < zero) {
-            return String.format("%d %s", Math.round(value), unit);
+        if (format != null) {
+          return format.format(value, unit);
         } else {
-            if (format != null) {
-                return String.format(format, value, unit);
+            if (Math.abs(value - Math.round(value)) < zero) {
+                return String.format("%d %s", Math.round(value), unit);
             } else if ("m".equals(unit)) {
                 // meter: no decimals
                 return String.format("%1.0f %s", value, unit);
@@ -147,7 +147,7 @@ final class GridUtils {
                                       final Polygon rotatedBounds, final String unit, final double x,
                                       final AffineTransform worldToScreenTransform,
                                       final MathTransform toLabelProjection,
-                                      final String labelFormat) {
+                                      final GridLabelFormat labelFormat) {
         Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
         LineString lineString = geometryFactory.createLineString(new Coordinate[]{
                 new Coordinate(x, envelopeInternal.centre().y),
@@ -180,7 +180,7 @@ final class GridUtils {
                                          final Polygon rotatedBounds, final String unit, final double x,
                                          final AffineTransform worldToScreenTransform,
                                          final MathTransform toLabelProjection,
-                                         final String labelFormat) {
+                                         final GridLabelFormat labelFormat) {
         Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
         LineString lineString = geometryFactory.createLineString(new Coordinate[]{
                 new Coordinate(x, envelopeInternal.getMinY()),
@@ -214,7 +214,7 @@ final class GridUtils {
                                         final Polygon rotatedBounds, final String unit, final double y,
                                         final AffineTransform worldToScreenTransform,
                                         final MathTransform toLabelProjection,
-                                        final String labelFormat) {
+                                        final GridLabelFormat labelFormat) {
         Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
         LineString lineString = geometryFactory.createLineString(new Coordinate[]{
                 new Coordinate(envelopeInternal.centre().x, y),
@@ -248,7 +248,7 @@ final class GridUtils {
                                 final Polygon rotatedBounds, final String unit, final double y,
                                 final AffineTransform worldToScreenTransform,
                                 final MathTransform toLabelProjection,
-                                final String labelFormat) {
+                                final GridLabelFormat labelFormat) {
         Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
         LineString lineString = geometryFactory.createLineString(new Coordinate[]{
                 new Coordinate(envelopeInternal.getMinX(), y),

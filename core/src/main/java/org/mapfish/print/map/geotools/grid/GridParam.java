@@ -26,6 +26,10 @@ public final class GridParam extends AbstractLayerParams {
     private static final String DEFAULT_HALO_COLOR = "#FFF";
     private static final String DEFAULT_LABEL_COLOR = "#444";
     private static final String DEFAULT_GRID_COLOR = "gray";
+    /**
+     * Grid label default format pattern for the unit (if valueFormat is used).
+     */
+    public static final String DEFAULT_UNIT_FORMAT = " %s";
 
     /**
      * The type of grid to render.  By default it is LINES
@@ -127,10 +131,40 @@ public final class GridParam extends AbstractLayerParams {
     public String labelProjection = null;
     /**
      * The formatting string used to format the label (for example "%1.2f %s"). By default the label is formatted
-     * according to the unit and label value.
+     * according to the unit and label value. For the format syntax, see
+     * <a href="https://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html">java.util.Formatter</a>.
+     * If <code>labelFormat</code> is set, <code>valueFormat</code>, <code>unitFormat</code> and custom separator
+     * characters will be ignored.
      */
     @HasDefaultValue
     public String labelFormat = null;
+    /**
+      * The formatting string used to format the decimal part of a label (for example "###,###"). This parameter
+      * is ignored if <code>labelFormat</code> is set. For the format syntax, see
+      * <a href="https://docs.oracle.com/javase/tutorial/i18n/format/decimalFormat.html">DecimalFormat</a>.
+      */
+    @HasDefaultValue
+    public String valueFormat = null;
+    /**
+      * The formatting string used to format the unit part of a label (for example " %s"). This parameter
+      * is ignored if <code>labelFormat</code> is set. <code>valueFormat</code> must be set to use this
+      * parameter. For the format syntax, see
+      * <a href="https://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html">java.util.Formatter</a>.
+      */
+    @HasDefaultValue
+    public String unitFormat = null;
+    /**
+     * The character used to separate the decimal part (for example ","). This parameter is only used
+     * if <code>valueFormat</code> is used. The default is the character of the default locale.
+     */
+    @HasDefaultValue
+    public String formatDecimalSeparator = null;
+    /**
+     * The character used for the thousands separator (for example "'"). This parameter is only used
+     * if <code>valueFormat</code> is used. The default is the character of the default locale.
+     */
+    @HasDefaultValue
+    public String formatGroupingSeparator = null;
     /**
      * By default the normal axis order as specified in EPSG code will be used when parsing projections.  However
      * the requestor can override this by explicitly declaring that longitude axis is first.
@@ -138,6 +172,7 @@ public final class GridParam extends AbstractLayerParams {
     @HasDefaultValue
     public Boolean longitudeFirst = null;
 
+    private GridLabelFormat gridLabelFormat = null;
     private CoordinateReferenceSystem labelCRS;
 
     /**
@@ -189,12 +224,17 @@ public final class GridParam extends AbstractLayerParams {
             throw new IllegalArgumentException("The projection code: " + this.labelProjection +
                                                " is not valid. Error message when parsing code: " + e.getMessage());
         }
-        if (this.labelFormat != null) {
-            try {
-                String.format(this.labelFormat, 2.0, "m");
-            } catch (IllegalFormatException e) {
-                throw new IllegalArgumentException("Invalid label format: " + this.labelFormat);
+        if (this.labelFormat != null || this.valueFormat != null || this.unitFormat != null) {
+            GridLabelFormat format = GridLabelFormat.fromConfig(this);
+            if (format == null) {
+                throw new IllegalArgumentException("`labelFormat` or `valueFormat` must be set");
             }
+            try {
+                format.format(2.0, "m");
+            } catch (IllegalFormatException e) {
+                throw new IllegalArgumentException("Invalid label format");
+            }
+            this.gridLabelFormat = format;
         }
     }
 
@@ -232,5 +272,9 @@ public final class GridParam extends AbstractLayerParams {
         }
 
         return labelTransform;
+    }
+
+    public GridLabelFormat getGridLabelFormat() {
+        return this.gridLabelFormat;
     }
 }

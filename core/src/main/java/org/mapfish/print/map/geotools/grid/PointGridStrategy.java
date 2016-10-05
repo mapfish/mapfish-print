@@ -87,18 +87,22 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
 
             if (!onRightBorder(bounds, x)) { // don't add the border features twice.
                 GridUtils.bottomBorderLabel(
-                        labels, geometryFactory, rotatedBounds, unit, x, worldToScreenTransform, labelTransform, layerData.labelFormat);
+                        labels, geometryFactory, rotatedBounds, unit, x, worldToScreenTransform, labelTransform,
+                        layerData.getGridLabelFormat());
                 GridUtils.topBorderLabel(
-                        labels, geometryFactory, rotatedBounds, unit, x, worldToScreenTransform, labelTransform, layerData.labelFormat);
+                        labels, geometryFactory, rotatedBounds, unit, x, worldToScreenTransform, labelTransform,
+                        layerData.getGridLabelFormat());
             }
             for (double y = minY; y < bounds.getMaxY(); y += incrementY) {
                 j++;
 
                 if (addBorderFeatures && !onRightBorder(bounds, x) && !onTopBorder(bounds, y)) {
                     GridUtils.leftBorderLabel(
-                            labels, geometryFactory, rotatedBounds, unit, y, worldToScreenTransform, labelTransform, layerData.labelFormat);
+                            labels, geometryFactory, rotatedBounds, unit, y, worldToScreenTransform, labelTransform,
+                            layerData.getGridLabelFormat());
                     GridUtils.rightBorderLabel(
-                            labels, geometryFactory, rotatedBounds, unit, y, worldToScreenTransform, labelTransform, layerData.labelFormat);
+                            labels, geometryFactory, rotatedBounds, unit, y, worldToScreenTransform, labelTransform,
+                            layerData.getGridLabelFormat());
                 }
                 if (!onTopBorder(bounds, y) && !onBottomBorder(bounds, y) &&
                     !onLeftBorder(bounds, x) && !onRightBorder(bounds, x)) { // don't add the border features twice.
@@ -159,16 +163,16 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
 
                     if (i == 0) {
                         GridUtils.leftBorderLabel(labels, geometryFactory, rotatedBounds, unit, y,
-                                worldToScreenTransform, labelTransform, layerData.labelFormat);
+                                worldToScreenTransform, labelTransform, layerData.getGridLabelFormat());
                     } else if (i == layerData.numberOfLines[0] + 1) {
                         GridUtils.rightBorderLabel(labels, geometryFactory, rotatedBounds, unit, y,
-                                worldToScreenTransform, labelTransform, layerData.labelFormat);
+                                worldToScreenTransform, labelTransform, layerData.getGridLabelFormat());
                     } else if (j == 0) {
                         GridUtils.bottomBorderLabel(labels, geometryFactory, rotatedBounds, unit, x,
-                                worldToScreenTransform, labelTransform, layerData.labelFormat);
+                                worldToScreenTransform, labelTransform, layerData.getGridLabelFormat());
                     } else if (j == layerData.numberOfLines[1] + 1) {
                         GridUtils.topBorderLabel(labels, geometryFactory, rotatedBounds, unit, x,
-                                worldToScreenTransform, labelTransform, layerData.labelFormat);
+                                worldToScreenTransform, labelTransform, layerData.getGridLabelFormat());
                     } else {
                         featureBuilder.reset();
                         Point geom = geometryFactory.createPoint(new Coordinate(x, y));

@@ -14,7 +14,9 @@
           "gridType": "points",
           "numberOfLines": [5,5],
           "renderAsSvg": true,
-          "labelFormat": "%1.0f %s",
+          "valueFormat": "###,###",
+          "unitFormat": " %s",
+          "formatGroupingSeparator": "'",
           "font" : {
             "name" : ["Arial", "Helvetica", "Nimbus Sans L", "Liberation Sans", "FreeSans", "Sans-serif"]
           }
