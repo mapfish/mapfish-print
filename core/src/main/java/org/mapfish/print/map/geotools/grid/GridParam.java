@@ -130,7 +130,7 @@ public final class GridParam extends AbstractLayerParams {
      * according to the unit and label value.
      */
     @HasDefaultValue
-    public String labelFomat = null;
+    public String labelFormat = null;
     /**
      * By default the normal axis order as specified in EPSG code will be used when parsing projections.  However
      * the requestor can override this by explicitly declaring that longitude axis is first.
@@ -189,11 +189,11 @@ public final class GridParam extends AbstractLayerParams {
             throw new IllegalArgumentException("The projection code: " + this.labelProjection +
                                                " is not valid. Error message when parsing code: " + e.getMessage());
         }
-        if (this.labelFomat != null) {
+        if (this.labelFormat != null) {
             try {
-                String.format(this.labelFomat, 2.0, "m");
+                String.format(this.labelFormat, 2.0, "m");
             } catch (IllegalFormatException e) {
-                throw new IllegalArgumentException("Invalid label format: " + this.labelFomat);
+                throw new IllegalArgumentException("Invalid label format: " + this.labelFormat);
             }
         }
     }
