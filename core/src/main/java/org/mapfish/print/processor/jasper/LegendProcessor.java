@@ -4,6 +4,8 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.collect.Lists;
 import com.google.common.io.Closer;
+
+import jsr166y.ForkJoinPool;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 import org.mapfish.print.Constants;
@@ -32,6 +34,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 
 /**
@@ -50,6 +57,9 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
 
     @Autowired
     private MetricRegistry metricRegistry;
+    
+    @Resource(name = "requestForkJoinPool")
+    private ForkJoinPool requestForkJoinPool;
 
     // CSOFF:MagicNumber
     private Dimension missingImageSize = new Dimension(24, 24);
@@ -126,47 +136,80 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         }
         return null;
     }
+    
+    private class IconTask implements Callable<BufferedImage> {
 
+        private URL icon;
+        private ExecutionContext context;
+        private Closer closer;
+        private MfClientHttpRequestFactory clientHttpRequestFactory;
+
+        public IconTask(final URL icon, final ExecutionContext context, 
+                final Closer closer, 
+                final MfClientHttpRequestFactory clientHttpRequestFactory) {
+            this.icon = icon;
+            this.context = context;
+            this.closer = closer;
+            this.clientHttpRequestFactory = clientHttpRequestFactory;
+        }
+
+        @Override
+        public BufferedImage call() throws IOException, URISyntaxException {
+            BufferedImage image = null;
+            final URI uri = this.icon.toURI();
+            final String metricName = LegendProcessor.class.getName() + ".read." + uri.getHost();
+            try {
+                checkCancelState(this.context);
+                final ClientHttpRequest request = this.clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
+                final Timer.Context timer = LegendProcessor.this.metricRegistry.timer(metricName).time();
+                final ClientHttpResponse httpResponse = this.closer.register(request.execute());
+                if (httpResponse.getStatusCode() == HttpStatus.OK) {
+                    image = ImageIO.read(httpResponse.getBody());
+                    if (image == null) {
+                        LOGGER.warn("The URL: " + this.icon + " is NOT an image format that can be decoded");
+                    } else {
+                        timer.stop();
+                    }
+                } else {
+                    LOGGER.warn("Failed to load image from: " + this.icon
+                            + " due to server side error.\n\tResponse Code: " + httpResponse.getStatusCode()
+                            + "\n\tResponse Text: " + httpResponse.getStatusText());
+                }
+            } catch (Exception e) {
+                LOGGER.warn("Failed to load image from: " + this.icon, e);
+            } finally {
+                this.closer.close();
+            }
+
+            if (image == null) {
+                image = getMissingImage();
+                LegendProcessor.this.metricRegistry.counter(metricName + ".error").inc();
+            }
+
+            return image;
+        }
+
+    }
+    
+    
     private void fillLegend(final MfClientHttpRequestFactory clientHttpRequestFactory,
                             final LegendAttributeValue legendAttributes,
                             final List<Object[]> legendList,
                             final int level,
                             final ExecutionContext context,
-                            final File tempTaskDirectory) throws IOException, URISyntaxException, JRException {
+                            final File tempTaskDirectory) throws ExecutionException, JRException, InterruptedException, IOException {
         int insertNameIndex = legendList.size();
         final URL[] icons = legendAttributes.icons;
         Closer closer = Closer.create();
         if (icons != null) {
+            List<IconTask> iconTasks = new ArrayList<IconTask>();
             for (URL icon : icons) {
-                BufferedImage image = null;
-                final URI uri = icon.toURI();
-                final String metricName = LegendProcessor.class.getName() + ".read." + uri.getHost();
-                try {
-                    checkCancelState(context);
-                    final ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
-                    final Timer.Context timer = this.metricRegistry.timer(metricName).time();
-                    final ClientHttpResponse httpResponse = closer.register(request.execute());
-                    if (httpResponse.getStatusCode() == HttpStatus.OK) {
-                        image = ImageIO.read(httpResponse.getBody());
-                        if (image == null) {
-                            LOGGER.warn("The URL: " + icon + " is NOT an image format that can be decoded");
-                        } else {
-                            timer.stop();
-                        }
-                    } else {
-                        LOGGER.warn("Failed to load image from: " + icon + " due to server side error.\n\tResponse Code: " +
-                                    httpResponse.getStatusCode() + "\n\tResponse Text: " + httpResponse.getStatusText());
-                    }
-                } catch (Exception e) {
-                    LOGGER.warn("Failed to load image from: " + icon, e);
-                } finally {
-                    closer.close();
-                }
-
-                if (image == null) {
-                    image = this.getMissingImage();
-                    this.metricRegistry.counter(metricName + ".error").inc();
-                }
+                iconTasks.add(new IconTask(icon, context, closer, clientHttpRequestFactory));
+            }      
+            List<Future<BufferedImage>> futureTiles = this.requestForkJoinPool.invokeAll(iconTasks);
+            
+            for (Future<BufferedImage> future : futureTiles) {
+                BufferedImage image = future.get();
 
                 String report = null;
                 if (this.maxWidth != null) {
