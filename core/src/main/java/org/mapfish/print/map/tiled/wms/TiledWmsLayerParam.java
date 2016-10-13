@@ -3,7 +3,6 @@ package org.mapfish.print.map.tiled.wms;
 import com.vividsolutions.jts.util.Assert;
 
 import org.mapfish.print.map.image.wms.WmsLayerParam;
-import org.mapfish.print.parser.HasDefaultValue;
 
 import java.awt.Dimension;
 import java.net.URISyntaxException;
@@ -20,12 +19,6 @@ public final class TiledWmsLayerParam extends WmsLayerParam {
      * A two element array of integers indicating the x and y size of each tile.
      */
     public int[] tileSize;
-
-    /**
-     * The format of the image. for example image/png, image/jpeg, etc...
-     */
-    @HasDefaultValue
-    public String imageFormat = "image/png";
 
     @Override
     public void postConstruct() throws URISyntaxException {

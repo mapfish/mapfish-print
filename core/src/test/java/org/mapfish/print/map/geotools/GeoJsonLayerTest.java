@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.IllegalFileAccessException;
 import org.mapfish.print.TestHttpClientFactory;
+import org.mapfish.print.attribute.map.MapLayer.RenderType;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.MapfishParserTest;
@@ -70,7 +71,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
         FeatureLayer featureLayer = (FeatureLayer) layers.get(0);
         final int count = featureLayer.getFeatureSource().getCount(Query.ALL);
         assertEquals(3, count);
-        assertEquals(true, layer.shouldRenderAsSvg());
+        assertEquals(RenderType.SVG, layer.getRenderType());
     }
 
     @Test(expected = IllegalFileAccessException.class)
@@ -199,6 +200,6 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
         FeatureLayer layer = (FeatureLayer) layers.get(0);
         final int count = layer.getFeatureSource().getCount(Query.ALL);
         assertEquals(3, count);
-        assertEquals(false, mapLayer.shouldRenderAsSvg());
+        assertEquals(RenderType.UNKNOWN, mapLayer.getRenderType());
     }
 }

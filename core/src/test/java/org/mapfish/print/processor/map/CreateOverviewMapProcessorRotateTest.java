@@ -87,7 +87,7 @@ public class CreateOverviewMapProcessorRotateTest extends AbstractMapfishSpringT
 
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("overviewMapLayerGraphics", List.class);
-        assertEquals(3, layerGraphics.size());
+        assertEquals(2, layerGraphics.size());
 
         final BufferedImage actualImage = ImageSimilarity.mergeImages(layerGraphics, 300, 200);
 //        ImageIO.write(actualImage, "png", new File("/tmp/expectedSimpleImage.png"));

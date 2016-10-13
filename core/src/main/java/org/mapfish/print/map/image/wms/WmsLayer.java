@@ -123,5 +123,10 @@ public final class WmsLayer extends AbstractSingleImageLayer {
     public boolean supportsNativeRotation() {
         return this.params.getCustomParams().containsKey("angle") ||
                this.params.getMergeableParams().containsKey("angle");
+    }    
+
+    @Override
+    public RenderType getRenderType() {
+        return RenderType.fromMimeType(this.params.imageFormat);
     }
 }

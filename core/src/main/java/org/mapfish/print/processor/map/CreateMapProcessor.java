@@ -26,6 +26,7 @@ import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
+import org.mapfish.print.attribute.map.MapLayer.RenderType;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.attribute.map.ZoomLevelSnapStrategy;
 import org.mapfish.print.attribute.map.ZoomToFeatures.ZoomType;
@@ -42,6 +43,8 @@ import org.mapfish.print.processor.jasper.ImagesSubReport;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -82,6 +85,8 @@ import static org.geotools.renderer.lite.RendererUtilities.worldToScreenTransfor
  * [[examples=verboseExample]]
  */
 public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcessor.Input, CreateMapProcessor.Output> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CreateMapProcessor.class);
+    
     enum BufferedImageType {
         TYPE_4BYTE_ABGR(BufferedImage.TYPE_4BYTE_ABGR),
         TYPE_4BYTE_ABGR_PRE(BufferedImage.TYPE_4BYTE_ABGR_PRE),
@@ -118,6 +123,8 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
     FeatureLayer.Plugin featureLayerPlugin;
 
     private BufferedImageType imageType = BufferedImageType.TYPE_4BYTE_ABGR;
+    
+    private BufferedImageType jpegImageType = BufferedImageType.TYPE_3BYTE_BGR;
 
     /**
      * Constructor.
@@ -166,6 +173,22 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
 
         return compiledReport.toURI();
     }
+    
+    private RenderType getSupportedRenderType(final RenderType renderType) {
+        if (renderType == RenderType.UNKNOWN || renderType == RenderType.TIFF) {
+            return RenderType.PNG;
+        } else {
+            return renderType;
+        }
+    }
+    
+    private void warnIfDifferentRenderType(final RenderType renderType, final MapLayer layer) {
+        if (renderType != layer.getRenderType()) {
+            LOGGER.warn(
+                    "Layer " + layer.getName() + " has " +
+                    layer.getRenderType().toString() + " format, storing as PNG.");
+        }
+    }
 
     private List<URI> createLayerGraphics(final File printDirectory,
                                           final MfClientHttpRequestFactory clientHttpRequestFactory,
@@ -180,17 +203,19 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
 
         final String mapKey = UUID.randomUUID().toString();
         final List<URI> graphics = new ArrayList<URI>(layers.size());
-        int i = 0;
-        for (MapLayer layer : layers) {
+        for (int i = 0; i < layers.size(); i++) {
+            MapLayer layer = layers.get(i);
             checkCancelState(context);
             File path = null;
             layer.prepareRender(mapContext);
-            if (renderAsSvg(layer)) {
+            RenderType renderType = getSupportedRenderType(layer.getRenderType());
+            if (layer.getRenderType() == RenderType.SVG) {
                 // render layer as SVG
                 final SVGGraphics2D graphics2D = getSvgGraphics(mapContext.getMapSize());
 
                 try {
-                    Graphics2D clippedGraphics2D = createClippedGraphics(mapContext, areaOfInterest, graphics2D);
+                    Graphics2D clippedGraphics2D = createClippedGraphics(
+                            mapContext, areaOfInterest, graphics2D);
                     layer.render(clippedGraphics2D, clientHttpRequestFactory, mapContext);
 
                     path = new File(printDirectory, mapKey + "_layer_" + i + ".svg");
@@ -200,16 +225,18 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 }
             } else {
                 // render layer as raster graphic
+                warnIfDifferentRenderType(renderType, layer);
                 final double imageBufferScaling = layer.getImageBufferScaling();
                 final BufferedImage bufferedImage = new BufferedImage(
                         (int) Math.round(mapContext.getMapSize().width * imageBufferScaling),
                         (int) Math.round(mapContext.getMapSize().height * imageBufferScaling),
-                        this.imageType.value
+                        renderType == RenderType.JPEG ? this.jpegImageType.value : this.imageType.value
                 );
                 Graphics2D graphics2D = createClippedGraphics(
                         mapContext, areaOfInterest,
                         bufferedImage.createGraphics()
                 );
+
                 try {
                     MapfishMapContext transformer = new MapfishMapContext(
                             mapContext,
@@ -226,14 +253,29 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                     );
                     layer.render(graphics2D, clientHttpRequestFactory, transformer);
 
-                    path = new File(printDirectory, mapKey + "_layer_" + i + ".png");
-                    ImageIO.write(bufferedImage, "png", path);
+                    // Merge consecutive layers of same render type and same buffer scaling (native
+                    // resolution)
+                    while (
+                        i < layers.size() - 1 &&
+                        getSupportedRenderType(layers.get(i + 1).getRenderType()) == renderType &&
+                        imageBufferScaling == layers.get(i + 1).getImageBufferScaling()
+                    ) {
+                        layer = layers.get(++i);
+                        checkCancelState(context);
+                        layer.prepareRender(mapContext);
+                        warnIfDifferentRenderType(renderType, layer);
+                        layer.render(graphics2D, clientHttpRequestFactory, transformer);
+                    }
+                    
+                    path = new File(
+                            printDirectory,
+                            mapKey + "_layer_" + i + "." + renderType.toString().toLowerCase());
+                    ImageIO.write(bufferedImage, renderType.toString(), path);
                 } finally {
                     graphics2D.dispose();
                 }
             }
-            graphics.add(path.toURI());
-            i++;
+            graphics.add(path.toURI());            
         }
 
         return graphics;
@@ -343,14 +385,6 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             newBounds = newBounds.adjustedEnvelope(paintArea);
         }
         return newBounds;
-    }
-
-    private boolean renderAsSvg(final MapLayer layer) {
-        if (layer instanceof AbstractFeatureSourceLayer) {
-            AbstractFeatureSourceLayer featureLayer = (AbstractFeatureSourceLayer) layer;
-            return featureLayer.shouldRenderAsSvg();
-        }
-        return false;
     }
 
     /**
@@ -501,6 +535,19 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
      */
     public void setImageType(final String imageType) {
         this.imageType = BufferedImageType.lookupValue(imageType);
+    }
+    
+    /**
+     * Set the type of buffered image rendered to for JPEG files.  
+     * See {@link org.mapfish.print.processor.map.CreateMapProcessor.BufferedImageType}.
+     * <p></p>
+     * Default is {@link org.mapfish.print.processor.map.CreateMapProcessor.BufferedImageType#TYPE_3BYTE_BGR}.
+     *
+     * @param jpegImageType one of the
+     *        {@link org.mapfish.print.processor.map.CreateMapProcessor.BufferedImageType} values.
+     */
+    public void setJpegImageType(final String jpegImageType) {
+        this.jpegImageType = BufferedImageType.lookupValue(jpegImageType);
     }
 
     /**

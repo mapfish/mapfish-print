@@ -34,6 +34,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mapfish.print.attribute.map.AreaOfInterest.AoiDisplay.RENDER;
 
 /**
@@ -95,16 +96,22 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
         final Template template = config.getTemplate("main");
 
         createMap(template, "expectedSimpleImage-default.png", RENDER, null, false, null);
+        /* jpeg */ createMap(template, "expectedSimpleImage-default.png", RENDER, null, false, true, null);
         createMap(template, "expectedSimpleImage-render-thinline.png", RENDER, "file://thinline.sld", false, null);
+        /* jpeg */ createMap(template, "expectedSimpleImage-render-thinline.png", RENDER, "file://thinline.sld", false, true, null);
         createMap(template, "expectedSimpleImage-render-jsonStyle.png", RENDER, createJsonStyle().toString(), false, null);
         createMap(template, "expectedSimpleImage-render-polygon.png", RENDER, "polygon",
                 false, null);
         createMap(template, "expectedSimpleImage-none.png", AreaOfInterest.AoiDisplay.NONE, null, false, null);
+        /* jpeg */ createMap(template, "expectedSimpleImage-none.png", AreaOfInterest.AoiDisplay.NONE, null, false, true, null);
         createMap(template, "expectedSimpleImage-clip.png", AreaOfInterest.AoiDisplay.CLIP, null, false, null);
+        /* jpeg */ createMap(template, "expectedSimpleImage-clip.png", AreaOfInterest.AoiDisplay.CLIP, null, false, true, null);
 
         // Test when SVG is used for vector layers
         createMap(template, "expectedSimpleImage-render-polygon-svg.png", RENDER, createJsonStyle().toString(), true, null);
+        /* jpeg */ createMap(template, "expectedSimpleImage-render-polygon-svg.png", RENDER, createJsonStyle().toString(), true, true, null);
         createMap(template, "expectedSimpleImage-clip-svg.png", AreaOfInterest.AoiDisplay.CLIP, null, true, null);
+        /* jpeg */ createMap(template, "expectedSimpleImage-clip-svg.png", AreaOfInterest.AoiDisplay.CLIP, null, true, true, null);
         Function<PJsonObject, Void> setRotationUpdater = new Function<PJsonObject, Void>() {
 
             @Nullable
@@ -141,9 +148,17 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
 
     private void createMap(Template template, String expectedImageName, AreaOfInterest.AoiDisplay aoiDisplay, String styleRef,
                            boolean useSVG, Function<PJsonObject, Void> requestUpdater) throws IOException, JSONException, TranscoderException {
+        createMap(template, expectedImageName, aoiDisplay, styleRef, useSVG, false, requestUpdater);
+    }
+    
+    private void createMap(Template template, String expectedImageName, AreaOfInterest.AoiDisplay aoiDisplay, String styleRef,
+            boolean useSVG, boolean useJPEG, Function<PJsonObject, Void> requestUpdater) throws IOException, JSONException, TranscoderException {
         PJsonObject requestData = loadJsonRequestData();
         final PJsonObject mapAttribute = getMapAttributes(requestData);
         mapAttribute.getJSONArray("layers").getJSONObject(0).getInternalObj().put("renderAsSvg", useSVG);
+        if (useJPEG) {
+            mapAttribute.getJSONArray("layers").getJSONObject(1).getInternalObj().put("imageFormat", "jpeg");
+        }
 
         final PJsonObject areaOfInterest = mapAttribute.getJSONObject("areaOfInterest");
         areaOfInterest.getInternalObj().put("display", aoiDisplay.name().toLowerCase()); // doesn't have to be lowercase,
@@ -159,13 +174,19 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
 
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
-        assertEquals(aoiDisplay == RENDER ? 3 : 2, layerGraphics.size());
+        int expectedNumberOfLayers = useSVG ? (aoiDisplay == RENDER ? 3 : 2) : (useJPEG ? 2 : 1);
+        assertEquals(expectedNumberOfLayers, layerGraphics.size());
+        if (useJPEG) {
+            assertTrue(layerGraphics.get(0).getPath().endsWith(".jpeg"));
+        }
 
         final BufferedImage actualImage = ImageSimilarity.mergeImages(layerGraphics, 630, 294);
 //        ImageIO.write(actualImage, "png", new File(TMP, expectedImageName));
         File expectedImage = getFile(BASE_DIR + "/output/" + expectedImageName);
-        new ImageSimilarity(actualImage, 2).assertSimilarity(expectedImage, 50);
+        new ImageSimilarity(actualImage, 2).assertSimilarity(expectedImage, 55);
+        
     }
+
 
     private PJsonObject getMapAttributes(PJsonObject requestData) {
         return requestData.getJSONObject("attributes").getJSONObject("mapDef");

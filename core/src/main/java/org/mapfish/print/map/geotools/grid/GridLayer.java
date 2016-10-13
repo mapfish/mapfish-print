@@ -145,4 +145,9 @@ public final class GridLayer implements MapLayer {
                                     final MapfishMapContext mapContext) throws Exception {
         return this.grid.getLayers(httpRequestFactory, mapContext);
     }
+
+    @Override
+    public RenderType getRenderType() {
+        return this.grid.getRenderType();
+    }
 }

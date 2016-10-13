@@ -116,7 +116,7 @@ public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
 
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
-        assertEquals(2, layerGraphics.size());
+        assertEquals(1, layerGraphics.size());
 
 //        Files.copy(new File(layerGraphics.get(0)), new File("/tmp/0_"+getClass().getSimpleName()+".tiff"));
 //        Files.copy(new File(layerGraphics.get(1)), new File("/tmp/1_"+getClass().getSimpleName()+".tiff"));
