@@ -36,7 +36,7 @@ templates:
     - !restrictUris
       matchers:
         - !localMatch
-          port : 9876
+          port : 8080
           pathRegex : /.+
     - !reportBuilder # compile all reports in current directory
       directory: '.'
