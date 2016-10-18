@@ -50,17 +50,17 @@ public final class OsmLayer extends AbstractTiledLayer {
     }
 
     @Override
-    protected TileCacheInformation createTileInformation(final MapBounds bounds, final Rectangle paintArea, final double dpi,
-                                                         final boolean isFirstLayer) {
-        return new OsmTileCacheInformation(bounds, paintArea, dpi, isFirstLayer);
+    protected TileCacheInformation createTileInformation(
+            final MapBounds bounds, final Rectangle paintArea, final double dpi) {
+        return new OsmTileCacheInformation(bounds, paintArea, dpi);
     }
 
     private final class OsmTileCacheInformation extends TileCacheInformation {
         private final double resolution;
         private final int resolutionIndex;
 
-        public OsmTileCacheInformation(final MapBounds bounds, final Rectangle paintArea, final double dpi,
-                                       final boolean isFirstLayer) {
+        public OsmTileCacheInformation(
+                final MapBounds bounds, final Rectangle paintArea, final double dpi) {
             super(bounds, paintArea, dpi, OsmLayer.this.param);
 
             final double targetResolution = bounds.getScaleDenominator(paintArea, dpi).toResolution(bounds.getProjection(), dpi);
@@ -73,6 +73,7 @@ public final class OsmLayer extends AbstractTiledLayer {
                 if (cur <= targetResolution * OsmLayer.this.param.resolutionTolerance) {
                     result = cur;
                     pos = i;
+                    OsmLayer.this.imageBufferScaling = cur / targetResolution;
                 }
             }
 

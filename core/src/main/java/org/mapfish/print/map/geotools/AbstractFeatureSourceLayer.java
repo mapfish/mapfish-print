@@ -69,8 +69,7 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
 
     @Override
     public final List<? extends Layer> getLayers(final MfClientHttpRequestFactory httpRequestFactory,
-                                                 final MapfishMapContext mapContext,
-                                                 final boolean isFirstLayer) throws Exception {
+                                                 final MapfishMapContext mapContext) throws Exception {
         FeatureSource<?, ?> source = getFeatureSource(httpRequestFactory, mapContext);
         Style style = this.styleSupplier.load(httpRequestFactory, source, mapContext);
 
@@ -102,5 +101,10 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
      */
     public final Boolean shouldRenderAsSvg() {
         return this.renderAsSvg;
+    }
+
+    @Override
+    public final double getImageBufferScaling() {
+        return 1;
     }
 }

@@ -81,12 +81,10 @@ public class CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest extend
 
         String imageName = getExpectedImageName("", referenceImage, BASE_DIR);
 
-        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + imageName), 65);
-
+        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + imageName), 85);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
         return parseJSONObjectFromFile(CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest.class, BASE_DIR + "requestData.json");
     }
-
 }

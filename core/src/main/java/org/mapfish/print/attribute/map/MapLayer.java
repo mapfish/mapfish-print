@@ -26,16 +26,27 @@ public interface MapLayer {
     Optional<MapLayer> tryAddLayer(MapLayer newLayer);
 
     /**
-     * Render the layer to the graphics2D object.
-     * @param graphics2D   the graphics object.
-     * @param clientHttpRequestFactory The factory to use for making http requests.
-     * @param transformer  the map transformer containing the map bounds and size
-     * @param isFirstLayer true indicates this layer is the first layer in the map (the first layer drawn, ie the base layer)
+     * Get the scale ratio between the tiles resolution and the target resolution.
+     * Used to don't scale the tiles on tiled layer.
      */
-    void render(Graphics2D graphics2D,
-                MfClientHttpRequestFactory clientHttpRequestFactory,
-                MapfishMapContext transformer,
-                final boolean isFirstLayer);
+    double getImageBufferScaling();
+
+    /**
+     * Render the layer to the graphics2D object.
+     * @param transformer the map transformer containing the map bounds and size.
+     */
+    void prepareRender(final MapfishMapContext transformer);
+
+    /**
+     * Render the layer to the graphics2D object.
+     * @param graphics2D the graphics object.
+     * @param clientHttpRequestFactory The factory to use for making http requests.
+     * @param transformer the map transformer containing the map bounds and size.
+     */
+    void render(
+            final Graphics2D graphics2D,
+            final MfClientHttpRequestFactory clientHttpRequestFactory,
+            final MapfishMapContext transformer);
 
     /**
      * Indicate if the layer supports native rotation (e.g. WMS layers with 

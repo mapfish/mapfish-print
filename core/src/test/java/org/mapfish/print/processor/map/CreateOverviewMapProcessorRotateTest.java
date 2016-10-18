@@ -90,14 +90,12 @@ public class CreateOverviewMapProcessorRotateTest extends AbstractMapfishSpringT
         assertEquals(3, layerGraphics.size());
 
         final BufferedImage actualImage = ImageSimilarity.mergeImages(layerGraphics, 300, 200);
-//        ImageIO.write(actualImage, "tiff", new File("/tmp/expectedSimpleImage.tiff"));
+//        ImageIO.write(actualImage, "png", new File("/tmp/expectedSimpleImage.png"));
         new ImageSimilarity(actualImage, 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 50);
-
+                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 50);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
         return parseJSONObjectFromFile(CreateOverviewMapProcessorRotateTest.class, BASE_DIR + "requestData.json");
     }
-
 }

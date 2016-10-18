@@ -60,16 +60,14 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
 
     @Override
     protected TileCacheInformation createTileInformation(
-            final MapBounds bounds, final Rectangle paintArea, final double dpi,
-            final boolean isFirstLayer) {
-        return new WmsTileCacheInformation(bounds, paintArea, dpi, isFirstLayer);
+            final MapBounds bounds, final Rectangle paintArea, final double dpi) {
+        return new WmsTileCacheInformation(bounds, paintArea, dpi);
     }
 
     private final class WmsTileCacheInformation extends TileCacheInformation {
 
         public WmsTileCacheInformation(
-                final MapBounds bounds, final Rectangle paintArea, final double dpi,
-                final boolean isFirstLayer) {
+                final MapBounds bounds, final Rectangle paintArea, final double dpi) {
             super(bounds, paintArea, dpi, TiledWmsLayer.this.param);
         }
 

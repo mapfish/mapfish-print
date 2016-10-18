@@ -102,11 +102,9 @@ public class OsmCustomParamsTest extends AbstractMapfishSpringTest {
 
 //        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
         new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + expectedSimpleImage), 30);
-
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
         return parseJSONObjectFromFile(OsmCustomParamsTest.class, BASE_DIR + "requestData.json");
     }
-
 }

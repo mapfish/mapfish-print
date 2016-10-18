@@ -106,14 +106,14 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  *       "strokeWidth":5,
  *       "strokeLinecap":"round",
  *       "strokeDashstyle":"dot"
- *     },{
+ *     }, {
  *       "type" : "line",
  *       "strokeColor":"${val1}",
  *       "strokeOpacity":1,
  *       "strokeWidth":5,
  *       "strokeLinecap":"round",
  *       "strokeDashstyle":"dot"
- *     },{
+ *     }, {
  *       "type" : "polygon",
  *       "fillColor":"#FF0000",
  *       "fillOpacity":0,
@@ -123,7 +123,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  *       "strokeWidth":5,
  *       "strokeLinecap":"round",
  *       "strokeDashstyle":"dot"
- *     },{
+ *     }, {
  *       "type" : "text",
  *       "fontColor":"#000000",
  *       "fontFamily": "sans-serif",

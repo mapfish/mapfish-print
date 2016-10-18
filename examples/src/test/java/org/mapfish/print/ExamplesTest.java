@@ -72,7 +72,7 @@ public class ExamplesTest {
     MapPrinter mapPrinter;
 
     private static Pattern exampleFilter;
-    private static Pattern configFilter;
+    private static Pattern requestFilter;
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -81,15 +81,15 @@ public class ExamplesTest {
             String[] parts = filterProperty.split("/", 2);
 
             if (parts.length == 1) {
-                configFilter = MATCH_ALL;
+                requestFilter = MATCH_ALL;
             } else {
-                configFilter = Pattern.compile(parts[1]);
+                requestFilter = Pattern.compile(parts[1]);
             }
 
             exampleFilter = Pattern.compile(parts[0]);
 
         } else {
-            configFilter = exampleFilter = MATCH_ALL;
+            requestFilter = exampleFilter = MATCH_ALL;
         }
     }
 
@@ -150,7 +150,7 @@ public class ExamplesTest {
                 throw new AssertionError("Example: '" + example.getName() + "' does not have any request data files.");
             }
             for (File requestFile : Files.fileTreeTraverser().children(example)) {
-                if (!requestFile.isFile() ||  !configFilter.matcher(example.getName()).matches()) {
+                if (!requestFile.isFile() || !requestFilter.matcher(requestFile.getName()).matches()) {
                     continue;
                 }
                 try {
@@ -195,7 +195,7 @@ public class ExamplesTest {
 
                         File expectedOutputDir = new File(example, "expected_output");
                         File expectedOutput = getExpecteOutput(requestFile, expectedOutputDir);
-                        int similarity = 70;
+                        int similarity = 50;
                         File file = new File(expectedOutputDir, "image-similarity.txt");
                         if (file.isFile()) {
                             String similarityString = Files.toString(file, Constants.DEFAULT_CHARSET);

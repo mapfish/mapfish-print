@@ -93,11 +93,9 @@ public class CreateOverviewMapProcessorTest extends AbstractMapfishSpringTest {
 //        ImageIO.write(actualImage, "png", new File("/tmp/expectedSimpleImage.png"));
         new ImageSimilarity(actualImage, 2)
                 .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 50);
-
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
         return parseJSONObjectFromFile(CreateOverviewMapProcessorTest.class, BASE_DIR + "requestData.json");
     }
-
 }

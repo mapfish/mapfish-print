@@ -20,7 +20,7 @@
           ["347352116", "2010-11-09T22:54:23Z", "Mirabeau", "bus_stop"]
         ]
       }
-    },{
+    }, {
       "title": "Table 2",
       "table": {
         "columns": ["osm_id", "name"],

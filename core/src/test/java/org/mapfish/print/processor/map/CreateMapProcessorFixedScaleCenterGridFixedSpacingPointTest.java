@@ -80,11 +80,9 @@ public class CreateMapProcessorFixedScaleCenterGridFixedSpacingPointTest extends
         assertEquals(2, layerGraphics.size());
         new ImageSimilarity(referenceImage, 2)
                 .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 30);
-
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
         return parseJSONObjectFromFile(CreateMapProcessorFixedScaleCenterGridFixedSpacingPointTest.class, BASE_DIR + "requestData.json");
     }
-
 }

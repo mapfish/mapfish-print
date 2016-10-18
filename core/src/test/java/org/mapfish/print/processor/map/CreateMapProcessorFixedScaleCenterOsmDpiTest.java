@@ -98,15 +98,13 @@ public class CreateMapProcessorFixedScaleCenterOsmDpiTest extends AbstractMapfis
 //        Files.copy(new File(layerGraphics.get(0)), new File("/tmp/0_"+getClass().getSimpleName()+".tiff"));
 //        Files.copy(new File(layerGraphics.get(1)), new File("/tmp/1_"+getClass().getSimpleName()+".tiff"));
 
-        final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
-//        ImageIO.write(referenceImage, "tiff", new File(TMP + "/expectedSimpleImage.tiff"));
+        final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 1560, 660);
+//        ImageIO.write(referenceImage, "png", new File(TMP + "/expectedSimpleImage.png"));
         new ImageSimilarity(referenceImage, 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 30);
-
+                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 30);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
         return parseJSONObjectFromFile(CreateMapProcessorFixedScaleCenterOsmDpiTest.class, BASE_DIR + "requestData.json");
     }
-
 }

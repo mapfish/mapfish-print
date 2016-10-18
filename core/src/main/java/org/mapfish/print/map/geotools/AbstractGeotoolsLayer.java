@@ -56,10 +56,14 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
     }
 
     @Override
-    public final void render(final Graphics2D graphics2D,
-                             final MfClientHttpRequestFactory clientHttpRequestFactory,
-                             final MapfishMapContext transformer,
-                             final boolean isFirstLayer) {
+    public void prepareRender(final MapfishMapContext transformer) {
+    }
+
+    @Override
+    public final void render(
+            final Graphics2D graphics2D,
+            final MfClientHttpRequestFactory clientHttpRequestFactory,
+            final MapfishMapContext transformer) {
         Rectangle paintArea = new Rectangle(transformer.getMapSize());
         MapBounds bounds = transformer.getBounds();
 
@@ -72,14 +76,19 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
             bounds = transformer.getRotatedBounds(paintAreaPrecise, paintArea);
             graphics2D.setTransform(transformer.getTransform());
             Dimension mapSize = new Dimension(paintArea.width, paintArea.height);
-            layerTransformer = new MapfishMapContext(transformer, bounds, mapSize, transformer.getRotation(), transformer.getDPI(),
-                    transformer.getRequestorDPI(), transformer.isForceLongitudeFirst(), transformer.isDpiSensitiveStyle());
+            layerTransformer = new MapfishMapContext(
+                    transformer, bounds, mapSize,
+                    0, false,
+                    transformer.getDPI(),
+                    transformer.getRequestorDPI(),
+                    transformer.isForceLongitudeFirst(),
+                    transformer.isDpiSensitiveStyle()
+            );
         }
-
 
         MapContent content = new MapContent();
         try {
-            List<? extends Layer> layers = getLayers(clientHttpRequestFactory, layerTransformer, isFirstLayer);
+            List<? extends Layer> layers = getLayers(clientHttpRequestFactory, layerTransformer);
             applyTransparency(layers);
 
             content.addLayers(layers);
@@ -148,11 +157,9 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
      *
      * @param httpRequestFactory the factory for making http requests
      * @param transformer        the map transformer
-     * @param isFirstLayer       true indicates this layer is the first layer in the map (the first layer drawn, ie the base layer)
      */
     protected abstract List<? extends Layer> getLayers(MfClientHttpRequestFactory httpRequestFactory,
-                                                       MapfishMapContext transformer,
-                                                       final boolean isFirstLayer) throws Exception;
+                                                       MapfishMapContext transformer) throws Exception;
 
     //CHECKSTYLE:OFF: DesignForExtension - Set a default value for all sub classes.
     @Override

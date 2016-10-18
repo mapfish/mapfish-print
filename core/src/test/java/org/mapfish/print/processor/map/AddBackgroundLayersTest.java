@@ -87,17 +87,17 @@ public class AddBackgroundLayersTest extends AbstractMapfishSpringTest {
         Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
         template.getProcessorGraph().createTask(values).invoke();
 
-        assertImage(values, 2, "layerGraphics", "expectedSimpleImage.tiff");
-        assertImage(values, 3, "overviewMapLayerGraphics", "expectedOverviewImage.tiff");
+        assertImage(values, 2, "layerGraphics", "expectedSimpleImage.png", 630, 294);
+        assertImage(values, 3, "overviewMapLayerGraphics", "expectedOverviewImage.png", 320, 200);
     }
 
-    private void assertImage(Values values, int numberOfLayers, String graphicsValueKey, String imageName) throws IOException, TranscoderException {
+    private void assertImage(Values values, int numberOfLayers, String graphicsValueKey, String imageName, int width, int height) throws IOException, TranscoderException {
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject(graphicsValueKey, List.class);
         assertEquals(numberOfLayers, layerGraphics.size());
 
-        final BufferedImage bufferedImage = ImageSimilarity.mergeImages(layerGraphics, 630, 294);
-//        ImageIO.write(bufferedImage, "tiff", new File(TMP, imageName));
+        final BufferedImage bufferedImage = ImageSimilarity.mergeImages(layerGraphics, width, height);
+//        ImageIO.write(bufferedImage, "png", new File(TMP, imageName));
         new ImageSimilarity(bufferedImage, 2).assertSimilarity(getFile(BASE_DIR + imageName), 10);
     }
 

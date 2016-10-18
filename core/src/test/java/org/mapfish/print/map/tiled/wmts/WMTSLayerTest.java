@@ -21,18 +21,18 @@ public class WMTSLayerTest {
     public void testTileBoundsCalculation() throws Exception {
         WMTSLayerParam params = new WMTSLayerParam();
         Matrix matrix = new Matrix();
-        matrix.matrixSize = new long[]{67108864, 67108864};
-        matrix.tileSize = new int[]{256, 256};
-        matrix.topLeftCorner = new double[]{420000, 350000};
+        matrix.matrixSize = new long[] {67108864, 67108864};
+        matrix.tileSize = new int[] {256, 256};
+        matrix.topLeftCorner = new double[] {420000, 350000};
         matrix.scaleDenominator = 7500;
         params.matrices = new Matrix[] {matrix};
 
         WMTSLayer wmtsLayer = new WMTSLayer(null, null, null, params, null);
 
-        Rectangle paintArea = new Rectangle(0,0,256,256);
+        Rectangle paintArea = new Rectangle(0, 0, 256, 256);
         MapBounds bounds = new CenterScaleMapBounds(CRS.decode("EPSG:21781"), 595217.02, 236708.54, new Scale(7500));
         WMTSLayer.WMTSTileCacheInfo tileInformation =
-                (WMTSLayer.WMTSTileCacheInfo) wmtsLayer.createTileInformation(bounds, paintArea, 256, false);
+                (WMTSLayer.WMTSTileCacheInfo) wmtsLayer.createTileInformation(bounds, paintArea, 256);
 
         ReferencedEnvelope tileCacheBounds = tileInformation.getTileCacheBounds();
 
