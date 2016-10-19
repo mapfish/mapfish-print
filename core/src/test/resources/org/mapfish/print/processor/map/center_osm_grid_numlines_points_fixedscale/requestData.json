@@ -18,7 +18,7 @@
         },{
           "type": "osm",
           "baseURL": "http://center_osm_fixedscale.osm:1234",
-          "imageFormat": "tiff"
+          "imageExtension": "tiff"
         }
 
       ]

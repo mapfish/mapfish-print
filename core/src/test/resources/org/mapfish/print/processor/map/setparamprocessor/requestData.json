@@ -19,7 +19,7 @@
           "layers": ["tiger-ny"],
           "styles": ["line"],
           "version": "1.0.0",
-          "imageFormat": "tiff"
+          "imageFormat": "image/tiff"
         }
       ]
     }

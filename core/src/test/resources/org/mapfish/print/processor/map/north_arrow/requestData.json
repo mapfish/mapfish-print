@@ -10,7 +10,7 @@
         {
           "type": "osm",
           "baseURL": "http://north_arrow.osm:1234",
-          "imageFormat": "tiff"
+          "imageExtension": "tiff"
         }
 
       ]

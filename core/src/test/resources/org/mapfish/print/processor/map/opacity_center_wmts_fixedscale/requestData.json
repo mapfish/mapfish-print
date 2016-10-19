@@ -73,7 +73,7 @@
             "tileSize": [256, 256],
             "topLeftCorner": [-2.003750834E7, 2.0037508E7]
           }],
-          "imageFormat": "tiff"
+          "imageFormat": "image/tiff"
         }
       ]
     }
