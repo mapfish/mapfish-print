@@ -6,22 +6,20 @@
   "outputFormat" : "pdf",
   "layers":[
     {
-	  "baseURL": "http://localhost:8080/examples/data/www/osm",
-	  "type": "OSM",
-	  "extension": "png"
-	},
+      "baseURL": "http://localhost:8080/examples/data/www/osm",
+      "type": "OSM",
+      "extension": "png"
+    },
     {
       "baseURL":"http://localhost:8080/gs-web-app/wms",
       "opacity" : 1,
       "type":"WMS",
-      "layers": [
-        "tiger:tiger_roads"
-      ],
+      "layers": ["tiger:tiger_roads"],
       "format": "image/png",
       "singleTile": true,
-	  "customParams": {
-	    "TRANSPARENT": "true"
-	  }
+      "customParams": {
+        "TRANSPARENT": "true"
+      }
     }
   ],
   "pages": [

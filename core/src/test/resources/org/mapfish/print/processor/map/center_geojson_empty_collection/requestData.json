@@ -1,25 +1,24 @@
 {
-  "outputFormat":"png",
-  "layout":"1 A4 portrait",
-  "attributes":{
-    "title":"",
-    "mapDef":{
-      "center":[ 2617275, 1255000],
-      "scale":100000,
-      "rotation":0,
-      "layers":[
+  "outputFormat": "png",
+  "layout": "1 A4 portrait",
+  "attributes": {
+    "title": "",
+    "mapDef": {
+      "center": [ 2617275, 1255000],
+      "scale": 100000,
+      "rotation": 0,
+      "layers": [
         {
-          "geoJson": {
-            "features":[
-            ],
-            "type":"FeatureCollection"
+          "geoJson":  {
+            "features": [],
+            "type": "FeatureCollection"
           },
-          "type":"geojson"
+          "type": "geojson"
         }
       ],
-      "projection":"EPSG:2056",
-      "dpi":144
+      "projection": "EPSG:2056",
+      "dpi": 144
     },
-    "comment":""
+    "comment": ""
   }
 }

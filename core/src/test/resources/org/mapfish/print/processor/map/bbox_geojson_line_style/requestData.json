@@ -8,7 +8,7 @@
         {
           "type": "geojson",
           "style": @@importFile(style.json)@@,
-          "geoJson":   @@importFile(geojson.json)@@
+          "geoJson": @@importFile(geojson.json)@@
         }
       ]
     }

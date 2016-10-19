@@ -23,7 +23,7 @@
           "indent": 10,
           "haloRadius" : 4,
           "font" : {
-            "name" : ["Arial", "Helvetica", "Nimbus Sans L", "Liberation Sans", "FreeSans", "Sans-serif"],
+            "name" : ["Liberation Sans", "Helvetica", "Nimbus Sans L", "Liberation Sans", "FreeSans", "Sans-serif"],
             "size" : 8,
             "style" : "BOLD"
           }

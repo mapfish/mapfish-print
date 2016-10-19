@@ -13,15 +13,9 @@
           "baseURL": "http://localhost:8080/gs-web-app/wms",
           "opacity": 1,
           "type": "WMS",
-          "layers": [
-            "tiger:tiger_roads"
-          ],
-
+          "layers": ["tiger:tiger_roads"],
           "imageFormat": "image/png",
-          "styles": [
-            "line"
-          ],
-
+          "styles": ["line"],
           "customParams": {
             "TRANSPARENT": "true"
           }
@@ -30,9 +24,7 @@
           "baseURL": "http://localhost:8080/gs-web-app/wms",
           "opacity": 1,
           "type": "WMS",
-          "layers": [
-            "tiger-ny"
-          ],
+          "layers": ["tiger-ny"],
           "imageFormat": "image/png",
           "customParams": {
             "TRANSPARENT": "true"

@@ -1,4 +1,3 @@
-
 {
 
   "layout": "main",
@@ -6,8 +5,8 @@
     "map": {
       "center": [-8234690, 4978853],
       "scale": 60000,
-      "areaOfInterest" : {
-        "area" : {
+      "areaOfInterest": {
+        "area": {
           "type": "Polygon",
           "coordinates": [
             [

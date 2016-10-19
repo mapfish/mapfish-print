@@ -10,14 +10,14 @@
         {
           "type": "grid",
           "gridType": "points",
-          "numberOfLines": [5,5],
+          "numberOfLines": [5, 5],
           "renderAsSvg": false,
           "haloRadius": 1,
           "haloColor": "green",
-          "labelColor":"black",
+          "labelColor": "black",
           "indent": 10,
           "font": {
-            "name" : ["Verdana"],
+            "name": ["Verdana"],
             "style": "BOLD",
             "size": 8
           }

@@ -1,9 +1,9 @@
 {
   "attributes": {
     "mapDef": {
-      "areaOfInterest" : {
-        "display" : "none",
-        "area" : {
+      "areaOfInterest": {
+        "display": "none",
+        "area": {
           "type": "Polygon",
           "coordinates": [
             [
@@ -29,7 +29,7 @@
           "type": "geojson",
           "style": "file://thinline.sld",
           "geojson": "http://center_gml_only_aoi_for_bounds.json/geojson/ny-roads-3857.json",
-          "renderAsSvg" : "true"
+          "renderAsSvg": "true"
         },
         {
           "type": "geojson",

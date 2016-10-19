@@ -1,24 +1,21 @@
 {
-	"attributes": 
-	{
-		"map": 
-		{
-			"projection": "EPSG:4326",
-			"dpi": 72,
-			"rotation": 90,
-            "bbox": [-139.84870868359,18.549281576172,-51.852562316406,55.778420423828],
-            "longitudeFirst": true,
-			"layers": 
-			[
-				{
-		            "type": "WMS",
-		            "layers": ["topp:states"],
-		            "baseURL": "http://bbox_native_rotation_wms1_3_0_scale.wms:1234/wms",
-		            "imageFormat": "image/tiff",
-		            "version": "1.3.0",
-		            "customParams":{"TRANSPARENT":"true","EXCEPTIONS":"INIMAGE","angle":"90"}
-		        }
-			]
-		}
-	}
+  "attributes": {
+    "map": {
+      "projection": "EPSG:4326",
+      "dpi": 72,
+      "rotation": 90,
+      "bbox": [-139.84870868359, 18.549281576172, -51.852562316406, 55.778420423828],
+      "longitudeFirst": true,
+      "layers": [
+        {
+          "type": "WMS",
+          "layers": ["topp:states"],
+          "baseURL": "http://bbox_native_rotation_wms1_3_0_scale.wms:1234/wms",
+          "imageFormat": "image/tiff",
+          "version": "1.3.0",
+          "customParams": {"TRANSPARENT": "true", "EXCEPTIONS": "INIMAGE", "angle": "90"}
+        }
+      ]
+    }
+  }
 }
