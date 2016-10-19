@@ -1,8 +1,12 @@
 package org.mapfish.print.map.tiled.wmts;
 
 import com.vividsolutions.jts.util.Assert;
+import org.mapfish.print.map.Scale;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.util.Arrays;
+
+import static org.mapfish.print.Constants.OGC_DPI;
 
 /**
  * A class representing a matrix.
@@ -19,7 +23,7 @@ public class Matrix {
      */
     public long[] matrixSize;
     /**
-     * The scale of the matrix.
+     * The scale denominator of the matrix.
      */
     public double scaleDenominator;
     /**
@@ -55,5 +59,13 @@ public class Matrix {
      */
     public final int getTileHeight() {
         return this.tileSize[0];
+    }
+
+    /**
+     * Get the resolution.
+     * @param projection The map projection
+     */
+    public final double getResolution(final CoordinateReferenceSystem projection) {
+        return new Scale(this.scaleDenominator).toResolution(projection, OGC_DPI);
     }
 }

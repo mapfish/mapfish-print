@@ -3,7 +3,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.vividsolutions.jts.util.Assert;
-import org.mapfish.print.Constants;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.map.tiled.AbstractWMXLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
@@ -75,13 +74,7 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
     @HasDefaultValue
     public String[] dimensions;
 
-    /**
-     * The dpi of the returned images.
-     * <p></p>
-     * By default this is the OGC default DPI.
-     */
-    @HasDefaultValue
-    public double dpi = Constants.OGC_DPI;
+
     /**
      * Dictionary of dimensions name (Must be uppercase) =&gt; value.
      */

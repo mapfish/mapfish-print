@@ -4,7 +4,6 @@ import com.vividsolutions.jts.geom.Coordinate;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
-import org.mapfish.print.map.Scale;
 import org.springframework.http.client.ClientHttpRequest;
 
 import java.awt.Dimension;
@@ -76,12 +75,12 @@ public abstract class TileCacheInformation {
             throws Exception;
 
     /**
-     * Get the scale that the layer uses for its calculations.  The map isn't always at a resolution that a tiled layer
+     * Get the resolution that the layer uses for its calculations.  The map isn't always at a resolution that a tiled layer
      * supports so a scale is chosen for the layer that is close to the map scale. This method returns the layer's scale.
      * <p></p>
      * This is used for calculating the bounds of tiles, the size number and indices of the tiles to be returned.
      */
-    public abstract Scale getScale();
+    public abstract double getResolution();
 
     /**
      * Get the DPI of the layer's images.  The server renders at a certain DPI that may or may not be the same DPI that the map

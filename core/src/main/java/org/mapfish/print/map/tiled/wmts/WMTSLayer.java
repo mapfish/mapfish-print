@@ -9,7 +9,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
-import org.mapfish.print.map.Scale;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.tiled.AbstractTiledLayer;
 import org.mapfish.print.map.tiled.TileCacheInformation;
@@ -25,6 +24,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.annotation.Nonnull;
+
+import static org.mapfish.print.Constants.OGC_DPI;
 
 
 /**
@@ -67,9 +68,10 @@ public class WMTSLayer extends AbstractTiledLayer {
         public WMTSTileCacheInfo(final MapBounds bounds, final Rectangle paintArea, final double dpi) {
             super(bounds, paintArea, dpi, WMTSLayer.this.param);
             double diff = Double.POSITIVE_INFINITY;
-            final double targetScale = bounds.getScaleDenominator(paintArea, dpi).getDenominator();
+            final double targetResolution = bounds.getScaleDenominator(paintArea, dpi).toResolution(bounds.getProjection(), dpi);
+
             for (Matrix m : WMTSLayer.this.param.matrices) {
-                double delta = Math.abs(m.scaleDenominator - targetScale);
+                double delta = Math.abs(m.getResolution(this.bounds.getProjection()) - targetResolution);
                 if (delta < diff) {
                     diff = delta;
                     this.matrix = m;
@@ -77,7 +79,7 @@ public class WMTSLayer extends AbstractTiledLayer {
             }
 
             if (this.matrix == null) {
-                throw new IllegalArgumentException("Unable to find a matrix that at the scale: " + targetScale);
+                throw new IllegalArgumentException("Unable to find a matrix for the resolution: " + targetResolution);
             }
         }
 
@@ -92,14 +94,14 @@ public class WMTSLayer extends AbstractTiledLayer {
         @Nonnull
         @Override
         protected ReferencedEnvelope getTileCacheBounds() {
-            double scaleDenominator = new Scale(this.matrix.scaleDenominator).toResolution(this.bounds.getProjection(), getLayerDpi());
+            double resolution = getResolution();
             double minX = this.matrix.topLeftCorner[0];
             double tileHeight = this.matrix.getTileHeight();
             double numYTiles = this.matrix.matrixSize[1];
-            double minY = this.matrix.topLeftCorner[1] - (tileHeight * numYTiles * scaleDenominator);
+            double minY = this.matrix.topLeftCorner[1] - (tileHeight * numYTiles * resolution);
             double tileWidth = this.matrix.getTileWidth();
             double numXTiles = this.matrix.matrixSize[0];
-            double maxX = this.matrix.topLeftCorner[0] + (tileWidth * numXTiles * scaleDenominator);
+            double maxX = this.matrix.topLeftCorner[0] + (tileWidth * numXTiles * resolution);
             double maxY = this.matrix.topLeftCorner[1];
             return new ReferencedEnvelope(minX, maxX, minY, maxY, bounds.getProjection());
         }
@@ -158,13 +160,13 @@ public class WMTSLayer extends AbstractTiledLayer {
         }
 
         @Override
-        public Scale getScale() {
-            return new Scale(this.matrix.scaleDenominator);
+        public double getResolution() {
+            return this.matrix.getResolution(this.bounds.getProjection());
         }
 
         @Override
         public Double getLayerDpi() {
-            return WMTSLayer.this.param.dpi;
+            return OGC_DPI;
         }
     }
 
