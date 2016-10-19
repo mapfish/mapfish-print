@@ -8,7 +8,7 @@
     "pointRadius":0,
     "label":"This is a longer text that should be rendered",
     "fontColor":"#000000",
-    "fontFamily":"Arial",
+    "fontFamily":"Liberation Sans",
     "fontSize":"36px",
     "labelAlign":"cm",
     "haloColor":"green",

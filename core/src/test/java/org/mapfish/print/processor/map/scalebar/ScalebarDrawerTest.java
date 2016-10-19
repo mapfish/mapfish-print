@@ -100,7 +100,7 @@ public class ScalebarDrawerTest {
         drawer.draw();
 
 //        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-bar-bg.tiff");
-        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile(expectedDir + "expected-scalebar-bar-bg.tiff"), 48);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile(expectedDir + "expected-scalebar-bar-bg.tiff"), 52);
     }
 
     @Test
@@ -141,7 +141,7 @@ public class ScalebarDrawerTest {
         drawer.draw();
 
 //        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-bar-text-above.tiff");
-        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile(expectedDir + "expected-scalebar-bar-text-above.tiff"), 52);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile(expectedDir + "expected-scalebar-bar-text-above.tiff"), 80);
     }
 
     @Test
@@ -221,7 +221,7 @@ public class ScalebarDrawerTest {
         ScalebarAttributeValues params = attribute.createValue(null);
         params.labelDistance = 4;
         params.barSize = 10;
-        params.font = "Arial";
+        params.font = "Liberation Sans";
         ScaleBarRenderSettings settings = new ScaleBarRenderSettings();
         settings.setParams(params);
 

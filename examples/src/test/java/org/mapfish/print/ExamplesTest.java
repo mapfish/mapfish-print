@@ -277,5 +277,4 @@ public class ExamplesTest {
         junit.addListener(textListener);
         junit.run(ExamplesTest.class);
     }
-
 }

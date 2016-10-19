@@ -61,5 +61,4 @@ public class CreateMapProcessorGridFixedNumlinesPointAltLabelProjTest extends Ab
     private static PJsonObject loadJsonRequestData() throws IOException {
         return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleCenterTiledWmsTest.class, BASE_DIR + "requestData.json");
     }
-
 }

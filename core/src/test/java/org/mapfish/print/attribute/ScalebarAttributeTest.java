@@ -90,7 +90,7 @@ public class ScalebarAttributeTest extends AbstractMapfishSpringTest {
         assertEquals("m", value.unit);
         assertTrue(value.geodetic);
         assertTrue(value.lockUnits);
-        assertEquals("Arial", value.font);
+        assertEquals("Liberation Sans", value.font);
         assertEquals("#cccccc", value.fontColor);
     }
 

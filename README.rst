@@ -29,6 +29,11 @@ If you only want to build the docs simply run
 
 or run build in the docs directory
 
+.. note::
+
+   The test (part of the build) requires the 'Liberation Sans' font, witch can be downloaded
+   `here <https://www.fontsquirrel.com/fonts/Liberation-Sans>`_.
+
 Deploy
 ------
 

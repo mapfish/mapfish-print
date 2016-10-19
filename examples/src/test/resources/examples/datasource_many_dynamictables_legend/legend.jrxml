@@ -4,7 +4,7 @@
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<style name="Default" isDefault="true" fontName="Arial"/>
+	<style name="Default" isDefault="true" fontName="Liberation Sans"/>
 	<field name="name" class="java.lang.String"/>
 	<field name="icon" class="java.awt.Image"/>
 	<field name="level" class="java.lang.Integer"/>

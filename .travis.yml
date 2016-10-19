@@ -4,11 +4,6 @@ services:
 - docker
 
 before_install:
-  - echo "deb http://us-central1.gce.archive.ubuntu.com/ubuntu/ trusty multiverse" | sudo tee /etc/apt/sources.list.d/print.list
-  - sudo apt-get update -yq
-  - sudo sh -c "echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections"
-  - sudo apt-get install -y ttf-mscorefonts-installer -qq
-  - fc-list | grep -i "Arial"
   #we have to change the hostname to work around a bug in openjdk7 that crashes when the hostname is
   #too long.
   - export OLD_HOSTNAME=`hostname` && sudo sed -i -e "s/$OLD_HOSTNAME/test/g" /etc/hosts && sudo hostname test

@@ -174,7 +174,7 @@ public class JsonStyleParserHelperTest {
     public void testCreateTextSymbolizer() throws Exception {
         final String fontColor = "#333333";
         final String fontStyle = "normal";
-        final String fontFamily = "Arial, sans-serif";
+        final String fontFamily = "Liberation Sans, sans-serif";
         final String fontWeight = "bold";
         final String labelXOffset = "-25.0";
         final String labelYOffset = "-35.0";
@@ -212,7 +212,7 @@ public class JsonStyleParserHelperTest {
         final Font font = symbolizer.getFont();
         final List<Expression> family = font.getFamily();
         assertEquals(2, family.size());
-        assertEquals("Arial", valueOf(family.get(0)));
+        assertEquals("Liberation Sans", valueOf(family.get(0)));
         assertEquals("SansSerif", valueOf(family.get(1)));
         assertEquals(12.0, valueOf(font.getSize()));
         assertEquals(fontStyle, valueOf(font.getStyle()));
@@ -243,7 +243,7 @@ public class JsonStyleParserHelperTest {
     public void testCreateTextSymbolizerInPX() throws Exception {
         final String fontColor = "#333333";
         final String fontStyle = "normal";
-        final String fontFamily = "Arial, sans-serif";
+        final String fontFamily = "Liberation Sans, sans-serif";
         final String fontWeight = "bold";
         final String labelXOffset = "-25.0";
         final String labelYOffset = "-35.0";
@@ -281,7 +281,7 @@ public class JsonStyleParserHelperTest {
         final Font font = symbolizer.getFont();
         final List<Expression> family = font.getFamily();
         assertEquals(2, family.size());
-        assertEquals("Arial", valueOf(family.get(0)));
+        assertEquals("Liberation Sans", valueOf(family.get(0)));
         assertEquals("SansSerif", valueOf(family.get(1)));
         assertEquals(12.0, valueOf(font.getSize()));
         assertEquals(fontStyle, valueOf(font.getStyle()));
@@ -314,7 +314,7 @@ public class JsonStyleParserHelperTest {
 
         final String fontColor = "#333333";
         final String fontStyle = "normal";
-        final String fontFamily = "Arial, sans-serif";
+        final String fontFamily = "Liberation Sans, sans-serif";
         final String fontWeight = "bold";
         final String labelXOffset = "-25.0";
         final String labelYOffset = "-35.0";
@@ -352,7 +352,7 @@ public class JsonStyleParserHelperTest {
         final Font font = symbolizer.getFont();
         final List<Expression> family = font.getFamily();
         assertEquals(2, family.size());
-        assertEquals("Arial", valueOf(family.get(0)));
+        assertEquals("Liberation Sans", valueOf(family.get(0)));
         assertEquals("SansSerif", valueOf(family.get(1)));
         assertEquals(12.0, (Double)valueOf(font.getSize()), delta);
         assertEquals(fontStyle, valueOf(font.getStyle()));
@@ -385,7 +385,7 @@ public class JsonStyleParserHelperTest {
 
         final String fontColor = "#333333";
         final String fontStyle = "normal";
-        final String fontFamily = "Arial, sans-serif";
+        final String fontFamily = "Liberation Sans, sans-serif";
         final String fontWeight = "bold";
         final String labelXOffset = "-25.0";
         final String labelYOffset = "-35.0";
@@ -423,7 +423,7 @@ public class JsonStyleParserHelperTest {
         final Font font = symbolizer.getFont();
         final List<Expression> family = font.getFamily();
         assertEquals(2, family.size());
-        assertEquals("Arial", valueOf(family.get(0)));
+        assertEquals("Liberation Sans", valueOf(family.get(0)));
         assertEquals("SansSerif", valueOf(family.get(1)));
         assertEquals(12.0, (Double)valueOf(font.getSize()), delta);
         assertEquals(fontStyle, valueOf(font.getStyle()));
