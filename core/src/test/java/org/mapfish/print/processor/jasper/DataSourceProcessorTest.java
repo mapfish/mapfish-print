@@ -78,7 +78,7 @@ public class DataSourceProcessorTest extends AbstractMapfishSpringTest {
         assertEquals(1, print.getPages().size());
         BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
 
-//            final File output = new File("e:/tmp/expected-page.png");
+//            final File output = new File("/tmp/expected-page.png");
 //            output.getParentFile().mkdirs();
 //            ImageIO.write(reportImage, "png", output);
 

@@ -242,7 +242,7 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals("political-boundaries.png", fileName);
 
         final BufferedImage reportAsImage = ImageIO.read(new ByteArrayInputStream(report));
-//        ImageSimilarity.writeUncompressedImage(reportAsImage, "e:/expectedSimpleImage.tiff");
+//        ImageSimilarity.writeUncompressedImage(reportAsImage, "/expectedSimpleImage.tiff");
         new ImageSimilarity(reportAsImage, 2).assertSimilarity(getFile(OldAPIMapPrinterServletTest.class, "expectedSimpleImage.tiff"), 10);
     }
     
