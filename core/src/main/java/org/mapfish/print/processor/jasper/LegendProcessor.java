@@ -118,7 +118,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         final List<Object[]> legendList = new ArrayList<Object[]>();
         final String[] legendColumns = {NAME_COLUMN, ICON_COLUMN, REPORT_COLUMN, LEVEL_COLUMN};
         final LegendAttributeValue legendAttributes = values.legend;
-        fillLegend(values.clientHttpRequestFactory, legendAttributes, legendList, 0, context, values.tempTaskDirectory);
+        fillLegend(values.clientHttpRequestFactory, legendAttributes, legendList, context, values.tempTaskDirectory);
         final Object[][] legend = new Object[legendList.size()][];
 
         final JRTableModelDataSource dataSource = new JRTableModelDataSource(new TableDataSource(legendColumns,
@@ -137,24 +137,28 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         return null;
     }
     
-    private class IconTask implements Callable<BufferedImage> {
+    private class IconTask implements Callable<Object[]> {
 
         private URL icon;
         private ExecutionContext context;
         private Closer closer;
         private MfClientHttpRequestFactory clientHttpRequestFactory;
-
+        private int level;
+        private File tempTaskDirectory;
+        
         public IconTask(final URL icon, final ExecutionContext context, 
-                final Closer closer, 
+                final Closer closer, final int level, final File tempTaskDirectory,
                 final MfClientHttpRequestFactory clientHttpRequestFactory) {
             this.icon = icon;
             this.context = context;
             this.closer = closer;
+            this.level = level;
             this.clientHttpRequestFactory = clientHttpRequestFactory;
+            this.tempTaskDirectory = tempTaskDirectory;
         }
 
         @Override
-        public BufferedImage call() throws IOException, URISyntaxException {
+        public Object[] call() throws IOException, URISyntaxException, JRException {
             BufferedImage image = null;
             final URI uri = this.icon.toURI();
             final String metricName = LegendProcessor.class.getName() + ".read." + uri.getHost();
@@ -186,49 +190,63 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
                 LegendProcessor.this.metricRegistry.counter(metricName + ".error").inc();
             }
 
-            return image;
+            String report = null;
+            if (LegendProcessor.this.maxWidth != null) {
+                // if a max width is given, create a sub-report containing the cropped graphic
+                report = createSubReport(image, this.tempTaskDirectory).toString();
+            }
+            return new Object[] {null, image, report, this.level};
         }
-
     }
     
+    private class NameTask implements Callable<Object[]> {
+        
+        private String name;
+        private int level;
+        
+        public NameTask(final String name, final int level) {
+            this.name = name;
+            this.level = level;
+        }
+
+        @Override
+        public Object[] call() {
+            return new Object[]{this.name, null, null, this.level};
+        }
+    }
     
+    private void createTasks(final MfClientHttpRequestFactory clientHttpRequestFactory,
+                            final Closer closer, final LegendAttributeValue legendAttributes,
+                            final ExecutionContext context, final File tempTaskDirectory,
+                            final int level, final List<Callable<Object[]>> tasks) {
+        int insertNameIndex = tasks.size();        
+        final URL[] icons = legendAttributes.icons;
+        if (icons != null && icons.length > 0) {
+            for (URL icon : icons) {
+                tasks.add(new IconTask(icon, context, closer, level, tempTaskDirectory, clientHttpRequestFactory));
+            }
+        }
+        if (legendAttributes.classes != null) {
+            for (LegendAttributeValue value : legendAttributes.classes) {
+                createTasks(clientHttpRequestFactory, closer,  value, context, tempTaskDirectory, level + 1, tasks);
+            }
+        }
+        if (!tasks.isEmpty()) {
+            tasks.add(insertNameIndex, new NameTask(legendAttributes.name, level));
+        }
+    }
+        
     private void fillLegend(final MfClientHttpRequestFactory clientHttpRequestFactory,
                             final LegendAttributeValue legendAttributes,
                             final List<Object[]> legendList,
-                            final int level,
                             final ExecutionContext context,
                             final File tempTaskDirectory) throws ExecutionException, JRException, InterruptedException, IOException {
-        int insertNameIndex = legendList.size();
-        final URL[] icons = legendAttributes.icons;
         Closer closer = Closer.create();
-        if (icons != null) {
-            List<IconTask> iconTasks = new ArrayList<IconTask>();
-            for (URL icon : icons) {
-                iconTasks.add(new IconTask(icon, context, closer, clientHttpRequestFactory));
-            }      
-            List<Future<BufferedImage>> futureTiles = this.requestForkJoinPool.invokeAll(iconTasks);
-            
-            for (Future<BufferedImage> future : futureTiles) {
-                BufferedImage image = future.get();
-
-                String report = null;
-                if (this.maxWidth != null) {
-                    // if a max width is given, create a sub-report containing the cropped graphic
-                    report = createSubReport(image, tempTaskDirectory).toString();
-                }
-                final Object[] iconRow = {null, image, report, level};
-                legendList.add(iconRow);
-            }
-        }
-
-        if (legendAttributes.classes != null) {
-            for (LegendAttributeValue value : legendAttributes.classes) {
-                fillLegend(clientHttpRequestFactory, value, legendList, level + 1, context, tempTaskDirectory);
-            }
-        }
-
-        if (!legendList.isEmpty()) {
-            legendList.add(insertNameIndex, new Object[]{legendAttributes.name, null, null, level});
+        List<Callable<Object[]>> tasks = new ArrayList<Callable<Object[]>>();
+        createTasks(clientHttpRequestFactory, closer, legendAttributes, context, tempTaskDirectory, 0, tasks);
+        List<Future<Object[]>> futures = this.requestForkJoinPool.invokeAll(tasks);            
+        for (Future<Object[]> future : futures) {
+           legendList.add(future.get());
         }
     }
 
