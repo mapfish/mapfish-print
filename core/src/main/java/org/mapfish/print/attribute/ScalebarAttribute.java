@@ -243,6 +243,12 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
          */
         @HasDefaultValue
         public Boolean renderAsSvg;
+        
+        /**
+         * Specifies whether a subreport should be created, or only a graphic.
+         */
+        @HasDefaultValue
+        public boolean createSubReport = true;
 
         /**
          * Constructor.
@@ -362,6 +368,10 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
             } else {
                 return VerticalAlign.fromString(this.verticalAlign);
             }
+        }
+        
+        public final boolean isCreateSubReport() {
+            return this.createSubReport;
         }
     }
 }
