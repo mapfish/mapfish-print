@@ -56,7 +56,7 @@ public class CreateMapProcessorCenterGeojsonJsonStyleV1 extends AbstractMapfishS
         assertEquals(1, layerGraphics.size());
 
         final BufferedImage img = ImageIO.read(new File(layerGraphics.get(0)));
-//        ImageIO.write(img, "tiff", new File("e:/tmp/expectedSimpleImage.tiff"));
+//        ImageIO.write(img, "tiff", new File("/tmp/expectedSimpleImage.tiff"));
         new ImageSimilarity(img, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 30);
     }
 

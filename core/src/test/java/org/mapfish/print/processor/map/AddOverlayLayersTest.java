@@ -97,7 +97,7 @@ public class AddOverlayLayersTest extends AbstractMapfishSpringTest {
         assertEquals(numberOfLayers, layerGraphics.size());
 
         final BufferedImage bufferedImage = ImageSimilarity.mergeImages(layerGraphics, 630, 294);
-//        ImageIO.write(bufferedImage, "tiff", new File("e:/tmp/" + imageName));
+//        ImageIO.write(bufferedImage, "tiff", new File("/tmp/" + imageName));
         new ImageSimilarity(bufferedImage, 2).assertSimilarity(getFile(BASE_DIR + imageName), 40);
     }
 

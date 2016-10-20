@@ -75,7 +75,7 @@ public class CreateMapProcessorAoiForBoundsTest extends AbstractMapfishSpringTes
         assertEquals(2, layerGraphics.size());
 
         final BufferedImage actualImage = ImageSimilarity.mergeImages(layerGraphics, 630, 294);
-//        ImageIO.write(actualImage, "png", new File("e:/tmp/expectedSimpleImage-no-bounds.png"));
+//        ImageIO.write(actualImage, "png", new File("/tmp/expectedSimpleImage-no-bounds.png"));
         File expectedImage = getFile(BASE_DIR + "/expectedSimpleImage-no-bounds.png");
         new ImageSimilarity(actualImage, 2).assertSimilarity(expectedImage, 50);
     }
