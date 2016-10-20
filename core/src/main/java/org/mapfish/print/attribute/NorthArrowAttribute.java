@@ -78,6 +78,12 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
          */
         @HasDefaultValue
         public String backgroundColor = DEFAULT_BACKGROUND_COLOR;
+        
+        /**
+         * Specifies whether a subreport should be created, or only a graphic.
+         */
+        @HasDefaultValue
+        public boolean createSubReport = true;
 
         /**
          * Constructor.
@@ -108,5 +114,10 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
         public final Color getBackgroundColor() {
             return ColorParser.toColor(this.backgroundColor);
         }
+
+        public final boolean isCreateSubReport() {
+            return this.createSubReport;
+        }
+        
     }
 }
