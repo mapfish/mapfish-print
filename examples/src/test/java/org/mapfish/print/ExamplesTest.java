@@ -198,7 +198,7 @@ public class ExamplesTest {
 
                         File expectedOutputDir = new File(example, "expected_output");
                         File expectedOutput = getExpecteOutput(requestFile, expectedOutputDir);
-                        int similarity = 50;
+                        int similarity = 65;
                         File file = new File(expectedOutputDir, "image-similarity.txt");
                         if (file.isFile()) {
                             String similarityString = Files.toString(file, Constants.DEFAULT_CHARSET);
