@@ -12,16 +12,16 @@ templates:
       scalebar: !scalebar
         width: 240
         height: 40
+        createSubReport: false
         default:
           backgroundColor: "rgba(214, 214, 214, 200)"
           align: "right"
-          createSubReport: false
       northArrowDef: !northArrow
         size: 50
+        createSubReport: false
         default:
           graphic: "file://NorthArrow_10.svg"
           backgroundColor: "rgba(214, 214, 214, 200)"
-          createSubReport: false
     processors:
     - !reportBuilder # compile all reports in current directory
       directory: '.'

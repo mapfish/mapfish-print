@@ -12,9 +12,9 @@ templates:
           scales: [5000, 10000, 25000, 50000, 110000, 500000, 1000000]
       northArrowDef: !northArrow
         size: 200
+        createSubReport: false
         default:        
           graphic: "file://NorthArrow_10.png"
-          createSubReport: false
     processors:
     - !createMap
         inputMapper: {mapDef: map}

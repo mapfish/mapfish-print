@@ -45,7 +45,7 @@ import java.util.List;
  *     }
  * </code></pre>
  * <p>See also: <a href="attributes.html#!northArrow">!northArrow</a> attribute</p>
- * [[examples=verboseExample]]
+ * [[examples=verboseExample,print_osm_new_york_nosubreports]]
  */
 public class CreateNorthArrowProcessor extends AbstractProcessor<CreateNorthArrowProcessor.Input, CreateNorthArrowProcessor.Output> {
 

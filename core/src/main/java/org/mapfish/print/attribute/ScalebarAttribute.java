@@ -2,6 +2,7 @@ package org.mapfish.print.attribute;
 
 
 import com.google.common.base.Strings;
+
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.Template;
@@ -20,12 +21,13 @@ import java.util.List;
 /**
  * <p>The attributes for {@link org.mapfish.print.processor.map.scalebar.CreateScalebarProcessor} (see
  * <a href="processors.html#!createScalebar">!createScalebar</a> processor).</p>
- * [[examples=verboseExample,print_osm_new_york_EPSG_900913]]
+ * [[examples=verboseExample,print_osm_new_york_EPSG_900913,print_osm_new_york_nosubreports]]
  */
 public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.ScalebarAttributeValues> {
 
     private Integer width = null;
     private Integer height = null;
+    private Boolean createSubReport = true;
 
     @Override
     public final void validate(final List<Throwable> validationErrors, final Configuration configuration) {
@@ -40,7 +42,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
 
     @Override
     public final ScalebarAttributeValues createValue(final Template template) {
-        return new ScalebarAttributeValues(new Dimension(this.width, this.height));
+        return new ScalebarAttributeValues(new Dimension(this.width, this.height), this.createSubReport);
     }
 
     @Override
@@ -74,6 +76,19 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
         this.height = height;
     }
 
+
+    public final Boolean getCreateSubReport() {
+        return this.createSubReport;
+    }
+
+    /**
+     * Specifies whether a subreport should be created, or only a graphic.
+     * @param createSubReport Create a sub-report?
+     */
+    public final void setCreateSubReport(final Boolean createSubReport) {
+        this.createSubReport = createSubReport;
+    }
+
     /**
      * The value of {@link ScalebarAttribute}.
      */
@@ -88,6 +103,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
         private static final String DEFAULT_BACKGROUND_COLOR = "rgba(255, 255, 255, 0)";
 
         private final Dimension size;
+        private final boolean createSubReport;
 
         /**
          * The scalebar type.
@@ -243,20 +259,16 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
          */
         @HasDefaultValue
         public Boolean renderAsSvg;
-        
-        /**
-         * Specifies whether a subreport should be created, or only a graphic.
-         */
-        @HasDefaultValue
-        public boolean createSubReport = true;
 
         /**
          * Constructor.
          *
          * @param size The size of the scalebar graphic in the Jasper report (in pixels).
+         * @param createSubReport Create a sub-report?
          */
-        public ScalebarAttributeValues(final Dimension size) {
+        public ScalebarAttributeValues(final Dimension size, final boolean createSubReport) {
             this.size = size;
+            this.createSubReport = createSubReport;
         }
 
         /**
@@ -369,7 +381,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
                 return VerticalAlign.fromString(this.verticalAlign);
             }
         }
-        
+
         public final boolean isCreateSubReport() {
             return this.createSubReport;
         }
