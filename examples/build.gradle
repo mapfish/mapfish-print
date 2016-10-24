@@ -42,6 +42,12 @@ test { }
 test.onlyIf{false}
 
 task integrationTest(type: Test) {
+    testLogging {
+        exceptionFormat = 'full'
+        showCauses true
+        showExceptions true
+        showStackTraces true
+    }
 }
 integrationTest.dependsOn ':core:compileJava'
 
