@@ -17,10 +17,10 @@
                 "renderAsSvg": false,
                 "labelFormat": "%1.0f %s",
                 "font": {
-                    "name": ["Arial"],
+                    "name": ["Liberation Sans"],
                     "size": "10"
                 }
-            },{
+            }, {
                 "type": "tiledwms",
                 "layers": ["topp:states"],
                 "baseURL": "http://grid_numlines_points_fixedscale_crs84.wms/",

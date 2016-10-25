@@ -17,10 +17,10 @@
                 "renderAsSvg": false,
                 "labelProjection": "EPSG:3857",
                 "font": {
-                    "name": ["Arial"],
+                    "name": ["Liberation Sans"],
                     "size": "10"
                 }
-            },{
+            }, {
                 "type": "tiledwms",
                 "layers": ["topp:states"],
                 "baseURL": "http://grid_numlines_points_fixedscale_alt_label_proj.wms/",

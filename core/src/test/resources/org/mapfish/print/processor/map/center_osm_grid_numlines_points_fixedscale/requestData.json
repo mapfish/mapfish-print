@@ -12,10 +12,10 @@
           "numberOfLines": [5, 5],
           "renderAsSvg": false,
           "font": {
-            "name" : ["Arial"],
+            "name" : ["Liberation Sans"],
             "size" : "10"
           }
-        },{
+        }, {
           "type": "osm",
           "baseURL": "http://center_osm_fixedscale.osm:1234",
           "imageFormat": "tiff"

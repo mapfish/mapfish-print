@@ -17,7 +17,7 @@
                 "renderAsSvg": false,
                 "labelFormat": "%1.2f %s",
                 "font": {
-                    "name": ["Arial"],
+                    "name": ["Liberation Sans"],
                     "size": "10"
                 },
                 "rotateLabels": false,

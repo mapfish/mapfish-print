@@ -11,5 +11,5 @@ templates:
           geodetic: true
           lockUnits: true
           intervals: 4
-          font: Arial
+          font: Liberation Sans
           fontColor: "#cccccc"
