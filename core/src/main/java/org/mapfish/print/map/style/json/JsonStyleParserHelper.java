@@ -536,7 +536,7 @@ public final class JsonStyleParserHelper {
             }
         });
 
-        if (anchorX == null && anchorY == null) {
+        if (anchorX == null && anchorY == null && styleJson.has(JSON_LABEL_ALIGN)) {
             String labelAlign = styleJson.getString(JSON_LABEL_ALIGN);
             String xAlign = labelAlign.substring(0, 1);
             String yAlign = labelAlign.substring(1, 2);
