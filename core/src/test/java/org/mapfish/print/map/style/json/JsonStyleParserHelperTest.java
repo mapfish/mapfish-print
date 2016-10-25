@@ -240,6 +240,30 @@ public class JsonStyleParserHelperTest {
     }
 
     @Test
+    public void testCreateTextSymbolizerRotated() throws Exception {
+        final String fontColor = "#333333";
+        final String fontStyle = "normal";
+        final String fontFamily = "Arial, sans-serif";
+        final String fontWeight = "bold";
+
+
+        JSONObject style = new JSONObject();
+        style.put("label", "name");
+        style.put("fontColor", fontColor);
+        style.put("fontStyle", fontStyle);
+        style.put("fontFamily", fontFamily);
+        style.put("fontWeight", fontWeight);
+        style.put("fontSize", "12");
+        style.put("labelRotation", "45");
+
+        final PJsonObject pStyle = new PJsonObject(style, null);
+        TextSymbolizer symbolizer = helper.createTextSymbolizer(pStyle);
+        assertNotNull(symbolizer);
+
+        transformer.transform(symbolizer);  // test that it can be written to xml correctly
+    }
+
+    @Test
     public void testCreateTextSymbolizerInPX() throws Exception {
         final String fontColor = "#333333";
         final String fontStyle = "normal";
