@@ -129,16 +129,15 @@ public class ExamplesTest {
             }
 
             StringBuilder errorReport = new StringBuilder();
-            errorReport.append("\n").append(errors.size()).append(" errors encountered while running ");
-            errorReport.append(testsRan).append(" examples.\n");
-            errorReport.append("See Standard Error for the stack traces.  A summary is as follows:\n\n");
-
-            for (Map.Entry<String, Throwable> entry : errors.entrySet()) {
-                errorReport.append("    * ").append(entry.getKey()).append(" -> ").append(entry.getValue().getMessage());
-                errorReport.append('\n');
+            errorReport.append("\n");
+            errorReport.append(errors.size()).append(" errors encountered while running ")
+                .append(testsRan).append(" examples.\n");
+            errorReport.append("See Standard Error for the stack traces.  A summary is as follows:\n");
+            for (Map.Entry<String, Throwable> error : errors.entrySet()) {
+                errorReport.append("    * The example: '").append(error.getKey()).append("'\n");
+                errorReport.append("      failed with the error: ").append(error.getValue()).append("\n");
             }
-            errorReport.append("\n\n");
-
+            errorReport.append("\n");
             fail(errorReport.toString());
         }
     }
