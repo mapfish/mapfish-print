@@ -14,7 +14,7 @@
           "type": "geojson",
           "style": "point",
           "renderAsSvg": true,
-          "geoJson":   @@importFile(geojson.json)@@
+          "geoJson": @@importFile(geojson.json)@@
         }
       ]
     }

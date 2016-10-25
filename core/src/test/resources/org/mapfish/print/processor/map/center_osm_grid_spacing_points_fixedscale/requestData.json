@@ -9,7 +9,7 @@
         {
           "type": "grid",
           "gridType": "points",
-          "spacing": [1000,1000],
+          "spacing": [1000, 1000],
           "origin": [8200000, 4980000],
           "renderAsSvg": false
         },{

@@ -9,7 +9,7 @@
         {
           "type": "grid",
           "gridType": "points",
-          "numberOfLines": [5,5],
+          "numberOfLines": [5, 5],
           "renderAsSvg": false,
           "font": {
             "name" : ["Arial"],

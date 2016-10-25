@@ -20,8 +20,8 @@
           "version": "1.0.0",
           "imageFormat": "tiff",
           "customParams": {
-            "customP1" : 1,
-            "customP2" : 2
+            "customP1": 1,
+            "customP2": 2
           },
           "mergeableParams": {
             "mergeableP1": 3

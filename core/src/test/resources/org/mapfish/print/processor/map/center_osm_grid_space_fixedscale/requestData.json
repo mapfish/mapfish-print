@@ -8,7 +8,7 @@
       "layers": [
         {
           "type": "grid",
-          "spacing": [1000,1000],
+          "spacing": [1000, 1000],
           "origin": [8200000, 4980000],
           "pointsInLine": 100,
           "renderAsSvg": false

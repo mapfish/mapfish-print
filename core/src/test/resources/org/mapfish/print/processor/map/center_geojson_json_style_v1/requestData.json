@@ -1,127 +1,127 @@
 {
-  "outputFormat":"png",
-  "layout":"1 A4 portrait",
-  "attributes":{
-    "title":"",
-    "mapDef":{
-      "center":[ 2617275, 1255000],
-      "scale":100000,
-      "rotation":0,
-      "layers":[
+  "outputFormat": "png",
+  "layout": "1 A4 portrait",
+  "attributes": {
+    "title": "",
+    "mapDef": {
+      "center": [2617275, 1255000],
+      "scale": 100000,
+      "rotation": 0,
+      "layers": [
         {
-          "style":{
-            "3":{
-              "fontColor":"#000000",
-              "hoverFillColor":"white",
-              "cursor":"inherit",
-              "hoverStrokeOpacity":1,
-              "fillColor":"#0000FF",
-              "labelOutlineColor":"white",
-              "hoverFillOpacity":0.8,
-              "labelOutlineWidth":3,
-              "pointRadius":6,
-              "pointerEvents":"visiblePainted",
-              "strokeColor":"#0000FF",
-              "fillOpacity":0.4,
-              "strokeOpacity":1,
-              "hoverStrokeColor":"red",
-              "hoverStrokeWidth":0.2,
-              "strokeDashstyle":"solid",
-              "hoverPointUnit":"%",
-              "hoverPointRadius":1,
-              "strokeLinecap":"round",
-              "labelAlign":"cm",
-              "strokeWidth":1
+          "style": {
+            "3": {
+              "fontColor": "#000000",
+              "hoverFillColor": "white",
+              "cursor": "inherit",
+              "hoverStrokeOpacity": 1,
+              "fillColor": "#0000FF",
+              "labelOutlineColor": "white",
+              "hoverFillOpacity": 0.8,
+              "labelOutlineWidth": 3,
+              "pointRadius": 6,
+              "pointerEvents": "visiblePainted",
+              "strokeColor": "#0000FF",
+              "fillOpacity": 0.4,
+              "strokeOpacity": 1,
+              "hoverStrokeColor": "red",
+              "hoverStrokeWidth": 0.2,
+              "strokeDashstyle": "solid",
+              "hoverPointUnit": "%",
+              "hoverPointRadius": 1,
+              "strokeLinecap": "round",
+              "labelAlign": "cm",
+              "strokeWidth": 1
             },
-            "2":{
-              "fontColor":"#000000",
-              "hoverFillColor":"white",
-              "cursor":"inherit",
-              "hoverStrokeOpacity":1,
-              "fillColor":"#ff0000",
-              "labelOutlineColor":"white",
-              "hoverFillOpacity":0.8,
-              "label":"2615100 1257750",
-              "labelOutlineWidth":3,
-              "fontSize":"12px",
-              "pointRadius":100,
-              "pointerEvents":"visiblePainted",
-              "strokeColor":"#ff0000",
-              "fillOpacity":0.4,
-              "strokeOpacity":1,
-              "hoverStrokeColor":"red",
-              "hoverStrokeWidth":0.2,
-              "strokeDashstyle":"solid",
-              "hoverPointUnit":"%",
-              "hoverPointRadius":1,
-              "strokeLinecap":"round",
-              "labelAlign":"lb",
-              "strokeWidth":1
+            "2": {
+              "fontColor": "#000000",
+              "hoverFillColor": "white",
+              "cursor": "inherit",
+              "hoverStrokeOpacity": 1,
+              "fillColor": "#ff0000",
+              "labelOutlineColor": "white",
+              "hoverFillOpacity": 0.8,
+              "label": "2615100 1257750",
+              "labelOutlineWidth": 3,
+              "fontSize": "12px",
+              "pointRadius": 100,
+              "pointerEvents": "visiblePainted",
+              "strokeColor": "#ff0000",
+              "fillOpacity": 0.4,
+              "strokeOpacity": 1,
+              "hoverStrokeColor": "red",
+              "hoverStrokeWidth": 0.2,
+              "strokeDashstyle": "solid",
+              "hoverPointUnit": "%",
+              "hoverPointRadius": 1,
+              "strokeLinecap": "round",
+              "labelAlign": "lb",
+              "strokeWidth": 1
             },
-            "1":{
-              "fontColor":"#000000",
-              "hoverFillColor":"white",
-              "cursor":"inherit",
-              "hoverStrokeOpacity":1,
-              "fillColor":"#ff0000",
-              "labelOutlineColor":"white",
-              "hoverFillOpacity":0.8,
-              "labelOutlineWidth":3,
-              "pointRadius":6,
-              "pointerEvents":"visiblePainted",
-              "strokeColor":"#ff0000",
-              "fillOpacity":0.4,
-              "strokeOpacity":0.5,
-              "hoverStrokeColor":"red",
-              "hoverStrokeWidth":0.2,
-              "strokeDashstyle":"dash",
-              "hoverPointUnit":"%",
-              "hoverPointRadius":1,
-              "strokeLinecap":"round",
-              "labelAlign":"cm",
-              "strokeWidth":"8"
+            "1": {
+              "fontColor": "#000000",
+              "hoverFillColor": "white",
+              "cursor": "inherit",
+              "hoverStrokeOpacity": 1,
+              "fillColor": "#ff0000",
+              "labelOutlineColor": "white",
+              "hoverFillOpacity": 0.8,
+              "labelOutlineWidth": 3,
+              "pointRadius": 6,
+              "pointerEvents": "visiblePainted",
+              "strokeColor": "#ff0000",
+              "fillOpacity": 0.4,
+              "strokeOpacity": 0.5,
+              "hoverStrokeColor": "red",
+              "hoverStrokeWidth": 0.2,
+              "strokeDashstyle": "dash",
+              "hoverPointUnit": "%",
+              "hoverPointRadius": 1,
+              "strokeLinecap": "round",
+              "labelAlign": "cm",
+              "strokeWidth": "8"
             },
-            "styleProperty":"_gx_style",
-            "4":{
-              "fontColor":"#000000",
-              "hoverFillColor":"white",
-              "cursor":"inherit",
-              "hoverStrokeOpacity":1,
-              "fillColor":"#993300",
-              "labelOutlineColor":"white",
-              "hoverFillOpacity":0.8,
-              "labelOutlineWidth":3,
-              "pointRadius":6,
-              "pointerEvents":"visiblePainted",
-              "strokeColor":"#993300",
-              "fillOpacity":0.4,
-              "strokeOpacity":1,
-              "hoverStrokeColor":"red",
-              "hoverStrokeWidth":0.2,
-              "strokeDashstyle":"solid",
-              "hoverPointUnit":"%",
-              "hoverPointRadius":1,
-              "strokeLinecap":"round",
-              "labelAlign":"cm",
-              "strokeWidth":"2"
+            "styleProperty": "_gx_style",
+            "4": {
+              "fontColor": "#000000",
+              "hoverFillColor": "white",
+              "cursor": "inherit",
+              "hoverStrokeOpacity": 1,
+              "fillColor": "#993300",
+              "labelOutlineColor": "white",
+              "hoverFillOpacity": 0.8,
+              "labelOutlineWidth": 3,
+              "pointRadius": 6,
+              "pointerEvents": "visiblePainted",
+              "strokeColor": "#993300",
+              "fillOpacity": 0.4,
+              "strokeOpacity": 1,
+              "hoverStrokeColor": "red",
+              "hoverStrokeWidth": 0.2,
+              "strokeDashstyle": "solid",
+              "hoverPointUnit": "%",
+              "hoverPointRadius": 1,
+              "strokeLinecap": "round",
+              "labelAlign": "cm",
+              "strokeWidth": "2"
             },
-            "version":"1"
+            "version": "1"
           },
-          "geoJson":{
-            "features":[
+          "geoJson": {
+            "features": [
               {
-                "properties":{
-                  "stroke":8,
-                  "measure":false,
-                  "_gx_style":1,
-                  "description":"",
-                  "name":"no title",
-                  "ext-comp-1153":"#ff0000"
+                "properties": {
+                  "stroke": 8,
+                  "measure": false,
+                  "_gx_style": 1,
+                  "description": "",
+                  "name": "no title",
+                  "ext-comp-1153": "#ff0000"
                 },
-                "type":"Feature",
-                "geometry":{
-                  "type":"LineString",
-                  "coordinates":[
+                "type": "Feature",
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
                     [
                       2619800,
                       1264550
@@ -150,37 +150,37 @@
                 }
               },
               {
-                "properties":{
-                  "measure":true,
-                  "ext-comp-1163":"#FF00FF",
-                  "_gx_style":2,
-                  "description":"",
-                  "name":"no title",
-                  "pointRadius":6,
-                  "showMeasure":true
+                "properties": {
+                  "measure": true,
+                  "ext-comp-1163": "#FF00FF",
+                  "_gx_style": 2,
+                  "description": "",
+                  "name": "no title",
+                  "pointRadius": 6,
+                  "showMeasure": true
                 },
-                "type":"Feature",
-                "geometry":{
-                  "type":"Point",
-                  "coordinates":[
+                "type": "Feature",
+                "geometry": {
+                  "type": "Point",
+                  "coordinates": [
                     2615100,
                     1257750
                   ]
                 }
               },
               {
-                "properties":{
-                  "stroke":1,
-                  "measure":false,
-                  "_gx_style":3,
-                  "description":"",
-                  "name":"no title",
-                  "ext-comp-1175":"#0000FF"
+                "properties": {
+                  "stroke": 1,
+                  "measure": false,
+                  "_gx_style": 3,
+                  "description": "",
+                  "name": "no title",
+                  "ext-comp-1175": "#0000FF"
                 },
-                "type":"Feature",
-                "geometry":{
-                  "type":"Polygon",
-                  "coordinates":[
+                "type": "Feature",
+                "geometry": {
+                  "type": "Polygon",
+                  "coordinates": [
                     [
                       [
                         2618550,
@@ -215,19 +215,19 @@
                 }
               },
               {
-                "properties":{
-                  "stroke":2,
-                  "isBox":true,
-                  "measure":false,
-                  "_gx_style":4,
-                  "description":"",
-                  "name":"no title",
-                  "ext-comp-1187":"#993300"
+                "properties": {
+                  "stroke": 2,
+                  "isBox": true,
+                  "measure": false,
+                  "_gx_style": 4,
+                  "description": "",
+                  "name": "no title",
+                  "ext-comp-1187": "#993300"
                 },
-                "type":"Feature",
-                "geometry":{
-                  "type":"Polygon",
-                  "coordinates":[
+                "type": "Feature",
+                "geometry": {
+                  "type": "Polygon",
+                  "coordinates": [
                     [
                       [
                         2620050,
@@ -254,14 +254,14 @@
                 }
               }
             ],
-            "type":"FeatureCollection"
+            "type": "FeatureCollection"
           },
-          "type":"geojson"
+          "type": "geojson"
         }
       ],
-      "projection":"EPSG:2056",
-      "dpi":72
+      "projection": "EPSG:2056",
+      "dpi": 72
     },
-    "comment":""
+    "comment": ""
   }
 }

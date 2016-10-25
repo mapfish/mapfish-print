@@ -1,7 +1,7 @@
 {
   "attributes": {
-    "customP1" : "1",
-    "customP2" : "2",
+    "customP1": "1",
+    "customP2": "2",
     "map": {
       "center": [-8236566.427097, 4976131.070529],
       "scale": 100000,
