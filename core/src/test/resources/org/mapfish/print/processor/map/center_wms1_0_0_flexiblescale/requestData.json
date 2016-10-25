@@ -17,7 +17,7 @@
           "layers": ["tiger-ny"],
           "styles": ["line"],
           "version": "1.0.0",
-          "imageFormat": "tiff",
+          "imageFormat": "image/tiff",
           "customParams": {
             "customP1": 1,
             "customP2": 2

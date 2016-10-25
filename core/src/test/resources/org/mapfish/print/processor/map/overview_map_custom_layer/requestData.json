@@ -15,7 +15,7 @@
         },{
           "type": "osm",
           "baseURL": "http://overview_map_custom_layer.osm:1234",
-          "imageFormat": "tiff"
+          "imageExtension": "tiff"
         }
       ]
     },

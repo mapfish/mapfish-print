@@ -35,7 +35,7 @@
           "baseURL": "http://center_wms1_0_0_flexiblescale.wms:1234/wms",
           "layers": ["tiger-ny"],
           "version": "1.0.0",
-          "imageFormat": "tiff"
+          "imageFormat": "image/tiff"
         }
 
       ]

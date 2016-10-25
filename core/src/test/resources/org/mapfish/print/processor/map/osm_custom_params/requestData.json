@@ -13,7 +13,7 @@
         }, {
           "type": "osm",
           "baseURL": "http://osm_custom_params.osm:1234",
-          "imageFormat": "tiff",
+          "imageExtension": "tiff",
           "customParams": {
             "access_token": "pk.eyJ1IjoibWFwYm94IiwiYSI6IlpIdEpjOHcifQ",
             "PRINT-USERNAME": "bob.lenon"

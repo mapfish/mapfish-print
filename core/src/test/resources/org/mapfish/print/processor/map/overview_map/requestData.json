@@ -13,7 +13,7 @@
         },{
           "type": "osm",
           "baseURL": "http://overview_map.osm:1234",
-          "imageFormat": "tiff"
+          "imageExtension": "tiff"
         }
 
       ]
