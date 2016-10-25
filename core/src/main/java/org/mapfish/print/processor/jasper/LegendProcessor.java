@@ -3,7 +3,6 @@ package org.mapfish.print.processor.jasper;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.collect.Lists;
-import com.google.common.io.Closer;
 
 import jsr166y.ForkJoinPool;
 import net.sf.jasperreports.engine.JRException;
@@ -141,17 +140,15 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
 
         private URL icon;
         private ExecutionContext context;
-        private Closer closer;
         private MfClientHttpRequestFactory clientHttpRequestFactory;
         private int level;
         private File tempTaskDirectory;
         
         public IconTask(final URL icon, final ExecutionContext context, 
-                final Closer closer, final int level, final File tempTaskDirectory,
+                final int level, final File tempTaskDirectory,
                 final MfClientHttpRequestFactory clientHttpRequestFactory) {
             this.icon = icon;
             this.context = context;
-            this.closer = closer;
             this.level = level;
             this.clientHttpRequestFactory = clientHttpRequestFactory;
             this.tempTaskDirectory = tempTaskDirectory;
@@ -166,23 +163,25 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
                 checkCancelState(this.context);
                 final ClientHttpRequest request = this.clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
                 final Timer.Context timer = LegendProcessor.this.metricRegistry.timer(metricName).time();
-                final ClientHttpResponse httpResponse = this.closer.register(request.execute());
-                if (httpResponse.getStatusCode() == HttpStatus.OK) {
-                    image = ImageIO.read(httpResponse.getBody());
-                    if (image == null) {
-                        LOGGER.warn("The URL: " + this.icon + " is NOT an image format that can be decoded");
+                final ClientHttpResponse httpResponse = request.execute();
+                try {
+                    if (httpResponse.getStatusCode() == HttpStatus.OK) {
+                        image = ImageIO.read(httpResponse.getBody());
+                        if (image == null) {
+                            LOGGER.warn("The URL: " + this.icon + " is NOT an image format that can be decoded");
+                        } else {
+                            timer.stop();
+                        }
                     } else {
-                        timer.stop();
+                        LOGGER.warn("Failed to load image from: " + this.icon
+                                + " due to server side error.\n\tResponse Code: " + httpResponse.getStatusCode()
+                                + "\n\tResponse Text: " + httpResponse.getStatusText());
                     }
-                } else {
-                    LOGGER.warn("Failed to load image from: " + this.icon
-                            + " due to server side error.\n\tResponse Code: " + httpResponse.getStatusCode()
-                            + "\n\tResponse Text: " + httpResponse.getStatusText());
+                } finally {
+                    httpResponse.close();
                 }
             } catch (Exception e) {
                 LOGGER.warn("Failed to load image from: " + this.icon, e);
-            } finally {
-                this.closer.close();
             }
 
             if (image == null) {
@@ -216,19 +215,19 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     }
     
     private void createTasks(final MfClientHttpRequestFactory clientHttpRequestFactory,
-                            final Closer closer, final LegendAttributeValue legendAttributes,
+                            final LegendAttributeValue legendAttributes,
                             final ExecutionContext context, final File tempTaskDirectory,
                             final int level, final List<Callable<Object[]>> tasks) {
         int insertNameIndex = tasks.size();        
         final URL[] icons = legendAttributes.icons;
         if (icons != null && icons.length > 0) {
             for (URL icon : icons) {
-                tasks.add(new IconTask(icon, context, closer, level, tempTaskDirectory, clientHttpRequestFactory));
+                tasks.add(new IconTask(icon, context, level, tempTaskDirectory, clientHttpRequestFactory));
             }
         }
         if (legendAttributes.classes != null) {
             for (LegendAttributeValue value : legendAttributes.classes) {
-                createTasks(clientHttpRequestFactory, closer,  value, context, tempTaskDirectory, level + 1, tasks);
+                createTasks(clientHttpRequestFactory, value, context, tempTaskDirectory, level + 1, tasks);
             }
         }
         if (!tasks.isEmpty()) {
@@ -241,9 +240,8 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
                             final List<Object[]> legendList,
                             final ExecutionContext context,
                             final File tempTaskDirectory) throws ExecutionException, JRException, InterruptedException, IOException {
-        Closer closer = Closer.create();
         List<Callable<Object[]>> tasks = new ArrayList<Callable<Object[]>>();
-        createTasks(clientHttpRequestFactory, closer, legendAttributes, context, tempTaskDirectory, 0, tasks);
+        createTasks(clientHttpRequestFactory, legendAttributes, context, tempTaskDirectory, 0, tasks);
         List<Future<Object[]>> futures = this.requestForkJoinPool.invokeAll(tasks);            
         for (Future<Object[]> future : futures) {
            legendList.add(future.get());
