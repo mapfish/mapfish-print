@@ -109,7 +109,6 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
             final CoordinateReferenceSystem mapProjection = mapGeoBounds.getCoordinateReferenceSystem();
             Dimension tileSizeOnScreen = this.tiledLayer.getTileSize();
 
-            final double layerDpi = (this.tiledLayer.getLayerDpi() != null) ? this.tiledLayer.getLayerDpi() : this.dpi;
             final double layerResolution = this.tiledLayer.getResolution();
             Coordinate tileSizeInWorld = new Coordinate(tileSizeOnScreen.width * layerResolution,
                     tileSizeOnScreen.height * layerResolution);
@@ -189,6 +188,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
             GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
             GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapProjection);
             gridEnvelope.setEnvelope(gridCoverageOrigin.x, gridCoverageOrigin.y, gridCoverageMaxX, gridCoverageMaxY);
+//            ImageIO.write(coverageImage, "png", new File(System.getProperty("java.io.tmpdir"), "coverageImage.png"));
             return factory.create(commonUrl, coverageImage, gridEnvelope, null, null, null);
         } catch (Exception e) {
             throw ExceptionUtils.getRuntimeException(e);

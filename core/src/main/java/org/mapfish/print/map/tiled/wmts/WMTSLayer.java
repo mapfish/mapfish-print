@@ -42,9 +42,9 @@ public class WMTSLayer extends AbstractTiledLayer {
      *
      * @param forkJoinPool the thread pool for doing the rendering.
      * @param requestForkJoinPool the thread pool for making tile/image requests.
-     * @param styleSupplier   strategy for loading the style for this layer
-     * @param param           the information needed to create WMTS requests.
-     * @param registry      the metrics registry.
+     * @param styleSupplier strategy for loading the style for this layer
+     * @param param the information needed to create WMTS requests.
+     * @param registry the metrics registry.
      */
     protected WMTSLayer(final ForkJoinPool forkJoinPool,
                         final ForkJoinPool requestForkJoinPool,
@@ -56,8 +56,7 @@ public class WMTSLayer extends AbstractTiledLayer {
     }
 
     @Override
-    protected final TileCacheInformation createTileInformation(final MapBounds bounds, final Rectangle paintArea, final double dpi,
-                                                               final boolean isFirstLayer) {
+    protected final TileCacheInformation createTileInformation(final MapBounds bounds, final Rectangle paintArea, final double dpi) {
         return new WMTSTileCacheInfo(bounds, paintArea, dpi);
     }
 
@@ -71,10 +70,12 @@ public class WMTSLayer extends AbstractTiledLayer {
             final double targetResolution = bounds.getScaleDenominator(paintArea, dpi).toResolution(bounds.getProjection(), dpi);
 
             for (Matrix m : WMTSLayer.this.param.matrices) {
-                double delta = Math.abs(m.getResolution(this.bounds.getProjection()) - targetResolution);
+                final double resolution = m.getResolution(this.bounds.getProjection());
+                final double delta = Math.abs(resolution - targetResolution);
                 if (delta < diff) {
                     diff = delta;
                     this.matrix = m;
+                    WMTSLayer.this.imageBufferScaling = targetResolution / resolution;
                 }
             }
 

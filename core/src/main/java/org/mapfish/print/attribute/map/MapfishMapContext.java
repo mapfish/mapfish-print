@@ -57,11 +57,30 @@ public final class MapfishMapContext {
     public MapfishMapContext(final MapfishMapContext parent, final MapBounds bounds, final Dimension mapSize,
                              final double rotationInDegree, final double dpi, final double requestorDpi,
                              final Boolean forceLongitudeFirst, final boolean dpiSensitiveStyle) {
+        this(parent, bounds, mapSize, rotationInDegree, true, dpi, requestorDpi, forceLongitudeFirst, dpiSensitiveStyle);
+    }
+
+    /**
+     * Constructor.
+     * @param parent the context that this context is derived from
+     * @param bounds the map bounds
+     * @param mapSize the map size
+     * @param rotation the rotation
+     * @param rotationInDegree the rotation in degree?
+     * @param dpi the dpi of the printed map
+     * @param requestorDpi the dpi of the client map
+     * @param forceLongitudeFirst If true then force longitude coordinates as the first coordinate.
+     * @param dpiSensitiveStyle Scale the vector styles?
+     */
+    // CSOFF: ParameterNumber
+    public MapfishMapContext(final MapfishMapContext parent, final MapBounds bounds, final Dimension mapSize,
+                             final double rotation, final boolean rotationInDegree, final double dpi, final double requestorDpi,
+                             final Boolean forceLongitudeFirst, final boolean dpiSensitiveStyle) {
         // CSON: ParameterNumber
         this.parent = parent;
         this.bounds = bounds;
         this.mapSize = mapSize;
-        this.rotation = Math.toRadians(rotationInDegree);
+        this.rotation = rotationInDegree ? Math.toRadians(rotation) : rotation;
         this.dpi = dpi;
         this.requestorDpi = requestorDpi;
         this.forceLongitudeFirst = forceLongitudeFirst == null ? false : forceLongitudeFirst;

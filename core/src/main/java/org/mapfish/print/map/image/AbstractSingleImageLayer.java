@@ -46,11 +46,10 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
 
     @Override
     protected final List<? extends Layer> getLayers(final MfClientHttpRequestFactory httpRequestFactory,
-                                                    final MapfishMapContext mapContext,
-                                                    final boolean isFirstLayer) throws Exception {
+                                                    final MapfishMapContext mapContext) throws Exception {
         BufferedImage image;
         try {
-            image = loadImage(httpRequestFactory, mapContext, isFirstLayer);
+            image = loadImage(httpRequestFactory, mapContext);
         } catch (Throwable t) {
             throw ExceptionUtils.getRuntimeException(t);
         }
@@ -72,9 +71,12 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
      * Load the image at the requested size for the provided map bounds.
      *  @param requestFactory the factory to use for making http requests
      * @param transformer object containing map rendering information
-     * @param isFirstLayer true indicates this layer is the first layer in the map (the first layer drawn, ie the base layer)
      */
     protected abstract BufferedImage loadImage(MfClientHttpRequestFactory requestFactory,
-                                               MapfishMapContext transformer,
-                                               boolean isFirstLayer) throws Throwable;
+                                               MapfishMapContext transformer) throws Throwable;
+
+    @Override
+    public final double getImageBufferScaling() {
+        return 1;
+    }
 }

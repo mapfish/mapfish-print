@@ -85,5 +85,4 @@ public class CreateMapProcessorFixedScaleCenterGridSpacingTest extends AbstractM
     private static PJsonObject loadJsonRequestData() throws IOException {
         return parseJSONObjectFromFile(CreateMapProcessorFixedScaleCenterGridSpacingTest.class, BASE_DIR + "requestData.json");
     }
-
 }

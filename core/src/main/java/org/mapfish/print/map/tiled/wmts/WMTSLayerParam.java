@@ -74,7 +74,6 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
     @HasDefaultValue
     public String[] dimensions;
 
-
     /**
      * Dictionary of dimensions name (Must be uppercase) =&gt; value.
      */

@@ -50,8 +50,7 @@ public final class GridLayer implements MapLayer {
                      final boolean renderAsSvg,
                      final GridParam params,
                      final LabelPositionCollector labels) {
-        this.grid = new AbstractFeatureSourceLayer(executorService, featureSourceSupplier, styleSupplier, renderAsSvg, params) {
-        };
+        this.grid = new AbstractFeatureSourceLayer(executorService, featureSourceSupplier, styleSupplier, renderAsSvg, params) { };
         this.params = params;
         this.labels = labels;
     }
@@ -62,13 +61,22 @@ public final class GridLayer implements MapLayer {
     }
 
     @Override
+    public double getImageBufferScaling() {
+        return 1.0;
+    }
+
+    @Override
+    public void prepareRender(final MapfishMapContext transformer) {
+    }
+
+    @Override
     public void render(final Graphics2D graphics, final MfClientHttpRequestFactory clientHttpRequestFactory,
-                       final MapfishMapContext transformer, final boolean isFirstLayer) {
+                       final MapfishMapContext transformer) {
         Graphics2D graphics2D = (Graphics2D) graphics.create();
         int haloRadius = this.params.haloRadius;
         double dpiScaling = transformer.getDPI() / Constants.PDF_DPI;
 
-        this.grid.render(graphics2D, clientHttpRequestFactory, transformer, isFirstLayer);
+        this.grid.render(graphics2D, clientHttpRequestFactory, transformer);
         Font baseFont = null;
         for (String fontName : this.params.font.name) {
             try {
@@ -136,8 +144,7 @@ public final class GridLayer implements MapLayer {
 
     @VisibleForTesting
     List<? extends Layer> getLayers(final MfClientHttpRequestFactory httpRequestFactory,
-                                    final MapfishMapContext mapContext,
-                                    final boolean isFirstLayer) throws Exception {
-        return this.grid.getLayers(httpRequestFactory, mapContext, isFirstLayer);
+                                    final MapfishMapContext mapContext) throws Exception {
+        return this.grid.getLayers(httpRequestFactory, mapContext);
     }
 }

@@ -98,11 +98,9 @@ public class CreateMapProcessorFixedScaleCenterOsmTest extends AbstractMapfishSp
 //        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
         new ImageSimilarity(referenceImage, 2)
                 .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 30);
-
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
         return parseJSONObjectFromFile(CreateMapProcessorFixedScaleCenterOsmTest.class, BASE_DIR + "requestData.json");
     }
-
 }

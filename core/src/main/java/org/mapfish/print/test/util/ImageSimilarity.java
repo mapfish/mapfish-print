@@ -16,6 +16,7 @@ import org.apache.batik.transcoder.image.TIFFTranscoder;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -224,7 +225,13 @@ public final class ImageSimilarity {
         if (file.getName().endsWith(".svg")) {
             return convertFromSvg(path, width, height);
         } else {
-            return ImageIO.read(file);
+            BufferedImage originalImage = ImageIO.read(file);
+            BufferedImage resizedImage = new BufferedImage(width, height, originalImage.getType());
+            Graphics2D g = resizedImage.createGraphics();
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g.drawImage(originalImage, 0, 0, width, height, null);
+            g.dispose();
+            return resizedImage;
         }
     }
 

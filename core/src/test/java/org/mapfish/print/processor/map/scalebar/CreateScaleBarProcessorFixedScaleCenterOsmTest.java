@@ -100,17 +100,15 @@ public class CreateScaleBarProcessorFixedScaleCenterOsmTest extends AbstractMapf
 
 //        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
         new ImageSimilarity(referenceImage, 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 30);
+                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 60);
 
         URI scalebarGraphic = values.getObject("graphic", URI.class);
 //        Files.copy(new File(scalebarGraphic), new File("/tmp/expectedScalebar_" + getClass().getSimpleName() + ".tiff"));
 
         new ImageSimilarity(new File(scalebarGraphic), 4).assertSimilarity(getFile(BASE_DIR + ScalebarDrawerTest.expectedDir + "expectedScalebar.tiff"), 5);
-
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
         return parseJSONObjectFromFile(CreateScaleBarProcessorFixedScaleCenterOsmTest.class, BASE_DIR + "requestData.json");
     }
-
 }

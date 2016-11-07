@@ -101,13 +101,12 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSTest extends AbstractMapfi
         assertEquals(2, layerGraphics.size());
 
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 630, 294);
-//        ImageIO.write(referenceImage, "tif", new File("/tmp/expectedSimpleImage.tiff"));
+//        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
         new ImageSimilarity(referenceImage, 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 20);
+                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 20);
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {
         return parseJSONObjectFromFile(CreateMapProcessorFixedScaleAndCenterWMTSTest.class, BASE_DIR + "requestData.json");
     }
-
 }

@@ -55,8 +55,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
 
     @Override
     protected BufferedImage loadImage(final MfClientHttpRequestFactory requestFactory,
-                                      final MapfishMapContext transformer,
-                                      final boolean isFirstLayer) throws Throwable {
+                                      final MapfishMapContext transformer) throws Throwable {
         final WmsLayerParam wmsLayerParam = this.params;
         final URI commonUri = new URI(wmsLayerParam.getBaseUrl());
 

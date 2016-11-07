@@ -101,11 +101,9 @@ public class CreateOverviewMapProcessorStyleTest extends AbstractMapfishSpringTe
 //        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
         new ImageSimilarity(referenceImage, 2)
                 .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 50);
-
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
         return parseJSONObjectFromFile(CreateOverviewMapProcessorStyleTest.class, BASE_DIR + "requestData.json");
     }
-
 }
