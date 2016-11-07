@@ -91,8 +91,6 @@ public class ExamplesTest {
         } else {
             configFilter = exampleFilter = MATCH_ALL;
         }
-
-
     }
 
     @Test
@@ -197,7 +195,7 @@ public class ExamplesTest {
 
                         File expectedOutputDir = new File(example, "expected_output");
                         File expectedOutput = getExpecteOutput(requestFile, expectedOutputDir);
-                        int similarity = 65;
+                        int similarity = 70;
                         File file = new File(expectedOutputDir, "image-similarity.txt");
                         if (file.isFile()) {
                             String similarityString = Files.toString(file, Constants.DEFAULT_CHARSET);

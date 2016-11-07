@@ -110,7 +110,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
             Dimension tileSizeOnScreen = this.tiledLayer.getTileSize();
 
             final double layerDpi = (this.tiledLayer.getLayerDpi() != null) ? this.tiledLayer.getLayerDpi() : this.dpi;
-            final double layerResolution = this.tiledLayer.getScale().toResolution(mapProjection, layerDpi);
+            final double layerResolution = this.tiledLayer.getResolution();
             Coordinate tileSizeInWorld = new Coordinate(tileSizeOnScreen.width * layerResolution,
                     tileSizeOnScreen.height * layerResolution);
 
@@ -120,7 +120,7 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
             final String commonUrl = this.tiledLayer.createCommonUrl();
 
             ReferencedEnvelope tileCacheBounds = this.tiledLayer.getTileCacheBounds();
-            final double resolution = this.tiledLayer.getScale().toResolution(this.bounds.getProjection(), layerDpi);
+            final double resolution = this.tiledLayer.getResolution();
             double rowFactor = 1 / (resolution * tileSizeOnScreen.height);
             double columnFactor = 1 / (resolution * tileSizeOnScreen.width);
 
