@@ -223,18 +223,20 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
      * @param baseUrl the path to the webapp
      * @param jsonpVar if given the result is returned as a variable assignment
      * @param req the http request
+     * @param appId the app request
      * @param resp the http response
      */
     @RequestMapping(DEP_INFO_URL)
     public final void getInfo(
             @RequestParam(value = "url", defaultValue = "") final String baseUrl,
             @RequestParam(value = "var", defaultValue = "") final String jsonpVar,
+            @RequestParam(value = "app", defaultValue = DEFAULT_CONFIGURATION_FILE_KEY) final String appId,
             final HttpServletRequest req, final HttpServletResponse resp)
             throws ServletException, IOException {
 
         final MapPrinter printer;
         try {
-            printer = this.printerFactory.create(DEFAULT_CONFIGURATION_FILE_KEY);
+            printer = this.printerFactory.create(appId);
         } catch (NoSuchAppException e) {
             error(resp, e.getMessage(), HttpStatus.NOT_FOUND);
             return;
@@ -442,7 +444,5 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
         } catch (JSONException e) {
             throw ExceptionUtils.getRuntimeException(e);
         }
-
     }
-
 }

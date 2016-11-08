@@ -14,6 +14,7 @@ public interface StyleSupplier<Source> {
      * @param requestFactory the factory to use for making http requests
      * @param featureSource the source the style applies to
      */
-    Style load(final MfClientHttpRequestFactory requestFactory,
-               final Source featureSource) throws Exception;
+    Style load(
+            final MfClientHttpRequestFactory requestFactory,
+            final Source featureSource) throws Exception;
 }

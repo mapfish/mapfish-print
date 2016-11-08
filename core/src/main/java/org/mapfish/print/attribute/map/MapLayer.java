@@ -15,7 +15,7 @@ public interface MapLayer {
     /**
      * Enumerated type to specify whether layer should be rendered as PNG, JPEG or SVG.
      */
-    public enum RenderType {
+    enum RenderType {
         /** Unknown Rendering Format (let CreateMapProcessor decide). */
         UNKNOWN,
         /** Render as PNG. */

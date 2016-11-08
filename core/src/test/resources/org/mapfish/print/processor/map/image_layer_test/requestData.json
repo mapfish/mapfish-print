@@ -1,0 +1,30 @@
+{
+  "attributes": {
+    "mapDef": {
+      "bbox": [
+            4150836.3839982115,
+            7600898.092677928,
+            4588667.682015701,
+            8257645.039704161
+      ],
+      "scale": 100000000,
+      "projection": "EPSG:3857",
+      "dpi": 300,
+      "rotation": 0,
+      "layers": [
+        {
+          "baseURL": "http://image_layer_test/_ags_map33ada24b8384452dbcdc72fb6cd1d34e.png",
+          "extent": [
+                    4392836.015549079,
+                    7861166.1739889495,
+                    4481502.968359884,
+                    7924914.6555787865
+          ],
+          "name": "image",
+          "opacity": 1,
+          "type": "image"
+        }
+      ]
+    }
+  }
+}
