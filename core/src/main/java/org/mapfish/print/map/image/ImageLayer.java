@@ -79,7 +79,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
     }
 
     /**
-      * <p>Renders a image as layer.</p>
+      * <p>Renders an image as layer.</p>
       * <p>Type: <code>image</code></p>
       */
     public static final class ImageLayerPlugin extends AbstractGridCoverageLayerPlugin implements MapLayerFactoryPlugin<ImageParam> {
@@ -145,19 +145,18 @@ public final class ImageLayer extends AbstractSingleImageLayer {
               final MapfishMapContext transformer) throws Throwable {
         final ImageParam layerParam = this.params;
         final URI commonUri = new URI(layerParam.getBaseUrl());
-        final int maxYIndex = 3;
+        
         final Double extentMinX = layerParam.extent[0];
         final Double extentMinY = layerParam.extent[1];
         final Double extentMaxX = layerParam.extent[2];
-        final Double extentMaxY = layerParam.extent[maxYIndex];
-        
+        // CSOFF: MagicNumber
+        final Double extentMaxY = layerParam.extent[3];
+        // CSON: MagicNumber
         final Rectangle paintArea = transformer.getPaintArea();
         
         final ReferencedEnvelope envelope = transformer.getBounds().toReferencedEnvelope(paintArea, transformer.getDPI());
         final CoordinateReferenceSystem mapProjection = envelope.getCoordinateReferenceSystem();
         
-        
-        //File imageFile = File.createTempFile("downloadedimage", "png");
         Closer closer = Closer.create();
         final BufferedImage bufferedImage = new BufferedImage(paintArea.width, paintArea.height, TYPE_INT_ARGB_PRE);
         final Graphics2D graphics = bufferedImage.createGraphics();
@@ -166,7 +165,6 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         try {
             final ClientHttpRequest request = requestFactory.createRequest(commonUri, HttpMethod.GET);
             final ClientHttpResponse httpResponse = closer.register(request.execute());
-            //FileOutputStream output = closer.register(new FileOutputStream(imageFile));
             final BufferedImage image = ImageIO.read(httpResponse.getBody());
             if (image == null) {
                 return createErrorImage(paintArea);
@@ -180,7 +178,6 @@ public final class ImageLayer extends AbstractSingleImageLayer {
             GridCoverage2D coverage = factory.create(layerParam.getBaseUrl(), image, gridEnvelope, null, null, null);
             Style style = this.styleSupplier.load(requestFactory, coverage, transformer);
             GridCoverageLayer l = new GridCoverageLayer(coverage, style);
-            //coverage.
             
             content.addLayers(Collections.singletonList(l));
 
