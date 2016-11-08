@@ -93,6 +93,8 @@ public final class JsonStyleParserHelper {
     static final String JSON_EXTERNAL_GRAPHIC = "externalGraphic";
     static final String JSON_GRAPHIC_NAME = "graphicName";
     static final String JSON_GRAPHIC_OPACITY = "graphicOpacity";
+    static final String JSON_GRAPHIC_Y_OFFSET = "graphicYOffset";
+    static final String JSON_GRAPHIC_X_OFFSET = "graphicXOffset";
     static final String JSON_POINT_RADIUS = "pointRadius";
     static final String JSON_GRAPHIC_WIDTH = "graphicWidth";
     static final String JSON_ROTATION = "rotation";
@@ -229,6 +231,26 @@ public final class JsonStyleParserHelper {
             graphic.setSize(size);
         }
 
+        if (!Strings.isNullOrEmpty(styleJson.optString(JSON_GRAPHIC_Y_OFFSET)) && 
+               !Strings.isNullOrEmpty(styleJson.optString(JSON_GRAPHIC_X_OFFSET))) {
+            Expression dy = parseExpression(null, styleJson, JSON_GRAPHIC_Y_OFFSET, new Function<String, Object>() {
+                 @Nullable
+                 @Override
+                 public Object apply(final String input) {
+                     return Double.parseDouble(input);
+                 }
+            });
+            Expression dx = parseExpression(null, styleJson, JSON_GRAPHIC_X_OFFSET, new Function<String, Object>() {
+                @Nullable
+                @Override
+                public Object apply(final String input) {
+                    return Double.parseDouble(input);
+                }
+            });
+            Displacement offset = this.styleBuilder.createDisplacement(dx, dy);
+            graphic.setDisplacement(offset);
+        }
+        
         if (!Strings.isNullOrEmpty(styleJson.optString(JSON_ROTATION))) {
             final Expression rotation = parseExpression(null, styleJson, JSON_ROTATION, new Function<String, Object>() {
                 @Nullable
