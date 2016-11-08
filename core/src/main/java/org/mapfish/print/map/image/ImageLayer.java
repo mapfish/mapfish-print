@@ -129,8 +129,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
          public double[] extent;
     
          /**
-          * The styles to apply to the layers.  If this is defined there should be the same number as the layers and the style are applied
-          * to the layer in the {@link #layers} field.
+          * The styles to apply to the image.
           */
         @HasDefaultValue
         public String style = Constants.Style.Raster.NAME;
