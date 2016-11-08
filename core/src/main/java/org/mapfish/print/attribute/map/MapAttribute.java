@@ -8,7 +8,6 @@ import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues;
 import org.mapfish.print.attribute.map.ZoomToFeatures.ZoomType;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.map.Scale;
 import org.mapfish.print.parser.CanSatisfyOneOf;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.OneOf;
@@ -175,9 +174,8 @@ public final class MapAttribute extends GenericMapAttribute {
             if (this.center != null) {
                 double centerX = this.center[0];
                 double centerY = this.center[1];
-                Scale scaleObject = new Scale(this.scale);
 
-                bounds = new CenterScaleMapBounds(crs, centerX, centerY, scaleObject);
+                bounds = new CenterScaleMapBounds(crs, centerX, centerY, this.scale);
             } else if (this.bbox != null) {
                 final int maxYIndex = 3;
                 double minX = this.bbox[0];
@@ -189,10 +187,12 @@ public final class MapAttribute extends GenericMapAttribute {
                 Envelope area = this.areaOfInterest.getArea().getEnvelopeInternal();
                 bounds = new BBoxMapBounds(crs, area);
             } else if (this.zoomToFeatures != null) {
-                bounds = new BBoxMapBounds(crs, 0, 0, 0, 0);
+                // CSOFF: MagicNumber
+                bounds = new BBoxMapBounds(crs, 0, 0, 10, 10);
+                // CSON: MagicNumber
             } else {
-                throw new IllegalArgumentException("Expected either: center and scale, bbox, or an areaOfInterest defined in order to " +
-                                                   "calculate the map bounds");
+                throw new IllegalArgumentException("Expected either: center and scale, bbox, or an " +
+                        "areaOfInterest defined in order to calculate the map bounds");
             }
             return bounds;
         }

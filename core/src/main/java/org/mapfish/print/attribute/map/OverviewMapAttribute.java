@@ -2,7 +2,6 @@ package org.mapfish.print.attribute.map;
 
 import org.json.JSONArray;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.map.Scale;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.Requires;
 import org.mapfish.print.wrapper.PArray;
@@ -133,9 +132,8 @@ public final class OverviewMapAttribute extends GenericMapAttribute {
             if (this.center != null) {
                 double centerX = this.center[0];
                 double centerY = this.center[1];
-                Scale scaleObject = new Scale(this.scale);
 
-                bounds = new CenterScaleMapBounds(crs, centerX, centerY, scaleObject);
+                bounds = new CenterScaleMapBounds(crs, centerX, centerY, this.scale);
             } else if (this.bbox != null) {
                 final int maxYIndex = 3;
                 double minX = this.bbox[0];

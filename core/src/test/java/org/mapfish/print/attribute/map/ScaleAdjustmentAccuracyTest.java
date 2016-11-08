@@ -19,48 +19,48 @@ public class ScaleAdjustmentAccuracyTest {
 
     @Test
     public void testSearchCLOSEST_LOWER_SCALE_ON_MATCHMatch() throws Exception {
-        assertEquals(SCALE_12_RESULT, CLOSEST_LOWER_SCALE_ON_TIE.search(new Scale(12), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_12_RESULT, CLOSEST_LOWER_SCALE_ON_TIE.search(new Scale(12.01), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_12_RESULT, CLOSEST_LOWER_SCALE_ON_TIE.search(new Scale(12.5), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_8_RESULT, CLOSEST_LOWER_SCALE_ON_TIE.search(new Scale(10), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_12_RESULT, CLOSEST_LOWER_SCALE_ON_TIE.search(new Scale(13), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_12_RESULT, CLOSEST_LOWER_SCALE_ON_TIE.search(new Scale(11.88), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_12_RESULT, CLOSEST_LOWER_SCALE_ON_TIE.search(new Scale(11), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_8_RESULT, CLOSEST_LOWER_SCALE_ON_TIE.search(new Scale(9), TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, CLOSEST_LOWER_SCALE_ON_TIE.search(12, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, CLOSEST_LOWER_SCALE_ON_TIE.search(12.01, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, CLOSEST_LOWER_SCALE_ON_TIE.search(12.5, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_8_RESULT, CLOSEST_LOWER_SCALE_ON_TIE.search(10, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, CLOSEST_LOWER_SCALE_ON_TIE.search(13, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, CLOSEST_LOWER_SCALE_ON_TIE.search(11.88, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, CLOSEST_LOWER_SCALE_ON_TIE.search(11, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_8_RESULT, CLOSEST_LOWER_SCALE_ON_TIE.search(9, TOLERANCE, ZOOM_LEVELS));
     }
 
     @Test
     public void testSearchCLOSEST_HIGHER_SCALE_ON_MATCHMatch() throws Exception {
-        assertEquals(SCALE_12_RESULT, CLOSEST_HIGHER_SCALE_ON_TIE.search(new Scale(12), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_12_RESULT, CLOSEST_HIGHER_SCALE_ON_TIE.search(new Scale(12.01), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_12_RESULT, CLOSEST_HIGHER_SCALE_ON_TIE.search(new Scale(12.5), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_12_RESULT, CLOSEST_HIGHER_SCALE_ON_TIE.search(new Scale(10), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_12_RESULT, CLOSEST_HIGHER_SCALE_ON_TIE.search(new Scale(13), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_12_RESULT, CLOSEST_HIGHER_SCALE_ON_TIE.search(new Scale(11.88), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_12_RESULT, CLOSEST_HIGHER_SCALE_ON_TIE.search(new Scale(11), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_8_RESULT, CLOSEST_HIGHER_SCALE_ON_TIE.search(new Scale(9), TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, CLOSEST_HIGHER_SCALE_ON_TIE.search(12, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, CLOSEST_HIGHER_SCALE_ON_TIE.search(12.01, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, CLOSEST_HIGHER_SCALE_ON_TIE.search(12.5, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, CLOSEST_HIGHER_SCALE_ON_TIE.search(10, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, CLOSEST_HIGHER_SCALE_ON_TIE.search(13, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, CLOSEST_HIGHER_SCALE_ON_TIE.search(11.88, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, CLOSEST_HIGHER_SCALE_ON_TIE.search(11, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_8_RESULT, CLOSEST_HIGHER_SCALE_ON_TIE.search(9, TOLERANCE, ZOOM_LEVELS));
     }
 
     @Test
     public void testSearchNextHighest() throws Exception {
-        assertEquals(SCALE_12_RESULT, HIGHER_SCALE.search(new Scale(12), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_12_RESULT, HIGHER_SCALE.search(new Scale(12.01), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_12_RESULT, HIGHER_SCALE.search(new Scale(12.5), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_12_RESULT, HIGHER_SCALE.search(new Scale(10), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_16_RESULT, HIGHER_SCALE.search(new Scale(13), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_12_RESULT, HIGHER_SCALE.search(new Scale(11.88), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_12_RESULT, HIGHER_SCALE.search(new Scale(11), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_12_RESULT, HIGHER_SCALE.search(new Scale(9), TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, HIGHER_SCALE.search(12, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, HIGHER_SCALE.search(12.01, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, HIGHER_SCALE.search(12.5, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, HIGHER_SCALE.search(10, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_16_RESULT, HIGHER_SCALE.search(13, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, HIGHER_SCALE.search(11.88, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, HIGHER_SCALE.search(11, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, HIGHER_SCALE.search(9, TOLERANCE, ZOOM_LEVELS));
     }
     @Test
     public void testSearchLower() throws Exception {
-        assertEquals(SCALE_12_RESULT, LOWER_SCALE.search(new Scale(12), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_12_RESULT, LOWER_SCALE.search(new Scale(12.01), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_12_RESULT, LOWER_SCALE.search(new Scale(12.5), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_8_RESULT, LOWER_SCALE.search(new Scale(10), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_12_RESULT, LOWER_SCALE.search(new Scale(13), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_12_RESULT, LOWER_SCALE.search(new Scale(11.88), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_8_RESULT, LOWER_SCALE.search(new Scale(11), TOLERANCE, ZOOM_LEVELS));
-        assertEquals(SCALE_8_RESULT, LOWER_SCALE.search(new Scale(9), TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, LOWER_SCALE.search(12, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, LOWER_SCALE.search(12.01, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, LOWER_SCALE.search(12.5, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_8_RESULT, LOWER_SCALE.search(10, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, LOWER_SCALE.search(13, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_12_RESULT, LOWER_SCALE.search(11.88, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_8_RESULT, LOWER_SCALE.search(11, TOLERANCE, ZOOM_LEVELS));
+        assertEquals(SCALE_8_RESULT, LOWER_SCALE.search(9, TOLERANCE, ZOOM_LEVELS));
     }
 }

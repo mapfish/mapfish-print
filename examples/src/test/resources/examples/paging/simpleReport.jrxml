@@ -70,7 +70,7 @@
 				<textElement textAlignment="Right">
 					<font size="16"/>
 				</textElement>
-				<textFieldExpression><![CDATA[String.format("1:%.0f", $P{mapContext}.getRoundedScale())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[String.format("1:%.0f", $P{mapContext}.getRoundedScaleDenominator())]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>
@@ -165,7 +165,7 @@
 				<textElement textAlignment="Right">
 					<font size="16"/>
 				</textElement>
-				<textFieldExpression><![CDATA[String.format("1:%.0f", $F{mapContext}.getRoundedScale())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[String.format("1:%.0f", $F{mapContext}.getRoundedScaleDenominator())]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

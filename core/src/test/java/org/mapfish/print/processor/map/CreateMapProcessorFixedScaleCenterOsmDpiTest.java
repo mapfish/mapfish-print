@@ -100,7 +100,7 @@ public class CreateMapProcessorFixedScaleCenterOsmDpiTest extends AbstractMapfis
         assertEquals(2, layerGraphics.size());
 
         MapfishMapContext mapContext = values.getObject("mapContext", MapfishMapContext.class);
-        assertEquals(25000.0, mapContext.getScale().getDenominator(), 1E-6);
+        assertEquals(25000.0, mapContext.getScale().getDenominator(mapContext.getBounds().getProjection(), mapContext.getRequestorDPI()), 1E-6);
 
 //        Files.copy(new File(layerGraphics.get(0)), new File("/tmp/0_"+getClass().getSimpleName()+".tiff"));
 //        Files.copy(new File(layerGraphics.get(1)), new File("/tmp/1_"+getClass().getSimpleName()+".tiff"));

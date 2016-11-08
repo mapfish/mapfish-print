@@ -52,13 +52,13 @@ public class BBoxMapBoundsTest {
 
     @Test
     public void testAdjustToScale() throws Exception {
-        int scale = 24000;
+        int scaleDenominator = 24000;
         double dpi = 100;
         Rectangle screen = new Rectangle(100, 100);
         ZoomLevels zoomLevels = new ZoomLevels(15000, 20000, 25000, 30000, 350000);
 
 
-        final CenterScaleMapBounds mapBounds = new CenterScaleMapBounds(CH1903, 50000, 50000, new Scale(scale));
+        final CenterScaleMapBounds mapBounds = new CenterScaleMapBounds(CH1903, 50000, 50000, scaleDenominator);
         final ReferencedEnvelope originalBBox = mapBounds.toReferencedEnvelope(screen, dpi);
 
         BBoxMapBounds linear = new BBoxMapBounds(CH1903, originalBBox.getMinX(), originalBBox.getMinY(),
@@ -74,19 +74,19 @@ public class BBoxMapBoundsTest {
 
         double expectedScale = 25000;
         CenterScaleMapBounds expectedMapBounds = new CenterScaleMapBounds(CH1903, originalBBox.centre().x, originalBBox.centre().y,
-                new Scale(expectedScale));
+                expectedScale);
         assertEquals(expectedMapBounds.toReferencedEnvelope(screen, dpi), newBBox);
     }
 
     @Test
     public void testAdjustToScaleLatLong() throws Exception {
-        int scale = 24000;
+        int scaleDenominator = 24000;
         double dpi = 100;
         Rectangle screen = new Rectangle(100, 100);
         ZoomLevels zoomLevels = new ZoomLevels(15000, 20000, 25000, 30000, 350000);
 
 
-        final CenterScaleMapBounds mapBounds = new CenterScaleMapBounds(WGS84, 5, 5, new Scale(scale));
+        final CenterScaleMapBounds mapBounds = new CenterScaleMapBounds(WGS84, 5, 5, scaleDenominator);
         final ReferencedEnvelope originalBBox = mapBounds.toReferencedEnvelope(screen, dpi);
 
         BBoxMapBounds linear = new BBoxMapBounds(WGS84, originalBBox.getMinX(), originalBBox.getMinY(),
@@ -103,7 +103,7 @@ public class BBoxMapBoundsTest {
 
         double expectedScale = 25000;
         CenterScaleMapBounds expectedMapBounds = new CenterScaleMapBounds(WGS84, originalBBox.centre().x, originalBBox.centre().y,
-                new Scale(expectedScale));
+                expectedScale);
         assertEquals(expectedMapBounds.toReferencedEnvelope(screen, dpi), newBBox);
     }
 
@@ -138,15 +138,17 @@ public class BBoxMapBoundsTest {
 
     @Test
     public void testAdjustToGeodeticScale() throws Exception {
-        int scale = 24000;
+        int scaleDenominator = 24000;
         double dpi = 100;
         Rectangle screen = new Rectangle(100, 100);
         ZoomLevels zoomLevels = new ZoomLevels(15000, 20000, 25000, 30000, 350000);
 
-        final CenterScaleMapBounds mapBounds = new CenterScaleMapBounds(SPHERICAL_MERCATOR, 400000, 5000000, new Scale(scale));
+        final CenterScaleMapBounds mapBounds = new CenterScaleMapBounds(SPHERICAL_MERCATOR, 400000,
+                5000000, scaleDenominator);
         final ReferencedEnvelope originalBBox = mapBounds.toReferencedEnvelope(screen, dpi);
 
-        BBoxMapBounds linear = new BBoxMapBounds(SPHERICAL_MERCATOR, originalBBox.getMinX(), originalBBox.getMinY(),
+        BBoxMapBounds linear = new BBoxMapBounds(SPHERICAL_MERCATOR,
+                originalBBox.getMinX(), originalBBox.getMinY(),
                 originalBBox.getMaxX(), originalBBox.getMaxY());
 
         final MapBounds newMapBounds = linear.adjustBoundsToNearestScale(zoomLevels, 0.05,
@@ -161,7 +163,10 @@ public class BBoxMapBoundsTest {
         assertEquals(4999664, newBBox.getMinY(), 1);
         assertEquals(400335, newBBox.getMaxX(), 1);
         assertEquals(5000335, newBBox.getMaxY(), 1);
-        assertEquals(26428, newMapBounds.getScaleDenominator(screen, dpi).getDenominator(), 1);
-        assertEquals(20000, newMapBounds.getGeodeticScaleDenominator(screen, dpi).getDenominator(), delta);
+        assertEquals(26429, newMapBounds.getScaleDenominator(screen, dpi), 1);
+        assertEquals(20000,
+                new Scale(newMapBounds.getScaleDenominator(screen, dpi), SPHERICAL_MERCATOR, dpi)
+                .getGeodeticDenominator(SPHERICAL_MERCATOR, dpi, newBBox.centre()),
+                1);
     }
 }
