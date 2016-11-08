@@ -52,7 +52,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
 /**
  * <p>Reads a image file from an URL.</p>
  *
- * @author Jesse on 3/26/14.
+ * @author MaxComse on 11/08/16.
  */
 public final class ImageLayer extends AbstractSingleImageLayer {
 
