@@ -1,17 +1,8 @@
 package org.mapfish.print.attribute.map;
 
 import com.vividsolutions.jts.geom.Coordinate;
-
-import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
-import org.geotools.referencing.GeodeticCalculator;
-import org.mapfish.print.map.DistanceUnit;
-import org.mapfish.print.map.Scale;
-import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,49 +74,7 @@ public abstract class MapBounds {
      * @param paintArea the paint area of the map.
      * @param dpi the dpi of the map
      */
-    public abstract Scale getScaleDenominator(final Rectangle paintArea, final double dpi);
-
-    /**
-     * Calculate and return the geodetic scale of the map bounds.
-     *
-     * @param paintArea the paint area of the map.
-     * @param dpi the dpi of the map
-     */
-    public final Scale getGeodeticScaleDenominator(final Rectangle paintArea, final double dpi) {
-
-        DistanceUnit projUnit = DistanceUnit.fromProjection(getProjection());
-
-        if (projUnit == DistanceUnit.DEGREES) {
-            return getScaleDenominator(paintArea, dpi);
-        }
-
-        try {
-            final ReferencedEnvelope bboxAdjustedToScreen = toReferencedEnvelope(paintArea, dpi);
-
-            final GeodeticCalculator calculator = new GeodeticCalculator(getProjection());
-            final double centerY = bboxAdjustedToScreen.centre().y;
-
-            final MathTransform transform = CRS.findMathTransform(getProjection(),
-                    GenericMapAttribute.parseProjection("EPSG:4326", true));
-            final Coordinate start = JTS.transform(new Coordinate(bboxAdjustedToScreen.getMinX(), centerY), null, transform);
-            final Coordinate end = JTS.transform(new Coordinate(bboxAdjustedToScreen.getMaxX(), centerY), null, transform);
-            calculator.setStartingGeographicPoint(start.x, start.y);
-            calculator.setDestinationGeographicPoint(end.x, end.y);
-            final double geoWidthInEllipsoidUnits = calculator.getOrthodromicDistance();
-            final DistanceUnit ellipsoidUnit = DistanceUnit.fromString(calculator.getEllipsoid().getAxisUnit().toString());
-
-            final double geoWidthInInches = ellipsoidUnit.convertTo(geoWidthInEllipsoidUnits, DistanceUnit.IN);
-            return new Scale(geoWidthInInches * (dpi / paintArea.getWidth()));
-        } catch (FactoryException e) {
-            LOGGER.error("Unable to do the geodetic calculation on the scale", e);
-        } catch (TransformException e) {
-            LOGGER.error("Unable to do the geodetic calculation on the scale", e);
-        }
-
-        // fall back
-        return getScaleDenominator(paintArea, dpi);
-    }
-
+    public abstract double getScaleDenominator(final Rectangle paintArea, final double dpi);
 
     /**
      * In case a rotation is used for the map, the bounds have to be adjusted so that all
@@ -147,10 +96,17 @@ public abstract class MapBounds {
     /**
      * Zoom to the given scale.
      *
-     * @param scale The new scale.
+     * @param scaleDenominator The new scale denominator.
      * @return Bounds adjusted to the scale.
      */
-    public abstract MapBounds zoomToScale(final double scale);
+    public abstract MapBounds zoomToScale(final double scaleDenominator);
+
+    /**
+     * Get the center.
+     *
+     * @return the center position
+     */
+    public abstract Coordinate getCenter();
 
     // CHECKSTYLE:OFF
     @Override

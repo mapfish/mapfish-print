@@ -32,8 +32,8 @@ public class CenterScaleMapBoundsTest {
 
     @Test
     public void testToReferencedEnvelopeCH1903Projection() throws Exception {
-        final Scale startScale = new Scale(18984.396150703426);
-        final CenterScaleMapBounds bounds = new CenterScaleMapBounds(CH1903, 659596.5, 185610.5, startScale);
+        final double startScaleDenominator = 18984.396150703426;
+        final CenterScaleMapBounds bounds = new CenterScaleMapBounds(CH1903, 659596.5, 185610.5, startScaleDenominator);
         final Rectangle paintArea = new Rectangle(521, 330);
         final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea, OPENLAYERS_2_DPI);
 
@@ -48,8 +48,8 @@ public class CenterScaleMapBoundsTest {
 
     @Test
     public void testToReferencedEnvelopeLambertProjection() throws Exception {
-        final Scale startScale = new Scale(17983.582534790035);
-        final CenterScaleMapBounds bounds = new CenterScaleMapBounds(LAMBERT, 445000, 6355000, startScale);
+        final double startScaleDenominator = 17983.582534790035;
+        final CenterScaleMapBounds bounds = new CenterScaleMapBounds(LAMBERT, 445000, 6355000, startScaleDenominator);
         final Rectangle paintArea = new Rectangle(418, 512);
         final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea, OPENLAYERS_2_DPI);
 
@@ -64,9 +64,9 @@ public class CenterScaleMapBoundsTest {
 
     @Test
     public void testToReferencedEnvelopeLatLong() throws Exception {
-        final Scale startScale = new Scale(56304.83087498591);
+        final double startScaleDenominator = 56304.83087498591;
         final CenterScaleMapBounds bounds = new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 8.2335427805083, 46.801424340241,
-                startScale);
+                startScaleDenominator);
         final Rectangle paintArea = new Rectangle(521, 330);
         final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea, OPENLAYERS_2_DPI);
 
@@ -82,8 +82,8 @@ public class CenterScaleMapBoundsTest {
 
     @Test
     public void testZoomOut() throws Exception {
-        final Scale scale = new Scale(2500.0);
-        final CenterScaleMapBounds bounds = new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 0.0, 0.0, scale);
+        final double Denominator = 2500.0;
+        final CenterScaleMapBounds bounds = new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 0.0, 0.0, Denominator);
         final Rectangle paintArea = new Rectangle(400, 200);
         final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea, OPENLAYERS_2_DPI);
 
@@ -103,17 +103,5 @@ public class CenterScaleMapBoundsTest {
         assertEquals(envelope.getMaxX() * 2, newEnvelope.getMaxX(), delta);
         assertEquals(envelope.getMinY() * 2, newEnvelope.getMinY(), delta);
         assertEquals(envelope.getMaxY() * 2, newEnvelope.getMaxY(), delta);
-    }
-
-    @Test
-    public void geodetic() throws Exception {
-        final Scale scale = new Scale(15432.0);
-        final CenterScaleMapBounds centerBounds = new CenterScaleMapBounds(SPHERICAL_MERCATOR, 682433.0, 6379270.0, scale);
-        assertEquals(
-                centerBounds.getScaleDenominator(new Rectangle(715, 395), 254).getDenominator(),
-                15432.0, 1.0);
-        assertEquals(
-                centerBounds.getGeodeticScaleDenominator(new Rectangle(715, 395), 254).getDenominator(),
-                10019.0, 1.0);
     }
 }

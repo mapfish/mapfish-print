@@ -57,13 +57,10 @@ public class ScalebarGraphic {
         MapBounds bounds = mapContext.getBounds();
 
         final DistanceUnit mapUnit = getUnit(bounds);
-        Scale scale;
-        if (scalebarParams.geodetic) {
-            // to calculate the scale the requestor DPI is used , because the paint area is already adjusted
-            scale = bounds.getGeodeticScaleDenominator(paintArea, mapContext.getRequestorDPI());
-        } else {
-            scale = bounds.getScaleDenominator(paintArea, mapContext.getRequestorDPI());
-        }
+        final Scale scale = new Scale(bounds.getScaleDenominator(paintArea, mapContext.getRequestorDPI()),
+                bounds.getProjection(), dpi);
+        final double scaleDenominator = scale.getDenominator(scalebarParams.geodetic,
+                bounds.getProjection(), dpi, bounds.getCenter());
 
         DistanceUnit scaleUnit = scalebarParams.getUnit();
         if (scaleUnit == null) {
@@ -77,7 +74,7 @@ public class ScalebarGraphic {
                 maxWidthInPixelAdjusted : maxHeightInPixelAdjusted;
 
         final double maxIntervalLengthInWorldUnits = DistanceUnit.PX.convertTo(maxLengthInPixelAdjusted, scaleUnit)
-                * scale.getDenominator() / scalebarParams.intervals;
+                * scaleDenominator / scalebarParams.intervals;
         final double niceIntervalLengthInWorldUnits =
                 getNearestNiceValue(maxIntervalLengthInWorldUnits, scaleUnit, scalebarParams.lockUnits);
 
@@ -95,7 +92,7 @@ public class ScalebarGraphic {
                     new Dimension(maxWidthInPixelAdjusted, maxHeightInPixelAdjusted));
 
             try {
-                tryLayout(graphics2D, scaleUnit, scale, niceIntervalLengthInWorldUnits, settings, 0);
+                tryLayout(graphics2D, scaleUnit, scaleDenominator, niceIntervalLengthInWorldUnits, settings, 0);
 
                 path = File.createTempFile("scalebar-graphic-", ".svg", tempFolder);
                 CreateMapProcessor.saveSvgFile(graphics2D, path);
@@ -109,7 +106,7 @@ public class ScalebarGraphic {
             final Graphics2D graphics2D = bufferedImage.createGraphics();
 
             try {
-                tryLayout(graphics2D, scaleUnit, scale, niceIntervalLengthInWorldUnits, settings, 0);
+                tryLayout(graphics2D, scaleUnit, scaleDenominator, niceIntervalLengthInWorldUnits, settings, 0);
 
                 path = File.createTempFile("scalebar-graphic-", ".tiff", tempFolder);
                 ImageIO.write(bufferedImage, "tiff", path);
@@ -129,19 +126,19 @@ public class ScalebarGraphic {
     /**
      * Try recursively to find the correct layout.
      */
-    private void tryLayout(final Graphics2D graphics2D, final DistanceUnit scaleUnit, final Scale scale,
+    private void tryLayout(final Graphics2D graphics2D, final DistanceUnit scaleUnit, final double scaleDenominator,
             final double intervalLengthInWorldUnits, final ScaleBarRenderSettings settings, final int tryNumber) {
         if (tryNumber > MAX_NUMBER_LAYOUTING_TRIES) {
             // if no good layout can be found, stop. an empty scalebar graphic will be shown.
             LOGGER.error("layouting the scalebar failed (unit: " + scaleUnit.toString()
-                    + ", scale: " + scale.getDenominator() + ")");
+                    + ", scale: " + scaleDenominator + ")");
             return;
         }
 
         final ScalebarAttributeValues scalebarParams = settings.getParams();
         final DistanceUnit intervalUnit = bestUnit(scaleUnit, intervalLengthInWorldUnits, scalebarParams.lockUnits);
         final float intervalLengthInPixels = (float) scaleUnit.convertTo(
-                intervalLengthInWorldUnits / scale.getDenominator(), DistanceUnit.PX);
+                intervalLengthInWorldUnits / scaleDenominator, DistanceUnit.PX);
 
         //compute the label positions
         final List<Label> labels = new ArrayList<Label>(scalebarParams.intervals + 1);
@@ -200,7 +197,7 @@ public class ScalebarGraphic {
             //CSOFF: MagicNumber
             double nextIntervalDistance = getNearestNiceValue(intervalLengthInWorldUnits * 0.9, scaleUnit, scalebarParams.lockUnits);
             //CSOFF: MagicNumber
-            tryLayout(graphics2D, scaleUnit, scale, nextIntervalDistance, settings, tryNumber + 1);
+            tryLayout(graphics2D, scaleUnit, scaleDenominator, nextIntervalDistance, settings, tryNumber + 1);
         }
     }
 

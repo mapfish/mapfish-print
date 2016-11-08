@@ -42,11 +42,11 @@ public class MapfishMapContextTest {
         assertRoundedScale(12342290, 12000000);
     }
 
-    private void assertRoundedScale(double actualScale, double roundedScale) {
-        MapBounds bounds = new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 0, 0, new Scale(actualScale));
+    private void assertRoundedScale(double actualScaleDenominator, double roundedScale) {
+        MapBounds bounds = new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 0, 0, actualScaleDenominator);
         Dimension paint = new Dimension(200, 200);
         MapfishMapContext transformer = new MapfishMapContext(bounds, paint, 90, Constants.PDF_DPI, Constants.PDF_DPI, null, true);
-        assertEquals(roundedScale, transformer.getRoundedScale(), 0.00001);
+        assertEquals(roundedScale, transformer.getRoundedScaleDenominator(), 0.00001);
     }
 
     @Test
@@ -91,7 +91,7 @@ public class MapfishMapContextTest {
 
     @Test
     public void testGetRotatedBounds_CenterScaleMapBounds() {
-        MapBounds bounds = new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 0, 0, new Scale(1000));
+        MapBounds bounds = new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 0, 0, 1000);
         MapfishMapContext transformer = new MapfishMapContext(bounds, null, 90, Constants.PDF_DPI, Constants.PDF_DPI, null, true);
         // nothing changes
         assertEquals(bounds, transformer.getRotatedBounds());
@@ -117,7 +117,7 @@ public class MapfishMapContextTest {
         MapAttribute.MapAttributeValues mapValues = (new MapAttribute()).new MapAttributeValues(null, mapSize);
         mapValues.dpi = 100;
         mapValues.rotation = 55.26239249861529;
-        mapValues.setMapBounds(new CenterScaleMapBounds(epsg2056, 2742033.0, 1253823.0, new Scale(25000)));
+        mapValues.setMapBounds(new CenterScaleMapBounds(epsg2056, 2742033.0, 1253823.0, 25000));
 
         MapBounds centerBounds = mapValues.getMapBounds();
         Rectangle paintAreaRotated = new Rectangle(993, 1151);

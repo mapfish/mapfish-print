@@ -32,7 +32,6 @@ import org.mapfish.print.attribute.map.ZoomToFeatures.ZoomType;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
-import org.mapfish.print.map.Scale;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.map.geotools.FeatureLayer;
 import org.mapfish.print.map.geotools.grid.GridLayer;
@@ -433,8 +432,8 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                         mapBounds = ((BBoxMapBounds) mapBounds).expand(mapValues.zoomToFeatures.minMargin, paintArea);
                     }
 
-                    Scale scale = mapBounds.getScaleDenominator(paintArea, mapValues.getDpi());
-                    if (scale.getDenominator() < mapValues.zoomToFeatures.minScale) {
+                    final double scaleDenominator = mapBounds.getScaleDenominator(paintArea, mapValues.getDpi());
+                    if (scaleDenominator < mapValues.zoomToFeatures.minScale) {
                         // if the current scale is smaller than the min. scale, change it
                         mapBounds = mapBounds.zoomToScale(mapValues.zoomToFeatures.minScale);
                     }

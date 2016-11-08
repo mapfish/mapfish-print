@@ -1,58 +1,179 @@
 package org.mapfish.print.map;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.GeodeticCalculator;
+import org.mapfish.print.attribute.map.GenericMapAttribute;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 
 /**
- * Represent a scale denominator.  For example 1:10'000m which means 1 meter on the paper represent 10'000m on the ground.
+ * Represent a scale and provide transformation.
  */
 public final class Scale {
-    private final double denominator;
+    private final double resolution;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Scale.class);
 
     /**
      * Constructor.
      *
-     * @param denominator the scale denominator.  a value of 1'000 would be a scale of 1:1'000
+     * @param denominator the scale denominator.  a value of 1'000 would be a scale of 1:1'000.
+     * @param projection the projection.
+     * @param dpi the DPI on witch the scale is valid.
      */
-    public Scale(final double denominator) {
-        this.denominator = denominator;
-    }
-
-    public double getDenominator() {
-        return this.denominator;
+    public Scale(final double denominator, @Nonnull final CoordinateReferenceSystem projection, final double dpi) {
+        this(denominator, DistanceUnit.fromProjection(projection), dpi);
     }
 
     /**
-     * Calculate the resolution for this scale.
+     * Constructor.
      *
-     * @param projection the projection to perform the calculation in
-     * @param dpi the dpi of the display device.
+     * @param denominator the scale denominator.  a value of 1'000 would be a scale of 1:1'000.
+     * @param projectionUnit the unit used by the projection.
+     * @param dpi the DPI on witch the scale is valid.
      */
-    public double toResolution(@Nonnull final CoordinateReferenceSystem projection, final double dpi) {
-        double normScale = normalizeScale(this.denominator);
-        final double distancePerInch = DistanceUnit.fromProjection(projection).convertTo(normScale, DistanceUnit.IN);
-        return 1.0 / (distancePerInch * dpi);
+    public Scale(final double denominator, @Nonnull final DistanceUnit projectionUnit, final double dpi) {
+        this(1.0 / (projectionUnit.convertTo(1.0 / denominator, DistanceUnit.IN) * dpi));
     }
 
-    private double normalizeScale(final double scale) {
-        if (scale > 1.0) {
-            return (1.0 / scale);
-        } else {
-            return scale;
+    /**
+     * Constructor.
+     *
+     * @param resolution the resolution.
+     */
+    private Scale(final double resolution) {
+        this.resolution = resolution;
+    }
+
+    /**
+     * Get the resolution.
+     * @return the resolution
+     */
+    public double getResolution() {
+        return this.resolution;
+    }
+
+    /**
+     * @param geodetic geodetic mode.
+     * @param projection the projection to perform the calculation in.
+     * @param dpi the dpi of the display device.
+     * @param position the position on the map.
+     * @return the scale denominator
+     */
+    public double getDenominator(
+            final boolean geodetic, @Nonnull final CoordinateReferenceSystem projection,
+            final double dpi, final Coordinate position) {
+        return geodetic ?
+                getGeodeticDenominator(projection, dpi, position) :
+                getDenominator(projection, dpi);
+    }
+
+    /**
+     * @param projection the projection to perform the calculation in
+     * @param dpi the dpi of the display device.
+     * @return the scale denominator
+     */
+    public double getDenominator(@Nonnull final CoordinateReferenceSystem projection, final double dpi) {
+        return getDenominator(DistanceUnit.fromProjection(projection), dpi);
+    }
+
+    /**
+     * @param projectionUnit the projection unit
+     * @param dpi the dpi of the display device.
+     * @return the scale denominator
+     */
+    public double getDenominator(@Nonnull final DistanceUnit projectionUnit, final double dpi) {
+        final double resolutionInInches = projectionUnit.convertTo(this.resolution, DistanceUnit.IN);
+        return resolutionInInches * dpi;
+    }
+
+    /**
+     * @param projection the projection to perform the calculation in
+     * @param dpi the dpi of the display device.
+     * @param position the position on the map.
+     * @return the scale denominator
+     */
+    public double getGeodeticDenominator(@Nonnull final CoordinateReferenceSystem projection, final double dpi, final Coordinate position) {
+        final DistanceUnit projectionUnit = DistanceUnit.fromProjection(projection);
+        double scaleDenominator = getDenominator(projectionUnit, dpi);
+
+        if (projectionUnit == DistanceUnit.DEGREES) {
+            return scaleDenominator;
         }
+
+        try {
+            double width = 1;
+            double geoWidthInches = scaleDenominator * width / dpi;
+            double geoWidth = DistanceUnit.IN.convertTo(geoWidthInches, projectionUnit);
+            double minGeoX = position.y - (geoWidth / 2.0);
+            double maxGeoX = minGeoX + geoWidth;
+
+            final GeodeticCalculator calculator = new GeodeticCalculator(projection);
+            final double centerY = position.y;
+
+            final MathTransform transform = CRS.findMathTransform(projection,
+                    GenericMapAttribute.parseProjection("EPSG:4326", true));
+            final Coordinate start = JTS.transform(new Coordinate(minGeoX, centerY), null, transform);
+            final Coordinate end = JTS.transform(new Coordinate(maxGeoX, centerY), null, transform);
+            calculator.setStartingGeographicPoint(start.x, start.y);
+            calculator.setDestinationGeographicPoint(end.x, end.y);
+            final double geoWidthInEllipsoidUnits = calculator.getOrthodromicDistance();
+            final DistanceUnit ellipsoidUnit = DistanceUnit.fromString(calculator.getEllipsoid().getAxisUnit().toString());
+
+            final double geoWidthInInches = ellipsoidUnit.convertTo(geoWidthInEllipsoidUnits, DistanceUnit.IN);
+            return geoWidthInInches * (dpi / width);
+        } catch (FactoryException e) {
+            LOGGER.error("Unable to do the geodetic calculation on the scale", e);
+        } catch (TransformException e) {
+            LOGGER.error("Unable to do the geodetic calculation on the scale", e);
+        }
+
+        // fall back
+        return getDenominator(projectionUnit, dpi);
+    }
+
+    /**
+     * @param geodetic Do in geodetic.
+     * @param scaleDenominator the scale denominator.
+     * @param projection the projection to perform the calculation in.
+     * @param dpi the dpi of the display device.
+     * @param position the position on the map.
+     * @return the scale denominator.
+     */
+    public static double getDenominator(
+            final boolean geodetic,
+            final double scaleDenominator, @Nonnull final CoordinateReferenceSystem projection,
+            final double dpi, final Coordinate position) {
+        return geodetic ? getGeodeticDenominator(scaleDenominator, projection, dpi, position) : scaleDenominator;
+    }
+
+    /**
+     * @param scaleDenominator the scale denominator.
+     * @param projection the projection to perform the calculation in.
+     * @param dpi the dpi of the display device.
+     * @param position the position on the map.
+     * @return the scale denominator.
+     */
+    public static double getGeodeticDenominator(
+            final double scaleDenominator, @Nonnull final CoordinateReferenceSystem projection,
+            final double dpi, final Coordinate position) {
+        return new Scale(scaleDenominator, DistanceUnit.fromProjection(projection), dpi).getGeodeticDenominator(projection, dpi, position);
     }
 
     /**
      * Construct a scale object from a resolution.
      *
      * @param resolution the resolution of the map
-     * @param projection the projection of the map
-     * @param dpi the dpi of the display device.
      */
-    public static Scale fromResolution(final double resolution, @Nonnull final CoordinateReferenceSystem projection, final double dpi) {
-        final double resolutionInInches = DistanceUnit.fromProjection(projection).convertTo(resolution, DistanceUnit.IN);
-        return new Scale(resolutionInInches * dpi);
+    public static Scale fromResolution(final double resolution) {
+        return new Scale(resolution);
     }
 
     // CHECKSTYLE:OFF
@@ -68,7 +189,7 @@ public final class Scale {
 
         Scale scale = (Scale) o;
 
-        if (Double.compare(scale.denominator, denominator) != 0) {
+        if (Double.compare(scale.resolution, resolution) != 0) {
             return false;
         }
 
@@ -79,15 +200,14 @@ public final class Scale {
     public int hashCode() {
         int result;
         long temp;
-        temp = Double.doubleToLongBits(denominator);
+        temp = Double.doubleToLongBits(resolution);
         result = (int) (temp ^ (temp >>> 32));
         return result;
     }
 
     @Override
     public String toString() {
-        return "Scale{" + denominator + '}';
+        return "Scale{resolution=" + resolution + '}';
     }
     // CHECKSTYLE:ON
-
 }

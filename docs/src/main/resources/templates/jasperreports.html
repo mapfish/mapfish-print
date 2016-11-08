@@ -528,7 +528,7 @@ In order to add a numeric scale you have to create a text field with the
 following expression:
 </p>
 <div class="highlight"><pre>
-   String.format("Massstab 1: %.0f", $P{mapContext}.getRoundedScale())
+   String.format("Massstab 1: %.0f", $P{mapContext}.getRoundedScaleDenominator())
 </pre></div>
 <p>
 Finally add the missing mapContext parameter with the following properties:
@@ -554,7 +554,7 @@ such modification for fixing this type of error:
 &lt;parameter name="mapSubReport" class="java.lang.String"
 isForPrompting="false"/&gt;
     ...
-    &lt;textFieldExpression&gt;&lt;![CDATA[String.format("Massstab 1: %.0f", $P{mapContext}.getRoundedScale())]]&gt;&lt;/textFieldExpression&gt;
+    &lt;textFieldExpression&gt;&lt;![CDATA[String.format("Massstab 1: %.0f", $P{mapContext}.getRoundedScaleDenominator())]]&gt;&lt;/textFieldExpression&gt;
     ...
 ==>
     ...

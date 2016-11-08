@@ -7,7 +7,6 @@ import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues;
 import org.mapfish.print.attribute.map.ZoomToFeatures.ZoomType;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.map.Scale;
 import org.mapfish.print.parser.CanSatisfyOneOf;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.OneOf;
@@ -158,9 +157,8 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
             if (this.center != null) {
                 double centerX = this.center[0];
                 double centerY = this.center[1];
-                Scale scaleObject = new Scale(this.scale);
 
-                bounds = new CenterScaleMapBounds(crs, centerX, centerY, scaleObject);
+                bounds = new CenterScaleMapBounds(crs, centerX, centerY, this.scale);
             } else if (this.bbox != null) {
                 final int maxYIndex = 3;
                 double minX = this.bbox[0];

@@ -142,10 +142,10 @@ public final class MapfishMapContext {
     }
 
     public Scale getScale() {
-        return this.bounds.getScaleDenominator(getPaintArea(), this.dpi);
+        return new Scale(this.bounds.getScaleDenominator(getPaintArea(), this.dpi), getBounds().getProjection(), getRequestorDPI());
     }
-    public Scale getGeodeticScale() {
-        return this.bounds.getGeodeticScaleDenominator(getPaintArea(), this.dpi);
+    public double getGeodeticScaleDenominator() {
+        return getScale().getGeodeticDenominator(this.bounds.getProjection(), this.dpi, getBounds().getCenter());
     }
 
     /**
@@ -153,11 +153,11 @@ public final class MapfishMapContext {
      * <p>
      *     One of the output parameters of the {@link org.mapfish.print.processor.map.CreateMapProcessor} is 'mapContext' which can
      *     be accessed in a template.  If the scale is required in the template then it can be accessed via:
-     *     <code>$P{mapContext}.getRoundedScale()</code>
+     *     <code>$P{mapContext}.getRoundedScaleDenominator()</code>
      * </p>
      */
-    public double getRoundedScale() {
-        return getRoundedScale(false);
+    public double getRoundedScaleDenominator() {
+        return getRoundedScaleDenominator(false);
     }
 
     /**
@@ -165,30 +165,26 @@ public final class MapfishMapContext {
      * <p>
      *     One of the output parameters of the {@link org.mapfish.print.processor.map.CreateMapProcessor} is 'mapContext' which can
      *     be accessed in a template.  If the scale is required in the template then it can be accessed via:
-     *     <code>$P{mapContext}.getRoundedScale()</code>
+     *     <code>$P{mapContext}.getRoundedScaleDenominator()</code>
      * </p>
      *
      * @param geodetic Get geodetic scale
      */
-    public double getRoundedScale(final boolean geodetic) {
-        double scale;
-        if (geodetic) {
-            scale = this.bounds.getGeodeticScaleDenominator(getPaintArea(), this.dpi).getDenominator();
-        } else {
-            scale = this.bounds.getScaleDenominator(getPaintArea(), this.dpi).getDenominator();
-        }
+    public double getRoundedScaleDenominator(final boolean geodetic) {
+        final double scaleDenominator = new Scale(
+                this.bounds.getScaleDenominator(getPaintArea(), this.dpi), getBounds().getProjection(), this.dpi
+        ).getDenominator(geodetic, getBounds().getProjection(), this.dpi, getBounds().getCenter());
 
-        final int numChars = String.format("%d", Math.round(scale)).length();
+        final int numChars = String.format("%d", Math.round(scaleDenominator)).length();
         if (numChars > 2) {
             // CSOFF: MagicNumber
             double factor = Math.pow(10, (numChars - 2));
             // CSON: MagicNumber
-            scale = Math.round(scale / factor) * factor;
-        } else if (scale > 1) {
-            scale = Math.round(scale);
+            return Math.round(scaleDenominator / factor) * factor;
+        } else if (scaleDenominator > 1) {
+            return Math.round(scaleDenominator);
         }
-
-        return scale;
+        return scaleDenominator;
     }
 
     /**
