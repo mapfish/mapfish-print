@@ -46,7 +46,7 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         final MockHttpServletRequest infoRequest = new MockHttpServletRequest();
         infoRequest.setContextPath("/print-old");
         final MockHttpServletResponse infoResponse = new MockHttpServletResponse();
-        this.servlet.getInfo(null, null, infoRequest, infoResponse);
+        this.servlet.getInfo(null, null,null, infoRequest, infoResponse);
         assertEquals(HttpStatus.OK.value(), infoResponse.getStatus());
         
         final String result = infoResponse.getContentAsString();
@@ -87,7 +87,7 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         final MockHttpServletRequest infoRequest = new MockHttpServletRequest();
         infoRequest.setContextPath("/print-old");
         final MockHttpServletResponse infoResponse = new MockHttpServletResponse();
-        this.servlet.getInfo(null, null, infoRequest, infoResponse);
+        this.servlet.getInfo(null, null,null, infoRequest, infoResponse);
         assertEquals(HttpStatus.OK.value(), infoResponse.getStatus());
         
         final String result = infoResponse.getContentAsString();
@@ -110,7 +110,7 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         final MockHttpServletRequest infoRequest = new MockHttpServletRequest();
         infoRequest.setContextPath("/print-old");
         final MockHttpServletResponse infoResponse = new MockHttpServletResponse();
-        this.servlet.getInfo(null, null, infoRequest, infoResponse);
+        this.servlet.getInfo(null, null,null, infoRequest, infoResponse);
         assertEquals(HttpStatus.OK.value(), infoResponse.getStatus());
 
         final String result = infoResponse.getContentAsString();
@@ -128,7 +128,7 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         final MockHttpServletRequest infoRequest = new MockHttpServletRequest();
         infoRequest.setContextPath("/print-old");
         final MockHttpServletResponse infoResponse = new MockHttpServletResponse();
-        this.servlet.getInfo("http://demo.mapfish.org/2.2/print/dep/info.json", "printConfig",
+        this.servlet.getInfo("http://demo.mapfish.org/2.2/print/dep/info.json", "printConfig",null,
                 infoRequest, infoResponse);
         assertEquals(HttpStatus.OK.value(), infoResponse.getStatus());
         
@@ -157,7 +157,7 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         final MockHttpServletRequest infoRequest = new MockHttpServletRequest();
         infoRequest.setContextPath("/print-old");
         final MockHttpServletResponse infoResponse = new MockHttpServletResponse();
-        this.servlet.getInfo(null, null, infoRequest, infoResponse);
+        this.servlet.getInfo(null, null,null, infoRequest, infoResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), infoResponse.getStatus());
         assertTrue(infoResponse.getContentAsString().contains("Error while processing request"));
     }
@@ -290,7 +290,7 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         final MockHttpServletRequest infoRequest = new MockHttpServletRequest();
         infoRequest.setContextPath("/print-old");
         final MockHttpServletResponse infoResponse = new MockHttpServletResponse();
-        this.servlet.getInfo("http://ref.geoview.bl.ch/print/wsgi/printproxy", null, infoRequest, infoResponse);
+        this.servlet.getInfo("http://ref.geoview.bl.ch/print/wsgi/printproxy", null,null, infoRequest, infoResponse);
         assertEquals(HttpStatus.OK.value(), infoResponse.getStatus());
 
         final String result = infoResponse.getContentAsString();
