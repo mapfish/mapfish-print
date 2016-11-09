@@ -1,0 +1,30 @@
+{
+    "attributes": {"map": {
+        "bbox": [
+            4150836.3839982115,
+            7600898.092677928,
+            4588667.682015701,
+            8257645.039704161
+        ],
+        "dpi": 300,
+        "layers": [
+            {
+                "baseURL": "http://pkk5.rosreestr.ru/arcgis/rest/directories/out_site_1/Cadastre/Cadastre_MapServer/_ags_map33ada24b8384452dbcdc72fb6cd1d34e.png",
+                "extent": [
+                    4392836.015549079,
+                    7861166.1739889495,
+                    4481502.968359884,
+                    7924914.6555787865
+                ],
+                "name": "image",
+                "opacity": 1,
+                "type": "image"
+            }          
+        ],
+        "longitudeFirst": true,
+        "projection": "EPSG:3857",
+        "rotation": 0,
+        "scale": 100000000
+    }},
+    "layout": "A4"
+}
