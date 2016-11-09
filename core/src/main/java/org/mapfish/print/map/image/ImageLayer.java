@@ -4,6 +4,7 @@ import com.codahale.metrics.MetricRegistry;
 
 import com.google.common.collect.Maps;
 import com.google.common.io.Closer;
+import com.vividsolutions.jts.util.Assert;
 
 import jsr166y.ForkJoinPool;
 
@@ -25,7 +26,6 @@ import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.map.geotools.AbstractGridCoverageLayerPlugin;
 import org.mapfish.print.map.geotools.StyleSupplier;
-import org.mapfish.print.map.style.StyleParser;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +39,8 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -87,8 +89,6 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         @Autowired
         private ForkJoinPool forkJoinPool;
         @Autowired
-        private StyleParser styleParser;
-        @Autowired
         private MetricRegistry metricRegistry;
 
         @Override
@@ -118,6 +118,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
      */
     public static final class ImageParam extends AbstractLayerParams {
          
+         private static final int NUMBER_OF_EXTENT_COORDS = 4;
          /**
          * The base URL for the image file.  Used for making request.
          */
@@ -134,6 +135,15 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         @HasDefaultValue
         public String style = Constants.Style.Raster.NAME;
 
+        
+        /**
+         * Validate the properties have the correct values.
+         * @throws URISyntaxException
+         */
+        public void postConstruct() throws URISyntaxException {
+            Assert.equals(NUMBER_OF_EXTENT_COORDS, this.extent.length, "maxExtent must have exactly 4 elements to the array.  Was: " +
+                                                                          Arrays.toString(this.extent));
+        }
 
         public String getBaseUrl() {
             return this.baseURL;
