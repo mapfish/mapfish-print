@@ -9,7 +9,7 @@
         "dpi": 300,
         "layers": [
             {
-                "baseURL": "http://pkk5.rosreestr.ru/arcgis/rest/directories/out_site_1/Cadastre/Cadastre_MapServer/_ags_map33ada24b8384452dbcdc72fb6cd1d34e.png",
+                "baseURL": "http://localhost:8080/images/test_image.png",
                 "extent": [
                     4392836.015549079,
                     7861166.1739889495,
