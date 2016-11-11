@@ -11,8 +11,6 @@ import static org.mapfish.print.Constants.Style.Raster.NAME;
 
 /**
  * Abstract class for {@link org.mapfish.print.map.MapLayerFactoryPlugin} that created layers based on grid coverages.
- *
- * @author Jesse on 6/25/2014.
  */
 public abstract class AbstractGridCoverageLayerPlugin {
     @Autowired

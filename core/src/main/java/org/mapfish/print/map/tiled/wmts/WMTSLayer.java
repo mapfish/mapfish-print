@@ -30,8 +30,6 @@ import static org.mapfish.print.Constants.OGC_DPI;
 
 /**
  * Class for loading data from a WMTS.
- *
- * @author Jesse on 4/3/14.
  */
 public class WMTSLayer extends AbstractTiledLayer {
     private static final Logger LOGGER = LoggerFactory.getLogger(WMTSLayer.class);

@@ -34,8 +34,6 @@ import static org.mapfish.print.servlet.MapPrinterServlet.JSON_REQUEST_HEADERS;
 
 /**
  * Values that go into a processor from previous processors in the processor processing graph.
- *
- * @author Jesse
  */
 public final class Values {
     /**

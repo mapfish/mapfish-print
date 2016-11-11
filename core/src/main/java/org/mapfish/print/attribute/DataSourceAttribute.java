@@ -72,8 +72,6 @@ import javax.annotation.Nullable;
  * ]
  * </code></pre>
  * [[examples=verboseExample,datasource_dynamic_tables,datasource_many_dynamictables_legend,datasource_multiple_maps,customDynamicReport]]
- *
- * @author Jesse on 9/5/2014.
  */
 public final class DataSourceAttribute implements Attribute {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSourceAttribute.class);

@@ -11,7 +11,6 @@ import java.util.Date;
 
 /**
  * Represent a print job that has completed.  Contains the information about the print job.
- * @author jesseeichar on 3/18/14.
  */
 public abstract class PrintJobStatus {
     /**

@@ -11,8 +11,6 @@ import javax.annotation.PostConstruct;
 
 /**
  * Utility class for adding metrics instrumentation to logging framework.
- *
- * @author jesseeichar on 3/22/14.
  */
 public class LoggingMetricsConfigurator {
     @Autowired

@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
  * Called when a report is loaded to be sent to the user.
  *
  * @param <R> The return value
- * @author Jesse on 4/26/2014.
  */
 public interface HandleReportLoadResult<R> {
 

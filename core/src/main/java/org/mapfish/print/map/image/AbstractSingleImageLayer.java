@@ -23,8 +23,6 @@ import java.util.concurrent.ExecutorService;
 
 /**
  * Common implementation for layers that are represented as a single grid coverage image.
- *
- * @author Jesse on 4/10/2014.
  */
 public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
 

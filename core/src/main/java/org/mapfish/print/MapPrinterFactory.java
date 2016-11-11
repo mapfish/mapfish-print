@@ -6,7 +6,6 @@ import java.util.Set;
 
 /**
  * Interface for a class that creates MapPrinters.
- * @author jesseeichar on 3/18/14.
  */
 public interface MapPrinterFactory {
     /**

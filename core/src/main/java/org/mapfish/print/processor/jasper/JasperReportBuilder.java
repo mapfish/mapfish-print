@@ -30,9 +30,6 @@ import javax.annotation.Nullable;
  *         - !reportBuilder # compile all reports in current directory
  *               directory: '.'</code></pre>
  * [[examples=verboseExample]]
- *
- * @author Jesse
- * @author sbrunner
  */
 public final class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.Input, Void> implements HasConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);

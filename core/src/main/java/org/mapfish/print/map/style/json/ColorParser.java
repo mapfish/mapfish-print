@@ -30,7 +30,6 @@ import java.util.regex.Pattern;
  *     <li>0f-1f</li>
  *     <li>0.0f-1.0f</li>
  * </ul>
- * @author Jesse on 7/25/2014.
  */
 public final class ColorParser {
     private static final float MAX_INT_COLOR = 255f;

@@ -11,7 +11,6 @@ import javax.swing.JLabel;
 /**
  * Configuration object for the grid labels.
  *
- * @author Jesse on 8/6/2015.
  *         CSOFF: VisibilityModifier
  */
 public final class GridFontParam {

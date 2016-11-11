@@ -12,8 +12,6 @@ import java.util.Map;
 
 /**
  * Class for logging the values in a {@link org.mapfish.print.output.Values} object.
- *
- * @author Jesse on 2/26/2015.
  */
 public final class ValuesLogger {
     private static final Logger LOGGER = LoggerFactory.getLogger(ValuesLogger.class);

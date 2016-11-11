@@ -25,8 +25,6 @@ import javax.annotation.Nonnull;
 
 /**
  * The class responsible for accessing resources and streams when generating jasper reports.
- *
- * @author Jesse on 8/28/2014.
  */
 class MapfishPrintRepositoryService implements StreamRepositoryService {
 

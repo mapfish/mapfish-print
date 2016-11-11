@@ -45,8 +45,9 @@ import java.util.concurrent.Future;
 
 import javax.imageio.ImageIO;
 
+
 /**
- * @author Jesse on 4/3/14.
+ * The TileLoaderTask class.
  */
 public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
     private static final Logger LOGGER = LoggerFactory.getLogger(TileLoaderTask.class);

@@ -19,7 +19,6 @@ import java.util.concurrent.ExecutorService;
  * Abstract class for FeatureSource based {@link org.mapfish.print.map.MapLayerFactoryPlugin} objects.
  *
  * @param <P> the type of parameter
- * @author Jesse on 4/9/2014.
  *
  * CSOFF:VisibilityModifier
  */

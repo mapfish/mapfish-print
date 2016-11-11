@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 /**
- * @author Jesse on 3/26/14.
+ * The AbstractGridCoverage2DReaderLayer class.
  */
 public class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
 

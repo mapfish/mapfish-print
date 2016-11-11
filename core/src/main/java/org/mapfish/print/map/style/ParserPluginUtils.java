@@ -18,8 +18,6 @@ import java.net.URISyntaxException;
 
 /**
  * Utilities for creating parser plugins.
- *
- * @author Jesse on 7/30/2014.
  */
 public final class ParserPluginUtils {
 

@@ -3,7 +3,6 @@ package org.mapfish.print.output;
 /**
  * An exception that is thrown if an unexpected error occurs while parsing attributes into the Values object.
  *
- * @author Jesse on 9/25/2015.
  * @see Values#populateFromAttributes(org.mapfish.print.config.Template, org.mapfish.print.parser.MapfishParser, java.util.Map,
  * org.mapfish.print.wrapper.PObject)
  */

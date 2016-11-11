@@ -19,8 +19,6 @@ import java.util.List;
 /**
  * An abstract class to support implementing layers that consist of Raster tiles which are combined to compose a single raster
  * to be drawn on the map.
- *
- * @author Jesse on 4/3/14.
  */
 public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
 

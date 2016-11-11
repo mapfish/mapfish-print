@@ -9,8 +9,6 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Processor that needs the configuration object injected.
- *
- * @author jesseeichar on 3/25/14.
  */
 public class ProcessorWithConfigurationInjection extends AbstractProcessor<Object, Void> implements HasConfiguration {
 

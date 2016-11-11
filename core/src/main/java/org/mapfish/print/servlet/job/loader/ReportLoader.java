@@ -6,8 +6,6 @@ import java.net.URI;
 
 /**
  * Load a generated report from a supported URI.
- *
- * @author jesseeichar on 3/18/14.
  */
 public interface ReportLoader {
 

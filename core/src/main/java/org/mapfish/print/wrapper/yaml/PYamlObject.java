@@ -17,8 +17,6 @@ import java.util.Map;
 
 /**
  * Object wrapper for Yaml parsing.
- *
- * @author Stéphane Brunner on 11/04/14.
  */
 public class PYamlObject extends PAbstractObject {
     private final Map<String, Object> obj;

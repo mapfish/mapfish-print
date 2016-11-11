@@ -11,7 +11,6 @@ import java.net.URI;
 /**
  * A PrintJob implementation that write results to files.
  * <p></p>
- * @author jesseeichar on 3/18/14.
  */
 public class FilePrintJob extends PrintJob {
 

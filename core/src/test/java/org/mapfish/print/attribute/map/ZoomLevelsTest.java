@@ -5,9 +5,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-/**
- * @author Jesse on 4/1/14.
- */
 public class ZoomLevelsTest {
 
     @Test

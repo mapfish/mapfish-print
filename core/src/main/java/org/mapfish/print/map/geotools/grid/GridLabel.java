@@ -2,8 +2,6 @@ package org.mapfish.print.map.geotools.grid;
 
 /**
  * Represents text, position and rotation of a label.
- *
- * @author Jesse on 8/6/2015.
  */
 class GridLabel {
     // CSOFF: VisibilityModifier

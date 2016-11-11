@@ -4,8 +4,6 @@ import java.awt.Font;
 
 /**
  * Enumeration of all the allowed font styles.
- *
- * @author Jesse on 8/6/2015.
  */
 public enum FontStyle {
     /**

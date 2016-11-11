@@ -2,8 +2,6 @@ package org.mapfish.print.servlet;
 
 /**
  * Provides information about the current servlet.
- *
- * @author Jesse on 4/26/2014.
  */
 public interface ServletInfo {
     /**

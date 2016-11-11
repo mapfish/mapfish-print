@@ -4,8 +4,6 @@ import org.mapfish.print.map.Scale;
 
 /**
  * Enumerates the different strategies for finding the closest zoom-level/scale.
- *
- * @author Jesse on 3/31/14.
  */
 public enum ZoomLevelSnapStrategy {
     /**

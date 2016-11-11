@@ -13,7 +13,6 @@ import java.util.List;
 /**
  * <p>Processor to set a param on WMS layers.
  * </p>
- * @author Stéphane Brunner
  */
 public class SetWmsCustomParamProcessor extends AbstractProcessor<SetWmsCustomParamProcessor.Input, Void> {
 

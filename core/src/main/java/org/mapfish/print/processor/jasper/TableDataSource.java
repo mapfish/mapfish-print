@@ -1,7 +1,3 @@
-/**
- * @author Stéphane Brunner
- */
-
 package org.mapfish.print.processor.jasper;
 
 import org.mapfish.print.wrapper.json.PJsonArray;
@@ -11,9 +7,6 @@ import javax.swing.table.AbstractTableModel;
 
 /**
  * Processor that has data for a table in a jasper report.
- *
- * @author Jesse
- * @author sbrunner
  */
 public class TableDataSource extends AbstractTableModel {
 

@@ -54,8 +54,6 @@ import javax.annotation.PostConstruct;
 /**
  * The Main Configuration Bean.
  * <p></p>
- *
- * @author jesseeichar on 2/20/14.
  */
 public class Configuration {
     private static final Map<String, String> GEOMETRY_NAME_ALIASES;

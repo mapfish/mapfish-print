@@ -31,7 +31,7 @@ import java.util.concurrent.ExecutorService;
 import static org.mapfish.print.Constants.OPACITY_PRECISION;
 
 /**
- * @author Jesse on 3/26/14.
+ * The AbstractGeotoolsLayer class.
  */
 public abstract class AbstractGeotoolsLayer implements MapLayer {
 

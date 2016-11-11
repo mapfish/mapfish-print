@@ -3,8 +3,6 @@ import java.lang.reflect.Method
 
 /**
  * Strategy for parsing out the field, class and method descriptions from Javadoc 7 compatible javadocs.
- *
- * @author Jesse on 7/13/2014.
  */
 class Javadoc7Parser {
     File javadocDir;

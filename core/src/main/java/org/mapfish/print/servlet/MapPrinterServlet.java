@@ -65,7 +65,6 @@ import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGU
 /**
  * The default servlet.
  *
- * @author Jesse
  *         CSOFF: RedundantThrowsCheck
  */
 @Controller

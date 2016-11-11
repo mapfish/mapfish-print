@@ -11,8 +11,6 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Test Processor.
- *
- * @author jesseeichar on 3/25/14.
  */
 public class ProcessorWithSpringInjection extends AbstractProcessor<Object, Void> {
 

@@ -26,8 +26,6 @@ import java.util.regex.Pattern;
 /**
  * Class that loads the normal spring application context from the spring config file.
  * Subclasses can use Autowired to get dependencies from the application context.
- *
- * @author jesseeichar on 3/25/14.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {

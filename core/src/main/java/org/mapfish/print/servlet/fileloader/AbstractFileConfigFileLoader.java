@@ -15,8 +15,6 @@ import java.util.NoSuchElementException;
 
 /**
  * Abstract implementation for files that are on the local file system.
- *
- * @author Jesse on 4/28/2014.
  */
 public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPlugin {
     @Autowired

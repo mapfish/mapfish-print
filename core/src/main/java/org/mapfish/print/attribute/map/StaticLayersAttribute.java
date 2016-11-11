@@ -14,8 +14,6 @@ import java.util.List;
  * attribute to the layers in the map.  The typical use is to add the background or overlay layers as the "default"
  * in the config.yaml file if the client desires it can override those values.</p>
  * [[examples=add_overlay_layer]]
- *
- * @author Jesse on 4/18/2015.
  */
 public final class StaticLayersAttribute extends ReflectiveAttribute<StaticLayersAttribute.StaticLayersAttributeValue> {
 

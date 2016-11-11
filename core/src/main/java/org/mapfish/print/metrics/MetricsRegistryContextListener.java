@@ -10,8 +10,6 @@ import javax.servlet.ServletContextEvent;
 import static org.springframework.web.context.support.WebApplicationContextUtils.getWebApplicationContext;
 /**
  * Allows the AdminServlet to get access to the MetricRegistry so it can display the statistics via the admin servlet.
- *
- * @author jesseeichar on 3/21/2014.
  */
 public class MetricsRegistryContextListener extends MetricsServlet.ContextListener {
     private ServletContext servletContext;

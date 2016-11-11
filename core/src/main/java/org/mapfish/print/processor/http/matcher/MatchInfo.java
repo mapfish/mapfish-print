@@ -9,8 +9,6 @@ import java.net.URI;
 
 /**
  * Information required for performing a request match.
- *
- * @author Jesse on 9/5/2014.
  */
 public final class MatchInfo {
     /**

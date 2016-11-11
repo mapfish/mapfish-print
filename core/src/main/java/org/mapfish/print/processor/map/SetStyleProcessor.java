@@ -16,7 +16,6 @@ import java.util.List;
 /**
  * <p>Processor to set a style on vector layers from the attributes.
  * </p>
- * @author Stéphane Brunner
  */
 public class SetStyleProcessor extends
         AbstractProcessor<SetStyleProcessor.Input, Void> {

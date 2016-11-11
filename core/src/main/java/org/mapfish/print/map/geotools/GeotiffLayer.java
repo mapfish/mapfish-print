@@ -30,8 +30,6 @@ import javax.annotation.Nullable;
 
 /**
  * <p>Reads a GeoTIFF file from an URL.</p>
- *
- * @author Jesse on 3/26/14.
  */
 public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
 

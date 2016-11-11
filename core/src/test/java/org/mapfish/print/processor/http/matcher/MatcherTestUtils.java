@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Support methods for the tests
- * @author Jesse on 9/5/2014.
  */
 public class MatcherTestUtils {
     static void assertMatch(final URIMatcher matcher, boolean expected, final URI uri, final HttpMethod method)

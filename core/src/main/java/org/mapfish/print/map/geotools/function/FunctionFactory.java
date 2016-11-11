@@ -14,8 +14,6 @@ import javax.annotation.Nullable;
 
 /**
  * A factory for building all the mapfish print functions.
- *
- * @author Jesse on 11/7/2014.
  */
 public final class FunctionFactory implements org.geotools.filter.FunctionFactory {
     private List<? extends FunctionExpressionImpl> functions = Lists.newArrayList(

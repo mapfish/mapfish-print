@@ -32,8 +32,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 /**
  * Basic implementation for loading and parsing an SLD style.
- *
- * @author Jesse on 4/8/2014.
  */
 public class SLDParserPlugin implements StyleParserPlugin {
     /**

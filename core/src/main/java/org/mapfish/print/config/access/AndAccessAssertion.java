@@ -13,8 +13,6 @@ import javax.annotation.Nonnull;
 
 /**
  * An access assertion that throws fails if any of the encapsulated assertions fail.
- *
- * @author Jesse on 10/7/2014.
  */
 public final class AndAccessAssertion implements AccessAssertion {
     private static final String JSON_ARRAY = "data";

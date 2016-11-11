@@ -13,8 +13,6 @@ import java.util.Arrays;
 
 /**
  * Layer parameters for WMS layer.
- *
- * @author Jesse on 4/10/2014.
  */
 public class WmsLayerParam extends AbstractWMXLayerParams {
     private static final Logger LOGGER = LoggerFactory.getLogger(WmsLayerParam.class);

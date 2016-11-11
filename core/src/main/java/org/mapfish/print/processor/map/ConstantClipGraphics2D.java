@@ -28,8 +28,6 @@ import java.util.Map;
 /**
  * A graphics 2d implementation that delegates all calls to the wrapped graphics2d
  * except for the methods related to setting the clip.  These calls are ignored.
- *
- * @author Jesse on 8/26/2014.
  */
 // CHECKSTYLE:OFF
 final class ConstantClipGraphics2D extends Graphics2D {

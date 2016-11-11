@@ -29,8 +29,6 @@ import static org.mapfish.print.map.geotools.grid.GridLabel.Side.TOP;
 
 /**
  * A set of methods shared between the different Grid strategies.
- *
- * @author Jesse on 7/10/2015.
  */
 final class GridUtils {
     private GridUtils() {

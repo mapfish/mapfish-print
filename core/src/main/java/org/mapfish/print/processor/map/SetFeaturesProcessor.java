@@ -14,7 +14,6 @@ import java.util.List;
 /**
  * <p>Processor to set features on vector layers.
  * </p>
- * @author Stéphane Brunner
  */
 public class SetFeaturesProcessor extends
         AbstractProcessor<SetFeaturesProcessor.Input, Void> {

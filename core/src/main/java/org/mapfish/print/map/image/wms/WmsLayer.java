@@ -28,8 +28,6 @@ import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
 
 /**
  * Wms layer.
- *
- * @author Jesse on 4/10/2014.
  */
 public final class WmsLayer extends AbstractSingleImageLayer {
     private static final Logger LOGGER = LoggerFactory.getLogger(WmsLayer.class);

@@ -16,8 +16,6 @@ import javax.annotation.Nullable;
 
 /**
  * Utility method for getting and setting parameters on Processor Input and Output objects.
- *
- * @author Jesse on 3/30/14.
  */
 public final class ParserUtils {
     /**

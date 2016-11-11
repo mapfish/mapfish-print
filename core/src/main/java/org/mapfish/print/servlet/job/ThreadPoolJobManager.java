@@ -40,8 +40,6 @@ import javax.annotation.PreDestroy;
 
 /**
  * A JobManager backed by a {@link java.util.concurrent.ThreadPoolExecutor}.
- *
- * @author jesseeichar on 3/18/14.
  */
 public class ThreadPoolJobManager implements JobManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(ThreadPoolJobManager.class);

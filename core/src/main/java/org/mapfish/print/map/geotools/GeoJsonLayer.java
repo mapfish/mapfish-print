@@ -16,8 +16,6 @@ import javax.annotation.Nonnull;
 /**
  * <p>Parses GeoJSON from the request data.</p>
  * <p>Type: <code>geojson</code></p>
- *
- * @author Jesse on 3/26/14.
  */
 public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
 

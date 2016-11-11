@@ -11,8 +11,6 @@ import javax.annotation.PostConstruct;
 
 /**
  * A bean that will add several gauges and metric sets for tracking the JVM stats.
- *
- * @author Jesse on 5/9/2014.
  */
 public final class JvmMetricsConfigurator {
 

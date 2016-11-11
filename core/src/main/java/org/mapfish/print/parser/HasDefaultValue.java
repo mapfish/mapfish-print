@@ -8,8 +8,6 @@ import java.lang.annotation.Target;
  * will be thrown when populating the method in
  * {@link org.mapfish.print.processor.ProcessorUtils#populateInputParameter(org.mapfish.print.processor.Processor,
  * org.mapfish.print.output.Values)}
- *
- * @author Jesse on 3/29/14.
  */
 @Target(value = ElementType.FIELD)
 @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)

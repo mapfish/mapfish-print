@@ -7,8 +7,8 @@ import org.mapfish.print.ExceptionUtils;
 import org.opengis.referencing.cs.AxisDirection;
 
 /**
- * @author Jesse on 7/3/2014.
- *         CSOFF: HiddenField
+ * The LinearCoordinateSequence class.
+ * CSOFF: HiddenField
  */
 public final class LinearCoordinateSequence implements CoordinateSequence {
     private int dimension;

@@ -18,8 +18,6 @@ import java.util.NoSuchElementException;
 /**
  * A plugin that loads the config resources from urls starting with prefix:
  * {@value org.mapfish.print.servlet.fileloader.ClasspathConfigFileLoader#PREFIX}://.
- *
- * @author Jesse on 4/28/2014.
  */
 public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathConfigFileLoader.class);

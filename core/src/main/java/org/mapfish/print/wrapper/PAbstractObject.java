@@ -3,8 +3,6 @@ package org.mapfish.print.wrapper;
 
 /**
  * Abstract class for PObject implementation.
- *
- * @author Stéphane Brunner on 11/04/14.
  */
 public abstract class PAbstractObject extends PElement implements PObject {
 

@@ -24,8 +24,6 @@ import static org.junit.Assert.fail;
 
 /**
  * Allows tests to provide canned responses to requests.
- *
- * @author Jesse on 4/4/14.
  */
 public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl implements MfClientHttpRequestFactory {
 

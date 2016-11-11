@@ -60,8 +60,6 @@ import static org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttribut
  * 
  * <p>See also: <a href="attributes.html#!datasource">!datasource</a> attribute</p>
  * [[examples=verboseExample,datasource_dynamic_tables,datasource_many_dynamictables_legend,datasource_multiple_maps,customDynamicReport]]
- *
- * @author Jesse on 8/26/2014.
  */
 public final class DataSourceProcessor extends AbstractProcessor<DataSourceProcessor.Input, DataSourceProcessor.Output> {
 

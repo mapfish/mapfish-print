@@ -5,8 +5,6 @@ import org.mapfish.print.parser.HasDefaultValue;
 
 /**
  * Common parameters for geotools vector layers.
- *
- * @author Jesse on 7/2/2014.
  */
 public abstract class AbstractVectorLayerParam extends AbstractLayerParams {
     /**

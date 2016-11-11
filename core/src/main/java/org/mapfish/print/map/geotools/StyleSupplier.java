@@ -7,8 +7,6 @@ import org.mapfish.print.http.MfClientHttpRequestFactory;
 /**
  * A strategy for loading style objects.
  *
- * @author Jesse on 6/25/2014.
- *
  * @param <Source> the type source that the style applies to
  */
 public interface StyleSupplier<Source> {

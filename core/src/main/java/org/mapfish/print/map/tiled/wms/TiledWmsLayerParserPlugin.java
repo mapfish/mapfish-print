@@ -20,8 +20,6 @@ import javax.annotation.Resource;
  * <p>Renders tiled WMS layers.</p>
  * <p>Type: <code>tiledwms</code></p>
  * [[examples=printtiledwms]]
- *
- * @author Stéphane Brunner
  */
 public final class TiledWmsLayerParserPlugin extends AbstractGridCoverageLayerPlugin implements MapLayerFactoryPlugin<TiledWmsLayerParam> {
 

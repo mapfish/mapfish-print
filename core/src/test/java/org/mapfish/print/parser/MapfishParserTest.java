@@ -24,9 +24,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mapfish.print.AbstractMapfishSpringTest.parseJSONObjectFromFile;
 
-/**
- * @author Jesse on 4/3/14.
- */
 public class MapfishParserTest {
     private final MapfishParser mapfishJsonParser = new MapfishParser();
 

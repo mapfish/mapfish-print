@@ -10,8 +10,6 @@ import java.net.URISyntaxException;
  * Converter to convert the value of a table cell (a string) into
  * a different type (e.g. an image).
  *
- * @author Jesse on 6/30/2014.
- *
  * @param <R> The resulting type
  */
 public interface TableColumnConverter<R> extends ConfigurationObject {

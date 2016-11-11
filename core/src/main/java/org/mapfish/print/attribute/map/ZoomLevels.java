@@ -18,8 +18,6 @@ import java.util.TreeSet;
  *     zoomLevels: !zoomLevels
  *        scales: [5000, 10000, 25000, 50000, 100000, 500000]</code></pre>
  * [[examples=datasource_many_dynamictables_legend]]
- *
- * @author Jesse on 4/1/14.
  */
 public final class ZoomLevels implements ConfigurationObject {
     private double[] scales;

@@ -7,9 +7,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @author Jesse on 4/2/14.
- */
 public class DistanceUnitTest {
     @Test
     public void testConvertTo() throws Exception {

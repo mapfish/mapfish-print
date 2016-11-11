@@ -67,8 +67,6 @@ import java.net.URI;
  * @see org.mapfish.print.processor.http.matcher.AddressHostMatcher
  * @see org.mapfish.print.processor.http.matcher.DnsHostMatcher
  * @see org.mapfish.print.processor.http.matcher.LocalHostMatcher
- *
- * @author Jesse on 8/6/2014.
  */
 public final class RestrictUrisProcessor extends AbstractClientHttpRequestFactoryProcessor {
     @Override

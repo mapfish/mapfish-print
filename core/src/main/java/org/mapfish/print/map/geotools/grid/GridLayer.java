@@ -26,8 +26,6 @@ import java.util.concurrent.ExecutorService;
 
 /**
  * A layer which is a spatial grid of lines on the map.
- *
- * @author Jesse on 7/2/2014.
  */
 public final class GridLayer implements MapLayer {
     private final GridParam params;

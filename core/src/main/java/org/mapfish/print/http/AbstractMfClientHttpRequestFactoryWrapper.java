@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.net.URI;
 
 /**
- * @author Jesse on 9/3/2014.
+ * The AbstractMfClientHttpRequestFactoryWrapper class.
  */
 public abstract class AbstractMfClientHttpRequestFactoryWrapper implements MfClientHttpRequestFactory {
 

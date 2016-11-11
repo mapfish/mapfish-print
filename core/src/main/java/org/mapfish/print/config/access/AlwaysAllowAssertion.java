@@ -7,8 +7,6 @@ import java.util.List;
 
 /**
  * This assertion always allows access.
- *
- * @author Jesse on 10/7/2014.
  */
 public final class AlwaysAllowAssertion implements AccessAssertion {
     /**

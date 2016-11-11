@@ -22,8 +22,6 @@ import javax.annotation.Nullable;
 
 /**
  * An access assertion that verifies that the current user has the required roles.
- *
- * @author Jesse on 10/7/2014.
  */
 public final class RoleAccessAssertion implements AccessAssertion {
 

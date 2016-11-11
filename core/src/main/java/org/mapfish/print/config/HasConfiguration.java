@@ -3,8 +3,6 @@ package org.mapfish.print.config;
 /**
  * Indicates that the {@link org.mapfish.print.config.ConfigurationFactory} should inject the configuration object into the
  * object.
- *
- * @author jesseeichar on 3/25/14.
  */
 public interface HasConfiguration {
     /**

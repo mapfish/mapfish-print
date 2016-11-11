@@ -29,8 +29,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * <p>Parses GML from the request data.</p>
- *
- * @author Jesse on 3/26/14.
  */
 public final class GmlLayer extends AbstractFeatureSourceLayer {
     /**

@@ -4,8 +4,6 @@ import java.util.regex.Pattern;
 
 /**
  * Regular Expression utilities.
- *
- * @author Jesse on 6/25/2014.
  */
 public final class RegexpUtil {
     private RegexpUtil() {

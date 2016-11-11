@@ -10,8 +10,6 @@ import java.net.URL;
 
 /**
  * An enumeration of all the supported WMS versions.
- *
- * @author Jesse on 4/11/2014.
  */
 public enum WmsVersion {
     /**

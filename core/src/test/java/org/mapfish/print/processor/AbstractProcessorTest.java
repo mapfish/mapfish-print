@@ -10,9 +10,6 @@ import javax.annotation.Nullable;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @author Jesse on 3/29/14.
- */
 public class AbstractProcessorTest {
 
     /**

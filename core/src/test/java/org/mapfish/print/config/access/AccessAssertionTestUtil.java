@@ -8,9 +8,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Collection;
 
-/**
- * @author Jesse on 10/7/2014.
- */
 public class AccessAssertionTestUtil {
     public static void setCreds(String... role) {
         Collection<SimpleGrantedAuthority> authorities = Sets.newHashSet();

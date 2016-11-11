@@ -11,8 +11,6 @@ import java.util.Date;
 
 /**
  * Represents a successfully completed job.
- *
- * @author jesseeichar on 3/18/14.
  */
 public final class SuccessfulPrintJob extends PrintJobStatus {
     private static final String JSON_REPORT_URI = "reportURI";

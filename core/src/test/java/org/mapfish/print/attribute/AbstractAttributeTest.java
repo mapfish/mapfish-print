@@ -19,8 +19,6 @@ import static org.mapfish.print.attribute.ReflectiveAttribute.JSON_NAME;
 
 /**
  * Common base class for testing attributes.
- *
- * @author Jesse on 5/8/2014.
  */
 public abstract class AbstractAttributeTest {
 

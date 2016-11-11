@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
  * <p></p>
  * If this annotation is present then {@link org.mapfish.print.parser.HasDefaultValue} is not required.
  *
- * @author Jesse on 4/9/2014.
  * @see org.mapfish.print.parser.OneOf
  */
 @Target(value = ElementType.FIELD)

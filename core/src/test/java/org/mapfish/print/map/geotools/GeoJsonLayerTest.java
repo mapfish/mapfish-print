@@ -31,8 +31,6 @@ import static org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBo
 
 /**
  * Test GeoJson layer
- *
- * @author Jesse on 3/27/14.
  */
 public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 

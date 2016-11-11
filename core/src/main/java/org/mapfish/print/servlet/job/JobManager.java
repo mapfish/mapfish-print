@@ -4,8 +4,6 @@ import com.google.common.base.Optional;
 
 /**
  * Manages and Executes Print Jobs.
- *
- * @author jesseeichar on 3/17/14.
  */
 public interface JobManager {
     /**

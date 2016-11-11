@@ -31,8 +31,6 @@ import javax.annotation.Nullable;
 
 /**
  * The information for printing a report.
- *
- * @author Jesse
  */
 public abstract class PrintJob implements Callable<PrintJobStatus> {
     private static final Logger LOGGER = LoggerFactory.getLogger(PrintJob.class);

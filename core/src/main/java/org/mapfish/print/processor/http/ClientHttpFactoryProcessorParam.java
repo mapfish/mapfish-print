@@ -5,7 +5,6 @@ import org.mapfish.print.http.MfClientHttpRequestFactory;
 /**
  * The parameter for a processors that have {@link org.mapfish.print.http.MfClientHttpRequestFactory}.
  *
-* @author Jesse on 6/25/2014.
  * CSOFF: VisibilityModifier
 */
 public class ClientHttpFactoryProcessorParam {

@@ -2,8 +2,6 @@ package org.mapfish.print.config;
 
 /**
  * Represents an error made in the config.yaml file.
- *
- * @author Jesse on 3/30/14.
  */
 public class ConfigurationException extends RuntimeException {
     private Configuration configuration;

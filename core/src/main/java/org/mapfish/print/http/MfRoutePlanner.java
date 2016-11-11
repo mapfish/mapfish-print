@@ -22,8 +22,6 @@ import java.util.List;
  *
  * {@link MfClientHttpRequestFactoryImpl.Request} will set the correct configuration
  * before the request is executed so that correct proxies will be set.
- *
- * @author Jesse on 9/4/2014.
  */
 public final class MfRoutePlanner extends DefaultRoutePlanner {
     /**

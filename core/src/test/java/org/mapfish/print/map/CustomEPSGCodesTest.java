@@ -3,9 +3,6 @@ package org.mapfish.print.map;
 import junit.framework.TestCase;
 import org.geotools.referencing.CRS;
 
-/**
- * @author Jesse on 4/8/2014.
- */
 public class CustomEPSGCodesTest extends TestCase
 
 {

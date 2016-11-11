@@ -27,8 +27,6 @@ import java.util.List;
  *         reject: true
  *       - !acceptAll {}
  * </code></pre>
- *
- * @author Jesse on 6/25/2014.
  */
 public final class HttpProxy extends HttpCredential {
     private String host;

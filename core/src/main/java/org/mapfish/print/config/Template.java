@@ -30,8 +30,6 @@ import javax.annotation.Nonnull;
 
 /**
  * Represents a report template configuration.
- *
- * @author sbrunner
  */
 public class Template implements ConfigurationObject, HasConfiguration {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Template.class);

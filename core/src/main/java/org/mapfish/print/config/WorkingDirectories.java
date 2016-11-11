@@ -18,7 +18,6 @@ import static com.google.common.io.Files.getNameWithoutExtension;
 /**
  * Class for configuring the working directories and ensuring they exist correctly.
  * <p></p>
- * @author jesseeichar on 3/25/14.
  */
 public class WorkingDirectories {
     private static final String TASK_DIR_PREFIX = "task-";

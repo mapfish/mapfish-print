@@ -26,7 +26,6 @@ import javax.annotation.Nonnull;
  *
  * @param <In>  Same as {@link org.mapfish.print.processor.Processor} <em>In</em> parameter
  * @param <Out> Same as {@link org.mapfish.print.processor.Processor} <em>Out</em> parameter
- * @author jesseeichar on 3/24/14.
  */
 public final class ProcessorGraphNode<In, Out> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessorGraphNode.class);

@@ -10,7 +10,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 /**
- * @author Jesse on 6/25/2014.
+ * The AbstractClientHttpRequestFactoryProcessor class.
  */
 public abstract class AbstractClientHttpRequestFactoryProcessor
         extends AbstractProcessor<ClientHttpFactoryProcessorParam, ClientHttpFactoryProcessorParam>
