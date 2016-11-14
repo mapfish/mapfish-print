@@ -17,8 +17,6 @@ import javax.annotation.Nullable;
 
 /**
  * Keeps track of which OneOf groups there are and which ones are satisfied.
- *
- * @author Jesse on 4/10/2014.
  */
 final class OneOfTracker {
     private Map<String, OneOfGroup> mapping = Maps.newHashMap();

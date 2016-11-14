@@ -12,7 +12,6 @@ import static org.mapfish.print.AbstractMapfishSpringTest.DEFAULT_SPRING_XML;
 /**
  * Test ConfigurationFactory.
  * <p></p>
- * @author jesseeichar on 3/25/14.
  */
 public class ConfigurationFactoryAllConfigObjectMustBePrototypeTest {
 

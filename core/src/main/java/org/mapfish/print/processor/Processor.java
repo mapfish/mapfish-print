@@ -15,8 +15,6 @@ import javax.annotation.Nullable;
  *              Object is populated from the {@link org.mapfish.print.output.Values} object.
  * @param <Out> A Java DTO output/return object from the execute method.
  *             properties will be put into the {@link org.mapfish.print.output.Values} object so other processor can access the values.
- *
- * @author jesseeichar on 2/21/14.
  */
 public interface Processor<In, Out> extends ConfigurationObject {
 

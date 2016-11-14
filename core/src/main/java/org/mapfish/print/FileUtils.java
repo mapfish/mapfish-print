@@ -13,8 +13,6 @@ import java.util.Arrays;
 /**
  * Methods for interacting with files.  Such things and verifying the files are in the correct directory,
  * Converting URLs to file objects.
- *
- * @author Jesse on 4/8/2014.
  */
 public final class FileUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileUtils.class);

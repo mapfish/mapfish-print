@@ -13,9 +13,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @author Jesse on 4/4/14.
- */
 public class URIUtilsTest {
 
     public static final String TEST_QUERY = "a=1&a=2&b=b1&b=b2&c&d=1";

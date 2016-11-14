@@ -3,8 +3,6 @@ package org.mapfish.print.wrapper;
 
 /**
  * Array wrapper interface for Json and Yaml parsing.
- *
- * @author Stéphane Brunner on 11/04/14.
  */
 public interface PArray {
     /**

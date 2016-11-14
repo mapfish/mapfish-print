@@ -12,8 +12,6 @@ import java.util.List;
  *
  * <p>This is used by the <a href="processors.html#!paging">paging processor</a>.</p>
  * [[examples=paging]]
- *
- * @author Jesse on 8/27/2014.
  */
 public final class PagingAttribute extends ReflectiveAttribute<PagingAttribute.PagingProcessorValues> {
 

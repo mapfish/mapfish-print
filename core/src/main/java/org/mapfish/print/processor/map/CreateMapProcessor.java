@@ -80,8 +80,6 @@ import static org.geotools.renderer.lite.RendererUtilities.worldToScreenTransfor
  * template.</p>
  * <p>See also: <a href="attributes.html#!map">!map</a> attribute</p>
  * [[examples=verboseExample]]
- * @author jesseeichar on 3/17/14.
- * @author sbrunner
  */
 public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcessor.Input, CreateMapProcessor.Output> {
     enum BufferedImageType {

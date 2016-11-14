@@ -13,7 +13,6 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Test bounds implementation.
- * @author Jesse on 3/26/14.
  */
 public class CenterScaleMapBoundsTest {
     static final double OPENLAYERS_2_DPI = 72;

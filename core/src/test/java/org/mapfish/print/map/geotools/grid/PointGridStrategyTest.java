@@ -25,9 +25,6 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @author Jesse on 6/29/2015.
- */
 public class PointGridStrategyTest extends AbstractMapfishSpringTest {
     @Autowired
     private TestHttpClientFactory requestFactory;

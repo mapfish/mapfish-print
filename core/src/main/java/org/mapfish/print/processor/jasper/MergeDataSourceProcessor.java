@@ -42,8 +42,6 @@ import javax.annotation.Nullable;
  * report will nicely expand depending on if you have a legend and how many tables you have in your report.
  * </p>
  * [[examples=merged_datasource]]
- *
- * @author Jesse on 9/6/2014.
  */
 @Beta
 public final class MergeDataSourceProcessor extends AbstractProcessor<MergeDataSourceProcessor.In, MergeDataSourceProcessor.Out>

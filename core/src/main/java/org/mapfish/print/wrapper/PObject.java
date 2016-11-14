@@ -5,8 +5,6 @@ import java.util.Iterator;
 
 /**
  * Object wrapper interface for Json and Yaml parsing.
- *
- * @author Stéphane Brunner on 11/04/14.
  */
 public interface PObject {
 

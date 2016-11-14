@@ -23,8 +23,6 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Test loading an style from a file.
- *
- * @author Jesse on 3/26/14.
  */
 public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
     @Autowired

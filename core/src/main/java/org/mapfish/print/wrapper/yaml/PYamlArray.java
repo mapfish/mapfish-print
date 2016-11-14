@@ -16,8 +16,6 @@ import java.util.Map;
 
 /**
  * Array wrapper for Yaml parsing.
- *
- * @author Stéphane Brunner on 11/04/14.
  */
 public class PYamlArray extends PElement implements PArray {
 

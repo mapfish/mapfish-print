@@ -28,7 +28,6 @@ import javax.annotation.Nullable;
  * </p>
  * <p>See also: <a href="attributes.html#!updatePdfConfigUpdate">!updatePdfConfigUpdate</a> attribute</p>
  * [[examples=updatePdfMetadata]]
- * @author Jesse on 9/13/2014.
  */
 public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfigurationProcessor.In, Void> {
 

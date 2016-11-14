@@ -31,9 +31,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.BASE_DIR;
 import static org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.loadJsonRequestData;
 
-/**
- * @author Jesse on 4/3/14.
- */
 public class MapAttributeTest extends AbstractMapfishSpringTest {
 
     @Autowired

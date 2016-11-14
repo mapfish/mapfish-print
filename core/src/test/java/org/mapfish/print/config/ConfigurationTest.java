@@ -46,8 +46,6 @@ import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link org.mapfish.print.config.Configuration} class.
- *
- * @author Jesse on 3/27/14.
  */
 public class ConfigurationTest {
 

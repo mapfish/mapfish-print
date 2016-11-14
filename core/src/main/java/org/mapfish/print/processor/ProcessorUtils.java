@@ -21,8 +21,6 @@ import static org.mapfish.print.parser.ParserUtils.getAllAttributes;
 
 /**
  * Shared methods for working with processor.
- *
- * @author Jesse on 6/26/2014.
  */
 public final class ProcessorUtils {
     private ProcessorUtils() {

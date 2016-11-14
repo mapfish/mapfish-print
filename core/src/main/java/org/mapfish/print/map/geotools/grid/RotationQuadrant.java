@@ -8,8 +8,6 @@ import java.awt.geom.Rectangle2D;
  *
  * For example if the rotation is between 0 and 90 then the top and bottom text will be upside down.  In this case the
  * Quadrant 1 strategy will be used to ensure the  will be correctly oriented.
- *
- * @author Jesse on 8/6/2015.
  */
 enum RotationQuadrant {
     /**

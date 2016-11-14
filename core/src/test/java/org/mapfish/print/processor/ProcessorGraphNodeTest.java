@@ -14,9 +14,6 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-/**
- * @author Jesse on 3/28/14.
- */
 public class ProcessorGraphNodeTest {
     final String iMappingName = "integer";
     Integer intVal = 1;

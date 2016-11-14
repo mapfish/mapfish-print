@@ -28,8 +28,6 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleParserPlugin.Vers
 
 /**
  * Support a more flexible json styling than that which is supported by version 1.
- *
- * @author Jesse on 7/26/2014.
  */
 public final class MapfishJsonStyleVersion2 {
     static final String JSON_SYMB = "symbolizers";

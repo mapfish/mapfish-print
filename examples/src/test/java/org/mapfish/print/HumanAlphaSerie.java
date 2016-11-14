@@ -5,8 +5,6 @@ import java.util.Stack;
 /**
  * Used to convert an integer index to an alpha index.
  * Index in: A..Z,AA..ZZ,AAA...
- *
- * @author sbrunner
  */
 public class HumanAlphaSerie {
 

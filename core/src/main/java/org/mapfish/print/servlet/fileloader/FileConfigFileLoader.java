@@ -9,8 +9,6 @@ import java.util.Iterator;
 /**
  * A plugin that loads the config resources from urls starting with prefix:
  * {@value org.mapfish.print.servlet.fileloader.FileConfigFileLoader#PREFIX}://.
- *
- * @author Jesse on 4/28/2014.
  */
 public final class FileConfigFileLoader extends AbstractFileConfigFileLoader {
     static final String PREFIX = "file";

@@ -25,8 +25,6 @@ import javax.annotation.Nonnull;
 
 /**
  * Strategy for creating the style and features for the grid when the grid consists of lines.
- *
- * @author Jesse on 6/29/2015.
  */
 final class LineGridStrategy implements GridType.GridTypeStrategy {
     @Override

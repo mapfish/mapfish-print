@@ -9,8 +9,6 @@ import javax.annotation.PreDestroy;
 
 /**
  * This bean will enable JMX reporting when added to application context.
- *
- * @author Jesse on 5/9/2014.
  */
 public final class JmxMetricsReporter {
 

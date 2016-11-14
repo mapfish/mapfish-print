@@ -1,4 +1,4 @@
 /**
- * @author Jesse on 10/7/2014.
+ * The access package.
  */
 package org.mapfish.print.config.access;

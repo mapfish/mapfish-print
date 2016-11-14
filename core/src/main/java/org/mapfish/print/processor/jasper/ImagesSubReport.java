@@ -22,8 +22,6 @@ import java.util.List;
 /**
  * Creates a Jasper containing overlaid images, which is supposed to
  * be embedded into an another report as sub-report.
- *
- * @author tsauerwein
  */
 public class ImagesSubReport {
 

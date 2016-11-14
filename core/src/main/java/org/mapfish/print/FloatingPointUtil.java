@@ -2,8 +2,6 @@ package org.mapfish.print;
 
 /**
  * Util class to test equality of floating points.
- *
- * @author ayman on 2/22/16.
  */
 public final class FloatingPointUtil {
     private static final float EPSILON =  0.00000001F;

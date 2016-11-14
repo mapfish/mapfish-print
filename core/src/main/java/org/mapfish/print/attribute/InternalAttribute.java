@@ -8,8 +8,6 @@ import java.lang.annotation.Target;
 /**
  * An annotation indicating that the attribute should not be printed in client config (client does not need to know about it)
  * because it is registered automatically.
- *
- * @author Jesse on 6/26/2014.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

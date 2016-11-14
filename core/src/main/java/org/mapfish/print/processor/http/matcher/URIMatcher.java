@@ -8,8 +8,6 @@ import java.net.UnknownHostException;
 
 /**
  * Checks if a uri is a permitted uri.
- *
- * @author Jesse on 8/6/2014.
  */
 public interface URIMatcher extends ConfigurationObject {
     /**

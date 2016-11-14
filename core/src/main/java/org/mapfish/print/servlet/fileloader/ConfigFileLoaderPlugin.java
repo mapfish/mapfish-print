@@ -12,8 +12,6 @@ import java.net.URI;
  * was obtained by the client) then there must be restrictions placed on which files the client may load (you can't allow
  * him to load the full database or a passwords file for example).  The simple way is to ensure the file is within the same or
  * sub-directory of the config file directory.
- *
- * @author Jesse on 4/27/2014.
  */
 public interface ConfigFileLoaderPlugin {
 

@@ -4,8 +4,6 @@ import org.mapfish.print.wrapper.json.PJsonArray;
 
 /**
  * Common parent class for the Json and Yaml wrappers.
- *
- * @author Stéphane Brunner on 11/04/14.
  */
 public abstract class PElement {
     private final PElement parent;

@@ -18,8 +18,6 @@ import javax.annotation.Nonnull;
 
 /**
  * A layer that wraps a Geotools Feature Source and a style object.
- *
- * @author Jesse on 3/26/14.
  */
 public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
 

@@ -14,9 +14,6 @@ import java.net.URI;
 
 import static java.lang.Double.parseDouble;
 
-/**
- * @author Jesse on 8/4/2015.
- */
 public final class TiledWMSUtil {
     private TiledWMSUtil() {
         // do nothing

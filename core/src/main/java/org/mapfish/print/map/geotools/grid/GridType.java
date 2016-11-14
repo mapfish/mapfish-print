@@ -6,8 +6,6 @@ import org.mapfish.print.map.geotools.FeatureSourceSupplier;
 
 /**
  * The supported Grid types.
- *
- * @author Jesse on 6/29/2015.
  */
 public enum GridType {
     /**

@@ -56,8 +56,9 @@ import javax.annotation.Nonnull;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+
 /**
- * @author Jesse on 5/7/2014.
+ * The AbstractJasperReportOutputFormat class.
  */
 public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportPDFOutputFormat.class);

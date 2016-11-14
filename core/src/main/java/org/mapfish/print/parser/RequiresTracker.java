@@ -13,8 +13,6 @@ import java.util.Map;
 /**
  * Keeps track of the attributes that require other dependencies and verifies they are all satisfied at the end
  * of the json parsing.
- *
- * @author Jesse on 4/10/2014.
  */
 class RequiresTracker {
     private Multimap<Field, String> dependantToRequirementsMap = HashMultimap.create();

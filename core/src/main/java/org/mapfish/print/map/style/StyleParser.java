@@ -21,8 +21,6 @@ import javax.annotation.Nonnull;
 
 /**
  * Parse a style using all the available {@link StyleParserPlugin} registered with the spring application context.
- *
- * @author Jesse on 3/26/14.
  */
 public final class StyleParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(StyleParser.class);

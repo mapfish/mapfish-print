@@ -10,8 +10,6 @@ import java.util.List;
  * </p>
  * <p>Naturally this only applies to reports that are exported as PDFs.</p>
  * [[examples=config_aliases_defaults,verboseExample]]
- *
- * @author Jesse on 9/12/2014.
  */
 // CSOFF: DesignForExtension  -- Note: This is disabled so that I can use Mockito.spy in tests
 public class PDFConfig implements ConfigurationObject {

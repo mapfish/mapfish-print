@@ -12,8 +12,6 @@ import javax.annotation.Nonnull;
  * differ from one configuration to another they must be determined at runtime.
  *
  * The test for this class will be part of {@link org.mapfish.print.processor.jasper.MergeDataSourceProcessor} tests.
- *
- * @author Jesse on 9/9/2014.
  */
 public interface CustomDependencies {
     /**

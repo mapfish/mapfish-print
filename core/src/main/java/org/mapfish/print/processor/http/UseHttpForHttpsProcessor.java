@@ -34,8 +34,6 @@ import java.util.regex.Pattern;
  * <p>Can be applied conditionally using matchers, like in {@link RestrictUrisProcessor} 
  * (<a href="processors.html#!restrictUris">!restrictUris</a>).</p>
  * [[examples=http_processors,osm_custom_params]]
- *
- * @author Jesse on 6/25/2014.
  */
 public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFactoryProcessor {
     private static final int HTTPS_STANDARD_PORT = 443;

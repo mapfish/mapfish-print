@@ -8,8 +8,6 @@ import javax.annotation.Nonnull;
 
 /**
  * Function for creating feature source.
- *
- * @author Jesse on 7/3/2014.
  */
 public interface FeatureSourceSupplier {
     /**

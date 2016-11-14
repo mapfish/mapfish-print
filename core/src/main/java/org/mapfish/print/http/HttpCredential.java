@@ -22,8 +22,6 @@ import javax.annotation.Nullable;
  * <em>Note: proxies are also HttpCredentials and when searching for credentials, the proxies will also be searched
  * for credentials.</em>
  * </p>
- *
- * @author Jesse on 9/4/2014.
  */
 // CSOFF: DesignForExtension
 public class HttpCredential implements ConfigurationObject {

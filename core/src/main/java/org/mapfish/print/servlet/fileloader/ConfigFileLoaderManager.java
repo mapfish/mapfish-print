@@ -20,8 +20,6 @@ import javax.annotation.PostConstruct;
 
 /**
  * Processes all {@link org.mapfish.print.servlet.fileloader.ConfigFileLoaderPlugin}s and loads the files.
- *
- * @author Jesse on 4/28/2014.
  */
 public final class ConfigFileLoaderManager implements ConfigFileLoaderPlugin {
     @Autowired

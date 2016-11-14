@@ -19,8 +19,6 @@ import java.util.List;
  * <p></p>
  * {@link MfClientHttpRequestFactoryImpl.Request} will set the correct configuration
  * before the request is executed so that correct proxies will be set.
- *
- * @author Jesse on 9/4/2014.
  */
 public final class MfCredentialsProvider implements CredentialsProvider {
     private final CredentialsProvider fallback = new SystemDefaultCredentialsProvider();

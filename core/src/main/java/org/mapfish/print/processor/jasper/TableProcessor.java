@@ -58,9 +58,6 @@ import static org.mapfish.print.processor.jasper.JasperReportBuilder.JASPER_REPO
  * <p>A processor for generating a table.</p>
  * <p>See also: <a href="attributes.html#!table">!table</a> attribute</p>
  * [[examples=verboseExample,datasource_dynamic_tables,customDynamicReport]]
- *
- * @author Jesse
- * @author sbrunner
  */
 public final class TableProcessor extends AbstractProcessor<TableProcessor.Input, TableProcessor.Output> {
 

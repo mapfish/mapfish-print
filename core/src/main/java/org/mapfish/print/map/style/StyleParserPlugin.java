@@ -13,9 +13,7 @@ import javax.annotation.Nullable;
  * A plugin used for loading {@link org.geotools.styling.Style} objects from a string.
  *
  * The string might be json, css, url, whatever.
- *
-* @author Jesse on 3/26/14.
-*/
+ */
 public interface StyleParserPlugin {
 
     /**

@@ -5,8 +5,6 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 /**
  * A http request factory that allows configuration callbacks to be registered, allowing low-level customizations to the request
  * object.
- *
- * @author Jesse on 9/3/2014.
  */
 public interface MfClientHttpRequestFactory extends ClientHttpRequestFactory {
 

@@ -7,8 +7,6 @@ import java.util.List;
 
 /**
  * This class collects the position and angle of the labels that need to be rendered for the grid.
- *
- * @author Jesse on 8/6/2015.
  */
 final class LabelPositionCollector implements Iterable<GridLabel> {
     private final List<GridLabel> labels = Lists.newArrayList();

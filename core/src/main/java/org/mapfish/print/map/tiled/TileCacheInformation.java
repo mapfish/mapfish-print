@@ -16,8 +16,6 @@ import javax.annotation.Nullable;
 
 /**
  * Encapsulates the information needed to create tile requests for a particular map bounds and display.
- *
- * @author Jesse on 4/3/14.
  */
 public abstract class TileCacheInformation {
 

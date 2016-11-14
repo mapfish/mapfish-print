@@ -37,9 +37,6 @@ import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @author Jesse on 4/10/2014.
- */
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class TableProcessorTest extends AbstractMapfishSpringTest {
     public static final String BASIC_BASE_DIR = "table/";

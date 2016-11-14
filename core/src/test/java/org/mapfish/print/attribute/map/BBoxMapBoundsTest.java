@@ -12,9 +12,6 @@ import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
 import static org.junit.Assert.assertEquals;
 import static org.mapfish.print.attribute.map.CenterScaleMapBoundsTest.CH1903;
 
-/**
- * @author Jesse on 3/27/14.
- */
 public class BBoxMapBoundsTest {
     public static final CoordinateReferenceSystem SPHERICAL_MERCATOR;
 

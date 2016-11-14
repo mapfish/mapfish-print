@@ -37,9 +37,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
 
-/**
- * @author Jesse on 4/10/2014.
- */
 public class LegendProcessorTest extends AbstractMapfishSpringTest {
     public static final String BASE_DIR = "legend/";
     public static final String BASE_DIR_DYNAMIC = "legend_dynamic/";

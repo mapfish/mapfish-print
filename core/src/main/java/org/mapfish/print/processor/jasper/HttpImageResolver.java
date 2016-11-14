@@ -23,8 +23,6 @@ import javax.imageio.ImageIO;
  * <p>Interprets text in a table cell as an image URL.</p>
  * <p>See also: <a href="tableimages.html">Configuration of tables with HTML images</a></p>
  * [[examples=datasource_many_dynamictables_legend]]
- *
- * @author Jesse on 6/30/2014.
  */
 public final class HttpImageResolver implements TableColumnConverter<BufferedImage> {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpImageResolver.class);

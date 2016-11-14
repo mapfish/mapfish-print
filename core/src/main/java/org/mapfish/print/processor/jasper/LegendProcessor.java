@@ -38,9 +38,6 @@ import javax.imageio.ImageIO;
  * <p>Create a legend.</p>
  * <p>See also: <a href="attributes.html#!legend">!legend</a> attribute</p>
  * [[examples=verboseExample,legend_cropped]]
- *
- * @author Jesse
- * @author sbrunner
  */
 public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, LegendProcessor.Output> {
     private static final Logger LOGGER = LoggerFactory.getLogger(LegendProcessor.class);

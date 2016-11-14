@@ -17,8 +17,6 @@ import javax.annotation.Nonnull;
  * <p>Renders WMS layers as single image.</p>
  * <p>Type: <code>wms</code></p>
  * [[examples=printwms_tyger_ny_EPSG_900913,printwms_UsaPopulation_EPSG_4326]]
- *
- * @author Jesse on 4/10/2014.
  */
 public final class WmsLayerFactoryPlugin extends AbstractGridCoverageLayerPlugin implements MapLayerFactoryPlugin<WmsLayerParam> {
     private static final String TYPE = "wms";

@@ -13,8 +13,6 @@ import java.util.List;
 
 /**
  * Attribute for GeoJson feature collection.
- *
- * @author Stéphane Brunner
  */
 public final class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribute.FeaturesAttributeValues> {
 

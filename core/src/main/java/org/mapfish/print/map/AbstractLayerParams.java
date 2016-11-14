@@ -4,8 +4,6 @@ import org.mapfish.print.parser.HasDefaultValue;
 
 /**
  * Contains common properties to all layers.
- *
- * @author Jesse on 11/7/2014.
  */
 public class AbstractLayerParams {
     /**

@@ -24,8 +24,6 @@ import javax.annotation.Nonnull;
 
 /**
  * Strategy object for rendering Osm based layers.
- *
- * @author Jesse on 4/11/2014.
  */
 public final class OsmLayer extends AbstractTiledLayer {
     private static final Logger LOGGER = LoggerFactory.getLogger(OsmLayer.class);

@@ -11,9 +11,6 @@ import javax.annotation.Nullable;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-/**
- * @author jesseeichar on 3/25/14.
- */
 @SuppressWarnings("unchecked")
 public class ProcessorDependencyGraphTest {
     @Test

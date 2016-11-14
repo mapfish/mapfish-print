@@ -24,8 +24,6 @@ import java.util.List;
 
 /**
  * A few methods to help make wms requests for all types of wms layers.
- *
- * @author Jesse on 7/23/2014.
  */
 public final class WmsUtilities {
     private WmsUtilities() {

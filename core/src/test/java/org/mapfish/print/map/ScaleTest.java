@@ -6,9 +6,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mapfish.print.Constants.PDF_DPI;
 import static org.mapfish.print.attribute.map.CenterScaleMapBoundsTest.CH1903;
 
-/**
- * @author Jesse on 4/8/2014.
- */
 public class ScaleTest{
     private static final double DELTA = 0.00001;
     private static final double SCALE = 108335.72891406555;

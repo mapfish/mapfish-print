@@ -9,7 +9,6 @@ import org.mapfish.print.attribute.map.GenericMapAttribute;
  * Support for testing attributes.  This is in main jar because it might be needed across module
  * boundaries and that can be difficult if it is in testing jar.
  *
- * @author Jesse on 8/18/2014.
  * CHECKSTYLE:OFF
  */
 public class AttributeTesting {

@@ -12,8 +12,6 @@ import javax.servlet.ServletException;
 
 /**
  * An essentially non-functional servlet context that is used by the CLI application to satisfy the spring dependencies.
- *
- * @author Jesse on 8/27/2014.
  */
 // CHECKSTYLE:OFF
 @SuppressWarnings("deprecation")

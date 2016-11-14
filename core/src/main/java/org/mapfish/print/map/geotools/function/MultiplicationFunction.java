@@ -8,9 +8,7 @@ import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 
 /**
  * A Function that multiplies the two values.
- *
-* @author Jesse on 11/7/2014.
-*/
+ */
 public final class MultiplicationFunction extends FunctionExpressionImpl {
 
     /**

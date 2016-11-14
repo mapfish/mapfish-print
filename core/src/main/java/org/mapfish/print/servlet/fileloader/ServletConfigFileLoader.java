@@ -11,8 +11,6 @@ import javax.servlet.ServletContext;
 /**
  * A plugin that loads the config resources from urls starting with prefix:
  * {@value org.mapfish.print.servlet.fileloader.ServletConfigFileLoader#PREFIX}://.
- *
- * @author Jesse on 4/28/2014.
  */
 public final class ServletConfigFileLoader extends AbstractFileConfigFileLoader {
 

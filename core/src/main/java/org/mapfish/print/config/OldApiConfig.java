@@ -12,8 +12,6 @@ import java.util.List;
  *   wmsReverseLayers: true
  * templates:
  *   ..</code></pre>
- *
- * @author Jesse on 6/12/2015.
  */
 public final class OldApiConfig implements ConfigurationObject {
     private boolean layersFirstIsBaseLayer = true;

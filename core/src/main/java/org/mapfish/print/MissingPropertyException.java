@@ -5,7 +5,6 @@ import java.util.Set;
 
 /**
  * Indicates one or more properties are missing either from a config.yaml configuration file or from request json.
- * @author Jesse on 4/2/14.
  */
 public final class MissingPropertyException extends RuntimeException {
     private final Map<String, Class<?>> missingProperties;

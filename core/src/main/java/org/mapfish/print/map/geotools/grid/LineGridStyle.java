@@ -9,8 +9,6 @@ import java.awt.Color;
 
 /**
  * Creates the Named LineGridStyle.
- *
- * @author Jesse on 6/29/2015.
  */
 public final class LineGridStyle {
     private LineGridStyle() {

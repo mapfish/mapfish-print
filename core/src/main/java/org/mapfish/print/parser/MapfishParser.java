@@ -39,7 +39,6 @@ import static org.mapfish.print.parser.ParserUtils.getAttributeNames;
  * There is a more explicit explanation in
  * {@link org.mapfish.print.attribute.ReflectiveAttribute#createValue(org.mapfish.print.config.Template)}
  *
- * @author Jesse on 4/3/14.
  * @see org.mapfish.print.attribute.ReflectiveAttribute
  * @see org.mapfish.print.map.MapLayerFactoryPlugin
  */

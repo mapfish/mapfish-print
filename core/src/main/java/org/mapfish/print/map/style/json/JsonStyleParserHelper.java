@@ -54,8 +54,6 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleParserPlugin.Vers
 
 /**
  * Methods shared by various style versions for creating geotools SLD styles from the json format mapfish supports.
- *
- * @author Jesse on 7/25/2014.
  */
 public final class JsonStyleParserHelper {
 

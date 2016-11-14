@@ -35,8 +35,6 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleParserPlugin.Vers
 
 /**
  * The strategy for parsing the Mapfish json style version 1.
- *
- * @author Jesse on 7/26/2014.
  */
 public final class MapfishJsonStyleVersion1 {
 

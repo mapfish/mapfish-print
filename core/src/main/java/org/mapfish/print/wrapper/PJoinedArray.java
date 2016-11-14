@@ -2,8 +2,6 @@ package org.mapfish.print.wrapper;
 
 /**
  * PArray that is consists of several PArray objects merged together.
- *
- * @author Jesse on 4/18/2015.
  */
 public final class PJoinedArray implements PArray {
     private final PArray[] arrays;

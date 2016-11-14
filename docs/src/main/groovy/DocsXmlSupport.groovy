@@ -6,7 +6,6 @@ import java.lang.reflect.Field
 
 /**
  * Helpful xml related methods.
- * @author Jesse on 7/20/2014.
  */
 class DocsXmlSupport {
     static String toXmlString(node) {

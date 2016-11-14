@@ -22,7 +22,6 @@ import java.util.List;
  * </ul>
  *
  * @param <Value> The value type of the attribute
- * @author Jesse on 4/9/2014.
  */
 public abstract class PrimitiveAttribute<Value> implements Attribute {
     private Class<Value> valueClass;

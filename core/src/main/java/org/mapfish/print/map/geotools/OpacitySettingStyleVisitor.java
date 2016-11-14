@@ -14,8 +14,6 @@ import org.opengis.filter.expression.Function;
 /**
  * Visits all elements in the style an multiplies the opacity of each element (where opacity applies) by
  * the opacity factory passed in.
- *
- * @author Jesse on 11/7/2014.
  */
 public final class OpacitySettingStyleVisitor extends AbstractStyleVisitor {
     private final Expression opacityFactor;

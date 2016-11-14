@@ -7,8 +7,6 @@ import org.springframework.context.ApplicationContext;
 
 /**
  * Class for marshalling and unmarshalling AccessAssertionObjects to and from JSON.
- *
- * @author Jesse on 10/7/2014.
  */
 public final class AccessAssertionPersister {
     private static final String JSON_CLASS_NAME = "className";

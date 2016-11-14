@@ -25,9 +25,6 @@ import java.net.URI;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @author Jesse on 4/8/2014.
- */
 public class URLSLDParserPluginTest extends AbstractMapfishSpringTest {
 
     @Autowired

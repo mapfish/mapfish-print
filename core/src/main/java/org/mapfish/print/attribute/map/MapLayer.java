@@ -7,8 +7,6 @@ import java.awt.Graphics2D;
 
 /**
  * Encapsulates the data required to load map data for a layer and render it.
- *
- * @author Jesse on 3/26/14.
  */
 public interface MapLayer {
 

@@ -18,9 +18,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @author Jesse on 5/11/2015.
- */
 public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
 
     @Autowired

@@ -9,9 +9,6 @@ import java.io.OutputStream;
 
 /**
  * An PDF output format that uses Jasper reports to generate the result.
- *
- * @author Jesse
- * @author sbrunner
  */
 public final class JasperReportExcelOutputFormat extends AbstractJasperReportOutputFormat implements OutputFormat {
 

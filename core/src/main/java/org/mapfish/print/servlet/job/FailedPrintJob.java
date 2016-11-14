@@ -8,8 +8,6 @@ import java.util.Date;
 
 /**
  * Represents a failed print job.
- *
- * @author jesseeichar on 3/18/14.
  */
 public class FailedPrintJob extends PrintJobStatus {
     private static final String JSON_ERROR = "errorMessage";

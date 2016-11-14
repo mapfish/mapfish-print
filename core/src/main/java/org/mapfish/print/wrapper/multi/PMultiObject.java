@@ -13,8 +13,6 @@ import java.util.Set;
 
 /**
  * Object wrapper for Yaml parsing.
- *
- * @author Stéphane Brunner on 11/04/14.
  */
 public class PMultiObject extends PAbstractObject {
     private final PObject[] objs;

@@ -24,8 +24,6 @@ import static org.mapfish.print.map.image.wms.WmsUtilities.makeWmsGetLayerReques
 
 /**
  * Strategy object for rendering WMS based layers .
- *
- * @author Stéphane Brunner on 22/07/2014.
  */
 public final class TiledWmsLayer extends AbstractTiledLayer {
     private final TiledWmsLayerParam param;

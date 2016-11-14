@@ -5,7 +5,6 @@ import java.util.Set;
 
 /**
  * Indicates one or more properties are not used either in a config.yaml configuration file or in the request json.
- * @author Jesse on 4/2/14.
  */
 public final class ExtraPropertyException extends RuntimeException {
     private final Collection<String> extraProperties;

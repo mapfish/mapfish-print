@@ -52,8 +52,6 @@ import javax.annotation.Nullable;
  * </p>
  * <p>See also: <a href="attributes.html#!paging">!paging</a> attribute</p>
  * [[examples=paging]]
- *
- * @author Stéphane Brunner
  */
 public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesProcessor.Input, CreateMapPagesProcessor.Output> {
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateMapPagesProcessor.class);

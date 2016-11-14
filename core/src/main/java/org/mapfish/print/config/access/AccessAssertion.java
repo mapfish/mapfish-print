@@ -9,8 +9,6 @@ import org.mapfish.print.config.ConfigurationObject;
  * <p>
  * All implementations must be serializable.
  * </p>
- *
- * @author Jesse on 10/7/2014.
  */
 public interface AccessAssertion extends ConfigurationObject {
     /**

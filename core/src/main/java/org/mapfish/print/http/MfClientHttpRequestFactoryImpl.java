@@ -37,8 +37,6 @@ import javax.annotation.Nullable;
 
 /**
  * Default implementation.
- *
- * @author Jesse on 9/3/2014.
  */
 public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequestFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(MfClientHttpRequestFactoryImpl.class);

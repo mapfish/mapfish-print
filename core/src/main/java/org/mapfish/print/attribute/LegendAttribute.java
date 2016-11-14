@@ -31,8 +31,6 @@ public final class LegendAttribute extends ReflectiveAttribute<LegendAttribute.L
 
     /**
      * The data required to render a map legend.
-     *
-     * @author Jesse
      */
     public static final class LegendAttributeValue {
 

@@ -8,8 +8,6 @@ import java.lang.annotation.Target;
  * <p></p>
  * Note: If the field with the {@link org.mapfish.print.parser.Requires} annotation is NOT in the json
  * then the required are not required as long as they have the {@link org.mapfish.print.parser.HasDefaultValue} annotation.
- *
- * @author Jesse on 4/9/2014.
  */
 @Target(value = ElementType.FIELD)
 @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)

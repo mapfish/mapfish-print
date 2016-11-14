@@ -6,8 +6,6 @@ import javax.annotation.Nonnull;
 
 /**
  * Represent a scale denominator.  For example 1:10'000m which means 1 meter on the paper represent 10'000m on the ground.
- *
- * @author Jesse on 3/27/14.
  */
 public final class Scale {
     private final double denominator;

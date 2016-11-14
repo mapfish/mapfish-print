@@ -10,9 +10,6 @@ import org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJso
 
 import java.io.File;
 
-/**
- * @author Jesse on 4/3/14.
- */
 public class GeotiffLayerFactoryPluginTest {
 
     @Test(expected = IllegalFileAccessException.class)

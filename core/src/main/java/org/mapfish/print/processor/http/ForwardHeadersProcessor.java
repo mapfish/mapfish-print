@@ -35,8 +35,6 @@ import javax.annotation.Nullable;
  * <p>Can be applied conditionally using matchers, like in {@link RestrictUrisProcessor} 
  * (<a href="processors.html#!restrictUris">!restrictUris</a>).</p>
  * [[examples=http_processors,osm_custom_params]]
- * 
- * @author Jesse on 6/26/2014.
  */
 public final class ForwardHeadersProcessor
         extends AbstractProcessor<ForwardHeadersProcessor.Param, ClientHttpFactoryProcessorParam>
@@ -159,5 +157,4 @@ public final class ForwardHeadersProcessor
          */
         public HttpRequestHeadersAttribute.Value requestHeaders;
     }
-
 }

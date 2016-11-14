@@ -34,7 +34,6 @@ import static org.mapfish.print.parser.MapfishParser.stringRepresentation;
  * Used for attribute that can have defaults specified in the YAML config file.
  *
  * @param <Value>
- * @author sbrunner
  */
 public abstract class ReflectiveAttribute<Value> implements Attribute {
     private static final HashSet<Class<? extends Object>> VALUE_OBJ_FIELD_TYPE_THAT_SHOULD_BE_P_TYPE =

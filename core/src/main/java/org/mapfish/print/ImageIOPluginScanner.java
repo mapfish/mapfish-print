@@ -7,8 +7,6 @@ import javax.imageio.ImageIO;
 
 /**
  * Scans for ImageIO plugins when the application context is loaded.
- *
- * @author Jesse on 8/7/2015.
  */
 public final class ImageIOPluginScanner implements ApplicationListener<ContextRefreshedEvent> {
     /**

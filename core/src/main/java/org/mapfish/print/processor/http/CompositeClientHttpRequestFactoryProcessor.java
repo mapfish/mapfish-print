@@ -58,7 +58,6 @@ import javax.annotation.Nullable;
  *       matchers: [!localMatch {}]
  * </code></pre>
  * [[examples=http_processors]]
- * @author Jesse on 6/25/2014.
  */
 public final class CompositeClientHttpRequestFactoryProcessor
         extends AbstractProcessor<Values, ClientHttpFactoryProcessorParam>

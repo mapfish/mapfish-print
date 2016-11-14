@@ -5,7 +5,6 @@ import java.util.List;
 /**
  * A flag interface for a configuration object.  This to allow spring to find them as plugins.
  * <p></p>
- * @author jesseeichar on 3/4/14.
  */
 public interface ConfigurationObject {
     /**

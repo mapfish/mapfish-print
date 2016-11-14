@@ -10,7 +10,6 @@ import javax.annotation.Nonnull;
  * Parses layer request data and creates a MapLayer from it.
  *
  * @param <Param> the type of object that will be populated from the JSON and passed to the factory to create the layer.
- * @author Jesse on 3/26/14.
  */
 public interface MapLayerFactoryPlugin<Param> {
 

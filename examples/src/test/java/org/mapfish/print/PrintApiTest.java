@@ -33,8 +33,6 @@ import static org.junit.Assert.assertTrue;
  * Or run the tests with the following task (which automatically starts the servers):
  *
  *      ./gradlew examples:farmIntegrationTest
- *
- * @author Jesse on 5/9/2014.
  */
 public class PrintApiTest extends AbstractApiTest {
 
