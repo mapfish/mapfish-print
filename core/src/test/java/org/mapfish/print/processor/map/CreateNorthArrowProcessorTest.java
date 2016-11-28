@@ -18,6 +18,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -63,13 +66,22 @@ public class CreateNorthArrowProcessorTest extends AbstractMapfishSpringTest {
         Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
-        URI northArrowGraphic = (URI) values.getObject("graphic", URI.class);
+        String northArrowGraphic = values.getObject("northArrowGraphic", String.class);
 
 //        Files.copy(new File(northArrowGraphic), new File(TMP, getClass().getSimpleName() + ".tiff"));
 
-        new ImageSimilarity(new File(northArrowGraphic), 2)
+        new ImageSimilarity(new File(new URI(northArrowGraphic)), 2)
                 .assertSimilarity(getFile(BASE_DIR + "expectedNorthArrow.tiff"), 30);
-
+        
+        assertNotNull(values.getObject("northArrowOut", String.class));
+              
+        //now without a subreport
+        final Configuration configNoReport = configurationFactory.getConfig(getFile(BASE_DIR + "config-no-report.yaml"));
+        final Template templateNoReport = configNoReport.getTemplate("main");
+        Values valuesNoReport = new Values(requestData, templateNoReport, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
+        this.forkJoinPool.invoke(template.getProcessorGraph().createTask(valuesNoReport));
+        
+        assertNull(valuesNoReport.getObject("northArrowOut", String.class));
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

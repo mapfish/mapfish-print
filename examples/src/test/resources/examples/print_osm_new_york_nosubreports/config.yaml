@@ -1,0 +1,33 @@
+
+templates:
+  #===========================================================================
+  A4 landscape: !template
+  #===========================================================================
+    reportTemplate: simpleReport.jrxml
+    attributes:
+      map: !map
+        maxDpi: 400
+        width: 780
+        height: 330
+      scalebar: !scalebar
+        width: 240
+        height: 40
+        createSubReport: false
+        default:
+          backgroundColor: "rgba(214, 214, 214, 200)"
+          align: "right"
+      northArrowDef: !northArrow
+        size: 50
+        createSubReport: false
+        default:
+          graphic: "file://NorthArrow_10.svg"
+          backgroundColor: "rgba(214, 214, 214, 200)"
+    processors:
+    - !reportBuilder # compile all reports in current directory
+      directory: '.'
+    - !createMap
+      inputMapper: {map: map}
+      outputMapper: {mapSubReport: mapSubReport}
+    - !createScalebar {}
+    - !createNorthArrow
+        inputMapper: {map: map, northArrowDef: northArrow}

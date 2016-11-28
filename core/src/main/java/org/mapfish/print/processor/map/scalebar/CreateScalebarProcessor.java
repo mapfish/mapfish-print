@@ -24,7 +24,7 @@ import javax.xml.parsers.ParserConfigurationException;
 /**
  * <p>Processor to create a scalebar for a map.</p>
  * <p>See also: <a href="attributes.html#!scalebar">!scalebar</a> attribute</p>
- * [[examples=verboseExample,print_osm_new_york_EPSG_900913]]
+ * [[examples=verboseExample,print_osm_new_york_EPSG_900913,print_osm_new_york_nosubreports]]
  */
 public class CreateScalebarProcessor extends AbstractProcessor<CreateScalebarProcessor.Input, CreateScalebarProcessor.Output> {
 
@@ -51,11 +51,16 @@ public class CreateScalebarProcessor extends AbstractProcessor<CreateScalebarPro
         final URI scalebarGraphicFile = createScalebarGraphic(values);
 
         checkCancelState(context);
-        final URI scalebarSubReport = createScalebarSubReport(
-                values.tempTaskDirectory, values.scalebar.getSize(),
-                Lists.newArrayList(scalebarGraphicFile), values.mapContext.getDPI());
+        
+        String strScalebarSubReport = null;
+        if (values.scalebar.isCreateSubReport()) {
+            final URI scalebarSubReport = createScalebarSubReport(
+                    values.tempTaskDirectory, values.scalebar.getSize(),
+                    Lists.newArrayList(scalebarGraphicFile), values.mapContext.getDPI());
+            strScalebarSubReport = scalebarSubReport.toString();
+        }
 
-        return new Output(scalebarGraphicFile, scalebarSubReport.toString());
+        return new Output(scalebarGraphicFile.toString(), strScalebarSubReport);
     }
 
     private URI createScalebarGraphic(final Input values) throws IOException, ParserConfigurationException {
@@ -111,16 +116,15 @@ public class CreateScalebarProcessor extends AbstractProcessor<CreateScalebarPro
         /**
          * The path to the scalebar graphic (for testing purposes).
          */
-        @InternalValue
-        public final URI graphic;
+        public final String scalebarGraphic;
 
         /**
          * The path to the compiled sub-report for the scalebar.
          */
         public final String scalebarSubReport;
 
-        private Output(final URI graphic, final String subReport) {
-            this.graphic = graphic;
+        private Output(final String scalebarGraphic, final String subReport) {
+            this.scalebarGraphic = scalebarGraphic;
             this.scalebarSubReport = subReport;
         }
     }

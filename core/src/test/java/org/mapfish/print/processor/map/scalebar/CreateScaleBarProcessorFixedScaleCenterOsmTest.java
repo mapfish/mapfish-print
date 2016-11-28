@@ -27,6 +27,8 @@ import java.net.URI;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Basic test of the Scalebar processor.
@@ -102,10 +104,19 @@ public class CreateScaleBarProcessorFixedScaleCenterOsmTest extends AbstractMapf
         new ImageSimilarity(referenceImage, 2)
                 .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 60);
 
-        URI scalebarGraphic = values.getObject("graphic", URI.class);
+        String scalebarGraphic = values.getObject("scalebarGraphic", String.class);
 //        Files.copy(new File(scalebarGraphic), new File("/tmp/expectedScalebar_" + getClass().getSimpleName() + ".tiff"));
 
-        new ImageSimilarity(new File(scalebarGraphic), 4).assertSimilarity(getFile(BASE_DIR + ScalebarDrawerTest.expectedDir + "expectedScalebar.tiff"), 5);
+        new ImageSimilarity(new File(new URI(scalebarGraphic)), 4).assertSimilarity(getFile(BASE_DIR + ScalebarDrawerTest.expectedDir + "expectedScalebar.tiff"), 5);
+        assertNotNull(values.getObject("scalebarSubReport", String.class));
+
+        // now without a subreport
+        final Configuration config_noreport = configurationFactory.getConfig(getFile(BASE_DIR + "config-no-report.yaml"));
+        final Template template_noreport = config_noreport.getTemplate("main");
+        Values values_noreport = new Values(requestData, template_noreport, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
+        this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values_noreport));
+
+        assertNull(values_noreport.getObject("scalebarSubReport", String.class));
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

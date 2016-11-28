@@ -7,7 +7,6 @@ import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.AbstractProcessor;
-import org.mapfish.print.processor.InternalValue;
 import org.mapfish.print.processor.jasper.ImagesSubReport;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
 
@@ -46,7 +45,7 @@ import java.util.List;
  *     }
  * </code></pre>
  * <p>See also: <a href="attributes.html#!northArrow">!northArrow</a> attribute</p>
- * [[examples=verboseExample]]
+ * [[examples=verboseExample,print_osm_new_york_nosubreports]]
  */
 public class CreateNorthArrowProcessor extends AbstractProcessor<CreateNorthArrowProcessor.Input, CreateNorthArrowProcessor.Output> {
 
@@ -84,11 +83,16 @@ public class CreateNorthArrowProcessor extends AbstractProcessor<CreateNorthArro
                 values.clientHttpRequestFactory);
 
         checkCancelState(context);
-        final URI scalebarSubReport = createNorthArrowSubReport(
+        
+        String strScalebarSubReport = null;
+        if (values.northArrow.isCreateSubReport()) {
+            final URI scalebarSubReport = createNorthArrowSubReport(
                 values.tempTaskDirectory, values.northArrow.getSize(),
                 Lists.newArrayList(northArrowGraphicFile), values.map.getDpi());
+            strScalebarSubReport = scalebarSubReport.toString();
+        }
 
-        return new Output(northArrowGraphicFile, scalebarSubReport.toString());
+        return new Output(northArrowGraphicFile.toString(), strScalebarSubReport);
     }
 
     private URI createNorthArrowSubReport(final File printDirectory,
@@ -137,16 +141,15 @@ public class CreateNorthArrowProcessor extends AbstractProcessor<CreateNorthArro
         /**
          * The path to the north arrow graphic (for testing purposes).
          */
-        @InternalValue
-        public final URI graphic;
+        public final String northArrowGraphic;
 
         /**
          * The path to the compiled sub-report for the north arrow.
          */
         public final String northArrowSubReport;
 
-        private Output(final URI graphic, final String northArrowSubReport) {
-            this.graphic = graphic;
+        private Output(final String northArrowGraphic, final String northArrowSubReport) {
+            this.northArrowGraphic = northArrowGraphic;
             this.northArrowSubReport = northArrowSubReport;
         }
     }

@@ -13,11 +13,12 @@ import java.util.List;
 /**
  * <p>The attributes for {@link org.mapfish.print.processor.map.CreateNorthArrowProcessor} (see
  * <a href="processors.html#!createNorthArrow">!createNorthArrow</a> processor).</p>
- * [[examples=verboseExample]]
+ * [[examples=verboseExample,print_osm_new_york_nosubreports]]
  */
 public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute.NorthArrowAttributeValues> {
 
     private Integer size = null;
+    private Boolean createSubReport = true;
 
     @Override
     public final void validate(final List<Throwable> validationErrors, final Configuration configuration) {
@@ -28,7 +29,7 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
 
     @Override
     public final NorthArrowAttributeValues createValue(final Template template) {
-        return new NorthArrowAttributeValues(new Dimension(this.size, this.size));
+        return new NorthArrowAttributeValues(new Dimension(this.size, this.size), this.createSubReport);
     }
 
     @Override
@@ -50,6 +51,20 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
         this.size = size;
     }
 
+
+    public final Boolean getCreateSubReport() {
+        return this.createSubReport;
+    }
+
+    /**
+     * Specifies whether a subreport should be created, or only a graphic.
+     * @param createSubReport Create a sub-report?
+     */
+    public final void setCreateSubReport(final Boolean createSubReport) {
+        this.createSubReport = createSubReport;
+    }
+
+
     /**
      * The value of {@link NorthArrowAttribute}.
      */
@@ -58,6 +73,7 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
         private static final String DEFAULT_BACKGROUND_COLOR = "rgba(255, 255, 255, 0)";
 
         private final Dimension size;
+        private final boolean createSubReport;
 
         /**
          * The path to a graphic to use for the north-arrow.
@@ -83,9 +99,11 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
          * Constructor.
          *
          * @param size The size of the scalebar graphic in the Jasper report (in pixels).
+         * @param createSubReport Create a sub-report?
          */
-        public NorthArrowAttributeValues(final Dimension size) {
+        public NorthArrowAttributeValues(final Dimension size, final boolean createSubReport) {
             this.size = size;
+            this.createSubReport = createSubReport;
         }
 
         /**
@@ -108,5 +126,10 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
         public final Color getBackgroundColor() {
             return ColorParser.toColor(this.backgroundColor);
         }
+
+        public final boolean isCreateSubReport() {
+            return this.createSubReport;
+        }
+        
     }
 }

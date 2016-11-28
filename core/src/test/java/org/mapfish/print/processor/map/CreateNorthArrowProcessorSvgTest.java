@@ -66,8 +66,8 @@ public class CreateNorthArrowProcessorSvgTest extends AbstractMapfishSpringTest 
         Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
-        URI northArrowGraphic = (URI) values.getObject("graphic", URI.class);
-        BufferedImage graphic = ImageSimilarity.convertFromSvg(northArrowGraphic, 200, 200);
+        String northArrowGraphic = values.getObject("northArrowGraphic", String.class);
+        BufferedImage graphic = ImageSimilarity.convertFromSvg(new URI(northArrowGraphic), 200, 200);
 
 //        Files.copy(new File(northArrowGraphic), new File(TMP, getClass().getSimpleName() + ".svg"));
 //        ImageSimilarity.writeUncompressedImage(graphic, TMP + "/" + getClass().getSimpleName() + ".tiff");
