@@ -85,7 +85,7 @@ public class MapPrinter {
         try {
             jsonSpec = new JSONObject(spec);
         } catch (JSONException e) {
-            throw new RuntimeException("Cannot parse the spec file", e);
+            throw new RuntimeException("Cannot parse the spec file: " + spec, e);
         }
         return new PJsonObject(jsonSpec, "spec");
     }
