@@ -1,6 +1,6 @@
 {
   "units": "m",
-  "srs": "EPSG:900913",
+  "srs": "EPSG:3857",
   "layout": "A4 landscape",
   "dpi": 72,
   "outputFormat" : "pdf",

@@ -3,7 +3,7 @@
   "outputFormat": "pdf",
   "attributes": {
     "map": {
-      "projection": "EPSG:900913",
+      "projection": "EPSG:3857",
       "dpi": 72,
       "areaOfInterest": {
         "area" : {

@@ -14,3 +14,4 @@ The processor graph is more strict
 - In the !prepareTable processor, the table output is renamed to tableDataSource
 - In the mapContext the method getRoundedScale is renamed to getRoundedScaleDenominator
 - The longtime deprecated imageFormat on OSM layer is removed
+- The fake projection EPSG:900913 is no more supported, you should use the projection EPSG:3857

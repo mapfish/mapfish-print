@@ -1,6 +1,6 @@
 {
   "units": "m",
-  "srs": "EPSG:900913",
+  "srs": "EPSG:3857",
   "layout": "A4 Portrait",
   "outputFilename": "political-boundaries",
   "outputFormat": "pdf",

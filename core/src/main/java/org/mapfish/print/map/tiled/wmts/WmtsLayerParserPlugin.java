@@ -19,7 +19,7 @@ import javax.annotation.Resource;
 /**
  * <p>Renders WMTS layers.</p>
  * <p>Type: <code>wmts</code></p>
- * [[examples=printwmts_tyger_ny_EPSG_900913]]
+ * [[examples=printwmts_tyger_ny_EPSG_3857]]
  */
 public final class WmtsLayerParserPlugin extends AbstractGridCoverageLayerPlugin implements MapLayerFactoryPlugin<WMTSLayerParam> {
     @Autowired

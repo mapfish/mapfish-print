@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * <p>The attributes for {@link org.mapfish.print.processor.map.scalebar.CreateScalebarProcessor} (see
  * <a href="processors.html#!createScalebar">!createScalebar</a> processor).</p>
- * [[examples=verboseExample,print_osm_new_york_EPSG_900913,print_osm_new_york_nosubreports]]
+ * [[examples=verboseExample,print_osm_new_york_EPSG_3857,print_osm_new_york_nosubreports]]
  */
 public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.ScalebarAttributeValues> {
 

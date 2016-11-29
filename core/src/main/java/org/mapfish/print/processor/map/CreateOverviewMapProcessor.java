@@ -58,7 +58,7 @@ import java.util.List;
  * <p></p>
  * <p>The style of the bbox rectangle can be changed by setting the <code>style</code> property.</p>
  * <p>See also: <a href="attributes.html#!overviewMap">!overviewMap</a> attribute</p>
- * [[examples=verboseExample,overviewmap_tyger_ny_EPSG_900913]]
+ * [[examples=verboseExample,overviewmap_tyger_ny_EPSG_3857]]
  */
 public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverviewMapProcessor.Input, CreateOverviewMapProcessor.Output> {
 
