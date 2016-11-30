@@ -15,7 +15,7 @@
     <logger name="org.mapfish.print.output.ValuesLogger" level="OFF" />
 
 
-    <root level="ALL">
+    <root level="INFO">
         <appender-ref ref="standardOut" />
     </root>
 </configuration>

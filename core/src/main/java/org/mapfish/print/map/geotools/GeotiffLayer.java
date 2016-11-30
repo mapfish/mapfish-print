@@ -132,4 +132,9 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
         @HasDefaultValue
         public String style = Constants.Style.Raster.NAME;
     }
+
+    @Override
+    public RenderType getRenderType() {
+        return RenderType.TIFF;
+    }
 }

@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutorService;
 /**
  * The AbstractGridCoverage2DReaderLayer class.
  */
-public class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
+public abstract class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
 
     private final Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> coverage2DReaderSupplier;
     private final StyleSupplier<AbstractGridCoverage2DReader> styleSupplier;

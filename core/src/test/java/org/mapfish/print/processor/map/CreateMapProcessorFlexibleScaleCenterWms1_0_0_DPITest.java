@@ -115,7 +115,7 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0_DPITest extends Abstr
 
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
-        assertEquals(2, layerGraphics.size());
+        assertEquals(1, layerGraphics.size());
 
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 2625, 1225);
 

@@ -90,7 +90,7 @@ public class CreateOverviewMapProcessorCustomLayerTest extends AbstractMapfishSp
 
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("overviewMapLayerGraphics", List.class);
-        assertEquals(2, layerGraphics.size());
+        assertEquals(1, layerGraphics.size());
 
         final BufferedImage actualImage = ImageSimilarity.mergeImages(layerGraphics, 300, 200);
 //        ImageSimilarity.writeUncompressedImage(actualImage, "/tmp/expectedSimpleImage.tiff");

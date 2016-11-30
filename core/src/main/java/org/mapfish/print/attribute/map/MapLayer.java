@@ -9,6 +9,63 @@ import java.awt.Graphics2D;
  * Encapsulates the data required to load map data for a layer and render it.
  */
 public interface MapLayer {
+    
+    /**
+     * Enumerated type to specify whether layer should be rendered as PNG, JPEG or SVG.
+     */
+    public enum RenderType {
+        /** Unknown Rendering Format (let CreateMapProcessor decide). */
+        UNKNOWN,
+        /** Render as PNG. */
+        PNG, 
+        /** Render as JPEG. */
+        JPEG, 
+        /** Render as TIFF. */
+        TIFF,
+        /** Render as SVG. */
+        SVG;
+
+        /**
+         * Get RenderType from a string that represents a mime type.
+         *
+         * @param mimeType string with mime type
+         * @return render type
+         */
+        public static RenderType fromMimeType(final String mimeType) {
+            if (mimeType.equals("image/jpeg")) {
+                return JPEG;
+            } else if (mimeType.equals("image/png")) {
+                return PNG;
+            } else if (mimeType.matches("image/tiff(-fx)?")) {
+                return TIFF;
+            } else if (mimeType.matches("image/svg(\\+xml)?")) {
+                return SVG;
+            } else {
+                return UNKNOWN;
+            }
+        }
+
+        /**
+         * Get RenderType from a string that represents a file extension.
+         * 
+         * @param fileExtension string with file extension
+         * @return render type
+         */
+        public static RenderType fromFileExtension(final String fileExtension) {
+            final String extensionOrMimeLC = fileExtension.toLowerCase();
+            if (extensionOrMimeLC.matches("jpe?g")) {
+                return JPEG;
+            } else if (extensionOrMimeLC.equals("png")) {
+                return PNG;
+            } else if (extensionOrMimeLC.matches("tiff?")) {
+                return TIFF;
+            } else if (extensionOrMimeLC.equals("svg")) {
+                return SVG;
+            } else {
+                return UNKNOWN;
+            }
+        }
+    }
 
     /**
      * Attempt to add the layer this layer so that both can be rendered as a single layer.
@@ -57,4 +114,11 @@ public interface MapLayer {
      * The layer name.
      */
     String getName();
+    
+    /**
+     * Specify whether layer should be rendered as PNG, JPEG or SVG. 
+     * 
+     * @return render type
+     */
+    RenderType getRenderType();
 }

@@ -87,8 +87,8 @@ public class AddBackgroundLayersTest extends AbstractMapfishSpringTest {
         Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
         template.getProcessorGraph().createTask(values).invoke();
 
-        assertImage(values, 2, "layerGraphics", "expectedSimpleImage.png", 630, 294);
-        assertImage(values, 3, "overviewMapLayerGraphics", "expectedOverviewImage.png", 320, 200);
+        assertImage(values, 1, "layerGraphics", "expectedSimpleImage.png", 630, 294);
+        assertImage(values, 1, "overviewMapLayerGraphics", "expectedOverviewImage.png", 320, 200);
     }
 
     private void assertImage(Values values, int numberOfLayers, String graphicsValueKey, String imageName, int width, int height) throws IOException, TranscoderException {

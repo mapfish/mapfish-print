@@ -200,4 +200,9 @@ public class WMTSLayer extends AbstractTiledLayer {
 
         return new URI(path);
     }
+    
+    @Override
+    public final RenderType getRenderType() {
+        return RenderType.fromMimeType(this.param.imageFormat);
+    }
 }

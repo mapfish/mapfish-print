@@ -1,7 +1,5 @@
 #!/bin/bash -e
 
-
-JDK="oraclejdk7"   # what JDK we use to build the WAR that goes in the docker image
 NAME="camptocamp/mapfish_print"
 
 function publish {
@@ -16,12 +14,6 @@ function publish {
     ./gradlew --console=plain createDocker
     docker push "${NAME}:${DOCKER_VERSION}"
 }
-
-if [ "${TRAVIS_JDK_VERSION}" != "${JDK}" ]
-then
-    echo "Only publishing with ${JDK}"
-    exit 0
-fi
 
 if [ "${TRAVIS_PULL_REQUEST}" != "false" ]
 then

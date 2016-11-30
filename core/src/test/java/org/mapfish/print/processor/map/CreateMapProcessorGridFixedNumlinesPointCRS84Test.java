@@ -49,7 +49,7 @@ public class CreateMapProcessorGridFixedNumlinesPointCRS84Test extends AbstractM
 
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
-        assertEquals(2, layerGraphics.size());
+        assertEquals(1, layerGraphics.size());
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
 
 //        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
