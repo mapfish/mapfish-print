@@ -35,7 +35,7 @@
     <logger name="net.sf.jasperreports" level="INFO" />
 
 
-    <root level="ALL">
+    <root level="INFO">
         <appender-ref ref="standardOut" />
         <appender-ref ref="File" />
     </root>

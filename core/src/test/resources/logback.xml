@@ -15,7 +15,7 @@
     <logger name="org.springframework" level="WARN" />
     <logger name="org.apache" level="WARN" />
 
-    <root level="ALL">
+    <root level="INFO">
         <appender-ref ref="standardOut" />
     </root>
 </configuration>
