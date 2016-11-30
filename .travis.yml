@@ -16,10 +16,11 @@ before_install:
 - export OLD_HOSTNAME=`hostname` && sudo sed -i -e "s/$OLD_HOSTNAME/test/g" /etc/hosts && sudo hostname test
 
 # Don't run eval ./gradlew assemble"
-install: []
+install:
+- ./gradlew examples:geoserverData
 
 script:
-- ./gradlew --no-color build
+- ./gradlew build
 
 after_failure:
 - cat core/build/reports/checkstyleReports/main.xml
