@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
+import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 
 
@@ -76,8 +77,8 @@ public final class TileLoaderTask extends RecursiveTask<GridCoverage2D> {
      */
     public TileLoaderTask(final MfClientHttpRequestFactory httpRequestFactory,
                           final double dpi,
-                          final MapfishMapContext transformer,
-                          final TileCacheInformation tileCacheInfo,
+                          @Nonnull final MapfishMapContext transformer,
+                          @Nonnull final TileCacheInformation tileCacheInfo,
                           final boolean failOnError,
                           final ForkJoinPool requestForkJoinPool,
                           final MetricRegistry registry) {
