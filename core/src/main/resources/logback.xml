@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+    <appender name="standardOut" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <Pattern>gradle: %d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.mapfish" level="ALL" />
+    <!-- Set spec logger to INFO to log all print spec json data -->
+    <logger name="org.mapfish.print.servlet.BaseMapServlet.spec" level="OFF" />
+    <logger name="com.codahale.metrics.JmxReporter" level="INFO" />
+    <logger name="org.springframework" level="WARN" />
+    <logger name="org.apache" level="WARN" />
+
+    <root level="INFO">
+        <appender-ref ref="standardOut" />
+    </root>
+</configuration>
