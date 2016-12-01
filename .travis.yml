@@ -2,6 +2,15 @@ language: java
 
 sudo: true
 
+before_cache:
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+cache:
+  directories:
+  - $HOME/.gradle/caches/
+  - $HOME/.gradle/wrapper/
+
 services:
 - docker
 
@@ -16,10 +25,11 @@ before_install:
 - export OLD_HOSTNAME=`hostname` && sudo sed -i -e "s/$OLD_HOSTNAME/test/g" /etc/hosts && sudo hostname test
 
 # Don't run eval ./gradlew assemble"
-install: []
+install:
+- ./gradlew examples:geoserverData
 
 script:
-- ./gradlew --no-color build
+- ./gradlew build
 
 after_failure:
 - cat core/build/reports/checkstyleReports/main.xml

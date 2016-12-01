@@ -1,5 +1,9 @@
 package org.mapfish.print;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
+import ch.qos.logback.core.util.StatusPrinter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
@@ -14,6 +18,7 @@ import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.servlet.oldapi.OldAPIRequestConverter;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -74,6 +79,21 @@ public class ExamplesTest {
 
     @BeforeClass
     public static void setUp() throws Exception {
+        final ClassLoader classLoader = AbstractApiTest.class.getClassLoader();
+        final URL logfile = classLoader.getResource("logback.xml");
+        final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+        try {
+            final JoranConfigurator configurator = new JoranConfigurator();
+            configurator.setContext(loggerContext);
+            // Call context.reset() to clear any previous configuration, e.g. default
+            // configuration. For multi-step configuration, omit calling context.reset().
+            loggerContext.reset();
+            configurator.doConfigure(logfile);
+        } catch (JoranException je) {
+            // StatusPrinter will handle this
+        }
+        StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext);
+
         String filterProperty = System.getProperty(FILTER_PROPERTY);
         if (!Strings.isNullOrEmpty(filterProperty)) {
             String[] parts = filterProperty.split("/", 2);

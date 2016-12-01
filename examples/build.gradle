@@ -1,17 +1,23 @@
 apply plugin: 'war'
 apply plugin: 'org.akhikhl.gretty'
 
+def geoserverVersion = "2.8.2"
 
 repositories {
+    mavenLocal()
     maven {url "http://repo.boundlessgeo.com/main"}
     maven {url "http://maven.restlet.org"}
 }
 
 dependencies {
-    testCompile (project(':core'))
+    compile "org.geoserver.web:gs-web-app:$geoserverVersion"
+    testCompile (
+        project(":core")
+    )
 }
 
 configurations {
+    compile.exclude module: "jai_core"
 }
 
 def examplesDir = "${project(':examples').projectDir}/src/test/resources/examples"
@@ -23,14 +29,29 @@ gretty {
     integrationTestTask = "integrationTest"
 }
 
+task geoserverOriginalData (type: Copy) {
+    description "Extract the Geoserver web app jar file"
+
+    def path = configurations.compile.find {it.name.startsWith("gs-web-app") }
+    from zipTree(file(path))
+    into "$buildDir/geoserver/"
+}
+
+task geoserverData (type: Copy, dependsOn: geoserverOriginalData) {
+    description "Append additional data to GeoServer"
+
+    from fileTree("src/test/resources/data/")
+
+    into "build/geoserver/data/"
+}
+
 farm {
     // configuration to start a server running mfp, geoserver and the web-app
     // containing test data. start with `./gradlew examples:farmRun`
     systemProperty "path_to_examples", examplesDir
-    jvmArgs = ["-Xmx512M", "-XX:MaxPermSize=512m"]
+    jvmArgs = ["-Xmx512M", "-XX:MaxPermSize=512m", "-DGEOSERVER_DATA_DIR=$buildDir/geoserver/data"]
 
-    // FIXME do not output geoserver logs
-    webapp "org.geoserver.web:gs-web-app:2.8.2"
+    webapp "org.geoserver.web:gs-web-app:$geoserverVersion"
     webapp ":core"
     webapp ":examples"
 }
@@ -49,8 +70,9 @@ task integrationTest(type: Test) {
         showStackTraces true
     }
 }
-integrationTest.dependsOn ':core:compileJava'
+integrationTest.dependsOn ':core:compileJava', 'geoserverData'
 
 afterEvaluate {
     build.dependsOn project.tasks['farmIntegrationTest']
+    farmRun.dependsOn geoserverData
 }
