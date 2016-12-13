@@ -8,6 +8,7 @@ import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Polygon;
 
+import jsr166y.ForkJoinPool;
 import net.sf.jasperreports.engine.JRException;
 
 import org.apache.batik.svggen.DefaultStyleHandler;
@@ -32,6 +33,7 @@ import org.mapfish.print.attribute.map.ZoomLevelSnapStrategy;
 import org.mapfish.print.attribute.map.ZoomToFeatures.ZoomType;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
+import org.mapfish.print.http.HttpRequestCache;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.Scale;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
@@ -70,6 +72,7 @@ import java.util.UUID;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -121,6 +124,9 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
 
     @Autowired
     FeatureLayer.Plugin featureLayerPlugin;
+    
+    @Resource(name = "requestForkJoinPool")
+    private ForkJoinPool requestForkJoinPool;
 
     private BufferedImageType imageType = BufferedImageType.TYPE_4BYTE_ABGR;
     
@@ -189,7 +195,23 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                     layer.getRenderType().toString() + " format, storing as PNG.");
         }
     }
-
+    
+    private MapfishMapContext getTransformer(final MapfishMapContext mapContext, final double imageBufferScaling) {
+        return new MapfishMapContext(
+                mapContext,
+                mapContext.getBounds(),
+                new Dimension(
+                        (int) Math.round(mapContext.getMapSize().width * imageBufferScaling),
+                        (int) Math.round(mapContext.getMapSize().height * imageBufferScaling)
+                ),
+                mapContext.getRotation(), false,
+                mapContext.getDPI(),
+                mapContext.getRequestorDPI(),
+                mapContext.isForceLongitudeFirst(),
+                mapContext.isDpiSensitiveStyle()
+        );
+    }
+    
     private List<URI> createLayerGraphics(final File printDirectory,
                                           final MfClientHttpRequestFactory clientHttpRequestFactory,
                                           final MapAttribute.MapAttributeValues mapValues,
@@ -200,14 +222,28 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         final List<MapLayer> layers = Lists.reverse(Lists.newArrayList(mapValues.getLayers()));
 
         final AreaOfInterest areaOfInterest = addAreaOfInterestLayer(mapValues, layers);
-
+        
         final String mapKey = UUID.randomUUID().toString();
         final List<URI> graphics = new ArrayList<URI>(layers.size());
+        
+        HttpRequestCache cache = new HttpRequestCache();
+        
+        //prepare layers for rendering
+        for (int i = 0; i < layers.size(); i++) {
+            final MapLayer layer = layers.get(i);
+            layer.prepareRender(mapContext);   
+            final MapfishMapContext transformer = getTransformer(mapContext, 
+                    layer.getImageBufferScaling());
+            layer.cacheResources(cache, clientHttpRequestFactory, transformer);
+        }
+
+        //now we download and cache all images at once
+        cache.cache(this.requestForkJoinPool);
+        
         for (int i = 0; i < layers.size(); i++) {
             MapLayer layer = layers.get(i);
             checkCancelState(context);
             File path = null;
-            layer.prepareRender(mapContext);
             RenderType renderType = getSupportedRenderType(layer.getRenderType());
             if (layer.getRenderType() == RenderType.SVG) {
                 // render layer as SVG
@@ -238,19 +274,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 );
 
                 try {
-                    MapfishMapContext transformer = new MapfishMapContext(
-                            mapContext,
-                            mapContext.getBounds(),
-                            new Dimension(
-                                    (int) Math.round(mapContext.getMapSize().width * imageBufferScaling),
-                                    (int) Math.round(mapContext.getMapSize().height * imageBufferScaling)
-                            ),
-                            mapContext.getRotation(), false,
-                            mapContext.getDPI(),
-                            mapContext.getRequestorDPI(),
-                            mapContext.isForceLongitudeFirst(),
-                            mapContext.isDpiSensitiveStyle()
-                    );
+                    MapfishMapContext transformer = getTransformer(mapContext, layer.getImageBufferScaling());
                     layer.render(graphics2D, clientHttpRequestFactory, transformer);
 
                     // Merge consecutive layers of same render type and same buffer scaling (native

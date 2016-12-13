@@ -7,6 +7,7 @@ import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.Layer;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.http.HttpRequestCache;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.map.geotools.AbstractGeotoolsLayer;
@@ -28,6 +29,7 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
     private final MetricRegistry registry;
     private final ForkJoinPool requestForkJoinPool;
     private TileCacheInformation tileCacheInformation;
+    private TilePreparationInfo tilePreparationInfo;
 
     /**
      * The scale ratio between the tiles resolution and the target resolution.
@@ -66,10 +68,9 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
     @Override
     protected final List<? extends Layer> getLayers(final MfClientHttpRequestFactory httpRequestFactory,
                                                     final MapfishMapContext mapContext) throws Exception {
-        double dpi = mapContext.getDPI();
-        final TileLoaderTask task = new TileLoaderTask(
-                httpRequestFactory, dpi, mapContext,
-                this.tileCacheInformation, getFailOnError(), this.requestForkJoinPool, this.registry);
+        
+        final CoverageTask task = new CoverageTask(this.tilePreparationInfo, 
+                getFailOnError(), this.registry, this.tileCacheInformation, this.requestForkJoinPool);
         final GridCoverage2D gridCoverage2D = this.forkJoinPool.invoke(task);
 
         GridCoverageLayer layer = new GridCoverageLayer(gridCoverage2D, this.styleSupplier.load(httpRequestFactory, gridCoverage2D,
@@ -89,5 +90,17 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
     @Override
     public final double getImageBufferScaling() {
         return this.imageBufferScaling;
+    }
+    
+    @Override
+    public final void cacheResources(final HttpRequestCache httpRequestCache,
+            final MfClientHttpRequestFactory clientHttpRequestFactory, final MapfishMapContext transformer) {
+        final MapfishMapContext layerTransformer = getLayerTransformer(transformer);
+        
+        final double dpi = transformer.getDPI();
+        final TilePreparationTask task = new TilePreparationTask(
+                clientHttpRequestFactory, dpi, layerTransformer,
+                this.tileCacheInformation, httpRequestCache);
+        this.tilePreparationInfo = this.forkJoinPool.invoke(task);
     }
 }

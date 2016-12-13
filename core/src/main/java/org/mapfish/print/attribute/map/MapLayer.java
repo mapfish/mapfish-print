@@ -1,6 +1,8 @@
 package org.mapfish.print.attribute.map;
 
 import com.google.common.base.Optional;
+
+import org.mapfish.print.http.HttpRequestCache;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 
 import java.awt.Graphics2D;
@@ -121,4 +123,14 @@ public interface MapLayer {
      * @return render type
      */
     RenderType getRenderType();
+    
+    /**
+     * Cache any needed resources on disk.
+     * @param httpRequestCache TODO
+     * @param clientHttpRequestFactory client http request factory
+     * @param transformer transformer
+     */
+    void cacheResources(final HttpRequestCache httpRequestCache,
+            final MfClientHttpRequestFactory clientHttpRequestFactory, 
+            final MapfishMapContext transformer);
 }
