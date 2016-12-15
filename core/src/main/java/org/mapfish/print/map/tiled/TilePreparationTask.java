@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import jsr166y.RecursiveTask;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
@@ -26,14 +25,15 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import javax.annotation.Nonnull;
 
 
 /**
- * The TileLoaderTask class.
+ * The Tile Preparation Task class.
  */
-public final class TilePreparationTask extends RecursiveTask<TilePreparationInfo> {
+public final class TilePreparationTask implements Callable<TilePreparationInfo> {
     private static final Logger LOGGER = LoggerFactory.getLogger(TilePreparationTask.class);
         
     private final MapBounds bounds;
@@ -67,8 +67,10 @@ public final class TilePreparationTask extends RecursiveTask<TilePreparationInfo
         this.tiledLayer = tileCacheInfo;
     }
 
-    @Override
-    protected TilePreparationInfo compute() {        
+    /**
+     * Call the Tile Preparation Task.
+     */
+    public TilePreparationInfo call() {
         try {            
             final ReferencedEnvelope mapGeoBounds = this.bounds.toReferencedEnvelope(this.paintArea, this.dpi);
             final CoordinateReferenceSystem mapProjection = mapGeoBounds.getCoordinateReferenceSystem();

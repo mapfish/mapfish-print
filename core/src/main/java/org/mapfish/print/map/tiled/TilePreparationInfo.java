@@ -7,9 +7,7 @@ import org.springframework.http.client.ClientHttpRequest;
 import java.util.List;
 
 /**
- * Tile Loader Task Result.
- * 
- * @author Niels Charlier
+ * Tile Preparation Task Result.
  *
  */
 public class TilePreparationInfo {
@@ -75,8 +73,6 @@ public class TilePreparationInfo {
     
     /**
      * Information per tile (x, y and request).
-     * 
-     * @author Niels Charlier
      *
      */
     public static class SingleTilePreparationInfo {

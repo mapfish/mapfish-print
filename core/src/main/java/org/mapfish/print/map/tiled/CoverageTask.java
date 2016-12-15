@@ -3,8 +3,6 @@ package org.mapfish.print.map.tiled;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.google.common.collect.Lists;
-import jsr166y.ForkJoinPool;
 import jsr166y.RecursiveTask;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -23,23 +21,20 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 
 import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 
 
 /**
- * The TileLoaderTask class.
+ * The CoverageTask class.
  */
-public final class CoverageTask extends RecursiveTask<GridCoverage2D> {
+public final class CoverageTask implements Callable<GridCoverage2D> {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(CoverageTask.class);
 
     private final TileCacheInformation tiledLayer;
-    private final ForkJoinPool requestForkJoinPool;
     private final TilePreparationInfo tilePreparationInfo;
     private final boolean failOnError;
     private final MetricRegistry registry;
@@ -52,14 +47,12 @@ public final class CoverageTask extends RecursiveTask<GridCoverage2D> {
      * @param failOnError        fail on tile download error
      * @param registry           the metrics registry
      * @param tileCacheInfo      the object used to create the tile requests
-     * @param requestForkJoinPool the thread pool for making tile/image requests.
      */
     public CoverageTask(@Nonnull final TilePreparationInfo tilePreparationInfo, 
             final boolean failOnError, final MetricRegistry registry,
-            @Nonnull final TileCacheInformation tileCacheInfo, final ForkJoinPool requestForkJoinPool) {
+            @Nonnull final TileCacheInformation tileCacheInfo) {
         this.tilePreparationInfo = tilePreparationInfo;
         this.tiledLayer = tileCacheInfo;
-        this.requestForkJoinPool = requestForkJoinPool;
         this.failOnError = failOnError;
         this.registry = registry;
         
@@ -76,38 +69,33 @@ public final class CoverageTask extends RecursiveTask<GridCoverage2D> {
         }
     }
 
-    @Override
-    protected GridCoverage2D compute() {
+    /**
+     * Call the Coverage Task.
+     */
+    public GridCoverage2D call() {
         try {               
-            List<TileTask> loaderTasks = Lists.newArrayList();
-            for (SingleTilePreparationInfo tileLoader : this.tilePreparationInfo.getSingleTiles()) {
-                if (tileLoader.getTileRequest() != null) {
-                        final SingleTileLoaderTask task = new SingleTileLoaderTask(
-                                tileLoader.getTileRequest(), this.errorImage, tileLoader.getTileIndexX(),
-                                tileLoader.getTileIndexY(), this.failOnError, this.registry);
-                        loaderTasks.add(task);
-                } else {
-                    loaderTasks.add(new PlaceHolderImageTask(this.tiledLayer.getMissingTileImage(), 
-                            tileLoader.getTileIndexX(), tileLoader.getTileIndexY()));
-                }
-            }            
-            
             BufferedImage coverageImage = this.tiledLayer.createBufferedImage(this.tilePreparationInfo.getImageWidth(), 
                     this.tilePreparationInfo.getImageHeight());
             Graphics2D graphics = coverageImage.createGraphics();
-            try {
-                List<Future<Tile>> futureTiles = this.requestForkJoinPool.invokeAll(loaderTasks);
-                for (Future<Tile> futureTile : futureTiles) {
-                    Tile tile = futureTile.get();
-                    if (tile.getImage() != null) {
-                        graphics.drawImage(tile.getImage(),
-                                tile.getxIndex() * this.tiledLayer.getTileSize().width, 
-                                tile.getyIndex() * this.tiledLayer.getTileSize().height, null);
-                    }
+            
+            for (SingleTilePreparationInfo tileInfo : this.tilePreparationInfo.getSingleTiles()) {
+                TileTask task;
+                if (tileInfo.getTileRequest() != null) {
+                    task = new SingleTileLoaderTask(
+                                tileInfo.getTileRequest(), this.errorImage, tileInfo.getTileIndexX(),
+                                tileInfo.getTileIndexY(), this.failOnError, this.registry);
+                } else {
+                    task = new PlaceHolderImageTask(this.tiledLayer.getMissingTileImage(), 
+                            tileInfo.getTileIndexX(), tileInfo.getTileIndexY());
                 }
-            } finally {
-                graphics.dispose();
+                Tile tile = task.call();
+                if (tile.getImage() != null) {
+                    graphics.drawImage(tile.getImage(),
+                            tile.getxIndex() * this.tiledLayer.getTileSize().width, 
+                            tile.getyIndex() * this.tiledLayer.getTileSize().height, null);
+                }
             }
+            graphics.dispose();
 
             GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
             GeneralEnvelope gridEnvelope = new GeneralEnvelope(this.tilePreparationInfo.getMapProjection());

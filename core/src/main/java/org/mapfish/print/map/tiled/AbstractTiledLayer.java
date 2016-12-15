@@ -25,9 +25,7 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
 
 
     private final StyleSupplier<GridCoverage2D> styleSupplier;
-    private final ForkJoinPool forkJoinPool;
     private final MetricRegistry registry;
-    private final ForkJoinPool requestForkJoinPool;
     private TileCacheInformation tileCacheInformation;
     private TilePreparationInfo tilePreparationInfo;
 
@@ -39,19 +37,15 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
     /**
      * Constructor.
      * @param forkJoinPool the thread pool for doing the rendering.
-     * @param requestForkJoinPool the thread pool for making tile/image requests.
      * @param styleSupplier strategy for loading the style for this layer
      * @param params the parameters for this layer
      * @param registry the metrics registry
      */
     protected AbstractTiledLayer(final ForkJoinPool forkJoinPool,
-                                 final ForkJoinPool requestForkJoinPool,
                                  final StyleSupplier<GridCoverage2D> styleSupplier,
                                  final AbstractLayerParams params,
                                  final MetricRegistry registry) {
         super(forkJoinPool, params);
-        this.forkJoinPool = forkJoinPool;
-        this.requestForkJoinPool = requestForkJoinPool;
         this.styleSupplier = styleSupplier;
         this.registry = registry;
     }
@@ -70,8 +64,8 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
                                                     final MapfishMapContext mapContext) throws Exception {
         
         final CoverageTask task = new CoverageTask(this.tilePreparationInfo, 
-                getFailOnError(), this.registry, this.tileCacheInformation, this.requestForkJoinPool);
-        final GridCoverage2D gridCoverage2D = this.forkJoinPool.invoke(task);
+                getFailOnError(), this.registry, this.tileCacheInformation);
+        final GridCoverage2D gridCoverage2D = task.call();
 
         GridCoverageLayer layer = new GridCoverageLayer(gridCoverage2D, this.styleSupplier.load(httpRequestFactory, gridCoverage2D,
                 mapContext));
@@ -101,6 +95,6 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
         final TilePreparationTask task = new TilePreparationTask(
                 clientHttpRequestFactory, dpi, layerTransformer,
                 this.tileCacheInformation, httpRequestCache);
-        this.tilePreparationInfo = this.forkJoinPool.invoke(task);
+        this.tilePreparationInfo = task.call();
     }
 }

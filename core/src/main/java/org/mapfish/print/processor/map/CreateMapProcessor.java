@@ -1,5 +1,6 @@
 package org.mapfish.print.processor.map;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -125,6 +126,9 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
     @Autowired
     FeatureLayer.Plugin featureLayerPlugin;
     
+    @Autowired
+    private MetricRegistry metricRegistry;
+    
     @Resource(name = "requestForkJoinPool")
     private ForkJoinPool requestForkJoinPool;
 
@@ -226,7 +230,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         final String mapKey = UUID.randomUUID().toString();
         final List<URI> graphics = new ArrayList<URI>(layers.size());
         
-        HttpRequestCache cache = new HttpRequestCache();
+        HttpRequestCache cache = new HttpRequestCache(printDirectory, this.metricRegistry);
         
         //prepare layers for rendering
         for (int i = 0; i < layers.size(); i++) {
