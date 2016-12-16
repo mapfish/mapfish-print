@@ -15,6 +15,7 @@ import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.http.HttpRequestCache;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
 
@@ -57,6 +58,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
 
     @Override
     public void prepareRender(final MapfishMapContext transformer) {
+
     }
 
     @Override
@@ -64,28 +66,14 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
             final Graphics2D graphics2D,
             final MfClientHttpRequestFactory clientHttpRequestFactory,
             final MapfishMapContext transformer) {
-        Rectangle paintArea = new Rectangle(transformer.getMapSize());
-        MapBounds bounds = transformer.getBounds();
-
-        MapfishMapContext layerTransformer = transformer;
+        
+        MapfishMapContext layerTransformer = getLayerTransformer(transformer);
+        
         if (!FloatingPointUtil.equals(transformer.getRotation(), 0.0) && !this.supportsNativeRotation()) {
-            // if a rotation is set and the rotation can not be handled natively
-            // by the layer, we have to adjust the bounds and map size
-            final Rectangle2D.Double paintAreaPrecise = transformer.getRotatedMapSizePrecise();
-            paintArea = new Rectangle(MapfishMapContext.rectangleDoubleToDimension(paintAreaPrecise));
-            bounds = transformer.getRotatedBounds(paintAreaPrecise, paintArea);
             graphics2D.setTransform(transformer.getTransform());
-            Dimension mapSize = new Dimension(paintArea.width, paintArea.height);
-            layerTransformer = new MapfishMapContext(
-                    transformer, bounds, mapSize,
-                    0, false,
-                    transformer.getDPI(),
-                    transformer.getRequestorDPI(),
-                    transformer.isForceLongitudeFirst(),
-                    transformer.isDpiSensitiveStyle()
-            );
         }
 
+        Rectangle paintArea = new Rectangle(layerTransformer.getMapSize());
         MapContent content = new MapContent();
         try {
             List<? extends Layer> layers = getLayers(clientHttpRequestFactory, layerTransformer);
@@ -126,7 +114,8 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
             renderer.setMapContent(content);
             renderer.setThreadPool(this.executorService);
 
-            final ReferencedEnvelope mapArea = bounds.toReferencedEnvelope(paintArea, transformer.getDPI());
+            final ReferencedEnvelope mapArea = layerTransformer.getBounds().toReferencedEnvelope(paintArea, 
+                    transformer.getDPI());
             renderer.paint(graphics2D, paintArea, mapArea);
         } catch (Exception e) {
             throw ExceptionUtils.getRuntimeException(e);
@@ -174,5 +163,35 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
 
     public final boolean getFailOnError() {
         return this.params.failOnError;
+    }
+    
+    /**
+     * If the layer transformer has not been prepared yet, do it.
+     * 
+     * @param transformer the transformer
+     */
+    protected final MapfishMapContext getLayerTransformer(final MapfishMapContext transformer) {
+        Rectangle paintArea = new Rectangle(transformer.getMapSize());
+        MapfishMapContext layerTransformer = transformer;
+
+        if (!FloatingPointUtil.equals(transformer.getRotation(), 0.0) && !this.supportsNativeRotation()) {
+            // if a rotation is set and the rotation can not be handled natively
+            // by the layer, we have to adjust the bounds and map size
+            MapBounds bounds = transformer.getBounds();
+            final Rectangle2D.Double paintAreaPrecise = transformer.getRotatedMapSizePrecise();
+            paintArea = new Rectangle(MapfishMapContext.rectangleDoubleToDimension(paintAreaPrecise));
+            bounds = transformer.getRotatedBounds(paintAreaPrecise, paintArea);
+            Dimension mapSize = new Dimension(paintArea.width, paintArea.height);
+            layerTransformer = new MapfishMapContext(transformer, bounds, mapSize, 0, false, transformer.getDPI(),
+                    transformer.getRequestorDPI(), transformer.isForceLongitudeFirst(),
+                    transformer.isDpiSensitiveStyle());
+        }
+        
+        return layerTransformer;
+    }
+    
+    @Override
+    public void cacheResources(final HttpRequestCache httpRequestCache,
+            final MfClientHttpRequestFactory clientHttpRequestFactory, final MapfishMapContext transformer) {        
     }
 }

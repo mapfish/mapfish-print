@@ -7,6 +7,7 @@ import org.geotools.map.Layer;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.http.HttpRequestCache;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.map.geotools.FeatureSourceSupplier;
@@ -149,5 +150,11 @@ public final class GridLayer implements MapLayer {
     @Override
     public RenderType getRenderType() {
         return this.grid.getRenderType();
+    }
+    
+    @Override
+    public void cacheResources(final HttpRequestCache httpRequestCache,
+            final MfClientHttpRequestFactory clientHttpRequestFactory, final MapfishMapContext transformer) {
+        this.grid.cacheResources(httpRequestCache, clientHttpRequestFactory, transformer);
     }
 }
