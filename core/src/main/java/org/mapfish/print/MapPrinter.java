@@ -32,11 +32,14 @@ import java.util.TreeSet;
 public class MapPrinter {
 
     private static final String OUTPUT_FORMAT_BEAN_NAME_ENDING = "OutputFormat";
+    private static final String MAP_OUTPUT_FORMAT_BEAN_NAME_ENDING = "MapOutputFormat";
+    
     private Configuration configuration;
     @Autowired
     private Map<String, OutputFormat> outputFormat;
     @Autowired
     private ConfigurationFactory configurationFactory;
+    
     private File configFile;
     @Autowired
     private WorkingDirectories workingDirectories;
@@ -96,13 +99,16 @@ public class MapPrinter {
      * @param specJson the request json from the client
      */
     public final OutputFormat getOutputFormat(final PJsonObject specJson) {
-        String format = specJson.getString(MapPrinterServlet.JSON_OUTPUT_FORMAT);
-        
-        if (!this.outputFormat.containsKey(format + OUTPUT_FORMAT_BEAN_NAME_ENDING)) {
-            throw new RuntimeException("Format '" + format + "' is not supported.");
+        final String format = specJson.getString(MapPrinterServlet.JSON_OUTPUT_FORMAT);
+        final boolean mapExport = this.configuration.getTemplate(specJson.getString(Constants.JSON_LAYOUT_KEY)).isMapExport();
+        final String beanName = format + (mapExport ? MAP_OUTPUT_FORMAT_BEAN_NAME_ENDING : OUTPUT_FORMAT_BEAN_NAME_ENDING);
+                
+        if (!this.outputFormat.containsKey(beanName)) {
+            throw new RuntimeException("Format '" + format + "' with mapExport '" + mapExport
+                    + "' is not supported.");
         }
         
-        return this.outputFormat.get(format + OUTPUT_FORMAT_BEAN_NAME_ENDING);
+        return this.outputFormat.get(beanName);
     }
 
     /**
@@ -128,7 +134,11 @@ public class MapPrinter {
     public final Set<String> getOutputFormatsNames() {
         SortedSet<String> formats = new TreeSet<String>();
         for (String formatBeanName : this.outputFormat.keySet()) {
-            formats.add(formatBeanName.substring(0, formatBeanName.indexOf(OUTPUT_FORMAT_BEAN_NAME_ENDING)));
+            int endingIndex = formatBeanName.indexOf(MAP_OUTPUT_FORMAT_BEAN_NAME_ENDING);
+            if (endingIndex < 0) {
+                endingIndex = formatBeanName.indexOf(OUTPUT_FORMAT_BEAN_NAME_ENDING);
+            }
+            formats.add(formatBeanName.substring(0, endingIndex));
         }
         return formats;
     }

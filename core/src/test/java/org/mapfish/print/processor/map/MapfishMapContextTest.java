@@ -113,8 +113,7 @@ public class MapfishMapContextTest {
         CRSAuthorityFactory factory = CRS.getAuthorityFactory(true);
         CoordinateReferenceSystem epsg2056 = factory.createCoordinateReferenceSystem("EPSG:2056");
 
-        Dimension mapSize = new Dimension(780, 330);
-        MapAttribute.MapAttributeValues mapValues = (new MapAttribute()).new MapAttributeValues(null, mapSize);
+        MapAttribute.MapAttributeValues mapValues = (new MapAttribute()).new MapAttributeValues(null, 780, 330);
         mapValues.dpi = 100;
         mapValues.rotation = 55.26239249861529;
         mapValues.setMapBounds(new CenterScaleMapBounds(epsg2056, 2742033.0, 1253823.0, new Scale(25000)));

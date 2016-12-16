@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.io.Closer;
+import com.google.common.io.Files;
 import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Polygon;
@@ -13,6 +14,7 @@ import net.sf.jasperreports.engine.JRException;
 import org.apache.batik.svggen.DefaultStyleHandler;
 import org.apache.batik.svggen.SVGGeneratorContext;
 import org.apache.batik.svggen.SVGGraphics2D;
+import org.apache.batik.transcoder.TranscoderException;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.JTS;
@@ -20,6 +22,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.mapfish.print.Constants;
 import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.SvgUtil;
 import org.mapfish.print.attribute.map.AreaOfInterest;
 import org.mapfish.print.attribute.map.BBoxMapBounds;
 import org.mapfish.print.attribute.map.MapAttribute;
@@ -37,6 +40,7 @@ import org.mapfish.print.map.Scale;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.map.geotools.FeatureLayer;
 import org.mapfish.print.map.geotools.grid.GridLayer;
+import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.InternalValue;
 import org.mapfish.print.processor.jasper.ImagesSubReport;
@@ -50,6 +54,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -149,7 +154,13 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         final List<URI> graphics = createLayerGraphics(param.tempTaskDirectory, param.clientHttpRequestFactory,
                 mapValues, context, mapContext);
         checkCancelState(context);
-        final URI mapSubReport = createMapSubReport(param.tempTaskDirectory, mapValues.getMapSize(), graphics, mapValues.getDpi());
+        
+        final URI mapSubReport;
+        if (param.map.getTemplate().isMapExport()) {
+            mapSubReport = createMergedGraphic(param.tempTaskDirectory, mapValues.getMapSize(), graphics, mapContext, param.outputFormat);
+        } else {
+            mapSubReport = createMapSubReport(param.tempTaskDirectory, mapValues.getMapSize(), graphics, mapValues.getDpi());
+        }
 
         return new Output(graphics, mapSubReport.toString(), mapContext);
     }
@@ -159,6 +170,38 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         if (this.imageType == null) {
             validationErrors.add(new ConfigurationException("No imageType defined in " + getClass().getName()));
         }
+    }
+    
+    private URI createMergedGraphic(final File printDirectory,
+            final Dimension mapSize,
+            final List<URI> graphics,
+            final MapfishMapContext mapContext,
+            final String outputFormat) throws IOException, JRException {
+        int width = (int) Math.round(mapContext.getMapSize().width);
+        int height = (int) Math.round(mapContext.getMapSize().height);
+        final BufferedImage bufferedImage = new BufferedImage(width, height, 
+            (RenderType.fromFileExtension(outputFormat) == RenderType.JPEG ? this.jpegImageType.value : this.imageType.value)
+        );
+        Graphics g = bufferedImage.getGraphics();        
+        
+        for (URI graphic : graphics) {
+            final File graphicFile = new File(graphic);
+            if (Files.getFileExtension(graphicFile.getName()).equals("svg")) {
+                try {
+                    g.drawImage(SvgUtil.convertFromSvg(graphic, width, height), 0, 0, width, height, null);
+                } catch (TranscoderException e) {
+                    throw new IllegalStateException(e);
+                }
+            } else {
+                BufferedImage image = ImageIO.read(graphicFile);
+                g.drawImage(image, 0, 0, width, height, null);
+            }
+        }
+        
+        final File mergedGraphic = File.createTempFile("map-", "." + outputFormat, printDirectory);
+        ImageIO.write(bufferedImage, outputFormat, mergedGraphic);
+        
+        return mergedGraphic.toURI();
     }
 
     private URI createMapSubReport(final File printDirectory,
@@ -569,6 +612,12 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
          * The path to the temporary directory for the print task.
          */
         public File tempTaskDirectory;
+        
+        /**
+         * The output format.
+         */
+        @HasDefaultValue
+        public String outputFormat = null;
     }
 
     /**

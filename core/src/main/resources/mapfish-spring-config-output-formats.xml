@@ -15,4 +15,15 @@
         p:fileSuffix="gif"/>
     <bean id="bmpOutputFormat" class="org.mapfish.print.output.JasperReportImageOutputFormat" scope="prototype"
         p:fileSuffix="bmp"/>
+        
+    <bean id="pngMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
+        p:fileSuffix="png" p:contentType="image/png"/>
+    <bean id="jpgMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
+        p:fileSuffix="jpg" p:contentType="image/jpeg"/>
+    <bean id="jpegMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
+        p:fileSuffix="jpeg" p:contentType="image/jpeg"/>
+    <bean id="tiffMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
+        p:fileSuffix="tiff" p:contentType="image/tiff"/>
+    <bean id="tifMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
+        p:fileSuffix="tif" p:contentType="image/tiff" />
 </beans>

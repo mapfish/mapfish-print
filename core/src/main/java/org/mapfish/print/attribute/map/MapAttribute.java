@@ -16,7 +16,6 @@ import org.mapfish.print.wrapper.PArray;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -40,7 +39,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
 
     @Override
     public MapAttributeValues createValue(final Template template) {
-        return new MapAttributeValues(template, new Dimension(getWidth(), getHeight()));
+        return new MapAttributeValues(template, getWidth(), getHeight());
     }
 
     /**
@@ -104,10 +103,20 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
          * Constructor.
          *
          * @param template the template this map is part of.
-         * @param mapSize  the size of the map.
+         * @param width  the width of the map.
+         * @param height  the height of the map.
          */
-        public MapAttributeValues(final Template template, final Dimension mapSize) {
-            super(template, mapSize);
+        public MapAttributeValues(final Template template, final Integer width, final Integer height) {
+            super(template, width, height);
+        }
+        
+        /**
+         * Constructor.
+         *
+         * @param template the template this map is part of.
+         */
+        public MapAttributeValues(final Template template) {
+            super(template);
         }
 
         //CSOFF: DesignForExtension
@@ -248,15 +257,16 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
 
         /**
          * Create a copy of this instance. Should be overridden for each subclass.
-         * @param newMapSize the size of the new map attribute values to create
+         * @param width the width of the new map attribute values to create
+         * @param height the height of the new map attribute values to create
          * @param updater a function which will be called after copy is made but before postConstruct is called in order
          *                to do other configuration changes.
          */
         // CSOFF: DesignForExtension
-        public MapAttribute.MapAttributeValues copy(@Nonnull final Dimension newMapSize,
+        public MapAttribute.MapAttributeValues copy(final int width, final int height,
                                                     @Nonnull final Function<MapAttributeValues, Void> updater) {
             // CSON: DesignForExtension
-            MapAttributeValues copy = new MapAttributeValues(getTemplate(), newMapSize);
+            MapAttributeValues copy = new MapAttributeValues(getTemplate(), width, height);
             copy.areaOfInterest = this.areaOfInterest.copy();
             copy.bbox = this.bbox;
             copy.center = this.center;
@@ -304,7 +314,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
                 final MapAttributeValues params,
                 final OverviewMapAttributeValues paramOverrides,
                 final Template template) {
-            super(template, paramOverrides.getMapSize());
+            super(template, paramOverrides.getWidth(), paramOverrides.getHeight());
             this.params = params;
             this.paramOverrides = paramOverrides;
         }

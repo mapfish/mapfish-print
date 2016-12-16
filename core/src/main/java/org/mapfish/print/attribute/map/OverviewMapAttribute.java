@@ -10,7 +10,6 @@ import org.mapfish.print.wrapper.json.PJsonArray;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import java.awt.Dimension;
 /**
  * <p>The attributes for an overview map (see
  * <a href="processors.html#!createOverviewMap">!createOverviewMap</a> processor).</p>
@@ -50,7 +49,7 @@ public final class OverviewMapAttribute extends GenericMapAttribute<OverviewMapA
 
     @Override
     public OverviewMapAttributeValues createValue(final Template template) {
-        return new OverviewMapAttributeValues(template, new Dimension(this.getWidth(), this.getHeight()));
+        return new OverviewMapAttributeValues(template, this.getWidth(), this.getHeight());
     }
     
     /**
@@ -102,10 +101,21 @@ public final class OverviewMapAttribute extends GenericMapAttribute<OverviewMapA
          * Constructor.
          *
          * @param template the template this map is part of.
-         * @param mapSize  the size of the map.
          */
-        public OverviewMapAttributeValues(final Template template, final Dimension mapSize) {
-            super(template, mapSize);
+        public OverviewMapAttributeValues(final Template template) {
+            super(template);
+        }
+
+
+        /**
+         * Constructor.
+         *
+         * @param template the template this map is part of.
+         * @param width  the width of the map.
+         * @param height  the height of the map.
+         */
+        public OverviewMapAttributeValues(final Template template, final Integer width, final Integer height) {
+            super(template, width, height);
         }
 
         @Override
@@ -163,5 +173,6 @@ public final class OverviewMapAttribute extends GenericMapAttribute<OverviewMapA
         public String getProjection() {
             return getValueOr(super.getProjection(), DEFAULT_PROJECTION);
         }
+      
     }
 }

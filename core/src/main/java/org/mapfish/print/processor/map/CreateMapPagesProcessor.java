@@ -160,7 +160,8 @@ public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesPro
                     mapValues.put("top", j != nbHeight - 1 ? mapIndexes[i][j + 1] : DO_NOT_RENDER_BBOX_INDEX);
 
                     final Envelope mapsBound = mapsBounds[i][j];
-                    MapAttributeValues theMap = map.copy(map.getMapSize(), new Function<MapAttributeValues, Void>() {
+                    MapAttributeValues theMap = map.copy(map.getWidth(), map.getHeight(), 
+                            new Function<MapAttributeValues, Void>() {
                         @Nullable
                         @Override
                         public Void apply(@Nonnull final MapAttributeValues input) {
