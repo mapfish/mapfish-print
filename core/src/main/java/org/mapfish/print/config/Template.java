@@ -323,6 +323,9 @@ public class Template implements ConfigurationObject, HasConfiguration {
                 if (processor instanceof CreateMapProcessor) {
                     count++;
                 }
+                if (count > 1) {
+                    break;
+                }
             }
             if (count != 1) {
                 validationErrors.add(new ConfigurationException("When using MapExport, exactly one CreateMapProcessor should be defined."));
