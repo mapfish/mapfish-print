@@ -16,6 +16,7 @@ import org.mapfish.print.map.style.StyleParser;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
+import org.mapfish.print.processor.map.CreateMapProcessor;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -44,6 +45,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
     private String reportTemplate;
     private Map<String, Attribute> attributes = Maps.newHashMap();
     private List<Processor> processors = Lists.newArrayList();
+    private boolean mapExport;
 
     private String jdbcUrl;
     private String jdbcUser;
@@ -314,6 +316,21 @@ public class Template implements ConfigurationObject, HasConfiguration {
                 }
             }
         }
+        
+        if (this.mapExport) {
+            int count = 0;
+            for (Processor<?, ?> processor : getProcessors()) {
+                if (processor instanceof CreateMapProcessor) {
+                    count++;
+                }
+                if (count > 1) {
+                    break;
+                }
+            }
+            if (count != 1) {
+                validationErrors.add(new ConfigurationException("When using MapExport, exactly one CreateMapProcessor should be defined."));
+            }
+        }
     }
 
     final void assertAccessible(final String name) {
@@ -341,4 +358,13 @@ public class Template implements ConfigurationObject, HasConfiguration {
     public final AccessAssertion getAccessAssertion() {
         return this.accessAssertion;
     }
+
+    public final boolean isMapExport() {
+        return this.mapExport;
+    }
+
+    public final void setMapExport(final boolean mapExport) {
+        this.mapExport = mapExport;
+    }
+    
 }

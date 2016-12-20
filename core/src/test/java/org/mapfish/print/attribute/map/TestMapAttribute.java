@@ -29,7 +29,7 @@ public final class TestMapAttribute extends GenericMapAttribute<TestMapAttribute
         public int[] optionalArray;
 
         public TestMapAttributeValues(Template template) {
-            super(template, null);
+            super(template);
             optionalArray = new int[]{1, 2};
         }
 

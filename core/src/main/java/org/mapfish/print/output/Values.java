@@ -53,6 +53,10 @@ public final class Values {
      */
     public static final String PDF_CONFIG = "pdfConfig";
     /**
+     * The key for the output format.
+     */
+    public static final String OUTPUT_FORMAT = "outputFormat";
+    /**
      * The key for the values object for the subreport directory.
      */
     public static final String SUBREPORT_DIR = "SUBREPORT_DIR";
@@ -92,6 +96,27 @@ public final class Values {
                   final File taskDirectory,
                   final MfClientHttpRequestFactoryImpl httpRequestFactory,
                   final File jasperTemplateBuild) throws JSONException {
+        this(requestData, template, parser, taskDirectory, httpRequestFactory, jasperTemplateBuild, null);
+    }
+
+    /**
+     * Construct from the json request body and the associated template.
+     *
+     * @param requestData         the json request data
+     * @param template            the template
+     * @param parser              the parser to use for parsing the request data.
+     * @param taskDirectory       the temporary directory for this printing task.
+     * @param httpRequestFactory  a factory for making http requests.
+     * @param jasperTemplateBuild the directory where the jasper templates are compiled to
+     * @param outputFormat        the output format
+     */
+    public Values(final PJsonObject requestData,
+                  final Template template,
+                  final MapfishParser parser,
+                  final File taskDirectory,
+                  final MfClientHttpRequestFactoryImpl httpRequestFactory,
+                  final File jasperTemplateBuild,
+                  final String outputFormat) throws JSONException {
 
         Assert.isTrue(!taskDirectory.mkdirs() || taskDirectory.exists());
 
@@ -101,7 +126,12 @@ public final class Values {
                 template.getConfiguration()));
         this.values.put(TEMPLATE_KEY, template);
         this.values.put(PDF_CONFIG, template.getPdfConfig());
-        this.values.put(SUBREPORT_DIR, jasperTemplateBuild.getAbsolutePath());
+        if (jasperTemplateBuild != null) {
+            this.values.put(SUBREPORT_DIR, jasperTemplateBuild.getAbsolutePath());
+        }
+        if (outputFormat != null) {
+            this.values.put(OUTPUT_FORMAT, outputFormat);
+        }
 
         final PJsonObject jsonAttributes = requestData.getJSONObject(MapPrinterServlet.JSON_ATTRIBUTES);
 

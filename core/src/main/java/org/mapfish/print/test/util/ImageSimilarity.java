@@ -8,10 +8,7 @@ import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleGraphics2DExporterOutput;
 import net.sf.jasperreports.export.SimpleGraphics2DReportConfiguration;
 import org.apache.batik.transcoder.TranscoderException;
-import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.image.ImageTranscoder;
-import org.apache.batik.transcoder.image.TIFFTranscoder;
+import org.mapfish.print.SvgUtil;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -238,39 +235,7 @@ public final class ImageSimilarity {
      * Renders an SVG image into a {@link BufferedImage}.
      */
     public static BufferedImage convertFromSvg(URI svgFile, int width, int height) throws TranscoderException {
-        BufferedImageTranscoder imageTranscoder = new BufferedImageTranscoder();
-
-        imageTranscoder.addTranscodingHint(TIFFTranscoder.KEY_WIDTH, (float) width);
-        imageTranscoder.addTranscodingHint(TIFFTranscoder.KEY_HEIGHT, (float) height);
-
-        TranscoderInput input = new TranscoderInput(svgFile.toString());
-        imageTranscoder.transcode(input, null);
-
-        return imageTranscoder.getBufferedImage();
-    }
-
-    /**
-     * An image transcoder which allows to retrieve an {@link BufferedImage}.
-     */
-    private static class BufferedImageTranscoder extends ImageTranscoder {
-
-        private BufferedImage img = null;
-
-        @Override
-        public BufferedImage createImage(int w, int h) {
-            BufferedImage bi = new BufferedImage(w, h,
-                    BufferedImage.TYPE_INT_ARGB);
-            return bi;
-        }
-
-        @Override
-        public void writeImage(BufferedImage img, TranscoderOutput output) {
-            this.img = img;
-        }
-
-        public BufferedImage getBufferedImage() {
-            return img;
-        }
+        return SvgUtil.convertFromSvg(svgFile, width, height);
     }
 
     /**

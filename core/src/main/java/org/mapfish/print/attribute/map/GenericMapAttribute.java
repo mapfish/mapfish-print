@@ -52,6 +52,14 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
      * The json key for the height of the map in the client config.
      */
     public static final String JSON_MAP_HEIGHT = "height";
+    /**
+     * The json key for the max width of the map in the client config (for mapExport).
+     */
+    public static final String JSON_MAX_WIDTH = "maxWidth";
+    /**
+     * The json key for the max height of the map in the client config (for mapExport).
+     */
+    public static final String JSON_MAX_HEIGHT = "maxHeight";
     static final String JSON_ZOOM_LEVEL_SUGGESTIONS = "scales";
 
     @Autowired
@@ -68,6 +76,9 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
 
     private Integer width = null;
     private Integer height = null;
+    
+    private Integer maxWidth = null;
+    private Integer maxHeight = null;
 
     public final Double getMaxDpi() {
         return this.maxDpi;
@@ -131,6 +142,22 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
     public final void setHeight(final Integer height) {
         this.height = height;
     }
+    
+    public final Integer getMaxWidth() {
+        return this.maxWidth;
+    }
+
+    public final void setMaxWidth(final Integer maxWidth) {
+        this.maxWidth = maxWidth;
+    }
+
+    public final Integer getMaxHeight() {
+        return this.maxHeight;
+    }
+
+    public final void setMaxHeight(final Integer maxHeight) {
+        this.maxHeight = maxHeight;
+    }
 
     public final void setZoomLevels(final ZoomLevels zoomLevels) {
         this.zoomLevels = zoomLevels;
@@ -152,12 +179,30 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
     @Override
     public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
     //CSON: DesignForExtension
-        if (this.width == null || this.width < 1) {
+        
+        if (this.width != null && this.maxWidth != null) {
+            validationErrors.add(new ConfigurationException("cannot set both width and maxWidth in " + getClass().getName()));
+        }
+        
+        if (this.height != null && this.maxHeight != null) {
+            validationErrors.add(new ConfigurationException("cannot set both height and maxHeight in " + getClass().getName()));
+        }
+        
+        if (this.width != null && this.width < 1) {
             validationErrors.add(new ConfigurationException("width field is not legal: " + this.width + " in " + getClass().getName()));
         }
 
-        if (this.height == null || this.height < 1) {
+        if (this.height != null && this.height < 1) {
             validationErrors.add(new ConfigurationException("height field is not legal: " + this.height + " in " + getClass().getName()));
+        }
+        
+        if (this.maxWidth != null && this.maxWidth < 1) {
+            validationErrors.add(new ConfigurationException("max width field is not legal: " + this.width + " in " + getClass().getName()));
+        }
+
+        if (this.maxHeight != null && this.maxHeight < 1) {
+            validationErrors.add(new ConfigurationException("max height field is not legal: " + this.height + " in " + 
+                    getClass().getName()));
         }
 
         if (this.getMaxDpi() == null || this.getMaxDpi() < 1) {
@@ -186,6 +231,8 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
         jsonObject.put(JSON_MAX_DPI, this.maxDpi);
         jsonObject.put(JSON_MAP_WIDTH, this.width);
         jsonObject.put(JSON_MAP_HEIGHT, this.height);
+        jsonObject.put(JSON_MAX_WIDTH, this.maxWidth);
+        jsonObject.put(JSON_MAX_HEIGHT, this.maxHeight);
         return Optional.of(jsonObject);
     }
 
@@ -200,9 +247,20 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
          */
         protected static final String DEFAULT_PROJECTION = "EPSG:3857";
 
-        private final Dimension mapSize;
         private final Template template;
         private List<MapLayer> mapLayers;
+        
+        /**
+         * The width of the map.
+         */
+        @HasDefaultValue
+        public Integer width = null;
+        
+        /**
+         * The height of the map.
+         */
+        @HasDefaultValue
+        public Integer height = null;
 
         /**
          * The projection of the map.
@@ -255,11 +313,22 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
          * Constructor.
          *
          * @param template the template this map is part of.
-         * @param mapSize  the size of the map.
          */
-        public GenericMapAttributeValues(final Template template, final Dimension mapSize) {
+        public GenericMapAttributeValues(final Template template) {
             this.template = template;
-            this.mapSize = mapSize;
+        }
+        
+        /**
+         * Constructor.
+         *
+         * @param template the template this map is part of.
+         * @param width  the width of the map.
+         * @param height  the height of the map.
+         */
+        public GenericMapAttributeValues(final Template template, final Integer width, final Integer height) {
+            this.template = template;
+            this.width = width;
+            this.height = height;
         }
 
         /**
@@ -268,6 +337,25 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
         //CSOFF: DesignForExtension
         public void postConstruct() throws FactoryException {
         //CSON: DesignForExtension
+            
+            if (this.width == null) {
+                throw new IllegalArgumentException("width parameter was not set.");
+            }
+            
+            if (this.height == null) {
+                throw new IllegalArgumentException("height parameter was not set.");
+            }
+            
+            //check maximum dimensions
+            if (getMaxWidth() != null && this.width > getMaxWidth()) {
+                throw new IllegalArgumentException("width parameter was " + getWidth() + " must be limited to " 
+                            + getMaxWidth() + ".");
+            }
+            if (getMaxHeight() != null && this.height > getMaxHeight()) {
+                throw new IllegalArgumentException("height parameter was " + getHeight() + " must be limited to " 
+                            + getMaxHeight() + ".");
+            }
+            
             this.mapLayers = parseLayers();
         }
 
@@ -368,7 +456,15 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
         }
 
         public final Dimension getMapSize() {
-            return this.mapSize;
+            return new Dimension(this.width, this.height);
+        }
+        
+        public final Integer getWidth() {
+            return this.width;
+        }
+
+        public final Integer getHeight() {
+            return this.height;
         }
 
         //CSOFF: DesignForExtension
