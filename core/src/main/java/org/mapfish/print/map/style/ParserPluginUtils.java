@@ -33,8 +33,9 @@ public final class ParserPluginUtils {
      * @param styleRef the uri/file/else for attempting to load a style
      * @param loadFunction the function to call when data has been loaded.
      */
-    public static Optional<Style> loadStyleAsURI(final ClientHttpRequestFactory clientHttpRequestFactory, final String styleRef,
-                                                 final Function<byte[], Optional<Style>> loadFunction) throws IOException {
+    public static Optional<Style> loadStyleAsURI(
+            final ClientHttpRequestFactory clientHttpRequestFactory, final String styleRef,
+            final Function<byte[], Optional<Style>> loadFunction) throws IOException {
         HttpStatus statusCode;
         final byte[] input;
 

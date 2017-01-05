@@ -35,9 +35,16 @@ import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpResponse;
 
 import java.awt.Color;
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,11 +58,13 @@ import javax.imageio.ImageIO;
 
 import static org.mapfish.print.FileUtils.testForLegalFileUrl;
 import static org.mapfish.print.map.style.json.MapfishStyleParserPlugin.Versions;
+import static org.springframework.http.HttpMethod.HEAD;
 
 /**
  * Methods shared by various style versions for creating geotools SLD styles from the json format mapfish supports.
  */
 public final class JsonStyleParserHelper {
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(JsonStyleParserHelper.class);
 
     static final String JSON_FONT_FAMILY = "fontFamily";
     static final String JSON_FONT_SIZE = "fontSize";
@@ -118,6 +127,7 @@ public final class JsonStyleParserHelper {
     private static final Pattern VALUE_UNIT_PATTERN = Pattern.compile("^([0-9.]+)([a-z]*)");
 
     private final Configuration configuration;
+    private final ClientHttpRequestFactory requestFactory;
     private boolean allowNullSymbolizer;
     private StyleBuilder styleBuilder;
     private Versions version;
@@ -126,16 +136,19 @@ public final class JsonStyleParserHelper {
      * Constructor.
      *
      * @param configuration the configuration to use for resolving relative files or other settings.
+     * @param requestFactory Request factory for making the request.
      * @param styleBuilder a style builder to use for creating the style objects.
      * @param allowNullSymbolizer If true then create*Symbolizer() methods can return null if expected params are missing.
      * @param version the version being parsed.
      */
     public JsonStyleParserHelper(
             @Nullable final Configuration configuration,
+            @Nonnull final ClientHttpRequestFactory requestFactory,
             @Nonnull final StyleBuilder styleBuilder,
             final boolean allowNullSymbolizer,
             final Versions version) {
         this.configuration = configuration;
+        this.requestFactory = requestFactory;
         this.styleBuilder = styleBuilder;
         this.allowNullSymbolizer = allowNullSymbolizer;
         this.version = version;
@@ -176,7 +189,7 @@ public final class JsonStyleParserHelper {
         graphic.graphicalSymbols().clear();
         if (styleJson.has(JSON_EXTERNAL_GRAPHIC)) {
             String externalGraphicUrl = validateURL(styleJson.getString(JSON_EXTERNAL_GRAPHIC));
-            final String graphicFormat = getGraphicFormat(externalGraphicUrl, styleJson);
+            final String graphicFormat = getGraphicFormat(externalGraphicUrl, styleJson, this.requestFactory);
             final ExternalGraphic externalGraphic =
                     this.styleBuilder.createExternalGraphic(externalGraphicUrl, graphicFormat);
 
@@ -762,7 +775,9 @@ public final class JsonStyleParserHelper {
     }
 
     @VisibleForTesting
-    String getGraphicFormat(final String externalGraphicFile, final PJsonObject styleJson) {
+    String getGraphicFormat(
+            final String externalGraphicFile, final PJsonObject styleJson,
+            final ClientHttpRequestFactory requestFactory) {
         String mimeType = null;
         if (!Strings.isNullOrEmpty(styleJson.optString(JSON_GRAPHIC_FORMAT))) {
             mimeType = styleJson.getString(JSON_GRAPHIC_FORMAT);
@@ -771,8 +786,29 @@ public final class JsonStyleParserHelper {
 
             if (separatorPos >= 0) {
                 mimeType = "image/" + externalGraphicFile.substring(separatorPos + 1).toLowerCase();
-            } else {
-                mimeType = "";
+            }
+            if (mimeType.equals("")) {
+                try {
+                    URI uri;
+                    try {
+                        uri = new URI(externalGraphicFile);
+                    } catch (URISyntaxException e) {
+                        uri = new File(externalGraphicFile).toURI();
+                    }
+
+                    ClientHttpResponse httpResponse = requestFactory.createRequest(
+                            uri, HEAD).execute();
+                    List<String> contentTypes = httpResponse.getHeaders().get("Content-Type");
+                    if (contentTypes.size() == 1) {
+                        String contentType = contentTypes.get(0);
+                        int index = contentType.lastIndexOf(";");
+                        mimeType = index >= 0 ? contentType.substring(0, index) : contentType;
+                    } else {
+                        LOGGER.info("No content type found for: {}", externalGraphicFile);
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException("Unable to get a mime type for the external graphic", e);
+                }
             }
         }
         mimeType = toSupportedMimeType(mimeType);
@@ -798,14 +834,12 @@ public final class JsonStyleParserHelper {
                 return true;
             }
         }
-
         return false;
     }
 
     public void setVersion(final Versions version) {
         this.version = version;
     }
-
 
     private <T> Expression parseExpression(final T defaultValue,
                                            final PJsonObject styleJson,

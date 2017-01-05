@@ -43,9 +43,10 @@ public class SLDParserPlugin implements StyleParserPlugin {
 
 
     @Override
-    public final Optional<Style> parseStyle(@Nullable final Configuration configuration,
-                                            @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
-                                            @Nonnull final String styleString) throws Throwable {
+    public final Optional<Style> parseStyle(
+            @Nullable final Configuration configuration,
+            @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
+            @Nonnull final String styleString) throws Throwable {
 
         // try to load xml
         final ByteSource straightByteSource = ByteSource.wrap(styleString.getBytes(Constants.DEFAULT_CHARSET));
@@ -69,7 +70,8 @@ public class SLDParserPlugin implements StyleParserPlugin {
             }
         };
 
-        return ParserPluginUtils.loadStyleAsURI(clientHttpRequestFactory, styleStringWithoutIndexReference, loadFunction);
+        return ParserPluginUtils.loadStyleAsURI(clientHttpRequestFactory, styleStringWithoutIndexReference,
+                loadFunction);
     }
 
     private String removeIndexReference(final String styleString) {

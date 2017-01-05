@@ -37,7 +37,8 @@ public final class GridLayerPlugin extends AbstractFeatureSourceLayerPlugin<Grid
 
     @Nonnull
     @Override
-    public GridLayer parse(@Nonnull final Template template, @Nonnull final GridParam layerData) throws Throwable {
+    public GridLayer parse(@Nonnull final Template template, @Nonnull final GridParam layerData)
+            throws Throwable {
         LabelPositionCollector labels = new LabelPositionCollector();
         FeatureSourceSupplier featureSource = createFeatureSourceFunction(template, layerData, labels);
         final StyleSupplier<FeatureSource> styleFunction = createStyleSupplier(template, layerData);
@@ -46,8 +47,8 @@ public final class GridLayerPlugin extends AbstractFeatureSourceLayerPlugin<Grid
                 layerData, labels);
     }
 
-    private StyleSupplier<FeatureSource> createStyleSupplier(final Template template, final GridParam layerData) {
-
+    private StyleSupplier<FeatureSource> createStyleSupplier(
+            final Template template, final GridParam layerData) {
         return new StyleSupplier<FeatureSource>() {
             @Override
             public Style load(final MfClientHttpRequestFactory requestFactory,

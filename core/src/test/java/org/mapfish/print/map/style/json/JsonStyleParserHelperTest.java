@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
+import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -60,7 +61,8 @@ public class JsonStyleParserHelperTest {
         Configuration configuration = new Configuration();
         final File file = getFile(MapfishStyleParserPluginTest.class, REQUEST_DATA_STYLE_JSON_V1_STYLE_JSON);
         configuration.setConfigurationFile(file);
-        helper = new JsonStyleParserHelper(configuration, new StyleBuilder(), true, Versions.ONE);
+        helper = new JsonStyleParserHelper(
+                configuration, new TestHttpClientFactory(), new StyleBuilder(), true, Versions.ONE);
     }
 
     private File getFile(Class<?> base, String fileName) throws URISyntaxException {
@@ -649,7 +651,9 @@ public class JsonStyleParserHelperTest {
                     continue;
                 }
                 styleJson.getInternalObj().put(JsonStyleParserHelper.JSON_GRAPHIC_FORMAT, mimeType);
-                final String graphicFormat = helper.getGraphicFormat("http://somefile.com/file.jpg", styleJson);
+                final String graphicFormat = helper.getGraphicFormat(
+                        "http://somefile.com/file.jpg", styleJson,
+                        new TestHttpClientFactory());
                 assertTrue(graphicFormat + " is not supported", strings.contains(graphicFormat));
             }
         }
@@ -778,5 +782,4 @@ public class JsonStyleParserHelperTest {
         assertEquals(fillColor, valueOf(fill.getColor()));
         assertEquals(fillOpacity, valueOf(fill.getOpacity()));
     }
-
 }
