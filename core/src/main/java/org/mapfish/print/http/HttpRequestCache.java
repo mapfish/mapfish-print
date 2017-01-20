@@ -139,15 +139,19 @@ public final class HttpRequestCache {
         public Void call() throws Exception {
             final String baseMetricName = HttpRequestCache.class.getName() + ".read." + getURI().getHost();
             final Timer.Context timerDownload = HttpRequestCache.this.registry.timer(baseMetricName).time();
-            ClientHttpResponse originalResponse = this.originalRequest.execute();
+            ClientHttpResponse originalResponse = null;
             try {
+                originalResponse = this.originalRequest.execute();
                 LOGGER.debug("Caching URI resource " + this.originalRequest.getURI());
                 this.response = new CachedClientHttpResponse(originalResponse);
             } catch (IOException e) {
+                LOGGER.error("Request failed " + this.originalRequest.getURI(), e);
                 HttpRequestCache.this.registry.counter(baseMetricName + ".error").inc();
                 throw e;
             } finally {
-                originalResponse.close();
+                if (originalResponse != null) {
+                    originalResponse.close();
+                }
                 timerDownload.stop();
             }
             return null;
