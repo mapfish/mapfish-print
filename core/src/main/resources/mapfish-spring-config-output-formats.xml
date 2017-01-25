@@ -26,4 +26,6 @@
         p:fileSuffix="tiff" p:contentType="image/tiff"/>
     <bean id="tifMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
         p:fileSuffix="tif" p:contentType="image/tiff" />
+    <bean id="pdfMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
+        p:fileSuffix="pdf" p:contentType="application/pdf" />
 </beans>
