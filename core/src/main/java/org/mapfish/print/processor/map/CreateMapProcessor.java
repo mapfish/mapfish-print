@@ -56,6 +56,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -189,11 +190,17 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             final String outputFormat) throws IOException, JRException {
         int width = (int) Math.round(mapContext.getMapSize().width);
         int height = (int) Math.round(mapContext.getMapSize().height);
+        boolean isJpeg = RenderType.fromFileExtension(outputFormat) == RenderType.JPEG;
         final BufferedImage bufferedImage = new BufferedImage(width, height, 
-            (RenderType.fromFileExtension(outputFormat) == RenderType.JPEG ? this.jpegImageType.value : this.imageType.value)
+            (isJpeg ? this.jpegImageType.value : this.imageType.value)
         );
-        Graphics g = bufferedImage.getGraphics();        
-        
+        Graphics g = bufferedImage.getGraphics();
+
+        if (isJpeg) {
+            g.setColor(Color.WHITE);
+            g.fillRect(0, 0, width, height);
+        }
+
         for (URI graphic : graphics) {
             final File graphicFile = new File(graphic);
             if (Files.getFileExtension(graphicFile.getName()).equals("svg")) {
