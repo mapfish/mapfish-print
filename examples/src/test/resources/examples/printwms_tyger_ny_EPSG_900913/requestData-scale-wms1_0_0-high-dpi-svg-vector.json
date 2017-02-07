@@ -24,5 +24,6 @@
     "rotation": 0,
     "scale": 25000
   }},
-  "layout": "A4 landscape"
+  "layout": "A4 landscape",
+  "outputFormat": "pdf"
 }
