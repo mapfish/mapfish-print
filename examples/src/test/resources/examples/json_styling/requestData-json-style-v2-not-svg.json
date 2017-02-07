@@ -77,5 +77,6 @@
       "scale": 100000
     }
   },
-  "layout": "A4 landscape"
+  "layout": "A4 landscape",
+  "outputFormat": "pdf"
 }

@@ -4,9 +4,12 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
+
+import org.apache.commons.lang.ArrayUtils;
 import org.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -31,6 +34,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.regex.Pattern;
+
 import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
@@ -70,7 +74,8 @@ public class ExamplesTest {
      * will run all examples starting with verbose.
      */
     private static final String FILTER_PROPERTY = "examples.filter";
-    private static final Pattern MATCH_ALL = Pattern.compile(".*");
+    private static final Pattern REQUEST_MATCH_ALL = Pattern.compile(".*");
+    private static final Pattern EXAMPLE_MATCH_ALL = Pattern.compile(".*");
     @Autowired
     MapPrinter mapPrinter;
 
@@ -99,7 +104,7 @@ public class ExamplesTest {
             String[] parts = filterProperty.split("/", 2);
 
             if (parts.length == 1) {
-                requestFilter = MATCH_ALL;
+                requestFilter = REQUEST_MATCH_ALL;
             } else {
                 requestFilter = Pattern.compile(parts[1]);
             }
@@ -107,7 +112,8 @@ public class ExamplesTest {
             exampleFilter = Pattern.compile(parts[0]);
 
         } else {
-            requestFilter = exampleFilter = MATCH_ALL;
+            requestFilter = REQUEST_MATCH_ALL;
+            exampleFilter = EXAMPLE_MATCH_ALL;
         }
     }
 
@@ -186,7 +192,11 @@ public class ExamplesTest {
                         }
 
                         testsRan++;
-                        jsonSpec.getInternalObj().put("outputFormat", "png");
+                        String outputFormat = jsonSpec.getInternalObj().getString("outputFormat");
+                        if (!ArrayUtils.contains(new String[]{"png", "jpg", "tiff"}, outputFormat)) {
+                            jsonSpec.getInternalObj().put("outputFormat", "png");
+                            outputFormat = "png";
+                        }
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
                         JSONObject headers = new JSONObject();
@@ -207,12 +217,19 @@ public class ExamplesTest {
 
                         BufferedImage image = ImageIO.read(new ByteArrayInputStream(out.toByteArray()));
 
-//                        File outDir = new File("/tmp/examples_test", example.getName()+"/expected_output");
+//                        File outDir = new File("/tmp/examples_test", example.getName()+ "/expected_output");
 //                        outDir.mkdirs();
-//                        ImageIO.write(image, "png", new File(outDir, requestFile.getName().replace(".json", ".png")));
+//                        ImageIO.write(image, outputFormat, new File(outDir, requestFile.getName().replace(".json", "." + outputFormat)));
 
                         File expectedOutputDir = new File(example, "expected_output");
-                        File expectedOutput = getExpecteOutput(requestFile, expectedOutputDir);
+                        File expectedOutput = getExpectedOutput(outputFormat, requestFile, expectedOutputDir);
+                        if (!expectedOutput.exists()) {
+                            errors.put(
+                                    example.getName() + " (" + requestFile.getName() + ")",
+                                    new Exception("File not found: " + expectedOutput.toString()));
+                            continue;
+                        }
+
                         int similarity = 50;
                         File file = new File(expectedOutputDir, "image-similarity.txt");
                         if (file.isFile()) {
@@ -232,7 +249,7 @@ public class ExamplesTest {
         return testsRan;
     }
 
-    private File getExpecteOutput(File requestFile, File expectedOutputDir) {
+    private File getExpectedOutput(String outputFormat, File requestFile, File expectedOutputDir) {
         File platformSpecificDir;
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
             platformSpecificDir = new File(expectedOutputDir, "win");
@@ -242,7 +259,7 @@ public class ExamplesTest {
             platformSpecificDir = new File(expectedOutputDir, "linux");
         }
 
-        final String imageName = requestFile.getName().replace(".json", ".png");
+        final String imageName = requestFile.getName().replace(".json", "." + outputFormat);
         if (new File(platformSpecificDir, imageName).exists()) {
             return new File(platformSpecificDir, imageName);
         }
