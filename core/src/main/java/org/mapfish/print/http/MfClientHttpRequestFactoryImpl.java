@@ -153,6 +153,8 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
                 }
             }
             HttpResponse response = this.client.execute(this.request, this.context);
+            LOGGER.debug("Response: " + response.getStatusLine().getStatusCode() + " -- " + this.getURI());
+
             return new Response(response);
         }
     }
