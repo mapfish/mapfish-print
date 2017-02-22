@@ -9,6 +9,8 @@ import java.util.List;
  * This assertion always allows access.
  */
 public final class AlwaysAllowAssertion implements AccessAssertion {
+
+    private static final int HASH_CODE = 42;
     /**
      * A public instance that can be used by all resource in the default case.
      */
@@ -33,4 +35,20 @@ public final class AlwaysAllowAssertion implements AccessAssertion {
     public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         // do nothing
     }
+    
+    @Override
+    public boolean equals(final Object o) {
+        return o instanceof AlwaysAllowAssertion;
+    }
+
+    @Override
+    public int hashCode() {
+        return HASH_CODE;
+    }
+
+    @Override
+    public AccessAssertion copy() {
+        return new AlwaysAllowAssertion();
+    }
+
 }

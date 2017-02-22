@@ -1,6 +1,5 @@
 package org.mapfish.print.servlet;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
 
@@ -14,13 +13,10 @@ import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.servlet.job.FailedPrintJob;
 import org.mapfish.print.servlet.job.JobManager;
-import org.mapfish.print.servlet.job.JobStatus;
 import org.mapfish.print.servlet.job.NoSuchReferenceException;
-import org.mapfish.print.servlet.job.PrintJob;
 import org.mapfish.print.servlet.job.PrintJobStatus;
-import org.mapfish.print.servlet.job.SuccessfulPrintJob;
+import org.mapfish.print.servlet.job.impl.PrintJobEntryImpl;
 import org.mapfish.print.servlet.job.loader.ReportLoader;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
@@ -28,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -195,7 +190,6 @@ public class MapPrinterServlet extends BaseMapServlet {
     @Autowired
     private ServletInfo servletInfo;
 
-
     private long maxCreateAndGetWaitTimeInSeconds;
     @Autowired
     private MapPrinterFactory mapPrinterFactory;
@@ -241,7 +235,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             final HttpServletResponse statusResponse) {
         PrintWriter writer = null;
         try {
-            JobStatus status = this.jobManager.getStatus(referenceId);
+            PrintJobStatus status = this.jobManager.getStatus(referenceId);
 
             setContentType(statusResponse, jsonpCallback);
             writer = statusResponse.getWriter();
@@ -399,14 +393,14 @@ public class MapPrinterServlet extends BaseMapServlet {
             }
 
             @Override
-            public Void successfulPrint(final SuccessfulPrintJob successfulPrintResult, final HttpServletResponse httpServletResponse,
+            public Void successfulPrint(final PrintJobStatus successfulPrintResult, final HttpServletResponse httpServletResponse,
                                         final URI reportURI, final ReportLoader loader) throws IOException, ServletException {
                 sendReportFile(successfulPrintResult, httpServletResponse, loader, reportURI, inline);
                 return null;
             }
 
             @Override
-            public Void failedPrint(final FailedPrintJob failedPrintJob, final HttpServletResponse httpServletResponse) {
+            public Void failedPrint(final PrintJobStatus failedPrintJob, final HttpServletResponse httpServletResponse) {
                 error(httpServletResponse, failedPrintJob.getError(), HttpStatus.INTERNAL_SERVER_ERROR);
                 return null;
             }
@@ -477,7 +471,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             }
 
             @Override
-            public Boolean successfulPrint(final SuccessfulPrintJob successfulPrintResult,
+            public Boolean successfulPrint(final PrintJobStatus successfulPrintResult,
                                            final HttpServletResponse httpServletResponse,
                                            final URI reportURI, final ReportLoader loader) throws IOException, ServletException {
                 sendReportFile(successfulPrintResult, httpServletResponse, loader, reportURI, inline);
@@ -485,7 +479,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             }
 
             @Override
-            public Boolean failedPrint(final FailedPrintJob failedPrintJob, final HttpServletResponse httpServletResponse) {
+            public Boolean failedPrint(final PrintJobStatus failedPrintJob, final HttpServletResponse httpServletResponse) {
                 error(httpServletResponse, failedPrintJob.getError(), HttpStatus.INTERNAL_SERVER_ERROR);
                 return true;
             }
@@ -790,15 +784,15 @@ public class MapPrinterServlet extends BaseMapServlet {
      * @param reportURI           the uri of the report
      * @param inline              whether or not to inline the content
      */
-    protected final void sendReportFile(final SuccessfulPrintJob metadata, final HttpServletResponse httpServletResponse,
+    protected final void sendReportFile(final PrintJobStatus metadata, final HttpServletResponse httpServletResponse,
                                         final ReportLoader reportLoader, final URI reportURI, final boolean inline)
             throws IOException, ServletException {
 
         final OutputStream response = httpServletResponse.getOutputStream();
         try {
-            httpServletResponse.setContentType(metadata.getMimeType());
+            httpServletResponse.setContentType(metadata.getResult().getMimeType());
             if (!inline) {
-                String fileName = metadata.getFileName();
+                String fileName = metadata.getResult().getFileName();
                 Matcher matcher = VARIABLE_PATTERN.matcher(fileName);
                 while (matcher.find()) {
                     final String variable = matcher.group(1);
@@ -807,7 +801,7 @@ public class MapPrinterServlet extends BaseMapServlet {
                     matcher = VARIABLE_PATTERN.matcher(fileName);
                 }
 
-                fileName += "." + metadata.getFileExtension();
+                fileName += "." + metadata.getResult().getFileExtension();
                 httpServletResponse.setHeader("Content-disposition", "attachment; filename=" + cleanUpName(fileName));
             }
             reportLoader.loadReport(reportURI, response);
@@ -920,43 +914,37 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
         String ref = UUID.randomUUID().toString() + "@" + this.servletInfo.getServletId();
 
-        PrintJob job = this.context.getBean(PrintJob.class);
-
-        job.setReferenceId(ref);
-        job.setRequestData(specJson);
-        job.setSecurityContext(SecurityContextHolder.getContext());
-        job.setCreateTime(System.currentTimeMillis());
-
         // check that we have authorization and configure the job so it can only be access by users with sufficient authorization
         final String templateName = specJson.getString(Constants.JSON_LAYOUT_KEY);
         final MapPrinter mapPrinter = this.mapPrinterFactory.create(appId);
         final Template template = mapPrinter.getConfiguration().getTemplate(templateName);
-        job.configureAccess(template);
-
+        
+        PrintJobEntryImpl jobEntry = new PrintJobEntryImpl(ref, specJson, System.currentTimeMillis());
+        jobEntry.configureAccess(template, this.context);
+        
         try {
-            this.jobManager.submit(job);
+            this.jobManager.submit(jobEntry);
         } catch (RuntimeException exc) {
             LOGGER.error("Error when creating job", exc);
             ref = null;
         }
         return ref;
     }
-
+    
     private <R> R loadReport(final String referenceId, final HttpServletResponse httpServletResponse,
                              final HandleReportLoadResult<R> handler) throws IOException, ServletException {
-        Optional<? extends PrintJobStatus> metadata;
+        PrintJobStatus metadata;
 
         try {
-            metadata = this.jobManager.getCompletedPrintJob(referenceId);
+            metadata = this.jobManager.getStatus(referenceId);
         } catch (NoSuchReferenceException e) {
             return handler.unknownReference(httpServletResponse, referenceId);
         }
 
-        if (!metadata.isPresent()) {
+        if (!metadata.isDone()) {
             return handler.printJobPending(httpServletResponse, referenceId);
-        } else if (metadata.get() instanceof SuccessfulPrintJob) {
-            SuccessfulPrintJob successfulPrintJob = (SuccessfulPrintJob) metadata.get();
-            URI pdfURI = successfulPrintJob.getURI();
+        } else if (metadata.getResult() != null) {
+            URI pdfURI = metadata.getResult().getReportURI();
 
             ReportLoader loader = null;
             for (ReportLoader reportLoader : this.reportLoaders) {
@@ -968,14 +956,11 @@ public class MapPrinterServlet extends BaseMapServlet {
             if (loader == null) {
                 return handler.unsupportedLoader(httpServletResponse, referenceId);
             } else {
-                return handler.successfulPrint(successfulPrintJob, httpServletResponse, pdfURI, loader);
+                return handler.successfulPrint(metadata, httpServletResponse, pdfURI, loader);
             }
-        } else if (metadata.get() instanceof FailedPrintJob) {
-            FailedPrintJob failedPrintJob = (FailedPrintJob) metadata.get();
-            return handler.failedPrint(failedPrintJob, httpServletResponse);
         } else {
-            throw new ServletException("Unexpected state");
-        }
+            return handler.failedPrint(metadata, httpServletResponse);
+        } 
 
     }
 

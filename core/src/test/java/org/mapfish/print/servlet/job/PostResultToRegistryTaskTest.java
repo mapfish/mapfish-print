@@ -7,6 +7,8 @@ import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.servlet.MapPrinterServlet;
+import org.mapfish.print.servlet.job.impl.PrintJobEntryImpl;
+import org.mapfish.print.servlet.job.impl.ThreadPoolJobManager;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -24,20 +26,22 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
     ThreadPoolJobManager jobManager;
     @Autowired
     ApplicationContext context;
+    @Autowired
+    JobQueue jobQueue;
 
     @Test
     public void testRun() throws Exception {
 
         assertRegistryValues(null, 0, 0, true);
-
         TestPrintJob printJob = new TestPrintJob();
-        printJob.setCreateTime(System.currentTimeMillis());
+        PrintJobEntryImpl entry = (PrintJobEntryImpl) printJob.getEntry();
+        entry.setStartTime(System.currentTimeMillis());
         jobManager.submit(printJob);
 
         assertRegistryValues(printJob, 1, 1, false);
 
         printJob = new FailingPrintJob();
-        printJob.setCreateTime(System.currentTimeMillis());
+        entry.setStartTime(System.currentTimeMillis());
         jobManager.submit(printJob);
 
         assertRegistryValues(printJob, 2, 2, false);
@@ -46,14 +50,14 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
 
         printJob = new TestPrintJob() {
             @Override
-            protected URI withOpenOutputStream(PrintAction function) throws Throwable {
+            protected URI withOpenOutputStream(PrintAction function) throws Exception {
                 while (!finishFlag.get()) {
                     Thread.sleep(100);
                 }
                 return super.withOpenOutputStream(function);
             }
         };
-        printJob.setCreateTime(System.currentTimeMillis());
+        entry.setStartTime(System.currentTimeMillis());
         jobManager.submit(printJob);
 
         assertRegistryValues(printJob, 2, 3, false);
@@ -70,9 +74,9 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
         AssertionError error = null;
         while ((System.currentTimeMillis() - start) > 2000) {
             try {
-                int lastPrintCount = jobManager.getLastPrintCount();
-                int numberOfRequestsMade = jobManager.getNumberOfRequestsMade();
-                long timeSpentPrinting = jobManager.getAverageTimeSpentPrinting();
+                int lastPrintCount = jobQueue.getLastPrintCount();
+                int numberOfRequestsMade = jobQueue.getNumberOfRequestsMade();
+                long timeSpentPrinting = jobQueue.getAverageTimeSpentPrinting();
 
                 assertEquals(expectedLastPrintCount, lastPrintCount);
                 assertEquals(expectedRequestsMade, numberOfRequestsMade);
@@ -96,12 +100,13 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
         {
             try {
                 initForTesting(context);
-                setRequestData(new PJsonObject(new JSONObject("{\"" + MapPrinterServlet.JSON_APP + "\":\"default\"}"), "job"));
-                setReferenceId("abc");
+                PrintJobEntryImpl entry = (PrintJobEntryImpl) getEntry();
+                entry.setRequestData(new PJsonObject(new JSONObject("{\"" + MapPrinterServlet.JSON_APP + "\":\"default\"}"), "job"));
+                entry.setReferenceId("abc");
                 Template template = new Template();
                 Configuration configuration = new Configuration();
                 template.setConfiguration(configuration);
-                configureAccess(template);
+                entry.configureAccess(template, context);
                 setSecurityContext(SecurityContextHolder.createEmptyContext());
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -110,14 +115,14 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
         }
 
         @Override
-        protected URI withOpenOutputStream(PrintAction function) throws Throwable {
+        protected URI withOpenOutputStream(PrintAction function) throws Exception {
             return new URI("file://123.com");
         }
     }
 
     private class FailingPrintJob extends TestPrintJob {
         @Override
-        protected URI withOpenOutputStream(PrintAction function) throws Throwable {
+        protected URI withOpenOutputStream(PrintAction function) throws Exception {
             throw new RuntimeException("failure");
         }
     }

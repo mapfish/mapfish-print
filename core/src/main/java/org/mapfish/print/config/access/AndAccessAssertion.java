@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import org.mapfish.print.config.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -85,5 +86,26 @@ public final class AndAccessAssertion implements AccessAssertion {
         for (AccessAssertion predicate : this.predicates) {
             predicate.validate(validationErrors, configuration);
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o instanceof AndAccessAssertion) {
+            return ((AndAccessAssertion) o).predicates.equals(this.predicates);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.predicates.hashCode();
+    }
+
+    @Override
+    public AccessAssertion copy() {
+        AndAccessAssertion assertion = new AndAccessAssertion();
+        assertion.predicates = new ArrayList<AccessAssertion>(this.predicates);
+        assertion.persister = this.persister;
+        return assertion;
     }
 }
