@@ -153,6 +153,19 @@ public class PrintJobDao {
     }
 
     /**
+     * Delete old jobs.
+     * 
+     * @param checkTimeThreshold
+     *            threshold for last check time
+     */
+    public final void deleteOld(final long checkTimeThreshold) {
+        Query query = getSession()
+                .createQuery("delete from PrintJobStatusExtImpl " + "where lastCheckTime < :checktimethreshold)");
+        query.setParameter("checktimethreshold", checkTimeThreshold);
+        query.executeUpdate();
+    }
+
+    /**
      * Poll for the next N waiting jobs in line.
      * 
      * @param size maximum amount of jobs to poll for

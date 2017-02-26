@@ -6,10 +6,20 @@ import org.mapfish.print.servlet.job.PrintJobEntry;
 import org.mapfish.print.servlet.job.PrintJobResult;
 import org.mapfish.print.servlet.job.PrintJobStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 /**
  * 
@@ -18,30 +28,54 @@ import java.util.List;
  */
 @Transactional
 public class HibernateJobQueue implements JobQueue {
-    
+
+    private static final int DEFAULT_TIME_TO_KEEP_AFTER_ACCESS = 30; /* minutes */
+
+    private static final long DEFAULT_CLEAN_UP_INTERVAL = 300; /* seconds */
+
     @Autowired
     private PrintJobDao dao;
 
+    @Autowired
+    private PlatformTransactionManager txManager;
+
+    private ScheduledExecutorService cleanUpTimer;
+
+    /**
+     * The interval at which old records are deleted (in seconds).
+     */
+    private long cleanupInterval = DEFAULT_CLEAN_UP_INTERVAL;
+
+    /**
+     * The minimum time to keep records after last access.
+     */
+    private int timeToKeepAfterAccessInMinutes = DEFAULT_TIME_TO_KEEP_AFTER_ACCESS;
+
+    public final void setTimeToKeepAfterAccessInMinutes(final int timeToKeepAfterAccessInMinutes) {
+        this.timeToKeepAfterAccessInMinutes = timeToKeepAfterAccessInMinutes;
+    }
+
     @Override
     public final long getTimeToKeepAfterAccessInMillis() {
-        return -1;
+        return TimeUnit.MINUTES.toMillis(this.timeToKeepAfterAccessInMinutes);
     }
-    
+
     @Override
     public final int getLastPrintCount() {
-        return this.dao.count(PrintJobStatus.Status.FINISHED, PrintJobStatus.Status.CANCELLED, PrintJobStatus.Status.ERROR);
+        return this.dao.count(PrintJobStatus.Status.FINISHED, PrintJobStatus.Status.CANCELLED,
+                PrintJobStatus.Status.ERROR);
     }
-    
+
     @Override
     public final int getWaitingJobsCount() {
         return this.dao.count(PrintJobStatus.Status.WAITING, PrintJobStatus.Status.RUNNING);
     }
-    
+
     @Override
     public final int getNumberOfRequestsMade() {
         return this.dao.count();
     }
-    
+
     @Override
     public final long getAverageTimeSpentPrinting() {
         return this.dao.getTotalTimeSpentPrinting() / Math.max(1, getLastPrintCount());
@@ -72,9 +106,9 @@ public class HibernateJobQueue implements JobQueue {
     public final synchronized void add(final PrintJobEntry jobEntry) {
         this.dao.save(new PrintJobStatusExtImpl(jobEntry, getNumberOfRequestsMade()));
     }
-    
+
     @Override
-    public final synchronized void cancel(final String referenceId, final String message, final boolean forceFinal) 
+    public final synchronized void cancel(final String referenceId, final String message, final boolean forceFinal)
             throws NoSuchReferenceException {
         PrintJobStatusExtImpl record = this.dao.get(referenceId, true);
         if (record == null) {
@@ -90,9 +124,8 @@ public class HibernateJobQueue implements JobQueue {
         this.dao.save(record);
     }
 
-
     @Override
-    public final synchronized void fail(final String referenceId, final String message) 
+    public final synchronized void fail(final String referenceId, final String message)
             throws NoSuchReferenceException {
         PrintJobStatusExtImpl record = this.dao.get(referenceId, true);
         if (record == null) {
@@ -116,13 +149,14 @@ public class HibernateJobQueue implements JobQueue {
     }
 
     @Override
-    public final synchronized void done(final String referenceId, final PrintJobResult result) throws NoSuchReferenceException {
+    public final synchronized void done(final String referenceId, final PrintJobResult result)
+            throws NoSuchReferenceException {
         PrintJobStatusExtImpl record = this.dao.get(referenceId, true);
         if (record == null) {
             throw new NoSuchReferenceException(referenceId);
         }
-        record.setStatus(record.getStatus() == PrintJobStatus.Status.CANCELING ? PrintJobStatus.Status.CANCELLED : 
-            PrintJobStatus.Status.FINISHED);
+        record.setStatus(record.getStatus() == PrintJobStatus.Status.CANCELING ? PrintJobStatus.Status.CANCELLED
+                : PrintJobStatus.Status.FINISHED);
         record.setResult(result);
         record.setCompletionTime(System.currentTimeMillis());
         this.dao.save(record);
@@ -149,5 +183,44 @@ public class HibernateJobQueue implements JobQueue {
     public final List<? extends PrintJobStatus> toCancel() {
         return this.dao.get(PrintJobStatus.Status.CANCELING);
     }
-    
+
+    /**
+     * Called by spring on initialization.
+     */
+    @PostConstruct
+    public final void init() {
+        this.cleanUpTimer = Executors.newScheduledThreadPool(1, new ThreadFactory() {
+            @Override
+            public Thread newThread(final Runnable timerTask) {
+                final Thread thread = new Thread(timerTask, "Clean up old job records");
+                thread.setDaemon(true);
+                return thread;
+            }
+        });
+        this.cleanUpTimer.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                cleanup();
+            }
+        }, this.cleanupInterval, this.cleanupInterval, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Called by spring when application context is being destroyed.
+     */
+    @PreDestroy
+    public final void shutdown() {
+        this.cleanUpTimer.shutdownNow();
+    }
+
+    private void cleanup() {
+        TransactionTemplate tmpl = new TransactionTemplate(this.txManager);
+        tmpl.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(final TransactionStatus status) {
+                HibernateJobQueue.this.dao.deleteOld(System.currentTimeMillis() - getTimeToKeepAfterAccessInMillis());
+            }
+        });
+    }
+
 }
