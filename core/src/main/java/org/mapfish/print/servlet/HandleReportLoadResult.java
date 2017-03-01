@@ -1,7 +1,6 @@
 package org.mapfish.print.servlet;
 
-import org.mapfish.print.servlet.job.FailedPrintJob;
-import org.mapfish.print.servlet.job.SuccessfulPrintJob;
+import org.mapfish.print.servlet.job.PrintJobStatus;
 import org.mapfish.print.servlet.job.loader.ReportLoader;
 
 import java.io.IOException;
@@ -40,7 +39,7 @@ public interface HandleReportLoadResult<R> {
      * @param reportURI             the uri to the report
      * @param loader                the loader for loading the report.
      */
-    R successfulPrint(SuccessfulPrintJob successfulPrintResult, HttpServletResponse httpServletResponse, URI reportURI,
+    R successfulPrint(PrintJobStatus successfulPrintResult, HttpServletResponse httpServletResponse, URI reportURI,
                       ReportLoader loader) throws IOException, ServletException;
 
     /**
@@ -49,7 +48,7 @@ public interface HandleReportLoadResult<R> {
      * @param failedPrintJob      the failed print job
      * @param httpServletResponse the object for writing response
      */
-    R failedPrint(FailedPrintJob failedPrintJob, HttpServletResponse httpServletResponse);
+    R failedPrint(PrintJobStatus failedPrintJob, HttpServletResponse httpServletResponse);
 
     /**
      * Called when the print job has not yet completed.

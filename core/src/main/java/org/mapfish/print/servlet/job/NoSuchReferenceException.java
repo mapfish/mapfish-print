@@ -9,10 +9,10 @@ public class NoSuchReferenceException extends Exception {
 
     /**
      * Constructor.
-     * @param msg error message
+     * @param referenceId the reference id
      */
-    public NoSuchReferenceException(final String msg) {
-        super(msg);
+    public NoSuchReferenceException(final String referenceId) {
+        super("invalid reference '" + referenceId + "'");
     }
 
 }

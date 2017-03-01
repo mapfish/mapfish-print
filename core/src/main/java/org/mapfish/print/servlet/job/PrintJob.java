@@ -7,12 +7,10 @@ import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.config.access.AccessAssertion;
-import org.mapfish.print.config.access.AndAccessAssertion;
 import org.mapfish.print.output.OutputFormat;
-import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.servlet.NoSuchAppException;
-import org.mapfish.print.servlet.ServletMapPrinterFactory;
+import org.mapfish.print.servlet.job.impl.PrintJobEntryImpl;
+import org.mapfish.print.servlet.job.impl.PrintJobResultImpl;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +21,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.OutputStream;
 import java.net.URI;
-import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -32,68 +29,24 @@ import javax.annotation.Nullable;
 /**
  * The information for printing a report.
  */
-public abstract class PrintJob implements Callable<PrintJobStatus> {
+public abstract class PrintJob implements Callable<PrintJobResult> {
     private static final Logger LOGGER = LoggerFactory.getLogger(PrintJob.class);
-
-    private String referenceId;
-    private PJsonObject requestData;
-    private AccessAssertion access;
-    private Long createTime;
-
+    
+    private PrintJobEntry entry;
+    
     @Autowired
     private MapPrinterFactory mapPrinterFactory;
     @Autowired
     private MetricRegistry metricRegistry;
-    @Autowired
-    private ApplicationContext applicationContext;
 
-    private SecurityContext securityContext;
-
-    /**
-     * Get the reference id of the job so it can be looked up again later.
-     */
-    public final String getReferenceId() {
-        return this.referenceId;
+    private SecurityContext securityContext;       
+    
+    public final PrintJobEntry getEntry() {
+        return this.entry;
     }
 
-    /**
-     * Set the reference id of the job so it can be looked up again later.
-     *
-     * @param referenceId the referenceId
-     */
-    public final void setReferenceId(final String referenceId) {
-        this.referenceId = referenceId;
-    }
-
-    /*
-     * The timestamp when the job was created.
-     */
-    public final Long getCreateTime() {
-        return this.createTime;
-    }
-
-    /*
-     * The date when the job was created.
-     */
-    public final Date getCreateTimeAsDate() {
-        return new Date(this.createTime);
-    }
-
-    /*
-     * Set the timestamp when the job was created.
-     */
-    public final void setCreateTime(final Long createTime) {
-        this.createTime = createTime;
-    }
-
-
-    /**
-     * Set the data from the client making the request.
-     *
-     * @param requestData the json data
-     */
-    public final void setRequestData(final PJsonObject requestData) {
-        this.requestData = requestData;
+    public final void setEntry(final PrintJobEntry entry) {
+        this.entry = entry;
     }
 
     /**
@@ -102,75 +55,67 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
      * @param function the function to execute
      * @return the
      */
-    protected abstract URI withOpenOutputStream(PrintAction function) throws Throwable;
-
+    protected abstract URI withOpenOutputStream(PrintAction function) throws Exception;
+    
+    /**
+     * Create Print Job Result.
+     * 
+     * @param reportURI the report URI
+     * @param fileName the file name
+     * @param fileExtension the file extension
+     * @param mimeType the mime type
+     * @return the job result
+     */
+    //CHECKSTYLE:OFF
+    protected PrintJobResult createResult(final URI reportURI, final String fileName, final String fileExtension, 
+            final String mimeType) {
+    //CHECKSTYLE:ON
+        return new PrintJobResultImpl(reportURI, fileName, fileExtension, mimeType);
+    }
+    
     @Override
-    public final PrintJobStatus call() throws Exception {
+    public final PrintJobResult call() throws Exception {
         SecurityContextHolder.setContext(this.securityContext);
         Timer.Context timer = this.metricRegistry.timer(getClass().getName() + " call()").time();
         PJsonObject spec = null;
-        MapPrinter mapPrinter = null;
+        MapPrinter mapPrinter = null;  
         try {
-            LOGGER.info("Starting print job " + this.referenceId);
-            spec = PrintJob.this.requestData;
-            mapPrinter = PrintJob.this.mapPrinterFactory.create(getAppId());
+            LOGGER.info("Starting print job " + this.entry.getReferenceId());
+            spec = this.entry.getRequestData();
+            mapPrinter = PrintJob.this.mapPrinterFactory.create(this.entry.getAppId());
             final MapPrinter finalMapPrinter = mapPrinter;
             URI reportURI = withOpenOutputStream(new PrintAction() {
                 @Override
-                public void run(final OutputStream outputStream) throws Throwable {
-                    finalMapPrinter.print(PrintJob.this.requestData, outputStream);
+                public void run(final OutputStream outputStream) throws Exception {
+                    finalMapPrinter.print(PrintJob.this.entry.getRequestData(), outputStream);
                 }
             });
 
             this.metricRegistry.counter(getClass().getName() + "success").inc();
-            LOGGER.info("Successfully completed print job " + this.referenceId);
-            LOGGER.debug("Job " + this.referenceId + "\n" + this.requestData);
+            LOGGER.info("Successfully completed print job " + this.entry.getReferenceId());
+            LOGGER.debug("Job " + this.entry.getReferenceId() + "\n" + this.entry.getRequestData());
             String fileName = getFileName(mapPrinter, spec);
 
-            final OutputFormat outputFormat = mapPrinter.getOutputFormat(spec);
-            String mimeType = outputFormat.getContentType();
-            String fileExtension = outputFormat.getFileSuffix();
-
-            return new SuccessfulPrintJob(this.referenceId, reportURI, getAppId(), getCreateTimeAsDate(), new Date(), 0L,
-                    fileName, mimeType, fileExtension, this.access);
-        } catch (Throwable e) {
+            String mimeType = null;
+            String fileExtension = null;
+            if (mapPrinter != null) { //can only happen in test
+                final OutputFormat outputFormat = mapPrinter.getOutputFormat(spec);
+                mimeType = outputFormat.getContentType();
+                fileExtension = outputFormat.getFileSuffix();
+            }
+            return createResult(reportURI, fileName, fileExtension, mimeType);
+        } catch (Exception e) {
             String canceledText = "";
             if (Thread.currentThread().isInterrupted()) {
                 canceledText = "(canceled) ";
             }
-            LOGGER.info("Error executing print job " + canceledText + this.referenceId + "\n" + this.requestData, e);
+            LOGGER.info("Error executing print job " + canceledText + this.entry.getReferenceId() + "\n" + this.entry.getRequestData(), e);
             this.metricRegistry.counter(getClass().getName() + "failure").inc();
-            String fileName = "unknownFileName";
-            if (spec != null) {
-                fileName = getFileName(mapPrinter, spec);
-            }
-            final Throwable rootCause = getRootCause(e);
-            return new FailedPrintJob(this.referenceId, getAppId(), getCreateTimeAsDate(), new Date(), 0L,
-                    fileName, rootCause.toString(), false, this.access);
+            throw e;
         } finally {
             final long stop = TimeUnit.MILLISECONDS.convert(timer.stop(), TimeUnit.NANOSECONDS);
-            LOGGER.debug("Print Job " + PrintJob.this.referenceId + " completed in " + stop + "ms");
+            LOGGER.debug("Print Job " + this.entry.getReferenceId() + " completed in " + stop + "ms");
         }
-    }
-
-    /**
-     * Because exceptions might get re-thrown several times, an error message like
-     * "java.util.concurrent.ExecutionException: java.lang.IllegalArgumentException: java.lang.IllegalArgumentException: ..."
-     * might get created. To avoid this, this method finds the root cause, so that only a message like
-     * "java.lang.IllegalArgumentException: ..." is shown.
-     */
-    private Throwable getRootCause(final Throwable e) {
-        Throwable rootCause = e;
-        while (rootCause.getCause() != null && rootCause.getCause() != rootCause) {
-            rootCause = rootCause.getCause();
-        }
-        return rootCause;
-    }
-
-    protected final String getAppId() {
-        return PrintJob.this.requestData.optString(
-                MapPrinterServlet.JSON_APP,
-                ServletMapPrinterFactory.DEFAULT_CONFIGURATION_FILE_KEY);
     }
 
     /**
@@ -210,25 +155,7 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
         this.securityContext.setAuthentication(securityContext.getAuthentication());
     }
 
-    public final AccessAssertion getAccess() {
-        return this.access;
-    }
-
-    /**
-     * Configure the access permissions required to access this print job.
-     *
-     * @param template the containing print template which should have sufficient information to configure the access.
-     */
-    public final void configureAccess(final Template template) {
-        final Configuration configuration = template.getConfiguration();
-
-        AndAccessAssertion accessAssertion = this.applicationContext.getBean(AndAccessAssertion.class);
-        accessAssertion.setPredicates(configuration.getAccessAssertion(), template.getAccessAssertion());
-        this.access = accessAssertion;
-    }
-
     final void initForTesting(final ApplicationContext context) {
-        this.applicationContext = context;
         this.metricRegistry = context.getBean(MetricRegistry.class);
         this.mapPrinterFactory = new MapPrinterFactory() {
             @Override
@@ -241,6 +168,7 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
                 return null;
             }
         };
+        this.entry = new PrintJobEntryImpl();
     }
 
     /**
@@ -252,6 +180,6 @@ public abstract class PrintJob implements Callable<PrintJobStatus> {
          *
          * @param outputStream the output stream to write the report to.
          */
-        void run(OutputStream outputStream) throws Throwable;
+        void run(OutputStream outputStream) throws Exception;
     }
 }

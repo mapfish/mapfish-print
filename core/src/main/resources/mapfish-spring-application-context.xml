@@ -14,6 +14,7 @@
     <import resource="mapfish-spring-config-output-formats.xml" />
     <import resource="mapfish-spring-access-assertions.xml" />
     <import resource="mapfish-spring-named-styles.xml" />
+    <import resource="mapfish-spring-hibernate.xml" />    
 
     <context:annotation-config/>
     <context:property-placeholder system-properties-mode="OVERRIDE" file-encoding="UTF-8" location="classpath:mapfish-spring.properties"/>
@@ -41,7 +42,8 @@
         <property name="timeToKeepAfterAccessInMinutes" value="30" />
     </bean>
 
-    <bean id="jobManager" class="org.mapfish.print.servlet.job.ThreadPoolJobManager">
+    <bean id="jobQueue" class="org.mapfish.print.servlet.job.impl.RegistryJobQueue"></bean>
+    <bean id="jobManager" class="org.mapfish.print.servlet.job.impl.ThreadPoolJobManager">
         <property name="maxNumberOfRunningPrintJobs" value="${maxNumberOfRunningPrintJobs}" />
         <property name="maxNumberOfWaitingJobs" value="5000" />
         <!-- Timeout for print jobs in seconds -->
@@ -51,7 +53,7 @@
         <property name="oldFileCleanUp" value="${fileCleanUp}" />
         <property name="oldFileCleanupInterval" value="${fileCleanUpInterval}" />
     </bean>
-    <bean id="printJobPrototype" class="org.mapfish.print.servlet.job.FilePrintJob" scope="prototype"/>
+    <bean id="printJobPrototype" class="org.mapfish.print.servlet.job.impl.FilePrintJob" scope="prototype"/>
     <bean id="fileReportLoader" class="org.mapfish.print.servlet.job.loader.FileReportLoader"/>
 
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>
@@ -86,4 +88,6 @@
     <bean id="styleParser" class="org.mapfish.print.map.style.StyleParser" />
     <bean id="parser" class="org.mapfish.print.parser.MapfishParser" />
     <bean id="imageIOPluginScanner" class="org.mapfish.print.ImageIOPluginScanner" />
+    
+    <bean class="org.mapfish.print.ApplicationContextProvider" />
 </beans>

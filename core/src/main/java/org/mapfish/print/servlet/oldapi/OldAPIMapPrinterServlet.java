@@ -435,7 +435,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
             boolean isDone = false;
             while (!isDone) {
                 Thread.sleep(HALF_SECOND);
-                isDone = this.jobManager.isDone(jobReferenceId);
+                isDone = this.jobManager.getStatus(jobReferenceId).isDone();
             }
 
             return jobReferenceId;

@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -120,5 +121,25 @@ public final class RoleAccessAssertion implements AccessAssertion {
         if (this.requiredRoles == null) {
             validationErrors.add(new ConfigurationException("requiredRoles must be defined"));
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o instanceof RoleAccessAssertion) {
+            return ((RoleAccessAssertion) o).requiredRoles.equals(this.requiredRoles);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.requiredRoles.hashCode();
+    }
+
+    @Override
+    public AccessAssertion copy() {
+        RoleAccessAssertion assertion = new RoleAccessAssertion();
+        assertion.requiredRoles = Collections.unmodifiableSet(new HashSet<String>(this.requiredRoles));
+        return assertion;
     }
 }

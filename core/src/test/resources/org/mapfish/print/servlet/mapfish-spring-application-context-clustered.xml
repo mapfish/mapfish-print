@@ -9,18 +9,18 @@
     
     <!-- Uncomment this to use hibernate instead of the registry to store the job queue.
     configure the data source as well  -->    
-    <!-- <bean id="jobQueue" class="org.mapfish.print.servlet.job.impl.hibernate.HibernateJobQueue" />
+    <bean id="jobQueue" class="org.mapfish.print.servlet.job.impl.hibernate.HibernateJobQueue" />
     <bean id="mfDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="org.postgresql.Driver" />
         <property name="url" value="jdbc:postgresql://localhost/jobs" />
         <property name="username" value="jobs" />
         <property name="password" value="jobs" />
-    </bean> -->
+    </bean>
     	
    <!-- Uncomment this to force the job manager the support clustering, by not taking submitted jobs automatically as its own.
     	This mode requires the hibernate job queue, the registry job queue is unsupported.
     	oldFileCleanUp should be turned off if hibernate is used for print job results (see below)  -->                 
-    <!-- <bean class="org.springframework.beans.factory.config.PropertyOverrideConfigurer" >
+    <bean class="org.springframework.beans.factory.config.PropertyOverrideConfigurer" >
         <property name="ignoreResourceNotFound" value="true"/>
         <property name="properties">
             <props>
@@ -28,10 +28,10 @@
             	<prop key="jobManager.oldFileCleanUp">false</prop> 
             </props>
         </property>
-    </bean> -->
+    </bean>
       
     <!-- Uncomment this to use hibernate to read and write print job results  --> 
-    <!-- <bean id="printJobPrototype" class="org.mapfish.print.servlet.job.impl.hibernate.HibernatePrintJob" scope="prototype"/>
-    <bean id="fileReportLoader" class="org.mapfish.print.servlet.job.impl.hibernate.HibernateReportLoader"/> --> 
+    <bean id="printJobPrototype" class="org.mapfish.print.servlet.job.impl.hibernate.HibernatePrintJob" scope="prototype"/>
+    <bean id="fileReportLoader" class="org.mapfish.print.servlet.job.impl.hibernate.HibernateReportLoader"/> 
 
 </beans>

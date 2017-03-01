@@ -15,7 +15,7 @@ import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest;
-import org.mapfish.print.servlet.job.ThreadPoolJobManager;
+import org.mapfish.print.servlet.job.impl.ThreadPoolJobManager;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonArray;

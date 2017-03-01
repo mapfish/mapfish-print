@@ -1,6 +1,7 @@
-package org.mapfish.print.servlet.job;
+package org.mapfish.print.servlet.job.impl;
 
 import org.mapfish.print.config.WorkingDirectories;
+import org.mapfish.print.servlet.job.PrintJob;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.BufferedOutputStream;
@@ -20,8 +21,8 @@ public class FilePrintJob extends PrintJob {
 
 
     @Override
-    protected final URI withOpenOutputStream(final PrintAction function) throws Throwable {
-        final File reportFile = new File(this.workingDirectories.getReports(), getReferenceId());
+    protected final URI withOpenOutputStream(final PrintAction function) throws Exception {
+        final File reportFile = new File(this.workingDirectories.getReports(), getEntry().getReferenceId());
         FileOutputStream out = null;
         BufferedOutputStream bout = null;
         try {
