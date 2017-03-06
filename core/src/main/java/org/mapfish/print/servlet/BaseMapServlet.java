@@ -4,6 +4,8 @@ import org.mapfish.print.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -120,5 +122,19 @@ public abstract class BaseMapServlet {
             baseURL.append(httpServletRequest.getServletPath());
         }
         return baseURL;
+    }
+
+    /**
+     * Answer to CORS OPTION requests.
+     *
+     * @param theHttpServletResponse The response
+     */
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public final void commonOptions(final HttpServletResponse theHttpServletResponse) {
+        theHttpServletResponse.addHeader("Access-Control-Allow-Headers",
+                "origin, content-type, accept, x-requested-with");
+        theHttpServletResponse.addHeader("Access-Control-Max-Age", "86400");
+        theHttpServletResponse.addHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, DELETE");
+        theHttpServletResponse.addHeader("Access-Control-Allow-Origin", "*");
     }
 }

@@ -197,13 +197,13 @@ public class PrintApiTest extends AbstractApiTest {
     public void testCreateReport_RequestTooLarge() throws Exception {
         ClientHttpRequest request = getPrintRequest("geoext" + MapPrinterServlet.REPORT_URL + ".pdf", HttpMethod.POST);
         final String printSpec = getPrintSpec("examples/geoext/requestData.json");
-        
+
         // create a large, fake request
         StringBuilder largeRequest = new StringBuilder();
         for (int i = 0; i < 9999; i++) {
             largeRequest.append(printSpec);
         }
-        
+
         setPrintSpec(largeRequest.toString(), request);
         response = request.execute();
         assertNotEquals(HttpStatus.OK, response.getStatusCode());
@@ -470,6 +470,29 @@ public class PrintApiTest extends AbstractApiTest {
         execCreateRequestWithAuth("jimi:jimi", HttpStatus.OK, printSpec);
         execCreateRequestWithAuth("bob:bob", HttpStatus.FORBIDDEN, printSpec);
 
+    }
+
+    @Test
+    public void testCors() throws Exception {
+        ClientHttpRequest request = getPrintRequest(MapPrinterServlet.LIST_APPS_URL, HttpMethod.GET);
+        response = request.execute();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(!response.getHeaders().containsKey("Access-Control-Allow-Origin"));
+
+        request = getPrintRequest(MapPrinterServlet.LIST_APPS_URL, HttpMethod.GET);
+        request.getHeaders().set("Origin", "http://example.com/");
+        response = request.execute();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("*", response.getHeaders().getFirst("Access-Control-Allow-Origin"));
+
+        request = getPrintRequest(MapPrinterServlet.LIST_APPS_URL, HttpMethod.OPTIONS);
+        request.getHeaders().set("Origin", "http://example.com/");
+        response = request.execute();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("*", response.getHeaders().getFirst("Access-Control-Allow-Origin"));
+        assertTrue(response.getHeaders().containsKey("Access-Control-Max-Age"));
+        assertTrue(response.getHeaders().containsKey("Access-Control-Allow-Methods"));
+        assertTrue(response.getHeaders().containsKey("Access-Control-Allow-Headers"));
     }
 
     private JSONArray execCapabilitiesRequestWithAut(int expectedNumberOfLayouts, String credentials) throws IOException, URISyntaxException, JSONException {
