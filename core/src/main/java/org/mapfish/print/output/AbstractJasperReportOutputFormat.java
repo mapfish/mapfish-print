@@ -61,7 +61,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
  * The AbstractJasperReportOutputFormat class.
  */
 public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
-    private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportPDFOutputFormat.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractJasperReportOutputFormat.class);
 
     @Autowired
     private ForkJoinPool forkJoinPool;
@@ -222,10 +222,10 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                             if (!clazz.isInstance(record)) {
                                 wrongType.append("\t* ").append(name).append(" : ").append(record.getClass().getName());
                                 wrongType.append(" expected type: ").append(type).append("\n");
-                            } else {
-                                LOGGER.warn("The field " + name + " in " + reportTemplate + " is not available in at least one of the " +
-                                            "rows in the datasource.  This may not be an error.");
                             }
+                        } else {
+                            LOGGER.warn("The field " + name + " in " + reportTemplate + " is not available in at least one of the " +
+                                    "rows in the datasource.  This may not be an error.");
                         }
                     }
                 }
