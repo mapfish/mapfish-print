@@ -204,14 +204,18 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(mergedGraphic));
                 document.open();
                 PdfContentByte pdfCB = writer.getDirectContent();
-                Graphics g = pdfCB.createGraphics(width, height);                
-                drawGraphics(width, height, graphics, g);             
-                g.dispose();
-                document.close();
+                Graphics g = pdfCB.createGraphics(width, height);
+                try {
+                    drawGraphics(width, height, graphics, g);
+                } finally {
+                    g.dispose();
+                }
             } catch (BadElementException e) {
                 throw new IOException(e);
             } catch (DocumentException e) {
                 throw new IOException(e);
+            } finally {
+                document.close();
             }
         } else {
             boolean isJpeg = RenderType.fromFileExtension(outputFormat) == RenderType.JPEG;
@@ -222,8 +226,11 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 g.setColor(Color.WHITE);
                 g.fillRect(0, 0, width, height);
             }
-            drawGraphics(width, height, graphics, g);
-            g.dispose();
+            try {
+                drawGraphics(width, height, graphics, g);
+            } finally {
+                g.dispose();
+            }
             ImageIO.write(bufferedImage, outputFormat, mergedGraphic);
         }
         
