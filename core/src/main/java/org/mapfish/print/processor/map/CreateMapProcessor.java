@@ -6,6 +6,10 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.io.Closer;
 import com.google.common.io.Files;
+import com.lowagie.text.BadElementException;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfWriter;
 import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Polygon;
@@ -188,19 +192,53 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             final List<URI> graphics,
             final MapfishMapContext mapContext,
             final String outputFormat) throws IOException, JRException {
+        
+        final File mergedGraphic = File.createTempFile("map-", "." + outputFormat, printDirectory);
         int width = (int) Math.round(mapContext.getMapSize().width);
         int height = (int) Math.round(mapContext.getMapSize().height);
-        boolean isJpeg = RenderType.fromFileExtension(outputFormat) == RenderType.JPEG;
-        final BufferedImage bufferedImage = new BufferedImage(width, height, 
-            (isJpeg ? this.jpegImageType.value : this.imageType.value)
-        );
-        Graphics g = bufferedImage.getGraphics();
-
-        if (isJpeg) {
-            g.setColor(Color.WHITE);
-            g.fillRect(0, 0, width, height);
+        
+        if ("pdf".equalsIgnoreCase(outputFormat)) {
+            com.lowagie.text.Document document = new com.lowagie.text.Document(
+                    new com.lowagie.text.Rectangle(width, height));
+            try {
+                PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(mergedGraphic));
+                document.open();
+                PdfContentByte pdfCB = writer.getDirectContent();
+                Graphics g = pdfCB.createGraphics(width, height);
+                try {
+                    drawGraphics(width, height, graphics, g);
+                } finally {
+                    g.dispose();
+                }
+            } catch (BadElementException e) {
+                throw new IOException(e);
+            } catch (DocumentException e) {
+                throw new IOException(e);
+            } finally {
+                document.close();
+            }
+        } else {
+            boolean isJpeg = RenderType.fromFileExtension(outputFormat) == RenderType.JPEG;
+            final BufferedImage bufferedImage = new BufferedImage(width, height, 
+                    (isJpeg ? this.jpegImageType.value : this.imageType.value));
+            Graphics g = bufferedImage.getGraphics();
+            if (isJpeg) {
+                g.setColor(Color.WHITE);
+                g.fillRect(0, 0, width, height);
+            }
+            try {
+                drawGraphics(width, height, graphics, g);
+            } finally {
+                g.dispose();
+            }
+            ImageIO.write(bufferedImage, outputFormat, mergedGraphic);
         }
-
+        
+        return mergedGraphic.toURI();
+    }
+    
+    private void drawGraphics(final int width, final int height,
+            final List<URI> graphics, final Graphics g) throws IOException, JRException {
         for (URI graphic : graphics) {
             final File graphicFile = new File(graphic);
             if (Files.getFileExtension(graphicFile.getName()).equals("svg")) {
@@ -214,11 +252,6 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 g.drawImage(image, 0, 0, width, height, null);
             }
         }
-        
-        final File mergedGraphic = File.createTempFile("map-", "." + outputFormat, printDirectory);
-        ImageIO.write(bufferedImage, outputFormat, mergedGraphic);
-        
-        return mergedGraphic.toURI();
     }
 
     private URI createMapSubReport(final File printDirectory,
