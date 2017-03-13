@@ -39,7 +39,6 @@ public class CustomFontLoaderTest extends AbstractMapfishSpringTest {
     /**
      * Tests that a custom-loaded font can be used.
      */
-    @Test
     public void testPrint() throws Exception {
         final Configuration config = configurationFactory.getConfig(getFile(CustomFontLoaderTest.class, BASE_DIR + "config.yaml"));
         PJsonObject requestData = loadJsonRequestData();
