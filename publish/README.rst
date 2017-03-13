@@ -32,11 +32,12 @@ Credential Configuration
 .. code ::
 
   # server to publish to
+  enablePublishing=true
   host=oss.sonatype.org
   # gpg configuration information
-  signing.keyId=<id of the gpg key to use for the deploy>
-  signing.password=<password for gpg key that applies to the keyId> 
-  signing.secretKeyRingFile=<path to gnupg .gpg file for example: C:\\Users\\xyz\\.gnupg\\secring.gpg>
+  signing_keyId=<id of the gpg key to use for the deploy>
+  signing_password=<password for gpg key that applies to the keyId>
+  signing_secretKeyRingFile=<path to gnupg .gpg file for example: C:\\Users\\xyz\\.gnupg\\secring.gpg>
   sonatypeUsername=<sonatype username>
   sonatypePassword=<sonatype password>
   
