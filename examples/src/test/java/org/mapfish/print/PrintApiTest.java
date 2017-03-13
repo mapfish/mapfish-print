@@ -487,12 +487,14 @@ public class PrintApiTest extends AbstractApiTest {
 
         request = getPrintRequest(MapPrinterServlet.LIST_APPS_URL, HttpMethod.OPTIONS);
         request.getHeaders().set("Origin", "http://example.com/");
+        request.getHeaders().set("Access-Control-Request-Method", "POST");
+        request.getHeaders().set("Access-Control-Request-Headers", "X-Toto");
         response = request.execute();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("*", response.getHeaders().getFirst("Access-Control-Allow-Origin"));
         assertTrue(response.getHeaders().containsKey("Access-Control-Max-Age"));
         assertTrue(response.getHeaders().containsKey("Access-Control-Allow-Methods"));
-        assertTrue(response.getHeaders().containsKey("Access-Control-Allow-Headers"));
+        assertEquals("X-Toto", response.getHeaders().getFirst("Access-Control-Allow-Headers"));
     }
 
     private JSONArray execCapabilitiesRequestWithAut(int expectedNumberOfLayouts, String credentials) throws IOException, URISyntaxException, JSONException {
