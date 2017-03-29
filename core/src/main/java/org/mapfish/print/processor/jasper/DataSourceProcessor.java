@@ -25,11 +25,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.PostConstruct;
 
 import static org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue;
 
@@ -81,6 +83,12 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
      */
     public DataSourceProcessor() {
         super(Output.class);
+    }
+
+    @PostConstruct
+    private void init() {
+        // default to no processors
+        this.processorGraph  = this.processorGraphFactory.build(Collections.<Processor>emptyList());
     }
 
     /**
@@ -202,10 +210,6 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
 
     @Override
     protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
-        if (this.processorGraph == null) {
-            validationErrors.add(new ConfigurationException("There are child processors for this processor"));
-        }
-
         if (this.reportTemplate != null && this.reportKey == null || this.reportTemplate == null && this.reportKey != null) {
             validationErrors.add(new ConfigurationException("'reportKey' and 'reportTemplate' must either both be null or both" +
                                                             " be non-null.  reportKey: " + this.reportKey +
@@ -215,9 +219,13 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
             attribute.validate(validationErrors, configuration);
         }
 
-        final Set<Processor<?, ?>> allProcessors = this.processorGraph.getAllProcessors();
-        for (Processor<?, ?> processor : allProcessors) {
-            processor.validate(validationErrors, configuration);
+        if (this.processorGraph == null) {
+            validationErrors.add(new ConfigurationException("There are no child processors for this processor"));
+        } else {
+            final Set<Processor<?, ?>> allProcessors = this.processorGraph.getAllProcessors();
+            for (Processor<?, ?> processor : allProcessors) {
+                processor.validate(validationErrors, configuration);
+            }
         }
     }
 
