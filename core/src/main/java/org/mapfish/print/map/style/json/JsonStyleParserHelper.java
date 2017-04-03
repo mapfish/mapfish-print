@@ -35,9 +35,14 @@ import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -119,23 +124,26 @@ public final class JsonStyleParserHelper {
     private boolean allowNullSymbolizer;
     private StyleBuilder styleBuilder;
     private Versions version;
+    private final ClientHttpRequestFactory clientHttpRequestFactory;
 
     /**
      * Constructor.
-     *
-     * @param configuration       the configuration to use for resolving relative files or other settings.
+     *  @param configuration       the configuration to use for resolving relative files or other settings.
      * @param styleBuilder        a style builder to use for creating the style objects.
      * @param allowNullSymbolizer If true then create*Symbolizer() methods can return null if expected params are missing.
      * @param version             the version being parsed.
+     * @param clientHttpRequestFactory How to do requests
      */
     public JsonStyleParserHelper(@Nonnull final Configuration configuration,
                                  @Nonnull final StyleBuilder styleBuilder,
                                  final boolean allowNullSymbolizer,
-                                 final Versions version) {
+                                 final Versions version,
+                                 @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory) {
         this.configuration = configuration;
         this.styleBuilder = styleBuilder;
         this.allowNullSymbolizer = allowNullSymbolizer;
         this.version = version;
+        this.clientHttpRequestFactory = clientHttpRequestFactory;
     }
 
     void setAllowNullSymbolizer(final boolean allowNullSymbolizer) {
@@ -172,6 +180,17 @@ public final class JsonStyleParserHelper {
         graphic.graphicalSymbols().clear();
         if (styleJson.has(JSON_EXTERNAL_GRAPHIC)) {
             String externalGraphicUrl = validateURL(styleJson.getString(JSON_EXTERNAL_GRAPHIC));
+            try {
+                final URI uri = URI.create(externalGraphicUrl);
+                if (uri.getScheme().startsWith("http")) {
+                    final ClientHttpRequest request =
+                            this.clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
+                    externalGraphicUrl = request.getURI().toString();
+                }
+            } catch (IOException ignored) {
+                // ignored
+            }
+
             final String graphicFormat = getGraphicFormat(externalGraphicUrl, styleJson);
             final ExternalGraphic externalGraphic = this.styleBuilder.createExternalGraphic(externalGraphicUrl, graphicFormat);
 

@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
+import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -31,6 +32,8 @@ import org.opengis.filter.expression.Function;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.style.GraphicalSymbol;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 
 import java.io.File;
 import java.net.URI;
@@ -60,7 +63,9 @@ public class JsonStyleParserHelperTest {
         Configuration configuration = new Configuration();
         final File file = getFile(MapfishJsonStyleParserPluginTest.class, REQUEST_DATA_STYLE_JSON_V1_STYLE_JSON);
         configuration.setConfigurationFile(file);
-        helper = new JsonStyleParserHelper(configuration, new StyleBuilder(), true, Versions.ONE);
+        final ClientHttpRequestFactory clientHttpRequestFactory = new TestHttpClientFactory();
+        helper = new JsonStyleParserHelper(configuration, new StyleBuilder(), true, Versions.ONE,
+                clientHttpRequestFactory);
     }
 
     private File getFile(Class<?> base, String fileName) throws URISyntaxException {

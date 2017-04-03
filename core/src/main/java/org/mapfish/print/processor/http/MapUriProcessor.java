@@ -6,6 +6,8 @@ import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 
@@ -32,6 +34,7 @@ import java.util.regex.Pattern;
  * [[examples=http_processors,osm_custom_params]]
  */
 public final class MapUriProcessor extends AbstractClientHttpRequestFactoryProcessor {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapUriProcessor.class);
     private final Map<Pattern, String> uriMapping = Maps.newHashMap();
 
     /**
@@ -61,12 +64,15 @@ public final class MapUriProcessor extends AbstractClientHttpRequestFactoryProce
                 for (Map.Entry<Pattern, String> entry : MapUriProcessor.this.uriMapping.entrySet()) {
                     Matcher matcher = entry.getKey().matcher(uriString);
                     if (matcher.matches()) {
+                        LOGGER.debug("URI {} matched {}", uriString, entry.getKey());
                         final String finalUri = matcher.replaceAll(entry.getValue());
                         try {
                             return requestFactory.createRequest(new URI(finalUri), httpMethod);
                         } catch (URISyntaxException e) {
                             throw ExceptionUtils.getRuntimeException(e);
                         }
+                    } else {
+                        LOGGER.debug("URI {} did not match {}", uriString, entry.getKey());
                     }
                 }
                 return requestFactory.createRequest(uri, httpMethod);
