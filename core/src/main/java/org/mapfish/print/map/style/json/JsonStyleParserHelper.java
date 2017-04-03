@@ -36,6 +36,8 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
 
@@ -189,10 +191,20 @@ public final class JsonStyleParserHelper {
         graphic.graphicalSymbols().clear();
         if (styleJson.has(JSON_EXTERNAL_GRAPHIC)) {
             String externalGraphicUrl = validateURL(styleJson.getString(JSON_EXTERNAL_GRAPHIC));
-            final String graphicFormat = getGraphicFormat(externalGraphicUrl, styleJson, this.requestFactory);
+
+            try {
+                final URI uri = URI.create(externalGraphicUrl);
+                if (uri.getScheme().startsWith("http")) {
+                    final ClientHttpRequest request = this.requestFactory.createRequest(uri, HttpMethod.GET);
+                    externalGraphicUrl = request.getURI().toString();
+                }
+            } catch (IOException ignored) {
+                // ignored
+            }
+
+            final String graphicFormat = getGraphicFormat(externalGraphicUrl, styleJson);
             final ExternalGraphic externalGraphic =
                     this.styleBuilder.createExternalGraphic(externalGraphicUrl, graphicFormat);
-
             graphic.graphicalSymbols().add(externalGraphic);
         }
 
@@ -775,9 +787,7 @@ public final class JsonStyleParserHelper {
     }
 
     @VisibleForTesting
-    String getGraphicFormat(
-            final String externalGraphicFile, final PJsonObject styleJson,
-            final ClientHttpRequestFactory requestFactory) {
+    String getGraphicFormat(final String externalGraphicFile, final PJsonObject styleJson) {
         String mimeType = null;
         if (!Strings.isNullOrEmpty(styleJson.optString(JSON_GRAPHIC_FORMAT))) {
             mimeType = styleJson.getString(JSON_GRAPHIC_FORMAT);
@@ -796,7 +806,7 @@ public final class JsonStyleParserHelper {
                         uri = new File(externalGraphicFile).toURI();
                     }
 
-                    ClientHttpResponse httpResponse = requestFactory.createRequest(
+                    ClientHttpResponse httpResponse = this.requestFactory.createRequest(
                             uri, HEAD).execute();
                     List<String> contentTypes = httpResponse.getHeaders().get("Content-Type");
                     if (contentTypes.size() == 1) {
