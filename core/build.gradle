@@ -178,6 +178,7 @@ dependencies {
     compile ('org.apache.xmlgraphics:batik-transcoder:1.7'){
         exclude module: 'fop'
     }
+    compile ('org.apache.xmlgraphics:batik-codec:1.7')
     providedCompile('com.google.code.findbugs:jsr305:2.0.1')
 
     providedCompile('javax.servlet:servlet-api:2.5')
