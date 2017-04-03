@@ -114,7 +114,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         config.setFileLoaderManager(this.fileLoaderManager);
 
         ConfigFileResolvingHttpRequestFactory requestFactory = new ConfigFileResolvingHttpRequestFactory(
-                this.clientHttpRequestFactory, config);
+                this.clientHttpRequestFactory, config, "test");
 
         assertFalse(this.parser.parseStyle(config, requestFactory, file.getAbsolutePath()).isPresent());
     }
@@ -126,7 +126,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         config.setFileLoaderManager(this.fileLoaderManager);
 
         ConfigFileResolvingHttpRequestFactory requestFactory = new ConfigFileResolvingHttpRequestFactory(
-                this.clientHttpRequestFactory, config);
+                this.clientHttpRequestFactory, config, "test");
 
         return this.parser.parseStyle(config, requestFactory, styleString);
     }

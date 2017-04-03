@@ -197,7 +197,7 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
             requestUpdater.apply(requestData);
         }
 
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(),
+        Values values = new Values("test", requestData, template, this.parser, getTaskDirectory(),
                 this.requestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(

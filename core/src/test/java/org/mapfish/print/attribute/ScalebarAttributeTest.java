@@ -82,7 +82,7 @@ public class ScalebarAttributeTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
         final PJsonObject pJsonObject = parseJSONObjectFromFile(ScalebarAttributeTest.class, "scalebar/requestData.json");
-        final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory,
+        final Values values = new Values("test", pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory,
                 new File("."));
         final ScalebarAttribute.ScalebarAttributeValues value = values.getObject("scalebar", ScalebarAttribute.ScalebarAttributeValues.class);
 

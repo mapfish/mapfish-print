@@ -43,7 +43,7 @@ public class CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest extends Abstrac
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
+        Values values = new Values("test", requestData, template, this.parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));

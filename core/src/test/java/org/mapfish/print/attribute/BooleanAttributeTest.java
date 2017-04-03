@@ -34,7 +34,7 @@ public class BooleanAttributeTest extends AbstractMapfishSpringTest {
         PJsonObject requestData = loadJsonRequestData();
 
         Template template = config.getTemplate("main");
-        Values values = new Values(requestData, template, this.parser, config.getDirectory(), httpClientFactory, config.getDirectory());
+        Values values = new Values("test", requestData, template, this.parser, config.getDirectory(), httpClientFactory, config.getDirectory());
 
         assertTrue(values.getBoolean("field1"));
         assertFalse(values.getBoolean("field2"));

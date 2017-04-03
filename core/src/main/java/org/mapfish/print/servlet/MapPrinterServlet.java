@@ -22,6 +22,7 @@ import org.mapfish.print.url.data.Handler;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -913,6 +914,8 @@ public class MapPrinterServlet extends BaseMapServlet {
         if (specJson == null) {
             return null;
         }
+        String ref = UUID.randomUUID().toString() + "@" + this.servletInfo.getServletId();
+        MDC.put("job_id", ref);
         LOGGER.debug("\nspec:\n{}", specJson);
 
         specJson.getInternalObj().remove(JSON_OUTPUT_FORMAT);
@@ -923,7 +926,6 @@ public class MapPrinterServlet extends BaseMapServlet {
         if (requestHeaders.length() > 0) {
             specJson.getInternalObj().getJSONObject(JSON_ATTRIBUTES).put(JSON_REQUEST_HEADERS, requestHeaders);
         }
-        String ref = UUID.randomUUID().toString() + "@" + this.servletInfo.getServletId();
 
         // check that we have authorization and configure the job so it can only be access by users with sufficient authorization
         final String templateName = specJson.getString(Constants.JSON_LAYOUT_KEY);
@@ -936,7 +938,7 @@ public class MapPrinterServlet extends BaseMapServlet {
         try {
             this.jobManager.submit(jobEntry);
         } catch (RuntimeException exc) {
-            LOGGER.error("Error when creating job", exc);
+            LOGGER.error("Error when creating job on {}: {}", appId, specJson, exc);
             ref = null;
         }
         return ref;

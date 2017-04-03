@@ -88,10 +88,10 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             throws JRException, IOException;
 
     @Override
-    public final void print(final PJsonObject requestData, final Configuration config, final File configDir,
-                            final File taskDirectory, final OutputStream outputStream)
+    public final void print(final String jobId, final PJsonObject requestData, final Configuration config,
+                            final File configDir, final File taskDirectory, final OutputStream outputStream)
             throws Exception {
-        final Print print = getJasperPrint(requestData, config, configDir, taskDirectory);
+        final Print print = getJasperPrint(jobId, requestData, config, configDir, taskDirectory);
 
         if (Thread.currentThread().isInterrupted()) {
             throw new CancellationException();
@@ -109,17 +109,17 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
     /**
      * Renders the jasper report.
      *
+     * @param jobId the job ID
      * @param requestData the data from the client, required for writing.
      * @param config the configuration object representing the server side configuration.
-     * @param configDir the directory that contains the configuration, used for resolving resources like
-     *                  images etc...
+     * @param configDir the directory that contains the configuration, used for resolving resources like images etc...
      * @param taskDirectory the temporary directory for this printing task.
      * @return a jasper print object which can be used to generate a PDF or other outputs.
      * @throws ExecutionException
      */
     @VisibleForTesting
-    public final Print getJasperPrint(final PJsonObject requestData, final Configuration config,
-                                      final File configDir, final File taskDirectory)
+    public final Print getJasperPrint(final String jobId, final PJsonObject requestData,
+                                      final Configuration config, final File configDir, final File taskDirectory)
             throws JRException, SQLException, ExecutionException, JSONException {
         final String templateName = requestData.getString(Constants.JSON_LAYOUT_KEY);
 
@@ -134,7 +134,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         final File jasperTemplateBuild = this.workingDirectories.getBuildFileFor(config, jasperTemplateFile,
                 JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT, LOGGER);
 
-        final Values values = new Values(requestData, template, this.parser, taskDirectory,
+        final Values values = new Values(jobId, requestData, template, this.parser, taskDirectory,
                 this.httpRequestFactory, jasperTemplateBuild.getParentFile());
 
         double maxDpi = maxDpi(values);

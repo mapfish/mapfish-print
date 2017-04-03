@@ -20,6 +20,7 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.http.client.ClientHttpRequest;
 import java.awt.Dimension;
 import java.awt.Rectangle;
@@ -40,6 +41,7 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
     private final Rectangle paintArea;
     private final MapfishMapContext transformer;
     private final TileCacheInformation tiledLayer;
+    private final String jobId;
     private final MfClientHttpRequestFactory httpRequestFactory;
     private Optional<Geometry> cachedRotatedMapBounds = null;
     private final HttpRequestCache requestCache;
@@ -50,18 +52,21 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
      * @param transformer a transformer for making calculations
      * @param tileCacheInfo the object used to create the tile requests
      * @param requestCache request cache
+     * @param jobId the job ID
      */
     public TilePreparationTask(
             @Nonnull final MfClientHttpRequestFactory httpRequestFactory,
             @Nonnull final MapfishMapContext transformer,
             @Nonnull final TileCacheInformation tileCacheInfo,
-            final HttpRequestCache requestCache) {
+            final HttpRequestCache requestCache,
+            @Nonnull final String jobId) {
         this.requestCache = requestCache;
         this.bounds = transformer.getBounds();
         this.paintArea = new Rectangle(transformer.getMapSize());
         this.httpRequestFactory = httpRequestFactory;
         this.transformer = transformer;
         this.tiledLayer = tileCacheInfo;
+        this.jobId = jobId;
     }
 
     /**
@@ -69,6 +74,7 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
      */
     public TilePreparationInfo call() {
         try {
+            MDC.put("job_id", this.jobId);
             final ReferencedEnvelope mapGeoBounds = this.bounds.toReferencedEnvelope(this.paintArea);
             final CoordinateReferenceSystem mapProjection = mapGeoBounds.getCoordinateReferenceSystem();
             Dimension tileSizeOnScreen = this.tiledLayer.getTileSize();

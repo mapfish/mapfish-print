@@ -114,7 +114,8 @@ public final class ProcessorUtils {
             }
             final String[] defaultValues = {
                 Values.TASK_DIRECTORY_KEY, Values.CLIENT_HTTP_REQUEST_FACTORY_KEY,
-                Values.TEMPLATE_KEY, Values.PDF_CONFIG_KEY, Values.SUBREPORT_DIR_KEY, Values.OUTPUT_FORMAT_KEY
+                Values.TEMPLATE_KEY, Values.PDF_CONFIG_KEY, Values.SUBREPORT_DIR_KEY,
+                Values.OUTPUT_FORMAT_KEY, Values.JOB_ID_KEY
             };
             if (inputPrefix == null || Arrays.asList(defaultValues).contains(field)) {
                 name = field;

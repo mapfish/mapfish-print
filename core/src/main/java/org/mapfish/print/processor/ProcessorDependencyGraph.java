@@ -9,6 +9,7 @@ import com.google.common.collect.Multimap;
 import org.mapfish.print.output.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
@@ -160,7 +161,7 @@ public final class ProcessorDependencyGraph {
         @Override
         protected Values compute() {
             final ProcessorDependencyGraph graph = ProcessorDependencyGraph.this;
-
+            MDC.put("job_id", this.execContext.getJobId());
             LOGGER.debug("Starting to execute processor graph: \n" + graph);
             try {
                 List<ProcessorGraphNode.ProcessorNodeForkJoinTask> tasks = Lists.newArrayListWithExpectedSize(graph.roots.size());

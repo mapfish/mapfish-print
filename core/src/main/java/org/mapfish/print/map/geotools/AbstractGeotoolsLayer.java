@@ -62,7 +62,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
     public final void render(
             final Graphics2D graphics2D,
             final MfClientHttpRequestFactory clientHttpRequestFactory,
-            final MapfishMapContext transformer) {
+            final MapfishMapContext transformer, final String jobId) {
 
         MapfishMapContext layerTransformer = getLayerTransformer(transformer);
 
@@ -73,7 +73,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
         Rectangle paintArea = new Rectangle(layerTransformer.getMapSize());
         MapContent content = new MapContent();
         try {
-            List<? extends Layer> layers = getLayers(clientHttpRequestFactory, layerTransformer);
+            List<? extends Layer> layers = getLayers(clientHttpRequestFactory, layerTransformer, jobId);
             applyTransparency(layers);
 
             content.addLayers(layers);
@@ -139,12 +139,12 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
 
     /**
      * Get the {@link org.geotools.data.DataStore} object that contains the data for this layer.
-     *
      * @param httpRequestFactory the factory for making http requests
      * @param transformer the map transformer
+     * @param jobId the job ID
      */
     protected abstract List<? extends Layer> getLayers(MfClientHttpRequestFactory httpRequestFactory,
-                                                       MapfishMapContext transformer) throws Exception;
+                                                       MapfishMapContext transformer, String jobId) throws Exception;
 
     @Override
     public boolean supportsNativeRotation() {
@@ -186,6 +186,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
 
     @Override
     public void cacheResources(final HttpRequestCache httpRequestCache,
-            final MfClientHttpRequestFactory clientHttpRequestFactory, final MapfishMapContext transformer) {
+                               final MfClientHttpRequestFactory clientHttpRequestFactory, final MapfishMapContext transformer,
+                               final String jobId) {
     }
 }

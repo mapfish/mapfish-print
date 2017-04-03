@@ -72,12 +72,12 @@ public final class GridLayer implements MapLayer {
 
     @Override
     public void render(final Graphics2D graphics, final MfClientHttpRequestFactory clientHttpRequestFactory,
-                       final MapfishMapContext transformer) {
+                       final MapfishMapContext transformer, final String jobId) {
         Graphics2D graphics2D = (Graphics2D) graphics.create();
         int haloRadius = this.params.haloRadius;
         double dpiScaling = transformer.getDPI() / Constants.PDF_DPI;
 
-        this.grid.render(graphics2D, clientHttpRequestFactory, transformer);
+        this.grid.render(graphics2D, clientHttpRequestFactory, transformer, jobId);
         Font baseFont = null;
         for (String fontName : this.params.font.name) {
             try {
@@ -145,8 +145,9 @@ public final class GridLayer implements MapLayer {
     @VisibleForTesting
     List<? extends Layer> getLayers(
             @Nonnull final MfClientHttpRequestFactory httpRequestFactory,
-            @Nonnull final MapfishMapContext mapContext) throws Exception {
-        return this.grid.getLayers(httpRequestFactory, mapContext);
+            @Nonnull final MapfishMapContext mapContext,
+            @Nonnull final String jobId) throws Exception {
+        return this.grid.getLayers(httpRequestFactory, mapContext, jobId);
     }
 
     @Override
@@ -156,7 +157,8 @@ public final class GridLayer implements MapLayer {
 
     @Override
     public void cacheResources(final HttpRequestCache httpRequestCache,
-            final MfClientHttpRequestFactory clientHttpRequestFactory, final MapfishMapContext transformer) {
-        this.grid.cacheResources(httpRequestCache, clientHttpRequestFactory, transformer);
+                               final MfClientHttpRequestFactory clientHttpRequestFactory, final MapfishMapContext transformer,
+                               final String jobId) {
+        this.grid.cacheResources(httpRequestCache, clientHttpRequestFactory, transformer, jobId);
     }
 }

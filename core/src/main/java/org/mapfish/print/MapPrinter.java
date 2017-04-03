@@ -113,16 +113,17 @@ public class MapPrinter {
 
     /**
      * Start a print.
+     * @param jobId the job ID
      * @param specJson the client json request.
      * @param out the stream to write to.
      */
-    public final void print(final PJsonObject specJson, final OutputStream out)
+    public final void print(final String jobId, final PJsonObject specJson, final OutputStream out)
             throws Exception {
         final OutputFormat format = getOutputFormat(specJson);
         final File taskDirectory = this.workingDirectories.getTaskDirectory();
 
         try {
-            format.print(specJson, getConfiguration(), this.configFile.getParentFile(), taskDirectory, out);
+            format.print(jobId, specJson, getConfiguration(), this.configFile.getParentFile(), taskDirectory, out);
         } finally {
             this.workingDirectories.removeDirectory(taskDirectory);
         }

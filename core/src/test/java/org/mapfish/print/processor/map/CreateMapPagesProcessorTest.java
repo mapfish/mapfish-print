@@ -136,7 +136,7 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
 
     private void testPrint(Configuration config, PJsonObject requestData, String testName,
                            AbstractJasperReportOutputFormat format, double tolerance) throws Exception {
-        JasperPrint print = format.getJasperPrint(requestData, config, config.getDirectory(),
+        JasperPrint print = format.getJasperPrint("test", requestData, config, config.getDirectory(),
                 getTaskDirectory()).print;
 
         assertEquals(7, print.getPages().size());

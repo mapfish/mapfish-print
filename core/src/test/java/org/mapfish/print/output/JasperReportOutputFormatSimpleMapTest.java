@@ -29,7 +29,7 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
         PJsonObject requestData = loadJsonRequestData();
 
         final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
-        JasperPrint print = format.getJasperPrint(requestData, config,
+        JasperPrint print = format.getJasperPrint("test", requestData, config,
                 getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR), getTaskDirectory()).print;
 
         // note that we are using a sample size of 50, because the image is quite big.
@@ -45,7 +45,7 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
 
         for (OutputFormat format : this.outputFormat.values()) {
             OutputStream outputStream = new ByteArrayOutputStream();
-            format.print(requestData, config,
+            format.print("test", requestData, config,
                     getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR),
                     getTaskDirectory(), outputStream);
             // no error?  its a pass

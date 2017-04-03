@@ -166,7 +166,7 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
     @Test
     public void testTreatStringAsGeoJson() throws Exception {
         Configuration configuration = configurationFactory.getConfig(getFile("geojson/config.yaml"));
-        MfClientHttpRequestFactory configRequestFactory = new ConfigFileResolvingHttpRequestFactory(requestFactory, configuration);
+        MfClientHttpRequestFactory configRequestFactory = new ConfigFileResolvingHttpRequestFactory(requestFactory, configuration, "test");
         FeaturesParser featuresParser = new FeaturesParser( configRequestFactory, false);
         for (File geojsonExample : getGeoJsonExamples()) {
             try {
@@ -186,7 +186,7 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
     @Test
     public void testTreatStringAsGeoJsonEmptyCollection() throws Exception {
         Configuration configuration = configurationFactory.getConfig(getFile("geojson/config.yaml"));
-        MfClientHttpRequestFactory configRequestFactory = new ConfigFileResolvingHttpRequestFactory(requestFactory, configuration);
+        MfClientHttpRequestFactory configRequestFactory = new ConfigFileResolvingHttpRequestFactory(requestFactory, configuration, "test");
         FeaturesParser featuresParser = new FeaturesParser( configRequestFactory, false);
 
         final String geojson = "{\"type\": \"FeatureCollection\", \"features\": []}";

@@ -94,7 +94,7 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSTest extends AbstractMapfi
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, parser, getTaskDirectory(),
+        Values values = new Values("test", requestData, template, parser, getTaskDirectory(),
                 this.requestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(

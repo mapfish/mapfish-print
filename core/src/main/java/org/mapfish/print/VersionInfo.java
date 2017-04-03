@@ -80,7 +80,7 @@ public class VersionInfo {
         } catch (FileNotFoundException e) {
             LOGGER.warn("Cannot find servlet manifest");
         } catch (IOException e) {
-            LOGGER.warn("Cannot read servlet manifest", e);
+            LOGGER.warn("Cannot read servlet manifest");
         }
         return null;
     }

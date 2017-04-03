@@ -17,7 +17,8 @@ public final class ProcessorExecutionContext {
     private final IdentityHashMap<Processor, Void> runningProcessors = new IdentityHashMap<Processor, Void>();
     private final IdentityHashMap<Processor, Void> executedProcessors = new IdentityHashMap<Processor, Void>();
     private final Lock processorLock = new ReentrantLock();
-    private final Context context = new Context();
+    private final Context context;
+
     /**
      * Constructor.
      *
@@ -25,6 +26,7 @@ public final class ProcessorExecutionContext {
      */
     public ProcessorExecutionContext(final Values values) {
         this.values = values;
+        this.context = new Context();
     }
 
     public Values getValues() {
@@ -150,5 +152,9 @@ public final class ProcessorExecutionContext {
 
     public Context getContext() {
         return this.context;
+    }
+
+    public String getJobId() {
+        return this.values.getString(Values.JOB_ID_KEY);
     }
 }
