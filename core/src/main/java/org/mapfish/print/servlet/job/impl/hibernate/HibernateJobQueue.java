@@ -28,7 +28,6 @@ import javax.annotation.PreDestroy;
  */
 @Transactional
 public class HibernateJobQueue implements JobQueue {
-
     private static final int DEFAULT_TIME_TO_KEEP_AFTER_ACCESS = 30; /* minutes */
 
     private static final long DEFAULT_CLEAN_UP_INTERVAL = 300; /* seconds */
@@ -96,8 +95,7 @@ public class HibernateJobQueue implements JobQueue {
         }
         record.setStatusTime(now);
         if (!record.isDone() && external) {
-            record.setLastCheckTime(System.currentTimeMillis());
-            this.dao.save(record);
+            this.dao.updateLastCheckTime(referenceId, System.currentTimeMillis());
         }
         return record;
     }
@@ -222,5 +220,4 @@ public class HibernateJobQueue implements JobQueue {
             }
         });
     }
-
 }

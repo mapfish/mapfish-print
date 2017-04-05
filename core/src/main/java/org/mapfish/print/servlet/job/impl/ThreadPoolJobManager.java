@@ -363,10 +363,8 @@ public class ThreadPoolJobManager implements JobManager {
     
     @Override
     public final PrintJobStatus getStatus(final String referenceId) throws NoSuchReferenceException {
-        PrintJobStatus jobStatus = null;
-
         // check if the reference id is valid
-        jobStatus = this.jobQueue.get(referenceId, true);
+        final PrintJobStatus jobStatus = this.jobQueue.get(referenceId, true);
         jobStatus.getEntry().assertAccess();
                 
         if (jobStatus.getStatus() == PrintJobStatus.Status.WAITING) {
