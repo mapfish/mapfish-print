@@ -100,25 +100,27 @@ import static org.geotools.renderer.lite.RendererUtilities.worldToScreenTransfor
  */
 public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcessor.Input, CreateMapProcessor.Output> {
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateMapProcessor.class);
-    
-    enum BufferedImageType {
-        TYPE_4BYTE_ABGR(BufferedImage.TYPE_4BYTE_ABGR),
-        TYPE_4BYTE_ABGR_PRE(BufferedImage.TYPE_4BYTE_ABGR_PRE),
-        TYPE_3BYTE_BGR(BufferedImage.TYPE_3BYTE_BGR),
-        TYPE_BYTE_BINARY(BufferedImage.TYPE_BYTE_BINARY),
-        TYPE_BYTE_GRAY(BufferedImage.TYPE_BYTE_GRAY),
-        TYPE_BYTE_INDEXED(BufferedImage.TYPE_BYTE_INDEXED),
-        TYPE_INT_BGR(BufferedImage.TYPE_INT_BGR),
-        TYPE_INT_RGB(BufferedImage.TYPE_INT_RGB),
-        TYPE_INT_ARGB(BufferedImage.TYPE_INT_ARGB),
-        TYPE_INT_ARGB_PRE(BufferedImage.TYPE_INT_ARGB_PRE),
-        TYPE_USHORT_555_RGB(BufferedImage.TYPE_USHORT_555_RGB),
-        TYPE_USHORT_565_RGB(BufferedImage.TYPE_USHORT_565_RGB),
-        TYPE_USHORT_GRAY(BufferedImage.TYPE_USHORT_GRAY);
-        private final int value;
 
-        private BufferedImageType(final int value) {
+    enum BufferedImageType {
+        TYPE_4BYTE_ABGR(BufferedImage.TYPE_4BYTE_ABGR, true),
+        TYPE_4BYTE_ABGR_PRE(BufferedImage.TYPE_4BYTE_ABGR_PRE, true),
+        TYPE_3BYTE_BGR(BufferedImage.TYPE_3BYTE_BGR, false),
+        TYPE_BYTE_BINARY(BufferedImage.TYPE_BYTE_BINARY, false),
+        TYPE_BYTE_GRAY(BufferedImage.TYPE_BYTE_GRAY, false),
+        TYPE_BYTE_INDEXED(BufferedImage.TYPE_BYTE_INDEXED, false),
+        TYPE_INT_BGR(BufferedImage.TYPE_INT_BGR, false),
+        TYPE_INT_RGB(BufferedImage.TYPE_INT_RGB, false),
+        TYPE_INT_ARGB(BufferedImage.TYPE_INT_ARGB, true),
+        TYPE_INT_ARGB_PRE(BufferedImage.TYPE_INT_ARGB_PRE, true),
+        TYPE_USHORT_555_RGB(BufferedImage.TYPE_USHORT_555_RGB, false),
+        TYPE_USHORT_565_RGB(BufferedImage.TYPE_USHORT_565_RGB, false),
+        TYPE_USHORT_GRAY(BufferedImage.TYPE_USHORT_GRAY, false);
+        private final int value;
+        private final boolean transparency;
+
+        BufferedImageType(final int value, final boolean transparency) {
             this.value = value;
+            this.transparency = transparency;
         }
 
         static BufferedImageType lookupValue(final String name) {
@@ -135,15 +137,15 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
 
     @Autowired
     FeatureLayer.Plugin featureLayerPlugin;
-    
+
     @Autowired
     private MetricRegistry metricRegistry;
-    
+
     @Resource(name = "requestForkJoinPool")
     private ForkJoinPool requestForkJoinPool;
 
     private BufferedImageType imageType = BufferedImageType.TYPE_4BYTE_ABGR;
-    
+
     private BufferedImageType jpegImageType = BufferedImageType.TYPE_3BYTE_BGR;
 
     /**
@@ -169,10 +171,10 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         final List<URI> graphics = createLayerGraphics(param.tempTaskDirectory, param.clientHttpRequestFactory,
                 mapValues, context, mapContext);
         checkCancelState(context);
-        
+
         final URI mapSubReport;
         if (param.map.getTemplate().isMapExport()) {
-            mapSubReport = createMergedGraphic(param.tempTaskDirectory, mapValues.getMapSize(), graphics, mapContext, param.outputFormat);
+            mapSubReport = createMergedGraphic(param.tempTaskDirectory, graphics, mapContext, param.outputFormat);
         } else {
             mapSubReport = createMapSubReport(param.tempTaskDirectory, mapValues.getMapSize(), graphics, mapValues.getDpi());
         }
@@ -186,17 +188,16 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             validationErrors.add(new ConfigurationException("No imageType defined in " + getClass().getName()));
         }
     }
-    
+
     private URI createMergedGraphic(final File printDirectory,
-            final Dimension mapSize,
-            final List<URI> graphics,
-            final MapfishMapContext mapContext,
-            final String outputFormat) throws IOException, JRException {
-        
+                                    final List<URI> graphics,
+                                    final MapfishMapContext mapContext,
+                                    final String outputFormat) throws IOException, JRException {
+
         final File mergedGraphic = File.createTempFile("map-", "." + outputFormat, printDirectory);
-        int width = (int) Math.round(mapContext.getMapSize().width);
-        int height = (int) Math.round(mapContext.getMapSize().height);
-        
+        int width = Math.round(mapContext.getMapSize().width);
+        int height = Math.round(mapContext.getMapSize().height);
+
         if ("pdf".equalsIgnoreCase(outputFormat)) {
             com.lowagie.text.Document document = new com.lowagie.text.Document(
                     new com.lowagie.text.Rectangle(width, height));
@@ -219,7 +220,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             }
         } else {
             boolean isJpeg = RenderType.fromFileExtension(outputFormat) == RenderType.JPEG;
-            final BufferedImage bufferedImage = new BufferedImage(width, height, 
+            final BufferedImage bufferedImage = new BufferedImage(width, height,
                     (isJpeg ? this.jpegImageType.value : this.imageType.value));
             Graphics g = bufferedImage.getGraphics();
             if (isJpeg) {
@@ -233,10 +234,10 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             }
             ImageIO.write(bufferedImage, outputFormat, mergedGraphic);
         }
-        
+
         return mergedGraphic.toURI();
     }
-    
+
     private void drawGraphics(final int width, final int height,
             final List<URI> graphics, final Graphics g) throws IOException, JRException {
         for (URI graphic : graphics) {
@@ -266,7 +267,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
 
         return compiledReport.toURI();
     }
-    
+
     private RenderType getSupportedRenderType(final RenderType renderType) {
         if (renderType == RenderType.UNKNOWN || renderType == RenderType.TIFF) {
             return RenderType.PNG;
@@ -274,7 +275,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             return renderType;
         }
     }
-    
+
     private void warnIfDifferentRenderType(final RenderType renderType, final MapLayer layer) {
         if (renderType != layer.getRenderType()) {
             LOGGER.warn(
@@ -282,7 +283,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                     layer.getRenderType().toString() + " format, storing as PNG.");
         }
     }
-    
+
     private MapfishMapContext getTransformer(final MapfishMapContext mapContext, final double imageBufferScaling) {
         return new MapfishMapContext(
                 mapContext,
@@ -298,7 +299,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 mapContext.isDpiSensitiveStyle()
         );
     }
-    
+
     private List<URI> createLayerGraphics(final File printDirectory,
                                           final MfClientHttpRequestFactory clientHttpRequestFactory,
                                           final MapAttribute.MapAttributeValues mapValues,
@@ -309,28 +310,27 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         final List<MapLayer> layers = Lists.reverse(Lists.newArrayList(mapValues.getLayers()));
 
         final AreaOfInterest areaOfInterest = addAreaOfInterestLayer(mapValues, layers);
-        
+
         final String mapKey = UUID.randomUUID().toString();
         final List<URI> graphics = new ArrayList<URI>(layers.size());
-        
+
         HttpRequestCache cache = new HttpRequestCache(printDirectory, this.metricRegistry);
-        
+
         //prepare layers for rendering
-        for (int i = 0; i < layers.size(); i++) {
-            final MapLayer layer = layers.get(i);
-            layer.prepareRender(mapContext);   
-            final MapfishMapContext transformer = getTransformer(mapContext, 
+        for (final MapLayer layer : layers) {
+            layer.prepareRender(mapContext);
+            final MapfishMapContext transformer = getTransformer(mapContext,
                     layer.getImageBufferScaling());
             layer.cacheResources(cache, clientHttpRequestFactory, transformer);
         }
 
         //now we download and cache all images at once
         cache.cache(this.requestForkJoinPool);
-        
+
         for (int i = 0; i < layers.size(); i++) {
             MapLayer layer = layers.get(i);
             checkCancelState(context);
-            File path = null;
+            final File path;
             RenderType renderType = getSupportedRenderType(layer.getRenderType());
             if (layer.getRenderType() == RenderType.SVG) {
                 // render layer as SVG
@@ -350,15 +350,24 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 // render layer as raster graphic
                 warnIfDifferentRenderType(renderType, layer);
                 final double imageBufferScaling = layer.getImageBufferScaling();
+                final BufferedImageType layerImageType =
+                        renderType == RenderType.JPEG ? this.jpegImageType : this.imageType;
                 final BufferedImage bufferedImage = new BufferedImage(
                         (int) Math.round(mapContext.getMapSize().width * imageBufferScaling),
                         (int) Math.round(mapContext.getMapSize().height * imageBufferScaling),
-                        renderType == RenderType.JPEG ? this.jpegImageType.value : this.imageType.value
+                        layerImageType.value
                 );
                 Graphics2D graphics2D = createClippedGraphics(
                         mapContext, areaOfInterest,
                         bufferedImage.createGraphics()
                 );
+                if (!layerImageType.transparency) {
+                    // the image is opaque and therefore needs a white background
+                    final Color prevColor = graphics2D.getColor();
+                    graphics2D.setColor(Color.WHITE);
+                    graphics2D.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
+                    graphics2D.setColor(prevColor);
+                }
 
                 try {
                     MapfishMapContext transformer = getTransformer(mapContext, layer.getImageBufferScaling());
@@ -377,7 +386,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                         warnIfDifferentRenderType(renderType, layer);
                         layer.render(graphics2D, clientHttpRequestFactory, transformer);
                     }
-                    
+
                     path = new File(
                             printDirectory,
                             mapKey + "_layer_" + i + "." + renderType.toString().toLowerCase());
@@ -386,7 +395,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                     graphics2D.dispose();
                 }
             }
-            graphics.add(path.toURI());            
+            graphics.add(path.toURI());
         }
 
         return graphics;
@@ -647,9 +656,9 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
     public void setImageType(final String imageType) {
         this.imageType = BufferedImageType.lookupValue(imageType);
     }
-    
+
     /**
-     * Set the type of buffered image rendered to for JPEG files.  
+     * Set the type of buffered image rendered to for JPEG files.
      * See {@link org.mapfish.print.processor.map.CreateMapProcessor.BufferedImageType}.
      * <p></p>
      * Default is {@link org.mapfish.print.processor.map.CreateMapProcessor.BufferedImageType#TYPE_3BYTE_BGR}.
@@ -680,7 +689,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
          * The path to the temporary directory for the print task.
          */
         public File tempTaskDirectory;
-        
+
         /**
          * The output format.
          */
