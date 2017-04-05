@@ -8,4 +8,5 @@
     <logger name="com.codahale.metrics" level="INFO" />
     <logger name="net.sf.jasperreports" level="${JASPER_LOG_LEVEL}" />
     <logger name="org.apache" level="${APACHE_LOG_LEVEL}" />
+    <logger name="org.hibernate" level="${SQL_LOG_LEVEL}" />
 </included>

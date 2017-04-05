@@ -335,4 +335,5 @@ task createDocker(type: Docker, dependsOn: 'unzipWar') {
     setEnvironment('SPRING_LOG_LEVEL', 'WARN')
     setEnvironment('JASPER_LOG_LEVEL', 'WARN')
     setEnvironment('APACHE_LOG_LEVEL', 'WARN')
+    setEnvironment('SQL_LOG_LEVEL', 'WARN')
 }

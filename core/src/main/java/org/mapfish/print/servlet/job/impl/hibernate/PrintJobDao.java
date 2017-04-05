@@ -47,6 +47,8 @@ public class PrintJobDao {
      */
     public final void save(final PrintJobStatusExtImpl entry) {  
         getSession().merge(entry);
+        getSession().flush();
+        getSession().evict(entry);
     }
         
     /**
@@ -57,7 +59,9 @@ public class PrintJobDao {
      * @return
      */
     public final PrintJobStatusExtImpl get(final String id) {
-        return get(id, false);
+        final PrintJobStatusExtImpl result = get(id, false);
+        getSession().evict(result);
+        return result;
     }
     
     /**
@@ -72,8 +76,10 @@ public class PrintJobDao {
         Criteria c = getSession().createCriteria(PrintJobStatusExtImpl.class);
         c.add(Restrictions.idEq(id));
         if (lock) { //LOCK means SELECT FOR UPDATE which prevents these records to be pulled by different instances
-           c.setLockMode("pj", LockMode.PESSIMISTIC_READ);
-           c.setFetchMode("result", FetchMode.SELECT);
+            c.setLockMode("pj", LockMode.PESSIMISTIC_READ);
+            c.setFetchMode("result", FetchMode.SELECT);
+        } else {
+            c.setReadOnly(true);  // make sure the object is not updated if there is no lock
         }
         return (PrintJobStatusExtImpl) c.uniqueResult();
     }
@@ -153,6 +159,19 @@ public class PrintJobDao {
     }
 
     /**
+     * Update the lastCheckTime of the given record.
+     * @param id the id
+     * @param lastCheckTime the new value
+     */
+    public final void updateLastCheckTime(final String id, final long lastCheckTime) {
+        Query query = getSession().createQuery("update PrintJobStatusExtImpl pj " + "set lastCheckTime=:lastCheckTime "
+                + "where pj.referenceId = :id");
+        query.setParameter("id", id);
+        query.setParameter("lastCheckTime", lastCheckTime);
+        query.executeUpdate();
+    }
+
+    /**
      * Delete old jobs.
      * 
      * @param checkTimeThreshold
@@ -195,5 +214,4 @@ public class PrintJobDao {
         c.add(Restrictions.idEq(reportURI.toString()));
         return (PrintJobResultExtImpl) c.uniqueResult();
     }
-
 }
