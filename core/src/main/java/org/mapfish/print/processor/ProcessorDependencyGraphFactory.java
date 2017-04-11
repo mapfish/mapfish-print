@@ -133,7 +133,7 @@ public final class ProcessorDependencyGraphFactory {
         }
 
         Assert.isTrue(graph.getAllProcessors().containsAll(processors), "'" + graph + "' does not contain all the processors: " +
-                                                                        processors);
+                                                                        processors + " vs: " + graph.getAllProcessors());
 
         return graph;
     }
