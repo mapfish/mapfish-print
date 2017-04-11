@@ -69,7 +69,7 @@ Run from commandline
 
 The following command will run the mapfish printer.  The arguments must be supplied to the -PprintArgs="..." parameter.
 
-To list all the commandline options then execute:
+To list all the commandline options then execute (the current direstory is `./core`):
 
 .. code::
 
@@ -77,12 +77,12 @@ To list all the commandline options then execute:
 
 .. code::
 
-  > ./gradlew print -PprintArgs="-config examples/config.yaml -spec examples/spec.json -output ./output.pdf"
+  > ./gradlew print -PprintArgs="-config ../examples/config.yaml -spec ../examples/spec.json -output ./output.pdf"
 
 If you want to run in debug mode you can do the following:
 
 .. code::
-  > ./gradlew print --debug-jvm -PprintArgs="-config examples/config.yaml -spec examples/spec.json -output ./output.pdf"
+  > ./gradlew print --debug-jvm -PprintArgs="-config ../examples/config.yaml -spec ../examples/spec.json -output ./output.pdf"
 
 
 Run in Eclipse
