@@ -1,13 +1,12 @@
 {
   "attributes": {
     "mapDef": {
-      "bbox": [95, -1, 110, 2],
       "projection": "CRS:84",
       "rotation": 0.0,
       "dpi": 90,
+      "scale": 5000,
       "zoomToFeatures": {
-        "zoomType": "center",
-        "minScale": 5000
+        "zoomType": "center"
       },
       "layers": [
         {

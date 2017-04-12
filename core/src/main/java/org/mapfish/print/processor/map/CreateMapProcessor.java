@@ -559,9 +559,11 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 Coordinate center = bounds.centre();
                 mapValues.center = new double[] {center.x, center.y};
                 if (mapValues.zoomToFeatures.minScale != null) {
+                    LOGGER.warn(
+                        "The map.zoomToFeatures.minScale is deprecated, " +
+                        "please use dirrectly the map.scale");
                     mapValues.scale = mapValues.zoomToFeatures.minScale;
                 }
-                mapValues.bbox = null;
                 mapValues.recalculateBounds();
             } else if (mapValues.zoomToFeatures.zoomType == ZoomType.EXTENT) {
                 if (bounds.getWidth() == 0.0 && bounds.getHeight() == 0.0) {

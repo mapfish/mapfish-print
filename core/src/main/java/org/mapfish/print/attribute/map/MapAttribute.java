@@ -82,7 +82,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
         /**
          * Zoom the map to the features of a specific layer or all features of the map.
          */
-        @HasDefaultValue
+        @OneOf("MapBounds")
         public ZoomToFeatures zoomToFeatures;
 
         /**
@@ -180,6 +180,8 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
             } else if (this.areaOfInterest != null) {
                 Envelope area = this.areaOfInterest.getArea().getEnvelopeInternal();
                 bounds = new BBoxMapBounds(crs, area);
+            } else if (this.zoomToFeatures != null) {
+                bounds = new BBoxMapBounds(crs, 0, 0, 0, 0);
             } else {
                 throw new IllegalArgumentException("Expected either: center and scale, bbox, or an areaOfInterest defined in order to " +
                                                    "calculate the map bounds");
