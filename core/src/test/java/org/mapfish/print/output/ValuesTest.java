@@ -120,18 +120,4 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         Template template = config.getTemplates().values().iterator().next();
         new Values(requestData, template, this.parser, new File("tmp"), this.httpRequestFactory, new File("."));
     }
-
-
-    @Test(expected = AttributeParsingException.class)
-    public void testUnexpectedParseError() throws Exception {
-
-        PJsonObject requestData = parseJSONObjectFromFile(ValuesTest.class, BASE_DIR + "requestData.json");
-        requestData.getJSONObject("attributes").getJSONObject("legend").getInternalObj().remove("name");
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-bad-defaults.yaml"));
-
-        Template template = config.getTemplates().values().iterator().next();
-        new Values(requestData, template, this.parser, new File("tmp"), this.httpRequestFactory, new File("."));
-   }
-
-
 }
