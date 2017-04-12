@@ -8,6 +8,7 @@ import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
+import org.mapfish.print.parser.HasDefaultValue;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -99,6 +100,7 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
          * <p></p>
          * The url can be a file url, however if it is it must be relative to the configuration directory.
          */
-        public String geoJson;
+        @HasDefaultValue
+        public String geoJson = "{\"type\": \"FeatureCollection\", \"features\": []}";
     }
 }
