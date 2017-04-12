@@ -1,8 +1,9 @@
 package org.mapfish.print.processor.map;
 
 import org.geotools.data.simple.SimpleFeatureCollection;
+
 import org.mapfish.print.attribute.FeaturesAttribute.FeaturesAttributeValues;
-import org.mapfish.print.attribute.map.GenericMapAttribute;
+import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
@@ -11,18 +12,19 @@ import org.mapfish.print.processor.AbstractProcessor;
 
 import java.util.List;
 
+
 /**
  * <p>Processor to set features on vector layers.
  * </p>
  */
 public class SetFeaturesProcessor extends
-        AbstractProcessor<SetFeaturesProcessor.Input, Void> {
+        AbstractProcessor<SetFeaturesProcessor.Input, SetFeaturesProcessor.Output> {
 
     /**
      * Constructor.
      */
     protected SetFeaturesProcessor() {
-        super(Void.class);
+        super(Output.class);
     }
 
     @Override
@@ -31,7 +33,7 @@ public class SetFeaturesProcessor extends
     }
 
     @Override
-    public final Void execute(final Input values, final ExecutionContext context) throws Exception {
+    public final Output execute(final Input values, final ExecutionContext context) throws Exception {
         for (MapLayer layer : values.map.getLayers()) {
             checkCancelState(context);
             if (layer instanceof AbstractFeatureSourceLayer) {
@@ -40,7 +42,7 @@ public class SetFeaturesProcessor extends
             }
         }
 
-        return null;
+        return new Output(values.map);
     }
 
     @Override
@@ -59,11 +61,26 @@ public class SetFeaturesProcessor extends
         /**
          * The map to update.
          */
-        public GenericMapAttribute<?>.GenericMapAttributeValues map;
+        public MapAttributeValues map;
 
         /**
          * The features.
          */
         public FeaturesAttributeValues features;
+    }
+
+    /**
+     * The object containing the output for this processor.
+     */
+    public static class Output {
+
+        /**
+         * The map to update with the static layers.
+         */
+        public MapAttributeValues map;
+
+        Output(final MapAttributeValues map) {
+            this.map = map;
+        }
     }
 }

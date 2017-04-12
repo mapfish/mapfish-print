@@ -22,7 +22,8 @@ import javax.annotation.Nullable;
  * <p>See also: <a href="attributes.html#!staticLayers">!staticLayers</a> attribute</p>
  * [[examples=add_overlay_layer]]
  */
-public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticLayersProcessor.Input, Void> {
+public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticLayersProcessor.Input,
+        AddStaticLayersProcessor.Output> {
 
     private StaticLayerPosition position;
 
@@ -30,7 +31,7 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
      * Constructor.
      */
     protected AddStaticLayersProcessor() {
-        super(Void.class);
+        super(AddStaticLayersProcessor.Output.class);
     }
 
     /**
@@ -59,7 +60,7 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
 
     @Nullable
     @Override
-    public Void execute(final Input values, final ExecutionContext context) throws Exception {
+    public Output execute(final Input values, final ExecutionContext context) throws Exception {
         switch (this.position) {
             case BOTTOM:
                 values.map.layers = new PJoinedArray(new PArray[]{values.map.layers, values.staticLayers.layers});
@@ -72,7 +73,7 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
                                 + "this implementation to " + getClass().getName());
         }
         values.map.postConstruct();
-        return null;
+        return new Output(values.map);
     }
 
     /**
@@ -89,6 +90,21 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
          * The attribute containing the static layers to add to the map.
          */
         public StaticLayersAttribute.StaticLayersAttributeValue staticLayers;
+    }
+
+    /**
+     * The object containing the output for this processor.
+     */
+    public static class Output {
+
+        /**
+         * The map to update with the static layers.
+         */
+        public MapAttributeValues map;
+
+        Output(final MapAttributeValues map) {
+            this.map = map;
+        }
     }
 
     /**
