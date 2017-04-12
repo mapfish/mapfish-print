@@ -3,6 +3,7 @@ package org.mapfish.print.attribute.map;
 import com.google.common.base.Function;
 import com.vividsolutions.jts.geom.Envelope;
 
+import org.json.JSONArray;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues;
 import org.mapfish.print.attribute.map.ZoomToFeatures.ZoomType;
@@ -13,6 +14,7 @@ import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.OneOf;
 import org.mapfish.print.parser.Requires;
 import org.mapfish.print.wrapper.PArray;
+import org.mapfish.print.wrapper.json.PJsonArray;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -92,7 +94,8 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
          * The first layer in the array will be the top layer in the map.  The last layer in the array will be the bottom
          * layer in the map.  There for the last layer will be hidden by the first layer (where not transparent).
          */
-        public PArray layers;
+        @HasDefaultValue
+        public PArray layers = new PJsonArray(null, new JSONArray(), null);
 
         /**
          * The output dpi of the printed map.
