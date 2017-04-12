@@ -311,7 +311,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
 
         /**
          * Constructor.
-         *  @param params The fallback parameters.
+         * @param params The fallback parameters.
          * @param paramOverrides The parameters explicitly defined for the overview map.
          * @param template The template this map is part of.
          */
