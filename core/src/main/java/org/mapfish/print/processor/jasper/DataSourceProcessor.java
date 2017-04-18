@@ -164,7 +164,7 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
         //CSON:RedundantThrows
         List<Values> dataSourceValues = Lists.newArrayList();
         for (Map<String, Object> o : input.datasource.attributesValues) {
-            Values rowValues = new Values(input.values);
+            Values rowValues = new Values(input.values.asMap());
             for (Map.Entry<String, Object> entry : o.entrySet()) {
                 rowValues.put(entry.getKey(), entry.getValue());
             }
