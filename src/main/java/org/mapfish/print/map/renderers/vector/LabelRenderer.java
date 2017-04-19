@@ -52,6 +52,7 @@ public class LabelRenderer {
             String labelAlign = style.optString("labelAlign", "cm");
             float labelXOffset = style.optFloat("labelXOffset", (float) 0.0);
             float labelYOffset = style.optFloat("labelYOffset", (float) 0.0);
+            float labelRotation = style.optFloat("labelRotation", (float) 0.0);
             String fontColor = style.optString("fontColor", "#000000");
             /* Supported itext fonts: COURIER, HELVETICA, TIMES_ROMAN */
             String fontFamily = style.optString("fontFamily", "HELVETICA");
@@ -90,7 +91,7 @@ public class LabelRenderer {
 		                            * f
 		                            - PDFUtils
 		                                    .getVerticalOffset(labelAlign, fontHeight) - ((PDFUtils.getVerticalOffset(labelAlign, fontHeight)+2)*i),
-		                    0);
+		                    labelRotation);
 	            
             }
             dc.endText();
