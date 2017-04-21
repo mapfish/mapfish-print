@@ -18,6 +18,14 @@ public class AttributeWithConfigurationInjection extends PrimitiveAttribute<Inte
         super(Integer.class);
     }
 
+    /**
+     * <p>A default value for this attribute.</p>
+     * @param value The default value.
+     */
+    public final void setDefault(final Integer value) {
+        this.defaultValue = value;
+    }
+
     public void assertInjected() {
         assertNotNull(configuration);
     }

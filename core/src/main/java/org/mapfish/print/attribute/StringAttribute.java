@@ -17,6 +17,18 @@ public class StringAttribute extends PrimitiveAttribute<String> {
     }
 
     /**
+     * <p>A default value for this attribute. Example:</p>
+     * <pre><code>
+     *     attributes:
+     *       title: !string
+     *         default: The title</code></pre>
+     * @param value The default value.
+     */
+    public final void setDefault(final String value) {
+        this.defaultValue = value;
+    }
+
+    /**
      * The maximum number of characters allowed for this field (default: unlimited).
      *
      * @param maxLength Maximum number of characters.
