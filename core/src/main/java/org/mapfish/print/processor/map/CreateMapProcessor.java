@@ -31,8 +31,8 @@ import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.SvgUtil;
 import org.mapfish.print.attribute.map.AreaOfInterest;
 import org.mapfish.print.attribute.map.BBoxMapBounds;
+import org.mapfish.print.attribute.map.GenericMapAttribute;
 import org.mapfish.print.attribute.map.MapAttribute;
-import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.attribute.map.MapLayer.RenderType;
@@ -163,7 +163,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
     @Override
     public Output execute(final Input param, final ExecutionContext context) throws Exception {
         checkCancelState(context);
-        MapAttribute.MapAttributeValues mapValues = param.map;
+        MapAttribute.MapAttributeValues mapValues = (MapAttribute.MapAttributeValues) param.map;
         if (mapValues.zoomToFeatures != null) {
             zoomToFeatures(param.tempTaskDirectory, param.clientHttpRequestFactory, mapValues, context);
         }
@@ -487,7 +487,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
      * @param bounds         The map bounds.
      */
     public static MapBounds adjustBoundsToScaleAndMapSize(
-            final MapAttribute.MapAttributeValues mapValues, final double dpiOfRequestor,
+            final GenericMapAttribute<?>.GenericMapAttributeValues mapValues, final double dpiOfRequestor,
             final Rectangle paintArea, final MapBounds bounds) {
         MapBounds newBounds = bounds;
         if (mapValues.isUseNearestScale()) {
@@ -548,7 +548,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
     }
 
     private void zoomToFeatures(final File tempTaskDirectory, final MfClientHttpRequestFactory clientHttpRequestFactory,
-            final MapAttributeValues mapValues, final ExecutionContext context) {
+            final MapAttribute.MapAttributeValues mapValues, final ExecutionContext context) {
 
         ReferencedEnvelope bounds = getFeatureBounds(clientHttpRequestFactory,
                 mapValues, context);
@@ -615,7 +615,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
      */
     private ReferencedEnvelope getFeatureBounds(
             final MfClientHttpRequestFactory clientHttpRequestFactory,
-            final MapAttributeValues mapValues, final ExecutionContext context) {
+            final MapAttribute.MapAttributeValues mapValues, final ExecutionContext context) {
         final MapfishMapContext mapContext = createMapContext(mapValues);
 
         String layerName = mapValues.zoomToFeatures.layer;
@@ -685,7 +685,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         /**
          * The required parameters for the map.
          */
-        public MapAttribute.MapAttributeValues map;
+        public GenericMapAttribute<?>.GenericMapAttributeValues map;
 
         /**
          * The path to the temporary directory for the print task.

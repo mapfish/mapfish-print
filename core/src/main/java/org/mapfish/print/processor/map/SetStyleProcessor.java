@@ -18,13 +18,13 @@ import java.util.List;
  * </p>
  */
 public class SetStyleProcessor extends
-        AbstractProcessor<SetStyleProcessor.Input, Void> {
+        AbstractProcessor<SetStyleProcessor.Input, SetStyleProcessor.Output> {
 
     /**
      * Constructor.
      */
     protected SetStyleProcessor() {
-        super(Void.class);
+        super(Output.class);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class SetStyleProcessor extends
     }
 
     @Override
-    public final Void execute(final Input values, final ExecutionContext context) {
+    public final Output execute(final Input values, final ExecutionContext context) {
         for (MapLayer layer : values.map.getLayers()) {
             checkCancelState(context);
             if (layer instanceof AbstractFeatureSourceLayer) {
@@ -48,7 +48,7 @@ public class SetStyleProcessor extends
             }
         }
 
-        return null;
+        return new Output(values.map);
     }
 
     @Override
@@ -74,5 +74,20 @@ public class SetStyleProcessor extends
          * The style.
          */
         public StyleAttribute.StylesAttributeValues style;
+    }
+
+    /**
+     * The object containing the output for this processor.
+     */
+    public static class Output {
+
+        /**
+         * The map to update with the static layers.
+         */
+        public GenericMapAttribute<?>.GenericMapAttributeValues map;
+
+        Output(final GenericMapAttribute<?>.GenericMapAttributeValues map) {
+            this.map = map;
+        }
     }
 }
