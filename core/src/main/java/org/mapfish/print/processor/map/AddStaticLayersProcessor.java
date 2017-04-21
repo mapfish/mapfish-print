@@ -20,7 +20,7 @@ import javax.annotation.Nullable;
  *
  * <p>This can simplify the client so the client only needs to be concerned with the data layers.</p>
  * <p>See also: <a href="attributes.html#!staticLayers">!staticLayers</a> attribute</p>
- * [[examples=add_overlay_layer]]
+ * [[examples=add_overlay_layer,report]]
  */
 public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticLayersProcessor.Input,
         AddStaticLayersProcessor.Output> {

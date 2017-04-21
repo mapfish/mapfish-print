@@ -17,6 +17,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Attribute for GeoJson Styles collection.
+ * [[examples=report]]
  */
 public final class StyleAttribute extends ReflectiveAttribute<StylesAttributeValues> {
 

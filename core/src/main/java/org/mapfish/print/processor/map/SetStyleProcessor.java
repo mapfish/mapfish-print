@@ -14,8 +14,8 @@ import org.mapfish.print.processor.AbstractProcessor;
 import java.util.List;
 
 /**
- * <p>Processor to set a style on vector layers from the attributes.
- * </p>
+ * <p>Processor to set a style on vector layers from the attributes.</p>
+ * [[examples=report]]
  */
 public class SetStyleProcessor extends
         AbstractProcessor<SetStyleProcessor.Input, SetStyleProcessor.Output> {
