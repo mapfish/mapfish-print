@@ -20,6 +20,7 @@ public class AttributeWithConfigurationInjection extends PrimitiveAttribute<Inte
 
     /**
      * <p>A default value for this attribute.</p>
+     *
      * @param value The default value.
      */
     public final void setDefault(final Integer value) {
