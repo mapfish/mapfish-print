@@ -462,15 +462,18 @@ public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
             @Override
             Style parseStyle(final PJsonObject json,
                              final StyleBuilder styleBuilder,
-                             final Configuration configuration) {
-                return new MapfishJsonStyleVersion1(json, styleBuilder, configuration, DEFAULT_GEOM_ATT_NAME).parseStyle();
+                             final Configuration configuration,
+                             final ClientHttpRequestFactory clientHttpRequestFactory) {
+                return new MapfishJsonStyleVersion1(json, styleBuilder, configuration, DEFAULT_GEOM_ATT_NAME,
+                        clientHttpRequestFactory).parseStyle();
             }
         }, TWO("2") {
             @Override
             Style parseStyle(final PJsonObject json,
                              final StyleBuilder styleBuilder,
-                             final Configuration configuration) {
-                return new MapfishJsonStyleVersion2(json, styleBuilder, configuration).parseStyle();
+                             final Configuration configuration,
+                             final ClientHttpRequestFactory clientHttpRequestFactory) {
+                return new MapfishJsonStyleVersion2(json, styleBuilder, configuration, clientHttpRequestFactory).parseStyle();
             }
         };
         private final String versionNumber;
@@ -479,7 +482,8 @@ public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
             this.versionNumber = versionNumber;
         }
 
-        abstract Style parseStyle(PJsonObject json, StyleBuilder styleBuilder, Configuration configuration);
+        abstract Style parseStyle(PJsonObject json, StyleBuilder styleBuilder, Configuration configuration,
+                                  ClientHttpRequestFactory clientHttpRequestFactory);
     }
 
     static final String JSON_VERSION = "version";
@@ -492,7 +496,7 @@ public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
                                       @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
                                       @Nonnull final String styleString,
                                       @Nonnull final MapfishMapContext mapContext) throws Throwable {
-        final Optional<Style> styleOptional = tryLoadJson(configuration, styleString);
+        final Optional<Style> styleOptional = tryLoadJson(configuration, styleString, clientHttpRequestFactory);
 
         if (styleOptional.isPresent()) {
             return styleOptional;
@@ -502,7 +506,7 @@ public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
             @Override
             public Optional<Style> apply(final byte[] input) {
                 try {
-                    return tryLoadJson(configuration, new String(input, Constants.DEFAULT_CHARSET));
+                    return tryLoadJson(configuration, new String(input, Constants.DEFAULT_CHARSET), clientHttpRequestFactory);
                 } catch (JSONException e) {
                     throw ExceptionUtils.getRuntimeException(e);
                 }
@@ -510,7 +514,8 @@ public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
         });
     }
 
-    private Optional<Style> tryLoadJson(final Configuration configuration, final String styleString) throws JSONException {
+    private Optional<Style> tryLoadJson(final Configuration configuration, final String styleString,
+                                        final ClientHttpRequestFactory clientHttpRequestFactory) throws JSONException {
         String trimmed = styleString.trim();
         if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
             final PJsonObject json = new PJsonObject(new JSONObject(styleString), "style");
@@ -518,7 +523,7 @@ public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
             final String jsonVersion = json.optString(JSON_VERSION, "1");
             for (Versions versions : Versions.values()) {
                 if (versions.versionNumber.equals(jsonVersion)) {
-                    return Optional.of(versions.parseStyle(json, this.sldStyleBuilder, configuration));
+                    return Optional.of(versions.parseStyle(json, this.sldStyleBuilder, configuration, clientHttpRequestFactory));
                 }
             }
         }

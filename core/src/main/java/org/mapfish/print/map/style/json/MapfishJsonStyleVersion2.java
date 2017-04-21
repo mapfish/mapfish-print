@@ -16,6 +16,7 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.opengis.filter.Filter;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.Iterator;
 import java.util.List;
@@ -65,14 +66,17 @@ public final class MapfishJsonStyleVersion2 {
 
     private final PJsonObject json;
     private final StyleBuilder styleBuilder;
+    private final ClientHttpRequestFactory clientHttpRequestFactory;
     private final JsonStyleParserHelper parserHelper;
 
     MapfishJsonStyleVersion2(@Nonnull final PJsonObject json,
                              @Nonnull final StyleBuilder styleBuilder,
-                             @Nonnull final Configuration configuration) {
+                             @Nonnull final Configuration configuration,
+                             @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory) {
         this.json = json;
         this.styleBuilder = styleBuilder;
-        this.parserHelper = new JsonStyleParserHelper(configuration, styleBuilder, false, Versions.TWO);
+        this.clientHttpRequestFactory = clientHttpRequestFactory;
+        this.parserHelper = new JsonStyleParserHelper(configuration, styleBuilder, false, Versions.TWO, clientHttpRequestFactory);
     }
 
     Style parseStyle() {
