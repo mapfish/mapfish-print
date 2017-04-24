@@ -1,5 +1,6 @@
 package org.mapfish.print.processor.map;
 
+import org.mapfish.print.attribute.map.GenericMapAttribute;
 import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.attribute.map.StaticLayersAttribute;
 import org.mapfish.print.config.Configuration;
@@ -61,12 +62,15 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
     @Nullable
     @Override
     public Output execute(final Input values, final ExecutionContext context) throws Exception {
+        final MapAttributeValues map = (MapAttributeValues) values.map;
         switch (this.position) {
             case BOTTOM:
-                values.map.layers = new PJoinedArray(new PArray[]{values.map.layers, values.staticLayers.layers});
+                map.layers = new PJoinedArray(new PArray[]{
+                        map.layers, values.staticLayers.layers});
                 break;
             case TOP:
-                values.map.layers = new PJoinedArray(new PArray[]{values.staticLayers.layers, values.map.layers});
+                map.layers = new PJoinedArray(new PArray[]{
+                        values.staticLayers.layers, map.layers});
                 break;
             default:
                 throw new Error("An enumeration value was added that does not have an implementation.  A Programmer must add "
@@ -84,7 +88,7 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
         /**
          * The map to update with the static layers.
          */
-        public MapAttributeValues map;
+        public GenericMapAttribute<?>.GenericMapAttributeValues map;
 
         /**
          * The attribute containing the static layers to add to the map.
@@ -100,9 +104,9 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
         /**
          * The map to update with the static layers.
          */
-        public MapAttributeValues map;
+        public GenericMapAttribute<?>.GenericMapAttributeValues map;
 
-        Output(final MapAttributeValues map) {
+        Output(final GenericMapAttribute<?>.GenericMapAttributeValues map) {
             this.map = map;
         }
     }
