@@ -28,7 +28,7 @@ public final class StyleParser {
 
     /**
      * Load style using one of the plugins or return Optional.absent().
-     *  @param configuration the configuration for the current request.
+     * @param configuration the configuration for the current request.
      * @param clientHttpRequestFactory a factory for making http requests
      * @param styleString   the style to load.
      */

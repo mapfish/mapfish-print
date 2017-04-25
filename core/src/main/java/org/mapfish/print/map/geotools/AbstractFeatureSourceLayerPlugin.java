@@ -56,7 +56,7 @@ public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFac
     /**
      * Create a function that will create the style on demand.  This is called later in a separate thread so any blocking calls
      * will not block the parsing of the layer attributes.
-     *  @param template    the template for this map
+     * @param template the template for this map
      * @param styleString a string that identifies a style.
      */
     protected final StyleSupplier<FeatureSource> createStyleFunction(final Template template,

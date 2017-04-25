@@ -113,7 +113,7 @@ public class MapPrinter {
 
     /**
      * Start a print.
-     *  @param specJson the client json request.
+     * @param specJson the client json request.
      * @param out the stream to write to.
      */
     public final void print(final PJsonObject specJson, final OutputStream out)

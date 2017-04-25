@@ -67,7 +67,7 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
 
     /**
      * Load the image at the requested size for the provided map bounds.
-     *  @param requestFactory the factory to use for making http requests
+     * @param requestFactory the factory to use for making http requests
      * @param transformer object containing map rendering information
      */
     protected abstract BufferedImage loadImage(MfClientHttpRequestFactory requestFactory,
