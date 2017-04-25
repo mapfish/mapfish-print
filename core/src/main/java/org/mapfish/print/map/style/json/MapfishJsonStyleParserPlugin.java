@@ -20,11 +20,11 @@ import javax.annotation.Nullable;
 import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_GEOM_ATT_NAME;
 
 /**
- * Supports a JSON based style format.
+ * Supports all style format.
  * <p>
- *     This style parser support two versions of JSON formatting.  Both versions use the same parameter names for configuring
- *     the values of the various properties of the style but the layout differs between the two and version 2 is more flexible
- *     and powerful than version 1.
+ *     This style parser support two versions of JSON and SLD formatting.  Both versions use the same
+ *     parameter names for configuring the values of the various properties of the style but the layout
+ *     differs between the two and version 2 is more flexible and powerful than version 1.
  * </p>
  * <h2 id="stylev1">Mapfish JSON Style Version 1 <a class="headerlink" href="#stylev1">¶</a></h2>
  * <p>
