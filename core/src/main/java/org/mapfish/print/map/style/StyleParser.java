@@ -9,7 +9,6 @@ import org.geotools.styling.StyleFactory;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.styling.UserLayer;
 import org.mapfish.print.ExceptionUtils;
-import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,16 +31,14 @@ public final class StyleParser {
      *  @param configuration the configuration for the current request.
      * @param clientHttpRequestFactory a factory for making http requests
      * @param styleString   the style to load.
-     * @param mapContext information about the map projection, bounds, size, etc...
      */
     public Optional<? extends Style> loadStyle(final Configuration configuration,
                                                @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
-                                               final String styleString,
-                                               final MapfishMapContext mapContext) {
+                                               final String styleString) {
         if (styleString != null) {
         for (StyleParserPlugin plugin : this.plugins) {
             try {
-                Optional<? extends Style> style = plugin.parseStyle(configuration, clientHttpRequestFactory, styleString, mapContext);
+                Optional<? extends Style> style = plugin.parseStyle(configuration, clientHttpRequestFactory, styleString);
                 if (style.isPresent()) {
                     if (LOGGER.isDebugEnabled()) {
                         try {

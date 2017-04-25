@@ -67,8 +67,8 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
                 getFailOnError(), this.registry, this.tileCacheInformation);
         final GridCoverage2D gridCoverage2D = task.call();
 
-        GridCoverageLayer layer = new GridCoverageLayer(gridCoverage2D, this.styleSupplier.load(httpRequestFactory, gridCoverage2D,
-                mapContext));
+        GridCoverageLayer layer = new GridCoverageLayer(
+                gridCoverage2D, this.styleSupplier.load(httpRequestFactory, gridCoverage2D));
         return Collections.singletonList(layer);
     }
 

@@ -76,8 +76,8 @@ public class MapfishJsonStyleParserPluginTest {
         PJsonObject layerJson = parseJSONObjectFromFile(MapfishJsonStyleParserPluginTest.class,
                 "bug_cant_transform_to_xml.json");
 
-        Optional<Style> style = parser.parseStyle(null, new TestHttpClientFactory(), layerJson.getString("style"),
-                null);
+        Optional<Style> style = parser.parseStyle(
+                null, new TestHttpClientFactory(), layerJson.getString("style"));
         assertTrue(style.isPresent());
 
         transformer.transform(style.get()); // assert it can be converted to SLD
@@ -86,8 +86,8 @@ public class MapfishJsonStyleParserPluginTest {
     public void testVersion1() throws Throwable {
         PJsonObject layerJson = parseJSONObjectFromFile(MapfishJsonStyleParserPluginTest.class,
                 REQUEST_DATA_STYLE_JSON_V1_STYLE_JSON);
-        Optional<Style> style = parser.parseStyle(null, new TestHttpClientFactory(), layerJson.getString("style"),
-                null);
+        Optional<Style> style = parser.parseStyle(
+                null, new TestHttpClientFactory(), layerJson.getString("style"));
         assertTrue(style.isPresent());
 
         transformer.transform(style.get()); // assert it can be converted to SLD
@@ -276,9 +276,13 @@ public class MapfishJsonStyleParserPluginTest {
         config.setConfigurationFile(getFile(styleJsonFileName));
         final String styleJson = getSpec(styleJsonFileName);
 
-        final CenterScaleMapBounds bounds = new CenterScaleMapBounds(CRS.decode("CRS:84"), 0, 0, new Scale(300000));
-        MapfishMapContext context = new MapfishMapContext(bounds, new Dimension(500, 500), 0, 72, Constants.PDF_DPI, null, true);
-        final Optional<Style> styleOptional = mapfishJsonStyleParserPlugin.parseStyle(config, httpClient, styleJson, context);
+        final CenterScaleMapBounds bounds = new CenterScaleMapBounds(
+                CRS.decode("CRS:84"), 0, 0, new Scale(300000));
+        MapfishMapContext context = new MapfishMapContext(
+                bounds, new Dimension(500, 500), 0, 72, Constants.PDF_DPI,
+                null, true);
+        final Optional<Style> styleOptional = mapfishJsonStyleParserPlugin.parseStyle(
+                config, httpClient, styleJson);
 
         assertTrue(styleOptional.isPresent());
 

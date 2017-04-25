@@ -61,7 +61,7 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
         final String coverageName = getClass().getSimpleName();
         final GridCoverage2D gridCoverage2D = factory.create(coverageName, image, gridEnvelope, null, null, null);
         
-        Style style = this.styleSupplier.load(httpRequestFactory, gridCoverage2D, mapContext);
+        Style style = this.styleSupplier.load(httpRequestFactory, gridCoverage2D);
         return Collections.singletonList(new GridCoverageLayer(gridCoverage2D, style));
     }
 

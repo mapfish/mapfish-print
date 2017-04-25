@@ -45,8 +45,7 @@ public class SetStyleProcessor extends
             final Style style = this.mapfishJsonParser.parseStyle(
                     values.template.getConfiguration(),
                     values.clientHttpRequestFactory,
-                    values.style.style,
-                    null
+                    values.style.style
             ).get();
             for (MapLayer layer : values.map.getLayers()) {
                 checkCancelState(context);
@@ -55,8 +54,7 @@ public class SetStyleProcessor extends
                         @Override
                         public Style load(
                                 final MfClientHttpRequestFactory requestFactory,
-                                final Object featureSource,
-                                final MapfishMapContext mapContext) throws Exception {
+                                final Object featureSource) throws Exception {
                             return style;
                         }
                     });

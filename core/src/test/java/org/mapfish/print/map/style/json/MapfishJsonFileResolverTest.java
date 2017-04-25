@@ -107,8 +107,8 @@ public class MapfishJsonFileResolverTest extends AbstractMapfishSpringTest {
         final String path = "/org/mapfish/print/map/style/json/v2-style-symbolizers-default-values.json";
         configuration.setConfigurationFile(getFile(path));
 
-        final Optional<Style> styleOptional = parser.parseStyle(configuration, this.httpClient,
-                "http://URLSLDParserPluginTest.com" + path, null);
+        final Optional<Style> styleOptional = parser.parseStyle(
+                configuration, this.httpClient, "http://URLSLDParserPluginTest.com" + path);
 
         assertTrue(styleOptional.isPresent());
         assertNotNull(styleOptional.get());
@@ -136,7 +136,6 @@ public class MapfishJsonFileResolverTest extends AbstractMapfishSpringTest {
 
         ConfigFileResolvingHttpRequestFactory requestFactory = new ConfigFileResolvingHttpRequestFactory(this.httpClient, configuration);
 
-        return parser.parseStyle(configuration, requestFactory,
-                styleString, null);
+        return parser.parseStyle(configuration, requestFactory, styleString);
     }
 }

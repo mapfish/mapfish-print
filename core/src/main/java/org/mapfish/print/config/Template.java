@@ -8,7 +8,6 @@ import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.attribute.InternalAttribute;
-import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.access.AccessAssertion;
 import org.mapfish.print.config.access.AlwaysAllowAssertion;
 import org.mapfish.print.config.access.RoleAccessAssertion;
@@ -246,20 +245,18 @@ public class Template implements ConfigurationObject, HasConfiguration {
      * Look for a style in the named styles provided in the configuration.
      *
      * @param styleName  the name of the style to look for.
-     * @param mapContext information about the map projection, bounds, size, etc...
      */
     @SuppressWarnings("unchecked")
     @Nonnull
-    public final Optional<Style> getStyle(final String styleName,
-                                          final MapfishMapContext mapContext) {
+    public final Optional<Style> getStyle(final String styleName) {
         final String styleRef = this.styles.get(styleName);
         Optional<Style> style;
         if (styleRef != null) {
-            style = (Optional<Style>) this.styleParser.loadStyle(getConfiguration(), this.httpRequestFactory, styleRef, mapContext);
+            style = (Optional<Style>) this.styleParser.loadStyle(getConfiguration(), this.httpRequestFactory, styleRef);
         } else {
             style = Optional.absent();
         }
-        return style.or(this.configuration.getStyle(styleName, mapContext));
+        return style.or(this.configuration.getStyle(styleName));
     }
 
     @Override

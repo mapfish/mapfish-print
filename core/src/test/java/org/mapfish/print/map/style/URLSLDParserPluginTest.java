@@ -64,18 +64,19 @@ public class URLSLDParserPluginTest extends AbstractMapfishSpringTest {
 
         ConfigFileResolvingHttpRequestFactory requestFactory = new ConfigFileResolvingHttpRequestFactory(this.clientHttpRequestFactory,
                 configuration);
-        final Optional<Style> styleOptional = parserPlugin.parseStyle(configuration,
-                requestFactory, "http://" + host + "/org/mapfish/print/processor/map/center_wmts_fixedscale/thinline.sld", mapContext);
+        final Optional<Style> styleOptional = parserPlugin.parseStyle(
+                configuration, requestFactory,
+                "http://" + host + "/org/mapfish/print/processor/map/center_wmts_fixedscale/thinline.sld");
 
         assertTrue(styleOptional.isPresent());
 
-        final Optional<Style> styleOptional2 = parserPlugin.parseStyle(configuration,
-                requestFactory, "file://thinline.sld", mapContext);
+        final Optional<Style> styleOptional2 = parserPlugin.parseStyle(
+                configuration, requestFactory, "file://thinline.sld");
 
         assertTrue(styleOptional2.isPresent());
 
-        final Optional<Style> styleOptional3 = parserPlugin.parseStyle(configuration,
-                requestFactory, "file://config.yaml", mapContext);
+        final Optional<Style> styleOptional3 = parserPlugin.parseStyle(
+                configuration, requestFactory, "file://config.yaml");
 
         assertFalse(styleOptional3.isPresent());
 

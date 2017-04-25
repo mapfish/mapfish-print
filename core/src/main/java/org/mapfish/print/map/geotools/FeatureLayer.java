@@ -95,8 +95,7 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
             return new StyleSupplier<FeatureSource>() {
                 @Override
                 public Style load(final MfClientHttpRequestFactory requestFactory,
-                                  final FeatureSource featureSource,
-                                  final MapfishMapContext mapContext) {
+                                  final FeatureSource featureSource) {
                     if (featureSource == null) {
                         throw new IllegalArgumentException("Feature source cannot be null");
                     }
@@ -111,10 +110,10 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
                             styleRef = geomType;
                         }
                     }
-                    return template.getStyle(styleRef, mapContext)
+                    return template.getStyle(styleRef)
                             .or(Plugin.this.parser.loadStyle(
                                     template.getConfiguration(),
-                                    requestFactory, styleRef, mapContext))
+                                    requestFactory, styleRef))
                             .or(template.getConfiguration().getDefaultStyle(styleRef));
                 }
             };
