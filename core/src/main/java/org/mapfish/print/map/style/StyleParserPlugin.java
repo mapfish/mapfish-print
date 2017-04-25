@@ -30,5 +30,5 @@ public interface StyleParserPlugin {
     Optional<Style> parseStyle(@Nullable Configuration configuration,
                                @Nonnull ClientHttpRequestFactory clientHttpRequestFactory,
                                @Nullable String styleString,
-                               @Nonnull MapfishMapContext mapContext) throws Throwable;
+                               MapfishMapContext mapContext) throws Throwable;
 }

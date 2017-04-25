@@ -4,13 +4,12 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.Constants;
 import org.mapfish.print.ExceptionUtils;
-import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.style.ParserPluginUtils;
+import org.mapfish.print.map.style.SLDParserPlugin;
 import org.mapfish.print.map.style.StyleParserPlugin;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -490,9 +489,9 @@ public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
     @Override
     public Optional<Style> parseStyle(@Nullable final Configuration configuration,
                                       @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
-                                      @Nonnull final String styleString,
-                                      @Nonnull final MapfishMapContext mapContext) throws Throwable {
-        final Optional<Style> styleOptional = tryLoadJson(configuration, styleString);
+                                      @Nonnull final String styleString) throws Throwable {
+        final Optional<Style> styleOptional = tryParse(
+                configuration, styleString, clientHttpRequestFactory);
 
         if (styleOptional.isPresent()) {
             return styleOptional;
@@ -502,15 +501,19 @@ public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
             @Override
             public Optional<Style> apply(final byte[] input) {
                 try {
-                    return tryLoadJson(configuration, new String(input, Constants.DEFAULT_CHARSET));
-                } catch (JSONException e) {
+                    return tryParse(configuration, new String(input, Constants.DEFAULT_CHARSET), clientHttpRequestFactory);
+                } catch (Throwable e) {
                     throw ExceptionUtils.getRuntimeException(e);
                 }
             }
         });
     }
 
-    private Optional<Style> tryLoadJson(final Configuration configuration, final String styleString) throws JSONException {
+    private Optional<Style> tryParse(
+            @Nullable final Configuration configuration,
+            @Nonnull final String styleString,
+            @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory)
+            throws Throwable {
         String trimmed = styleString.trim();
         if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
             final PJsonObject json = new PJsonObject(new JSONObject(styleString), "style");
@@ -521,8 +524,10 @@ public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
                     return Optional.of(versions.parseStyle(json, this.sldStyleBuilder, configuration));
                 }
             }
+        } else if (trimmed.startsWith("<") && trimmed.endsWith(">")) {
+            final SLDParserPlugin parser = new SLDParserPlugin();
+            return parser.parseStyle(configuration, clientHttpRequestFactory, styleString);
         }
-
         return Optional.absent();
     }
 }
