@@ -61,7 +61,7 @@ public class SetFeaturesProcessor extends
         /**
          * The map to update.
          */
-        public GenericMapAttribute<?>.GenericMapAttributeValues map;
+        public GenericMapAttribute.GenericMapAttributeValues map;
 
         /**
          * The features.
@@ -77,9 +77,9 @@ public class SetFeaturesProcessor extends
         /**
          * The map to update with the static layers.
          */
-        public GenericMapAttribute<?>.GenericMapAttributeValues map;
+        public GenericMapAttribute.GenericMapAttributeValues map;
 
-        Output(final GenericMapAttribute<?>.GenericMapAttributeValues map) {
+        Output(final GenericMapAttribute.GenericMapAttributeValues map) {
             this.map = map;
         }
     }

@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
  * <a href="processors.html#!createMap">!createMap</a> processor).</p>
  * [[examples=verboseExample]]
  */
-public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttributeValues> {
+public final class MapAttribute extends GenericMapAttribute {
 
     private static final double DEFAULT_SNAP_TOLERANCE = 0.05;
     private static final ZoomLevelSnapStrategy DEFAULT_SNAP_STRATEGY = ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE;
@@ -47,7 +47,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
     /**
      * The value of {@link MapAttribute}.
      */
-    public class MapAttributeValues extends GenericMapAttribute<?>.GenericMapAttributeValues {
+    public class MapAttributeValues extends GenericMapAttribute.GenericMapAttributeValues {
 
         private static final boolean DEFAULT_ADJUST_BOUNDS = false;
         private static final double DEFAULT_ROTATION = 0.0;

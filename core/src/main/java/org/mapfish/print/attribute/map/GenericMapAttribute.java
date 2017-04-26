@@ -30,10 +30,10 @@ import java.util.Map;
 /**
  * Generic attributes for {@link org.mapfish.print.processor.map.CreateMapProcessor} and
  * {@link org.mapfish.print.processor.map.CreateOverviewMapProcessor}.
- * @param <GenericMapAttributeValues>
  */
-public abstract class GenericMapAttribute<GenericMapAttributeValues>
-        extends ReflectiveAttribute<GenericMapAttribute<?>.GenericMapAttributeValues> {
+public abstract class GenericMapAttribute
+
+        extends ReflectiveAttribute<GenericMapAttribute.GenericMapAttributeValues> {
 
     private static final double[] DEFAULT_DPI_VALUES = {72, 120, 200, 254, 300, 600, 1200, 2400};
     /**

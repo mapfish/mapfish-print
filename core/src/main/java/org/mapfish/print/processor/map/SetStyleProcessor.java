@@ -92,7 +92,7 @@ public class SetStyleProcessor extends
         /**
          * The map to update.
          */
-        public GenericMapAttribute<?>.GenericMapAttributeValues map;
+        public GenericMapAttribute.GenericMapAttributeValues map;
 
         /**
          * The style.
@@ -107,9 +107,9 @@ public class SetStyleProcessor extends
         /**
          * The map to update with the static layers.
          */
-        public GenericMapAttribute<?>.GenericMapAttributeValues map;
+        public GenericMapAttribute.GenericMapAttributeValues map;
 
-        Output(final GenericMapAttribute<?>.GenericMapAttributeValues map) {
+        Output(final GenericMapAttribute.GenericMapAttributeValues map) {
             this.map = map;
         }
     }

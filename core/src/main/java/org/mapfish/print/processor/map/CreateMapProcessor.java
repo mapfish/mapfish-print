@@ -487,7 +487,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
      * @param bounds         The map bounds.
      */
     public static MapBounds adjustBoundsToScaleAndMapSize(
-            final GenericMapAttribute<?>.GenericMapAttributeValues mapValues, final double dpiOfRequestor,
+            final GenericMapAttribute.GenericMapAttributeValues mapValues, final double dpiOfRequestor,
             final Rectangle paintArea, final MapBounds bounds) {
         MapBounds newBounds = bounds;
         if (mapValues.isUseNearestScale()) {
@@ -685,7 +685,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         /**
          * The required parameters for the map.
          */
-        public GenericMapAttribute<?>.GenericMapAttributeValues map;
+        public GenericMapAttribute.GenericMapAttributeValues map;
 
         /**
          * The path to the temporary directory for the print task.

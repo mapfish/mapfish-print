@@ -204,7 +204,7 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
          * Optional parameters for the overview map which allow to override
          * parameters of the main map.
          */
-        public GenericMapAttribute<?>.GenericMapAttributeValues overviewMap;
+        public GenericMapAttribute.GenericMapAttributeValues overviewMap;
     }
 
     /**

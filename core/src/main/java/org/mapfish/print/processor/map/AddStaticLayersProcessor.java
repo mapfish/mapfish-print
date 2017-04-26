@@ -88,7 +88,7 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
         /**
          * The map to update with the static layers.
          */
-        public GenericMapAttribute<?>.GenericMapAttributeValues map;
+        public GenericMapAttribute.GenericMapAttributeValues map;
 
         /**
          * The attribute containing the static layers to add to the map.
@@ -104,9 +104,9 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
         /**
          * The map to update with the static layers.
          */
-        public GenericMapAttribute<?>.GenericMapAttributeValues map;
+        public GenericMapAttribute.GenericMapAttributeValues map;
 
-        Output(final GenericMapAttribute<?>.GenericMapAttributeValues map) {
+        Output(final GenericMapAttribute.GenericMapAttributeValues map) {
             this.map = map;
         }
     }

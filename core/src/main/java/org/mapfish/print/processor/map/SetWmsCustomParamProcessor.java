@@ -61,7 +61,7 @@ public class SetWmsCustomParamProcessor extends AbstractProcessor<SetWmsCustomPa
         /**
          * The map to update.
          */
-        public GenericMapAttribute<?>.GenericMapAttributeValues map;
+        public GenericMapAttribute.GenericMapAttributeValues map;
 
         /**
          * The value.
