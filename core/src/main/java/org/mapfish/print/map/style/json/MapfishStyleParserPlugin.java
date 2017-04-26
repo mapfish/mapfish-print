@@ -486,7 +486,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  *         http://docs.geoserver.org/latest/en/user/tutorials/cql/cql_tutorial.html</a></li>
  * </ul>
  */
-public final class MapfishJsonStyleParserPlugin implements StyleParserPlugin {
+public final class MapfishStyleParserPlugin implements StyleParserPlugin {
     enum Versions {
         ONE("1") {
             @Override

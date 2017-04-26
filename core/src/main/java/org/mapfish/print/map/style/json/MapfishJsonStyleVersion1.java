@@ -31,7 +31,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static org.mapfish.print.map.style.json.MapfishJsonStyleParserPlugin.Versions;
+import static org.mapfish.print.map.style.json.MapfishStyleParserPlugin.Versions;
 
 /**
  * The strategy for parsing the Mapfish json style version 1.
@@ -75,7 +75,7 @@ public final class MapfishJsonStyleVersion1 {
 
         for (Iterator<String> iterator = this.json.keys(); iterator.hasNext();) {
             String styleKey = iterator.next();
-            if (styleKey.equals(JSON_STYLE_PROPERTY) || styleKey.equals(MapfishJsonStyleParserPlugin.JSON_VERSION)) {
+            if (styleKey.equals(JSON_STYLE_PROPERTY) || styleKey.equals(MapfishStyleParserPlugin.JSON_VERSION)) {
                 continue;
             }
             PJsonObject styleJson = this.json.getJSONObject(styleKey);

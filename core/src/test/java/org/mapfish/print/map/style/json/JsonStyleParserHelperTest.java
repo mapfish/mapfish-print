@@ -45,8 +45,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mapfish.print.map.style.json.MapfishJsonStyleParserPlugin.Versions;
-import static org.mapfish.print.map.style.json.MapfishJsonStyleParserPluginTest.REQUEST_DATA_STYLE_JSON_V1_STYLE_JSON;
+import static org.mapfish.print.map.style.json.MapfishStyleParserPlugin.Versions;
+import static org.mapfish.print.map.style.json.MapfishStyleParserPluginTest.REQUEST_DATA_STYLE_JSON_V1_STYLE_JSON;
 
 public class JsonStyleParserHelperTest {
 
@@ -58,7 +58,7 @@ public class JsonStyleParserHelperTest {
     @Before
     public void setUp() throws Exception {
         Configuration configuration = new Configuration();
-        final File file = getFile(MapfishJsonStyleParserPluginTest.class, REQUEST_DATA_STYLE_JSON_V1_STYLE_JSON);
+        final File file = getFile(MapfishStyleParserPluginTest.class, REQUEST_DATA_STYLE_JSON_V1_STYLE_JSON);
         configuration.setConfigurationFile(file);
         helper = new JsonStyleParserHelper(configuration, new StyleBuilder(), true, Versions.ONE);
     }

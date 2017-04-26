@@ -30,7 +30,7 @@ public class MapfishJsonFileResolverTest extends AbstractMapfishSpringTest {
     final TestHttpClientFactory httpClient = new TestHttpClientFactory();
 
     @Autowired
-    private MapfishJsonStyleParserPlugin parser;
+    private MapfishStyleParserPlugin parser;
 
     @Autowired
     private ConfigFileLoaderManager fileLoaderManager;

@@ -50,7 +50,7 @@ import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 
 import static org.mapfish.print.FileUtils.testForLegalFileUrl;
-import static org.mapfish.print.map.style.json.MapfishJsonStyleParserPlugin.Versions;
+import static org.mapfish.print.map.style.json.MapfishStyleParserPlugin.Versions;
 
 /**
  * Methods shared by various style versions for creating geotools SLD styles from the json format mapfish supports.
