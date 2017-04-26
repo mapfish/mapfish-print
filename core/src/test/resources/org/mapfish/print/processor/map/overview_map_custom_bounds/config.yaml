@@ -19,7 +19,8 @@ templates:
     processors:
     - !setStyle {}
     - !createMap
-        outputMapper: {mapSubReport: mapOut}
+        outputMapper: 
+            mapSubReport: mapOut
     - !setStyle
       inputMapper:
         overviewMap: map

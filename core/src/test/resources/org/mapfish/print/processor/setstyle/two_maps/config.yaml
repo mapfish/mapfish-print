@@ -32,17 +32,20 @@ templates:
       inputMapper:
         mapDef1: map
       outputMapper:
-        map: mapDef1
+        map: mapDef11
     - !createMap
-      inputMapper: {mapDef1: map}
-      outputMapper: {mapSubReport: map1}
+      inputMapper:
+        mapDef11: map
+      outputMapper:
+        mapSubReport: map1
     - !setStyle
       inputMapper:
         mapDef2: map
       outputMapper:
-        map: mapDef2
+        map: mapDef21
     - !createMap
-      inputMapper: {mapDef2: map}
+      inputMapper:
+        mapDef21: map
       outputMapper:
         mapSubReport: map2
         mapContext: mapContext2

@@ -33,6 +33,3 @@ templates:
             overviewMapSubReport: overviewMapOut,
             layerGraphics: overviewMapLayerGraphics
         }
-
-
-

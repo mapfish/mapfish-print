@@ -1,4 +1,3 @@
-
 templates:
   #===========================================================================
   A4 landscape: !template
@@ -17,14 +16,5 @@ templates:
     processors:
     - !reportBuilder # compile all reports in current directory
       directory: '.'
-    - !createMap
-      inputMapper: {map: map}
-      outputMapper: {mapSubReport: mapSubReport}
-    - !createOverviewMap
-        inputMapper: {
-            map: map,
-            overviewMap: overviewMap
-        }
-        outputMapper: {
-            overviewMapSubReport: overviewMapSubReport
-        }
+    - !createMap {}
+    - !createOverviewMap {}

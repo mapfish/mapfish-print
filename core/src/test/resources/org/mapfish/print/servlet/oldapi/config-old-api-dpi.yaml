@@ -4,7 +4,7 @@ templates:
   A4 Portrait: !template
     reportTemplate: MapOnly_A4-old-api.jrxml
     attributes:
-      geojsonMap: !map
+      map: !map
         width: 802
         height: 500
         maxDpi: 400
@@ -16,7 +16,6 @@ templates:
     - !reportBuilder # compile all reports in current directory
         directory: '.'
     - !createMap
-        inputMapper: {geojsonMap: map}
         outputMapper: {mapSubReport: geojsonMap}
     - !prepareTable
       inputMapper: {entries: table}

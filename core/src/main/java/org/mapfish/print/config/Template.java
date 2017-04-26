@@ -225,7 +225,8 @@ public class Template implements ConfigurationObject, HasConfiguration {
         if (this.processorGraph == null) {
             synchronized (this) {
                 if (this.processorGraph == null) {
-                    this.processorGraph = this.processorGraphFactory.build(this.processors);
+                    this.processorGraph = this.processorGraphFactory.build(this.processors,
+                            this.attributes.keySet());
                 }
             }
         }

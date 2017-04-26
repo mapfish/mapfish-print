@@ -16,6 +16,4 @@ templates:
         - !addHeaders
           headers:
             Referer : "http://geojson.io/"
-    - !createMap
-      inputMapper: {map: map}
-      outputMapper: {mapSubReport: mapSubReport}
+    - !createMap {}

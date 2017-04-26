@@ -17,16 +17,14 @@ templates:
         style: file://overview-map.sld
     processors:
     - !createMap
-        inputMapper: {mapDef: map}
-        outputMapper: {mapSubReport: mapOut}
+        inputMapper:
+            mapDef: map
+        outputMapper:
+            mapSubReport: mapOut
     - !createOverviewMap
-        inputMapper: {
-            mapDef: map,
+        inputMapper:
+            mapDef: map
             overviewMapDef: overviewMap
-        }
-        outputMapper: {
-            overviewMapSubReport: overviewMapOut,
+        outputMapper:
+            overviewMapSubReport: overviewMapOut
             layerGraphics: overviewMapLayerGraphics 
-        }
-
-

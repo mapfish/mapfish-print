@@ -1,4 +1,3 @@
-
 templates:
   main: !template
     reportTemplate: "dummy.jxml"
@@ -12,4 +11,3 @@ templates:
         inputMapper: {mapDef: map}
         outputMapper: {mapSubReport: mapOut}
         imageType: TYPE_4BYTE_ABGR
-

@@ -26,8 +26,4 @@ templates:
     processors:
     - !reportBuilder
         directory: "."
-    - !createMap
-        inputMapper: {map: map}
-        outputMapper: {mapSubReport: map}
-
-
+    - !createMap {}

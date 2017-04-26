@@ -15,5 +15,3 @@ templates:
     - !createMap
         inputMapper: {mapDef: map}
         outputMapper: {mapSubReport: mapOut}
-
-

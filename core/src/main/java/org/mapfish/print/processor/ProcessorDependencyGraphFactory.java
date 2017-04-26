@@ -52,14 +52,21 @@ public final class ProcessorDependencyGraphFactory {
      * Create a {@link ProcessorDependencyGraph}.
      *
      * @param processors the processors that will be part of the graph
+     * @param attributes the list of attributes name
      * @return a {@link org.mapfish.print.processor.ProcessorDependencyGraph} constructed from the passed in processors
      */
     @SuppressWarnings("unchecked")
-    public ProcessorDependencyGraph build(final List<? extends Processor> processors) {
+    public ProcessorDependencyGraph build(
+            final List<? extends Processor> processors,
+            final Set<String> attributes) {
         ProcessorDependencyGraph graph = new ProcessorDependencyGraph();
 
         final Map<String, ProcessorGraphNode<Object, Object>> provideBy =
                 new HashMap<String, ProcessorGraphNode<Object, Object>>();
+        for (String attribute : attributes) {
+            provideBy.put(attribute, null);
+        }
+
         final Map<String, Class<?>> outputTypes = new HashMap<String, Class<?>>();
         final List<ProcessorGraphNode<Object, Object>> nodes =
                 new ArrayList<ProcessorGraphNode<Object, Object>>(processors.size());
@@ -75,10 +82,20 @@ public final class ProcessorDependencyGraphFactory {
                         // if this is just a debug output, we can simply rename it
                         outputName = outputName + "_" + UUID.randomUUID().toString();
                     } else {
-                        throw new IllegalArgumentException("Multiple processors provide the same output mapping: '" +
-                                processor + "' and '" + provideBy.get(outputName) + "' both provide: '" + outputName +
-                                "'.  You have to rename one of the outputs and the corresponding input so that" +
-                                " there is no ambiguity with regards to the input a processor consumes.");
+                        ProcessorGraphNode<Object, Object> provider = provideBy.get(outputName);
+                        if (provider == null) {
+                            throw new IllegalArgumentException("Processors '" + processor + " provide the " +
+                                    "output '" + outputName + "' who is already declared as an attribute.  " +
+                                    "You have to rename one of the outputs and the corresponding input so " +
+                                    "that  there is no ambiguity with regards to the input a processor " +
+                                    "consumes.");
+                        } else {
+                            throw new IllegalArgumentException("Multiple processors provide the same output" +
+                                    " mapping: '" + processor + "' and '" + provider + "' both provide: '"
+                                    + outputName + "'.  You have to rename one of the outputs and the " +
+                                    "corresponding input so that  there is no ambiguity with regards to the" +
+                                    " input a processor consumes.");
+                        }
                     }
                 }
 

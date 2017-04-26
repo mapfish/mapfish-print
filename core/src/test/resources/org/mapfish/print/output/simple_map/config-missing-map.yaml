@@ -5,5 +5,3 @@ templates:
     processors:
     - !reportBuilder
         directory: "."
-
-

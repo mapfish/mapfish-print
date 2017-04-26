@@ -70,6 +70,7 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
     @Autowired
     private ProcessorDependencyGraphFactory processorGraphFactory;
     private ProcessorDependencyGraph processorGraph;
+    private List<Processor> processors;
     @Autowired
     private MapfishParser parser;
     @Autowired
@@ -88,7 +89,8 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
     @PostConstruct
     private void init() {
         // default to no processors
-        this.processorGraph  = this.processorGraphFactory.build(Collections.<Processor>emptyList());
+        this.processorGraph  = this.processorGraphFactory.build(Collections.<Processor>emptyList(),
+                Collections.<String>emptySet());
     }
 
     /**
@@ -128,7 +130,7 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
      * @param processors the processors which will be ran to create the datasource
      */
     public void setProcessors(final List<Processor> processors) {
-        this.processorGraph = this.processorGraphFactory.build(processors);
+        this.processors = processors;
     }
 
     /**
@@ -138,6 +140,12 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
      */
     public void setAttributes(final Map<String, Attribute> attributes) {
         this.attributes = attributes;
+    }
+
+    @Override
+    public void validate(final List<Throwable> errors, final Configuration configuration) {
+        this.processorGraph = this.processorGraphFactory.build(this.processors, this.attributes.keySet());
+        super.validate(errors, configuration);
     }
 
     @Nullable

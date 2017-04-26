@@ -1,4 +1,3 @@
-
 templates:
   main: !template
     reportTemplate: "dummy.jxml"
@@ -11,5 +10,3 @@ templates:
     - !createMap
         inputMapper: {mapDef: map}
         outputMapper: {mapSubReport: mapOut}
-
-

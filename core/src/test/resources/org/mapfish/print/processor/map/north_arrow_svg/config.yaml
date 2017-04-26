@@ -16,10 +16,13 @@ templates:
           graphic: "file://NorthArrow_10.svg"
     processors:
     - !createMap
-        inputMapper: {mapDef: map}
-        outputMapper: {mapSubReport: mapOut}
+        inputMapper:
+            mapDef: map
+        outputMapper:
+            mapSubReport: mapOut
     - !createNorthArrow
-        inputMapper: {mapDef: map, northArrowDef: northArrow}
-        outputMapper: {northArrowSubReport: northArrowOut}
-
-
+        inputMapper:
+            mapDef: map
+            northArrowDef: northArrow
+        outputMapper:
+            northArrowSubReport: northArrowOut

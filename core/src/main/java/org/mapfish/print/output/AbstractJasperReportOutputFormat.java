@@ -247,7 +247,6 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             if (finalError.length() > 0) {
                 throw new AssertionFailedException(finalError.toString());
             }
-
         }
     }
 

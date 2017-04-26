@@ -1,4 +1,3 @@
-
 templates:
   #===========================================================================
   A4 landscape: !template
@@ -10,6 +9,4 @@ templates:
         width: 780
         height: 330
     processors:
-    - !createMap
-      inputMapper: {map: map}
-      outputMapper: {mapSubReport: map}
+    - !createMap {}

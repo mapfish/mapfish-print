@@ -40,20 +40,11 @@ templates:
           pathRegex : /.+
     - !reportBuilder # compile all reports in current directory
       directory: '.'
-    - !createMap
-      inputMapper: {map: map}
-      outputMapper: {mapSubReport: mapSubReport}
+    - !createMap {}
     - !createScalebar {}
     - !prepareLegend # create a datasource for the report with the 'legend' attribute
       template: legend.jrxml
-      inputMapper: {legend: legend}
-      outputMapper:
-        legend: legend
-        legendSubReport: legendSubReport
-        numberOfLegendRows: numberOfLegendRows
-    - !prepareTable
-      inputMapper: {table: table}
-      outputMapper: {table: table}
+    - !prepareTable {}
     - !createDataSource
       reportTemplate: table.jrxml
       reportKey: reportTemplate
@@ -79,6 +70,4 @@ templates:
           pathRegex : .+
     - !reportBuilder # compile all reports in current directory
       directory: '.'
-    - !createMap
-      inputMapper: {map: map}
-      outputMapper: {mapSubReport: map}
+    - !createMap {}

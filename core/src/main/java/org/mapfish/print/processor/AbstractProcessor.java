@@ -111,7 +111,7 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
     }
 
     @Override
-    public final void validate(final List<Throwable> errors, final Configuration configuration) {
+    public void validate(final List<Throwable> errors, final Configuration configuration) {
         final In inputParameter = createInputParameter();
         final Set<String> allInputAttributeNames;
         if (inputParameter != null) {
@@ -121,16 +121,17 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
         }
         for (String inputAttributeName : this.inputMapper.values()) {
             if (!allInputAttributeNames.contains(inputAttributeName)) {
-                errors.add(new ConfigurationException(inputAttributeName + " is not defined in processor '" + this + "'.  Check for " +
-                                                        "typos. Options are " + allInputAttributeNames));
+                errors.add(new ConfigurationException(inputAttributeName + " is not defined in processor '"
+                        + this + "'.  Check for typos. Options are " + allInputAttributeNames));
             }
         }
 
         Set<String> allOutputAttributeNames = ParserUtils.getAllAttributeNames(getOutputType());
         for (String outputAttributeName : this.outputMapper.keySet()) {
             if (!allOutputAttributeNames.contains(outputAttributeName)) {
-                errors.add(new ConfigurationException(outputAttributeName + " is not defined in processor '" + this + "' as an output " +
-                                                        "attribute.  Check for typos. Options are " + allOutputAttributeNames));
+                errors.add(new ConfigurationException(outputAttributeName + " is not defined in processor " +
+                        "'" + this + "' as an output attribute.  Check for typos. Options are " +
+                        allOutputAttributeNames));
             }
         }
 
