@@ -669,7 +669,6 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         }
     };
     private static class MapValuesInput extends MapInput {
-        @InternalValue
         public Values values;
     }
     private static class NeedsValuesAndMap extends TestProcessor<MapValuesInput, Void> {

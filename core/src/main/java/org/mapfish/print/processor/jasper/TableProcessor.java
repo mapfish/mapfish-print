@@ -34,7 +34,6 @@ import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.AbstractProcessor;
-import org.mapfish.print.processor.InternalValue;
 import org.mapfish.print.wrapper.PArray;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -596,17 +595,14 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
          * A factory for making http requests.  This is added to the values by the framework and therefore
          * does not need to be set in configuration
          */
-        @InternalValue
         public MfClientHttpRequestFactory clientHttpRequestFactory;
         /**
          * The directory to write the generated table to (if dynamic).
          */
-        @InternalValue
         public File tempTaskDirectory;
         /**
          * The template containing this table processor.
          */
-        @InternalValue
         public Template template;
         /**
          * Data for constructing the table Datasource.

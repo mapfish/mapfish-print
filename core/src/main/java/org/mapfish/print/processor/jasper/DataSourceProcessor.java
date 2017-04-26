@@ -16,7 +16,6 @@ import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.processor.AbstractProcessor;
-import org.mapfish.print.processor.InternalValue;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
@@ -237,12 +236,10 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
         /**
          * The values object with all values.  This is required in order to run sub-processor graph
          */
-        @InternalValue
         public Template template;
         /**
          * The values object with all values.  This is required in order to run sub-processor graph
          */
-        @InternalValue
         public Values values;
 
         /**

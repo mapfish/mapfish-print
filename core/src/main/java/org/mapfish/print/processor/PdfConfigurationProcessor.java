@@ -226,13 +226,11 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
         /**
          * The values object used to retrieve the required attributes.
          */
-        @InternalValue
         public Values values;
 
         /**
          * The pdf configuration object.
          */
-        @InternalValue
         public PDFConfig pdfConfig;
     }
 

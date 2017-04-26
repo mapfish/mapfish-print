@@ -12,7 +12,6 @@ import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.style.StyleParserPlugin;
 import org.mapfish.print.processor.AbstractProcessor;
-import org.mapfish.print.processor.InternalValue;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -86,7 +85,6 @@ public class SetStyleProcessor extends
         /**
          * The template containing this table processor.
          */
-        @InternalValue
         public Template template;
 
         /**
