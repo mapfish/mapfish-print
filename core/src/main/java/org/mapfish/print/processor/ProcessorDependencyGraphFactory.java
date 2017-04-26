@@ -368,8 +368,8 @@ public final class ProcessorDependencyGraphFactory {
         @Override
         public String toString() {
             return "InputValue{" +
-                   "name='" + this.name + '\'' +
-                   ", type=" + this.type.getSimpleName() +
+                   "name='" + this.name + "', " +
+                   "type=" + this.type.getSimpleName() +
                    '}';
         }
     }
