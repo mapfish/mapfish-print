@@ -129,8 +129,13 @@ public final class MapAttribute extends GenericMapAttribute {
         }
 
         @Override
-        protected final PArray getRawLayers() {
+        public final PArray getRawLayers() {
             return this.layers;
+        }
+
+        @Override
+        public void setRawLayers(final PArray newLayers) {
+            this.layers = newLayers;
         }
 
         @Override

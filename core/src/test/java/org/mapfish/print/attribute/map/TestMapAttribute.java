@@ -39,9 +39,12 @@ public final class TestMapAttribute extends GenericMapAttribute {
         }
 
         @Override
-        protected PArray getRawLayers() {
+        public PArray getRawLayers() {
             return null;
         }
+
+        @Override
+        public void setRawLayers(PArray layers) {}
     }
 
     public static final class EmbeddedTestAttribute {

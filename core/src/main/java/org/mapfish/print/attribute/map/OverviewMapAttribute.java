@@ -161,6 +161,11 @@ public final class OverviewMapAttribute extends GenericMapAttribute {
             return this.layers;
         }
 
+        @Override
+        public void setRawLayers(final PArray newLayers) {
+            this.layers = newLayers;
+        }
+
         public double getZoomFactor() {
             return OverviewMapAttribute.this.zoomFactor;
         }

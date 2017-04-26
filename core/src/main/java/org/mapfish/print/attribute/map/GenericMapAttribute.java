@@ -445,10 +445,17 @@ public abstract class GenericMapAttribute
         public abstract Double getDpi();
 
         /**
-         * Return the JSON layer definiton.
-         * This method is abstract is abstract for the same reasons as {@link #getDpi()}.
+         * Return the JSON layer definition.
+         * This method is abstract for the same reasons as {@link #getDpi()}.
          */
-        protected abstract PArray getRawLayers();
+        public abstract PArray getRawLayers();
+        /**
+         * Set the JSON layer definition.
+         * This method is abstract for the same reasons as {@link #getDpi()}.
+         *
+         * @param layers the new layers
+         */
+        public abstract void setRawLayers(PArray layers);
 
         //CSOFF: DesignForExtension
         public List<MapLayer> getLayers() {

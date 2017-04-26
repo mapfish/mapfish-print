@@ -1,7 +1,6 @@
 package org.mapfish.print.processor.map;
 
 import org.mapfish.print.attribute.map.GenericMapAttribute.GenericMapAttributeValues;
-import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.attribute.map.StaticLayersAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
@@ -62,15 +61,14 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
     @Nullable
     @Override
     public Output execute(final Input values, final ExecutionContext context) throws Exception {
-        final MapAttributeValues map = (MapAttributeValues) values.map;
         switch (this.position) {
             case BOTTOM:
-                map.layers = new PJoinedArray(new PArray[]{
-                        map.layers, values.staticLayers.layers});
+                values.map.setRawLayers(new PJoinedArray(new PArray[]{
+                        values.map.getRawLayers(), values.staticLayers.layers}));
                 break;
             case TOP:
-                map.layers = new PJoinedArray(new PArray[]{
-                        values.staticLayers.layers, map.layers});
+                values.map.setRawLayers(new PJoinedArray(new PArray[]{
+                        values.staticLayers.layers, values.map.getRawLayers()}));
                 break;
             default:
                 throw new Error("An enumeration value was added that does not have an implementation.  A Programmer must add "
