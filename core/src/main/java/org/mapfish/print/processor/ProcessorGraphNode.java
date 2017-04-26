@@ -199,7 +199,6 @@ public final class ProcessorGraphNode<In, Out> {
                     }
                 }
 
-
                 if (output != null) {
                     ProcessorUtils.writeProcessorOutputToValues(output, process, values);
                 }
@@ -244,5 +243,4 @@ public final class ProcessorGraphNode<In, Out> {
             }
         }
     }
-
 }

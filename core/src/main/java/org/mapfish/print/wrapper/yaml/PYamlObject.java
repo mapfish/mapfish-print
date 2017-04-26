@@ -1,5 +1,6 @@
 package org.mapfish.print.wrapper.yaml;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.ExceptionUtils;
@@ -10,6 +11,7 @@ import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +62,16 @@ public class PYamlObject extends PAbstractObject {
 
     @Override
     public final String optString(final String key) {
-        return (String) this.obj.get(key);
+        Object value = this.obj.get(key);
+        if (value == null || value instanceof String) {
+            return (String) value;
+        } else if (value instanceof Map) {
+            return new JSONObject((Map) value).toString();
+        } else if (value instanceof Collection) {
+            return new JSONArray((Collection) value).toString();
+        } else {
+            return value.toString();
+        }
     }
 
     @Override

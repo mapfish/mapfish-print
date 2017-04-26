@@ -13,7 +13,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.AbstractProcessor;
-import org.mapfish.print.processor.InternalValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -314,18 +313,15 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         /**
          * The template that contains this processor.
          */
-        @InternalValue
         public Template template;
         /**
          * A factory for making http requests.  This is added to the values by the framework and therefore
          * does not need to be set in configuration
          */
-        @InternalValue
         public MfClientHttpRequestFactory clientHttpRequestFactory;
         /**
          * The path to the temporary directory for the print task.
          */
-        @InternalValue
         public File tempTaskDirectory;
         /**
          * The data required for creating the legend.

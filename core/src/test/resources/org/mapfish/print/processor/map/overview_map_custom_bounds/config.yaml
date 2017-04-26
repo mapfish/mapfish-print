@@ -17,14 +17,16 @@ templates:
         maxDpi: 400
         zoomFactor: 2
     processors:
+    - !setStyle {}
     - !createMap
         outputMapper: {mapSubReport: mapOut}
-    - !createOverviewMap
-        outputMapper:
-            overviewMapSubReport: overviewMapOut
-            layerGraphics: overviewMapLayerGraphics 
-    - !setStyle {}
     - !setStyle
       inputMapper:
         overviewMap: map
         style: style
+      outputMapper:
+        map: overviewMap
+    - !createOverviewMap
+        outputMapper:
+            overviewMapSubReport: overviewMapOut
+            layerGraphics: overviewMapLayerGraphics

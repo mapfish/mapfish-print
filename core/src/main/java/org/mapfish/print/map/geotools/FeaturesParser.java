@@ -181,14 +181,14 @@ public class FeaturesParser {
                             allAttributes.add(nextKey);
                             builder.add(nextKey, Object.class);
                         }
-                        if (geomType != Geometry.class) {
-                            Class<Geometry> thisGeomType = parseGeometryType(feature);
-                            if (thisGeomType != null) {
-                                if (geomType == null) {
-                                    geomType = thisGeomType;
-                                } else if (geomType != thisGeomType) {
-                                    geomType = Geometry.class;
-                                }
+                    }
+                    if (geomType != Geometry.class) {
+                        Class<Geometry> thisGeomType = parseGeometryType(feature);
+                        if (thisGeomType != null) {
+                            if (geomType == null) {
+                                geomType = thisGeomType;
+                            } else if (geomType != thisGeomType) {
+                                geomType = Geometry.class;
                             }
                         }
                     }

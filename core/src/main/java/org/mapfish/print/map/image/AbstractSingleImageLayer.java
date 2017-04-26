@@ -61,13 +61,13 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
         final String coverageName = getClass().getSimpleName();
         final GridCoverage2D gridCoverage2D = factory.create(coverageName, image, gridEnvelope, null, null, null);
         
-        Style style = this.styleSupplier.load(httpRequestFactory, gridCoverage2D, mapContext);
+        Style style = this.styleSupplier.load(httpRequestFactory, gridCoverage2D);
         return Collections.singletonList(new GridCoverageLayer(gridCoverage2D, style));
     }
 
     /**
      * Load the image at the requested size for the provided map bounds.
-     *  @param requestFactory the factory to use for making http requests
+     * @param requestFactory the factory to use for making http requests
      * @param transformer object containing map rendering information
      */
     protected abstract BufferedImage loadImage(MfClientHttpRequestFactory requestFactory,

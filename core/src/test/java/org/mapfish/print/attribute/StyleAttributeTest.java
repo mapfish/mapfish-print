@@ -42,6 +42,6 @@ public class StyleAttributeTest extends AbstractMapfishSpringTest {
                 this.clientHttpRequestFactory, new File("."));
         final StyleAttribute.StylesAttributeValues value = values.getObject("styleDef", StyleAttribute.StylesAttributeValues.class);
 
-        assertNotNull(value.getStyle(clientHttpRequestFactory, mapContext));
+        assertNotNull(value.style);
     }
 }

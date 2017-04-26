@@ -1,6 +1,6 @@
 package org.mapfish.print.processor.map;
 
-import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
+import org.mapfish.print.attribute.map.GenericMapAttribute.GenericMapAttributeValues;
 import org.mapfish.print.attribute.map.StaticLayersAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
@@ -20,9 +20,10 @@ import javax.annotation.Nullable;
  *
  * <p>This can simplify the client so the client only needs to be concerned with the data layers.</p>
  * <p>See also: <a href="attributes.html#!staticLayers">!staticLayers</a> attribute</p>
- * [[examples=add_overlay_layer]]
+ * [[examples=add_overlay_layer,report]]
  */
-public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticLayersProcessor.Input, Void> {
+public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticLayersProcessor.Input,
+        AddStaticLayersProcessor.Output> {
 
     private StaticLayerPosition position;
 
@@ -30,7 +31,7 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
      * Constructor.
      */
     protected AddStaticLayersProcessor() {
-        super(Void.class);
+        super(AddStaticLayersProcessor.Output.class);
     }
 
     /**
@@ -59,20 +60,22 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
 
     @Nullable
     @Override
-    public Void execute(final Input values, final ExecutionContext context) throws Exception {
+    public Output execute(final Input values, final ExecutionContext context) throws Exception {
         switch (this.position) {
             case BOTTOM:
-                values.map.layers = new PJoinedArray(new PArray[]{values.map.layers, values.staticLayers.layers});
+                values.map.setRawLayers(new PJoinedArray(new PArray[]{
+                        values.map.getRawLayers(), values.staticLayers.layers}));
                 break;
             case TOP:
-                values.map.layers = new PJoinedArray(new PArray[]{values.staticLayers.layers, values.map.layers});
+                values.map.setRawLayers(new PJoinedArray(new PArray[]{
+                        values.staticLayers.layers, values.map.getRawLayers()}));
                 break;
             default:
                 throw new Error("An enumeration value was added that does not have an implementation.  A Programmer must add "
                                 + "this implementation to " + getClass().getName());
         }
         values.map.postConstruct();
-        return null;
+        return new Output(values.map);
     }
 
     /**
@@ -83,12 +86,27 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
         /**
          * The map to update with the static layers.
          */
-        public MapAttributeValues map;
+        public GenericMapAttributeValues map;
 
         /**
          * The attribute containing the static layers to add to the map.
          */
         public StaticLayersAttribute.StaticLayersAttributeValue staticLayers;
+    }
+
+    /**
+     * The object containing the output for this processor.
+     */
+    public static class Output {
+
+        /**
+         * The map to update with the static layers.
+         */
+        public GenericMapAttributeValues map;
+
+        Output(final GenericMapAttributeValues map) {
+            this.map = map;
+        }
     }
 
     /**

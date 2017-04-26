@@ -16,7 +16,6 @@ import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.processor.AbstractProcessor;
-import org.mapfish.print.processor.InternalValue;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
@@ -61,7 +60,8 @@ import static org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttribut
  * <p>If reportKey is defined the reportTemplate must also be defined (and vice-versa).</p>
  * 
  * <p>See also: <a href="attributes.html#!datasource">!datasource</a> attribute</p>
- * [[examples=verboseExample,datasource_dynamic_tables,datasource_many_dynamictables_legend,datasource_multiple_maps,customDynamicReport]]
+ * [[examples=verboseExample,datasource_dynamic_tables,datasource_many_dynamictables_legend,
+ * datasource_multiple_maps,customDynamicReport,report]]
  */
 public final class DataSourceProcessor extends AbstractProcessor<DataSourceProcessor.Input, DataSourceProcessor.Output> {
 
@@ -164,7 +164,7 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
         //CSON:RedundantThrows
         List<Values> dataSourceValues = Lists.newArrayList();
         for (Map<String, Object> o : input.datasource.attributesValues) {
-            Values rowValues = new Values(input.values);
+            Values rowValues = new Values(input.values.asMap());
             for (Map.Entry<String, Object> entry : o.entrySet()) {
                 rowValues.put(entry.getKey(), entry.getValue());
             }
@@ -236,12 +236,10 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
         /**
          * The values object with all values.  This is required in order to run sub-processor graph
          */
-        @InternalValue
         public Template template;
         /**
          * The values object with all values.  This is required in order to run sub-processor graph
          */
-        @InternalValue
         public Values values;
 
         /**

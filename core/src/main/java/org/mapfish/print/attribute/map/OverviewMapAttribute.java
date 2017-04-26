@@ -15,7 +15,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * <a href="processors.html#!createOverviewMap">!createOverviewMap</a> processor).</p>
  * [[examples=verboseExample,overviewmap_tyger_ny_EPSG_900913]]
  */
-public final class OverviewMapAttribute extends GenericMapAttribute<OverviewMapAttribute.OverviewMapAttributeValues> {
+public final class OverviewMapAttribute extends GenericMapAttribute {
     
     private static final double DEFAULT_ZOOM_FACTOR = 5.0;
 
@@ -55,7 +55,7 @@ public final class OverviewMapAttribute extends GenericMapAttribute<OverviewMapA
     /**
      * The value of {@link MapAttribute}.
      */
-    public final class OverviewMapAttributeValues extends GenericMapAttribute<?>.GenericMapAttributeValues {
+    public final class OverviewMapAttributeValues extends GenericMapAttribute.GenericMapAttributeValues {
         
         /**
          * The json with all the layer information.  This will be parsed in postConstruct into a list of layers and
@@ -159,6 +159,11 @@ public final class OverviewMapAttribute extends GenericMapAttribute<OverviewMapA
         @Override
         public PArray getRawLayers() {
             return this.layers;
+        }
+
+        @Override
+        public void setRawLayers(final PArray newLayers) {
+            this.layers = newLayers;
         }
 
         public double getZoomFactor() {

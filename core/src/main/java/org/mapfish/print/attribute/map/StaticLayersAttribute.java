@@ -13,7 +13,7 @@ import java.util.List;
  * <a href="processors.html#!addOverlayLayers">!addOverlayLayers</a> processor) which adds the layers in this
  * attribute to the layers in the map.  The typical use is to add the background or overlay layers as the "default"
  * in the config.yaml file if the client desires it can override those values.</p>
- * [[examples=add_overlay_layer]]
+ * [[examples=add_overlay_layer,report]]
  */
 public final class StaticLayersAttribute extends ReflectiveAttribute<StaticLayersAttribute.StaticLayersAttributeValue> {
 

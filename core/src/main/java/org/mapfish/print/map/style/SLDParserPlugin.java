@@ -12,7 +12,6 @@ import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.mapfish.print.Constants;
 import org.mapfish.print.ExceptionUtils;
-import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,8 +45,7 @@ public class SLDParserPlugin implements StyleParserPlugin {
     @Override
     public final Optional<Style> parseStyle(@Nullable final Configuration configuration,
                                             @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
-                                            @Nonnull final String styleString,
-                                            @Nonnull final MapfishMapContext mapContext) throws Throwable {
+                                            @Nonnull final String styleString) throws Throwable {
 
         // try to load xml
         final ByteSource straightByteSource = ByteSource.wrap(styleString.getBytes(Constants.DEFAULT_CHARSET));

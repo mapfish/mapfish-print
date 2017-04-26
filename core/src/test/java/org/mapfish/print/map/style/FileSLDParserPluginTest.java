@@ -119,10 +119,10 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         config.setConfigurationFile(tempFile);
         config.setFileLoaderManager(this.fileLoaderManager);
 
-        ConfigFileResolvingHttpRequestFactory requestFactory = new ConfigFileResolvingHttpRequestFactory(this.clientHttpRequestFactory,
-                config);
+        ConfigFileResolvingHttpRequestFactory requestFactory = new ConfigFileResolvingHttpRequestFactory(
+                this.clientHttpRequestFactory, config);
 
-        assertFalse(this.parser.parseStyle(config, requestFactory, file.getAbsolutePath(), mapContext).isPresent());
+        assertFalse(this.parser.parseStyle(config, requestFactory, file.getAbsolutePath()).isPresent());
     }
 
     private Optional<Style> loadStyle(String fileName, String styleString) throws Throwable {
@@ -131,9 +131,9 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         config.setConfigurationFile(file);
         config.setFileLoaderManager(this.fileLoaderManager);
 
-        ConfigFileResolvingHttpRequestFactory requestFactory = new ConfigFileResolvingHttpRequestFactory(this.clientHttpRequestFactory,
-                config);
+        ConfigFileResolvingHttpRequestFactory requestFactory = new ConfigFileResolvingHttpRequestFactory(
+                this.clientHttpRequestFactory, config);
 
-        return this.parser.parseStyle(config, requestFactory, styleString, mapContext);
+        return this.parser.parseStyle(config, requestFactory, styleString);
     }
 }

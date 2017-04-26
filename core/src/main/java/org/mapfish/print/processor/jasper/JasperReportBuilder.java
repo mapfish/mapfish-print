@@ -89,7 +89,8 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
                 LOGGER.debug("To: " + buildFile.getAbsolutePath());
                 final Timer.Context compileJasperReport = this.metricRegistry.timer("compile_" + jasperFile).time();
                 try {
-                    JasperCompileManager.compileReportToFile(jasperFile.getAbsolutePath(), tmpBuildFile.getAbsolutePath());
+                    JasperCompileManager.compileReportToFile(jasperFile.getAbsolutePath(), tmpBuildFile
+                             .getAbsolutePath());
                 } finally {
                     final long compileTime = TimeUnit.MILLISECONDS.convert(compileJasperReport.stop(), TimeUnit.NANOSECONDS);
                     LOGGER.info("Report built in " + compileTime + "ms.");

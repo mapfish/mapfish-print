@@ -5,7 +5,6 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import org.geotools.data.FeatureSource;
 import org.geotools.styling.Style;
-import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
@@ -57,7 +56,7 @@ public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFac
     /**
      * Create a function that will create the style on demand.  This is called later in a separate thread so any blocking calls
      * will not block the parsing of the layer attributes.
-     *  @param template    the template for this map
+     * @param template the template for this map
      * @param styleString a string that identifies a style.
      */
     protected final StyleSupplier<FeatureSource> createStyleFunction(final Template template,
@@ -65,8 +64,7 @@ public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFac
         return new StyleSupplier<FeatureSource>() {
             @Override
             public Style load(final MfClientHttpRequestFactory requestFactory,
-                              final FeatureSource featureSource,
-                              final MapfishMapContext mapContext) {
+                              final FeatureSource featureSource) {
                 if (featureSource == null) {
                     throw new IllegalArgumentException("Feature source cannot be null");
                 }
@@ -82,8 +80,8 @@ public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFac
                 }
 
                 final StyleParser styleParser = AbstractFeatureSourceLayerPlugin.this.parser;
-                return template.getStyle(styleRef, mapContext)
-                        .or(styleParser.loadStyle(template.getConfiguration(), requestFactory, styleRef, mapContext))
+                return template.getStyle(styleRef)
+                        .or(styleParser.loadStyle(template.getConfiguration(), requestFactory, styleRef))
                         .or(template.getConfiguration().getDefaultStyle(geomType));
             }
         };

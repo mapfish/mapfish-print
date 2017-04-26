@@ -17,7 +17,6 @@ import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.ParserUtils;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.CustomDependencies;
-import org.mapfish.print.processor.InternalValue;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.ProcessorDependency;
 import org.mapfish.print.processor.ProcessorGraphNode;
@@ -168,7 +167,6 @@ public final class MergeDataSourceProcessor extends AbstractProcessor<MergeDataS
         /**
          * The values used to look up the values to merge together.
          */
-        @InternalValue
         public Values values;
     }
 

@@ -1,30 +1,36 @@
 package org.mapfish.print.processor.map;
 
 import org.geotools.styling.Style;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.StyleAttribute;
-import org.mapfish.print.attribute.map.GenericMapAttribute;
+import org.mapfish.print.attribute.map.GenericMapAttribute.GenericMapAttributeValues;
 import org.mapfish.print.attribute.map.MapLayer;
-import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.map.geotools.StyleSupplier;
+import org.mapfish.print.map.style.StyleParserPlugin;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 /**
- * <p>Processor to set a style on vector layers from the attributes.
- * </p>
+ * <p>Processor to set a style on vector layers from the attributes.</p>
+ * [[examples=report]]
  */
 public class SetStyleProcessor extends
-        AbstractProcessor<SetStyleProcessor.Input, Void> {
+        AbstractProcessor<SetStyleProcessor.Input, SetStyleProcessor.Output> {
+
+    @Autowired
+    private StyleParserPlugin mapfishJsonParser;
 
     /**
      * Constructor.
      */
     protected SetStyleProcessor() {
-        super(Void.class);
+        super(Output.class);
     }
 
     @Override
@@ -33,26 +39,36 @@ public class SetStyleProcessor extends
     }
 
     @Override
-    public final Void execute(final Input values, final ExecutionContext context) {
-        for (MapLayer layer : values.map.getLayers()) {
-            checkCancelState(context);
-            if (layer instanceof AbstractFeatureSourceLayer) {
-                ((AbstractFeatureSourceLayer) layer).setStyle(new StyleSupplier() {
-                    @Override
-                    public Style load(final MfClientHttpRequestFactory requestFactory,
-                                      final Object featureSource,
-                                      final MapfishMapContext mapContext) throws Exception {
-                        return values.style.getStyle(values.clientHttpRequestFactory, mapContext);
-                    }
-                });
+    public final Output execute(final Input values, final ExecutionContext context) {
+        try {
+            final Style style = this.mapfishJsonParser.parseStyle(
+                    values.template.getConfiguration(),
+                    values.clientHttpRequestFactory,
+                    values.style.style
+            ).get();
+            for (MapLayer layer : values.map.getLayers()) {
+                checkCancelState(context);
+                if (layer instanceof AbstractFeatureSourceLayer) {
+                    ((AbstractFeatureSourceLayer) layer).setStyle(new StyleSupplier() {
+                        @Override
+                        public Style load(
+                                final MfClientHttpRequestFactory requestFactory,
+                                final Object featureSource) throws Exception {
+                            return style;
+                        }
+                    });
+                }
             }
-        }
 
-        return null;
+            return new Output(values.map);
+        } catch (Throwable e) {
+            throw ExceptionUtils.getRuntimeException(e);
+        }
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
+    protected void extraValidation(
+            final List<Throwable> validationErrors, final Configuration configuration) {
         // no validation needed
     }
 
@@ -65,14 +81,34 @@ public class SetStyleProcessor extends
          * does not need to be set in configuration
          */
         public MfClientHttpRequestFactory clientHttpRequestFactory;
+
+        /**
+         * The template containing this table processor.
+         */
+        public Template template;
+
         /**
          * The map to update.
          */
-        public GenericMapAttribute<?>.GenericMapAttributeValues map;
+        public GenericMapAttributeValues map;
 
         /**
          * The style.
          */
         public StyleAttribute.StylesAttributeValues style;
+    }
+
+    /**
+     * The object containing the output for this processor.
+     */
+    public static class Output {
+        /**
+         * The map to update with the static layers.
+         */
+        public GenericMapAttributeValues map;
+
+        Output(final GenericMapAttributeValues map) {
+            this.map = map;
+        }
     }
 }

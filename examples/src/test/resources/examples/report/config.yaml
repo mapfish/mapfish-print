@@ -1,0 +1,76 @@
+throwErrorOnExtraParameters: true
+
+templates:
+    report: !template
+        reportTemplate: report.jrxml
+
+        attributes:
+            title: !string {}
+            datasource: !datasource
+                attributes:
+                    features: !features {}
+                    map: !map
+                        maxDpi: 254
+                        width: 780
+                        height: 330
+                        default:
+                            projection: "EPSG:3857"
+                            dpi: 72
+                            zoomToFeatures:
+                                minScale: 2000
+            overlayLayers: !staticLayers
+                default:
+                    layers:
+                    -   type: geoJson
+            backgroundLayers: !staticLayers
+                default:
+                    layers:
+                    -   type: wms
+                        baseURL: "http://localhost:8080/gs-web-app/wms"
+                        layers: [tiger-ny]
+                        imageFormat: "image/png"
+            style: !style
+                default:
+                    style:
+                        version: 2
+                        "[type='parcel']":
+                            symbolizers:
+                            - type: polygon
+                              fillColor: "#ff0000"
+                        "[type='click']":
+                            symbolizers:
+                            - type: point
+                              fillColor: "#00ff00"
+                              pointRadius: 10
+
+        processors:
+        - !reportBuilder # compile all reports in current directory
+            directory: '.'
+        - !createDataSource
+            processors:
+            - !addBackgroundLayers
+                inputMapper:
+                    backgroundLayers: staticLayers
+                outputMapper:
+                    map: map2
+            - !addOverlayLayers
+                inputMapper:
+                    overlayLayers: staticLayers
+                    map2: map
+                outputMapper:
+                    map: map3
+            - !setStyle
+                inputMapper:
+                    map3: map
+                outputMapper:
+                    map: map4
+            - !setFeatures
+                inputMapper:
+                    map4: map
+                outputMapper:
+                    map: map5
+            - !createMap
+                inputMapper:
+                    map5: map
+
+        tableData: jrDataSource

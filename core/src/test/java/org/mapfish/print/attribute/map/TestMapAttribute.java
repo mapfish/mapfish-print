@@ -4,7 +4,7 @@ import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PObject;
-public final class TestMapAttribute extends GenericMapAttribute<TestMapAttribute.TestMapAttributeValues> {
+public final class TestMapAttribute extends GenericMapAttribute {
 
     @Override
     protected Class<TestMapAttributeValues> getValueType() {
@@ -16,7 +16,7 @@ public final class TestMapAttribute extends GenericMapAttribute<TestMapAttribute
         return new TestMapAttributeValues(template);
     }
 
-    public final class TestMapAttributeValues extends GenericMapAttribute<?>.GenericMapAttributeValues {
+    public final class TestMapAttributeValues extends GenericMapAttribute.GenericMapAttributeValues {
         public int requiredElem;
         public int[] requiredArray;
         public EmbeddedTestAttribute embedded;
@@ -39,9 +39,12 @@ public final class TestMapAttribute extends GenericMapAttribute<TestMapAttribute
         }
 
         @Override
-        protected PArray getRawLayers() {
+        public PArray getRawLayers() {
             return null;
         }
+
+        @Override
+        public void setRawLayers(PArray layers) {}
     }
 
     public static final class EmbeddedTestAttribute {

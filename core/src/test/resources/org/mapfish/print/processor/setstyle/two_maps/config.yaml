@@ -28,17 +28,21 @@ templates:
             style: "point"
             geoJson: "{}"
     processors:
+    - !setStyle
+      inputMapper:
+        mapDef1: map
+      outputMapper:
+        map: mapDef1
     - !createMap
       inputMapper: {mapDef1: map}
       outputMapper: {mapSubReport: map1}
     - !setStyle
       inputMapper:
-        mapDef1: map
+        mapDef2: map
+      outputMapper:
+        map: mapDef2
     - !createMap
       inputMapper: {mapDef2: map}
       outputMapper:
         mapSubReport: map2
         mapContext: mapContext2
-    - !setStyle
-      inputMapper:
-        mapDef2: map

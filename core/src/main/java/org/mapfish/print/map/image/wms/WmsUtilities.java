@@ -32,7 +32,7 @@ public final class WmsUtilities {
 
     /**
      * Make a WMS getLayer request and return the image read from the server.
-     *  @param requestFactory the factory for making http requests
+     * @param requestFactory the factory for making http requests
      * @param wmsLayerParam the wms request parameters
      * @param commonURI the uri to use for the requests (excepting parameters of course.)
      * @param imageSize the size of the image to request

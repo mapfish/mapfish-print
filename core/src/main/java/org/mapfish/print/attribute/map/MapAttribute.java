@@ -3,6 +3,7 @@ package org.mapfish.print.attribute.map;
 import com.google.common.base.Function;
 import com.vividsolutions.jts.geom.Envelope;
 
+import org.json.JSONArray;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues;
 import org.mapfish.print.attribute.map.ZoomToFeatures.ZoomType;
@@ -13,6 +14,7 @@ import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.OneOf;
 import org.mapfish.print.parser.Requires;
 import org.mapfish.print.wrapper.PArray;
+import org.mapfish.print.wrapper.json.PJsonArray;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -25,7 +27,7 @@ import javax.annotation.Nonnull;
  * <a href="processors.html#!createMap">!createMap</a> processor).</p>
  * [[examples=verboseExample]]
  */
-public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttributeValues> {
+public final class MapAttribute extends GenericMapAttribute {
 
     private static final double DEFAULT_SNAP_TOLERANCE = 0.05;
     private static final ZoomLevelSnapStrategy DEFAULT_SNAP_STRATEGY = ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE;
@@ -45,7 +47,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
     /**
      * The value of {@link MapAttribute}.
      */
-    public class MapAttributeValues extends GenericMapAttribute<?>.GenericMapAttributeValues {
+    public class MapAttributeValues extends GenericMapAttribute.GenericMapAttributeValues {
 
         private static final boolean DEFAULT_ADJUST_BOUNDS = false;
         private static final double DEFAULT_ROTATION = 0.0;
@@ -82,7 +84,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
         /**
          * Zoom the map to the features of a specific layer or all features of the map.
          */
-        @HasDefaultValue
+        @OneOf("MapBounds")
         public ZoomToFeatures zoomToFeatures;
 
         /**
@@ -92,7 +94,8 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
          * The first layer in the array will be the top layer in the map.  The last layer in the array will be the bottom
          * layer in the map.  There for the last layer will be hidden by the first layer (where not transparent).
          */
-        public PArray layers;
+        @HasDefaultValue
+        public PArray layers = new PJsonArray(null, new JSONArray(), null);
 
         /**
          * The output dpi of the printed map.
@@ -126,8 +129,13 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
         }
 
         @Override
-        protected final PArray getRawLayers() {
+        public final PArray getRawLayers() {
             return this.layers;
+        }
+
+        @Override
+        public void setRawLayers(final PArray newLayers) {
+            this.layers = newLayers;
         }
 
         @Override
@@ -180,6 +188,8 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
             } else if (this.areaOfInterest != null) {
                 Envelope area = this.areaOfInterest.getArea().getEnvelopeInternal();
                 bounds = new BBoxMapBounds(crs, area);
+            } else if (this.zoomToFeatures != null) {
+                bounds = new BBoxMapBounds(crs, 0, 0, 0, 0);
             } else {
                 throw new IllegalArgumentException("Expected either: center and scale, bbox, or an areaOfInterest defined in order to " +
                                                    "calculate the map bounds");
@@ -306,7 +316,7 @@ public final class MapAttribute extends GenericMapAttribute<MapAttribute.MapAttr
 
         /**
          * Constructor.
-         *  @param params The fallback parameters.
+         * @param params The fallback parameters.
          * @param paramOverrides The parameters explicitly defined for the overview map.
          * @param template The template this map is part of.
          */

@@ -69,7 +69,7 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
     public final List<? extends Layer> getLayers(final MfClientHttpRequestFactory httpRequestFactory,
                                                  final MapfishMapContext mapContext) throws Exception {
         FeatureSource<?, ?> source = getFeatureSource(httpRequestFactory, mapContext);
-        Style style = this.styleSupplier.load(httpRequestFactory, source, mapContext);
+        Style style = this.styleSupplier.load(httpRequestFactory, source);
 
         if (mapContext.isDpiSensitiveStyle() && mapContext.getDPI() > mapContext.getRequestorDPI()) {
             // rescale styles for a higher dpi print

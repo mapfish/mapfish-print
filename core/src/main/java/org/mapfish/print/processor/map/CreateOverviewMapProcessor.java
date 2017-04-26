@@ -11,6 +11,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.mapfish.print.Constants;
 import org.mapfish.print.FloatingPointUtil;
+import org.mapfish.print.attribute.map.GenericMapAttribute;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.OverviewMapAttribute;
@@ -91,8 +92,10 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
         CreateMapProcessor.Input mapProcessorValues = this.mapProcessor.createInputParameter();
         mapProcessorValues.clientHttpRequestFactory = values.clientHttpRequestFactory;
         mapProcessorValues.tempTaskDirectory = values.tempTaskDirectory;
-        
-        MapAttribute.OverriddenMapAttributeValues mapParams = values.map.getWithOverrides(values.overviewMap);
+
+        MapAttribute.OverriddenMapAttributeValues mapParams =
+                ((MapAttribute.MapAttributeValues) values.map).getWithOverrides(
+                    (OverviewMapAttribute.OverviewMapAttributeValues) values.overviewMap);
         mapProcessorValues.map = mapParams;
 
         // TODO validate parameters (dpi? mapParams.postConstruct())
@@ -111,8 +114,9 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
             final MapAttribute.OverriddenMapAttributeValues mapParams)
             throws IOException {
         Rectangle originalPaintArea = new Rectangle(values.map.getMapSize());
-        MapBounds adjustedBounds =
-                CreateMapProcessor.adjustBoundsToScaleAndMapSize(values.map, values.map.getDpi(), originalPaintArea, originalBounds);
+        MapBounds adjustedBounds = CreateMapProcessor.adjustBoundsToScaleAndMapSize(
+                (MapAttribute.MapAttributeValues) values.map,
+                values.map.getDpi(), originalPaintArea, originalBounds);
         ReferencedEnvelope originalEnvelope =
                 adjustedBounds.toReferencedEnvelope(originalPaintArea, values.map.getDpi());
 
@@ -121,8 +125,10 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
             mapExtent = rotateExtent(mapExtent, values.map.getRotation(), originalEnvelope);
         }
         
-        FeatureLayer layer = createOrignalMapExtentLayer(mapExtent, mapParams,
-                values.overviewMap.getStyle(), originalEnvelope.getCoordinateReferenceSystem());
+        FeatureLayer layer = createOrignalMapExtentLayer(
+                mapExtent, mapParams,
+                ((OverviewMapAttribute.OverviewMapAttributeValues) values.overviewMap).getStyle(),
+                originalEnvelope.getCoordinateReferenceSystem());
         mapParams.setMapExtentLayer(layer);
     }
 
@@ -175,7 +181,8 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
             overviewMapBounds = mapParams.getCustomBounds();
         } else {
             // zoom-out the original map bounds by the given factor
-            overviewMapBounds = originalBounds.zoomOut(values.overviewMap.getZoomFactor());
+            overviewMapBounds = originalBounds.zoomOut(
+                    ((OverviewMapAttribute.OverviewMapAttributeValues) values.overviewMap).getZoomFactor());
         }
 
         // adjust the bounds to size of the overview map, because the overview map
@@ -197,7 +204,7 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
          * Optional parameters for the overview map which allow to override
          * parameters of the main map.
          */
-        public OverviewMapAttribute.OverviewMapAttributeValues overviewMap;
+        public GenericMapAttribute.GenericMapAttributeValues overviewMap;
     }
 
     /**

@@ -31,7 +31,7 @@ import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.SvgUtil;
 import org.mapfish.print.attribute.map.AreaOfInterest;
 import org.mapfish.print.attribute.map.BBoxMapBounds;
-import org.mapfish.print.attribute.map.MapAttribute;
+import org.mapfish.print.attribute.map.GenericMapAttribute.GenericMapAttributeValues;
 import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
@@ -163,7 +163,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
     @Override
     public Output execute(final Input param, final ExecutionContext context) throws Exception {
         checkCancelState(context);
-        MapAttribute.MapAttributeValues mapValues = param.map;
+        MapAttributeValues mapValues = (MapAttributeValues) param.map;
         if (mapValues.zoomToFeatures != null) {
             zoomToFeatures(param.tempTaskDirectory, param.clientHttpRequestFactory, mapValues, context);
         }
@@ -302,7 +302,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
 
     private List<URI> createLayerGraphics(final File printDirectory,
                                           final MfClientHttpRequestFactory clientHttpRequestFactory,
-                                          final MapAttribute.MapAttributeValues mapValues,
+                                          final MapAttributeValues mapValues,
                                           final ExecutionContext context,
                                           final MapfishMapContext mapContext)
             throws Exception {
@@ -406,7 +406,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
      * @return The map context.
      */
     @VisibleForTesting
-    public static MapfishMapContext createMapContext(final MapAttribute.MapAttributeValues mapValues) {
+    public static MapfishMapContext createMapContext(final MapAttributeValues mapValues) {
         final Dimension mapSize = mapValues.getMapSize();
         Rectangle paintArea = new Rectangle(mapSize);
 
@@ -426,7 +426,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
     }
 
 
-    private AreaOfInterest addAreaOfInterestLayer(@Nonnull final MapAttribute.MapAttributeValues mapValues,
+    private AreaOfInterest addAreaOfInterestLayer(@Nonnull final MapAttributeValues mapValues,
                                                   @Nonnull final List<MapLayer> layers) throws IOException {
         final AreaOfInterest areaOfInterest = mapValues.areaOfInterest;
         if (areaOfInterest != null && areaOfInterest.display == AreaOfInterest.AoiDisplay.RENDER) {
@@ -487,7 +487,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
      * @param bounds         The map bounds.
      */
     public static MapBounds adjustBoundsToScaleAndMapSize(
-            final MapAttribute.MapAttributeValues mapValues, final double dpiOfRequestor,
+            final GenericMapAttributeValues mapValues, final double dpiOfRequestor,
             final Rectangle paintArea, final MapBounds bounds) {
         MapBounds newBounds = bounds;
         if (mapValues.isUseNearestScale()) {
@@ -559,9 +559,11 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 Coordinate center = bounds.centre();
                 mapValues.center = new double[] {center.x, center.y};
                 if (mapValues.zoomToFeatures.minScale != null) {
+                    LOGGER.warn(
+                        "The map.zoomToFeatures.minScale is deprecated, " +
+                        "please use dirrectly the map.scale");
                     mapValues.scale = mapValues.zoomToFeatures.minScale;
                 }
-                mapValues.bbox = null;
                 mapValues.recalculateBounds();
             } else if (mapValues.zoomToFeatures.zoomType == ZoomType.EXTENT) {
                 if (bounds.getWidth() == 0.0 && bounds.getHeight() == 0.0) {
@@ -683,7 +685,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         /**
          * The required parameters for the map.
          */
-        public MapAttribute.MapAttributeValues map;
+        public GenericMapAttributeValues map;
 
         /**
          * The path to the temporary directory for the print task.

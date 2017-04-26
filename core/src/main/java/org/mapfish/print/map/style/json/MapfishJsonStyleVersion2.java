@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 
-import static org.mapfish.print.map.style.json.MapfishJsonStyleParserPlugin.Versions;
+import static org.mapfish.print.map.style.json.MapfishStyleParserPlugin.Versions;
 
 /**
  * Support a more flexible json styling than that which is supported by version 1.

@@ -19,7 +19,7 @@ public class AttributeTesting {
      */
     public static void configureAttributeForTesting(Attribute att) {
         if (att instanceof GenericMapAttribute) {
-            GenericMapAttribute<?> genericMapAttribute = (GenericMapAttribute<?>) att;
+            GenericMapAttribute genericMapAttribute = (GenericMapAttribute) att;
             genericMapAttribute.setWidth(500);
             genericMapAttribute.setHeight(500);
             genericMapAttribute.setMaxDpi(400.0);

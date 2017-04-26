@@ -61,33 +61,33 @@ import static org.junit.Assert.fail;
 import static org.mapfish.print.AbstractMapfishSpringTest.parseJSONObjectFromFile;
 import static org.mapfish.print.map.style.json.JsonStyleParserHelperTest.valueOf;
 
-public class MapfishJsonStyleParserPluginTest {
+public class MapfishStyleParserPluginTest {
     static final String REQUEST_DATA_STYLE_JSON_V1_STYLE_JSON = "requestData-style-json-v1-style.json";
 
     private static final double DELTA = 0.000001;
-    final MapfishJsonStyleParserPlugin mapfishJsonStyleParserPlugin = new MapfishJsonStyleParserPlugin();
+    final MapfishStyleParserPlugin mapfishStyleParserPlugin = new MapfishStyleParserPlugin();
     final TestHttpClientFactory httpClient = new TestHttpClientFactory();
 
     final SLDTransformer transformer = new SLDTransformer();
-    MapfishJsonStyleParserPlugin parser = new MapfishJsonStyleParserPlugin();
+    MapfishStyleParserPlugin parser = new MapfishStyleParserPlugin();
 
     @Test
     public void testVersion1StyleParser() throws Throwable {
-        PJsonObject layerJson = parseJSONObjectFromFile(MapfishJsonStyleParserPluginTest.class,
+        PJsonObject layerJson = parseJSONObjectFromFile(MapfishStyleParserPluginTest.class,
                 "bug_cant_transform_to_xml.json");
 
-        Optional<Style> style = parser.parseStyle(null, new TestHttpClientFactory(), layerJson.getString("style"),
-                null);
+        Optional<Style> style = parser.parseStyle(
+                null, new TestHttpClientFactory(), layerJson.getString("style"));
         assertTrue(style.isPresent());
 
         transformer.transform(style.get()); // assert it can be converted to SLD
     }
     @Test
     public void testVersion1() throws Throwable {
-        PJsonObject layerJson = parseJSONObjectFromFile(MapfishJsonStyleParserPluginTest.class,
+        PJsonObject layerJson = parseJSONObjectFromFile(MapfishStyleParserPluginTest.class,
                 REQUEST_DATA_STYLE_JSON_V1_STYLE_JSON);
-        Optional<Style> style = parser.parseStyle(null, new TestHttpClientFactory(), layerJson.getString("style"),
-                null);
+        Optional<Style> style = parser.parseStyle(
+                null, new TestHttpClientFactory(), layerJson.getString("style"));
         assertTrue(style.isPresent());
 
         transformer.transform(style.get()); // assert it can be converted to SLD
@@ -276,9 +276,13 @@ public class MapfishJsonStyleParserPluginTest {
         config.setConfigurationFile(getFile(styleJsonFileName));
         final String styleJson = getSpec(styleJsonFileName);
 
-        final CenterScaleMapBounds bounds = new CenterScaleMapBounds(CRS.decode("CRS:84"), 0, 0, new Scale(300000));
-        MapfishMapContext context = new MapfishMapContext(bounds, new Dimension(500, 500), 0, 72, Constants.PDF_DPI, null, true);
-        final Optional<Style> styleOptional = mapfishJsonStyleParserPlugin.parseStyle(config, httpClient, styleJson, context);
+        final CenterScaleMapBounds bounds = new CenterScaleMapBounds(
+                CRS.decode("CRS:84"), 0, 0, new Scale(300000));
+        MapfishMapContext context = new MapfishMapContext(
+                bounds, new Dimension(500, 500), 0, 72, Constants.PDF_DPI,
+                null, true);
+        final Optional<Style> styleOptional = mapfishStyleParserPlugin.parseStyle(
+                config, httpClient, styleJson);
 
         assertTrue(styleOptional.isPresent());
 

@@ -30,10 +30,10 @@ import java.util.Map;
 /**
  * Generic attributes for {@link org.mapfish.print.processor.map.CreateMapProcessor} and
  * {@link org.mapfish.print.processor.map.CreateOverviewMapProcessor}.
- * @param <GenericMapAttributeValues>
  */
-public abstract class GenericMapAttribute<GenericMapAttributeValues>
-        extends ReflectiveAttribute<GenericMapAttribute<?>.GenericMapAttributeValues> {
+public abstract class GenericMapAttribute
+
+        extends ReflectiveAttribute<GenericMapAttribute.GenericMapAttributeValues> {
 
     private static final double[] DEFAULT_DPI_VALUES = {72, 120, 200, 254, 300, 600, 1200, 2400};
     /**
@@ -76,7 +76,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
 
     private Integer width = null;
     private Integer height = null;
-    
+
     private Integer maxWidth = null;
     private Integer maxHeight = null;
 
@@ -90,7 +90,8 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
 
     /**
      * Get DPI suggestions.
-     * @return  DPI suggestions
+     *
+     * @return DPI suggestions
      */
     public final double[] getDpiSuggestions() {
         if (this.dpiSuggestions == null) {
@@ -111,6 +112,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
 
     /**
      * Suggestions for DPI values to use. Typically these are used by the client to create a UI for a user.
+     *
      * @param dpiSuggestions DPI suggestions
      */
     public final void setDpiSuggestions(final double[] dpiSuggestions) {
@@ -124,6 +126,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
     /**
      * The width of the map in pixels. This value should match the width
      * of the sub-report in the JasperReport template.
+     *
      * @param width Width
      */
     public final void setWidth(final Integer width) {
@@ -137,12 +140,13 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
     /**
      * The height of the map in pixels. This value should match the height
      * of the sub-report in the JasperReport template.
+     *
      * @param height Height
      */
     public final void setHeight(final Integer height) {
         this.height = height;
     }
-    
+
     public final Integer getMaxWidth() {
         return this.maxWidth;
     }
@@ -178,16 +182,16 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
     //CSOFF: DesignForExtension
     @Override
     public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
-    //CSON: DesignForExtension
-        
+        //CSON: DesignForExtension
+
         if (this.width != null && this.maxWidth != null) {
             validationErrors.add(new ConfigurationException("cannot set both width and maxWidth in " + getClass().getName()));
         }
-        
+
         if (this.height != null && this.maxHeight != null) {
             validationErrors.add(new ConfigurationException("cannot set both height and maxHeight in " + getClass().getName()));
         }
-        
+
         if (this.width != null && this.width < 1) {
             validationErrors.add(new ConfigurationException("width field is not legal: " + this.width + " in " + getClass().getName()));
         }
@@ -195,13 +199,13 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
         if (this.height != null && this.height < 1) {
             validationErrors.add(new ConfigurationException("height field is not legal: " + this.height + " in " + getClass().getName()));
         }
-        
+
         if (this.maxWidth != null && this.maxWidth < 1) {
             validationErrors.add(new ConfigurationException("max width field is not legal: " + this.width + " in " + getClass().getName()));
         }
 
         if (this.maxHeight != null && this.maxHeight < 1) {
-            validationErrors.add(new ConfigurationException("max height field is not legal: " + this.height + " in " + 
+            validationErrors.add(new ConfigurationException("max height field is not legal: " + this.height + " in " +
                     getClass().getName()));
         }
 
@@ -249,13 +253,13 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
 
         private final Template template;
         private List<MapLayer> mapLayers;
-        
+
         /**
          * The width of the map.
          */
         @HasDefaultValue
         public Integer width = null;
-        
+
         /**
          * The height of the map.
          */
@@ -317,7 +321,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
         public GenericMapAttributeValues(final Template template) {
             this.template = template;
         }
-        
+
         /**
          * Constructor.
          *
@@ -336,26 +340,26 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
          */
         //CSOFF: DesignForExtension
         public void postConstruct() throws FactoryException {
-        //CSON: DesignForExtension
-            
+            //CSON: DesignForExtension
+
             if (this.width == null) {
                 throw new IllegalArgumentException("width parameter was not set.");
             }
-            
+
             if (this.height == null) {
                 throw new IllegalArgumentException("height parameter was not set.");
             }
-            
+
             //check maximum dimensions
             if (getMaxWidth() != null && this.width > getMaxWidth()) {
-                throw new IllegalArgumentException("width parameter was " + getWidth() + " must be limited to " 
-                            + getMaxWidth() + ".");
+                throw new IllegalArgumentException("width parameter was " + getWidth() + " must be limited to "
+                        + getMaxWidth() + ".");
             }
             if (getMaxHeight() != null && this.height > getMaxHeight()) {
-                throw new IllegalArgumentException("height parameter was " + getHeight() + " must be limited to " 
-                            + getMaxHeight() + ".");
+                throw new IllegalArgumentException("height parameter was " + getHeight() + " must be limited to "
+                        + getMaxHeight() + ".");
             }
-            
+
             this.mapLayers = parseLayers();
         }
 
@@ -412,7 +416,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
             }
 
             StringBuilder message = new StringBuilder("\nLayer with type: '" + layer.getString(TYPE) + "' is not currently " +
-                                                      "supported.  Options include: ");
+                    "supported.  Options include: ");
             for (MapLayerFactoryPlugin<?> mapLayerFactoryPlugin : layerParsers.values()) {
                 for (Object name : mapLayerFactoryPlugin.getTypeNames()) {
                     message.append("\n");
@@ -425,6 +429,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
 
         /**
          * Parse the projection from a string.
+         *
          * @return the crs
          */
         protected final CoordinateReferenceSystem parseProjection() {
@@ -440,14 +445,21 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
         public abstract Double getDpi();
 
         /**
-         * Return the JSON layer definiton.
-         * This method is abstract is abstract for the same reasons as {@link #getDpi()}.
+         * Return the JSON layer definition.
+         * This method is abstract for the same reasons as {@link #getDpi()}.
          */
-        protected abstract PArray getRawLayers();
+        public abstract PArray getRawLayers();
+        /**
+         * Set the JSON layer definition.
+         * This method is abstract for the same reasons as {@link #getDpi()}.
+         *
+         * @param layers the new layers
+         */
+        public abstract void setRawLayers(PArray layers);
 
         //CSOFF: DesignForExtension
         public List<MapLayer> getLayers() {
-        //CSON: DesignForExtension
+            //CSON: DesignForExtension
             return Lists.newArrayList(this.mapLayers);
         }
 
@@ -458,7 +470,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
         public final Dimension getMapSize() {
             return new Dimension(this.width, this.height);
         }
-        
+
         public final Integer getWidth() {
             return this.width;
         }
@@ -469,13 +481,13 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
 
         //CSOFF: DesignForExtension
         public Double getRotation() {
-        //CSON: DesignForExtension
+            //CSON: DesignForExtension
             return this.rotation;
         }
 
         //CSOFF: DesignForExtension
         public String getProjection() {
-        //CSON: DesignForExtension
+            //CSON: DesignForExtension
             return this.projection;
         }
 
@@ -484,7 +496,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
          */
         //CSOFF: DesignForExtension
         public Boolean isUseNearestScale() {
-        //CSON: DesignForExtension
+            //CSON: DesignForExtension
             return this.useNearestScale && GenericMapAttribute.this.zoomLevels != null;
         }
 
@@ -493,7 +505,7 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
          */
         //CSOFF: DesignForExtension
         public Boolean isUseAdjustBounds() {
-        //CSON: DesignForExtension
+            //CSON: DesignForExtension
             return this.useAdjustBounds;
         }
 
@@ -503,37 +515,37 @@ public abstract class GenericMapAttribute<GenericMapAttributeValues>
 
         //CSOFF: DesignForExtension
         public ZoomLevels getZoomLevels() {
-        //CSON: DesignForExtension
+            //CSON: DesignForExtension
             return GenericMapAttribute.this.zoomLevels;
         }
 
         //CSOFF: DesignForExtension
         public Double getZoomSnapTolerance() {
-        //CSON: DesignForExtension
+            //CSON: DesignForExtension
             return GenericMapAttribute.this.zoomSnapTolerance;
         }
 
         //CSOFF: DesignForExtension
         public ZoomLevelSnapStrategy getZoomLevelSnapStrategy() {
-        //CSON: DesignForExtension
+            //CSON: DesignForExtension
             return GenericMapAttribute.this.zoomLevelSnapStrategy;
         }
 
         //CSOFF: DesignForExtension
         public Boolean getZoomSnapGeodetic() {
-        //CSON: DesignForExtension
+            //CSON: DesignForExtension
             return GenericMapAttribute.this.zoomSnapGeodetic;
         }
 
         //CSOFF: DesignForExtension
         public double[] getDpiSuggestions() {
-        //CSON: DesignForExtension
+            //CSON: DesignForExtension
             return GenericMapAttribute.this.getDpiSuggestions();
         }
 
         //CSOFF: DesignForExtension
         public double getRequestorDPI() {
-        //CSON: DesignForExtension
+            //CSON: DesignForExtension
             // We are making the same assumption as Openlayers 2.x versions, that the DPI is 72.
             // In the future we probably need to change this assumption and allow the client software to
             // specify the DPI they are using for creating the bounds.

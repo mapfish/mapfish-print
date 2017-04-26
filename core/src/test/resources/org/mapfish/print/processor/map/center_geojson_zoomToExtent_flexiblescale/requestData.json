@@ -1,8 +1,6 @@
 {
   "attributes": {
     "mapDef": {
-      "center": [100, -0.5],
-      "scale": 1000000,
       "zoomToFeatures": {
         "zoomType": "extent",
         "minScale": 1000000
