@@ -86,21 +86,8 @@ public final class ProcessorDependencyGraphFactory {
                 outputTypes.put(outputName, value.getType());
             }
             nodes.add(node);
-        }
 
-        ArrayList<ProcessorDependency> allDependencies = Lists.newArrayList(this.dependencies);
-        for (ProcessorGraphNode<Object, Object> node : nodes) {
-            if (node.getProcessor() instanceof CustomDependencies) {
-                CustomDependencies custom = (CustomDependencies) node.getProcessor();
-                allDependencies.addAll(custom.createDependencies(nodes));
-            }
-        }
-        final SetMultimap<ProcessorGraphNode<Object, Object>, InputValue> inputsForNodes = cacheInputsForNodes(nodes);
-        for (ProcessorGraphNode<Object, Object> node : nodes) {
-            final Set<InputValue> inputs = inputsForNodes.get(node);
-
-            // check explicit, external dependencies between nodes
-            checkExternalDependencies(allDependencies, node, nodes);
+            final Set<InputValue> inputs = getInputs(node);
 
             // check input/output value dependencies
             for (InputValue input : inputs) {
@@ -114,12 +101,30 @@ public final class ProcessorDependencyGraphFactory {
                     } else {
                         throw new IllegalArgumentException(
                                 "Type conflict: Processor '" + solution.getName() + "' provides an output with name '"
-                                + input.getName() + "' and of type '" + outputType + " ', while "
-                                + "processor '" + node.getName() + "' expects an input of that name with type '"
-                                + inputType + "'! Please rename one of the attributes in the mappings of the processors.");
+                                        + input.getName() + "' and of type '" + outputType + " ', while "
+                                        + "processor '" + node.getName() + "' expects an input of that name with type '"
+                                        + inputType + "'! Please rename one of the attributes in the mappings of the processors.");
                     }
                 }
+
+                if (input.getField().getAnnotation(InputOutputValue.class) != null) {
+                    provideBy.put(input.getName(), node);
+                }
             }
+        }
+
+        ArrayList<ProcessorDependency> allDependencies = Lists.newArrayList(this.dependencies);
+        for (ProcessorGraphNode<Object, Object> node : nodes) {
+            if (node.getProcessor() instanceof CustomDependencies) {
+                CustomDependencies custom = (CustomDependencies) node.getProcessor();
+                allDependencies.addAll(custom.createDependencies(nodes));
+            }
+        }
+        final SetMultimap<ProcessorGraphNode<Object, Object>, InputValue> inputsForNodes =
+                cacheInputsForNodes(nodes);
+        for (ProcessorGraphNode<Object, Object> node : nodes) {
+            // check explicit, external dependencies between nodes
+            checkExternalDependencies(allDependencies, node, nodes);
         }
 
         // once all dependencies are discovered, select the root nodes
@@ -132,8 +137,10 @@ public final class ProcessorDependencyGraphFactory {
             }
         }
 
-        Assert.isTrue(graph.getAllProcessors().containsAll(processors), "'" + graph + "' does not contain all the processors: " +
-                                                                        processors + " vs: " + graph.getAllProcessors());
+        Assert.isTrue(
+                graph.getAllProcessors().containsAll(processors),
+                "'" + graph + "' does not contain all the processors: " + processors +
+                        " vs: " + graph.getAllProcessors());
 
         return graph;
     }
@@ -267,7 +274,7 @@ public final class ProcessorDependencyGraphFactory {
             final Collection<Field> allProperties = getAllAttributes(inputParameter.getClass());
             for (Field field : allProperties) {
                 String name = ProcessorUtils.getInputValueName(node.getProcessor().getInputPrefix(), inputMapper, field.getName());
-                inputs.add(new InputValue(name, field.getType()));
+                inputs.add(new InputValue(name, field.getType(), field));
             }
         }
 
@@ -288,14 +295,15 @@ public final class ProcessorDependencyGraphFactory {
             // mapping in case of a conflict.
             final boolean canBeRenamed = field.getAnnotation(InternalValue.class) != null;
             String name = ProcessorUtils.getOutputValueName(node.getProcessor().getOutputPrefix(), outputMapper, field);
-            values.add(new OutputValue(name, canBeRenamed, field.getType()));
+            values.add(new OutputValue(name, canBeRenamed, field.getType(), field));
         }
 
         return values;
     }
 
-    private static void verifyAllMappingsMatchParameter(final Set<String> mappings, final Class<?> paramType,
-                                                        final String errorMessagePrefix) {
+    private static void verifyAllMappingsMatchParameter(
+            final Set<String> mappings, final Class<?> paramType,
+            final String errorMessagePrefix) {
         final Set<String> attributeNames = ParserUtils.getAllAttributeNames(paramType);
         StringBuilder errors = new StringBuilder();
         for (String mapping : mappings) {
@@ -319,10 +327,12 @@ public final class ProcessorDependencyGraphFactory {
     private static class InputValue {
         private final String name;
         private final Class<?> type;
+        private final Field field;
 
-        public InputValue(final String name, final Class<?> type) {
+        public InputValue(final String name, final Class<?> type, final Field field) {
             this.name = name;
             this.type = type;
+            this.field = field;
         }
 
         @Override
@@ -351,6 +361,10 @@ public final class ProcessorDependencyGraphFactory {
             return this.type;
         }
 
+        public final Field getField() {
+            return this.field;
+        }
+
         @Override
         public String toString() {
             return "InputValue{" +
@@ -363,8 +377,9 @@ public final class ProcessorDependencyGraphFactory {
     private static final class OutputValue extends InputValue {
         private final boolean canBeRenamed;
 
-        private OutputValue(final String name, final boolean canBeRenamed, final Class<?> type) {
-            super(name, type);
+        private OutputValue(
+                final String name, final boolean canBeRenamed, final Class<?> type, final Field field) {
+            super(name, type, field);
             this.canBeRenamed = canBeRenamed;
         }
 
