@@ -1,6 +1,6 @@
 package org.mapfish.print.processor.map;
 
-import org.mapfish.print.attribute.map.GenericMapAttribute;
+import org.mapfish.print.attribute.map.GenericMapAttribute.GenericMapAttributeValues;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
@@ -61,7 +61,7 @@ public class SetWmsCustomParamProcessor extends AbstractProcessor<SetWmsCustomPa
         /**
          * The map to update.
          */
-        public GenericMapAttribute.GenericMapAttributeValues map;
+        public GenericMapAttributeValues map;
 
         /**
          * The value.

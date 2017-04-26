@@ -3,7 +3,7 @@ package org.mapfish.print.processor.map;
 import org.geotools.data.simple.SimpleFeatureCollection;
 
 import org.mapfish.print.attribute.FeaturesAttribute.FeaturesAttributeValues;
-import org.mapfish.print.attribute.map.GenericMapAttribute;
+import org.mapfish.print.attribute.map.GenericMapAttribute.GenericMapAttributeValues;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
@@ -61,7 +61,7 @@ public class SetFeaturesProcessor extends
         /**
          * The map to update.
          */
-        public GenericMapAttribute.GenericMapAttributeValues map;
+        public GenericMapAttributeValues map;
 
         /**
          * The features.
@@ -77,9 +77,9 @@ public class SetFeaturesProcessor extends
         /**
          * The map to update with the static layers.
          */
-        public GenericMapAttribute.GenericMapAttributeValues map;
+        public GenericMapAttributeValues map;
 
-        Output(final GenericMapAttribute.GenericMapAttributeValues map) {
+        Output(final GenericMapAttributeValues map) {
             this.map = map;
         }
     }

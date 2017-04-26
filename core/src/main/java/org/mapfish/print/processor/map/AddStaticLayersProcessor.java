@@ -1,6 +1,6 @@
 package org.mapfish.print.processor.map;
 
-import org.mapfish.print.attribute.map.GenericMapAttribute;
+import org.mapfish.print.attribute.map.GenericMapAttribute.GenericMapAttributeValues;
 import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.attribute.map.StaticLayersAttribute;
 import org.mapfish.print.config.Configuration;
@@ -88,7 +88,7 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
         /**
          * The map to update with the static layers.
          */
-        public GenericMapAttribute.GenericMapAttributeValues map;
+        public GenericMapAttributeValues map;
 
         /**
          * The attribute containing the static layers to add to the map.
@@ -104,9 +104,9 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
         /**
          * The map to update with the static layers.
          */
-        public GenericMapAttribute.GenericMapAttributeValues map;
+        public GenericMapAttributeValues map;
 
-        Output(final GenericMapAttribute.GenericMapAttributeValues map) {
+        Output(final GenericMapAttributeValues map) {
             this.map = map;
         }
     }

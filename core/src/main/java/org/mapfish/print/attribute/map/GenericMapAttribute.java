@@ -321,7 +321,7 @@ public abstract class GenericMapAttribute
         public GenericMapAttributeValues(final Template template) {
             this.template = template;
         }
-        
+
         /**
          * Constructor.
          *

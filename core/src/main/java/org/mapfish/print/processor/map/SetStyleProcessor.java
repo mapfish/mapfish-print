@@ -3,7 +3,7 @@ package org.mapfish.print.processor.map;
 import org.geotools.styling.Style;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.StyleAttribute;
-import org.mapfish.print.attribute.map.GenericMapAttribute;
+import org.mapfish.print.attribute.map.GenericMapAttribute.GenericMapAttributeValues;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
@@ -92,7 +92,7 @@ public class SetStyleProcessor extends
         /**
          * The map to update.
          */
-        public GenericMapAttribute.GenericMapAttributeValues map;
+        public GenericMapAttributeValues map;
 
         /**
          * The style.
@@ -107,9 +107,9 @@ public class SetStyleProcessor extends
         /**
          * The map to update with the static layers.
          */
-        public GenericMapAttribute.GenericMapAttributeValues map;
+        public GenericMapAttributeValues map;
 
-        Output(final GenericMapAttribute.GenericMapAttributeValues map) {
+        Output(final GenericMapAttributeValues map) {
             this.map = map;
         }
     }
