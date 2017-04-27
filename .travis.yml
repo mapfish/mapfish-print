@@ -29,7 +29,7 @@ install:
 - ./gradlew examples:geoserverData
 
 script:
-- travis_wait ./gradlew build
+- ./gradlew build
 
 after_failure:
 - cat core/build/reports/checkstyleReports/main.xml
