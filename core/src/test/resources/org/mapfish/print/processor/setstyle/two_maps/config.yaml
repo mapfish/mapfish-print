@@ -1,4 +1,3 @@
-
 templates:
   main: !template
     attributes:
@@ -31,21 +30,17 @@ templates:
     - !setStyle
       inputMapper:
         mapDef1: map
-      outputMapper:
-        map: mapDef11
     - !createMap
       inputMapper:
-        mapDef11: map
+        mapDef1: map
       outputMapper:
         mapSubReport: map1
     - !setStyle
       inputMapper:
         mapDef2: map
-      outputMapper:
-        map: mapDef21
     - !createMap
       inputMapper:
-        mapDef21: map
+        mapDef2: map
       outputMapper:
         mapSubReport: map2
         mapContext: mapContext2

@@ -9,6 +9,7 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.InputOutputValue;
 
 import java.util.List;
 
@@ -18,13 +19,13 @@ import java.util.List;
  * [[examples=report]]
  */
 public class SetFeaturesProcessor extends
-        AbstractProcessor<SetFeaturesProcessor.Input, SetFeaturesProcessor.Output> {
+        AbstractProcessor<SetFeaturesProcessor.Input, Void> {
 
     /**
      * Constructor.
      */
     protected SetFeaturesProcessor() {
-        super(Output.class);
+        super(Void.class);
     }
 
     @Override
@@ -33,7 +34,7 @@ public class SetFeaturesProcessor extends
     }
 
     @Override
-    public final Output execute(final Input values, final ExecutionContext context) throws Exception {
+    public final Void execute(final Input values, final ExecutionContext context) throws Exception {
         for (MapLayer layer : values.map.getLayers()) {
             checkCancelState(context);
             if (layer instanceof AbstractFeatureSourceLayer) {
@@ -42,7 +43,7 @@ public class SetFeaturesProcessor extends
             }
         }
 
-        return new Output(values.map);
+        return null;
     }
 
     @Override
@@ -58,29 +59,16 @@ public class SetFeaturesProcessor extends
          * The factory to use for making http requests.
          */
         public MfClientHttpRequestFactory clientHttpRequestFactory;
+
         /**
          * The map to update.
          */
+        @InputOutputValue
         public GenericMapAttributeValues map;
 
         /**
          * The features.
          */
         public FeaturesAttributeValues features;
-    }
-
-    /**
-     * The object containing the output for this processor.
-     */
-    public static class Output {
-
-        /**
-         * The map to update with the static layers.
-         */
-        public GenericMapAttributeValues map;
-
-        Output(final GenericMapAttributeValues map) {
-            this.map = map;
-        }
     }
 }

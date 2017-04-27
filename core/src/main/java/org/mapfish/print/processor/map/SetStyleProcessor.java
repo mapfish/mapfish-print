@@ -12,6 +12,7 @@ import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.style.StyleParserPlugin;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.InputOutputValue;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.List;
  * [[examples=report]]
  */
 public class SetStyleProcessor extends
-        AbstractProcessor<SetStyleProcessor.Input, SetStyleProcessor.Output> {
+        AbstractProcessor<SetStyleProcessor.Input, Void> {
 
     @Autowired
     private StyleParserPlugin mapfishJsonParser;
@@ -30,7 +31,7 @@ public class SetStyleProcessor extends
      * Constructor.
      */
     protected SetStyleProcessor() {
-        super(Output.class);
+        super(Void.class);
     }
 
     @Override
@@ -39,7 +40,7 @@ public class SetStyleProcessor extends
     }
 
     @Override
-    public final Output execute(final Input values, final ExecutionContext context) {
+    public final Void execute(final Input values, final ExecutionContext context) {
         try {
             final Style style = this.mapfishJsonParser.parseStyle(
                     values.template.getConfiguration(),
@@ -60,7 +61,7 @@ public class SetStyleProcessor extends
                 }
             }
 
-            return new Output(values.map);
+            return null;
         } catch (Throwable e) {
             throw ExceptionUtils.getRuntimeException(e);
         }
@@ -90,25 +91,12 @@ public class SetStyleProcessor extends
         /**
          * The map to update.
          */
+        @InputOutputValue
         public GenericMapAttributeValues map;
 
         /**
          * The style.
          */
         public StyleAttribute.StylesAttributeValues style;
-    }
-
-    /**
-     * The object containing the output for this processor.
-     */
-    public static class Output {
-        /**
-         * The map to update with the static layers.
-         */
-        public GenericMapAttributeValues map;
-
-        Output(final GenericMapAttributeValues map) {
-            this.map = map;
-        }
     }
 }
