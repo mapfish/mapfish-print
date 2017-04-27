@@ -12,7 +12,6 @@ templates:
       title: "Verbose A4 Portrait"
       keywords: ["legend", "table", "tablelist", "map", "verbose"]
     reportTemplate: simpleReport.jrxml
-    tableData: jrDataSource
     attributes:
       number: !integer {}
       name: !string {}
@@ -50,6 +49,7 @@ templates:
       reportKey: reportTemplate
       processors:
         - !prepareTable {}
+    tableData: jrDataSource
 
   A4 portrait old api: !template
     pdfConfig: !pdfConfig

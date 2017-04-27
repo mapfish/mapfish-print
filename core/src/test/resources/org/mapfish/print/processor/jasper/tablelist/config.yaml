@@ -2,7 +2,6 @@ throwErrorOnExtraParameters: true
 templates:
   main: !template
     reportTemplate: simpleReport.jrxml
-    tableData: jrDataSource
     attributes:
       datasource: !datasource
         attributes:
@@ -15,3 +14,4 @@ templates:
       reportKey: reportTemplate
       processors:
         - !prepareTable {}
+    tableData: jrDataSource
