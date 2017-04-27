@@ -73,8 +73,8 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     /**
      * Print the report from a POST request.
      *
-     * @param requestData         the request spec as POST body
-     * @param httpServletRequest  the request object
+     * @param requestData the request spec as POST body
+     * @param httpServletRequest the request object
      * @param httpServletResponse the response object
      */
     @RequestMapping(value = DEP_PRINT_URL, method = RequestMethod.POST)
@@ -94,8 +94,8 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
      * Print the report from a GET request. Avoid to use
      * it, the accents in the spec are not all supported.
      *
-     * @param spec                the request spec as GET parameter
-     * @param httpServletRequest  the request object
+     * @param spec the request spec as GET parameter
+     * @param httpServletRequest the request object
      * @param httpServletResponse the response object
      */
     @RequestMapping(value = DEP_PRINT_URL, method = RequestMethod.GET)
@@ -113,10 +113,10 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     /**
      * Create the report from a POST request.
      *
-     * @param baseUrl             the base url to the servlet
-     * @param spec                if spec is form data then this will be nonnull
-     * @param requestData         the request spec as POST body
-     * @param httpServletRequest  the request object
+     * @param baseUrl the base url to the servlet
+     * @param spec if spec is form data then this will be nonnull
+     * @param requestData the request spec as POST body
+     * @param httpServletRequest the request object
      * @param httpServletResponse the response object
      */
     @RequestMapping(value = DEP_CREATE_URL + "**", method = RequestMethod.POST)
@@ -140,9 +140,9 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     /**
      * All in one method: create and returns the PDF to the client.
      *
-     * @param httpServletRequest  the request object
+     * @param httpServletRequest the request object
      * @param httpServletResponse the response object
-     * @param spec                the request spec
+     * @param spec the request spec
      */
     private void createAndGetPDF(final HttpServletRequest httpServletRequest,
                                  final HttpServletResponse httpServletResponse, final String spec) {
@@ -165,10 +165,10 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     /**
      * Create the PDF and returns to the client (in JSON) the URL to get the PDF.
      *
-     * @param httpServletRequest  the request object
+     * @param httpServletRequest the request object
      * @param httpServletResponse the response object
-     * @param basePath            the path of the webapp
-     * @param spec                the request spec
+     * @param basePath the path of the webapp
+     * @param spec the request spec
      */
     protected final void createPDF(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse,
                                    final String basePath, final String spec) throws IOException, JSONException {
@@ -205,9 +205,9 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     /**
      * To get the PDF created previously and write it to the http response.
      *
-     * @param inline   if true then inline the response
+     * @param inline if true then inline the response
      * @param response the http response
-     * @param id       the id for the file
+     * @param id the id for the file
      */
     @RequestMapping(DEP_SEG + "/{id:.+}" + REPORT_SUFFIX)
     public final void getFile(@PathVariable final String id,
@@ -220,10 +220,10 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     /**
      * To get (in JSON) the information about the available formats and CO.
      *
-     * @param baseUrl  the path to the webapp
+     * @param baseUrl the path to the webapp
      * @param jsonpVar if given the result is returned as a variable assignment
-     * @param req      the http request
-     * @param resp     the http response
+     * @param req the http request
+     * @param resp the http response
      */
     @RequestMapping(DEP_INFO_URL)
     public final void getInfo(
@@ -404,7 +404,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     /**
      * Do the actual work of creating the PDF temporary file.
      *
-     * @param spec               the json specification in the old API format
+     * @param spec the json specification in the old API format
      * @param httpServletRequest the request
      */
     private String doCreatePDFFile(final String spec,

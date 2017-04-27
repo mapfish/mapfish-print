@@ -28,8 +28,8 @@ public final class ValuesLogger {
      * Log the values for the provided template.
      *
      * @param templateName the name of the template the values came from
-     * @param template     the template object
-     * @param values       the resultant values
+     * @param template the template object
+     * @param values the resultant values
      */
     public static void log(final String templateName, final Template template, final Values values) {
         new ValuesLogger().doLog(templateName, template, values);

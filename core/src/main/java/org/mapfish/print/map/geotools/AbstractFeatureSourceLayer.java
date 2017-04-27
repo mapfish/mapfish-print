@@ -31,7 +31,7 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
      *
      * @param executorService the thread pool for doing the rendering.
      * @param featureSourceSupplier a function that creates the feature source.  This will only be called once.
-     * @param styleSupplier         a function that creates the style for styling the features. This will only be called once.
+     * @param styleSupplier a function that creates the style for styling the features. This will only be called once.
      * @param renderAsSvg is the layer rendered as SVG?
      * @param params the parameters for this layer
      */

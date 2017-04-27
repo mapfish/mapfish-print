@@ -9,8 +9,8 @@ public class LineScalebarDrawer extends ScalebarDrawer {
 
     /**
      * Constructor.
-     * @param graphics2d    The graphics context.
-     * @param settings      Parameters for rendering the scalebar.
+     * @param graphics2d The graphics context.
+     * @param settings Parameters for rendering the scalebar.
      */
     public LineScalebarDrawer(final Graphics2D graphics2d, final ScaleBarRenderSettings settings) {
         super(graphics2d, settings);

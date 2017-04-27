@@ -51,9 +51,9 @@ public final class MapfishParser {
      *
      * @param errorOnExtraProperties if true then throw an error when there are properties in the request data that are not in the
      *                               param.  Otherwise log them as a warning.
-     * @param requestData            the layer configuration json.
-     * @param objectToPopulate       the parameter object that will be passed to the layer factory or is the attribute value.
-     * @param extraPropertyToIgnore  An array of properties to ignore in request data.  For example Layers do not need "type" but
+     * @param requestData the layer configuration json.
+     * @param objectToPopulate the parameter object that will be passed to the layer factory or is the attribute value.
+     * @param extraPropertyToIgnore An array of properties to ignore in request data.  For example Layers do not need "type" but
      *                               the property has to be there for {@link org.mapfish.print.attribute.map.MapAttribute} to
      *                               be able to choose the correct plugin.
      */
@@ -303,9 +303,9 @@ public final class MapfishParser {
     /**
      * Get the value of a primitive type from the request data.
      *
-     * @param fieldName     the name of the attribute to get from the request data.
-     * @param pAtt          the primitive attribute.
-     * @param requestData   the data to retrieve the value from.
+     * @param fieldName the name of the attribute to get from the request data.
+     * @param pAtt the primitive attribute.
+     * @param requestData the data to retrieve the value from.
      */
     public Object parsePrimitive(final String fieldName, final PrimitiveAttribute<?> pAtt, final PObject requestData) {
         Class<?> valueClass = pAtt.getValueClass();

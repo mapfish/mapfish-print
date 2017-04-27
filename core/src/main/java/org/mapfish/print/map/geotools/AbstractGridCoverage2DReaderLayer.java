@@ -25,8 +25,8 @@ public abstract class AbstractGridCoverage2DReaderLayer extends AbstractGeotools
      * Constructor.
      *
      * @param coverage2DReader the coverage2DReader for reading the grid coverage data.
-     * @param style            style to use for rendering the data.
-     * @param executorService  the thread pool for doing the rendering.
+     * @param style style to use for rendering the data.
+     * @param executorService the thread pool for doing the rendering.
      * @param params the parameters for this layer
      */
     public AbstractGridCoverage2DReaderLayer(final Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> coverage2DReader,

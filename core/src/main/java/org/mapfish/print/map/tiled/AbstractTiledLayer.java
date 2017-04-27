@@ -75,9 +75,9 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
     /**
      * Create the tile cache information object for the given parameters.
      *
-     * @param bounds    the map bounds
+     * @param bounds the map bounds
      * @param paintArea the area to paint
-     * @param dpi       the DPI to render at
+     * @param dpi the DPI to render at
      */
     protected abstract TileCacheInformation createTileInformation(MapBounds bounds, Rectangle paintArea, double dpi);
 

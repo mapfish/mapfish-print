@@ -25,8 +25,8 @@ public abstract class ScalebarDrawer {
 
     /**
      * Constructor.
-     * @param graphics2d    The graphics context.
-     * @param settings      Parameters for rendering the scalebar.
+     * @param graphics2d The graphics context.
+     * @param settings Parameters for rendering the scalebar.
      */
     public ScalebarDrawer(final Graphics2D graphics2d, final ScaleBarRenderSettings settings) {
         this.graphics2d = graphics2d;

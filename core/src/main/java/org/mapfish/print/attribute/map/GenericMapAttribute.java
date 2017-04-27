@@ -326,8 +326,8 @@ public abstract class GenericMapAttribute
          * Constructor.
          *
          * @param template the template this map is part of.
-         * @param width  the width of the map.
-         * @param height  the height of the map.
+         * @param width the width of the map.
+         * @param height the height of the map.
          */
         public GenericMapAttributeValues(final Template template, final Integer width, final Integer height) {
             this.template = template;

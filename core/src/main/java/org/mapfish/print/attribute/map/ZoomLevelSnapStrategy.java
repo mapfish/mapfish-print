@@ -108,10 +108,10 @@ public enum ZoomLevelSnapStrategy {
      * Search the provided zoomLevels for the scale that is the closest according to the current strategy.
      *
      * @param targetScale the reference scale
-     * @param tolerance    the amount from one of the zoomLevels to still be considered <em>at</em> the scale.
-     *                     This is important for all strategies other than CLOSEST in order to prevent the scale from jumping
-     *                     to a different version even when it is very close to one of the zoomLevels.
-     * @param zoomLevels   the allowed zoomLevels
+     * @param tolerance the amount from one of the zoomLevels to still be considered <em>at</em> the scale.
+     *      This is important for all strategies other than CLOSEST in order to prevent the scale from jumping
+     *      to a different version even when it is very close to one of the zoomLevels.
+     * @param zoomLevels the allowed zoomLevels
      */
     protected abstract SearchResult search(Scale targetScale, double tolerance, ZoomLevels zoomLevels);
 

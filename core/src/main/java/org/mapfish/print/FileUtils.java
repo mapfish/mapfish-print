@@ -27,7 +27,7 @@ public final class FileUtils {
      * The correct file url is returned or the original if not a file url.  If an illegal file url (one that does not refer to a
      * file within the configuration directory or is relative to the configuration directory) then an exception is thrown.
      *
-     * @param url           the url to test
+     * @param url the url to test
      * @param configuration the configuration to test relativity.
      */
     public static URL testForLegalFileUrl(final Configuration configuration, final URL url) {

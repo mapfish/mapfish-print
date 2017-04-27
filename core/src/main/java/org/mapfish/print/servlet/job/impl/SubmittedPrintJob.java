@@ -16,8 +16,8 @@ public class SubmittedPrintJob {
     /**
      * Constructor.
      *
-     * @param reportFuture    the future for checking if the report is done and for getting the uri
-     * @param entry           the print job entry.
+     * @param reportFuture the future for checking if the report is done and for getting the uri
+     * @param entry the print job entry.
      */
     public SubmittedPrintJob(final Future<PrintJobResult> reportFuture, final PrintJobEntry entry) {
         this.reportFuture = reportFuture;

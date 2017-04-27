@@ -313,7 +313,7 @@ public class Configuration {
     /**
      * Return the named style ot Optional.absent() if there is not a style with the given name.
      *
-     * @param styleName  the name of the style to look up
+     * @param styleName the name of the style to look up
      */
     public final Optional<? extends Style> getStyle(final String styleName) {
         final String styleRef = this.styles.get(styleName);

@@ -33,7 +33,7 @@ public final class ProcessorUtils {
      * If {@link Processor#createInputParameter()} returns an instance of values then the values object will be returned.
      *
      * @param processor the processor that the input object will be for.
-     * @param values    the object containing the values to put into the input object
+     * @param values the object containing the values to put into the input object
      * @param <In>      type of the processor input object
      * @param <Out>     type of the processor output object
      */
@@ -76,9 +76,9 @@ public final class ProcessorUtils {
 
     /**
      * Read the values from the output object and write them to the values object.
-     * @param output    the output object from a processor
+     * @param output the output object from a processor
      * @param processor the processor the output if from
-     * @param values    the object for sharing values between processors
+     * @param values the object for sharing values between processors
      */
     public static void writeProcessorOutputToValues(final Object output,
                                                     final Processor<?, ?> processor,
@@ -109,7 +109,7 @@ public final class ProcessorUtils {
      *
      * @param inputPrefix a nullable prefix to prepend to the name if non-null and non-empty
      * @param inputMapper the name mapper
-     * @param field        the field containing the value
+     * @param field the field containing the value
      */
     public static String getInputValueName(@Nullable final String inputPrefix,
                                             @Nonnull final BiMap<String, String> inputMapper,
@@ -139,7 +139,7 @@ public final class ProcessorUtils {
      *
      * @param outputPrefix a nullable prefix to prepend to the name if non-null and non-empty
      * @param outputMapper the name mapper
-     * @param field        the field containing the value
+     * @param field the field containing the value
      */
     public static String getOutputValueName(@Nullable final String outputPrefix,
                                             @Nonnull final Map<String, String> outputMapper,

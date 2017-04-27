@@ -245,7 +245,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
     /**
      * Look for a style in the named styles provided in the configuration.
      *
-     * @param styleName  the name of the style to look for.
+     * @param styleName the name of the style to look for.
      */
     @SuppressWarnings("unchecked")
     @Nonnull

@@ -83,11 +83,11 @@ public final class Values {
     /**
      * Construct from the json request body and the associated template.
      *
-     * @param requestData         the json request data
-     * @param template            the template
-     * @param parser              the parser to use for parsing the request data.
-     * @param taskDirectory       the temporary directory for this printing task.
-     * @param httpRequestFactory  a factory for making http requests.
+     * @param requestData the json request data
+     * @param template the template
+     * @param parser the parser to use for parsing the request data.
+     * @param taskDirectory the temporary directory for this printing task.
+     * @param httpRequestFactory a factory for making http requests.
      * @param jasperTemplateBuild the directory where the jasper templates are compiled to
      */
     public Values(final PJsonObject requestData,
@@ -102,13 +102,13 @@ public final class Values {
     /**
      * Construct from the json request body and the associated template.
      *
-     * @param requestData         the json request data
-     * @param template            the template
-     * @param parser              the parser to use for parsing the request data.
-     * @param taskDirectory       the temporary directory for this printing task.
-     * @param httpRequestFactory  a factory for making http requests.
+     * @param requestData the json request data
+     * @param template the template
+     * @param parser the parser to use for parsing the request data.
+     * @param taskDirectory the temporary directory for this printing task.
+     * @param httpRequestFactory a factory for making http requests.
      * @param jasperTemplateBuild the directory where the jasper templates are compiled to
-     * @param outputFormat        the output format
+     * @param outputFormat the output format
      */
     public Values(final PJsonObject requestData,
                   final Template template,
@@ -142,9 +142,9 @@ public final class Values {
     /**
      * Process the requestJsonAttributes using the attributes and the MapfishParser and add all resulting values to this values object.
      *
-     * @param template              the template of the current request.
-     * @param parser                the parser to use for parsing the request data.
-     * @param attributes            the attributes that will be used to add values to this values object
+     * @param template the template of the current request.
+     * @param parser the parser to use for parsing the request data.
+     * @param attributes the attributes that will be used to add values to this values object
      * @param requestJsonAttributes the json data for populating the attribute values
      * @throws JSONException
      */
@@ -270,7 +270,7 @@ public final class Values {
     /**
      * Put a new value in map.
      *
-     * @param key   id of the value for looking up.
+     * @param key id of the value for looking up.
      * @param value the value.
      */
     public void put(final String key, final Object value) {
@@ -322,7 +322,7 @@ public final class Values {
     /**
      * Get a value as a string.
      *
-     * @param key  the key for looking up the value.
+     * @param key the key for looking up the value.
      * @param type the type of the object
      * @param <V>  the type
      */

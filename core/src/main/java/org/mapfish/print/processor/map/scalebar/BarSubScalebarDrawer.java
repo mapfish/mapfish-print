@@ -10,8 +10,8 @@ public class BarSubScalebarDrawer extends BarScalebarDrawer {
 
     /**
      * Constructor.
-     * @param graphics2d    The graphics context.
-     * @param settings      Parameters for rendering the scalebar.
+     * @param graphics2d The graphics context.
+     * @param settings Parameters for rendering the scalebar.
      */
     public BarSubScalebarDrawer(final Graphics2D graphics2d, final ScaleBarRenderSettings settings) {
         super(graphics2d, settings);

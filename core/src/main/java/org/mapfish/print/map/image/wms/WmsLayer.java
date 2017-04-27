@@ -40,9 +40,9 @@ public final class WmsLayer extends AbstractSingleImageLayer {
      * Constructor.
      *
      * @param executorService the thread pool for doing the rendering.
-     * @param styleSupplier   the style to use when drawing the constructed grid coverage on the map.
-     * @param params          the params from the request data.
-     * @param registry        the metrics registry.
+     * @param styleSupplier the style to use when drawing the constructed grid coverage on the map.
+     * @param params the params from the request data.
+     * @param registry the metrics registry.
      */
     protected WmsLayer(final ExecutorService executorService,
                        final StyleSupplier<GridCoverage2D> styleSupplier,

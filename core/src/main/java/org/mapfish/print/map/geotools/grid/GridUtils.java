@@ -84,7 +84,7 @@ final class GridUtils {
      * Create the grid feature type.
      *
      * @param mapContext the map context containing the information about the map the grid will be added to.
-     * @param geomClass  the geometry type
+     * @param geomClass the geometry type
      */
     public static SimpleFeatureType createGridFeatureType(@Nonnull final MapfishMapContext mapContext,
                                                    @Nonnull final Class<? extends Geometry> geomClass) {
@@ -100,7 +100,7 @@ final class GridUtils {
      * Create the label for a grid line.
      *
      * @param value the value of the line
-     * @param unit  the unit that the value is in
+     * @param unit the unit that the value is in
      */
     public static String createLabel(final double value, final String unit, final GridLabelFormat format) {
         final double zero = 0.000000001;

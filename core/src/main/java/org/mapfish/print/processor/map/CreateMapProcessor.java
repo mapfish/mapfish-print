@@ -481,10 +481,10 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
     /**
      * If requested, adjust the bounds to the nearest scale and the map size.
      *
-     * @param mapValues      Map parameters
+     * @param mapValues Map parameters
      * @param dpiOfRequestor The DPI.
-     * @param paintArea      The size of the painting area.
-     * @param bounds         The map bounds.
+     * @param paintArea The size of the painting area.
+     * @param bounds The map bounds.
      */
     public static MapBounds adjustBoundsToScaleAndMapSize(
             final GenericMapAttributeValues mapValues, final double dpiOfRequestor,
@@ -532,7 +532,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
      * Save a SVG graphic to the given path.
      *
      * @param graphics2d The SVG graphic to save.
-     * @param path       The file.
+     * @param path The file.
      */
     public static void saveSvgFile(final SVGGraphics2D graphics2d, final File path) throws IOException {
         Closer closer = Closer.create();

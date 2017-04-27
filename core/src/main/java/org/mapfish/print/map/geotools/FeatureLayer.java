@@ -25,10 +25,10 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
     /**
      * Constructor.
      *
-     * @param executorService       the thread pool for doing the rendering.
+     * @param executorService the thread pool for doing the rendering.
      * @param featureSourceSupplier a function that creates the feature source.  This will only be called once.
-     * @param styleSupplier         a function that creates the style for styling the features. This will only be called once.
-     * @param renderAsSvg           is the layer rendered as SVG?
+     * @param styleSupplier a function that creates the style for styling the features. This will only be called once.
+     * @param renderAsSvg is the layer rendered as SVG?
      * @param params the parameters for this layer
      */
     public FeatureLayer(final ExecutorService executorService,
@@ -85,9 +85,9 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
         /**
          * Create a function that will create the style on demand.  This is called later in a separate thread so any blocking calls
          * will not block the parsing of the layer attributes.
-         * @param template          the template for this map
-         * @param styleString       a string that identifies a style.
-         * @param defaultStyleName  a custom name for the default style. If null, the default style is selected
+         * @param template the template for this map
+         * @param styleString a string that identifies a style.
+         * @param defaultStyleName a custom name for the default style. If null, the default style is selected
          *      depending on the geometry type.
          */
         protected StyleSupplier<FeatureSource> createStyleFunction(final Template template,

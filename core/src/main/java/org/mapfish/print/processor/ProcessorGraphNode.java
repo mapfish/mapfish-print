@@ -37,7 +37,7 @@ public final class ProcessorGraphNode<In, Out> {
     /**
      * Constructor.
      *
-     * @param processor      The processor associated with this node.
+     * @param processor The processor associated with this node.
      * @param metricRegistry registry for timing the execution time of the processor.
      */
     public ProcessorGraphNode(@Nonnull final Processor<In, Out> processor, @Nonnull final MetricRegistry metricRegistry) {
@@ -118,7 +118,7 @@ public final class ProcessorGraphNode<In, Out> {
      * Create a string representing this node.
      *
      * @param builder the builder to add the string to.
-     * @param indent  the number of steps of indent for this node
+     * @param indent the number of steps of indent for this node
      */
     public void toString(final StringBuilder builder, final int indent) {
         int spaces = (indent) * 2;

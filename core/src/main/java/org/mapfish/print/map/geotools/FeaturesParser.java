@@ -60,7 +60,7 @@ public class FeaturesParser {
     /**
      * Construct.
      *
-     * @param httpRequestFactory  the HTTP request factory
+     * @param httpRequestFactory the HTTP request factory
      * @param forceLongitudeFirst if true then force longitude coordinate as first coordinate
      */
     public FeaturesParser(final MfClientHttpRequestFactory httpRequestFactory, final boolean forceLongitudeFirst) {
@@ -87,7 +87,7 @@ public class FeaturesParser {
     /**
      * Get the features collection from a GeoJson URL.
      *
-     * @param template   the template
+     * @param template the template
      * @param geoJsonUrl what to parse
      * @return the feature collection
      */

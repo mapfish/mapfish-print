@@ -46,8 +46,8 @@ public enum Type {
     /**
      * Create a {@link ScalebarDrawer} instance for this type.
      *
-     * @param graphics2d    The graphics context.
-     * @param settings      Parameters for rendering the scalebar.
+     * @param graphics2d The graphics context.
+     * @param settings Parameters for rendering the scalebar.
      */
     public abstract ScalebarDrawer createDrawer(final Graphics2D graphics2d, final ScaleBarRenderSettings settings);
 

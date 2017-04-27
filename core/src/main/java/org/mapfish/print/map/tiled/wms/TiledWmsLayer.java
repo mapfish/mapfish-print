@@ -31,10 +31,10 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
     /**
      * Constructor.
      *
-     * @param forkJoinPool  the thread pool for doing the rendering.
-     * @param styleSupplier strategy for loading the style for this layer
-     * @param param         the information needed to create WMS requests.
-     * @param registry      the metrics registry.
+     * @param forkJoinPool the thread pool for doing the rendering.
+     * @param styleSupplier strategy for loading the style for this layer.
+     * @param param the information needed to create WMS requests.
+     * @param registry the metrics registry.
      */
     public TiledWmsLayer(
             final ForkJoinPool forkJoinPool,
