@@ -21,5 +21,3 @@ templates:
       dynamic: true
       maxColumns: 4
       excludeColumns: ["exclude"]
-      inputMapper: {table: table}
-      outputMapper: {table: table}

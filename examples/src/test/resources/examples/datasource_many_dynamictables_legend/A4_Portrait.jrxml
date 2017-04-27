@@ -10,7 +10,7 @@
 	<parameter name="legendSubReport" class="java.lang.String"/>
 	<parameter name="scalebarSubReport" class="java.lang.String"/>
 	<parameter name="northArrowSubReport" class="java.lang.String"/>
-	<field name="table" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
+	<field name="tableDataSource" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
 	<field name="title" class="java.lang.String"/>
 	<field name="tableSubReport" class="java.lang.String"/>
 	<title>
@@ -70,7 +70,7 @@
 			</textField>
 			<subreport>
 				<reportElement x="0" y="23" width="555" height="42" uuid="e1c028e8-5edc-4911-8f28-481a06730bc7"/>
-				<dataSourceExpression><![CDATA[$F{table}]]></dataSourceExpression>
+				<dataSourceExpression><![CDATA[$F{tableDataSource}]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$F{tableSubReport}]]></subreportExpression>
 			</subreport>
 			<break>

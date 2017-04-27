@@ -617,7 +617,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         /**
          * The table datasource.
          */
-        public final JRMapCollectionDataSource table;
+        public final JRMapCollectionDataSource tableDataSource;
 
         /**
          * The number of rows in the table.
@@ -632,7 +632,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         private Output(final JRMapCollectionDataSource dataSource,
                        final int numberOfTableRows,
                        final String subReport) {
-            this.table = dataSource;
+            this.tableDataSource = dataSource;
             this.numberOfTableRows = numberOfTableRows;
             this.tableSubReport = subReport;
         }

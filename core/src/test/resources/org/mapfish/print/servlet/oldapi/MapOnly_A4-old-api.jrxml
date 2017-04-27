@@ -5,7 +5,7 @@
     <parameter name="geojsonMap" class="java.lang.String">
         <parameterDescription><![CDATA[Geo Json map]]></parameterDescription>
     </parameter>
-    <parameter name="table" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
+    <parameter name="tableDataSource" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
     <parameter name="legend1Legend" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
     <parameter name="legend2Legend" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
     <queryString>
@@ -28,7 +28,7 @@
             </subreport>
             <subreport>
                 <reportElement x="0" y="210" width="802" height="69" uuid="c6b99036-9edf-444d-9084-7c6b51ce0b2c"/>
-                <dataSourceExpression><![CDATA[$P{table}]]></dataSourceExpression>
+                <dataSourceExpression><![CDATA[$P{tableDataSource}]]></dataSourceExpression>
                 <subreportExpression><![CDATA["table.jasper"]]></subreportExpression>
             </subreport>
             <subreport>

@@ -22,7 +22,6 @@ templates:
         outputMapper: {mapSubReport: geojsonMap}
     - !prepareTable
       inputMapper: {entries: table}
-      outputMapper: {table: table}
     - !prepareLegend
       inputMapper: {legend1: legend}
       outputPrefix: legend1

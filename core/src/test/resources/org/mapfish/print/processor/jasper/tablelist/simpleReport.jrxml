@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version last-->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="9a3e59f5-6675-48cf-ad74-9c42b5a5b290">
-	<field name="table" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
+	<field name="tableDataSource" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
 	<field name="displayName" class="java.lang.String"/>
 	<field name="name" class="java.lang.String"/>
 	<field name="reportTemplate" class="java.lang.String"/>
@@ -9,7 +9,7 @@
 		<band height="65" splitType="Stretch">
 			<subreport>
 				<reportElement x="0" y="23" width="555" height="42" uuid="b4cae0ad-a520-425e-b790-d6984af7ddc8"/>
-				<dataSourceExpression><![CDATA[$F{table}]]></dataSourceExpression>
+				<dataSourceExpression><![CDATA[$F{tableDataSource}]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$F{reportTemplate}]]></subreportExpression>
 			</subreport>
 		</band>

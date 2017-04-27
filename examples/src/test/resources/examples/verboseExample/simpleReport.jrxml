@@ -7,10 +7,10 @@
 	<parameter name="description" class="java.lang.String"/>
 	<parameter name="number" class="java.lang.Integer"/>
     <parameter name="length" class="java.lang.Double"/>
-    <parameter name="table" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
+    <parameter name="tableDataSource" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
     <parameter name="legend" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
     <parameter name="legendSubReport" class="java.lang.String"/>
-    <field name="table" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
+    <field name="tableDataSource" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
 	<field name="displayName" class="java.lang.String"/>
 	<field name="reportTemplate" class="java.lang.String"/>
 	<title>
@@ -46,7 +46,7 @@
 			</textField>
 			<subreport>
 				<reportElement x="0" y="323" width="555" height="57" uuid="c6b99036-9edf-444d-9084-7c6b51ce0b2c"/>
-				<dataSourceExpression><![CDATA[$P{table}]]></dataSourceExpression>
+				<dataSourceExpression><![CDATA[$P{tableDataSource}]]></dataSourceExpression>
 				<subreportExpression><![CDATA["table.jasper"]]></subreportExpression>
 			</subreport>
 			<break>
@@ -65,7 +65,7 @@
 			</textField>
 			<subreport>
 				<reportElement x="0" y="23" width="555" height="42" uuid="b4cae0ad-a520-425e-b790-d6984af7ddc8"/>
-				<dataSourceExpression><![CDATA[$F{table}]]></dataSourceExpression>
+				<dataSourceExpression><![CDATA[$F{tableDataSource}]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$F{reportTemplate}]]></subreportExpression>
 			</subreport>
 			<break>

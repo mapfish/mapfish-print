@@ -11,13 +11,13 @@
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
 	<field name="title" class="java.lang.String"/>
-	<field name="table" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
+	<field name="tableDataSource" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
 	<field name="tableSubReport" class="java.lang.String"/>
 	<detail>
 		<band height="65">
 			<subreport>
 				<reportElement x="0" y="23" width="255" height="42" uuid="2d58b926-6505-49df-ac13-667df92d4cb1"/>
-				<dataSourceExpression><![CDATA[$F{table}]]></dataSourceExpression>
+				<dataSourceExpression><![CDATA[$F{tableDataSource}]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$F{tableSubReport}]]></subreportExpression>
 			</subreport>
 			<textField>

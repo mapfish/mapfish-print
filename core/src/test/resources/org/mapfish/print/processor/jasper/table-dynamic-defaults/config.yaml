@@ -13,5 +13,3 @@ templates:
           urlExtractor: (.*)
       dynamic: true
       excludeColumns: ["exclude"]
-      inputMapper: {table: table}
-      outputMapper: {table: table}
