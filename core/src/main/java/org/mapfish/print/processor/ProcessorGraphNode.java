@@ -30,8 +30,8 @@ import javax.annotation.Nonnull;
 public final class ProcessorGraphNode<In, Out> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessorGraphNode.class);
     private final Processor<In, Out> processor;
-    private final List<ProcessorGraphNode<?, ?>> dependencies = Lists.newArrayList();
-    private final List<ProcessorGraphNode<?, ?>> requirements = Lists.newArrayList();
+    private final List<ProcessorGraphNode> dependencies = Lists.newArrayList();
+    private final List<ProcessorGraphNode> requirements = Lists.newArrayList();
     private final MetricRegistry metricRegistry;
 
     /**
@@ -63,7 +63,7 @@ public final class ProcessorGraphNode<In, Out> {
         this.requirements.add(node);
     }
     
-    protected List<ProcessorGraphNode<?, ?>> getRequirements() {
+    protected List<ProcessorGraphNode> getRequirements() {
         return this.requirements;
     }
 
@@ -82,7 +82,8 @@ public final class ProcessorGraphNode<In, Out> {
      * @return a task ready to be submitted to a fork join pool.
      */
     @SuppressWarnings("unchecked")
-    public Optional<ProcessorNodeForkJoinTask> createTask(@Nonnull final ProcessorExecutionContext execContext) {
+    public Optional<ProcessorNodeForkJoinTask> createTask(@Nonnull final ProcessorExecutionContext
+                                                                       execContext) {
         if (!execContext.tryStart(this)) {
             return Optional.absent();
         } else {
@@ -217,12 +218,12 @@ public final class ProcessorGraphNode<In, Out> {
         }
 
         private void executeDependencyProcessors() {
-            final List<ProcessorGraphNode<?, ?>> dependencyNodes = this.node.dependencies;
+            final List<ProcessorGraphNode> dependencyNodes = this.node.dependencies;
 
             List<ProcessorNodeForkJoinTask<?, ?>> tasks = new ArrayList<ProcessorNodeForkJoinTask<?, ?>>(dependencyNodes.size());
 
             // fork all but 1 dependencies (the first will be ran in current thread)
-            for (final ProcessorGraphNode<?, ?> depNode : dependencyNodes) {
+            for (final ProcessorGraphNode depNode : dependencyNodes) {
                 Optional<ProcessorNodeForkJoinTask> task = depNode.createTask(this.execContext);
 
                 if (task.isPresent()) {

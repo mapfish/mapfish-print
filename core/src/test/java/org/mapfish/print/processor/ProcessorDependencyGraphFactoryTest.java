@@ -78,8 +78,8 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     @Test
     @DirtiesContext
     public void testSimpleBuild_ExternalDependency_NoInput() throws Exception {
-        final ArrayList<TestProcessor> processors = Lists.newArrayList(RootNoOutput, RootMapOut,
-                RootTableAndWidthOut, NeedsTable, NeedsMap);
+        final ArrayList<TestProcessor> processors = Lists.newArrayList(
+                RootNoOutput, RootMapOut, RootTableAndWidthOut, NeedsTable, NeedsMap);
 
         // external dependency: RootNoOutput should run before RootMapOuts
         final List<ProcessorDependency> dependencies = Lists.newArrayList(
@@ -88,7 +88,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
 
         ProcessorDependencyGraph graph = this.processorDependencyGraphFactory.build(processors,
                 Collections.<String>emptySet());
-        assertContainsProcessors(graph.getRoots(), RootNoOutput, RootTableAndWidthOut);
+        assertContainsProcessors(graph.getRoots(), RootNoOutput, RootMapOut, RootTableAndWidthOut);
         final TestOrderExecution execution = new TestOrderExecution();
         Values values = new Values();
         values.put(EXECUTION_TRACKER, execution);
@@ -135,11 +135,15 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     @Test
     @DirtiesContext
     public void testSimpleBuild_ExternalDependency_SameInputWithDifferentName() throws Exception {
+        RootMapOutClass rootMap2Out = new RootMapOutClass("rootMap2Out", MapOutput.class);
+        rootMap2Out.getOutputMapperBiMap().put("map", "map2");
         NeedsOverviewMapAndMap.getInputMapperBiMap().put("map2", "overviewMap");
         TestProcessor styleNeedsMap2 = new StyleNeedsMapClass("StyleNeedsMap2", Void.class);
         styleNeedsMap2.getInputMapperBiMap().put("map2", "map");
-        final ArrayList<TestProcessor> processors = Lists.newArrayList(RootNoOutput, NeedsTable, NeedsMap, StyleNeedsMap,
-                RootMapOut, RootTableAndWidthOut, NeedsOverviewMapAndMap, styleNeedsMap2);
+        final ArrayList<TestProcessor> processors = Lists.newArrayList(
+                RootNoOutput, RootMapOut, rootMap2Out, RootTableAndWidthOut,
+                StyleNeedsMap, styleNeedsMap2,
+                NeedsOverviewMapAndMap, NeedsTable, NeedsMap);
 
         // external dependency: StyleNeedsMap should run before NeedsMap when they have the same
         // mapped input for "map"
@@ -147,28 +151,30 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
                 new ProcessorDependency(StyleNeedsMapClass.class, NeedsMapClass.class, Sets.newHashSet("map")));
         // external dependency: StyleNeedsMap should run before NeedsOverviewMap when they have the same
         // mapped input for "map" and "overviewMap"
-        dependencies.add(
-                new ProcessorDependency(StyleNeedsMapClass.class, NeedsOverviewMapAndMapClass.class,
-                        Sets.newHashSet("map;overviewMap")));
+        dependencies.add(new ProcessorDependency(
+                StyleNeedsMapClass.class, NeedsOverviewMapAndMapClass.class,
+                Sets.newHashSet("map;overviewMap")));
         this.processorDependencyGraphFactory.setDependencies(dependencies);
 
         ProcessorDependencyGraph graph = this.processorDependencyGraphFactory.build(processors,
                 Collections.<String>emptySet());
-        assertContainsProcessors(graph.getRoots(), RootNoOutput, RootTableAndWidthOut, RootMapOut, styleNeedsMap2);
+        assertContainsProcessors(graph.getRoots(), RootNoOutput, RootTableAndWidthOut, RootMapOut, rootMap2Out);
         final TestOrderExecution execution = new TestOrderExecution();
         Values values = new Values();
         values.put(EXECUTION_TRACKER, execution);
         values.put("map2", "ov-map");
         forkJoinPool.invoke(graph.createTask(values));
 
-        assertEquals(execution.testOrderExecution.toString(), 8, execution.testOrderExecution.size());
+        assertEquals(execution.testOrderExecution.toString(), 9, execution.testOrderExecution.size());
         assertHasOrdering(execution, RootMapOut, NeedsMap);
         assertHasOrdering(execution, RootTableAndWidthOut, NeedsTable);
         assertHasOrdering(execution, StyleNeedsMap, NeedsMap);
         assertHasOrdering(execution, styleNeedsMap2, NeedsOverviewMapAndMap);
 
         // check that NeedsOverviewMap is not added as dependency to StyleNeedsMap
-        ProcessorGraphNode<Object, Object> styleNode = getNodeForProcessor(graph.getRoots(), styleNeedsMap2);
+        ProcessorGraphNode<Object, Object> mapNode = getNodeForProcessor(graph.getRoots(), rootMap2Out);
+        ProcessorGraphNode<Object, Object> styleNode = getNodeForProcessor(mapNode.getRequirements(),
+        styleNeedsMap2);
         assertEquals(2, styleNode.getAllProcessors().size());
     }
 
@@ -182,30 +188,34 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     @DirtiesContext
     public void testSimpleBuild_ExternalDependency_SameInputTwoMaps() throws Exception {
         // add processors for a second map
+        RootMapOutClass rootMap2Out = new RootMapOutClass("rootMap2Out", MapOutput.class);
+        rootMap2Out.getOutputMapperBiMap().put("map", "map2");
         TestProcessor needsMap2 = new NeedsMapClass("NeedsMap2", Void.class);
         needsMap2.getInputMapperBiMap().put("map2", "map");
         TestProcessor styleNeedsMap2 = new StyleNeedsMapClass("StyleNeedsMap2", Void.class);
         styleNeedsMap2.getInputMapperBiMap().put("map2", "map");
 
-        final ArrayList<TestProcessor> processors = Lists.newArrayList(RootNoOutput, NeedsTable, NeedsMap, StyleNeedsMap,
-                needsMap2, styleNeedsMap2, RootMapOut, RootTableAndWidthOut);
+        final ArrayList<TestProcessor> processors = Lists.newArrayList(
+                RootNoOutput, RootMapOut, rootMap2Out, RootTableAndWidthOut,
+                StyleNeedsMap, styleNeedsMap2,
+                NeedsTable, NeedsMap, needsMap2);
 
         // external dependency: StyleNeedsMap should run before NeedsMap when they have the same
         // mapped input for "map"
-        final List<ProcessorDependency> dependencies = Lists.newArrayList(
-                new ProcessorDependency(StyleNeedsMapClass.class, NeedsMapClass.class, Sets.newHashSet("map")));
+        final List<ProcessorDependency> dependencies = Lists.newArrayList(new ProcessorDependency(
+                StyleNeedsMapClass.class, NeedsMapClass.class, Sets.newHashSet("map")));
         this.processorDependencyGraphFactory.setDependencies(dependencies);
 
         ProcessorDependencyGraph graph = this.processorDependencyGraphFactory.build(processors,
                 Collections.<String>emptySet());
-        assertContainsProcessors(graph.getRoots(), RootNoOutput, RootTableAndWidthOut, RootMapOut, styleNeedsMap2);
+        assertContainsProcessors(graph.getRoots(), RootNoOutput, RootTableAndWidthOut, RootMapOut, rootMap2Out);
         final TestOrderExecution execution = new TestOrderExecution();
         Values values = new Values();
         values.put(EXECUTION_TRACKER, execution);
         values.put("map2", "the 2nd map definition");
         forkJoinPool.invoke(graph.createTask(values));
 
-        assertEquals(execution.testOrderExecution.toString(), 8, execution.testOrderExecution.size());
+        assertEquals(execution.testOrderExecution.toString(), 9, execution.testOrderExecution.size());
         assertHasOrdering(execution, RootMapOut, NeedsMap);
         assertHasOrdering(execution, RootTableAndWidthOut, NeedsTable);
         assertHasOrdering(execution, StyleNeedsMap, NeedsMap);
@@ -218,8 +228,9 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
 
     @Test
     public void testBuildProcessInputObject() throws Exception {
-        final ArrayList<Processor> processors = Lists.newArrayList(RootOutputExecutionTracker, RootNoOutput, NeedsTable, NeedsMap,
-                RootMapOut, RootTableAndWidthOut);
+        final ArrayList<Processor> processors = Lists.newArrayList(
+                RootOutputExecutionTracker, RootNoOutput, RootMapOut, RootTableAndWidthOut,
+                NeedsTable, NeedsMap);
         ProcessorDependencyGraph graph = this.processorDependencyGraphFactory.build(processors,
                 Collections.<String>emptySet());
         assertContainsProcessors(graph.getRoots(), RootOutputExecutionTracker);
@@ -242,7 +253,8 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     @Test
     public void testBuildProcessInputHasValuesAndOtherInput() throws Exception {
         final NeedsValuesAndMap needsValuesAndMap = new NeedsValuesAndMap();
-        final ArrayList<Processor> processors = Lists.<Processor>newArrayList(RootOutputExecutionTracker, needsValuesAndMap, RootMapOut);
+        final ArrayList<Processor> processors = Lists.<Processor>newArrayList(
+                RootOutputExecutionTracker, RootMapOut, needsValuesAndMap);
         ProcessorDependencyGraph graph = this.processorDependencyGraphFactory.build(processors,
                 Collections.<String>emptySet());
         assertContainsProcessors(graph.getRoots(), RootOutputExecutionTracker);
@@ -267,8 +279,8 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         final RootMapOutClass outMapProcessor = new RootMapOutClass("mapOut", MapOutput.class);
         outMapProcessor.getOutputMapperBiMap().put("map", "mapOutput");
         needsValuesAndMap.getInputMapperBiMap().put("mapOutput", "map");
-        final ArrayList<Processor> processors = Lists.newArrayList(RootOutputExecutionTracker, needsValuesAndMap,
-                outMapProcessor);
+        final ArrayList<Processor> processors = Lists.newArrayList(
+                RootOutputExecutionTracker, outMapProcessor, needsValuesAndMap);
 
         ProcessorDependencyGraph graph = this.processorDependencyGraphFactory.build(processors,
                 Collections.<String>emptySet());
@@ -394,9 +406,9 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         assertTrue(comparison, actualProcessorsList.containsAll(Arrays.asList(processors)));
     }
 
-    private ProcessorGraphNode<Object, Object> getNodeForProcessor(
+    private ProcessorGraphNode getNodeForProcessor(
             List<ProcessorGraphNode> roots, TestProcessor processor) {
-        for (ProcessorGraphNode<Object, Object> node : roots) {
+        for (ProcessorGraphNode node : roots) {
             if (node.getProcessor() == processor) {
                 return node;
             }

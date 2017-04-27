@@ -75,6 +75,32 @@ public final class ProcessorDependencyGraphFactory {
         for (Processor<Object, Object> processor : processors) {
             final ProcessorGraphNode<Object, Object> node =
                     new ProcessorGraphNode<Object, Object>(processor, this.metricRegistry);
+
+            final Set<InputValue> inputs = getInputs(node);
+            boolean isRoot = true;
+            // check input/output value dependencies
+            for (InputValue input : inputs) {
+                final ProcessorGraphNode<Object, Object> solution = provideBy.get(input.getName());
+                if (solution != null) {
+                    // check that the provided output has the same type
+                    final Class<?> inputType = input.getType();
+                    final Class<?> outputType = outputTypes.get(input.getName());
+                    if (inputType.isAssignableFrom(outputType)) {
+                        solution.addDependency(node);
+                        isRoot = false;
+                    } else {
+                        throw new IllegalArgumentException("Type conflict: Processor '" + solution
+                                .getName() + "' provides an output with name '" + input.getName() + "' " +
+                                "and of type '" + outputType + " ', while processor '" + node.getName()
+                                + "' expects an input of that name with type '" + inputType + "'! " +
+                                "Please rename one of the attributes in the mappings of the processors.");
+                    }
+                }
+            }
+            if (isRoot) {
+                graph.addRoot(node);
+            }
+
             for (OutputValue value : getOutputValues(node)) {
                 String outputName = value.getName();
                 if (provideBy.containsKey(outputName)) {
@@ -105,26 +131,8 @@ public final class ProcessorDependencyGraphFactory {
             }
             nodes.add(node);
 
-            final Set<InputValue> inputs = getInputs(node);
-
             // check input/output value dependencies
             for (InputValue input : inputs) {
-                final ProcessorGraphNode<Object, Object> solution = provideBy.get(input.getName());
-                if (solution != null && solution != node) {
-                    // check that the provided output has the same type
-                    final Class<?> inputType = input.getType();
-                    final Class<?> outputType = outputTypes.get(input.getName());
-                    if (inputType.isAssignableFrom(outputType)) {
-                        solution.addDependency(node);
-                    } else {
-                        throw new IllegalArgumentException(
-                                "Type conflict: Processor '" + solution.getName() + "' provides an output with name '"
-                                        + input.getName() + "' and of type '" + outputType + " ', while "
-                                        + "processor '" + node.getName() + "' expects an input of that name with type '"
-                                        + inputType + "'! Please rename one of the attributes in the mappings of the processors.");
-                    }
-                }
-
                 if (input.getField().getAnnotation(InputOutputValue.class) != null) {
                     provideBy.put(input.getName(), node);
                 }
@@ -143,16 +151,6 @@ public final class ProcessorDependencyGraphFactory {
         for (ProcessorGraphNode<Object, Object> node : nodes) {
             // check explicit, external dependencies between nodes
             checkExternalDependencies(allDependencies, node, nodes);
-        }
-
-        // once all dependencies are discovered, select the root nodes
-        for (ProcessorGraphNode<Object, Object> node : nodes) {
-            // a root node is a node that has no requirements (that is no other node
-            // should be executed before the node) and that has only external inputs
-            if (!node.hasRequirements() &&
-                    hasNoneOrOnlyExternalInput(node, inputsForNodes.get(node), provideBy)) {
-                graph.addRoot(node);
-            }
         }
 
         final Collection<? extends Processor> missingProcessors = CollectionUtils.subtract(
