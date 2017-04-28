@@ -1,4 +1,3 @@
-
 package org.mapfish.print.processor.http;
 
 import com.google.common.collect.Maps;
@@ -37,7 +36,7 @@ import javax.annotation.Nullable;
  * [[examples=http_processors,osm_custom_params]]
  */
 public final class ForwardHeadersProcessor
-        extends AbstractProcessor<ForwardHeadersProcessor.Param, ClientHttpFactoryProcessorParam>
+        extends AbstractProcessor<ForwardHeadersProcessor.Param, Void>
         implements HttpProcessor<ForwardHeadersProcessor.Param> {
 
     private final AddHeadersProcessor addHeadersProcessor = new AddHeadersProcessor();
@@ -49,7 +48,7 @@ public final class ForwardHeadersProcessor
      * Constructor.
      */
     public ForwardHeadersProcessor() {
-        super(ClientHttpFactoryProcessorParam.class);
+        super(Void.class);
     }
 
     /**
@@ -144,9 +143,10 @@ public final class ForwardHeadersProcessor
 
     @Nullable
     @Override
-    public ClientHttpFactoryProcessorParam execute(final Param values, final ExecutionContext context) throws Exception {
-        values.clientHttpRequestFactory = createFactoryWrapper(values, values.clientHttpRequestFactory);
-        return values;
+    public Void execute(final Param values, final ExecutionContext context) throws Exception {
+        values.clientHttpRequestFactoryProvider.set(
+                createFactoryWrapper(values, values.clientHttpRequestFactoryProvider.get()));
+        return null;
     }
 
     /**

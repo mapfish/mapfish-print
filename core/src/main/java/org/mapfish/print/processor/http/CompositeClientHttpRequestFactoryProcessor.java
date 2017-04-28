@@ -33,14 +33,14 @@ import javax.annotation.Nullable;
  * - !mapUri
  *   mapping:
  *     (http)://localhost(.*) : "$1://127.0.0.1$2"
- *   outputMapper: {clientHttpRequestFactory: clientHttpRequestFactoryMapped}
+ *   outputMapper: {clientHttpRequestFactoryProvider: clientHttpRequestFactoryMapped}
  * - !forwardHeaders
  *   all: true
- *   inputMapper: {clientHttpRequestFactoryMapped :clientHttpRequestFactory}
- *   outputMapper: {clientHttpRequestFactory: clientHttpRequestFactoryWithHeaders}
+ *   inputMapper: {clientHttpRequestFactoryMapped :clientHttpRequestFactoryProvider}
+ *   outputMapper: {clientHttpRequestFactoryProvider: clientHttpRequestFactoryWithHeaders}
  * - !restrictUris
  *   matchers: [!localMatch {}]
- *   inputMapper: {clientHttpRequestFactoryWithHeaders:clientHttpRequestFactory}
+ *   inputMapper: {clientHttpRequestFactoryWithHeaders:clientHttpRequestFactoryProvider}
  *     </code></pre>
  *
  * <p>
@@ -60,7 +60,7 @@ import javax.annotation.Nullable;
  * [[examples=http_processors]]
  */
 public final class CompositeClientHttpRequestFactoryProcessor
-        extends AbstractProcessor<Values, ClientHttpFactoryProcessorParam>
+        extends AbstractProcessor<Values, Void>
         implements HttpProcessor<Values> {
     private List<HttpProcessor> httpProcessors = Lists.newArrayList();
 
@@ -68,7 +68,7 @@ public final class CompositeClientHttpRequestFactoryProcessor
      * Constructor.
      */
     protected CompositeClientHttpRequestFactoryProcessor() {
-        super(ClientHttpFactoryProcessorParam.class);
+        super(Void.class);
     }
 
     /**
@@ -95,14 +95,17 @@ public final class CompositeClientHttpRequestFactoryProcessor
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
+    protected void extraValidation(
+            final List<Throwable> validationErrors,
+            final Configuration configuration) {
         if (this.httpProcessors.isEmpty()) {
-            validationErrors.add(new IllegalStateException("There are no composite elements for this processor"));
+            validationErrors.add(new IllegalStateException("There are no composite elements for this " +
+                    "processor"));
         } else {
             for (Object part : this.httpProcessors) {
                 if (!(part instanceof HttpProcessor)) {
-                    validationErrors.add(new IllegalStateException("One of the parts of " + getClass().getSimpleName() + " is not a " +
-                                                                   HttpProcessor.class.getSimpleName()));
+                    validationErrors.add(new IllegalStateException("One of the parts of " + getClass()
+                            .getSimpleName() + " is not a " + HttpProcessor.class.getSimpleName()));
                 }
             }
         }
@@ -116,13 +119,14 @@ public final class CompositeClientHttpRequestFactoryProcessor
 
     @Nullable
     @Override
-    public ClientHttpFactoryProcessorParam execute(final Values values,
-                                                   final ExecutionContext context) throws Exception {
+    public Void execute(
+            final Values values,
+            final ExecutionContext context) throws Exception {
         MfClientHttpRequestFactory requestFactory = values.getObject(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY,
                 MfClientHttpRequestFactory.class);
 
         final ClientHttpFactoryProcessorParam output = new ClientHttpFactoryProcessorParam();
-        output.clientHttpRequestFactory = createFactoryWrapper(values, requestFactory);
-        return output;
+        output.clientHttpRequestFactoryProvider.set(createFactoryWrapper(values, requestFactory));
+        return null;
     }
 }

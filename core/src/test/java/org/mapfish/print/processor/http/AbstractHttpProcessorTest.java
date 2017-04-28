@@ -102,7 +102,7 @@ public abstract class AbstractHttpProcessorTest extends AbstractMapfishSpringTes
     }
 
     public static class TestParam {
-        public MfClientHttpRequestFactory clientHttpRequestFactory;
+        public MfClientHttpRequestFactoryProvider clientHttpRequestFactoryProvider;
     }
 
     public static abstract class AbstractTestProcessor  extends AbstractProcessor<TestParam, Void> {

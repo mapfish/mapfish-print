@@ -5,8 +5,8 @@ import net.sf.jasperreports.engine.JRException;
 import org.mapfish.print.attribute.NorthArrowAttribute;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.config.Configuration;
-import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.mapfish.print.processor.jasper.ImagesSubReport;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
 
@@ -80,7 +80,7 @@ public class CreateNorthArrowProcessor extends AbstractProcessor<CreateNorthArro
                 values.northArrow.getBackgroundColor(),
                 values.map.getRotation(),
                 values.tempTaskDirectory,
-                values.clientHttpRequestFactory);
+                values.clientHttpRequestFactoryProvider.get());
 
         checkCancelState(context);
         
@@ -130,7 +130,7 @@ public class CreateNorthArrowProcessor extends AbstractProcessor<CreateNorthArro
         /**
          * The factory to use for making http requests.
          */
-        public MfClientHttpRequestFactory clientHttpRequestFactory;
+        public MfClientHttpRequestFactoryProvider clientHttpRequestFactoryProvider;
     }
 
     /**

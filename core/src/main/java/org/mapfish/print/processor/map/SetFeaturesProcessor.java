@@ -6,10 +6,10 @@ import org.mapfish.print.attribute.FeaturesAttribute.FeaturesAttributeValues;
 import org.mapfish.print.attribute.map.GenericMapAttribute.GenericMapAttributeValues;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.Configuration;
-import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.InputOutputValue;
+import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 
 import java.util.List;
 
@@ -38,7 +38,8 @@ public class SetFeaturesProcessor extends
         for (MapLayer layer : values.map.getLayers()) {
             checkCancelState(context);
             if (layer instanceof AbstractFeatureSourceLayer) {
-                final SimpleFeatureCollection features = values.features.getFeatures(values.clientHttpRequestFactory);
+                final SimpleFeatureCollection features = values.features.getFeatures(
+                        values.clientHttpRequestFactoryProvider.get());
                 ((AbstractFeatureSourceLayer) layer).setFeatureCollection(features);
             }
         }
@@ -58,7 +59,7 @@ public class SetFeaturesProcessor extends
         /**
          * The factory to use for making http requests.
          */
-        public MfClientHttpRequestFactory clientHttpRequestFactory;
+        public MfClientHttpRequestFactoryProvider clientHttpRequestFactoryProvider;
 
         /**
          * The map to update.

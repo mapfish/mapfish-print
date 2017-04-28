@@ -50,6 +50,7 @@ import org.mapfish.print.map.geotools.grid.GridLayer;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.InternalValue;
+import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.mapfish.print.processor.jasper.ImagesSubReport;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
 import org.opengis.referencing.operation.MathTransform;
@@ -165,10 +166,13 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         checkCancelState(context);
         MapAttributeValues mapValues = (MapAttributeValues) param.map;
         if (mapValues.zoomToFeatures != null) {
-            zoomToFeatures(param.tempTaskDirectory, param.clientHttpRequestFactory, mapValues, context);
+            zoomToFeatures(param.tempTaskDirectory, param.clientHttpRequestFactoryProvider.get(), mapValues,
+                    context);
         }
         final MapfishMapContext mapContext = createMapContext(mapValues);
-        final List<URI> graphics = createLayerGraphics(param.tempTaskDirectory, param.clientHttpRequestFactory,
+        final List<URI> graphics = createLayerGraphics(
+                param.tempTaskDirectory,
+                param.clientHttpRequestFactoryProvider.get(),
                 mapValues, context, mapContext);
         checkCancelState(context);
 
@@ -680,7 +684,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
          * A factory for making http requests.  This is added to the values by the framework and therefore
          * does not need to be set in configuration
          */
-        public MfClientHttpRequestFactory clientHttpRequestFactory;
+        public MfClientHttpRequestFactoryProvider clientHttpRequestFactoryProvider;
 
         /**
          * The required parameters for the map.

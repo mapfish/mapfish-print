@@ -41,7 +41,8 @@ public class AddHeadersProcessorTest extends AbstractHttpProcessorTest {
 
         private void matching(TestParam values) throws Exception {
             final URI uri = new URI("http://localhost:8080/path?query#fragment");
-            final ClientHttpRequest request = values.clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
+            final ClientHttpRequest request = values.clientHttpRequestFactoryProvider.get().createRequest(uri,
+                    HttpMethod.GET);
             final URI finalUri = request.getURI();
             assertEquals(uri, finalUri);
 
@@ -52,7 +53,8 @@ public class AddHeadersProcessorTest extends AbstractHttpProcessorTest {
 
         private void notMatching(TestParam values) throws Exception {
             final URI uri = new URI("http://195.176.255.226:8080/path?query#fragment");
-            final ClientHttpRequest request = values.clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
+            final ClientHttpRequest request = values.clientHttpRequestFactoryProvider.get().createRequest(uri,
+                    HttpMethod.GET);
             final URI finalUri = request.getURI();
             assertEquals(uri, finalUri);
 

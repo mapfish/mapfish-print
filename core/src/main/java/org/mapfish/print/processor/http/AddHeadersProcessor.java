@@ -44,7 +44,8 @@ public final class AddHeadersProcessor extends AbstractClientHttpRequestFactoryP
                 List value = (List) entry.getValue();
                 // verify they are all strings
                 for (Object o : value) {
-                    Assert.isTrue(o instanceof String, o + " is not a string it is a: '" + o.getClass() + "'");
+                    Assert.isTrue(o instanceof String, o + " is not a string it is a: '" +
+                            o.getClass() + "'");
                 }
                 this.headers.put(entry.getKey(), (List<String>) entry.getValue());
             } else if (entry.getValue() instanceof String) {
@@ -57,7 +58,9 @@ public final class AddHeadersProcessor extends AbstractClientHttpRequestFactoryP
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
+    protected void extraValidation(
+            final List<Throwable> validationErrors,
+            final Configuration configuration) {
         super.extraValidation(validationErrors, configuration);
         if (this.headers.isEmpty()) {
             validationErrors.add(new IllegalStateException("There are no headers defined."));
@@ -65,14 +68,15 @@ public final class AddHeadersProcessor extends AbstractClientHttpRequestFactoryP
     }
 
     @Override
-    public MfClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
-                                                         final MfClientHttpRequestFactory requestFactory) {
+    public MfClientHttpRequestFactory createFactoryWrapper(
+            final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
+            final MfClientHttpRequestFactory requestFactory) {
         return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory, matchers, false) {
             @Override
-            protected ClientHttpRequest createRequest(final URI uri,
-                                                      final HttpMethod httpMethod,
-                                                      final MfClientHttpRequestFactory requestFactory) throws
-                    IOException {
+            protected ClientHttpRequest createRequest(
+                    final URI uri,
+                    final HttpMethod httpMethod,
+                    final MfClientHttpRequestFactory requestFactory) throws IOException {
                 final ClientHttpRequest request = requestFactory.createRequest(uri, httpMethod);
                 request.getHeaders().putAll(AddHeadersProcessor.this.headers);
                 return request;

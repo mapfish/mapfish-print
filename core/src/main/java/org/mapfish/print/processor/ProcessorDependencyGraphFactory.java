@@ -16,6 +16,7 @@ import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.ParserUtils;
+import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.springframework.beans.factory.annotation.Autowired;
 

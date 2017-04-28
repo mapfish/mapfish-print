@@ -17,6 +17,7 @@ import org.mapfish.print.http.ConfigFileResolvingHttpRequestFactory;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
 import org.mapfish.print.parser.MapfishParser;
+import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.wrapper.ObjectMissingException;
 import org.mapfish.print.wrapper.PObject;
@@ -43,7 +44,7 @@ public final class Values {
     /**
      * The key that is used to store {@link org.mapfish.print.http.MfClientHttpRequestFactory}.
      */
-    public static final String CLIENT_HTTP_REQUEST_FACTORY_KEY = "clientHttpRequestFactory";
+    public static final String CLIENT_HTTP_REQUEST_FACTORY_KEY = "clientHttpRequestFactoryProvider";
     /**
      * The key that is used to store {@link org.mapfish.print.config.Template}.
      */
@@ -122,8 +123,9 @@ public final class Values {
 
         // add task dir. to values so that all processors can access it
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
-        this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY, new ConfigFileResolvingHttpRequestFactory(httpRequestFactory,
-                template.getConfiguration()));
+        this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY,
+                new MfClientHttpRequestFactoryProvider(new ConfigFileResolvingHttpRequestFactory(
+                        httpRequestFactory, template.getConfiguration())));
         this.values.put(TEMPLATE_KEY, template);
         this.values.put(PDF_CONFIG, template.getPdfConfig());
         if (jasperTemplateBuild != null) {

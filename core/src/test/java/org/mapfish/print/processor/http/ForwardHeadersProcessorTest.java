@@ -84,7 +84,8 @@ public class ForwardHeadersProcessorTest extends AbstractHttpProcessorTest {
         @Override
         public Void execute(TestParam values, ExecutionContext context) throws Exception {
             final URI uri = new URI("http://localhost:8080/path?query#fragment");
-            final ClientHttpRequest request = values.clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
+            final ClientHttpRequest request = values.clientHttpRequestFactoryProvider.get().createRequest(uri,
+                    HttpMethod.GET);
             final URI finalUri = request.getURI();
 
             assertEquals("http", finalUri.getScheme());
@@ -105,7 +106,8 @@ public class ForwardHeadersProcessorTest extends AbstractHttpProcessorTest {
         @Override
         public Void execute(TestParam values, ExecutionContext context) throws Exception {
             final URI uri = new URI("http://localhost:8080/path?query#fragment");
-            final ClientHttpRequest request = values.clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
+            final ClientHttpRequest request = values.clientHttpRequestFactoryProvider.get().createRequest(uri,
+                    HttpMethod.GET);
 
             assertEquals(3, request.getHeaders().size());
             assertArrayEquals(new Object[]{"header1-v1", "header1-v2"}, request.getHeaders().get("header1").toArray());

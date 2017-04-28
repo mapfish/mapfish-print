@@ -90,7 +90,7 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
     public final Output execute(final Input values, final ExecutionContext context)
             throws Exception {
         CreateMapProcessor.Input mapProcessorValues = this.mapProcessor.createInputParameter();
-        mapProcessorValues.clientHttpRequestFactory = values.clientHttpRequestFactory;
+        mapProcessorValues.clientHttpRequestFactoryProvider = values.clientHttpRequestFactoryProvider;
         mapProcessorValues.tempTaskDirectory = values.tempTaskDirectory;
 
         MapAttribute.OverriddenMapAttributeValues mapParams =

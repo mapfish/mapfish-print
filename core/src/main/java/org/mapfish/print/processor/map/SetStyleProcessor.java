@@ -13,6 +13,7 @@ import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.style.StyleParserPlugin;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.InputOutputValue;
+import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -44,7 +45,7 @@ public class SetStyleProcessor extends
         try {
             final Style style = this.mapfishJsonParser.parseStyle(
                     values.template.getConfiguration(),
-                    values.clientHttpRequestFactory,
+                    values.clientHttpRequestFactoryProvider.get(),
                     values.style.style
             ).get();
             for (MapLayer layer : values.map.getLayers()) {
@@ -81,7 +82,7 @@ public class SetStyleProcessor extends
          * A factory for making http requests.  This is added to the values by the framework and therefore
          * does not need to be set in configuration
          */
-        public MfClientHttpRequestFactory clientHttpRequestFactory;
+        public MfClientHttpRequestFactoryProvider clientHttpRequestFactoryProvider;
 
         /**
          * The template containing this table processor.
