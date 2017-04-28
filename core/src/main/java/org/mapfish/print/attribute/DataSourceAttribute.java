@@ -190,6 +190,11 @@ public final class DataSourceAttribute implements Attribute {
         return value;
     }
 
+    @Override
+    public Class getValueType() {
+        return DataSourceAttributeValue.class;
+    }
+
     /**
      * The value class for the {@link org.mapfish.print.attribute.DataSourceAttribute}.
      */

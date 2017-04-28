@@ -18,7 +18,7 @@ import java.util.List;
 public final class StaticLayersAttribute extends ReflectiveAttribute<StaticLayersAttribute.StaticLayersAttributeValue> {
 
     @Override
-    protected Class<StaticLayersAttribute.StaticLayersAttributeValue> getValueType() {
+    public Class<StaticLayersAttribute.StaticLayersAttributeValue> getValueType() {
         return StaticLayersAttributeValue.class;
     }
 

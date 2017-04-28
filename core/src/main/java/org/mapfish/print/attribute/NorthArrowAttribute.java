@@ -33,7 +33,7 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
     }
 
     @Override
-    protected final Class<? extends NorthArrowAttributeValues> getValueType() {
+    public final Class<? extends NorthArrowAttributeValues> getValueType() {
         return NorthArrowAttributeValues.class;
     }
 
@@ -63,7 +63,6 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
     public final void setCreateSubReport(final Boolean createSubReport) {
         this.createSubReport = createSubReport;
     }
-
 
     /**
      * The value of {@link NorthArrowAttribute}.

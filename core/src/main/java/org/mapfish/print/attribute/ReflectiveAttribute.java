@@ -127,7 +127,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
     /**
      * Return the type created by {@link #createValue(org.mapfish.print.config.Template)}.
      */
-    protected abstract Class<? extends Value> getValueType();
+    public abstract Class<? extends Value> getValueType();
 
     /**
      * The YAML config default values.
@@ -378,5 +378,4 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
         }
         return typeDescription;
     }
-
 }

@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -90,7 +91,7 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
     private void init() {
         // default to no processors
         this.processorGraph  = this.processorGraphFactory.build(Collections.<Processor>emptyList(),
-                Collections.<String>emptySet());
+                Collections.<String, Class<?>>emptyMap());
     }
 
     /**
@@ -144,7 +145,11 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
 
     @Override
     public void validate(final List<Throwable> errors, final Configuration configuration) {
-        this.processorGraph = this.processorGraphFactory.build(this.processors, this.attributes.keySet());
+        final Map<String, Class<?>> attcls = new HashMap<String, Class<?>>();
+        for (String attributeName: this.attributes.keySet()) {
+            attcls.put(attributeName, this.attributes.get(attributeName).getValueType());
+        }
+        this.processorGraph = this.processorGraphFactory.build(this.processors, attcls);
         super.validate(errors, configuration);
     }
 

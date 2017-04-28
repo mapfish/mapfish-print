@@ -32,7 +32,6 @@ import java.util.Map;
  * {@link org.mapfish.print.processor.map.CreateOverviewMapProcessor}.
  */
 public abstract class GenericMapAttribute
-
         extends ReflectiveAttribute<GenericMapAttribute.GenericMapAttributeValues> {
 
     private static final double[] DEFAULT_DPI_VALUES = {72, 120, 200, 254, 300, 600, 1200, 2400};

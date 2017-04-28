@@ -13,7 +13,6 @@ templates:
           layers:
           - type: "geojson"
             style: "point"
-            geoJson: "{}"
     processors:
-    - !createMap {}
     - !setStyle {}
+    - !createMap {}

@@ -225,8 +225,11 @@ public class Template implements ConfigurationObject, HasConfiguration {
         if (this.processorGraph == null) {
             synchronized (this) {
                 if (this.processorGraph == null) {
-                    this.processorGraph = this.processorGraphFactory.build(this.processors,
-                            this.attributes.keySet());
+                    final Map<String, Class<?>> attcls = new HashMap<String, Class<?>>();
+                    for (String attributeName: this.attributes.keySet()) {
+                        attcls.put(attributeName, this.attributes.get(attributeName).getValueType());
+                    }
+                    this.processorGraph = this.processorGraphFactory.build(this.processors, attcls);
                 }
             }
         }

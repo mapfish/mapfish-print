@@ -120,8 +120,9 @@ public final class ForwardHeadersProcessor
     }
 
     @Override
-    public MfClientHttpRequestFactory createFactoryWrapper(final Param param,
-                                                         final MfClientHttpRequestFactory requestFactory) {
+    public MfClientHttpRequestFactory createFactoryWrapper(
+            final Param param,
+            final MfClientHttpRequestFactory requestFactory) {
         Map<String, Object> headers = Maps.newHashMap();
 
         for (Map.Entry<String, List<String>> entry : param.requestHeaders.getHeaders().entrySet()) {

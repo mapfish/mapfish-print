@@ -11,12 +11,15 @@ import com.vividsolutions.jts.util.Assert;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.mapfish.print.attribute.HttpRequestHeadersAttribute;
+import org.mapfish.print.config.PDFConfig;
+import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.ParserUtils;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -63,26 +66,23 @@ public final class ProcessorDependencyGraphFactory {
     @SuppressWarnings("unchecked")
     public ProcessorDependencyGraph build(
             final List<? extends Processor> processors,
-            final Set<String> attributes) {
+            final Map<String, Class<?>> attributes) {
         ProcessorDependencyGraph graph = new ProcessorDependencyGraph();
 
-        final Map<String, ProcessorGraphNode<Object, Object>> provideBy =
+        final Map<String, ProcessorGraphNode<Object, Object>> provideByProcessor =
                 new HashMap<String, ProcessorGraphNode<Object, Object>>();
-        for (String attribute : attributes) {
-            provideBy.put(attribute, null);
-        }
+        final Map<String, Class<?>> outputTypes = new HashMap<String, Class<?>>(attributes);
 
         // Add internal values
-        provideBy.put("values", null); // Values.class
-        provideBy.put(Values.TASK_DIRECTORY_KEY, null);
-        provideBy.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, null);
-        provideBy.put(Values.TEMPLATE_KEY, null);
-        provideBy.put(Values.PDF_CONFIG, null);
-        provideBy.put(Values.SUBREPORT_DIR, null);
-        provideBy.put(Values.OUTPUT_FORMAT, null);
-        provideBy.put(MapPrinterServlet.JSON_REQUEST_HEADERS, null); // HttpRequestHeadersAttribute.Value.class
+        outputTypes.put("values", Values.class);
+        outputTypes.put(Values.TASK_DIRECTORY_KEY, File.class);
+        outputTypes.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, MfClientHttpRequestFactoryProvider.class);
+        outputTypes.put(Values.TEMPLATE_KEY, Template.class);
+        outputTypes.put(Values.PDF_CONFIG, PDFConfig.class);
+        outputTypes.put(Values.SUBREPORT_DIR, String.class);
+        outputTypes.put(Values.OUTPUT_FORMAT, String.class);
+        outputTypes.put(MapPrinterServlet.JSON_REQUEST_HEADERS, HttpRequestHeadersAttribute.Value.class);
 
-        final Map<String, Class<?>> outputTypes = new HashMap<String, Class<?>>();
         final List<ProcessorGraphNode<Object, Object>> nodes =
                 new ArrayList<ProcessorGraphNode<Object, Object>>(processors.size());
 
@@ -94,20 +94,24 @@ public final class ProcessorDependencyGraphFactory {
             boolean isRoot = true;
             // check input/output value dependencies
             for (InputValue input : inputs) {
-                final ProcessorGraphNode<Object, Object> solution = provideBy.get(input.getName());
-                if (solution != null) {
-                    // check that the provided output has the same type
-                    final Class<?> inputType = input.getType();
-                    final Class<?> outputType = outputTypes.get(input.getName());
-                    if (inputType.isAssignableFrom(outputType)) {
-                        solution.addDependency(node);
-                        isRoot = false;
-                    } else {
-                        throw new IllegalArgumentException("Type conflict: Processor '" + solution
-                                .getName() + "' provides an output with name '" + input.getName() + "' " +
-                                "and of type '" + outputType + " ', while processor '" + node.getName()
-                                + "' expects an input of that name with type '" + inputType + "'! " +
-                                "Please rename one of the attributes in the mappings of the processors.");
+                final Class<?> outputType = outputTypes.get(input.getName());
+
+                if (outputType != null) {
+                    final ProcessorGraphNode<Object, Object> processorSolution = provideByProcessor.get(input.getName());
+                    if (processorSolution != null) {
+                        // check that the outputTypes output has the same type
+                        final Class<?> inputType = input.getType();
+                        if (inputType.isAssignableFrom(outputType)) {
+                            processorSolution.addDependency(node);
+                            isRoot = false;
+                        } else {
+                            throw new IllegalArgumentException("Type conflict: Processor '" +
+                                    processorSolution.getName() + "' provides an output with name '" +
+                                    input.getName() + "' and of type '" + outputType + " ', while processor" +
+                                    " '" + node.getName() + "' expects an input of that name with type '" +
+                                    inputType + "'! Please rename one of the attributes in the mappings of " +
+                                    "the processors.");
+                        }
                     }
                 } else {
                     if (input.getField().getAnnotation(HasDefaultValue.class) == null) {
@@ -122,13 +126,13 @@ public final class ProcessorDependencyGraphFactory {
 
             for (OutputValue value : getOutputValues(node)) {
                 String outputName = value.getName();
-                if (provideBy.containsKey(outputName)) {
+                if (outputTypes.containsKey(outputName)) {
                     // there is already an output with the same name
                     if (value.canBeRenamed()) {
                         // if this is just a debug output, we can simply rename it
                         outputName = outputName + "_" + UUID.randomUUID().toString();
                     } else {
-                        ProcessorGraphNode<Object, Object> provider = provideBy.get(outputName);
+                        ProcessorGraphNode<Object, Object> provider = provideByProcessor.get(outputName);
                         if (provider == null) {
                             throw new IllegalArgumentException("Processors '" + processor + " provide the " +
                                     "output '" + outputName + "' who is already declared as an attribute.  " +
@@ -145,7 +149,7 @@ public final class ProcessorDependencyGraphFactory {
                     }
                 }
 
-                provideBy.put(outputName, node);
+                provideByProcessor.put(outputName, node);
                 outputTypes.put(outputName, value.getType());
             }
             nodes.add(node);
@@ -153,7 +157,7 @@ public final class ProcessorDependencyGraphFactory {
             // check input/output value dependencies
             for (InputValue input : inputs) {
                 if (input.getField().getAnnotation(InputOutputValue.class) != null) {
-                    provideBy.put(input.getName(), node);
+                    provideByProcessor.put(input.getName(), node);
                 }
             }
         }

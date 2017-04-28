@@ -31,4 +31,9 @@ public class AttributeWithSpringInjection extends PrimitiveAttribute<Integer> {
     public final void setDefault(final Integer value) {
         this.defaultValue = value;
     }
+
+    @Override
+    public Class getValueType() {
+        return Integer.class;
+    }
 }

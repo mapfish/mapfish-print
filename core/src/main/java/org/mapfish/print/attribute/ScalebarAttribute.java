@@ -46,7 +46,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
     }
 
     @Override
-    protected final Class<? extends ScalebarAttributeValues> getValueType() {
+    public final Class<? extends ScalebarAttributeValues> getValueType() {
         return ScalebarAttributeValues.class;
     }
 

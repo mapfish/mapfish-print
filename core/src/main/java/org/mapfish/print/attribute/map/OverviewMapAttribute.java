@@ -43,7 +43,7 @@ public final class OverviewMapAttribute extends GenericMapAttribute {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected Class<OverviewMapAttributeValues> getValueType() {
+    public Class<OverviewMapAttributeValues> getValueType() {
         return OverviewMapAttributeValues.class;
     }
 

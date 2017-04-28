@@ -18,7 +18,7 @@ public final class StyleAttribute extends ReflectiveAttribute<StylesAttributeVal
     private static final Logger LOGGER = LoggerFactory.getLogger(StyleAttribute.class);
 
     @Override
-    protected Class<StylesAttributeValues> getValueType() {
+    public Class<StylesAttributeValues> getValueType() {
         return StylesAttributeValues.class;
     }
 

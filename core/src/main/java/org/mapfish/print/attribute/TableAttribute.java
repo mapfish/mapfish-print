@@ -13,7 +13,7 @@ import java.util.List;
  */
 public final class TableAttribute extends ReflectiveAttribute<TableAttribute.TableAttributeValue> {
     @Override
-    protected Class<TableAttributeValue> getValueType() {
+    public Class<TableAttributeValue> getValueType() {
         return TableAttributeValue.class;
     }
     @Override
@@ -39,5 +39,4 @@ public final class TableAttribute extends ReflectiveAttribute<TableAttribute.Tab
          */
         public PArray[] data;
     }
-
 }

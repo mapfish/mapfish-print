@@ -36,4 +36,8 @@ public class AttributeWithConfigurationInjection extends PrimitiveAttribute<Inte
         this.configuration = configuration;
     }
 
+    @Override
+    public Class getValueType() {
+        return Integer.class;
+    }
 }

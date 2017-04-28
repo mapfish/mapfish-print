@@ -46,7 +46,7 @@ public class ReflectiveAttributeTest {
         }
 
         @Override
-        protected Class<?> getValueType() {
+        public Class<?> getValueType() {
             return type;
         }
 

@@ -50,4 +50,9 @@ public class StringAttribute extends PrimitiveAttribute<String> {
             }
         }
     }
+
+    @Override
+    public Class getValueType() {
+        return String.class;
+    }
 }
