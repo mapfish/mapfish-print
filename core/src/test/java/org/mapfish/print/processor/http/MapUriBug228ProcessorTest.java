@@ -15,6 +15,7 @@ import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.ProcessorGraphNode;
+import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -55,7 +56,7 @@ public class MapUriBug228ProcessorTest extends AbstractMapfishSpringTest {
         assertEquals(1, roots.size());
 
         Values values = new Values();
-        values.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, requestFactory);
+        values.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, new MfClientHttpRequestFactoryProvider(requestFactory));
         values.put(Values.TASK_DIRECTORY_KEY, temporaryFolder.getRoot());
         MapAttribute.MapAttributeValues map = getMapValue(template);
         values.put("map", map);

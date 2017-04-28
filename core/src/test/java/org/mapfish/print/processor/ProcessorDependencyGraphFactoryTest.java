@@ -174,8 +174,8 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
 
         // check that NeedsOverviewMap is not added as dependency to StyleNeedsMap
         ProcessorGraphNode<Object, Object> mapNode = getNodeForProcessor(graph.getRoots(), rootMap2Out);
-        ProcessorGraphNode<Object, Object> styleNode = getNodeForProcessor(mapNode.getRequirements(),
-        styleNeedsMap2);
+        ProcessorGraphNode<Object, Object> styleNode = getNodeForProcessor(
+                mapNode.getDependencies(), styleNeedsMap2);
         assertEquals(2, styleNode.getAllProcessors().size());
     }
 
@@ -223,7 +223,9 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         assertHasOrdering(execution, styleNeedsMap2, needsMap2);
 
         // check that NeedMap is not added as dependency to styleNeedsMap2
-        ProcessorGraphNode<Object, Object> styleNode = getNodeForProcessor(graph.getRoots(), styleNeedsMap2);
+        ProcessorGraphNode<Object, Object> mapNode = getNodeForProcessor(graph.getRoots(), rootMap2Out);
+        ProcessorGraphNode<Object, Object> styleNode = getNodeForProcessor(
+                mapNode.getDependencies(), styleNeedsMap2);
         assertEquals(2, styleNode.getAllProcessors().size());
     }
 

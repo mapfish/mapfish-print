@@ -14,6 +14,7 @@ import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.ProcessorGraphNode;
+import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.mapfish.print.processor.map.CreateMapProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -72,7 +73,7 @@ public abstract class AbstractHttpProcessorTest extends AbstractMapfishSpringTes
         assertEquals(testProcessorClass(), dependencies.iterator().next().getClass());
 
         Values values = new Values();
-        values.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, this.httpClientFactory);
+        values.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, new MfClientHttpRequestFactoryProvider(this.httpClientFactory));
         addExtraValues(values);
         forkJoinPool.invoke(graph.createTask(values));
     }

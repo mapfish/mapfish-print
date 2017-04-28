@@ -82,6 +82,5 @@ public final class AddHeadersProcessor extends AbstractClientHttpRequestFactoryP
                 return request;
             }
         };
-
     }
 }

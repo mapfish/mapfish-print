@@ -60,8 +60,8 @@ import javax.annotation.Nullable;
  * [[examples=http_processors]]
  */
 public final class CompositeClientHttpRequestFactoryProcessor
-        extends AbstractProcessor<Values, Void>
-        implements HttpProcessor<Values> {
+        extends AbstractProcessor<CompositeClientHttpRequestFactoryProcessor.Input, Void>
+        implements HttpProcessor<CompositeClientHttpRequestFactoryProcessor.Input> {
     private List<HttpProcessor> httpProcessors = Lists.newArrayList();
 
     /**
@@ -82,13 +82,14 @@ public final class CompositeClientHttpRequestFactoryProcessor
 
     @SuppressWarnings("unchecked")
     @Override
-    public MfClientHttpRequestFactory createFactoryWrapper(final Values values,
-                                                         final MfClientHttpRequestFactory requestFactory) {
+    public MfClientHttpRequestFactory createFactoryWrapper(
+            final Input values,
+            final MfClientHttpRequestFactory requestFactory) {
         MfClientHttpRequestFactory finalRequestFactory = requestFactory;
         // apply the parts in reverse so that the last part is the inner most wrapper (will be last to be called)
         for (int i = this.httpProcessors.size() - 1; i > -1; i--) {
             final HttpProcessor processor = this.httpProcessors.get(i);
-            Object input = ProcessorUtils.populateInputParameter(processor, values);
+            Object input = ProcessorUtils.populateInputParameter(processor, values.values);
             finalRequestFactory = processor.createFactoryWrapper(input, finalRequestFactory);
         }
         return finalRequestFactory;
@@ -113,20 +114,24 @@ public final class CompositeClientHttpRequestFactoryProcessor
 
     @Nullable
     @Override
-    public Values createInputParameter() {
-        return new Values();
+    public Input createInputParameter() {
+        return new Input();
     }
 
     @Nullable
     @Override
     public Void execute(
-            final Values values,
+            final Input values,
             final ExecutionContext context) throws Exception {
-        MfClientHttpRequestFactory requestFactory = values.getObject(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY,
-                MfClientHttpRequestFactory.class);
+        MfClientHttpRequestFactory requestFactory = values.clientHttpRequestFactoryProvider.get();
 
         final ClientHttpFactoryProcessorParam output = new ClientHttpFactoryProcessorParam();
-        output.clientHttpRequestFactoryProvider.set(createFactoryWrapper(values, requestFactory));
+        output.clientHttpRequestFactoryProvider.set(createFactoryWrapper(
+                values, requestFactory));
         return null;
+    }
+
+    class Input extends ClientHttpFactoryProcessorParam {
+        Values values;
     }
 }

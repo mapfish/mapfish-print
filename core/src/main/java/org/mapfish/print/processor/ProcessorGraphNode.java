@@ -62,9 +62,13 @@ public final class ProcessorGraphNode<In, Out> {
     private void addRequirement(final ProcessorGraphNode node) {
         this.requirements.add(node);
     }
-    
+
     protected List<ProcessorGraphNode> getRequirements() {
         return this.requirements;
+    }
+
+    protected List<ProcessorGraphNode> getDependencies() {
+        return this.dependencies;
     }
 
     /**
