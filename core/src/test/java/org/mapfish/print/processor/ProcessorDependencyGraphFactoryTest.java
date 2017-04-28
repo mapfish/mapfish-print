@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.output.Values;
+import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.processor.map.CreateOverviewMapProcessor;
 import org.mapfish.print.processor.map.SetStyleProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -346,20 +347,13 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     @Test
     public void testBuildWhenOutputsMapToAllOtherInputs() throws Exception {
         final ArrayList<TestProcessor> processors = Lists.newArrayList(NeedsMapProducesMap, NeedsTableProducesTable);
-        ProcessorDependencyGraph graph = this.processorDependencyGraphFactory.build(processors,
-                Collections.<String>emptySet());
-        assertContainsProcessors(graph.getRoots(), NeedsMapProducesMap, NeedsTableProducesTable);
-        final TestOrderExecution execution = new TestOrderExecution();
-        Values values = new Values();
-        values.put(EXECUTION_TRACKER, execution);
-        values.put("table", "tableValue");
-        values.put("map", "mapValue");
-
-        forkJoinPool.invoke(graph.createTask(values));
-
-        assertEquals(2, execution.testOrderExecution.size());
-
-        assertTrue(execution.testOrderExecution.containsAll(Arrays.asList(NeedsMapProducesMap, NeedsTableProducesTable)));
+        try {
+            ProcessorDependencyGraph graph = this.processorDependencyGraphFactory.build(processors,
+                    Collections.<String>emptySet());
+            assertTrue("A prossessor shouldn't be able to depends on himself", false);
+        } catch (IllegalArgumentException e) {
+            // => ok
+        }
     }
 
 
@@ -417,6 +411,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     }
 
     static class TrackerContainer {
+        @HasDefaultValue
         public TestOrderExecution executionOrder;
     }
     private abstract static class TestProcessor<In extends TrackerContainer, Out>

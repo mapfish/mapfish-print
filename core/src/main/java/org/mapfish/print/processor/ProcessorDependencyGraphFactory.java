@@ -10,6 +10,7 @@ import com.google.common.collect.Sets;
 import com.vividsolutions.jts.util.Assert;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.ParserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -94,6 +95,11 @@ public final class ProcessorDependencyGraphFactory {
                                 "and of type '" + outputType + " ', while processor '" + node.getName()
                                 + "' expects an input of that name with type '" + inputType + "'! " +
                                 "Please rename one of the attributes in the mappings of the processors.");
+                    }
+                } else {
+                    if (input.getField().getAnnotation(HasDefaultValue.class) == null) {
+                        throw new IllegalArgumentException("The Processor '" + processor + "' has no value " +
+                                "for the input '" + input.getName() + "'.");
                     }
                 }
             }
