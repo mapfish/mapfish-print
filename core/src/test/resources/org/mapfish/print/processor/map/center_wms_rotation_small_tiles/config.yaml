@@ -1,0 +1,12 @@
+templates:
+  main: !template
+    reportTemplate: "dummy.jxml"
+    attributes:
+      mapDef: !map
+        width: 625
+        height: 625
+        maxDpi: 400
+    processors:
+    - !createMap
+        inputMapper: {mapDef: map}
+        outputMapper: {mapSubReport: mapOut}

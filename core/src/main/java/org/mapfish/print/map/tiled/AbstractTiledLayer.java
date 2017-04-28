@@ -14,6 +14,7 @@ import org.mapfish.print.map.geotools.AbstractGeotoolsLayer;
 import org.mapfish.print.map.geotools.StyleSupplier;
 
 import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.util.Collections;
 import java.util.List;
 
@@ -55,8 +56,9 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
             final MapfishMapContext mapContext) {
         double dpi = mapContext.getDPI();
         MapBounds bounds = mapContext.getBounds();
-        Rectangle paintArea = new Rectangle(mapContext.getMapSize());
-        this.tileCacheInformation = createTileInformation(bounds, paintArea, dpi);
+        Rectangle2D.Double paintAreaPrecise = mapContext.getRotatedMapSizePrecise();
+        Rectangle paintArea = new Rectangle(MapfishMapContext.rectangleDoubleToDimension(paintAreaPrecise));
+        this.tileCacheInformation = createTileInformation(mapContext.getRotatedBounds(paintAreaPrecise, paintArea), paintArea, dpi);
     }
 
     @Override
