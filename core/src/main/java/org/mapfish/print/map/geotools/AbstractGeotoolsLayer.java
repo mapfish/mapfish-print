@@ -12,18 +12,15 @@ import org.geotools.styling.Style;
 import org.geotools.styling.StyleVisitor;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FloatingPointUtil;
-import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.http.HttpRequestCache;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
 
-import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.geom.Rectangle2D;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -171,19 +168,20 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
      * @param transformer the transformer
      */
     protected final MapfishMapContext getLayerTransformer(final MapfishMapContext transformer) {
-        Rectangle paintArea = new Rectangle(transformer.getMapSize());
         MapfishMapContext layerTransformer = transformer;
 
         if (!FloatingPointUtil.equals(transformer.getRotation(), 0.0) && !this.supportsNativeRotation()) {
             // if a rotation is set and the rotation can not be handled natively
             // by the layer, we have to adjust the bounds and map size
-            MapBounds bounds = transformer.getBounds();
-            final Rectangle2D.Double paintAreaPrecise = transformer.getRotatedMapSizePrecise();
-            paintArea = new Rectangle(MapfishMapContext.rectangleDoubleToDimension(paintAreaPrecise));
-            bounds = transformer.getRotatedBounds(paintAreaPrecise, paintArea);
-            Dimension mapSize = new Dimension(paintArea.width, paintArea.height);
-            layerTransformer = new MapfishMapContext(transformer, bounds, mapSize, 0, false, transformer.getDPI(),
-                    transformer.getRequestorDPI(), transformer.isForceLongitudeFirst(),
+            layerTransformer = new MapfishMapContext(
+                    transformer,
+                    transformer.getRotatedBoundsAdjustedForPreciseRotatedMapSize(),
+                    transformer.getRotatedMapSize(),
+                    0,
+                    false,
+                    transformer.getDPI(),
+                    transformer.getRequestorDPI(),
+                    transformer.isForceLongitudeFirst(),
                     transformer.isDpiSensitiveStyle());
         }
         
