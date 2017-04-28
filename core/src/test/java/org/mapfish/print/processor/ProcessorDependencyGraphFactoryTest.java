@@ -60,8 +60,8 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
 
     @Test
     public void testSimpleBuild() throws Exception {
-        final ArrayList<TestProcessor> processors = Lists.newArrayList(RootNoOutput, NeedsTable, NeedsMap, RootMapOut,
-                RootTableAndWidthOut);
+        final ArrayList<TestProcessor> processors = Lists.newArrayList(RootNoOutput, RootMapOut,
+                RootTableAndWidthOut, NeedsTable, NeedsMap);
         ProcessorDependencyGraph graph = this.processorDependencyGraphFactory.build(processors,
                 Collections.<String>emptySet());
         assertContainsProcessors(graph.getRoots(), RootMapOut, RootNoOutput, RootTableAndWidthOut);
@@ -78,8 +78,8 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     @Test
     @DirtiesContext
     public void testSimpleBuild_ExternalDependency_NoInput() throws Exception {
-        final ArrayList<TestProcessor> processors = Lists.newArrayList(RootNoOutput, NeedsTable, NeedsMap, RootMapOut,
-                RootTableAndWidthOut);
+        final ArrayList<TestProcessor> processors = Lists.newArrayList(RootNoOutput, RootMapOut,
+                RootTableAndWidthOut, NeedsTable, NeedsMap);
 
         // external dependency: RootNoOutput should run before RootMapOuts
         final List<ProcessorDependency> dependencies = Lists.newArrayList(
