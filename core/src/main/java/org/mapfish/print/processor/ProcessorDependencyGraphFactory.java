@@ -9,6 +9,7 @@ import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 import com.vividsolutions.jts.util.Assert;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.mapfish.print.parser.ParserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -154,10 +155,17 @@ public final class ProcessorDependencyGraphFactory {
             }
         }
 
+        final Collection<? extends Processor> missingProcessors = CollectionUtils.subtract(
+                processors, graph.getAllProcessors());
+        final StringBuffer missingProcessorsName = new StringBuffer();
+        for (Processor p : missingProcessors) {
+            missingProcessorsName.append("\n- ");
+            missingProcessorsName.append(p.toString());
+        }
         Assert.isTrue(
-                graph.getAllProcessors().containsAll(processors),
-                "'" + graph + "' does not contain all the processors: " + processors +
-                        " vs: " + graph.getAllProcessors());
+                missingProcessors.isEmpty(),
+                "The processor graph:\n" + graph + "\ndoes not contain all the processors, missing:" +
+                        missingProcessorsName);
 
         return graph;
     }
