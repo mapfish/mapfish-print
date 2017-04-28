@@ -103,8 +103,8 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     @Test
     @DirtiesContext
     public void testSimpleBuild_ExternalDependency_SameInput() throws Exception {
-        final ArrayList<TestProcessor> processors = Lists.newArrayList(RootNoOutput, NeedsTable, NeedsMap, StyleNeedsMap,
-                RootMapOut, RootTableAndWidthOut);
+        final ArrayList<TestProcessor> processors = Lists.newArrayList(RootNoOutput,
+                RootMapOut, RootTableAndWidthOut, NeedsTable, StyleNeedsMap, NeedsMap);
 
         // external dependency: StyleNeedsMap should run before NeedsMap when they have the same
         // mapped input for "map"
@@ -121,9 +121,8 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         forkJoinPool.invoke(graph.createTask(values));
 
         assertEquals(execution.testOrderExecution.toString(), 6, execution.testOrderExecution.size());
-        assertHasOrdering(execution, RootMapOut, NeedsMap);
+        assertHasOrdering(execution, RootMapOut, StyleNeedsMap, NeedsMap);
         assertHasOrdering(execution, RootTableAndWidthOut, NeedsTable);
-        assertHasOrdering(execution, StyleNeedsMap, NeedsMap);
     }
 
     /**
@@ -514,6 +513,11 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         public String map = "map";
     }
 
+    private static class MapInputOutput extends TrackerContainer {
+        @InputOutputValue
+        public String map = "map";
+    }
+
     private static class MapAndWidth extends MapInput {
         public int width;
     }
@@ -570,7 +574,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
 
     private static TestProcessor NeedsMapList = new NeedsMapListClass("NeedsMapList", Void.class);
 
-    private static class StyleNeedsMapClass extends TestProcessor<MapInput, Void> {
+    private static class StyleNeedsMapClass extends TestProcessor<MapInputOutput, Void> {
         protected StyleNeedsMapClass(String name, Class<Void> outputType) {
             super(name, outputType);
         }
@@ -581,8 +585,8 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         }
 
         @Override
-        public MapInput createInputParameter() {
-            return new MapInput();
+        public MapInputOutput createInputParameter() {
+            return new MapInputOutput();
         }
     }
 
