@@ -10,8 +10,11 @@ import com.google.common.collect.Sets;
 import com.vividsolutions.jts.util.Assert;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.mapfish.print.attribute.HttpRequestHeadersAttribute;
+import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.ParserUtils;
+import org.mapfish.print.servlet.MapPrinterServlet;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.Field;
@@ -68,6 +71,16 @@ public final class ProcessorDependencyGraphFactory {
         for (String attribute : attributes) {
             provideBy.put(attribute, null);
         }
+
+        // Add internal values
+        provideBy.put("values", null); // Values.class
+        provideBy.put(Values.TASK_DIRECTORY_KEY, null);
+        provideBy.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, null);
+        provideBy.put(Values.TEMPLATE_KEY, null);
+        provideBy.put(Values.PDF_CONFIG, null);
+        provideBy.put(Values.SUBREPORT_DIR, null);
+        provideBy.put(Values.OUTPUT_FORMAT, null);
+        provideBy.put(MapPrinterServlet.JSON_REQUEST_HEADERS, null); // HttpRequestHeadersAttribute.Value.class
 
         final Map<String, Class<?>> outputTypes = new HashMap<String, Class<?>>();
         final List<ProcessorGraphNode<Object, Object>> nodes =
