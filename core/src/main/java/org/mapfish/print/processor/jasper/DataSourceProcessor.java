@@ -62,9 +62,12 @@ import static org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttribut
  * [[examples=verboseExample,datasource_dynamic_tables,datasource_many_dynamictables_legend,
  * datasource_multiple_maps,customDynamicReport,report]]
  */
-public final class DataSourceProcessor extends AbstractProcessor<DataSourceProcessor.Input, DataSourceProcessor.Output> {
+public final class DataSourceProcessor
+        extends AbstractProcessor<DataSourceProcessor.Input, DataSourceProcessor.Output>
+        implements RequireAttribute{
 
-    private Map<String, Attribute> attributes = Maps.newHashMap();
+    private Map<String, Attribute> internalAttributes = Maps.newHashMap();
+    private Map<String, Attribute> allAttributes = Maps.newHashMap();
 
     @Autowired
     private ProcessorDependencyGraphFactory processorGraphFactory;
@@ -138,22 +141,20 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
      * @param attributes the attributes.
      */
     public void setAttributes(final Map<String, Attribute> attributes) {
-        this.attributes = attributes;
+        this.internalAttributes = attributes;
+        this.allAttributes.putAll(attributes);
     }
 
     /**
      * All the sublevel attributes.
      *
-     * @param attributes the attributes.
+     * @param name the attribute name.
+     * @param attribute the attribute.
      */
-    public void initAttributes(final Map<String, Attribute> attributes) {
-        String attributeName = ProcessorUtils.getInputValueName(
-                this.getOutputPrefix(), this.getInputMapperBiMap(), "datasource");
-        DataSourceAttribute attribute = (DataSourceAttribute)attributes.get(attributeName);
-        if (attribute == null) {
-            throw new RuntimeException("Unable to find the datasource value '" + attributeName + "'.");
+    public void setAttribute(String name, Attribute attribute) {
+        if (name.equals("datasource")) {
+            this.allAttributes.putAll(((DataSourceAttribute)attribute).getAttributes());
         }
-        this.setAttributes(((DataSourceAttribute)attributes.get(attributeName)).getAttributes());
     }
 
     @Nullable
@@ -191,6 +192,7 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
         List<ForkJoinTask<Values>> futures = Lists.newArrayList();
         if (!dataSourceValues.isEmpty()) {
             for (Values dataSourceValue : dataSourceValues) {
+                addAttributes(input.template, dataSourceValue);
                 final ForkJoinTask<Values> taskFuture = this.processorGraph.createTask(dataSourceValue).fork();
                 futures.add(taskFuture);
             }
@@ -219,7 +221,7 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
 
     private void addAttributes(@Nonnull final Template template,
                                @Nonnull final Values dataSourceValue) throws JSONException {
-        dataSourceValue.populateFromAttributes(template, this.parser, this.attributes,
+        dataSourceValue.populateFromAttributes(template, this.parser, this.internalAttributes,
                 new PJsonObject(new JSONObject(), "DataSourceProcessorAttributes"));
     }
 
@@ -234,20 +236,18 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
                     + this.reportTemplate));
         }
 
-        for (Attribute attribute : this.attributes.values()) {
+        for (Attribute attribute : this.allAttributes.values()) {
             attribute.validate(validationErrors, configuration);
         }
 
+        ProcessorDependencyGraphFactory.fillProcessorAttributes(this.processors, this.allAttributes);
         for (Processor processor : this.processors) {
-            if (processor instanceof DataSourceProcessor) {
-                ((DataSourceProcessor)processor).initAttributes(this.attributes);
-            }
             processor.validate(validationErrors, configuration);
         }
 
         final Map<String, Class<?>> attcls = new HashMap<String, Class<?>>();
-        for (String attributeName: this.attributes.keySet()) {
-            attcls.put(attributeName, this.attributes.get(attributeName).getValueType());
+        for (String attributeName: this.allAttributes.keySet()) {
+            attcls.put(attributeName, this.allAttributes.get(attributeName).getValueType());
         }
         try {
             this.processorGraph = this.processorGraphFactory.build(this.processors, attcls);

@@ -287,10 +287,8 @@ public class Template implements ConfigurationObject, HasConfiguration {
             attribute.validate(validationErrors, config);
         }
 
+        ProcessorDependencyGraphFactory.fillProcessorAttributes(this.processors, this.attributes);
         for (Processor processor : this.processors) {
-            if (processor instanceof DataSourceProcessor) {
-                ((DataSourceProcessor)processor).initAttributes(this.attributes);
-            }
             processor.validate(validationErrors, config);
         }
 

@@ -67,7 +67,6 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
                     }
                 }
         );
-
     }
 
     @Test

@@ -51,8 +51,8 @@ public final class ProcessorDependencyGraph {
         }
 
         if (missingAttributes.length() > 0) {
-            throw new IllegalArgumentException("It has been found that one or more required attributes are missing from the " +
-                                               "values object:" + missingAttributes + "\n");
+            throw new IllegalArgumentException("It has been found that one or more required attributes are " +
+                    "missing from the values object:" + missingAttributes + "\n");
         }
 
         return new ProcessorGraphForkJoinTask(values);
