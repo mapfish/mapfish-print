@@ -3,14 +3,11 @@ package org.mapfish.print.processor;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Objects;
 import com.google.common.collect.BiMap;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 import com.vividsolutions.jts.util.Assert;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.attribute.HttpRequestHeadersAttribute;
 import org.mapfish.print.config.PDFConfig;
@@ -236,6 +233,14 @@ public final class ProcessorDependencyGraphFactory {
         return values;
     }
 
+    /**
+     * Fill the attributes in the processor.
+     * @see RequireAttribute
+     * @see ProvideAttributes
+     *
+     * @param processors The processors
+     * @param initialAttributes The attributes
+     */
     public static void fillProcessorAttributes(
             final List<Processor> processors,
             final Map<String, Attribute> initialAttributes) {
@@ -289,7 +294,7 @@ public final class ProcessorDependencyGraphFactory {
         return msg.toString();
     }
 
-    public static class InputValue {
+    private static class InputValue {
         private final String name;
         private final String internalName;
         private final Class<?> type;
@@ -345,7 +350,7 @@ public final class ProcessorDependencyGraphFactory {
         }
     }
 
-    public static final class OutputValue extends InputValue {
+    private static final class OutputValue extends InputValue {
         private final boolean canBeRenamed;
 
         private OutputValue(

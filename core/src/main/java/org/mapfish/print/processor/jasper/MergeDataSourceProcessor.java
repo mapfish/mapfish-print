@@ -138,7 +138,8 @@ public final class MergeDataSourceProcessor
                 }
                 if (sourceKeys.contains(attributeName)) {
                     if (customDependency == null) {
-                        final Class<? extends Processor<?, ?>> processorClass = (Class<? extends Processor<?, ?>>) processor.getClass();
+                        final Class<Processor<?, ?>> processorClass =
+                                (Class<Processor<?, ?>>) processor.getClass();
                         customDependency = new ProcessorDependency(processorClass, getClass(),
                                 Collections.singleton(attributeName));
                         dependencies.add(customDependency);

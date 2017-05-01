@@ -1,5 +1,6 @@
 package org.mapfish.print.processor.jasper;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
@@ -53,7 +54,7 @@ public class MergeDataSourceProcessorIntegrationTest extends AbstractMapfishSpri
             if (processor instanceof MergeDataSourceProcessor) {
                 mergeDataSourceProcessor = (MergeDataSourceProcessor) processor;
             } else {
-                allNodes.add(new ProcessorGraphNode(processor, null));
+                allNodes.add(new ProcessorGraphNode(processor, new MetricRegistry()));
             }
         }
 

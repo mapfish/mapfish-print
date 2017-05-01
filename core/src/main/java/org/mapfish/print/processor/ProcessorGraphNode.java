@@ -5,7 +5,6 @@ import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import jsr166y.RecursiveTask;
 import org.mapfish.print.ExceptionUtils;
@@ -25,7 +24,7 @@ import javax.annotation.Nonnull;
  * Represents one node in the Processor dependency graph ({@link ProcessorDependencyGraph}).
  * <p></p>
  *
- * @param <In>  Same as {@link org.mapfish.print.processor.Processor} <em>In</em> parameter
+ * @param <In> Same as {@link org.mapfish.print.processor.Processor} <em>In</em> parameter
  * @param <Out> Same as {@link org.mapfish.print.processor.Processor} <em>Out</em> parameter
  */
 public final class ProcessorGraphNode<In, Out> {
@@ -91,8 +90,8 @@ public final class ProcessorGraphNode<In, Out> {
      * @return a task ready to be submitted to a fork join pool.
      */
     @SuppressWarnings("unchecked")
-    public Optional<ProcessorNodeForkJoinTask> createTask(@Nonnull final ProcessorExecutionContext
-                                                                       execContext) {
+    public Optional<ProcessorNodeForkJoinTask> createTask(
+            @Nonnull final ProcessorExecutionContext execContext) {
         if (!execContext.tryStart(this)) {
             return Optional.absent();
         } else {

@@ -200,12 +200,23 @@ public class CreateMapPagesProcessor
         return new Output(datasourceAttributes);
     }
 
-    public void setAttribute(String name, Attribute attribute) {
+    /**
+     * Set the map attribute.
+     *
+     * @param name the attribute name
+     * @param attribute the attribute
+     */
+    public void setAttribute(final String name, final Attribute attribute) {
         if (name.equals("map")) {
             this.mapAttribute = (MapAttribute) attribute;
         }
     }
 
+    /**
+     * Gets the attributes provided by the processor.
+     *
+     * @return the attributes
+     */
     public Map<String, Attribute> getAttributes() {
         Map<String, Attribute> result = new HashMap<String, Attribute>();
         DataSourceAttribute datasourceAttribute = new DataSourceAttribute();

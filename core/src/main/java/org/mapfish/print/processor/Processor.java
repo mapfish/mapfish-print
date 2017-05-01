@@ -10,11 +10,11 @@ import javax.annotation.Nullable;
  * Interface for processing input attributes.  A processor must <em>NOT</em> contain mutable state because a single processor
  * instance can be ran in multiple threads and one running processor must not interfere with the running of the other instance.
  *
- * @param <In>  A Java DTO input parameter object of the execute method.  The object properties are resolved by looking at the
- *              public fields in the object and setting those fields.  Only fields in the object itself will be inspected.
- *              Object is populated from the {@link org.mapfish.print.output.Values} object.
- * @param <Out> A Java DTO output/return object from the execute method.
- *             properties will be put into the {@link org.mapfish.print.output.Values} object so other processor can access the values.
+ * @param <In> A Java DTO input parameter object of the execute method.  The object properties are resolved
+ *      by looking at the public fields in the object and setting those fields.  Only fields in the object
+ *      itself will be inspected. Object is populated from the {@link org.mapfish.print.output.Values} object.
+ * @param <Out> A Java DTO output/return object from the execute method. properties will be put into the
+ *      {@link org.mapfish.print.output.Values} object so other processor can access the values.
  */
 public interface Processor<In, Out> extends ConfigurationObject {
 

@@ -331,7 +331,7 @@ public final class Values {
      *
      * @param key the key for looking up the value.
      * @param type the type of the object
-     * @param <V>  the type
+     * @param <V> the type
      */
     public <V> V getObject(final String key, final Class<V> type) {
         final Object obj = this.values.get(key);
@@ -370,7 +370,7 @@ public final class Values {
      * Find all the values of the requested type.
      *
      * @param valueTypeToFind the type of the value to return.
-     * @param <T>             the type of the value to find.
+     * @param <T> the type of the value to find.
      * @return the key, value pairs found.
      */
     @SuppressWarnings("unchecked")

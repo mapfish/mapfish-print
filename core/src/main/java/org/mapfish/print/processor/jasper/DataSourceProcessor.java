@@ -16,7 +16,11 @@ import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.MapfishParser;
-import org.mapfish.print.processor.*;
+import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.Processor;
+import org.mapfish.print.processor.ProcessorDependencyGraph;
+import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
+import org.mapfish.print.processor.RequireAttribute;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,27 +38,31 @@ import javax.annotation.PostConstruct;
 import static org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue;
 
 /**
- * <p>A processor that will process a {@link org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue} and construct
- * a single Jasper DataSource from the input values in the {@link org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue}
- * input object.</p>
+ * <p>A processor that will process a
+ * {@link org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue} and construct a single
+ * Jasper DataSource from the input values in the
+ * {@link org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue} input object.</p>
  *
- * <p>The {@link org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue} has an array of maps, each map in the array
- * equates to a row in the Jasper DataSource.</p>
+ * <p>The {@link org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue} has an array of
+ * maps, each map in the array equates to a row in the Jasper DataSource.</p>
  *
  * <p>The DataSourceProcessor can be configured with processors which will be used
  * to transform each map in the input array before constructing the final DataSource row.</p>
  *
- * <p>For example, each map in the array could be {@link org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues} and the
- * DataSourceProcessor could be configured with !createMap processor.  In this scenario each element in the array would be transformed
- * by the !createMap processor and thus each row of the resulting DataSource will contain the map subreport created by the !createMap
- * processor.</p>
+ * <p>For example, each map in the array could be
+ * {@link org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues} and the DataSourceProcessor
+ * could be configured with !createMap processor.  In this scenario each element in the array would be
+ * transformed by the !createMap processor and thus each row of the resulting DataSource will contain the
+ * map subreport created by the !createMap processor.</p>
  *
- * <p>An additional point to remember is that (as with the normal execution) in addition to the output of the processors, the attributes
- * in the input map will also be columns in the row.  This means that the jasper report that makes use of the resulting DataSource
- * will have access to both the results of the processor as well as the input values (unless overwritten by the processor output).</p>
+ * <p>An additional point to remember is that (as with the normal execution) in addition to the output of
+ * the processors, the attributes in the input map will also be columns in the row.  This means that the
+ * jasper report that makes use of the resulting DataSource will have access to both the results of the
+ * processor as well as the input values (unless overwritten by the processor output).</p>
  *
- * <p>If the reportKey is defined (and reportTemplate) then a the reportTemplate jrxml file will be compiled (as required by all
- * jrxml files) and an additional column will be added to each row [reportKey] : [compiled reportTemplate File]</p>
+ * <p>If the reportKey is defined (and reportTemplate) then a the reportTemplate jrxml file will be
+ * compiled (as required by all jrxml files) and an additional column will be added to each row [reportKey]
+ * : [compiled reportTemplate File]</p>
  *
  * <p>If reportKey is defined the reportTemplate must also be defined (and vice-versa).</p>
  * 
@@ -64,7 +72,7 @@ import static org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttribut
  */
 public final class DataSourceProcessor
         extends AbstractProcessor<DataSourceProcessor.Input, DataSourceProcessor.Output>
-        implements RequireAttribute{
+        implements RequireAttribute {
 
     private Map<String, Attribute> internalAttributes = Maps.newHashMap();
     private Map<String, Attribute> allAttributes = Maps.newHashMap();
@@ -146,14 +154,14 @@ public final class DataSourceProcessor
     }
 
     /**
-     * All the sublevel attributes.
+     * All the sub-level attributes.
      *
      * @param name the attribute name.
      * @param attribute the attribute.
      */
-    public void setAttribute(String name, Attribute attribute) {
+    public void setAttribute(final String name, final Attribute attribute) {
         if (name.equals("datasource")) {
-            this.allAttributes.putAll(((DataSourceAttribute)attribute).getAttributes());
+            this.allAttributes.putAll(((DataSourceAttribute) attribute).getAttributes());
         }
     }
 
@@ -251,7 +259,7 @@ public final class DataSourceProcessor
         }
         try {
             this.processorGraph = this.processorGraphFactory.build(this.processors, attcls);
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             validationErrors.add(e);
         }
 

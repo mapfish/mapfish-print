@@ -7,7 +7,10 @@ import org.mapfish.print.attribute.Attribute;
  */
 public interface RequireAttribute {
     /**
-     * Set the attribute
+     * Set the attribute.
+     *
+     * @param name the attribute name
+     * @param attribute the attribute
      */
     void setAttribute(String name, Attribute attribute);
 }

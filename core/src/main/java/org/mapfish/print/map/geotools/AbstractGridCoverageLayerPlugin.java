@@ -20,7 +20,7 @@ public abstract class AbstractGridCoverageLayerPlugin {
      *
      * @param template the template that the map is part of
      * @param styleRef the style ref identifying the style
-     * @param <T>      the source type
+     * @param <T> the source type
      */
     protected final <T> StyleSupplier<T> createStyleSupplier(final Template template,
                                                              final String styleRef) {

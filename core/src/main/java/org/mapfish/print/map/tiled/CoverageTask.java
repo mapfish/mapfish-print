@@ -43,7 +43,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
 
     /**
      * Constructor.
-     * @param tilePreparationInfo tileLoader Results     * 
+     * @param tilePreparationInfo tileLoader Results
      * @param failOnError fail on tile download error
      * @param registry the metrics registry
      * @param tileCacheInfo the object used to create the tile requests
