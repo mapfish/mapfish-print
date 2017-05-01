@@ -34,27 +34,19 @@ public final class ProcessorUtils {
      *
      * @param processor the processor that the input object will be for.
      * @param values the object containing the values to put into the input object
-     * @param <In>      type of the processor input object
-     * @param <Out>     type of the processor output object
+     * @param <In> type of the processor input object
+     * @param <Out> type of the processor output object
      */
-    public static <In, Out> In populateInputParameter(final Processor<In, Out> processor, final Values values) {
+    public static <In, Out> In populateInputParameter(
+            final Processor<In, Out> processor,
+            @Nonnull final Values values) {
         In inputObject = processor.createInputParameter();
-        if (inputObject instanceof Values) {
-            @SuppressWarnings("unchecked")
-            final In castValues = (In) values;
-            return castValues;
-        }
         if (inputObject != null) {
             Collection<Field> fields = getAllAttributes(inputObject.getClass());
             for (Field field : fields) {
                 String name = getInputValueName(processor.getOutputPrefix(),
                         processor.getInputMapperBiMap(), field.getName());
-                Object value = null;
-                if (field.getType() == Values.class) {
-                    value = values;
-                } else if (values != null) {
-                    value = values.getObject(name, Object.class);
-                }
+                Object value = values.getObject(name, Object.class);
                 if (value != null) {
                     try {
                         field.set(inputObject, value);
@@ -66,7 +58,7 @@ public final class ProcessorUtils {
                         throw new NoSuchElementException(name + " is a required property for " + processor
                                 + " and therefore must be defined in the Request Data or be an output of " +
                                 "one of the other processors. Available values: " +
-                                (values == null ? null : values.asMap().keySet()) + ".");
+                                values.asMap().keySet() + ".");
                     }
                 }
             }
@@ -80,9 +72,10 @@ public final class ProcessorUtils {
      * @param processor the processor the output if from
      * @param values the object for sharing values between processors
      */
-    public static void writeProcessorOutputToValues(final Object output,
-                                                    final Processor<?, ?> processor,
-                                                    final Values values) {
+    public static void writeProcessorOutputToValues(
+            final Object output,
+            final Processor<?, ?> processor,
+            final Values values) {
         Map<String, String> mapper = processor.getOutputMapperBiMap();
         if (mapper == null) {
             mapper = Collections.emptyMap();

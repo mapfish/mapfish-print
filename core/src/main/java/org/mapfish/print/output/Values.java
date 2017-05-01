@@ -61,6 +61,10 @@ public final class Values {
      * The key for the values object for the subreport directory.
      */
     public static final String SUBREPORT_DIR_KEY = "subreportDir";
+    /**
+     * The key for the values object of it self.
+     */
+    public static final String VALUES_KEY = "values";
 
 
     private final Map<String, Object> values = new ConcurrentHashMap<String, Object>();
@@ -139,6 +143,8 @@ public final class Values {
 
         Map<String, Attribute> attributes = Maps.newHashMap(template.getAttributes());
         populateFromAttributes(template, parser, attributes, jsonAttributes);
+
+        this.values.put(VALUES_KEY, this);
     }
 
     /**

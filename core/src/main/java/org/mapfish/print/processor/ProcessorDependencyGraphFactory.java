@@ -95,29 +95,36 @@ public final class ProcessorDependencyGraphFactory {
             boolean isRoot = true;
             // check input/output value dependencies
             for (InputValue input : inputs) {
-                final Class<?> outputType = outputTypes.get(input.getName());
-
-                if (outputType != null) {
-                    final ProcessorGraphNode<Object, Object> processorSolution = provideByProcessor.get(input.getName());
-                    if (processorSolution != null) {
-                        // check that the outputTypes output has the same type
-                        final Class<?> inputType = input.getType();
-                        if (inputType.isAssignableFrom(outputType)) {
-                            processorSolution.addDependency(node);
-                            isRoot = false;
-                        } else {
-                            throw new IllegalArgumentException("Type conflict: Processor '" +
-                                    processorSolution.getName() + "' provides an output with name '" +
-                                    input.getName() + "' and of type '" + outputType + " ', while processor" +
-                                    " '" + node.getName() + "' expects an input of that name with type '" +
-                                    inputType + "'! Please rename one of the attributes in the mappings of " +
-                                    "the processors.");
-                        }
+                if (input.getName() == Values.VALUES_KEY) {
+                    for (String name : provideByProcessor.keySet()) {
+                        final ProcessorGraphNode<Object, Object> processorSolution =
+                                provideByProcessor.get(name);
+                        processorSolution.addDependency(node);
                     }
                 } else {
-                    if (input.getField().getAnnotation(HasDefaultValue.class) == null) {
-                        throw new IllegalArgumentException("The Processor '" + processor + "' has no value " +
-                                "for the input '" + input.getName() + "'.");
+                    final Class<?> outputType = outputTypes.get(input.getName());
+                    if (outputType != null) {
+                        final ProcessorGraphNode<Object, Object> processorSolution = provideByProcessor.get(input.getName());
+                        if (processorSolution != null) {
+                            // check that the outputTypes output has the same type
+                            final Class<?> inputType = input.getType();
+                            if (inputType.isAssignableFrom(outputType)) {
+                                processorSolution.addDependency(node);
+                                isRoot = false;
+                            } else {
+                                throw new IllegalArgumentException("Type conflict: Processor '" +
+                                        processorSolution.getName() + "' provides an output with name '" +
+                                        input.getName() + "' and of type '" + outputType + " ', while processor" +
+                                        " '" + node.getName() + "' expects an input of that name with type '" +
+                                        inputType + "'! Please rename one of the attributes in the mappings of " +
+                                        "the processors.");
+                            }
+                        }
+                    } else {
+                        if (input.getField().getAnnotation(HasDefaultValue.class) == null) {
+                            throw new IllegalArgumentException("The Processor '" + processor + "' has no value " +
+                                    "for the input '" + input.getName() + "'.");
+                        }
                     }
                 }
             }

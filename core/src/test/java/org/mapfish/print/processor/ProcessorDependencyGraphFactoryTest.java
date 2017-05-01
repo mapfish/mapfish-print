@@ -263,6 +263,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         assertContainsProcessors(graph.getRoots(), RootOutputExecutionTracker);
         final TestOrderExecution execution = new TestOrderExecution();
         Values values = new Values();
+        values.put(Values.VALUES_KEY, values);
         values.put(EXECUTION_TRACKER, execution);
 
         forkJoinPool.invoke(graph.createTask(values));
@@ -290,6 +291,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         assertContainsProcessors(graph.getRoots(), RootOutputExecutionTracker);
         final TestOrderExecution execution = new TestOrderExecution();
         Values values = new Values();
+        values.put(Values.VALUES_KEY, values);
         values.put(EXECUTION_TRACKER, execution);
 
         forkJoinPool.invoke(graph.createTask(values));

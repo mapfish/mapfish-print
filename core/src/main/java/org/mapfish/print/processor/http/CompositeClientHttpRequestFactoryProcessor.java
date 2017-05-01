@@ -123,15 +123,18 @@ public final class CompositeClientHttpRequestFactoryProcessor
     public Void execute(
             final Input values,
             final ExecutionContext context) throws Exception {
-        MfClientHttpRequestFactory requestFactory = values.clientHttpRequestFactoryProvider.get();
-
-        final ClientHttpFactoryProcessorParam output = new ClientHttpFactoryProcessorParam();
-        output.clientHttpRequestFactoryProvider.set(createFactoryWrapper(
-                values, requestFactory));
+        values.clientHttpRequestFactoryProvider.set(createFactoryWrapper(
+                values, values.clientHttpRequestFactoryProvider.get()));
         return null;
     }
 
-    class Input extends ClientHttpFactoryProcessorParam {
-        Values values;
+    /**
+     * The input.
+     */
+    public class Input extends ClientHttpFactoryProcessorParam {
+        /**
+         * The values.
+         */
+        public Values values;
     }
 }

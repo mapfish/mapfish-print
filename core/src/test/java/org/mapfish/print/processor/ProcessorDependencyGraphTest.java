@@ -39,6 +39,7 @@ public class ProcessorDependencyGraphTest {
     @Test
     public void testCreateTaskAllDependenciesAreSatisfied() throws Exception {
         Values values = new Values();
+        values.put(Values.VALUES_KEY, values);
         values.put("pp", "value");
 
         final TestProcessor processor = new TestProcessor("p");
