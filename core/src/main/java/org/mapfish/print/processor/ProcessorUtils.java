@@ -63,10 +63,10 @@ public final class ProcessorUtils {
                     }
                 } else {
                     if (field.getAnnotation(HasDefaultValue.class) == null) {
-                        throw new NoSuchElementException(name + " or " + field.getName() + " is a required property for " + processor +
-                                                         " and therefore must be defined in the Request Data or be an output of one" +
-                                                         " of the other processors. Available values: " 
-                                                         + values == null ? null : values.asMap().keySet() + ".");
+                        throw new NoSuchElementException(name + " is a required property for " + processor
+                                + " and therefore must be defined in the Request Data or be an output of " +
+                                "one of the other processors. Available values: " +
+                                (values == null ? null : values.asMap().keySet()) + ".");
                     }
                 }
             }
