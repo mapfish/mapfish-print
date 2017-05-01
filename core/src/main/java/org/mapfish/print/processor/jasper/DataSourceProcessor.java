@@ -149,6 +149,10 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
     public void initAttributes(final Map<String, Attribute> attributes) {
         String attributeName = ProcessorUtils.getInputValueName(
                 this.getOutputPrefix(), this.getInputMapperBiMap(), "datasource");
+        DataSourceAttribute attribute = (DataSourceAttribute)attributes.get(attributeName);
+        if (attribute == null) {
+            throw new RuntimeException("Unable to find the datasource value '" + attributeName + "'.");
+        }
         this.setAttributes(((DataSourceAttribute)attributes.get(attributeName)).getAttributes());
     }
 
