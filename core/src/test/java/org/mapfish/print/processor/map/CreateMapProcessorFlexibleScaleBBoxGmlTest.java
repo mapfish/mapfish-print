@@ -67,7 +67,7 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
         final Template template = config.getTemplate("main");
 
         PJsonObject requestData = loadJsonRequestData();
-        final JSONObject jsonLayer = requestData.getJSONObject("attributes").getJSONObject("mapDef").getJSONArray("layers")
+        final JSONObject jsonLayer = requestData.getJSONObject("attributes").getJSONObject("map").getJSONArray("layers")
                 .getJSONObject(0).getInternalObj();
 
         for (String gmlDataName : new String[]{"spearfish-streams-v2.gml", "spearfish-streams-v311.gml"}) {

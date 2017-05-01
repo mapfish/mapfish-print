@@ -189,7 +189,7 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
 
 
     private PJsonObject getMapAttributes(PJsonObject requestData) {
-        return requestData.getJSONObject("attributes").getJSONObject("mapDef");
+        return requestData.getJSONObject("attributes").getJSONObject("map");
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

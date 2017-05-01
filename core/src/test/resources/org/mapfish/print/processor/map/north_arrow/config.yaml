@@ -2,7 +2,7 @@ templates:
   main: !template
     reportTemplate: "dummy.jxml"
     attributes:
-      mapDef: !map
+      map: !map
         width: 780
         height: 330
         maxDpi: 400
@@ -15,14 +15,9 @@ templates:
         default:
           graphic: "file://NorthArrow_10.png"
     processors:
-    - !createMap
-        inputMapper:
-            mapDef: map
-        outputMapper:
-            mapSubReport: mapOut
+    - !createMap {}
     - !createNorthArrow
         inputMapper:
-            mapDef: map
             northArrowDef: northArrow
         outputMapper:
             northArrowSubReport: northArrowOut

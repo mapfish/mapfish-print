@@ -19,5 +19,5 @@ templates:
     processors:
     - !createMap
         outputMapper:
-            mapSubReport: mapOut
+            mapSubReport: mapSubReport
     - !createScalebar {}

@@ -1,6 +1,6 @@
 {
   "attributes": {
-    "mapDef": {
+    "map": {
       "center": [-8234690, 4978853],
       "scale": 60000,
       "areaOfInterest": {

@@ -3,7 +3,7 @@
   "layout": "1 A4 portrait",
   "attributes": {
     "title": "",
-    "mapDef": {
+    "map": {
       "center": [2617275, 1255000],
       "scale": 100000,
       "rotation": 0,

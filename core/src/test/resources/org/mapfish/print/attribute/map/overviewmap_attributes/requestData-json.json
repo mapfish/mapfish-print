@@ -1,6 +1,6 @@
 {
   "attributes": {
-    "mapDef": {
+    "map": {
       "bbox": [95, -1, 110, 2],
       "projection": "CRS:84",
       "rotation": 0.0,
@@ -55,7 +55,7 @@
         }
       ]
     },
-    "overviewMapDef": {
+    "overviewMap": {
       "dpi": 300,
       "layers": [
         {

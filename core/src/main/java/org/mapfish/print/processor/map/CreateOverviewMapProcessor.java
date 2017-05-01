@@ -39,7 +39,7 @@ import java.util.List;
  * <pre><code>
  * attributes:
  *    ...
- *    overviewMapDef: !overviewMap
+ *    overviewMap: !overviewMap
  *      width: 300
  *      height: 200
  *      maxDpi: 400
@@ -47,11 +47,11 @@ import java.util.List;
  *    ...
  *    - !createOverviewMap
  *      inputMapper: {
- *        mapDef: map,
- *        overviewMapDef: overviewMap
+ *        map: map,
+ *        overviewMap: overviewMap
  *      }
  *      outputMapper: {
- *        overviewMapSubReport: overviewMapOut,
+ *        overviewMapSubReport: overviewMapSubReport,
  *        layerGraphics: overviewMapLayerGraphics
  *      }
  * </code></pre>

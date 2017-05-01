@@ -1,6 +1,6 @@
 {
   "attributes": {
-    "mapDef": {
+    "map": {
       "center": [-8235878.4938425, 4979784.7605681],
       "scale": 26000,
       "projection": "EPSG:900913",

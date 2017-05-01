@@ -280,9 +280,9 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     @Test
     public void testBuildProcessInputHasValuesAndOtherInput_WithInputMapping() throws Exception {
         final NeedsValuesAndMap needsValuesAndMap = new NeedsValuesAndMap();
-        final RootMapOutClass outMapProcessor = new RootMapOutClass("mapOut", MapOutput.class);
-        outMapProcessor.getOutputMapperBiMap().put("map", "mapOutput");
-        needsValuesAndMap.getInputMapperBiMap().put("mapOutput", "map");
+        final RootMapOutClass outMapProcessor = new RootMapOutClass("mapSubReport", MapOutput.class);
+        outMapProcessor.getOutputMapperBiMap().put("map", "mapSubReportput");
+        needsValuesAndMap.getInputMapperBiMap().put("mapSubReportput", "map");
         final ArrayList<Processor> processors = Lists.newArrayList(
                 RootOutputExecutionTracker, outMapProcessor, needsValuesAndMap);
 

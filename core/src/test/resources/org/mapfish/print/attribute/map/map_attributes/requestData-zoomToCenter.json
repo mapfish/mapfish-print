@@ -1,6 +1,6 @@
 {
   "attributes": {
-    "mapDef": {
+    "map": {
       "projection": "CRS:84",
       "rotation": 0.0,
       "dpi": 90,

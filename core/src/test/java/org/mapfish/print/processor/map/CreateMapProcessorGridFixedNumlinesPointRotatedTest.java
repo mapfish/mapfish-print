@@ -66,11 +66,11 @@ public class CreateMapProcessorGridFixedNumlinesPointRotatedTest extends Abstrac
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        PJsonObject mapDef = requestData.getJSONObject("attributes").getJSONObject("mapDef");
+        PJsonObject map = requestData.getJSONObject("attributes").getJSONObject("map");
         int[] rotationsToTest = {23, 90, 123, 180, 203, 270, 310, 360};
 
         for (int rotation : rotationsToTest) {
-            mapDef.getInternalObj().put("rotation", rotation);
+            map.getInternalObj().put("rotation", rotation);
             Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
             template.getProcessorGraph().createTask(values).invoke();
 

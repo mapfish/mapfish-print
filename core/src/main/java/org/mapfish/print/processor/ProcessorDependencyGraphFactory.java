@@ -219,8 +219,8 @@ public final class ProcessorDependencyGraphFactory {
                         } else {
                             // we have to check if the two processors have the given inputs in common.
                             // for example if the input "map" is required, the mapped name for "map" for
-                            // processor 1 is retrieved, e.g. "mapDef1". if processor 2 also has a mapped
-                            // input with name "mapDef1", we add a dependency.
+                            // processor 1 is retrieved, e.g. "map1". if processor 2 also has a mapped
+                            // input with name "map1", we add a dependency.
                             boolean allRequiredInputsInCommon = true;
                             for (String requiredInput : dependency.getCommonInputs()) {
                                 // to make things more complicated: the common input attributes might have

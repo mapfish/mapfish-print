@@ -37,7 +37,7 @@ import java.util.List;
  * ...
  *   - !createNorthArrow
  *     inputMapper: {
- *       mapDef: map,
+ *       map: map,
  *       northArrowDef: northArrow
  *     }
  *     outputMapper: {

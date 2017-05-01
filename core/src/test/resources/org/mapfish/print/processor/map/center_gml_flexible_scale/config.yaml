@@ -2,12 +2,10 @@ templates:
   main: !template
     reportTemplate: "dummy.jxml"
     attributes:
-      mapDef: !map
+      map: !map
         width: 630
         height: 294
         maxDpi: 400
     processors:
     - !createMap
-        inputMapper: {mapDef: map}
-        outputMapper: {mapSubReport: mapOut}
         imageType: TYPE_4BYTE_ABGR

@@ -18,14 +18,10 @@ templates:
         zoomFactor: 2
     processors:
     - !setStyle {}
-    - !createMap
-        outputMapper: 
-            mapSubReport: mapOut
+    - !createMap {}
     - !setStyle
       inputMapper:
         overviewMap: map
-        style: style
     - !createOverviewMap
         outputMapper:
-            overviewMapSubReport: overviewMapOut
             layerGraphics: overviewMapLayerGraphics
