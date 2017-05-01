@@ -179,12 +179,6 @@ public final class ProcessorDependencyGraphFactory {
                 allDependencies.addAll(custom.createDependencies(nodes));
             }
         }
-        final SetMultimap<ProcessorGraphNode<Object, Object>, InputValue> inputsForNodes =
-                cacheInputsForNodes(nodes);
-        for (ProcessorGraphNode<Object, Object> node : nodes) {
-            // check explicit, external dependencies between nodes
-            checkExternalDependencies(allDependencies, node, nodes);
-        }
 
         final Collection<? extends Processor> missingProcessors = CollectionUtils.subtract(
                 processors, graph.getAllProcessors());
@@ -199,123 +193,6 @@ public final class ProcessorDependencyGraphFactory {
                         missingProcessorsName);
 
         return graph;
-    }
-
-    private void checkExternalDependencies(
-            final List<ProcessorDependency> allDependencies,
-            final ProcessorGraphNode<Object, Object> node,
-            final List<ProcessorGraphNode<Object, Object>> nodes) {
-        for (ProcessorDependency dependency : allDependencies) {
-            if (dependency.getRequired().equals(node.getProcessor().getClass())) {
-                // this node is required by another processor type, let's see if there
-                // is an actual processor of this type
-                for (ProcessorGraphNode<Object, Object> dependentNode : nodes) {
-                    if (dependency.getDependent().equals(dependentNode.getProcessor().getClass())) {
-                        // this is the right processor type, let's check if the processors should have
-                        // some inputs in common
-                        if (dependency.getCommonInputs().isEmpty()) {
-                            // no inputs in common required, just create the dependency
-                            node.addDependency(dependentNode);
-                        } else {
-                            // we have to check if the two processors have the given inputs in common.
-                            // for example if the input "map" is required, the mapped name for "map" for
-                            // processor 1 is retrieved, e.g. "map1". if processor 2 also has a mapped
-                            // input with name "map1", we add a dependency.
-                            boolean allRequiredInputsInCommon = true;
-                            for (String requiredInput : dependency.getCommonInputs()) {
-                                // to make things more complicated: the common input attributes might have
-                                // different names in the two nodes. e.g. for `CreateOverviewMapProcessor`
-                                // the overview map is called `overviewMap`, but on the `SetStyleProcessor`
-                                // the map is simply called `map`.
-                                final String requiredNodeInput = getRequiredNodeInput(requiredInput);
-                                final String dependentNodeInput = getDependentNodeInput(requiredInput);
-
-                                final String mappedKey = getMappedKey(node, requiredNodeInput);
-                                if (!getOriginalKey(dependentNode, mappedKey).equals(dependentNodeInput)) {
-                                    allRequiredInputsInCommon = false;
-                                    break;
-                                }
-                            }
-
-                            if (allRequiredInputsInCommon) {
-                                node.addDependency(dependentNode);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Get the name of the common input attribute for the dependent node.
-     *
-     * E.g. "map;overviewMap" -> "overviewMap"
-     * or   "map" -> "map"
-     */
-    private String getDependentNodeInput(final String requiredInput) {
-        if (!requiredInput.contains(";")) {
-            return requiredInput;
-        } else {
-            return requiredInput.substring(requiredInput.indexOf(";") + 1);
-        }
-    }
-
-    /**
-     * Get the name of the common input attribute for the required node.
-     *
-     * E.g. "map;overviewMap" -> "map"
-     * or   "map" -> "map"
-     */
-    private String getRequiredNodeInput(final String requiredInput) {
-        if (!requiredInput.contains(";")) {
-            return requiredInput;
-        } else {
-            return requiredInput.substring(0, requiredInput.indexOf(";"));
-        }
-    }
-
-    private String getMappedKey(final ProcessorGraphNode<Object, Object> node, final String requiredInput) {
-        String inputName = requiredInput;
-        if (node.getInputMapper().containsValue(requiredInput)) {
-            inputName = node.getInputMapper().inverse().get(requiredInput);
-        }
-
-        return inputName;
-    }
-
-    private String getOriginalKey(final ProcessorGraphNode<Object, Object> node, final String mappedKey) {
-        String inputName = mappedKey;
-        if (node.getInputMapper().containsKey(mappedKey)) {
-            inputName = node.getInputMapper().get(mappedKey);
-        }
-
-        return inputName;
-    }
-
-    private SetMultimap<ProcessorGraphNode<Object, Object>, InputValue> cacheInputsForNodes(
-            final List<ProcessorGraphNode<Object, Object>> nodes) {
-        final SetMultimap<ProcessorGraphNode<Object, Object>, InputValue> inputsForNodes = HashMultimap.create();
-        for (ProcessorGraphNode<Object, Object> node : nodes) {
-            final Set<InputValue> inputs = getInputs(node.getProcessor());
-            inputsForNodes.putAll(node, inputs);
-        }
-        return inputsForNodes;
-    }
-
-    private boolean hasNoneOrOnlyExternalInput(final ProcessorGraphNode<Object, Object> node, final Set<InputValue> inputs,
-            final Map<String, ProcessorGraphNode<Object, Object>> provideBy) {
-        if (inputs.isEmpty()) {
-            return true;
-        }
-
-        for (InputValue input : inputs) {
-            final ProcessorGraphNode<Object, Object> provider = provideBy.get(input.getName());
-            if (provider != null && provider != node) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private static Set<InputValue> getInputs(final Processor processor) {
