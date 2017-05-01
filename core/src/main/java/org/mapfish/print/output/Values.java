@@ -272,7 +272,6 @@ public final class Values {
         this.values.put(TEMPLATE_KEY, template);
         this.values.put(PDF_CONFIG_KEY, pdfConfig);
         this.values.put(SUBREPORT_DIR_KEY, subReportDir);
-
     }
 
     /**
@@ -388,6 +387,8 @@ public final class Values {
 
     @Override
     public String toString() {
-        return this.values.toString();
+        Map<String, Object> display = new ConcurrentHashMap<String, Object>(this.values);
+        display.remove(VALUES_KEY);
+        return display.toString();
     }
 }
