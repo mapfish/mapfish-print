@@ -42,7 +42,7 @@ public final class Values {
      */
     public static final String TASK_DIRECTORY_KEY = "tempTaskDirectory";
     /**
-     * The key that is used to store {@link org.mapfish.print.http.MfClientHttpRequestFactory}.
+     * The key that is used to store {@link org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider}.
      */
     public static final String CLIENT_HTTP_REQUEST_FACTORY_KEY = "clientHttpRequestFactoryProvider";
     /**
