@@ -10,15 +10,13 @@ import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.attribute.Attribute;
+import org.mapfish.print.attribute.DataSourceAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.MapfishParser;
-import org.mapfish.print.processor.AbstractProcessor;
-import org.mapfish.print.processor.Processor;
-import org.mapfish.print.processor.ProcessorDependencyGraph;
-import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
+import org.mapfish.print.processor.*;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -143,14 +141,15 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
         this.attributes = attributes;
     }
 
-    @Override
-    public void validate(final List<Throwable> errors, final Configuration configuration) {
-        final Map<String, Class<?>> attcls = new HashMap<String, Class<?>>();
-        for (String attributeName: this.attributes.keySet()) {
-            attcls.put(attributeName, this.attributes.get(attributeName).getValueType());
-        }
-        this.processorGraph = this.processorGraphFactory.build(this.processors, attcls);
-        super.validate(errors, configuration);
+    /**
+     * All the sublevel attributes.
+     *
+     * @param attributes the attributes.
+     */
+    public void initAttributes(final Map<String, Attribute> attributes) {
+        String attributeName = ProcessorUtils.getInputValueName(
+                this.getOutputPrefix(), this.getInputMapperBiMap(), "datasource");
+        this.setAttributes(((DataSourceAttribute)attributes.get(attributeName)).getAttributes());
     }
 
     @Nullable
@@ -188,7 +187,6 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
         List<ForkJoinTask<Values>> futures = Lists.newArrayList();
         if (!dataSourceValues.isEmpty()) {
             for (Values dataSourceValue : dataSourceValues) {
-                addAttributes(input.template, dataSourceValue);
                 final ForkJoinTask<Values> taskFuture = this.processorGraph.createTask(dataSourceValue).fork();
                 futures.add(taskFuture);
             }
@@ -222,18 +220,40 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
-        if (this.reportTemplate != null && this.reportKey == null || this.reportTemplate == null && this.reportKey != null) {
-            validationErrors.add(new ConfigurationException("'reportKey' and 'reportTemplate' must either both be null or both" +
-                                                            " be non-null.  reportKey: " + this.reportKey +
-                                                            " reportTemplate: " + this.reportTemplate));
+    protected void extraValidation(
+            final List<Throwable> validationErrors,
+            final Configuration configuration) {
+        if (this.reportTemplate != null && this.reportKey == null ||
+                this.reportTemplate == null && this.reportKey != null) {
+            validationErrors.add(new ConfigurationException("'reportKey' and 'reportTemplate' must ither " +
+                    "both be null or both be non-null.  reportKey: " + this.reportKey + " reportTemplate: "
+                    + this.reportTemplate));
         }
+
         for (Attribute attribute : this.attributes.values()) {
             attribute.validate(validationErrors, configuration);
         }
 
+        for (Processor processor : this.processors) {
+            if (processor instanceof DataSourceProcessor) {
+                ((DataSourceProcessor)processor).initAttributes(this.attributes);
+            }
+            processor.validate(validationErrors, configuration);
+        }
+
+        final Map<String, Class<?>> attcls = new HashMap<String, Class<?>>();
+        for (String attributeName: this.attributes.keySet()) {
+            attcls.put(attributeName, this.attributes.get(attributeName).getValueType());
+        }
+        try {
+            this.processorGraph = this.processorGraphFactory.build(this.processors, attcls);
+        } catch(IllegalArgumentException e) {
+            validationErrors.add(e);
+        }
+
         if (this.processorGraph == null) {
-            validationErrors.add(new ConfigurationException("There are no child processors for this processor"));
+            validationErrors.add(new ConfigurationException(
+                    "There are no child processors for this processor"));
         } else {
             final Set<Processor<?, ?>> allProcessors = this.processorGraph.getAllProcessors();
             for (Processor<?, ?> processor : allProcessors) {
@@ -250,6 +270,7 @@ public final class DataSourceProcessor extends AbstractProcessor<DataSourceProce
          * The values object with all values.  This is required in order to run sub-processor graph
          */
         public Template template;
+
         /**
          * The values object with all values.  This is required in order to run sub-processor graph
          */

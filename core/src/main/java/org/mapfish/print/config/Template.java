@@ -15,6 +15,7 @@ import org.mapfish.print.map.style.StyleParser;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
+import org.mapfish.print.processor.jasper.DataSourceProcessor;
 import org.mapfish.print.processor.map.CreateMapProcessor;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -282,12 +283,15 @@ public class Template implements ConfigurationObject, HasConfiguration {
             validationErrors.add(new ConfigurationException("Only one of 'iterValue' or 'tableData' or 'jdbcUrl' should be defined."));
         }
 
-        for (Processor processor : this.processors) {
-            processor.validate(validationErrors, config);
-        }
-
         for (Attribute attribute : this.attributes.values()) {
             attribute.validate(validationErrors, config);
+        }
+
+        for (Processor processor : this.processors) {
+            if (processor instanceof DataSourceProcessor) {
+                ((DataSourceProcessor)processor).initAttributes(this.attributes);
+            }
+            processor.validate(validationErrors, config);
         }
 
         try {
