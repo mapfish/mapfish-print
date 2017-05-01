@@ -3,6 +3,8 @@ package org.mapfish.print.processor.map;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Multimap;
 import com.google.common.io.Files;
+import jsr166y.ForkJoinPool;
+import jsr166y.ForkJoinTask;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -41,7 +43,8 @@ public class CreateMapProcessorOpacityWMTSTest extends AbstractMapfishSpringTest
     private TestHttpClientFactory requestFactory;
     @Autowired
     private MapfishParser parser;
-
+    @Autowired
+    private ForkJoinPool forkJoinPool;
 
     @Test
     @DirtiesContext
@@ -94,7 +97,10 @@ public class CreateMapProcessorOpacityWMTSTest extends AbstractMapfishSpringTest
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values(requestData, template, parser, getTaskDirectory(), this.requestFactory, new File("."));
-        template.getProcessorGraph().createTask(values).invoke();
+
+        final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
+                template.getProcessorGraph().createTask(values));
+        taskFuture.get();
 
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);

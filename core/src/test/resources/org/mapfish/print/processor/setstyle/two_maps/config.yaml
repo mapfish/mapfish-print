@@ -32,7 +32,7 @@ templates:
       inputMapper:
         map1: map
       outputMapper:
-        mapSubReport: map1
+        mapSubReport: mapSubReport1
     - !setStyle
       inputMapper:
         map2: map
@@ -40,5 +40,5 @@ templates:
       inputMapper:
         map2: map
       outputMapper:
-        mapSubReport: map2
+        mapSubReport: mapSubReport2
         mapContext: mapContext2

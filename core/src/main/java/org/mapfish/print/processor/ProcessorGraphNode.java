@@ -6,6 +6,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import jsr166y.RecursiveTask;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.output.Values;
@@ -30,8 +31,8 @@ import javax.annotation.Nonnull;
 public final class ProcessorGraphNode<In, Out> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessorGraphNode.class);
     private final Processor<In, Out> processor;
-    private final List<ProcessorGraphNode> dependencies = Lists.newArrayList();
-    private final List<ProcessorGraphNode> requirements = Lists.newArrayList();
+    private final Set<ProcessorGraphNode> dependencies = Sets.newHashSet();
+    private final Set<ProcessorGraphNode> requirements = Sets.newHashSet();
     private final MetricRegistry metricRegistry;
 
     /**
@@ -40,7 +41,9 @@ public final class ProcessorGraphNode<In, Out> {
      * @param processor The processor associated with this node.
      * @param metricRegistry registry for timing the execution time of the processor.
      */
-    public ProcessorGraphNode(@Nonnull final Processor<In, Out> processor, @Nonnull final MetricRegistry metricRegistry) {
+    public ProcessorGraphNode(
+            @Nonnull final Processor<In, Out> processor,
+            @Nonnull final MetricRegistry metricRegistry) {
         this.processor = processor;
         this.metricRegistry = metricRegistry;
     }
@@ -55,6 +58,8 @@ public final class ProcessorGraphNode<In, Out> {
      * @param node the dependency to add.
      */
     public void addDependency(final ProcessorGraphNode node) {
+        assert node != this;
+
         this.dependencies.add(node);
         node.addRequirement(this);
     }
@@ -63,11 +68,11 @@ public final class ProcessorGraphNode<In, Out> {
         this.requirements.add(node);
     }
 
-    protected List<ProcessorGraphNode> getRequirements() {
+    protected Set<ProcessorGraphNode> getRequirements() {
         return this.requirements;
     }
 
-    protected List<ProcessorGraphNode> getDependencies() {
+    protected Set<ProcessorGraphNode> getDependencies() {
         return this.dependencies;
     }
 
@@ -222,7 +227,7 @@ public final class ProcessorGraphNode<In, Out> {
         }
 
         private void executeDependencyProcessors() {
-            final List<ProcessorGraphNode> dependencyNodes = this.node.dependencies;
+            final Set<ProcessorGraphNode> dependencyNodes = this.node.dependencies;
 
             List<ProcessorNodeForkJoinTask<?, ?>> tasks = new ArrayList<ProcessorNodeForkJoinTask<?, ?>>(dependencyNodes.size());
 

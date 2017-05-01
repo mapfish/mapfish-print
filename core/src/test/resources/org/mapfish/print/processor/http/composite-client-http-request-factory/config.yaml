@@ -1,7 +1,6 @@
 templates:
   main: !template
     processors:
-      - !compositeRequestFactoryTestProcessor {}
       - !configureHttpRequests
         httpProcessors:
           - !mapUri
@@ -14,3 +13,4 @@ templates:
               - 127.0.0.1
           - !forwardHeaders
             headers: [header1]
+      - !compositeRequestFactoryTestProcessor {}

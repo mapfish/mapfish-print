@@ -1,5 +1,7 @@
 package org.mapfish.print.processor.map;
 
+import jsr166y.ForkJoinPool;
+import jsr166y.ForkJoinTask;
 import org.json.JSONException;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -17,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -34,7 +37,8 @@ public class CreateMapProcessorFlexibleScaleBBoxGeoJsonTest extends AbstractMapf
     private MapfishParser parser;
     @Autowired
     private MfClientHttpRequestFactoryImpl httpRequestFactory;
-
+    @Autowired
+    private ForkJoinPool forkJoinPool;
 
     @Test
     public void testExecute() throws Exception {
@@ -50,11 +54,15 @@ public class CreateMapProcessorFlexibleScaleBBoxGeoJsonTest extends AbstractMapf
     }
 
 
-    private void doTest(PJsonObject requestData) throws IOException, JSONException {
+    private void doTest(PJsonObject requestData) throws IOException, JSONException, ExecutionException,
+            InterruptedException {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         Values values = new Values(requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
-        template.getProcessorGraph().createTask(values).invoke();
+
+        final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
+                template.getProcessorGraph().createTask(values));
+        taskFuture.get();
 
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);

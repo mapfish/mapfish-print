@@ -5,6 +5,7 @@ import org.mapfish.print.processor.AbstractProcessor.Context;
 
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -123,7 +124,7 @@ public final class ProcessorExecutionContext {
      *
      * @param processorNodes the node to check for completion.
      */
-    public boolean allAreFinished(final List<ProcessorGraphNode<?, ?>> processorNodes) {
+    public boolean allAreFinished(final Set<ProcessorGraphNode<?, ?>> processorNodes) {
         this.processorLock.lock();
         try {
             for (ProcessorGraphNode<?, ?> node : processorNodes) {

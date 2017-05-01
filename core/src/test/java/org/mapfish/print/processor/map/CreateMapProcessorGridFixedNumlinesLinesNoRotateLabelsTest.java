@@ -1,5 +1,7 @@
 package org.mapfish.print.processor.map;
 
+import jsr166y.ForkJoinPool;
+import jsr166y.ForkJoinTask;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -13,7 +15,6 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +37,8 @@ public class CreateMapProcessorGridFixedNumlinesLinesNoRotateLabelsTest extends 
     private TestHttpClientFactory requestFactory;
     @Autowired
     private MapfishParser parser;
+    @Autowired
+    private ForkJoinPool forkJoinPool;
 
     @Test
     @DirtiesContext
@@ -46,7 +49,10 @@ public class CreateMapProcessorGridFixedNumlinesLinesNoRotateLabelsTest extends 
         final Template template = config.getTemplate("A4 landscape");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
-        template.getProcessorGraph().createTask(values).invoke();
+
+        final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
+                template.getProcessorGraph().createTask(values));
+        taskFuture.get();
 
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);

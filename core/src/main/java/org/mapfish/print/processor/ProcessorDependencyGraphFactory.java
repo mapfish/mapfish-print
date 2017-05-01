@@ -102,6 +102,7 @@ public final class ProcessorDependencyGraphFactory {
                         final ProcessorGraphNode<Object, Object> processorSolution =
                                 provideByProcessor.get(name);
                         processorSolution.addDependency(node);
+                        isRoot = false;
                     }
                 } else {
                     final Class<?> outputType = outputTypes.get(input.getName());

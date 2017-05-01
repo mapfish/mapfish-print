@@ -19,11 +19,14 @@ templates:
     - !createMap
         outputMapper: {mapSubReport: geojsonMap}
     - !prepareTable
-      inputMapper: {entries: table}
+      inputMapper:
+        entries: table
     - !prepareLegend
-      inputMapper: {legend1: legend}
+      inputMapper:
+        legend1: legend
       outputPrefix: legend1
     - !prepareLegend
-      inputMapper: {legend2: legend}
+      inputMapper:
+        legend2: legend
       outputPrefix: legend2
 

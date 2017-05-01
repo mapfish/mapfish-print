@@ -32,18 +32,20 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * <p>This processor combines DataSources and individual processor outputs (or attribute values) into a single DataSource which
- * can be used in a jasper report's detail section.</p>
+ * <p>This processor combines DataSources and individual processor outputs (or attribute values) into a
+ * single DataSource which can be used in a jasper report's detail section.</p>
  * <p>
- * An example use case is where we might have zero or many of tables and zero or many legends.  You can configure the
- * template with a detail section that contains a subreport, the name of which is a field in the DataSources and the DataSources
- * for the sub-template another field.  Then you can merge the legend and the tables into a single DataSources.  This way the
- * report will nicely expand depending on if you have a legend and how many tables you have in your report.
+ * An example use case is where we might have zero or many of tables and zero or many legends.  You can
+ * configure the template with a detail section that contains a subreport, the name of which is a field in
+ * the DataSources and the DataSources for the sub-template another field.  Then you can merge the legend
+ * and the tables into a single DataSources.  This way the report will nicely expand depending on if you
+ * have a legend and how many tables you have in your report.
  * </p>
  * [[examples=merged_datasource]]
  */
 @Beta
-public final class MergeDataSourceProcessor extends AbstractProcessor<MergeDataSourceProcessor.In, MergeDataSourceProcessor.Out>
+public final class MergeDataSourceProcessor
+        extends AbstractProcessor<MergeDataSourceProcessor.In, MergeDataSourceProcessor.Out>
         implements CustomDependencies {
     private List<Source> sources = Lists.newArrayList();
 
@@ -57,11 +59,11 @@ public final class MergeDataSourceProcessor extends AbstractProcessor<MergeDataS
     /**
      * <p>The <em>source</em> to add to the merged DataSource.</p>
      * <p>Each <em>source</em> indicates if it should be treated
-     * as a datasource or as a single item to add to the merged DataSource. If the source indicates that it is a
-     * {@link org.mapfish.print.processor.jasper.MergeDataSourceProcessor.SourceType#DATASOURCE} the object
-     * each row in the datasource will be used to form a row in the merged DataSource.  If the source type is
-     * {@link org.mapfish.print.processor.jasper.MergeDataSourceProcessor.SourceType#SINGLE} the object will be a single row
-     * even if it is in fact a DataSource.</p>
+     * as a datasource or as a single item to add to the merged DataSource. If the source indicates that it
+     * is a {@link org.mapfish.print.processor.jasper.MergeDataSourceProcessor.SourceType#DATASOURCE} the
+     * object each row in the datasource will be used to form a row in the merged DataSource.  If the
+     * source type is {@link org.mapfish.print.processor.jasper.MergeDataSourceProcessor.SourceType#SINGLE}
+     * the object will be a single row even if it is in fact a DataSource.</p>
      * 
      * <p>See also: <a href="configuration.html#!mergeSource">!mergeSource</a></p>
      *

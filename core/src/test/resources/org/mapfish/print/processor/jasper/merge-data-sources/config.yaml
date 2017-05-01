@@ -30,11 +30,11 @@ templates:
         - !mergeSource
           type: SINGLE
           fields: # name the column data so there is consistence in all rows
-            map: subReportPath
+            mapSubReport: subReportPath
         - !mergeSource
           type: SINGLE
           fields: # name the column data so there is consistence in all rows
-            legend: subReportPath
+            legendSubReport: subReportPath
         - !mergeSource
           key: jrDataSource
           type: DATASOURCE

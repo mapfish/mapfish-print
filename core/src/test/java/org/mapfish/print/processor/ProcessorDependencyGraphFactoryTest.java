@@ -405,7 +405,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     }
 
     private ProcessorGraphNode getNodeForProcessor(
-            List<ProcessorGraphNode> roots, TestProcessor processor) {
+            Collection<ProcessorGraphNode> roots, TestProcessor processor) {
         for (ProcessorGraphNode node : roots) {
             if (node.getProcessor() == processor) {
                 return node;

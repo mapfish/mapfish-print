@@ -1,7 +1,7 @@
 templates:
   main: !template
     processors:
-      - !mapUriTestProcessor {}
       - !mapUri
         mapping:
           (http)://localhost(.*) : "$1://127.0.0.1$2"
+      - !mapUriTestProcessor {}
