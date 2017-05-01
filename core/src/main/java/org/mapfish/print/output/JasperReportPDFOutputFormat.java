@@ -36,7 +36,7 @@ public final class JasperReportPDFOutputFormat extends AbstractJasperReportOutpu
         SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
         configuration.setPdfVersion(PdfVersionEnum.VERSION_1_7);
 
-        final PDFConfig pdfConfig = print.values.getObject(Values.PDF_CONFIG, PDFConfig.class);
+        final PDFConfig pdfConfig = print.values.getObject(Values.PDF_CONFIG_KEY, PDFConfig.class);
 
         configuration.setCompressed(pdfConfig.isCompressed());
         configuration.setMetadataAuthor(pdfConfig.getAuthor());

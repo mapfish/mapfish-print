@@ -52,15 +52,15 @@ public final class Values {
     /**
      * The key for the values object for the {@link org.mapfish.print.config.PDFConfig} object.
      */
-    public static final String PDF_CONFIG = "pdfConfig";
+    public static final String PDF_CONFIG_KEY = "pdfConfig";
     /**
      * The key for the output format.
      */
-    public static final String OUTPUT_FORMAT = "outputFormat";
+    public static final String OUTPUT_FORMAT_KEY = "outputFormat";
     /**
      * The key for the values object for the subreport directory.
      */
-    public static final String SUBREPORT_DIR = "SUBREPORT_DIR";
+    public static final String SUBREPORT_DIR_KEY = "subreportDir";
 
 
     private final Map<String, Object> values = new ConcurrentHashMap<String, Object>();
@@ -127,12 +127,12 @@ public final class Values {
                 new MfClientHttpRequestFactoryProvider(new ConfigFileResolvingHttpRequestFactory(
                         httpRequestFactory, template.getConfiguration())));
         this.values.put(TEMPLATE_KEY, template);
-        this.values.put(PDF_CONFIG, template.getPdfConfig());
+        this.values.put(PDF_CONFIG_KEY, template.getPdfConfig());
         if (jasperTemplateBuild != null) {
-            this.values.put(SUBREPORT_DIR, jasperTemplateBuild.getAbsolutePath());
+            this.values.put(SUBREPORT_DIR_KEY, jasperTemplateBuild.getAbsolutePath());
         }
         if (outputFormat != null) {
-            this.values.put(OUTPUT_FORMAT, outputFormat);
+            this.values.put(OUTPUT_FORMAT_KEY, outputFormat);
         }
 
         final PJsonObject jsonAttributes = requestData.getJSONObject(MapPrinterServlet.JSON_ATTRIBUTES);
@@ -258,14 +258,14 @@ public final class Values {
         MfClientHttpRequestFactory requestFactory = sourceValues.getObject(CLIENT_HTTP_REQUEST_FACTORY_KEY,
                 MfClientHttpRequestFactory.class);
         Template template = sourceValues.getObject(TEMPLATE_KEY, Template.class);
-        PDFConfig pdfConfig = sourceValues.getObject(PDF_CONFIG, PDFConfig.class);
-        String subReportDir = sourceValues.getObject(SUBREPORT_DIR, String.class);
+        PDFConfig pdfConfig = sourceValues.getObject(PDF_CONFIG_KEY, PDFConfig.class);
+        String subReportDir = sourceValues.getObject(SUBREPORT_DIR_KEY, String.class);
 
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
         this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY, requestFactory);
         this.values.put(TEMPLATE_KEY, template);
-        this.values.put(PDF_CONFIG, pdfConfig);
-        this.values.put(SUBREPORT_DIR, subReportDir);
+        this.values.put(PDF_CONFIG_KEY, pdfConfig);
+        this.values.put(SUBREPORT_DIR_KEY, subReportDir);
 
     }
 

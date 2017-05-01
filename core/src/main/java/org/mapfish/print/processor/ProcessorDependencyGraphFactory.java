@@ -79,9 +79,9 @@ public final class ProcessorDependencyGraphFactory {
         outputTypes.put(Values.TASK_DIRECTORY_KEY, File.class);
         outputTypes.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, MfClientHttpRequestFactoryProvider.class);
         outputTypes.put(Values.TEMPLATE_KEY, Template.class);
-        outputTypes.put(Values.PDF_CONFIG, PDFConfig.class);
-        outputTypes.put(Values.SUBREPORT_DIR, String.class);
-        outputTypes.put(Values.OUTPUT_FORMAT, String.class);
+        outputTypes.put(Values.PDF_CONFIG_KEY, PDFConfig.class);
+        outputTypes.put(Values.SUBREPORT_DIR_KEY, String.class);
+        outputTypes.put(Values.OUTPUT_FORMAT_KEY, String.class);
         outputTypes.put(MapPrinterServlet.JSON_REQUEST_HEADERS, HttpRequestHeadersAttribute.Value.class);
 
         final List<ProcessorGraphNode<Object, Object>> nodes =
