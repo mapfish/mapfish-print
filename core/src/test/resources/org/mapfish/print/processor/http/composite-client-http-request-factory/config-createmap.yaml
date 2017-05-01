@@ -1,7 +1,10 @@
-
 templates:
   main: !template
+    attributes:
+      map: !map
+        width: 100
+        height: 100
     processors:
-      - !createMap {}
       - !configureHttpRequests
         httpProcessors : [!restrictUris {}]
+      - !createMap {}
