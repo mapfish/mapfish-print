@@ -73,7 +73,8 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
         Values values = new Values(requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
-        final JRTableModelDataSource legend = values.getObject("legend", JRTableModelDataSource.class);
+        final JRTableModelDataSource legend = values.getObject(
+                "legendDataSource", JRTableModelDataSource.class);
 
         int count = 0;
         while (legend.next()) {
@@ -110,7 +111,8 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
         Values values = new Values(requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
-        final JRTableModelDataSource legend = values.getObject("legend", JRTableModelDataSource.class);
+        final JRTableModelDataSource legend = values.getObject(
+                "legendDataSource", JRTableModelDataSource.class);
 
         JRDesignField iconField = new JRDesignField();
         iconField.setName("icon");
@@ -162,7 +164,8 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
         Values values = new Values(requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
-        final JRTableModelDataSource legend = values.getObject("legend", JRTableModelDataSource.class);
+        final JRTableModelDataSource legend = values.getObject(
+                "legendDataSource", JRTableModelDataSource.class);
 
         int count = 0;
         while (legend.next()) {

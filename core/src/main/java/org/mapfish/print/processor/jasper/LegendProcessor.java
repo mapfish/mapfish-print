@@ -340,7 +340,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         /**
          * The datasource for the legend object in the report.
          */
-        public final JRTableModelDataSource legend;
+        public final JRTableModelDataSource legendDataSource;
         /**
          * The path to the compiled subreport.
          */
@@ -350,8 +350,8 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
          */
         public final int numberOfLegendRows;
 
-        Output(final JRTableModelDataSource legend, final int numberOfLegendRows, final String legendSubReport) {
-            this.legend = legend;
+        Output(final JRTableModelDataSource legendDataSource, final int numberOfLegendRows, final String legendSubReport) {
+            this.legendDataSource = legendDataSource;
             this.numberOfLegendRows = numberOfLegendRows;
             this.legendSubReport = legendSubReport;
         }
