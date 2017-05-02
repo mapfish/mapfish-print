@@ -7,6 +7,7 @@ import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.map.image.wms.WmsLayer;
 import org.mapfish.print.map.tiled.wms.TiledWmsLayer;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.InputOutputValue;
 
 import java.util.List;
 
@@ -61,6 +62,7 @@ public class SetWmsCustomParamProcessor extends AbstractProcessor<SetWmsCustomPa
         /**
          * The map to update.
          */
+        @InputOutputValue
         public GenericMapAttributeValues map;
 
         /**
