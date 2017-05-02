@@ -249,14 +249,21 @@ public final class ProcessorDependencyGraphFactory {
             if (processor instanceof RequireAttribute) {
                 for (ProcessorDependencyGraphFactory.InputValue inputValue :
                         ProcessorDependencyGraphFactory.getInputs(processor)) {
-                    try {
-                        ((RequireAttribute) processor).setAttribute(
-                                inputValue.getInternalName(),
-                                currentAttributes.get(inputValue.getName()));
-                    } catch (ClassCastException e) {
-                        throw new RuntimeException("The processor '" + processor + "' Requires the " +
-                                "attribute '" + inputValue.getName() + "' (" + inputValue.getInternalName()
-                                + ") but he has the wrong type: " + e.getMessage(), e);
+                    if (inputValue.getType() == Values.class) {
+                        for (String attributeName:  currentAttributes.keySet()) {
+                            ((RequireAttribute) processor).setAttribute(
+                                    attributeName, currentAttributes.get(attributeName));
+                        }
+                    } else {
+                        try {
+                            ((RequireAttribute) processor).setAttribute(
+                                    inputValue.getInternalName(),
+                                    currentAttributes.get(inputValue.getName()));
+                        } catch (ClassCastException e) {
+                            throw new RuntimeException("The processor '" + processor + "' Requires the " +
+                                    "attribute '" + inputValue.getName() + "' (" + inputValue
+                                    .getInternalName() + ") but he has the wrong type: " + e.getMessage(), e);
+                        }
                     }
                 }
             }

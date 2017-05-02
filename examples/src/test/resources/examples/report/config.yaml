@@ -47,6 +47,10 @@ templates:
         - !reportBuilder # compile all reports in current directory
             directory: '.'
         - !createDataSource
+            copyAttributes:
+            - overlayLayers
+            - backgroundLayers
+            - style
             processors:
             - !addBackgroundLayers
                 inputMapper:

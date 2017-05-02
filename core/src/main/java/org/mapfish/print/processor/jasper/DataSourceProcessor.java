@@ -81,6 +81,7 @@ public final class DataSourceProcessor
     private ProcessorDependencyGraphFactory processorGraphFactory;
     private ProcessorDependencyGraph processorGraph;
     private List<Processor> processors;
+    private List<String> copyAttributes = Lists.newArrayList();
     @Autowired
     private MapfishParser parser;
     @Autowired
@@ -104,8 +105,8 @@ public final class DataSourceProcessor
     }
 
     /**
-     * The path to the report template used to render each row of the data.  This is only required if a subreport needs to be
-     * compiled and is referenced in the containing report's detail section.
+     * The path to the report template used to render each row of the data.  This is only required if a
+     * subreport needs to be compiled and is referenced in the containing report's detail section.
      * <p>
      *     The path should be relative to the configuration directory
      * </p>
@@ -118,18 +119,20 @@ public final class DataSourceProcessor
     /**
      * The key/name to use when putting the path to the compiled subreport in each row of the datasource.
      * This is required if {@link #reportTemplate} has been set.  The path to the compiled
-     * subreport will be added to each row in the datasource with this value as the key.  This allows the containing report to
-     * reference the subreport in each row.
+     * subreport will be added to each row in the datasource with this value as the key.  This allows the
+     * containing report to reference the subreport in each row.
      *
-     * @param reportKey the key/name to use when putting the path to the compiled subreport in each row of the datasource.
+     * @param reportKey the key/name to use when putting the path to the compiled subreport in each row of
+     *      the datasource.
      */
     public void setReportKey(final String reportKey) {
         this.reportKey = reportKey;
     }
 
     /**
-     * All the processors that will executed for each value retrieved from the {@link org.mapfish.print.output.Values} object
-     * with the datasource name.  All output values from the processor graph will be the datasource values.
+     * All the processors that will executed for each value retrieved from the
+     * {@link org.mapfish.print.output.Values} object with the datasource name.  All output values from the
+     * processor graph will be the datasource values.
      * <p></p>
      * <p>
      * Each value retrieved from values with the datasource name will be the input of the processor graph
@@ -154,6 +157,15 @@ public final class DataSourceProcessor
     }
 
     /**
+     * The attributes that will by copy from the previous level.
+     *
+     * @param copyAttributes the attributes name
+     */
+    public void setCopyAttributes(final List<String> copyAttributes) {
+        this.copyAttributes = copyAttributes;
+    }
+
+    /**
      * All the sub-level attributes.
      *
      * @param name the attribute name.
@@ -162,6 +174,8 @@ public final class DataSourceProcessor
     public void setAttribute(final String name, final Attribute attribute) {
         if (name.equals("datasource")) {
             this.allAttributes.putAll(((DataSourceAttribute) attribute).getAttributes());
+        } else if (this.copyAttributes.contains(name)) {
+            this.allAttributes.put(name, attribute);
         }
     }
 
@@ -189,7 +203,10 @@ public final class DataSourceProcessor
         //CSON:RedundantThrows
         List<Values> dataSourceValues = Lists.newArrayList();
         for (Map<String, Object> o : input.datasource.attributesValues) {
-            Values rowValues = new Values(input.values.asMap());
+            Values rowValues = new Values(input.values);
+            for (String attributeName: this.copyAttributes) {
+                rowValues.put(attributeName, input.values.getObject(attributeName, Object.class));
+            }
             for (Map.Entry<String, Object> entry : o.entrySet()) {
                 rowValues.put(entry.getKey(), entry.getValue());
             }
