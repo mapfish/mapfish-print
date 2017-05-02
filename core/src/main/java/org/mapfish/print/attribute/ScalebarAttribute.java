@@ -243,7 +243,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
         public String orientation = Orientation.HORIZONTAL_LABELS_BELOW.getLabel();
         
         /**
-         * Rotate the whole thing to some degree.
+         * Rotate the label to some degree (value between 0 and 180).
          */
         @HasDefaultValue
         public int labelRotation = 0;
