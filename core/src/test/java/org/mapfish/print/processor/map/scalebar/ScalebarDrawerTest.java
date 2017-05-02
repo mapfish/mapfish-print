@@ -64,8 +64,10 @@ public class ScalebarDrawerTest {
         ScalebarDrawer drawer = Type.LINE.createDrawer(graphics2d, settings);
         drawer.draw();
 
-//        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-line-labels-rotated.tiff");
-        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-rotated.tiff"), 5);
+//        final File output = new File("/tmp/expected-scalebar-line-labels-rotated.png");
+//        output.getParentFile().mkdirs();
+//        ImageIO.write(bufferedImage, "png", output);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-rotated.png"), 5);
     }
     
     @Test
@@ -82,8 +84,10 @@ public class ScalebarDrawerTest {
         ScalebarDrawer drawer = Type.LINE.createDrawer(graphics2d, settings);
         drawer.draw();
 
-//        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-line-labels-partially-rotated.tiff");
-        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-partially-rotated.tiff"), 5);
+//        final File output = new File("/tmp/expected-scalebar-line-labels-partially-rotated.png");
+//        output.getParentFile().mkdirs();
+//        ImageIO.write(bufferedImage, "png", output);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-partially-rotated.png"), 5);
     }
 
     @Test
@@ -101,8 +105,10 @@ public class ScalebarDrawerTest {
         ScalebarDrawer drawer = Type.LINE.createDrawer(graphics2d, settings);
         drawer.draw();
 
-//        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-line-labels-above-rotated.tiff");
-        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-above-rotated.tiff"), 5);
+//        final File output = new File("/tmp/expected-scalebar-line-labels-above-rotated.png");
+//        output.getParentFile().mkdirs();
+//        ImageIO.write(bufferedImage, "png", output);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-above-rotated.png"), 5);
     }
     
     @Test
@@ -120,8 +126,10 @@ public class ScalebarDrawerTest {
         ScalebarDrawer drawer = Type.LINE.createDrawer(graphics2d, settings);
         drawer.draw();
 
-//        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-line-labels-above-partially-rotated.tiff");
-        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-above-partially-rotated.tiff"), 5);
+//        final File output = new File("/tmp/expected-scalebar-line-labels-above-partially-rotated.png");
+//        output.getParentFile().mkdirs();
+//        ImageIO.write(bufferedImage, "png", output);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-above-partially-rotated.png"), 5);
     }
 
     @Test
@@ -139,8 +147,10 @@ public class ScalebarDrawerTest {
         ScalebarDrawer drawer = Type.LINE.createDrawer(graphics2d, settings);
         drawer.draw();
 
-//        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-line-labels-left-rotated.tiff");
-        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-left-rotated.tiff"), 5);
+//        final File output = new File("/tmp/expected-scalebar-line-labels-left-rotated.png");
+//        output.getParentFile().mkdirs();
+//        ImageIO.write(bufferedImage, "png", output);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-left-rotated.png"), 5);
     }
     
     @Test
@@ -158,8 +168,10 @@ public class ScalebarDrawerTest {
         ScalebarDrawer drawer = Type.LINE.createDrawer(graphics2d, settings);
         drawer.draw();
 
-//        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-line-labels-left-partially-rotated.tiff");
-        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-left-partially-rotated.tiff"), 5);
+//        final File output = new File("/tmp/expected-scalebar-line-labels-left-partially-rotated.png");
+//        output.getParentFile().mkdirs();
+//        ImageIO.write(bufferedImage, "png", output);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-left-partially-rotated.png"), 5);
     }
 
     @Test
@@ -177,8 +189,10 @@ public class ScalebarDrawerTest {
         ScalebarDrawer drawer = Type.LINE.createDrawer(graphics2d, settings);
         drawer.draw();
 
-//        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-line-labels-right-rotated.tiff");
-        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-right-rotated.tiff"), 5);
+//        final File output = new File("/tmp/expected-scalebar-line-labels-right-rotated.png");
+//        output.getParentFile().mkdirs();
+//        ImageIO.write(bufferedImage, "png", output);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-right-rotated.png"), 5);
     }
 
     @Test
@@ -196,8 +210,10 @@ public class ScalebarDrawerTest {
         ScalebarDrawer drawer = Type.LINE.createDrawer(graphics2d, settings);
         drawer.draw();
 
-//        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-line-labels-right-partially-rotated.tiff");
-        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-right-partially-rotated.tiff"), 5);
+//        final File output = new File("/tmp/expected-scalebar-line-labels-right-partially-rotated.png");
+//        output.getParentFile().mkdirs();
+//        ImageIO.write(bufferedImage, "png", output);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-right-partially-rotated.png"), 5);
     }
     
     @Test
