@@ -14,7 +14,6 @@ import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.PDFConfig;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.ConfigFileResolvingHttpRequestFactory;
-import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
 import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
@@ -260,14 +259,14 @@ public final class Values {
      */
     public void addRequiredValues(@Nonnull final Values sourceValues) {
         Object taskDirectory = sourceValues.getObject(TASK_DIRECTORY_KEY, Object.class);
-        MfClientHttpRequestFactory requestFactory = sourceValues.getObject(CLIENT_HTTP_REQUEST_FACTORY_KEY,
-                MfClientHttpRequestFactory.class);
+        MfClientHttpRequestFactoryProvider requestFactoryProvider = sourceValues.getObject(CLIENT_HTTP_REQUEST_FACTORY_KEY,
+                MfClientHttpRequestFactoryProvider.class);
         Template template = sourceValues.getObject(TEMPLATE_KEY, Template.class);
         PDFConfig pdfConfig = sourceValues.getObject(PDF_CONFIG_KEY, PDFConfig.class);
         String subReportDir = sourceValues.getObject(SUBREPORT_DIR_KEY, String.class);
 
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
-        this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY, requestFactory);
+        this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY, requestFactoryProvider);
         this.values.put(TEMPLATE_KEY, template);
         this.values.put(PDF_CONFIG_KEY, pdfConfig);
         this.values.put(SUBREPORT_DIR_KEY, subReportDir);
