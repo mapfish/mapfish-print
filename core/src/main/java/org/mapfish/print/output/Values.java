@@ -60,12 +60,11 @@ public final class Values {
     /**
      * The key for the values object for the subreport directory.
      */
-    public static final String SUBREPORT_DIR_KEY = "subreportDir";
+    public static final String SUBREPORT_DIR_KEY = "SUBREPORT_DIR";
     /**
      * The key for the values object of it self.
      */
     public static final String VALUES_KEY = "values";
-
 
     private final Map<String, Object> values = new ConcurrentHashMap<String, Object>();
 
