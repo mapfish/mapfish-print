@@ -49,6 +49,7 @@ import org.mapfish.print.map.geotools.FeatureLayer;
 import org.mapfish.print.map.geotools.grid.GridLayer;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.InputOutputValue;
 import org.mapfish.print.processor.InternalValue;
 import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.mapfish.print.processor.jasper.ImagesSubReport;
@@ -689,6 +690,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         /**
          * The required parameters for the map.
          */
+        @InputOutputValue
         public GenericMapAttributeValues map;
 
         /**
