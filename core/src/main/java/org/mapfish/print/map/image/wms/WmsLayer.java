@@ -64,13 +64,15 @@ public final class WmsLayer extends AbstractSingleImageLayer {
             final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
             final ClientHttpResponse response = closer.register(this.imageRequest.execute());
 
-            Assert.equals(HttpStatus.OK, response.getStatusCode(), "Http status code for " + this.imageRequest.getURI() + 
-                    " was not OK.  It was: " + response .getStatusCode() + ".  The response message was: '" +
-                    response.getStatusText() + "'");
+            Assert.isTrue(response != null, "No response, see error above");
+            Assert.equals(HttpStatus.OK, response.getStatusCode(), "Http status code for " +
+                    this.imageRequest.getURI() + " was not OK.  It was: " + response .getStatusCode() + ". " +
+                    " The response message was: '" + response.getStatusText() + "'");
 
             final BufferedImage image = ImageIO.read(response.getBody());
             if (image == null) {
-                LOGGER.warn("The URI: " + this.imageRequest.getURI() + " is an image format that can be decoded");
+                LOGGER.warn("The URI: " + this.imageRequest.getURI() + " is an image format that can be " +
+                        "decoded");
                 this.registry.counter(baseMetricName + ".error").inc();
                 return createErrorImage(transformer.getPaintArea());
             } else {
