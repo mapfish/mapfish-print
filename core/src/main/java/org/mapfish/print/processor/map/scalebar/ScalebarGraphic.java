@@ -261,15 +261,18 @@ public class ScalebarGraphic {
                 + settings.getLeftLabelMargin() + settings.getRightLabelMargin();
             height = 2 * settings.getPadding()
                 + settings.getBarSize() + settings.getLabelDistance()
-                + maxLabelSize.height;
+                + (long) Math.ceil(maxLabelSize.height * Math.cos(Math.toRadians(scalebarParams.labelRotation))
+                + maxLabelSize.width * Math.sin(Math.toRadians(scalebarParams.labelRotation)));
         } else {
             width = 2 * settings.getPadding()
-                + maxLabelSize.width + settings.getLabelDistance()
-                + settings.getBarSize();
+                + settings.getLabelDistance() + settings.getBarSize()
+                + (long) Math.ceil(maxLabelSize.width * Math.cos(Math.toRadians(scalebarParams.labelRotation))
+                + maxLabelSize.height * Math.sin(Math.toRadians(scalebarParams.labelRotation)));
             height = 2 * settings.getPadding()
                 + settings.getTopLabelMargin()
                 + settings.getIntervalLengthInPixels() * scalebarParams.intervals
-                + settings.getBottomLabelMargin();
+                + settings.getBottomLabelMargin()
+                + (long) Math.ceil(maxLabelSize.width / 2 * Math.sin(Math.toRadians(scalebarParams.labelRotation)));
         }
         return new Dimension((int) Math.ceil(width), (int) Math.ceil(height));
     }

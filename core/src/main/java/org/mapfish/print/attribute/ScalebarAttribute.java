@@ -101,6 +101,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
         private static final String DEFAULT_COLOR = "black";
         private static final String DEFAULT_BAR_BG_COLOR = "white";
         private static final String DEFAULT_BACKGROUND_COLOR = "rgba(255, 255, 255, 0)";
+        private static final int MAX_ROTATION = 180;
 
         private final Dimension size;
         private final boolean createSubReport;
@@ -240,6 +241,12 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
          */
         @HasDefaultValue
         public String orientation = Orientation.HORIZONTAL_LABELS_BELOW.getLabel();
+        
+        /**
+         * Rotate the label to some degree (value between 0 and 180).
+         */
+        @HasDefaultValue
+        public int labelRotation = 0;
 
         /**
          * The horizontal alignment of the scalebar inside the scalebar graphic (default: left).
@@ -305,6 +312,9 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
             if (getVerticalAlign() == null) {
                 throw new IllegalArgumentException("invalid verticalAlign: " + this.verticalAlign);
             }
+            if (this.labelRotation < 0 || this.labelRotation > MAX_ROTATION) {
+                throw new IllegalArgumentException("invalid labelRotation: " + this.labelRotation + ", must be positive value < 180.");
+            }
         }
 
         public final Dimension getSize() {
@@ -358,6 +368,13 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
             } else {
                 return Orientation.fromString(this.orientation);
             }
+        }
+        
+        /**
+         * @return Return the label rotation
+         */
+        public final int getLabelRotation() {
+            return this.labelRotation;
         }
 
         /**

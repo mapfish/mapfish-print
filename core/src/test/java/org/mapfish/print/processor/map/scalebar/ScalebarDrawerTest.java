@@ -46,10 +46,176 @@ public class ScalebarDrawerTest {
         ScalebarDrawer drawer = Type.LINE.createDrawer(graphics2d, settings);
         drawer.draw();
 
-//        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-line.tiff");
+//      ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-line.tiff");
         new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line.tiff"), 5);
     }
+    
+    @Test
+    public void testDrawLineLabelRotated() throws Exception {
+        final BufferedImage bufferedImage = new BufferedImage(180, 80, BufferedImage.TYPE_4BYTE_ABGR);
+        final Graphics2D graphics2d = bufferedImage.createGraphics();
 
+        ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
+        settings.getParams().labelRotation = 90;
+        settings.getParams().getSize().width = 180;
+        settings.getParams().getSize().height = 80;
+        settings.setMaxSize(new Dimension(180, 80));
+        settings.setSize(ScalebarGraphic.getSize(settings.getParams(), settings, settings.getMaxLabelSize()));
+        ScalebarDrawer drawer = Type.LINE.createDrawer(graphics2d, settings);
+        drawer.draw();
+
+//        final File output = new File("/tmp/expected-scalebar-line-labels-rotated.png");
+//        output.getParentFile().mkdirs();
+//        ImageIO.write(bufferedImage, "png", output);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-rotated.png"), 5);
+    }
+    
+    @Test
+    public void testDrawLineLabelPartiallyRotated() throws Exception {
+        final BufferedImage bufferedImage = new BufferedImage(180, 80, BufferedImage.TYPE_4BYTE_ABGR);
+        final Graphics2D graphics2d = bufferedImage.createGraphics();
+
+        ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
+        settings.getParams().labelRotation = 45;
+        settings.getParams().getSize().width = 180;
+        settings.getParams().getSize().height = 80;
+        settings.setMaxSize(new Dimension(180, 80));
+        settings.setSize(ScalebarGraphic.getSize(settings.getParams(), settings, settings.getMaxLabelSize()));
+        ScalebarDrawer drawer = Type.LINE.createDrawer(graphics2d, settings);
+        drawer.draw();
+
+//        final File output = new File("/tmp/expected-scalebar-line-labels-partially-rotated.png");
+//        output.getParentFile().mkdirs();
+//        ImageIO.write(bufferedImage, "png", output);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-partially-rotated.png"), 5);
+    }
+
+    @Test
+    public void testDrawLineLabelsAboveRotated() throws Exception {
+        final BufferedImage bufferedImage = new BufferedImage(180, 80, BufferedImage.TYPE_4BYTE_ABGR);
+        final Graphics2D graphics2d = bufferedImage.createGraphics();
+
+        ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
+        settings.getParams().orientation = Orientation.HORIZONTAL_LABELS_ABOVE.getLabel();
+        settings.getParams().labelRotation = 90;
+        settings.getParams().getSize().width = 180;
+        settings.getParams().getSize().height = 80;
+        settings.setMaxSize(new Dimension(180, 80));
+        settings.setSize(ScalebarGraphic.getSize(settings.getParams(), settings, settings.getMaxLabelSize()));
+        ScalebarDrawer drawer = Type.LINE.createDrawer(graphics2d, settings);
+        drawer.draw();
+
+//        final File output = new File("/tmp/expected-scalebar-line-labels-above-rotated.png");
+//        output.getParentFile().mkdirs();
+//        ImageIO.write(bufferedImage, "png", output);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-above-rotated.png"), 5);
+    }
+    
+    @Test
+    public void testDrawLineLabelsAbovePartiallyRotated() throws Exception {
+        final BufferedImage bufferedImage = new BufferedImage(180, 80, BufferedImage.TYPE_4BYTE_ABGR);
+        final Graphics2D graphics2d = bufferedImage.createGraphics();
+
+        ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
+        settings.getParams().orientation = Orientation.HORIZONTAL_LABELS_ABOVE.getLabel();
+        settings.getParams().labelRotation = 45;
+        settings.getParams().getSize().width = 180;
+        settings.getParams().getSize().height = 80;
+        settings.setMaxSize(new Dimension(180, 80));
+        settings.setSize(ScalebarGraphic.getSize(settings.getParams(), settings, settings.getMaxLabelSize()));
+        ScalebarDrawer drawer = Type.LINE.createDrawer(graphics2d, settings);
+        drawer.draw();
+
+//        final File output = new File("/tmp/expected-scalebar-line-labels-above-partially-rotated.png");
+//        output.getParentFile().mkdirs();
+//        ImageIO.write(bufferedImage, "png", output);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-above-partially-rotated.png"), 5);
+    }
+
+    @Test
+    public void testDrawLineLabelsVerticalLeftRotated() throws Exception {
+        final BufferedImage bufferedImage = new BufferedImage(80, 180, BufferedImage.TYPE_4BYTE_ABGR);
+        final Graphics2D graphics2d = bufferedImage.createGraphics();
+
+        ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
+        settings.getParams().orientation = Orientation.VERTICAL_LABELS_LEFT.getLabel();
+        settings.getParams().labelRotation = 90;
+        settings.getParams().getSize().width = 80;
+        settings.getParams().getSize().height = 180;
+        settings.setMaxSize(new Dimension(80, 180));
+        settings.setSize(ScalebarGraphic.getSize(settings.getParams(), settings, settings.getMaxLabelSize()));
+        ScalebarDrawer drawer = Type.LINE.createDrawer(graphics2d, settings);
+        drawer.draw();
+
+//        final File output = new File("/tmp/expected-scalebar-line-labels-left-rotated.png");
+//        output.getParentFile().mkdirs();
+//        ImageIO.write(bufferedImage, "png", output);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-left-rotated.png"), 5);
+    }
+    
+    @Test
+    public void testDrawLineLabelsVerticalLeftPartiallyRotated() throws Exception {
+        final BufferedImage bufferedImage = new BufferedImage(80, 180, BufferedImage.TYPE_4BYTE_ABGR);
+        final Graphics2D graphics2d = bufferedImage.createGraphics();
+
+        ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
+        settings.getParams().orientation = Orientation.VERTICAL_LABELS_LEFT.getLabel();
+        settings.getParams().labelRotation = 45;
+        settings.getParams().getSize().width = 80;
+        settings.getParams().getSize().height = 180;
+        settings.setMaxSize(new Dimension(80, 180));
+        settings.setSize(ScalebarGraphic.getSize(settings.getParams(), settings, settings.getMaxLabelSize()));
+        ScalebarDrawer drawer = Type.LINE.createDrawer(graphics2d, settings);
+        drawer.draw();
+
+//        final File output = new File("/tmp/expected-scalebar-line-labels-left-partially-rotated.png");
+//        output.getParentFile().mkdirs();
+//        ImageIO.write(bufferedImage, "png", output);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-left-partially-rotated.png"), 5);
+    }
+
+    @Test
+    public void testDrawLineLabelsVerticalRightRotated() throws Exception {
+        final BufferedImage bufferedImage = new BufferedImage(80, 180, BufferedImage.TYPE_4BYTE_ABGR);
+        final Graphics2D graphics2d = bufferedImage.createGraphics();
+
+        ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
+        settings.getParams().orientation = Orientation.VERTICAL_LABELS_RIGHT.getLabel();
+        settings.getParams().labelRotation = 90;
+        settings.getParams().getSize().width = 80;
+        settings.getParams().getSize().height = 180;
+        settings.setMaxSize(new Dimension(80, 180));
+        settings.setSize(ScalebarGraphic.getSize(settings.getParams(), settings, settings.getMaxLabelSize()));
+        ScalebarDrawer drawer = Type.LINE.createDrawer(graphics2d, settings);
+        drawer.draw();
+
+//        final File output = new File("/tmp/expected-scalebar-line-labels-right-rotated.png");
+//        output.getParentFile().mkdirs();
+//        ImageIO.write(bufferedImage, "png", output);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-right-rotated.png"), 5);
+    }
+
+    @Test
+    public void testDrawLineLabelsVerticalRightPartiallyRotated() throws Exception {
+        final BufferedImage bufferedImage = new BufferedImage(80, 180, BufferedImage.TYPE_4BYTE_ABGR);
+        final Graphics2D graphics2d = bufferedImage.createGraphics();
+
+        ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
+        settings.getParams().orientation = Orientation.VERTICAL_LABELS_RIGHT.getLabel();
+        settings.getParams().labelRotation = 45;
+        settings.getParams().getSize().width = 80;
+        settings.getParams().getSize().height = 180;
+        settings.setMaxSize(new Dimension(80, 180));
+        settings.setSize(ScalebarGraphic.getSize(settings.getParams(), settings, settings.getMaxLabelSize()));
+        ScalebarDrawer drawer = Type.LINE.createDrawer(graphics2d, settings);
+        drawer.draw();
+
+//        final File output = new File("/tmp/expected-scalebar-line-labels-right-partially-rotated.png");
+//        output.getParentFile().mkdirs();
+//        ImageIO.write(bufferedImage, "png", output);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-right-partially-rotated.png"), 5);
+    }
+    
     @Test
     public void testDrawLineWithSubIntervals() throws Exception {
         final BufferedImage bufferedImage = new BufferedImage(180, 40, BufferedImage.TYPE_4BYTE_ABGR);
