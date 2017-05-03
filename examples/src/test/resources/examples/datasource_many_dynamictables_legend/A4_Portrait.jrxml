@@ -6,7 +6,7 @@
 	<parameter name="title" class="java.lang.String"/>
 	<parameter name="comments" class="java.lang.String"/>
 	<parameter name="mapSubReport" class="java.lang.String"/>
-	<parameter name="legend" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
+	<parameter name="legendDataSource" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
 	<parameter name="legendSubReport" class="java.lang.String"/>
 	<parameter name="scalebarSubReport" class="java.lang.String"/>
 	<parameter name="northArrowSubReport" class="java.lang.String"/>
@@ -89,7 +89,7 @@
 			</textField>
 			<subreport>
 				<reportElement mode="Transparent" x="0" y="23" width="554" height="42" backcolor="#FFFFFF" uuid="9c27cdfd-7317-4f81-8115-90c941506c51"/>
-				<dataSourceExpression><![CDATA[$P{legend}]]></dataSourceExpression>
+				<dataSourceExpression><![CDATA[$P{legendDataSource}]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{legendSubReport}]]></subreportExpression>
 			</subreport>
 		</band>

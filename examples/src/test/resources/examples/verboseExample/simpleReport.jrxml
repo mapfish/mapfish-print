@@ -8,7 +8,7 @@
 	<parameter name="number" class="java.lang.Integer"/>
     <parameter name="length" class="java.lang.Double"/>
     <parameter name="tableDataSource" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
-    <parameter name="legend" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
+    <parameter name="legendDataSource" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
     <parameter name="legendSubReport" class="java.lang.String"/>
     <field name="tableDataSource" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
 	<field name="displayName" class="java.lang.String"/>
@@ -84,7 +84,7 @@
 			</textField>
 			<subreport>
 				<reportElement x="0" y="23" width="555" height="42" uuid="b4cae0ad-a520-425e-b790-d6984af7ddc8"/>
-				<dataSourceExpression><![CDATA[$P{legend}]]></dataSourceExpression>
+				<dataSourceExpression><![CDATA[$P{legendDataSource}]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{legendSubReport}]]></subreportExpression>
 			</subreport>
 		</band>

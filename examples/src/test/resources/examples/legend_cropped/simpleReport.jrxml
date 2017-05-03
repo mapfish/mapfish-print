@@ -13,7 +13,7 @@
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
 	<parameter name="mapSubReport" class="java.lang.String"/>
-	<parameter name="legend" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
+	<parameter name="legendDataSource" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
 	<parameter name="legendSubReport" class="java.lang.String"/>
 	<title>
 		<band height="432" splitType="Stretch">
@@ -35,7 +35,7 @@
 			</subreport>
 			<subreport>
 				<reportElement x="0" y="390" width="148" height="42" uuid="b4cae0ad-a520-425e-b790-d6984af7ddc8"/>
-				<dataSourceExpression><![CDATA[$P{legend}]]></dataSourceExpression>
+				<dataSourceExpression><![CDATA[$P{legendDataSource}]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{legendSubReport}]]></subreportExpression>
 			</subreport>
 		</band>

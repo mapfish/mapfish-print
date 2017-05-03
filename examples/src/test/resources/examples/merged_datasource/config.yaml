@@ -31,17 +31,17 @@ templates:
         - !mergeSource
           type: SINGLE
           fields: # name the column data so there is consistence in all rows
-            map: subReportPath
+            mapSubReport: subReportPath
         - !mergeSource
           type: SINGLE
           fields: # name the column data so there is consistence in all rows
             legendSubReport: subReportPath
-            legend: datasource
+            legendDataSource: datasource
         - !mergeSource
           key: jrDataSource
           type: DATASOURCE
           fields:
             displayName: displayName
-            table: datasource # main.jrxml uses the name "datasource" so we need to use that mapping here
+            tableDataSource: datasource # main.jrxml uses the name "datasource" so we need to use that mapping here
             reportTemplate: subReportPath
     tableData: mergedDataSource
