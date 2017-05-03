@@ -32,7 +32,7 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
      * Constructor.
      *
      * @param executorService the thread pool for doing the rendering.
-     * @param styleSupplier     the style to use when drawing the constructed grid coverage on the map.
+     * @param styleSupplier the style to use when drawing the constructed grid coverage on the map.
      * @param params the parameters for this layer
      */
     protected AbstractSingleImageLayer(final ExecutorService executorService,

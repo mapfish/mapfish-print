@@ -15,7 +15,7 @@ import java.util.List;
 public final class LegendAttribute extends ReflectiveAttribute<LegendAttribute.LegendAttributeValue> {
 
     @Override
-    protected Class<LegendAttributeValue> getValueType() {
+    public Class<LegendAttributeValue> getValueType() {
         return LegendAttributeValue.class;
     }
 

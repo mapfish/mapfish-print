@@ -5,9 +5,9 @@
     <parameter name="geojsonMap" class="java.lang.String">
         <parameterDescription><![CDATA[Geo Json map]]></parameterDescription>
     </parameter>
-    <parameter name="table" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
-    <parameter name="legend1Legend" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
-    <parameter name="legend2Legend" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
+    <parameter name="tableDataSource" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
+    <parameter name="legend1LegendDataSource" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
+    <parameter name="legend2LegendDataSource" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
     <queryString>
         <![CDATA[]]>
     </queryString>
@@ -28,17 +28,17 @@
             </subreport>
             <subreport>
                 <reportElement x="0" y="210" width="802" height="69" uuid="c6b99036-9edf-444d-9084-7c6b51ce0b2c"/>
-                <dataSourceExpression><![CDATA[$P{table}]]></dataSourceExpression>
+                <dataSourceExpression><![CDATA[$P{tableDataSource}]]></dataSourceExpression>
                 <subreportExpression><![CDATA["table.jasper"]]></subreportExpression>
             </subreport>
             <subreport>
                 <reportElement x="0" y="279" width="802" height="138" uuid="c6b99036-9edf-444d-9087-c6b51ce0b2c1"/>
-                <dataSourceExpression><![CDATA[$P{legend1Legend}]]></dataSourceExpression>
+                <dataSourceExpression><![CDATA[$P{legend1LegendDataSource}]]></dataSourceExpression>
                 <subreportExpression><![CDATA["legend.jasper"]]></subreportExpression>
             </subreport>
             <subreport>
                 <reportElement x="0" y="417" width="802" height="138" uuid="c6b99036-9edf-444d-9087-c6b51ce0b2c2"/>
-                <dataSourceExpression><![CDATA[$P{legend2Legend}]]></dataSourceExpression>
+                <dataSourceExpression><![CDATA[$P{legend2LegendDataSource}]]></dataSourceExpression>
                 <subreportExpression><![CDATA["legend.jasper"]]></subreportExpression>
             </subreport>
         </band>

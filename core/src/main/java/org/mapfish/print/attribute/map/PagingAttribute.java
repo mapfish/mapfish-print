@@ -16,7 +16,7 @@ import java.util.List;
 public final class PagingAttribute extends ReflectiveAttribute<PagingAttribute.PagingProcessorValues> {
 
     @Override
-    protected Class<? extends PagingProcessorValues> getValueType() {
+    public Class<? extends PagingProcessorValues> getValueType() {
         return PagingProcessorValues.class;
     }
 
@@ -65,7 +65,6 @@ public final class PagingAttribute extends ReflectiveAttribute<PagingAttribute.P
          */
         @HasDefaultValue
         public AreaOfInterest.AoiDisplay aoiDisplay;
-
 
         /**
          * If this is defined it will override the style used for rendering the Area Of Interest in the

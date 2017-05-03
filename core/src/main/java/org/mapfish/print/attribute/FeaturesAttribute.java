@@ -18,7 +18,7 @@ import java.util.List;
 public final class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribute.FeaturesAttributeValues> {
 
     @Override
-    protected Class<FeaturesAttributeValues> getValueType() {
+    public Class<FeaturesAttributeValues> getValueType() {
         return FeaturesAttributeValues.class;
     }
 
@@ -26,7 +26,6 @@ public final class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribu
     public FeaturesAttributeValues createValue(final Template template) {
         return new FeaturesAttributeValues(template);
     }
-
 
     @Override
     public void validate(final List<Throwable> validationErrors, final Configuration configuration) {

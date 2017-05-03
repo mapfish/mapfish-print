@@ -10,6 +10,8 @@ import com.vividsolutions.jts.geom.Polygon;
 
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.mapfish.print.attribute.Attribute;
+import org.mapfish.print.attribute.DataSourceAttribute;
 import org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue;
 import org.mapfish.print.attribute.map.AreaOfInterest;
 import org.mapfish.print.attribute.map.MapAttribute;
@@ -18,6 +20,8 @@ import org.mapfish.print.attribute.map.PagingAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.ProvideAttributes;
+import org.mapfish.print.processor.RequireAttributes;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,12 +57,14 @@ import javax.annotation.Nullable;
  * <p>See also: <a href="attributes.html#!paging">!paging</a> attribute</p>
  * [[examples=paging]]
  */
-public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesProcessor.Input, CreateMapPagesProcessor.Output> {
+public class CreateMapPagesProcessor
+        extends AbstractProcessor<CreateMapPagesProcessor.Input, CreateMapPagesProcessor.Output>
+        implements ProvideAttributes, RequireAttributes {
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateMapPagesProcessor.class);
     private static final int DO_NOT_RENDER_BBOX_INDEX = -1;
 
     private final GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
-
+    private MapAttribute mapAttribute;
 
     /**
      * Constructor.
@@ -192,6 +198,33 @@ public class CreateMapPagesProcessor extends AbstractProcessor<CreateMapPagesPro
         DataSourceAttributeValue datasourceAttributes = new DataSourceAttributeValue();
         datasourceAttributes.attributesValues = mapList.toArray(new Map[mapList.size()]);
         return new Output(datasourceAttributes);
+    }
+
+    /**
+     * Set the map attribute.
+     *
+     * @param name the attribute name
+     * @param attribute the attribute
+     */
+    public void setAttribute(final String name, final Attribute attribute) {
+        if (name.equals("map")) {
+            this.mapAttribute = (MapAttribute) attribute;
+        }
+    }
+
+    /**
+     * Gets the attributes provided by the processor.
+     *
+     * @return the attributes
+     */
+    public Map<String, Attribute> getAttributes() {
+        Map<String, Attribute> result = new HashMap<String, Attribute>();
+        DataSourceAttribute datasourceAttribute = new DataSourceAttribute();
+        Map<String, Attribute> dsResult = new HashMap<String, Attribute>();
+        dsResult.put("map", this.mapAttribute);
+        datasourceAttribute.setAttributes(dsResult);
+        result.put("datasource", datasourceAttribute);
+        return result;
     }
 
     /**

@@ -18,5 +18,6 @@ templates:
           font: Arial
     processors:
     - !createMap
-        outputMapper: {mapSubReport: mapOut}
+        outputMapper:
+            mapSubReport: mapSubReport
     - !createScalebar {}

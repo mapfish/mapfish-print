@@ -41,9 +41,9 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
         
         final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory,
                 new File("."));
-        final MapAttribute.MapAttributeValues mapValue = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
+        final MapAttribute.MapAttributeValues mapValue = values.getObject("map", MapAttribute.MapAttributeValues.class);
         final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue =
-                values.getObject("overviewMapDef", OverviewMapAttribute.OverviewMapAttributeValues.class);
+                values.getObject("overviewMap", OverviewMapAttribute.OverviewMapAttributeValues.class);
         final MapAttribute.OverriddenMapAttributeValues value = mapValue.getWithOverrides(overviewMapValue);
         
         assertEquals(300.0, value.getDpi(), 0.1);
@@ -65,9 +65,9 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
         final PJsonObject pJsonObject = parseJSONObjectFromFile(OverviewMapAttributeTest.class, "overviewmap_attributes/requestData-yaml.json");
         
         final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory, new File("."));
-        final MapAttribute.MapAttributeValues mapValue = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
+        final MapAttribute.MapAttributeValues mapValue = values.getObject("map", MapAttribute.MapAttributeValues.class);
         final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue =
-                values.getObject("overviewMapDef", OverviewMapAttribute.OverviewMapAttributeValues.class);
+                values.getObject("overviewMap", OverviewMapAttribute.OverviewMapAttributeValues.class);
         final MapAttribute.OverriddenMapAttributeValues value = mapValue.getWithOverrides(overviewMapValue);
 
         assertEquals(80.0, value.getDpi(), 0.1);
@@ -90,9 +90,9 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
         final PJsonObject pJsonObject = parseJSONObjectFromFile(OverviewMapAttributeTest.class, "overviewmap_attributes/requestData-json.json");
         
         final Values values = new Values(pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory, new File("."));
-        final MapAttribute.MapAttributeValues mapValue = values.getObject("mapDef", MapAttribute.MapAttributeValues.class);
+        final MapAttribute.MapAttributeValues mapValue = values.getObject("map", MapAttribute.MapAttributeValues.class);
         final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue =
-                values.getObject("overviewMapDef", OverviewMapAttribute.OverviewMapAttributeValues.class);
+                values.getObject("overviewMap", OverviewMapAttribute.OverviewMapAttributeValues.class);
         final MapAttribute.OverriddenMapAttributeValues value = mapValue.getWithOverrides(overviewMapValue);
 
         assertEquals(300.0, value.getDpi(), 0.1);

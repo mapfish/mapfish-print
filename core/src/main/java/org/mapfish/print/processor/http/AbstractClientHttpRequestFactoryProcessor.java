@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
  * The AbstractClientHttpRequestFactoryProcessor class.
  */
 public abstract class AbstractClientHttpRequestFactoryProcessor
-        extends AbstractProcessor<ClientHttpFactoryProcessorParam, ClientHttpFactoryProcessorParam>
+        extends AbstractProcessor<ClientHttpFactoryProcessorParam, Void>
         implements HttpProcessor<ClientHttpFactoryProcessorParam> {
 
     /**
@@ -25,7 +25,7 @@ public abstract class AbstractClientHttpRequestFactoryProcessor
      * Constructor.
      */
     protected AbstractClientHttpRequestFactoryProcessor() {
-        super(ClientHttpFactoryProcessorParam.class);
+        super(Void.class);
     }
 
     /**
@@ -76,10 +76,11 @@ public abstract class AbstractClientHttpRequestFactoryProcessor
 
     @Nullable
     @Override
-    public final ClientHttpFactoryProcessorParam execute(final ClientHttpFactoryProcessorParam values,
-                               final ExecutionContext context) throws Exception {
-        values.clientHttpRequestFactory = createFactoryWrapper(values, values.clientHttpRequestFactory);
-        return values;
+    public final Void execute(
+            final ClientHttpFactoryProcessorParam values,
+            final ExecutionContext context) throws Exception {
+        values.clientHttpRequestFactoryProvider.set(createFactoryWrapper(
+                values, values.clientHttpRequestFactoryProvider.get()));
+        return null;
     }
-
 }

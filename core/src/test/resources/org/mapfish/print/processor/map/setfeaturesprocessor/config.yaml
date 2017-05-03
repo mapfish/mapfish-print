@@ -13,6 +13,5 @@ templates:
     - !setFeatures
         inputMapper: 
           map1: map
-          features: features
     - !createMap
         inputMapper: {map1: map}

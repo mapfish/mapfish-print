@@ -119,7 +119,7 @@ public final class OsmLayerParam extends AbstractTiledLayerParams {
     /**
      * Set a custom parameter.
      *
-     * @param name  the parameter name
+     * @param name the parameter name
      * @param value the parameter value
      */
     public  void setCustomParam(final String name, final String value) {

@@ -2,6 +2,8 @@ package org.mapfish.print.processor.map;
 
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
+import jsr166y.ForkJoinPool;
+import jsr166y.ForkJoinTask;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -39,7 +41,8 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
     private TestHttpClientFactory requestFactory;
     @Autowired
     private MapfishParser parser;
-
+    @Autowired
+    private ForkJoinPool forkJoinPool;
 
     @Test
     @DirtiesContext
@@ -67,7 +70,7 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
         final Template template = config.getTemplate("main");
 
         PJsonObject requestData = loadJsonRequestData();
-        final JSONObject jsonLayer = requestData.getJSONObject("attributes").getJSONObject("mapDef").getJSONArray("layers")
+        final JSONObject jsonLayer = requestData.getJSONObject("attributes").getJSONObject("map").getJSONArray("layers")
                 .getJSONObject(0).getInternalObj();
 
         for (String gmlDataName : new String[]{"spearfish-streams-v2.gml", "spearfish-streams-v311.gml"}) {
@@ -75,7 +78,10 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
             jsonLayer.accumulate("url", "http://" + host + ":23432" + "/gml/" + gmlDataName);
 
             Values values = new Values(requestData, template, parser, getTaskDirectory(), this.requestFactory, new File("."));
-            template.getProcessorGraph().createTask(values).invoke();
+
+            final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
+                    template.getProcessorGraph().createTask(values));
+            taskFuture.get();
 
             @SuppressWarnings("unchecked")
             List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);

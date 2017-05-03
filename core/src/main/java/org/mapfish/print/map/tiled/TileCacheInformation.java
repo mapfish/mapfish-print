@@ -40,10 +40,10 @@ public abstract class TileCacheInformation {
     /**
      * Constructor.
      *
-     * @param bounds    the map bounds
+     * @param bounds the map bounds
      * @param paintArea the area to paint
-     * @param dpi       the DPI to render at
-     * @param params    the params with the data for creating the layer.
+     * @param dpi the DPI to render at
+     * @param params the params with the data for creating the layer.
      */
     public TileCacheInformation(final MapBounds bounds, final Rectangle paintArea, final double dpi,
                                 final AbstractTiledLayerParams params) {
@@ -57,11 +57,11 @@ public abstract class TileCacheInformation {
      * Create the http request for loading the image at the indicated area and the indicated size.
      *
      * @param httpRequestFactory the factory to use for making http requests
-     * @param commonUrl          the uri that is common to all tiles.  See {@link #createCommonUrl()}
-     * @param tileBounds         the bounds of the image in world coordinates
-     * @param tileSizeOnScreen   the size of the tile on the screen or on the image.
-     * @param column             the column index of the tile from the origin of the tile cache.
-     * @param row                the row index of the tile from the origin of the tile cache.
+     * @param commonUrl the uri that is common to all tiles.  See {@link #createCommonUrl()}
+     * @param tileBounds the bounds of the image in world coordinates
+     * @param tileSizeOnScreen the size of the tile on the screen or on the image.
+     * @param column the column index of the tile from the origin of the tile cache.
+     * @param row the row index of the tile from the origin of the tile cache.
      */
     @Nonnull
     public abstract ClientHttpRequest getTileRequest(MfClientHttpRequestFactory httpRequestFactory,
@@ -104,7 +104,7 @@ public abstract class TileCacheInformation {
      * <p></p>
      * This equates to the minX and minY of the GridCoverage as well.
      *
-     * @param envelope    the area that will be displayed.
+     * @param envelope the area that will be displayed.
      * @param geoTileSize the size of each tile in world space.
      */
     // CSOFF:DesignForExtension
@@ -125,7 +125,7 @@ public abstract class TileCacheInformation {
     /**
      * Create a buffered image with the correct image bands etc... for the tiles being loaded.
      *
-     * @param imageWidth  width of the image to create
+     * @param imageWidth width of the image to create
      * @param imageHeight height of the image to create.
      */
     // CSOFF:DesignForExtension

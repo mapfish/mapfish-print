@@ -47,30 +47,19 @@ templates:
         - !reportBuilder # compile all reports in current directory
             directory: '.'
         - !createDataSource
+            copyAttributes:
+            - overlayLayers
+            - backgroundLayers
+            - style
             processors:
             - !addBackgroundLayers
                 inputMapper:
                     backgroundLayers: staticLayers
-                outputMapper:
-                    map: map2
             - !addOverlayLayers
                 inputMapper:
                     overlayLayers: staticLayers
-                    map2: map
-                outputMapper:
-                    map: map3
-            - !setStyle
-                inputMapper:
-                    map3: map
-                outputMapper:
-                    map: map4
-            - !setFeatures
-                inputMapper:
-                    map4: map
-                outputMapper:
-                    map: map5
-            - !createMap
-                inputMapper:
-                    map5: map
+            - !setStyle {}
+            - !setFeatures {}
+            - !createMap {}
 
         tableData: jrDataSource

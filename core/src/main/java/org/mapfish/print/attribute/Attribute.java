@@ -21,7 +21,15 @@ public interface Attribute extends ConfigurationObject {
     void printClientConfig(JSONWriter json, Template template) throws JSONException;
     /**
      * Set the name of the attribute as set in the configuration file.
+     *
      * @param name the name of the attribute
      */
     void setConfigName(String name);
+
+    /**
+     * Get the class of the value.
+     *
+     * @return the value class
+     */
+    Class getValueType();
 }

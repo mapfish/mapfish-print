@@ -5,8 +5,8 @@ import net.sf.jasperreports.engine.JRException;
 import org.mapfish.print.attribute.NorthArrowAttribute;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.config.Configuration;
-import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.mapfish.print.processor.jasper.ImagesSubReport;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
 
@@ -28,21 +28,14 @@ import java.util.List;
  * <pre><code>
  * attributes:
  *   ...
- *   northArrowDef: !northArrow
+ *   northArrow: !northArrow
  *     size: 50
  *     default:
  *       graphic: "file://NorthArrow_10.svg"
  *
  * processors:
  * ...
- *   - !createNorthArrow
- *     inputMapper: {
- *       mapDef: map,
- *       northArrowDef: northArrow
- *     }
- *     outputMapper: {
- *       northArrowSubReport: northArrowSubReport
- *     }
+ *   - !createNorthArrow {}
  * </code></pre>
  * <p>See also: <a href="attributes.html#!northArrow">!northArrow</a> attribute</p>
  * [[examples=verboseExample,print_osm_new_york_nosubreports]]
@@ -80,7 +73,7 @@ public class CreateNorthArrowProcessor extends AbstractProcessor<CreateNorthArro
                 values.northArrow.getBackgroundColor(),
                 values.map.getRotation(),
                 values.tempTaskDirectory,
-                values.clientHttpRequestFactory);
+                values.clientHttpRequestFactoryProvider.get());
 
         checkCancelState(context);
         
@@ -130,7 +123,7 @@ public class CreateNorthArrowProcessor extends AbstractProcessor<CreateNorthArro
         /**
          * The factory to use for making http requests.
          */
-        public MfClientHttpRequestFactory clientHttpRequestFactory;
+        public MfClientHttpRequestFactoryProvider clientHttpRequestFactoryProvider;
     }
 
     /**

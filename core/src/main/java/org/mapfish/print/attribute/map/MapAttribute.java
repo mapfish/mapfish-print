@@ -35,7 +35,7 @@ public final class MapAttribute extends GenericMapAttribute {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected Class<MapAttributeValues> getValueType() {
+    public Class<MapAttributeValues> getValueType() {
         return MapAttributeValues.class;
     }
 
@@ -106,8 +106,8 @@ public final class MapAttribute extends GenericMapAttribute {
          * Constructor.
          *
          * @param template the template this map is part of.
-         * @param width  the width of the map.
-         * @param height  the height of the map.
+         * @param width the width of the map.
+         * @param height the height of the map.
          */
         public MapAttributeValues(final Template template, final Integer width, final Integer height) {
             super(template, width, height);

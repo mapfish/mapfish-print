@@ -202,9 +202,9 @@ public class MapPrinterServlet extends BaseMapServlet {
      *  {"time":0,"count":0,"done":false}
      * </code></pre>
      *
-     * @param referenceId    the job reference
-     * @param jsonpCallback  if given the result is returned with a function call wrapped around it
-     * @param statusRequest  the request object
+     * @param referenceId the job reference
+     * @param jsonpCallback if given the result is returned with a function call wrapped around it
+     * @param statusRequest the request object
      * @param statusResponse the response object
      */
     @RequestMapping(value = "/{appId}" + STATUS_URL + "/{referenceId:\\S+}.json", method = RequestMethod.GET)
@@ -222,9 +222,9 @@ public class MapPrinterServlet extends BaseMapServlet {
      *  {"time":0,"count":0,"done":false}
      * </code></pre>
      *
-     * @param referenceId    the job reference
-     * @param jsonpCallback  if given the result is returned with a function call wrapped around it
-     * @param statusRequest  the request object
+     * @param referenceId the job reference
+     * @param jsonpCallback if given the result is returned with a function call wrapped around it
+     * @param statusRequest the request object
      * @param statusResponse the response object
      */
     @RequestMapping(value = STATUS_URL + "/{referenceId:\\S+}.json", method = RequestMethod.GET)
@@ -277,7 +277,7 @@ public class MapPrinterServlet extends BaseMapServlet {
      * Even if a job was already finished, subsequent status requests will
      * return that the job was canceled.
      *
-     * @param referenceId    the job reference
+     * @param referenceId the job reference
      * @param statusResponse the response object
      */
     @RequestMapping(value = "/{appId}" + CANCEL_URL + "/{referenceId:\\S+}", method = RequestMethod.DELETE)
@@ -293,7 +293,7 @@ public class MapPrinterServlet extends BaseMapServlet {
      * Even if a job was already finished, subsequent status requests will
      * return that the job was canceled.
      *
-     * @param referenceId    the job reference
+     * @param referenceId the job reference
      * @param statusResponse the response object
      */
     @RequestMapping(value = CANCEL_URL + "/{referenceId:\\S+}", method = RequestMethod.DELETE)
@@ -310,10 +310,10 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * Add the print job to the job queue.
      *
-     * @param appId                the id of the app to get the request for.
-     * @param format               the format of the returned report
-     * @param requestData          a json formatted string with the request data required to perform the report generation.
-     * @param createReportRequest  the request object
+     * @param appId the id of the app to get the request for.
+     * @param format the format of the returned report
+     * @param requestData a json formatted string with the request data required to perform the report generation.
+     * @param createReportRequest the request object
      * @param createReportResponse the response object
      */
     @RequestMapping(value = "/{appId}" + REPORT_URL + ".{format:\\w+}", method = RequestMethod.POST)
@@ -355,8 +355,8 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * To get the PDF created previously.
      *
-     * @param referenceId       the path to the file.
-     * @param inline            whether or not to inline the
+     * @param referenceId the path to the file.
+     * @param inline whether or not to inline the
      * @param getReportResponse the response object
      */
     @RequestMapping(value = "/{appId}" + REPORT_URL + "/{referenceId:\\S+}", method = RequestMethod.GET)
@@ -369,8 +369,8 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * To get the PDF created previously.
      *
-     * @param referenceId       the path to the file.
-     * @param inline            whether or not to inline the
+     * @param referenceId the path to the file.
+     * @param inline whether or not to inline the
      * @param getReportResponse the response object
      */
     @RequestMapping(value = REPORT_URL + "/{referenceId:\\S+}", method = RequestMethod.GET)
@@ -416,9 +416,9 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * Add the print job to the job queue.
      *
-     * @param format               the format of the returned report
-     * @param requestData          a json formatted string with the request data required to perform the report generation.
-     * @param createReportRequest  the request object
+     * @param format the format of the returned report
+     * @param requestData a json formatted string with the request data required to perform the report generation.
+     * @param createReportRequest the request object
      * @param createReportResponse the response object
      */
     @RequestMapping(value = REPORT_URL + ".{format:\\w+}", method = RequestMethod.POST)
@@ -435,11 +435,11 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * add the print job to the job queue.
      *
-     * @param appId                the id of the app to get the request for.
-     * @param format               the format of the returned report
-     * @param requestData          a json formatted string with the request data required to perform the report generation.
-     * @param inline               whether or not to inline the content
-     * @param createReportRequest  the request object
+     * @param appId the id of the app to get the request for.
+     * @param format the format of the returned report
+     * @param requestData a json formatted string with the request data required to perform the report generation.
+     * @param inline whether or not to inline the content
+     * @param createReportRequest the request object
      * @param createReportResponse the response object
      */
     @RequestMapping(value = "/{appId}" + CREATE_AND_GET_URL + ".{format:\\w+}", method = RequestMethod.POST)
@@ -503,10 +503,10 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * add the print job to the job queue.
      *
-     * @param format               the format of the returned report
-     * @param requestData          a json formatted string with the request data required to perform the report generation.
-     * @param inline               whether or not to inline the content
-     * @param createReportRequest  the request object
+     * @param format the format of the returned report
+     * @param requestData a json formatted string with the request data required to perform the report generation.
+     * @param inline whether or not to inline the content
+     * @param createReportRequest the request object
      * @param createReportResponse the response object
      */
     @RequestMapping(value = CREATE_AND_GET_URL + ".{format:\\w+}", method = RequestMethod.POST)
@@ -525,7 +525,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * To get (in JSON) the information about the available formats and CO.
      *
-     * @param jsonpCallback    if given the result is returned with a function call wrapped around it
+     * @param jsonpCallback if given the result is returned with a function call wrapped around it
      * @param listAppsResponse the response object
      */
     @RequestMapping(value = LIST_APPS_URL, method = RequestMethod.GET)
@@ -563,8 +563,8 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * To get (in JSON) the information about the available formats and CO.
      *
-     * @param pretty               if true then pretty print the capabilities
-     * @param jsonpCallback        if given the result is returned with a function call wrapped around it
+     * @param pretty if true then pretty print the capabilities
+     * @param jsonpCallback if given the result is returned with a function call wrapped around it
      * @param capabilitiesResponse the response object
      */
     @RequestMapping(value = CAPABILITIES_URL, method = RequestMethod.GET)
@@ -579,9 +579,9 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * To get (in JSON) the information about the available formats and CO.
      *
-     * @param appId                the name of the "app" or in other words, a mapping to the configuration file for this request.
-     * @param pretty               if true then pretty print the capabilities
-     * @param jsonpCallback        if given the result is returned with a function call wrapped around it
+     * @param appId the name of the "app" or in other words, a mapping to the configuration file for this request.
+     * @param pretty if true then pretty print the capabilities
+     * @param jsonpCallback if given the result is returned with a function call wrapped around it
      * @param capabilitiesResponse the response object
      */
     @RequestMapping(value = "/{appId}" + CAPABILITIES_URL, method = RequestMethod.GET)
@@ -661,7 +661,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * Get a sample request for the app.  An empty response may be returned if there is not example request.
      *
-     * @param jsonpCallback      if given the result is returned with a function call wrapped around it
+     * @param jsonpCallback if given the result is returned with a function call wrapped around it
      * @param getExampleResponse the response object
      */
     @RequestMapping(value = EXAMPLE_REQUEST_URL, method = RequestMethod.GET)
@@ -675,8 +675,8 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * Get a sample request for the app.  An empty response may be returned if there is not example request.
      *
-     * @param appId              the id of the app to get the request for.
-     * @param jsonpCallback      if given the result is returned with a function call wrapped around it
+     * @param appId the id of the app to get the request for.
+     * @param jsonpCallback if given the result is returned with a function call wrapped around it
      * @param getExampleResponse the response object
      */
     @RequestMapping(value = "{appId}" + EXAMPLE_REQUEST_URL, method = RequestMethod.GET)
@@ -778,11 +778,11 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * Copy the PDF into the output stream.
      *
-     * @param metadata            the client request data
+     * @param metadata the client request data
      * @param httpServletResponse the response object
-     * @param reportLoader        the object used for loading the report
-     * @param reportURI           the uri of the report
-     * @param inline              whether or not to inline the content
+     * @param reportLoader the object used for loading the report
+     * @param reportURI the uri of the report
+     * @param inline whether or not to inline the content
      */
     protected final void sendReportFile(final PrintJobStatus metadata, final HttpServletResponse httpServletResponse,
                                         final ReportLoader reportLoader, final URI reportURI, final boolean inline)

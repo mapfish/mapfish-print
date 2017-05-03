@@ -5,6 +5,7 @@ import org.mapfish.print.attribute.map.StaticLayersAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.InputOutputValue;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PJoinedArray;
 
@@ -23,7 +24,7 @@ import javax.annotation.Nullable;
  * [[examples=add_overlay_layer,report]]
  */
 public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticLayersProcessor.Input,
-        AddStaticLayersProcessor.Output> {
+        Void> {
 
     private StaticLayerPosition position;
 
@@ -31,7 +32,7 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
      * Constructor.
      */
     protected AddStaticLayersProcessor() {
-        super(AddStaticLayersProcessor.Output.class);
+        super(Void.class);
     }
 
     /**
@@ -60,7 +61,7 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
 
     @Nullable
     @Override
-    public Output execute(final Input values, final ExecutionContext context) throws Exception {
+    public Void execute(final Input values, final ExecutionContext context) throws Exception {
         switch (this.position) {
             case BOTTOM:
                 values.map.setRawLayers(new PJoinedArray(new PArray[]{
@@ -75,7 +76,7 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
                                 + "this implementation to " + getClass().getName());
         }
         values.map.postConstruct();
-        return new Output(values.map);
+        return null;
     }
 
     /**
@@ -86,27 +87,13 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
         /**
          * The map to update with the static layers.
          */
+        @InputOutputValue
         public GenericMapAttributeValues map;
 
         /**
          * The attribute containing the static layers to add to the map.
          */
         public StaticLayersAttribute.StaticLayersAttributeValue staticLayers;
-    }
-
-    /**
-     * The object containing the output for this processor.
-     */
-    public static class Output {
-
-        /**
-         * The map to update with the static layers.
-         */
-        public GenericMapAttributeValues map;
-
-        Output(final GenericMapAttributeValues map) {
-            this.map = map;
-        }
     }
 
     /**

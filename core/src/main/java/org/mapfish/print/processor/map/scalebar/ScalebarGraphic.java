@@ -39,10 +39,10 @@ public class ScalebarGraphic {
 
     /**
      * Render the scalebar.
-     * @param mapContext        The context of the map for which the scalebar is created.
-     * @param scalebarParams    The scalebar parameters.
-     * @param tempFolder        The directory in which the graphic file is created.
-     * @param template          The template that containts the scalebar processor
+     * @param mapContext The context of the map for which the scalebar is created.
+     * @param scalebarParams The scalebar parameters.
+     * @param tempFolder The directory in which the graphic file is created.
+     * @param template The template that containts the scalebar processor
      */
     public final URI render(final MapfishMapContext mapContext,
                             final ScalebarAttributeValues scalebarParams,
@@ -246,9 +246,9 @@ public class ScalebarGraphic {
     /**
      * Get the size of the painting area required to draw the scalebar with labels.
      *
-     * @param scalebarParams    Parameters for the scalebar.
-     * @param settings          Parameters for rendering the scalebar.
-     * @param maxLabelSize      The max. size of the labels.
+     * @param scalebarParams Parameters for the scalebar.
+     * @param settings Parameters for rendering the scalebar.
+     * @param maxLabelSize The max. size of the labels.
      */
     @VisibleForTesting
     protected static Dimension getSize(final ScalebarAttributeValues scalebarParams,
@@ -295,9 +295,9 @@ public class ScalebarGraphic {
 
     /**
      * Format the label text.
-     * @param scaleUnit     The unit used for the scalebar.
-     * @param value         The scale value.
-     * @param intervalUnit  The scaled unit for the intervals.
+     * @param scaleUnit The unit used for the scalebar.
+     * @param value The scale value.
+     * @param intervalUnit The scaled unit for the intervals.
      */
     @VisibleForTesting
     protected static String createLabelText(final DistanceUnit scaleUnit, final double value, final DistanceUnit intervalUnit) {
@@ -327,7 +327,7 @@ public class ScalebarGraphic {
     /**
      * Reduce the given value to the nearest smaller 1 significant digit number starting
      * with 1, 2 or 5.
-     * @param value     the value to find a nice number for.
+     * @param value the value to find a nice number for.
      * @param scaleUnit the unit of the value.
      * @param lockUnits if set, the values are not scaled to a "nicer" unit.
      */

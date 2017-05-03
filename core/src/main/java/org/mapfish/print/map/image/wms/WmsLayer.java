@@ -40,9 +40,9 @@ public final class WmsLayer extends AbstractSingleImageLayer {
      * Constructor.
      *
      * @param executorService the thread pool for doing the rendering.
-     * @param styleSupplier   the style to use when drawing the constructed grid coverage on the map.
-     * @param params          the params from the request data.
-     * @param registry        the metrics registry.
+     * @param styleSupplier the style to use when drawing the constructed grid coverage on the map.
+     * @param params the params from the request data.
+     * @param registry the metrics registry.
      */
     protected WmsLayer(final ExecutorService executorService,
                        final StyleSupplier<GridCoverage2D> styleSupplier,
@@ -64,13 +64,15 @@ public final class WmsLayer extends AbstractSingleImageLayer {
             final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
             final ClientHttpResponse response = closer.register(this.imageRequest.execute());
 
-            Assert.equals(HttpStatus.OK, response.getStatusCode(), "Http status code for " + this.imageRequest.getURI() + 
-                    " was not OK.  It was: " + response .getStatusCode() + ".  The response message was: '" +
-                    response.getStatusText() + "'");
+            Assert.isTrue(response != null, "No response, see error above");
+            Assert.equals(HttpStatus.OK, response.getStatusCode(), "Http status code for " +
+                    this.imageRequest.getURI() + " was not OK.  It was: " + response .getStatusCode() + ". " +
+                    " The response message was: '" + response.getStatusText() + "'");
 
             final BufferedImage image = ImageIO.read(response.getBody());
             if (image == null) {
-                LOGGER.warn("The URI: " + this.imageRequest.getURI() + " is an image format that can be decoded");
+                LOGGER.warn("The URI: " + this.imageRequest.getURI() + " is an image format that can be " +
+                        "decoded");
                 this.registry.counter(baseMetricName + ".error").inc();
                 return createErrorImage(transformer.getPaintArea());
             } else {

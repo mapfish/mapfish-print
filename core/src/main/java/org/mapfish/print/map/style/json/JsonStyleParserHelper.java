@@ -123,10 +123,10 @@ public final class JsonStyleParserHelper {
     /**
      * Constructor.
      *
-     * @param configuration       the configuration to use for resolving relative files or other settings.
-     * @param styleBuilder        a style builder to use for creating the style objects.
+     * @param configuration the configuration to use for resolving relative files or other settings.
+     * @param styleBuilder a style builder to use for creating the style objects.
      * @param allowNullSymbolizer If true then create*Symbolizer() methods can return null if expected params are missing.
-     * @param version             the version being parsed.
+     * @param version the version being parsed.
      */
     public JsonStyleParserHelper(@Nonnull final Configuration configuration,
                                  @Nonnull final StyleBuilder styleBuilder,

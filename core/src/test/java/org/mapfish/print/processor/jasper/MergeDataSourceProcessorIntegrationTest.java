@@ -1,5 +1,6 @@
 package org.mapfish.print.processor.jasper;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
@@ -15,6 +16,7 @@ import org.mapfish.print.processor.ProcessorGraphNode;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,13 +55,12 @@ public class MergeDataSourceProcessorIntegrationTest extends AbstractMapfishSpri
             if (processor instanceof MergeDataSourceProcessor) {
                 mergeDataSourceProcessor = (MergeDataSourceProcessor) processor;
             } else {
-                allNodes.add(new ProcessorGraphNode(processor, null));
+                allNodes.add(new ProcessorGraphNode(processor, new MetricRegistry()));
             }
         }
 
-        List<ProcessorDependency> result = mergeDataSourceProcessor.createDependencies(allNodes);
+        Collection<String> result = mergeDataSourceProcessor.getDependencies();
         assertEquals(3, result.size());
-
     }
 
     private int count(String string, String toFind) {

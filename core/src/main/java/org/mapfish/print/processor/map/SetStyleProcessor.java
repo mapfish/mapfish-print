@@ -12,6 +12,8 @@ import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.style.StyleParserPlugin;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.InputOutputValue;
+import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -21,7 +23,7 @@ import java.util.List;
  * [[examples=report]]
  */
 public class SetStyleProcessor extends
-        AbstractProcessor<SetStyleProcessor.Input, SetStyleProcessor.Output> {
+        AbstractProcessor<SetStyleProcessor.Input, Void> {
 
     @Autowired
     private StyleParserPlugin mapfishJsonParser;
@@ -30,7 +32,7 @@ public class SetStyleProcessor extends
      * Constructor.
      */
     protected SetStyleProcessor() {
-        super(Output.class);
+        super(Void.class);
     }
 
     @Override
@@ -39,11 +41,11 @@ public class SetStyleProcessor extends
     }
 
     @Override
-    public final Output execute(final Input values, final ExecutionContext context) {
+    public final Void execute(final Input values, final ExecutionContext context) {
         try {
             final Style style = this.mapfishJsonParser.parseStyle(
                     values.template.getConfiguration(),
-                    values.clientHttpRequestFactory,
+                    values.clientHttpRequestFactoryProvider.get(),
                     values.style.style
             ).get();
             for (MapLayer layer : values.map.getLayers()) {
@@ -60,7 +62,7 @@ public class SetStyleProcessor extends
                 }
             }
 
-            return new Output(values.map);
+            return null;
         } catch (Throwable e) {
             throw ExceptionUtils.getRuntimeException(e);
         }
@@ -80,7 +82,7 @@ public class SetStyleProcessor extends
          * A factory for making http requests.  This is added to the values by the framework and therefore
          * does not need to be set in configuration
          */
-        public MfClientHttpRequestFactory clientHttpRequestFactory;
+        public MfClientHttpRequestFactoryProvider clientHttpRequestFactoryProvider;
 
         /**
          * The template containing this table processor.
@@ -90,25 +92,12 @@ public class SetStyleProcessor extends
         /**
          * The map to update.
          */
+        @InputOutputValue
         public GenericMapAttributeValues map;
 
         /**
          * The style.
          */
         public StyleAttribute.StylesAttributeValues style;
-    }
-
-    /**
-     * The object containing the output for this processor.
-     */
-    public static class Output {
-        /**
-         * The map to update with the static layers.
-         */
-        public GenericMapAttributeValues map;
-
-        Output(final GenericMapAttributeValues map) {
-            this.map = map;
-        }
     }
 }

@@ -145,7 +145,7 @@ public final class ImageSimilarity {
     /**
      * Check that the other image and the image calculated by this object are within the given distance.
      *
-     * @param other       the image to compare to "this" image.
+     * @param other the image to compare to "this" image.
      * @param maxDistance the maximum distance between the two images.
      */
     public void assertSimilarity(File other, double maxDistance) throws IOException {
@@ -160,7 +160,7 @@ public final class ImageSimilarity {
      * Write the image to a file in uncompressed tiff format.
      *
      * @param image image to write
-     * @param file  path and file name (extension will be ignored and changed to tiff.
+     * @param file path and file name (extension will be ignored and changed to tiff.
      */
     public static void writeUncompressedImage(BufferedImage image, String file) throws IOException {
         FileImageOutputStream out = null;
@@ -191,8 +191,8 @@ public final class ImageSimilarity {
      * Merges a list of graphic files into a single graphic.
      *
      * @param graphicFiles a list of graphic files
-     * @param width        the graphic width (required for svg files)
-     * @param height       the graphic height (required for svg files)
+     * @param width the graphic width (required for svg files)
+     * @param height the graphic height (required for svg files)
      * @return a single graphic
      * @throws TranscoderException
      */

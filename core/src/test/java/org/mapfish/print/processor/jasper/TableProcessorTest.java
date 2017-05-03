@@ -85,7 +85,8 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         Values values = new Values(requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
-        final JRMapCollectionDataSource tableDataSource = values.getObject("table", JRMapCollectionDataSource.class);
+        final JRMapCollectionDataSource tableDataSource = values.getObject(
+                "tableDataSource", JRMapCollectionDataSource.class);
 
         int count = 0;
         while (tableDataSource.next()) {

@@ -117,6 +117,15 @@ public final class DataSourceAttribute implements Attribute {
         this.attributes = attributes;
     }
 
+    /**
+     * Gets the attributes.
+     *
+     * @return the attributes
+     */
+    public Map<String, Attribute> getAttributes() {
+        return this.attributes;
+    }
+
     @Override
     public void printClientConfig(final JSONWriter json, final Template template) throws JSONException {
         try {
@@ -188,6 +197,11 @@ public final class DataSourceAttribute implements Attribute {
         }
 
         return value;
+    }
+
+    @Override
+    public Class getValueType() {
+        return DataSourceAttributeValue.class;
     }
 
     /**

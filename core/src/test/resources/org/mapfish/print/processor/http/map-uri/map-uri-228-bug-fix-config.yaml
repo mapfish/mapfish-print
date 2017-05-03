@@ -1,6 +1,11 @@
-
 templates:
   main: !template
+    attributes:
+      map: !map
+        width: 780
+        height: 330
+      northArrow: !northArrow
+        size: 200
     processors:
       - !configureHttpRequests
          httpProcessors:

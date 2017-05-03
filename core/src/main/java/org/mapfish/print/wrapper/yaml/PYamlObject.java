@@ -26,7 +26,7 @@ public class PYamlObject extends PAbstractObject {
     /**
      * Constructor.
      *
-     * @param obj         the internal json element
+     * @param obj the internal json element
      * @param contextName the field name of this element in the parent.
      */
     public PYamlObject(final Map<String, Object> obj, final String contextName) {
@@ -36,8 +36,8 @@ public class PYamlObject extends PAbstractObject {
     /**
      * Constructor.
      *
-     * @param parent      the parent element
-     * @param obj         the internal json element
+     * @param parent the parent element
+     * @param obj the internal json element
      * @param contextName the field name of this element in the parent.
      */
     public PYamlObject(final PElement parent, final Map<String, Object> obj, final String contextName) {

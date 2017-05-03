@@ -1,8 +1,7 @@
-
 templates:
   main: !template
     attributes:
-      mapDef: !map
+      map: !map
         width: 500
         height: 100
         maxDpi: 400

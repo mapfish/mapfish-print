@@ -43,7 +43,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
      * Constructor.
      *
      * @param executorService the thread pool for doing the rendering.
-     * @param params          the parameters for this layer
+     * @param params the parameters for this layer
      */
     protected AbstractGeotoolsLayer(final ExecutorService executorService, final AbstractLayerParams params) {
         this.executorService = executorService;
@@ -145,7 +145,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
      * Get the {@link org.geotools.data.DataStore} object that contains the data for this layer.
      *
      * @param httpRequestFactory the factory for making http requests
-     * @param transformer        the map transformer
+     * @param transformer the map transformer
      */
     protected abstract List<? extends Layer> getLayers(MfClientHttpRequestFactory httpRequestFactory,
                                                        MapfishMapContext transformer) throws Exception;

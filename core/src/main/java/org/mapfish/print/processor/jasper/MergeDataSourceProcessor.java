@@ -1,7 +1,6 @@
 package org.mapfish.print.processor.jasper;
 
 import com.google.common.annotations.Beta;
-import com.google.common.collect.BiMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -14,17 +13,10 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.ConfigurationObject;
 import org.mapfish.print.output.Values;
-import org.mapfish.print.parser.ParserUtils;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.CustomDependencies;
-import org.mapfish.print.processor.Processor;
-import org.mapfish.print.processor.ProcessorDependency;
-import org.mapfish.print.processor.ProcessorGraphNode;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -32,18 +24,20 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * <p>This processor combines DataSources and individual processor outputs (or attribute values) into a single DataSource which
- * can be used in a jasper report's detail section.</p>
+ * <p>This processor combines DataSources and individual processor outputs (or attribute values) into a
+ * single DataSource which can be used in a jasper report's detail section.</p>
  * <p>
- * An example use case is where we might have zero or many of tables and zero or many legends.  You can configure the
- * template with a detail section that contains a subreport, the name of which is a field in the DataSources and the DataSources
- * for the sub-template another field.  Then you can merge the legend and the tables into a single DataSources.  This way the
- * report will nicely expand depending on if you have a legend and how many tables you have in your report.
+ * An example use case is where we might have zero or many of tables and zero or many legends.  You can
+ * configure the template with a detail section that contains a subreport, the name of which is a field in
+ * the DataSources and the DataSources for the sub-template another field.  Then you can merge the legend
+ * and the tables into a single DataSources.  This way the report will nicely expand depending on if you
+ * have a legend and how many tables you have in your report.
  * </p>
  * [[examples=merged_datasource]]
  */
 @Beta
-public final class MergeDataSourceProcessor extends AbstractProcessor<MergeDataSourceProcessor.In, MergeDataSourceProcessor.Out>
+public final class MergeDataSourceProcessor
+        extends AbstractProcessor<MergeDataSourceProcessor.In, MergeDataSourceProcessor.Out>
         implements CustomDependencies {
     private List<Source> sources = Lists.newArrayList();
 
@@ -57,11 +51,11 @@ public final class MergeDataSourceProcessor extends AbstractProcessor<MergeDataS
     /**
      * <p>The <em>source</em> to add to the merged DataSource.</p>
      * <p>Each <em>source</em> indicates if it should be treated
-     * as a datasource or as a single item to add to the merged DataSource. If the source indicates that it is a
-     * {@link org.mapfish.print.processor.jasper.MergeDataSourceProcessor.SourceType#DATASOURCE} the object
-     * each row in the datasource will be used to form a row in the merged DataSource.  If the source type is
-     * {@link org.mapfish.print.processor.jasper.MergeDataSourceProcessor.SourceType#SINGLE} the object will be a single row
-     * even if it is in fact a DataSource.</p>
+     * as a datasource or as a single item to add to the merged DataSource. If the source indicates that it
+     * is a {@link org.mapfish.print.processor.jasper.MergeDataSourceProcessor.SourceType#DATASOURCE} the
+     * object each row in the datasource will be used to form a row in the merged DataSource.  If the
+     * source type is {@link org.mapfish.print.processor.jasper.MergeDataSourceProcessor.SourceType#SINGLE}
+     * the object will be a single row even if it is in fact a DataSource.</p>
      * 
      * <p>See also: <a href="configuration.html#!mergeSource">!mergeSource</a></p>
      *
@@ -113,40 +107,12 @@ public final class MergeDataSourceProcessor extends AbstractProcessor<MergeDataS
 
     @Nonnull
     @Override
-    public List<ProcessorDependency> createDependencies(@Nonnull final List<ProcessorGraphNode<Object, Object>> nodes) {
+    public Collection<String> getDependencies() {
         HashSet<String> sourceKeys = Sets.newHashSet();
         for (Source source : this.sources) {
             source.type.addValuesKeys(source, sourceKeys);
         }
-
-        final ArrayList<ProcessorDependency> dependencies = Lists.newArrayList();
-        for (ProcessorGraphNode<Object, Object> node : nodes) {
-            if (node.getProcessor() == this) {
-                continue;
-            }
-            final Processor<?, ?> processor = node.getProcessor();
-            final Collection<Field> allAttributes = ParserUtils.getAllAttributes(processor.getOutputType());
-            final BiMap<String, String> outputMapper = node.getOutputMapper();
-            ProcessorDependency customDependency = null;
-            for (Field allAttribute : allAttributes) {
-                String attributeName = allAttribute.getName();
-                final String mappedName = outputMapper.get(attributeName);
-                if (mappedName != null) {
-                    attributeName = mappedName;
-                }
-                if (sourceKeys.contains(attributeName)) {
-                    if (customDependency == null) {
-                        final Class<? extends Processor<?, ?>> processorClass = (Class<? extends Processor<?, ?>>) processor.getClass();
-                        customDependency = new ProcessorDependency(processorClass, getClass(),
-                                Collections.singleton(attributeName));
-                        dependencies.add(customDependency);
-                    } else {
-                        customDependency.addCommonInput(attributeName);
-                    }
-                }
-            }
-        }
-        return dependencies;
+        return sourceKeys;
     }
 
     private static String indexString(final int i) {

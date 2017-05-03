@@ -5,7 +5,8 @@ import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.vividsolutions.jts.util.Assert;
 import jsr166y.RecursiveTask;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.output.Values;
@@ -24,23 +25,25 @@ import javax.annotation.Nonnull;
  * Represents one node in the Processor dependency graph ({@link ProcessorDependencyGraph}).
  * <p></p>
  *
- * @param <In>  Same as {@link org.mapfish.print.processor.Processor} <em>In</em> parameter
+ * @param <In> Same as {@link org.mapfish.print.processor.Processor} <em>In</em> parameter
  * @param <Out> Same as {@link org.mapfish.print.processor.Processor} <em>Out</em> parameter
  */
 public final class ProcessorGraphNode<In, Out> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessorGraphNode.class);
     private final Processor<In, Out> processor;
-    private final List<ProcessorGraphNode<?, ?>> dependencies = Lists.newArrayList();
-    private final List<ProcessorGraphNode<?, ?>> requirements = Lists.newArrayList();
+    private final Set<ProcessorGraphNode> dependencies = Sets.newHashSet();
+    private final Set<ProcessorGraphNode> requirements = Sets.newHashSet();
     private final MetricRegistry metricRegistry;
 
     /**
      * Constructor.
      *
-     * @param processor      The processor associated with this node.
+     * @param processor The processor associated with this node.
      * @param metricRegistry registry for timing the execution time of the processor.
      */
-    public ProcessorGraphNode(@Nonnull final Processor<In, Out> processor, @Nonnull final MetricRegistry metricRegistry) {
+    public ProcessorGraphNode(
+            @Nonnull final Processor<In, Out> processor,
+            @Nonnull final MetricRegistry metricRegistry) {
         this.processor = processor;
         this.metricRegistry = metricRegistry;
     }
@@ -55,6 +58,8 @@ public final class ProcessorGraphNode<In, Out> {
      * @param node the dependency to add.
      */
     public void addDependency(final ProcessorGraphNode node) {
+        Assert.isTrue(node != this, "A processor can't depends on himself");
+
         this.dependencies.add(node);
         node.addRequirement(this);
     }
@@ -62,9 +67,13 @@ public final class ProcessorGraphNode<In, Out> {
     private void addRequirement(final ProcessorGraphNode node) {
         this.requirements.add(node);
     }
-    
-    protected List<ProcessorGraphNode<?, ?>> getRequirements() {
+
+    protected Set<ProcessorGraphNode> getRequirements() {
         return this.requirements;
+    }
+
+    protected Set<ProcessorGraphNode> getDependencies() {
+        return this.dependencies;
     }
 
     /**
@@ -82,7 +91,8 @@ public final class ProcessorGraphNode<In, Out> {
      * @return a task ready to be submitted to a fork join pool.
      */
     @SuppressWarnings("unchecked")
-    public Optional<ProcessorNodeForkJoinTask> createTask(@Nonnull final ProcessorExecutionContext execContext) {
+    public Optional<ProcessorNodeForkJoinTask> createTask(
+            @Nonnull final ProcessorExecutionContext execContext) {
         if (!execContext.tryStart(this)) {
             return Optional.absent();
         } else {
@@ -118,7 +128,7 @@ public final class ProcessorGraphNode<In, Out> {
      * Create a string representing this node.
      *
      * @param builder the builder to add the string to.
-     * @param indent  the number of steps of indent for this node
+     * @param indent the number of steps of indent for this node
      */
     public void toString(final StringBuilder builder, final int indent) {
         int spaces = (indent) * 2;
@@ -217,12 +227,12 @@ public final class ProcessorGraphNode<In, Out> {
         }
 
         private void executeDependencyProcessors() {
-            final List<ProcessorGraphNode<?, ?>> dependencyNodes = this.node.dependencies;
+            final Set<ProcessorGraphNode> dependencyNodes = this.node.dependencies;
 
             List<ProcessorNodeForkJoinTask<?, ?>> tasks = new ArrayList<ProcessorNodeForkJoinTask<?, ?>>(dependencyNodes.size());
 
             // fork all but 1 dependencies (the first will be ran in current thread)
-            for (final ProcessorGraphNode<?, ?> depNode : dependencyNodes) {
+            for (final ProcessorGraphNode depNode : dependencyNodes) {
                 Optional<ProcessorNodeForkJoinTask> task = depNode.createTask(this.execContext);
 
                 if (task.isPresent()) {

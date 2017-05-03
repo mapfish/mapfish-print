@@ -55,8 +55,9 @@ public class MapUriBug228ProcessorTest extends AbstractMapfishSpringTest {
         assertEquals(1, roots.size());
 
         Values values = new Values();
-        values.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, requestFactory);
+        values.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, new MfClientHttpRequestFactoryProvider(requestFactory));
         values.put(Values.TASK_DIRECTORY_KEY, temporaryFolder.getRoot());
+        values.put(Values.VALUES_KEY, values);
         MapAttribute.MapAttributeValues map = getMapValue(template);
         values.put("map", map);
         NorthArrowAttribute.NorthArrowAttributeValues northArrow = getNorthArrowValue(template);

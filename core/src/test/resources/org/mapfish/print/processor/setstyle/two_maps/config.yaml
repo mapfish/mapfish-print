@@ -1,9 +1,8 @@
-
 templates:
   main: !template
     attributes:
       style: !style {}
-      mapDef1: !map
+      map1: !map
         maxDpi: 300
         width: 555
         height: 400
@@ -12,10 +11,9 @@ templates:
           rotation: 0
           useAdjustBounds: true
           layers:
-          - type: "geojson"
-            style: "point"
-            geoJson: "{}"
-      mapDef2: !map
+          - type: geojson
+            style: point
+      map2: !map
         maxDpi: 300
         width: 1000
         height: 500
@@ -24,25 +22,23 @@ templates:
           rotation: 0
           useAdjustBounds: true
           layers:
-          - type: "geojson"
-            style: "point"
-            geoJson: "{}"
+          - type: geojson
+            style: point
     processors:
     - !setStyle
       inputMapper:
-        mapDef1: map
-      outputMapper:
-        map: mapDef1
+        map1: map
     - !createMap
-      inputMapper: {mapDef1: map}
-      outputMapper: {mapSubReport: map1}
+      inputMapper:
+        map1: map
+      outputMapper:
+        mapSubReport: mapSubReport1
     - !setStyle
       inputMapper:
-        mapDef2: map
-      outputMapper:
-        map: mapDef2
+        map2: map
     - !createMap
-      inputMapper: {mapDef2: map}
+      inputMapper:
+        map2: map
       outputMapper:
-        mapSubReport: map2
+        mapSubReport: mapSubReport2
         mapContext: mapContext2

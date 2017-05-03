@@ -30,8 +30,8 @@ public final class ParserPluginUtils {
      * it will be passed to the loadFunction to be turned into a style.
      *
      * @param clientHttpRequestFactory the factory to use for http requests
-     * @param styleRef                 the uri/file/else for attempting to load a style
-     * @param loadFunction             the function to call when data has been loaded.
+     * @param styleRef the uri/file/else for attempting to load a style
+     * @param loadFunction the function to call when data has been loaded.
      */
     public static Optional<Style> loadStyleAsURI(final ClientHttpRequestFactory clientHttpRequestFactory, final String styleRef,
                                                  final Function<byte[], Optional<Style>> loadFunction) throws IOException {

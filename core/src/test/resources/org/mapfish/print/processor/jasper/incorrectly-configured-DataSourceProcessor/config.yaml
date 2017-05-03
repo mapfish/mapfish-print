@@ -3,7 +3,6 @@ throwErrorOnExtraParameters: true
 templates:
     A4 portrait: !template
         reportTemplate: A4_Portrait.jrxml
-        tableData: jrDataSource
         attributes:
             title: !string {}
             comments: !string {}
@@ -44,3 +43,5 @@ templates:
             - !prepareTable
                 dynamic: true
                 jasperTemplate: table.jrxml
+
+        tableData: jrDataSource

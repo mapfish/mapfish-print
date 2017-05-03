@@ -39,21 +39,15 @@ import java.util.List;
  * <pre><code>
  * attributes:
  *    ...
- *    overviewMapDef: !overviewMap
+ *    overviewMap: !overviewMap
  *      width: 300
  *      height: 200
  *      maxDpi: 400
  * processors:
  *    ...
  *    - !createOverviewMap
- *      inputMapper: {
- *        mapDef: map,
- *        overviewMapDef: overviewMap
- *      }
- *      outputMapper: {
- *        overviewMapSubReport: overviewMapOut,
+ *      outputMapper:
  *        layerGraphics: overviewMapLayerGraphics
- *      }
  * </code></pre>
  * <p></p>
  * <strong>Features:</strong>
@@ -90,7 +84,7 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
     public final Output execute(final Input values, final ExecutionContext context)
             throws Exception {
         CreateMapProcessor.Input mapProcessorValues = this.mapProcessor.createInputParameter();
-        mapProcessorValues.clientHttpRequestFactory = values.clientHttpRequestFactory;
+        mapProcessorValues.clientHttpRequestFactoryProvider = values.clientHttpRequestFactoryProvider;
         mapProcessorValues.tempTaskDirectory = values.tempTaskDirectory;
 
         MapAttribute.OverriddenMapAttributeValues mapParams =

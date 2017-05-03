@@ -24,4 +24,9 @@ public class FloatAttribute extends PrimitiveAttribute<Double> {
     public final void setDefault(final Double value) {
         this.defaultValue = value;
     }
+
+    @Override
+    public Class getValueType() {
+        return Double.class;
+    }
 }

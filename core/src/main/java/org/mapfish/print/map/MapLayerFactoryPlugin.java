@@ -33,7 +33,7 @@ public interface MapLayerFactoryPlugin<Param> {
 
     /**
      * Inspect the json data and return Optional&lt;MapLayer&gt; or Optional.absent().
-     * @param template  the configuration related to the current request.
+     * @param template the configuration related to the current request.
      * @param layerData an object populated from the json for the layer
      */
     @Nonnull

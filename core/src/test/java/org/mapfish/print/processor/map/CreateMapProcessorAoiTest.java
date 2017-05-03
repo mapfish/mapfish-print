@@ -4,6 +4,8 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
 
+import jsr166y.ForkJoinPool;
+import jsr166y.ForkJoinTask;
 import org.apache.batik.transcoder.TranscoderException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -51,6 +54,8 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
     private TestHttpClientFactory requestFactory;
     @Autowired
     private MapfishParser parser;
+    @Autowired
+    private ForkJoinPool forkJoinPool;
 
     @Test
     @DirtiesContext
@@ -146,13 +151,16 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
         return jsonStyle;
     }
 
-    private void createMap(Template template, String expectedImageName, AreaOfInterest.AoiDisplay aoiDisplay, String styleRef,
-                           boolean useSVG, Function<PJsonObject, Void> requestUpdater) throws IOException, JSONException, TranscoderException {
+    private void createMap(Template template, String expectedImageName, AreaOfInterest.AoiDisplay
+            aoiDisplay, String styleRef, boolean useSVG, Function<PJsonObject, Void> requestUpdater) throws
+            IOException, JSONException, TranscoderException, ExecutionException, InterruptedException {
         createMap(template, expectedImageName, aoiDisplay, styleRef, useSVG, false, requestUpdater);
     }
     
-    private void createMap(Template template, String expectedImageName, AreaOfInterest.AoiDisplay aoiDisplay, String styleRef,
-            boolean useSVG, boolean useJPEG, Function<PJsonObject, Void> requestUpdater) throws IOException, JSONException, TranscoderException {
+    private void createMap(Template template, String expectedImageName, AreaOfInterest.AoiDisplay
+            aoiDisplay, String styleRef, boolean useSVG, boolean useJPEG, Function<PJsonObject, Void>
+            requestUpdater) throws IOException, JSONException, TranscoderException, ExecutionException,
+            InterruptedException {
         PJsonObject requestData = loadJsonRequestData();
         final PJsonObject mapAttribute = getMapAttributes(requestData);
         mapAttribute.getJSONArray("layers").getJSONObject(0).getInternalObj().put("renderAsSvg", useSVG);
@@ -170,7 +178,10 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
         }
 
         Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
-        template.getProcessorGraph().createTask(values).invoke();
+
+        final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
+                template.getProcessorGraph().createTask(values));
+        taskFuture.get();
 
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
@@ -189,7 +200,7 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
 
 
     private PJsonObject getMapAttributes(PJsonObject requestData) {
-        return requestData.getJSONObject("attributes").getJSONObject("mapDef");
+        return requestData.getJSONObject("attributes").getJSONObject("map");
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

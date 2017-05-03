@@ -2,7 +2,7 @@
   "outputFormat": "tiff",
   "layout": "plain",
   "attributes": {
-    "mapDef": {
+    "map": {
       "width": 780,     
       "height": 660,
       "projection": "EPSG:900913",

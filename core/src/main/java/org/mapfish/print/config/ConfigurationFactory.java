@@ -71,8 +71,7 @@ public class ConfigurationFactory {
                     errors.append("\n\t* ").append(throwable.getMessage());
                     LOGGER.error("Configuration Error found: ", throwable);
                 }
-
-                throw new Error(errors.toString());
+                throw new Error(errors.toString(), validate.get(0));
             }
         }
         return config;

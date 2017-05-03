@@ -2,7 +2,6 @@ throwErrorOnExtraParameters: true
 templates:
   main: !template
     reportTemplate: simpleReport.jrxml
-    tableData: table
     attributes:
       table: !table {}
     processors:
@@ -13,5 +12,4 @@ templates:
       - !urlImage
           urlExtractor: <img src="([^"]+)".*
           urlGroup: 1
-      inputMapper: {table: table}
-      outputMapper: {table: table}
+    tableData: tableDataSource

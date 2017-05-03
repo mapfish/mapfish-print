@@ -1,4 +1,3 @@
-
 throwErrorOnExtraParameters: true
 
 templates:
@@ -19,9 +18,7 @@ templates:
     processors:
     - !reportBuilder # compile all reports in current directory
       directory: '.'
-    - !createMap
-      inputMapper: {map: map}
-      outputMapper: {mapSubReport: map}
+    - !createMap {}
     - !createDataSource
       reportTemplate: table.jrxml
       reportKey: reportTemplate
@@ -33,11 +30,11 @@ templates:
         - !mergeSource
           type: SINGLE
           fields: # name the column data so there is consistence in all rows
-            map: subReportPath
+            mapSubReport: subReportPath
         - !mergeSource
           type: SINGLE
           fields: # name the column data so there is consistence in all rows
-            legend: subReportPath
+            legendSubReport: subReportPath
         - !mergeSource
           key: jrDataSource
           type: DATASOURCE

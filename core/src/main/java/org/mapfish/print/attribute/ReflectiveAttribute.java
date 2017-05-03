@@ -127,7 +127,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
     /**
      * Return the type created by {@link #createValue(org.mapfish.print.config.Template)}.
      */
-    protected abstract Class<? extends Value> getValueType();
+    public abstract Class<? extends Value> getValueType();
 
     /**
      * The YAML config default values.
@@ -219,7 +219,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
      * written with the field name as the key and an object as a value with a type property with the type and a default property
      * containing the default value.
      *
-     * @param json     the json writer to write to
+     * @param json the json writer to write to
      * @param template the template that this attribute is part of
      * @throws org.json.JSONException
      */
@@ -378,5 +378,4 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
         }
         return typeDescription;
     }
-
 }

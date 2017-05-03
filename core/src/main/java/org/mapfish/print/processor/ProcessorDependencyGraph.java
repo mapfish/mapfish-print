@@ -51,8 +51,8 @@ public final class ProcessorDependencyGraph {
         }
 
         if (missingAttributes.length() > 0) {
-            throw new IllegalArgumentException("It has been found that one or more required attributes are missing from the " +
-                                               "values object:" + missingAttributes + "\n");
+            throw new IllegalArgumentException("It has been found that one or more required attributes are " +
+                    "missing from the values object:" + missingAttributes + "\n");
         }
 
         return new ProcessorGraphForkJoinTask(values);
@@ -164,11 +164,11 @@ public final class ProcessorDependencyGraph {
 
             LOGGER.debug("Starting to execute processor graph: \n" + graph);
             try {
-                List<ProcessorGraphNode.ProcessorNodeForkJoinTask<?, ?>> tasks = Lists.newArrayListWithExpectedSize(graph.roots.size());
+                List<ProcessorGraphNode.ProcessorNodeForkJoinTask> tasks = Lists.newArrayListWithExpectedSize(graph.roots.size());
                 // fork all but 1 dependencies (the first will be ran in current thread)
                 for (int i = 0; i < graph.roots.size(); i++) {
                     @SuppressWarnings("unchecked")
-                    Optional<ProcessorGraphNode.ProcessorNodeForkJoinTask<?, ?>> task = graph.roots.get(i).createTask(this.execContext);
+                    Optional<ProcessorGraphNode.ProcessorNodeForkJoinTask> task = graph.roots.get(i).createTask(this.execContext);
                     if (task.isPresent()) {
                         tasks.add(task.get());
                         if (tasks.size() > 1) {

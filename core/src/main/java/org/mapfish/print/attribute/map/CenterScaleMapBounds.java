@@ -27,7 +27,7 @@ public final class CenterScaleMapBounds extends MapBounds {
      * @param projection the projection these bounds are defined in.
      * @param centerX the x coordinate of the center point.
      * @param centerY the y coordinate of the center point.
-     * @param scale   the scale of the map
+     * @param scale the scale of the map
      */
     public CenterScaleMapBounds(final CoordinateReferenceSystem projection, final double centerX,
                                 final double centerY, final Scale scale) {

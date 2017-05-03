@@ -27,7 +27,7 @@ public final class HttpRequestHeadersAttribute extends ReflectiveAttribute<HttpR
     }
 
     @Override
-    protected Class<Value> getValueType() {
+    public Class<Value> getValueType() {
         return Value.class;
     }
 

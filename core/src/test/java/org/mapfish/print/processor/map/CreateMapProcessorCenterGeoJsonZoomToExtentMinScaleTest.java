@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
+import jsr166y.ForkJoinPool;
+import jsr166y.ForkJoinTask;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -36,6 +38,8 @@ public class CreateMapProcessorCenterGeoJsonZoomToExtentMinScaleTest extends Abs
     private MapfishParser parser;
     @Autowired
     private TestHttpClientFactory httpRequestFactory;
+    @Autowired
+    private ForkJoinPool forkJoinPool;
 
     @Test
     public void testExecute() throws Exception {
@@ -43,7 +47,10 @@ public class CreateMapProcessorCenterGeoJsonZoomToExtentMinScaleTest extends Abs
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
-        template.getProcessorGraph().createTask(values).invoke();
+
+        final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
+                template.getProcessorGraph().createTask(values));
+        taskFuture.get();
 
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);

@@ -27,8 +27,8 @@ public class Label {
     /**
      * Constructor.
      * @param graphicOffset Position offset.
-     * @param labelLayout   Layout for the label.
-     * @param orientation   Scalebar orientation.
+     * @param labelLayout Layout for the label.
+     * @param orientation Scalebar orientation.
      */
     public Label(final float graphicOffset, final TextLayout labelLayout, final Orientation orientation) {
         this.graphicOffset = graphicOffset;

@@ -29,7 +29,7 @@ public abstract class InetHostMatcher extends HostMatcher {
         /**
          * IP and mask are given.
          *
-         * @param ip   The IP address
+         * @param ip The IP address
          * @param mask A null mask means match all.
          */
         public AddressMask(final InetAddress ip, final InetAddress mask) {

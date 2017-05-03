@@ -13,6 +13,7 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,7 +117,10 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         final List<Object[]> legendList = new ArrayList<Object[]>();
         final String[] legendColumns = {NAME_COLUMN, ICON_COLUMN, REPORT_COLUMN, LEVEL_COLUMN};
         final LegendAttributeValue legendAttributes = values.legend;
-        fillLegend(values.clientHttpRequestFactory, legendAttributes, legendList, context, values.tempTaskDirectory);
+        fillLegend(
+                values.clientHttpRequestFactoryProvider.get(),
+                legendAttributes, legendList, context,
+                values.tempTaskDirectory);
         final Object[][] legend = new Object[legendList.size()][];
 
         final JRTableModelDataSource dataSource = new JRTableModelDataSource(new TableDataSource(legendColumns,
@@ -318,7 +322,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
          * A factory for making http requests.  This is added to the values by the framework and therefore
          * does not need to be set in configuration
          */
-        public MfClientHttpRequestFactory clientHttpRequestFactory;
+        public MfClientHttpRequestFactoryProvider clientHttpRequestFactoryProvider;
         /**
          * The path to the temporary directory for the print task.
          */
@@ -336,7 +340,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         /**
          * The datasource for the legend object in the report.
          */
-        public final JRTableModelDataSource legend;
+        public final JRTableModelDataSource legendDataSource;
         /**
          * The path to the compiled subreport.
          */
@@ -346,8 +350,8 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
          */
         public final int numberOfLegendRows;
 
-        Output(final JRTableModelDataSource legend, final int numberOfLegendRows, final String legendSubReport) {
-            this.legend = legend;
+        Output(final JRTableModelDataSource legendDataSource, final int numberOfLegendRows, final String legendSubReport) {
+            this.legendDataSource = legendDataSource;
             this.numberOfLegendRows = numberOfLegendRows;
             this.legendSubReport = legendSubReport;
         }

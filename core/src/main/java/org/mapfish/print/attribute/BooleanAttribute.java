@@ -25,4 +25,9 @@ public class BooleanAttribute extends PrimitiveAttribute<Boolean> {
     public final void setDefault(final Boolean value) {
         this.defaultValue = value;
     }
+
+    @Override
+    public Class getValueType() {
+        return Boolean.class;
+    }
 }

@@ -24,4 +24,9 @@ public class StringArrayAttribute extends PrimitiveAttribute<String[]> {
     public final void setDefault(final String[] value) {
         this.defaultValue = value;
     }
+
+    @Override
+    public Class getValueType() {
+        return String[].class;
+    }
 }

@@ -1,7 +1,7 @@
 throwErrorOnExtraParameters: true
 templates:
   main: !template
-    reportTemplate: simple-map.jrxml
+    reportTemplate: simple-map-wrong-type.jrxml
     attributes:
       map: !map
         width: 500
@@ -15,7 +15,5 @@ templates:
     - !reportBuilder
         directory: "."
     - !createMap
-        inputMapper: {map: map}
-        outputMapper: {mapSubReport: mapWrongName}
-
-
+        outputMapper:
+            mapSubReport: mapWrongName

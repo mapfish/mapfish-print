@@ -49,7 +49,8 @@ public class CompositeClientHttpRequestFactoryProcessorTest extends AbstractHttp
         @Override
         public Void execute(TestParam values, ExecutionContext context) throws Exception {
             final URI uri = new URI("https://localhost:8443/path?query#fragment");
-            final ClientHttpRequest request = values.clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
+            final ClientHttpRequest request = values.clientHttpRequestFactoryProvider.get().createRequest(uri,
+                    HttpMethod.GET);
             final URI finalUri = request.getURI();
 
             assertEquals("http", finalUri.getScheme());

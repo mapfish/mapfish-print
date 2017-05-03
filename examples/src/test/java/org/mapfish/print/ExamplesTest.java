@@ -152,14 +152,24 @@ public class ExamplesTest {
 
             StringBuilder errorReport = new StringBuilder();
             errorReport.append("\n");
-            errorReport.append(errors.size()).append(" errors encountered while running ")
-                .append(testsRan).append(" examples.\n");
-            errorReport.append("See Standard Error for the stack traces.  A summary is as follows:\n");
+            errorReport.append(errors.size());
+            errorReport.append(" errors encountered while running ");
+            errorReport.append(testsRan);
+            errorReport.append(" examples.\n");
+            errorReport.append("See Standard Error for the stack traces.  A summary is as follows...\n\n");
             for (Map.Entry<String, Throwable> error : errors.entrySet()) {
-                errorReport.append("    * The example: '").append(error.getKey()).append("'\n");
-                errorReport.append("      failed with the error: ").append(error.getValue()).append("\n");
+                StringBuilder exampleName = new StringBuilder();
+                exampleName.append("The example ");
+                exampleName.append(error.getKey());
+                errorReport.append(exampleName);
+                errorReport.append('\n');
+                errorReport.append(exampleName.toString().replaceAll(".", "="));
+                errorReport.append('\n');
+                errorReport.append("Failed with the error:\n");
+                errorReport.append(error.getValue());
+                errorReport.append('\n');
             }
-            errorReport.append("\n");
+            errorReport.append("\n\n");
             fail(errorReport.toString());
         }
     }

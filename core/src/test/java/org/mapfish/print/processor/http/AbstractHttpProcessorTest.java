@@ -9,9 +9,9 @@ import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.InputOutputValue;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.ProcessorGraphNode;
 import org.mapfish.print.processor.map.CreateMapProcessor;
@@ -72,7 +72,8 @@ public abstract class AbstractHttpProcessorTest extends AbstractMapfishSpringTes
         assertEquals(testProcessorClass(), dependencies.iterator().next().getClass());
 
         Values values = new Values();
-        values.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, this.httpClientFactory);
+        values.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, new MfClientHttpRequestFactoryProvider(this.httpClientFactory));
+        values.put(Values.VALUES_KEY, values);
         addExtraValues(values);
         forkJoinPool.invoke(graph.createTask(values));
     }
@@ -102,7 +103,8 @@ public abstract class AbstractHttpProcessorTest extends AbstractMapfishSpringTes
     }
 
     public static class TestParam {
-        public MfClientHttpRequestFactory clientHttpRequestFactory;
+        @InputOutputValue
+        public MfClientHttpRequestFactoryProvider clientHttpRequestFactoryProvider;
     }
 
     public static abstract class AbstractTestProcessor  extends AbstractProcessor<TestParam, Void> {

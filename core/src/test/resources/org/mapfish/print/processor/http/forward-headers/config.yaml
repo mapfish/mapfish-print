@@ -1,7 +1,6 @@
-
 templates:
   main: !template
     processors:
-      - !forwardHeadersTestProcessor {}
       - !forwardHeaders
         headers: [header1, Header2]
+      - !forwardHeadersTestProcessor {}

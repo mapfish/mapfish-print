@@ -12,7 +12,6 @@ templates:
       title: "Verbose A4 Portrait"
       keywords: ["legend", "table", "tablelist", "map", "verbose"]
     reportTemplate: simpleReport.jrxml
-    tableData: jrDataSource
     attributes:
       number: !integer {}
       name: !string {}
@@ -40,25 +39,17 @@ templates:
           pathRegex : /.+
     - !reportBuilder # compile all reports in current directory
       directory: '.'
-    - !createMap
-      inputMapper: {map: map}
-      outputMapper: {mapSubReport: mapSubReport}
+    - !createMap {}
     - !createScalebar {}
     - !prepareLegend # create a datasource for the report with the 'legend' attribute
       template: legend.jrxml
-      inputMapper: {legend: legend}
-      outputMapper:
-        legend: legend
-        legendSubReport: legendSubReport
-        numberOfLegendRows: numberOfLegendRows
-    - !prepareTable
-      inputMapper: {table: table}
-      outputMapper: {table: table}
+    - !prepareTable {}
     - !createDataSource
       reportTemplate: table.jrxml
       reportKey: reportTemplate
       processors:
         - !prepareTable {}
+    tableData: jrDataSource
 
   A4 portrait old api: !template
     pdfConfig: !pdfConfig
@@ -79,6 +70,4 @@ templates:
           pathRegex : .+
     - !reportBuilder # compile all reports in current directory
       directory: '.'
-    - !createMap
-      inputMapper: {map: map}
-      outputMapper: {mapSubReport: map}
+    - !createMap {}

@@ -7,7 +7,7 @@ import org.mapfish.print.wrapper.PObject;
 public final class TestMapAttribute extends GenericMapAttribute {
 
     @Override
-    protected Class<TestMapAttributeValues> getValueType() {
+    public Class<TestMapAttributeValues> getValueType() {
         return TestMapAttributeValues.class;
     }
 

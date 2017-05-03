@@ -1,10 +1,8 @@
-
 templates:
   #===========================================================================
   main: !template
   #===========================================================================
     reportTemplate: simpleReport.jrxml
-    tableData: jrDataSource
     attributes:
       map: !map
         maxDpi: 400
@@ -26,3 +24,4 @@ templates:
     - !createDataSource
       processors:
         - !createMap {}
+    tableData: jrDataSource

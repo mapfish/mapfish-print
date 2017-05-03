@@ -77,7 +77,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
      * Export the report to the output stream.
      *
      * @param outputStream the output stream to export to
-     * @param print        the report
+     * @param print the report
      */
     protected abstract void doExport(final OutputStream outputStream, final Print print) throws JRException, IOException;
 
@@ -105,9 +105,9 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
     /**
      * Renders the jasper report.
      *
-     * @param requestData   the data from the client, required for writing.
-     * @param config        the configuration object representing the server side configuration.
-     * @param configDir     the directory that contains the configuration, used for resolving resources like images etc...
+     * @param requestData the data from the client, required for writing.
+     * @param config the configuration object representing the server side configuration.
+     * @param configDir the directory that contains the configuration, used for resolving resources like images etc...
      * @param taskDirectory the temporary directory for this printing task.
      * @return a jasper print object which can be used to generate a PDF or other outputs.
      * @throws ExecutionException
@@ -247,7 +247,6 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             if (finalError.length() > 0) {
                 throw new AssertionFailedException(finalError.toString());
             }
-
         }
     }
 

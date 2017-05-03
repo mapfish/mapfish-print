@@ -57,13 +57,13 @@ public final class NorthArrowGraphic {
      * Scales the given graphic to the given size and applies the given
      * rotation.
      *
-     * @param targetSize                The size of the graphic to create.
-     * @param graphicFile               The graphic to use as north-arrow.
-     * @param backgroundColor           The background color.
-     * @param rotation                  The rotation to apply.
-     * @param workingDir                The directory in which the graphic is created.
-     * @param clientHttpRequestFactory  The request factory.
-     * @return                          The path to the created graphic.
+     * @param targetSize The size of the graphic to create.
+     * @param graphicFile The graphic to use as north-arrow.
+     * @param backgroundColor The background color.
+     * @param rotation The rotation to apply.
+     * @param workingDir The directory in which the graphic is created.
+     * @param clientHttpRequestFactory The request factory.
+     * @return The path to the created graphic.
      */
     public static URI create(
             final Dimension targetSize,

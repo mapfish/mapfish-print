@@ -14,9 +14,9 @@ import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.PDFConfig;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.ConfigFileResolvingHttpRequestFactory;
-import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
 import org.mapfish.print.parser.MapfishParser;
+import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.wrapper.ObjectMissingException;
 import org.mapfish.print.wrapper.PObject;
@@ -25,6 +25,7 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.mapfish.print.wrapper.multi.PMultiObject;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
@@ -41,9 +42,9 @@ public final class Values {
      */
     public static final String TASK_DIRECTORY_KEY = "tempTaskDirectory";
     /**
-     * The key that is used to store {@link org.mapfish.print.http.MfClientHttpRequestFactory}.
+     * The key that is used to store {@link org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider}.
      */
-    public static final String CLIENT_HTTP_REQUEST_FACTORY_KEY = "clientHttpRequestFactory";
+    public static final String CLIENT_HTTP_REQUEST_FACTORY_KEY = "clientHttpRequestFactoryProvider";
     /**
      * The key that is used to store {@link org.mapfish.print.config.Template}.
      */
@@ -51,16 +52,19 @@ public final class Values {
     /**
      * The key for the values object for the {@link org.mapfish.print.config.PDFConfig} object.
      */
-    public static final String PDF_CONFIG = "pdfConfig";
+    public static final String PDF_CONFIG_KEY = "pdfConfig";
     /**
      * The key for the output format.
      */
-    public static final String OUTPUT_FORMAT = "outputFormat";
+    public static final String OUTPUT_FORMAT_KEY = "outputFormat";
     /**
      * The key for the values object for the subreport directory.
      */
-    public static final String SUBREPORT_DIR = "SUBREPORT_DIR";
-
+    public static final String SUBREPORT_DIR_KEY = "SUBREPORT_DIR";
+    /**
+     * The key for the values object of it self.
+     */
+    public static final String VALUES_KEY = "values";
 
     private final Map<String, Object> values = new ConcurrentHashMap<String, Object>();
 
@@ -83,11 +87,11 @@ public final class Values {
     /**
      * Construct from the json request body and the associated template.
      *
-     * @param requestData         the json request data
-     * @param template            the template
-     * @param parser              the parser to use for parsing the request data.
-     * @param taskDirectory       the temporary directory for this printing task.
-     * @param httpRequestFactory  a factory for making http requests.
+     * @param requestData the json request data
+     * @param template the template
+     * @param parser the parser to use for parsing the request data.
+     * @param taskDirectory the temporary directory for this printing task.
+     * @param httpRequestFactory a factory for making http requests.
      * @param jasperTemplateBuild the directory where the jasper templates are compiled to
      */
     public Values(final PJsonObject requestData,
@@ -102,13 +106,13 @@ public final class Values {
     /**
      * Construct from the json request body and the associated template.
      *
-     * @param requestData         the json request data
-     * @param template            the template
-     * @param parser              the parser to use for parsing the request data.
-     * @param taskDirectory       the temporary directory for this printing task.
-     * @param httpRequestFactory  a factory for making http requests.
+     * @param requestData the json request data
+     * @param template the template
+     * @param parser the parser to use for parsing the request data.
+     * @param taskDirectory the temporary directory for this printing task.
+     * @param httpRequestFactory a factory for making http requests.
      * @param jasperTemplateBuild the directory where the jasper templates are compiled to
-     * @param outputFormat        the output format
+     * @param outputFormat the output format
      */
     public Values(final PJsonObject requestData,
                   final Template template,
@@ -122,29 +126,32 @@ public final class Values {
 
         // add task dir. to values so that all processors can access it
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
-        this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY, new ConfigFileResolvingHttpRequestFactory(httpRequestFactory,
-                template.getConfiguration()));
+        this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY,
+                new MfClientHttpRequestFactoryProvider(new ConfigFileResolvingHttpRequestFactory(
+                        httpRequestFactory, template.getConfiguration())));
         this.values.put(TEMPLATE_KEY, template);
-        this.values.put(PDF_CONFIG, template.getPdfConfig());
+        this.values.put(PDF_CONFIG_KEY, template.getPdfConfig());
         if (jasperTemplateBuild != null) {
-            this.values.put(SUBREPORT_DIR, jasperTemplateBuild.getAbsolutePath());
+            this.values.put(SUBREPORT_DIR_KEY, jasperTemplateBuild.getAbsolutePath());
         }
         if (outputFormat != null) {
-            this.values.put(OUTPUT_FORMAT, outputFormat);
+            this.values.put(OUTPUT_FORMAT_KEY, outputFormat);
         }
 
         final PJsonObject jsonAttributes = requestData.getJSONObject(MapPrinterServlet.JSON_ATTRIBUTES);
 
         Map<String, Attribute> attributes = Maps.newHashMap(template.getAttributes());
         populateFromAttributes(template, parser, attributes, jsonAttributes);
+
+        this.values.put(VALUES_KEY, this);
     }
 
     /**
      * Process the requestJsonAttributes using the attributes and the MapfishParser and add all resulting values to this values object.
      *
-     * @param template              the template of the current request.
-     * @param parser                the parser to use for parsing the request data.
-     * @param attributes            the attributes that will be used to add values to this values object
+     * @param template the template of the current request.
+     * @param parser the parser to use for parsing the request data.
+     * @param attributes the attributes that will be used to add values to this values object
      * @param requestJsonAttributes the json data for populating the attribute values
      * @throws JSONException
      */
@@ -253,24 +260,24 @@ public final class Values {
      */
     public void addRequiredValues(@Nonnull final Values sourceValues) {
         Object taskDirectory = sourceValues.getObject(TASK_DIRECTORY_KEY, Object.class);
-        MfClientHttpRequestFactory requestFactory = sourceValues.getObject(CLIENT_HTTP_REQUEST_FACTORY_KEY,
-                MfClientHttpRequestFactory.class);
+        MfClientHttpRequestFactoryProvider requestFactoryProvider = sourceValues.getObject(CLIENT_HTTP_REQUEST_FACTORY_KEY,
+                MfClientHttpRequestFactoryProvider.class);
         Template template = sourceValues.getObject(TEMPLATE_KEY, Template.class);
-        PDFConfig pdfConfig = sourceValues.getObject(PDF_CONFIG, PDFConfig.class);
-        String subReportDir = sourceValues.getObject(SUBREPORT_DIR, String.class);
+        PDFConfig pdfConfig = sourceValues.getObject(PDF_CONFIG_KEY, PDFConfig.class);
+        String subReportDir = sourceValues.getObject(SUBREPORT_DIR_KEY, String.class);
 
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
-        this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY, requestFactory);
+        this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY, requestFactoryProvider);
         this.values.put(TEMPLATE_KEY, template);
-        this.values.put(PDF_CONFIG, pdfConfig);
-        this.values.put(SUBREPORT_DIR, subReportDir);
-
+        this.values.put(PDF_CONFIG_KEY, pdfConfig);
+        this.values.put(SUBREPORT_DIR_KEY, subReportDir);
+        this.values.put(VALUES_KEY, this);
     }
 
     /**
      * Put a new value in map.
      *
-     * @param key   id of the value for looking up.
+     * @param key id of the value for looking up.
      * @param value the value.
      */
     public void put(final String key, final Object value) {
@@ -322,9 +329,9 @@ public final class Values {
     /**
      * Get a value as a string.
      *
-     * @param key  the key for looking up the value.
+     * @param key the key for looking up the value.
      * @param type the type of the object
-     * @param <V>  the type
+     * @param <V> the type
      */
     public <V> V getObject(final String key, final Class<V> type) {
         final Object obj = this.values.get(key);
@@ -363,7 +370,7 @@ public final class Values {
      * Find all the values of the requested type.
      *
      * @param valueTypeToFind the type of the value to return.
-     * @param <T>             the type of the value to find.
+     * @param <T> the type of the value to find.
      * @return the key, value pairs found.
      */
     @SuppressWarnings("unchecked")
@@ -380,6 +387,8 @@ public final class Values {
 
     @Override
     public String toString() {
-        return this.values.toString();
+        Map<String, Object> display = new HashMap<String, Object>(this.values);
+        display.remove(VALUES_KEY);
+        return display.toString();
     }
 }

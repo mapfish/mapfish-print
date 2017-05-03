@@ -33,28 +33,20 @@ public final class ProcessorUtils {
      * If {@link Processor#createInputParameter()} returns an instance of values then the values object will be returned.
      *
      * @param processor the processor that the input object will be for.
-     * @param values    the object containing the values to put into the input object
-     * @param <In>      type of the processor input object
-     * @param <Out>     type of the processor output object
+     * @param values the object containing the values to put into the input object
+     * @param <In> type of the processor input object
+     * @param <Out> type of the processor output object
      */
-    public static <In, Out> In populateInputParameter(final Processor<In, Out> processor, final Values values) {
+    public static <In, Out> In populateInputParameter(
+            final Processor<In, Out> processor,
+            @Nonnull final Values values) {
         In inputObject = processor.createInputParameter();
-        if (inputObject instanceof Values) {
-            @SuppressWarnings("unchecked")
-            final In castValues = (In) values;
-            return castValues;
-        }
         if (inputObject != null) {
             Collection<Field> fields = getAllAttributes(inputObject.getClass());
             for (Field field : fields) {
                 String name = getInputValueName(processor.getOutputPrefix(),
                         processor.getInputMapperBiMap(), field.getName());
-                Object value = null;
-                if (field.getType() == Values.class) {
-                    value = values;
-                } else if (values != null) {
-                    value = values.getObject(name, Object.class);
-                }
+                Object value = values.getObject(name, Object.class);
                 if (value != null) {
                     try {
                         field.set(inputObject, value);
@@ -63,10 +55,10 @@ public final class ProcessorUtils {
                     }
                 } else {
                     if (field.getAnnotation(HasDefaultValue.class) == null) {
-                        throw new NoSuchElementException(name + " or " + field.getName() + " is a required property for " + processor +
-                                                         " and therefore must be defined in the Request Data or be an output of one" +
-                                                         " of the other processors. Available values: " 
-                                                         + values == null ? null : values.asMap().keySet() + ".");
+                        throw new NoSuchElementException(name + " is a required property for " + processor
+                                + " and therefore must be defined in the Request Data or be an output of " +
+                                "one of the other processors. Available values: " +
+                                values.asMap().keySet() + ".");
                     }
                 }
             }
@@ -76,13 +68,14 @@ public final class ProcessorUtils {
 
     /**
      * Read the values from the output object and write them to the values object.
-     * @param output    the output object from a processor
+     * @param output the output object from a processor
      * @param processor the processor the output if from
-     * @param values    the object for sharing values between processors
+     * @param values the object for sharing values between processors
      */
-    public static void writeProcessorOutputToValues(final Object output,
-                                                    final Processor<?, ?> processor,
-                                                    final Values values) {
+    public static void writeProcessorOutputToValues(
+            final Object output,
+            final Processor<?, ?> processor,
+            final Values values) {
         Map<String, String> mapper = processor.getOutputMapperBiMap();
         if (mapper == null) {
             mapper = Collections.emptyMap();
@@ -109,7 +102,7 @@ public final class ProcessorUtils {
      *
      * @param inputPrefix a nullable prefix to prepend to the name if non-null and non-empty
      * @param inputMapper the name mapper
-     * @param field        the field containing the value
+     * @param field the field containing the value
      */
     public static String getInputValueName(@Nullable final String inputPrefix,
                                             @Nonnull final BiMap<String, String> inputMapper,
@@ -120,9 +113,9 @@ public final class ProcessorUtils {
                 throw new RuntimeException("field in keys");
             }
             final String[] defaultValues = {
-                    Values.TASK_DIRECTORY_KEY, Values.CLIENT_HTTP_REQUEST_FACTORY_KEY,
-                    Values.TEMPLATE_KEY, Values.PDF_CONFIG, Values.SUBREPORT_DIR, Values.OUTPUT_FORMAT
-                };
+                Values.TASK_DIRECTORY_KEY, Values.CLIENT_HTTP_REQUEST_FACTORY_KEY,
+                Values.TEMPLATE_KEY, Values.PDF_CONFIG_KEY, Values.SUBREPORT_DIR_KEY, Values.OUTPUT_FORMAT_KEY
+            };
             if (inputPrefix == null || Arrays.asList(defaultValues).contains(field)) {
                 name = field;
             } else {
@@ -139,7 +132,7 @@ public final class ProcessorUtils {
      *
      * @param outputPrefix a nullable prefix to prepend to the name if non-null and non-empty
      * @param outputMapper the name mapper
-     * @param field        the field containing the value
+     * @param field the field containing the value
      */
     public static String getOutputValueName(@Nullable final String outputPrefix,
                                             @Nonnull final Map<String, String> outputMapper,

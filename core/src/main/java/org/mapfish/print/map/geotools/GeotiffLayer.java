@@ -36,8 +36,8 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
     /**
      * Constructor.
      *
-     * @param reader          the reader to use for reading the geotiff.
-     * @param style           style to use for rendering the data.
+     * @param reader the reader to use for reading the geotiff.
+     * @param style style to use for rendering the data.
      * @param executorService the thread pool for doing the rendering.
      * @param params the parameters for this layer
      */

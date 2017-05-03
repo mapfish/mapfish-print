@@ -17,7 +17,7 @@ public interface MfClientHttpRequestFactory extends ClientHttpRequestFactory {
     /**
      * A Callback allowing low-level customizations to an http request created by this factory.
      */
-    public interface RequestConfigurator {
+    interface RequestConfigurator {
         /**
          * Configure the request.
          *

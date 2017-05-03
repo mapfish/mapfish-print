@@ -56,14 +56,14 @@ public final class MatchInfo {
     /**
      * Constructor.
      *
-     * @param scheme   the scheme to match.
-     * @param host     the host to match.
-     * @param port     the host to match.
-     * @param path     the path to match.
+     * @param scheme the scheme to match.
+     * @param host the host to match.
+     * @param port the host to match.
+     * @param path the path to match.
      * @param fragment the fragment to match.
-     * @param query    the query to match.
-     * @param realm    the realm to match.
-     * @param method   the method to match.
+     * @param query the query to match.
+     * @param realm the realm to match.
+     * @param method the method to match.
      */
     // CSOFF: ParameterNumber
     public MatchInfo(final String scheme,
@@ -88,7 +88,7 @@ public final class MatchInfo {
     /**
      * Create an info object from a uri and the http method object.
      *
-     * @param uri    the uri
+     * @param uri the uri
      * @param method the method
      */
     public static MatchInfo fromUri(final URI uri, final HttpMethod method) {

@@ -10,7 +10,7 @@ templates:
         zoomLevelSnapStrategy: CLOSEST_LOWER_SCALE_ON_TIE
         zoomLevels: !zoomLevels
           scales: [5000, 10000, 50000, 110000, 500000, 1000000]
-      overviewMapDef: !overviewMap
+      overviewMap: !overviewMap
         width: 300
         height: 200
         maxDpi: 400
@@ -26,16 +26,7 @@ templates:
               imageFormat: "tiff"
     processors:
     - !addBackgroundLayers {}
-    - !createMap
-        outputMapper: {mapSubReport: mapOut}
+    - !createMap {}
     - !createOverviewMap
-        inputMapper: {
-            overviewMapDef: overviewMap
-        }
-        outputMapper: {
-            overviewMapSubReport: overviewMapOut,
+        outputMapper:
             layerGraphics: overviewMapLayerGraphics
-        }
-
-
-

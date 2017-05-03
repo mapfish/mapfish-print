@@ -34,6 +34,7 @@ import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.mapfish.print.wrapper.PArray;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -255,9 +256,9 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
                 }
                 TableColumnConverter<?> converter = this.columnConverterMap.get(columnName);
                 if (converter != null) {
-                    rowValue = converter.resolve(values.clientHttpRequestFactory, (String) rowValue);
+                    rowValue = converter.resolve(values.clientHttpRequestFactoryProvider.get(), (String) rowValue);
                 } else {
-                    rowValue = tryConvert(values.clientHttpRequestFactory, rowValue);
+                    rowValue = tryConvert(values.clientHttpRequestFactoryProvider.get(), rowValue);
                 }
                 if (columns.size() < this.maxColumns && !this.excludeColumns.contains(columnName)) {
                     Class<?> columnDef = columns.get(columnName);
@@ -595,7 +596,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
          * A factory for making http requests.  This is added to the values by the framework and therefore
          * does not need to be set in configuration
          */
-        public MfClientHttpRequestFactory clientHttpRequestFactory;
+        public MfClientHttpRequestFactoryProvider clientHttpRequestFactoryProvider;
         /**
          * The directory to write the generated table to (if dynamic).
          */
@@ -617,7 +618,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         /**
          * The table datasource.
          */
-        public final JRMapCollectionDataSource table;
+        public final JRMapCollectionDataSource tableDataSource;
 
         /**
          * The number of rows in the table.
@@ -632,7 +633,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         private Output(final JRMapCollectionDataSource dataSource,
                        final int numberOfTableRows,
                        final String subReport) {
-            this.table = dataSource;
+            this.tableDataSource = dataSource;
             this.numberOfTableRows = numberOfTableRows;
             this.tableSubReport = subReport;
         }

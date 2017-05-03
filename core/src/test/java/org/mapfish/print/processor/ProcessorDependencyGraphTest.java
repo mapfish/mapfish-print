@@ -10,18 +10,19 @@ import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("unchecked")
 public class ProcessorDependencyGraphTest {
     @Test
     public void testToString() throws Exception {
         ProcessorDependencyGraph graph = new ProcessorDependencyGraph();
-        ProcessorGraphNode root1 = new ProcessorGraphNode(new TestProcessor("root1"), null);
-        ProcessorGraphNode root2 = new ProcessorGraphNode(new TestProcessor("root2"), null);
-        ProcessorGraphNode dep11 = new ProcessorGraphNode(new TestProcessor("dep11"), null);
-        ProcessorGraphNode dep21 = new ProcessorGraphNode(new TestProcessor("dep21"), null);
-        ProcessorGraphNode dep11_1 = new ProcessorGraphNode(new TestProcessor("dep11_1"), null);
-        ProcessorGraphNode dep11_2 = new ProcessorGraphNode(new TestProcessor("dep11_2"), null);
+        ProcessorGraphNode root1 = new ProcessorGraphNode(new TestProcessor("root1"), new MetricRegistry());
+        ProcessorGraphNode root2 = new ProcessorGraphNode(new TestProcessor("root2"), new MetricRegistry());
+        ProcessorGraphNode dep11 = new ProcessorGraphNode(new TestProcessor("dep11"), new MetricRegistry());
+        ProcessorGraphNode dep21 = new ProcessorGraphNode(new TestProcessor("dep21"), new MetricRegistry());
+        ProcessorGraphNode dep11_1 = new ProcessorGraphNode(new TestProcessor("dep11_1"), new MetricRegistry());
+        ProcessorGraphNode dep11_2 = new ProcessorGraphNode(new TestProcessor("dep11_2"), new MetricRegistry());
         graph.addRoot(root1);
         graph.addRoot(root2);
 
@@ -31,14 +32,16 @@ public class ProcessorDependencyGraphTest {
         dep11.addDependency(dep11_1);
         dep11.addDependency(dep11_2);
         assertEquals("dep11_1", dep11_1.toString());
-        assertEquals("dep11\n  +-- dep11_1\n  +-- dep11_2", dep11.toString());
-        assertEquals("+ root1\n  +-- dep11\n    +-- dep11_1\n    +-- dep11_2\n+ root2\n  +-- dep21", graph.toString());
+        assertTrue("dep11\n  +-- dep11_1\n  +-- dep11_2".equals(dep11.toString()) ||
+                "dep11\n  +-- dep11_2\n  +-- dep11_1".equals(dep11.toString()));
+        assertEquals("root2\n  +-- dep21", root2.toString());
     }
 
 
     @Test
     public void testCreateTaskAllDependenciesAreSatisfied() throws Exception {
         Values values = new Values();
+        values.put(Values.VALUES_KEY, values);
         values.put("pp", "value");
 
         final TestProcessor processor = new TestProcessor("p");

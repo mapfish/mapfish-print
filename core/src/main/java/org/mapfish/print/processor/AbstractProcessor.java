@@ -18,10 +18,10 @@ import javax.annotation.Nonnull;
 /**
  * Basic functionality of a processor.  Mostly utility methods.
  *
- * @param <In>  A Java bean input parameter object of the execute method.
- *              Object is populated from the {@link org.mapfish.print.output.Values} object.
- * @param <Out> A Java bean output/return object from the execute method.
- *              properties will be put into the {@link org.mapfish.print.output.Values} object so other processor can access the values.
+ * @param <In> A Java bean input parameter object of the execute method. Object is populated from the
+ *      {@link org.mapfish.print.output.Values} object.
+ * @param <Out> A Java bean output/return object from the execute method. properties will be put into the
+ *      {@link org.mapfish.print.output.Values} object so other processor can access the values.
  */
 public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
     private final BiMap<String, String> inputMapper = HashBiMap.create();
@@ -121,16 +121,17 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
         }
         for (String inputAttributeName : this.inputMapper.values()) {
             if (!allInputAttributeNames.contains(inputAttributeName)) {
-                errors.add(new ConfigurationException(inputAttributeName + " is not defined in processor '" + this + "'.  Check for " +
-                                                        "typos. Options are " + allInputAttributeNames));
+                errors.add(new ConfigurationException(inputAttributeName + " is not defined in processor '"
+                        + this + "'.  Check for typos. Options are " + allInputAttributeNames));
             }
         }
 
         Set<String> allOutputAttributeNames = ParserUtils.getAllAttributeNames(getOutputType());
         for (String outputAttributeName : this.outputMapper.keySet()) {
             if (!allOutputAttributeNames.contains(outputAttributeName)) {
-                errors.add(new ConfigurationException(outputAttributeName + " is not defined in processor '" + this + "' as an output " +
-                                                        "attribute.  Check for typos. Options are " + allOutputAttributeNames));
+                errors.add(new ConfigurationException(outputAttributeName + " is not defined in processor " +
+                        "'" + this + "' as an output attribute.  Check for typos. Options are " +
+                        allOutputAttributeNames));
             }
         }
 

@@ -17,5 +17,6 @@ templates:
           font: Liberation Sans
     processors:
     - !createMap
-        outputMapper: {mapSubReport: mapOut}
+        outputMapper:
+            mapSubReport: mapSubReport
     - !createScalebar {}

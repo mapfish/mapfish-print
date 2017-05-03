@@ -52,8 +52,8 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertTrue(!attributes.has("units"));
 
         // map
-        assertTrue(attributes.has("geojsonMap"));
-        JSONObject map = attributes.getJSONObject("geojsonMap");
+        assertTrue(attributes.has("map"));
+        JSONObject map = attributes.getJSONObject("map");
         assertEquals(5000.0, map.getDouble("scale"), 0.1);
         assertEquals(659307.58735556, map.getJSONArray("center").getDouble(0), 0.1);
         assertEquals(5711360.4205031, map.getJSONArray("center").getDouble(1), 0.1);
@@ -196,7 +196,7 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         Configuration configuration = printerFactory.create("default").getConfiguration();
         PJsonObject jsonObject = OldAPIRequestConverter.convert(oldApiJSON, configuration);
 
-        PJsonArray layers = jsonObject.getJSONObject("attributes").getJSONObject("geojsonMap").getJSONArray("layers");
+        PJsonArray layers = jsonObject.getJSONObject("attributes").getJSONObject("map").getJSONArray("layers");
         assertEquals(2, layers.size());
         PJsonArray wmsLayer1 = layers.getJSONObject(0).getJSONArray("layers");
         assertEquals(2, wmsLayer1.size());
@@ -216,7 +216,7 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         Configuration configuration = printerFactory.create("default").getConfiguration();
         PJsonObject jsonObject = OldAPIRequestConverter.convert(oldApiJSON, configuration);
 
-        PJsonArray layers = jsonObject.getJSONObject("attributes").getJSONObject("geojsonMap").getJSONArray("layers");
+        PJsonArray layers = jsonObject.getJSONObject("attributes").getJSONObject("map").getJSONArray("layers");
         assertEquals(1, layers.size());
         PJsonObject wmsLayer = layers.getJSONObject(0);
         assertEquals("tiledwms", wmsLayer.getString("type"));
@@ -238,7 +238,7 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertTrue(request.has("attributes"));
         JSONObject attributes = request.getJSONObject("attributes");
 
-        JSONArray layers = attributes.getJSONObject("geojsonMap").getJSONArray("layers");
+        JSONArray layers = attributes.getJSONObject("map").getJSONArray("layers");
 
         assertEquals("geojson", layers.getJSONObject(0).getString("type"));
         assertEquals("geojson", layers.getJSONObject(1).getString("type"));

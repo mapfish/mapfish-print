@@ -36,7 +36,7 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
      * Constructor.
      *
      * @param httpRequestFactory basic request factory
-     * @param config             the template for the current print job.
+     * @param config the template for the current print job.
      */
     public ConfigFileResolvingHttpRequestFactory(final MfClientHttpRequestFactoryImpl httpRequestFactory,
                                                  final Configuration config) {

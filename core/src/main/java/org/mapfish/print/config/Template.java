@@ -225,7 +225,11 @@ public class Template implements ConfigurationObject, HasConfiguration {
         if (this.processorGraph == null) {
             synchronized (this) {
                 if (this.processorGraph == null) {
-                    this.processorGraph = this.processorGraphFactory.build(this.processors);
+                    final Map<String, Class<?>> attcls = new HashMap<String, Class<?>>();
+                    for (String attributeName: this.attributes.keySet()) {
+                        attcls.put(attributeName, this.attributes.get(attributeName).getValueType());
+                    }
+                    this.processorGraph = this.processorGraphFactory.build(this.processors, attcls);
                 }
             }
         }
@@ -244,7 +248,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
     /**
      * Look for a style in the named styles provided in the configuration.
      *
-     * @param styleName  the name of the style to look for.
+     * @param styleName the name of the style to look for.
      */
     @SuppressWarnings("unchecked")
     @Nonnull
@@ -278,12 +282,13 @@ public class Template implements ConfigurationObject, HasConfiguration {
             validationErrors.add(new ConfigurationException("Only one of 'iterValue' or 'tableData' or 'jdbcUrl' should be defined."));
         }
 
-        for (Processor processor : this.processors) {
-            processor.validate(validationErrors, config);
-        }
-
         for (Attribute attribute : this.attributes.values()) {
             attribute.validate(validationErrors, config);
+        }
+
+        ProcessorDependencyGraphFactory.fillProcessorAttributes(this.processors, this.attributes);
+        for (Processor processor : this.processors) {
+            processor.validate(validationErrors, config);
         }
 
         try {

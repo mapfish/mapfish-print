@@ -19,7 +19,7 @@ public interface HandleReportLoadResult<R> {
      * Called if the report reference is unknown.
      *
      * @param httpServletResponse response object
-     * @param referenceId         report id
+     * @param referenceId report id
      */
     R unknownReference(HttpServletResponse httpServletResponse, String referenceId);
 
@@ -27,7 +27,7 @@ public interface HandleReportLoadResult<R> {
      * Called if no loader can be found for loading the report.
      *
      * @param httpServletResponse response object
-     * @param referenceId         report id
+     * @param referenceId report id
      */
     R unsupportedLoader(HttpServletResponse httpServletResponse, String referenceId);
 
@@ -35,9 +35,9 @@ public interface HandleReportLoadResult<R> {
      * Called when a print succeeded.
      *
      * @param successfulPrintResult the result
-     * @param httpServletResponse   the http reponse
-     * @param reportURI             the uri to the report
-     * @param loader                the loader for loading the report.
+     * @param httpServletResponse the http reponse
+     * @param reportURI the uri to the report
+     * @param loader the loader for loading the report.
      */
     R successfulPrint(PrintJobStatus successfulPrintResult, HttpServletResponse httpServletResponse, URI reportURI,
                       ReportLoader loader) throws IOException, ServletException;
@@ -45,7 +45,7 @@ public interface HandleReportLoadResult<R> {
     /**
      * Called when a print job failed.
      *
-     * @param failedPrintJob      the failed print job
+     * @param failedPrintJob the failed print job
      * @param httpServletResponse the object for writing response
      */
     R failedPrint(PrintJobStatus failedPrintJob, HttpServletResponse httpServletResponse);

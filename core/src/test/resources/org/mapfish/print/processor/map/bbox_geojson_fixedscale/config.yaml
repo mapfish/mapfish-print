@@ -3,7 +3,7 @@ templates:
   main: !template
     reportTemplate: "dummy.jxml"
     attributes:
-      mapDef: !map
+      map: !map
         width: 500
         height: 100
         maxDpi: 400
@@ -12,8 +12,4 @@ templates:
         zoomLevels: !zoomLevels
           scales: [50000, 100000, 500000, 1000000]
     processors:
-    - !createMap
-        inputMapper: {mapDef: map}
-        outputMapper: {mapSubReport: mapOut}
-
-
+    - !createMap {}

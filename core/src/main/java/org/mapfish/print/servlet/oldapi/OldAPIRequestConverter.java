@@ -49,7 +49,7 @@ public final class OldAPIRequestConverter {
      * Note that the converter does not support all features of the old API, for example
      * only requests containing a single map are supported.
      *
-     * @param oldRequest          the request in the format of the old API
+     * @param oldRequest the request in the format of the old API
      * @param configuration the configuration
      */
     public static PJsonObject convert(final PJsonObject oldRequest, final Configuration configuration) throws JSONException {

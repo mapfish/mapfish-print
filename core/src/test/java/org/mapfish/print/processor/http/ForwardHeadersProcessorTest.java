@@ -10,6 +10,7 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
+import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
@@ -74,7 +75,7 @@ public class ForwardHeadersProcessorTest extends AbstractHttpProcessorTest {
         ProcessorDependencyGraph graph = template.getProcessorGraph();
 
         Values values = new Values();
-        values.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, this.httpClientFactory);
+        values.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, new MfClientHttpRequestFactoryProvider(this.httpClientFactory));
         addExtraValues(values);
         forkJoinPool.invoke(graph.createTask(values));
     }
@@ -84,7 +85,8 @@ public class ForwardHeadersProcessorTest extends AbstractHttpProcessorTest {
         @Override
         public Void execute(TestParam values, ExecutionContext context) throws Exception {
             final URI uri = new URI("http://localhost:8080/path?query#fragment");
-            final ClientHttpRequest request = values.clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
+            final ClientHttpRequest request = values.clientHttpRequestFactoryProvider.get().createRequest(uri,
+                    HttpMethod.GET);
             final URI finalUri = request.getURI();
 
             assertEquals("http", finalUri.getScheme());
@@ -105,7 +107,8 @@ public class ForwardHeadersProcessorTest extends AbstractHttpProcessorTest {
         @Override
         public Void execute(TestParam values, ExecutionContext context) throws Exception {
             final URI uri = new URI("http://localhost:8080/path?query#fragment");
-            final ClientHttpRequest request = values.clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
+            final ClientHttpRequest request = values.clientHttpRequestFactoryProvider.get().createRequest(uri,
+                    HttpMethod.GET);
 
             assertEquals(3, request.getHeaders().size());
             assertArrayEquals(new Object[]{"header1-v1", "header1-v2"}, request.getHeaders().get("header1").toArray());

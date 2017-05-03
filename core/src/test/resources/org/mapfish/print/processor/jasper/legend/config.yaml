@@ -1,4 +1,3 @@
-
 throwErrorOnExtraParameters: true
 
 templates:
@@ -9,6 +8,4 @@ templates:
     processors:
     - !reportBuilder # compile all reports in current directory
       directory: '.'
-    - !prepareLegend # create a datasource for the report with the 'legend' attribute
-      inputMapper: {legend: legend}
-      outputMapper: {legend: legend}
+    - !prepareLegend {}

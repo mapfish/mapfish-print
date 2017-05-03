@@ -78,8 +78,8 @@ public final class URIUtils {
     /**
      * Add the given params to the query.
      *
-     * @param url            The query
-     * @param params         The params to add
+     * @param url The query
+     * @param params The params to add
      * @param overrideParams A set of parameter names that must be overridden and not added
      * @return The new query
      * @throws URISyntaxException 
@@ -92,8 +92,8 @@ public final class URIUtils {
     /**
      * Add the given params to the query.
      *
-     * @param uri            The query
-     * @param params         The params to add
+     * @param uri The query
+     * @param params The params to add
      * @param overrideParams A set of parameter names that must be overridden and not added
      * @return The new query
      */
@@ -169,8 +169,8 @@ public final class URIUtils {
      * Add a parameter to the query params (the params map) replacing any parameter that might be there.
      *
      * @param params the query parameters
-     * @param key    the key/param name
-     * @param value  the value to insert
+     * @param key the key/param name
+     * @param value the value to insert
      */
     public static void addParamOverride(final Multimap<String, String> params, final String key, final String value) {
         params.removeAll(key);
@@ -181,8 +181,8 @@ public final class URIUtils {
      * Add a parameter to the query params (the params map) if there is not existing value for that key.
      *
      * @param params the query parameters
-     * @param key    the key/param name
-     * @param value  the value to insert
+     * @param key the key/param name
+     * @param value the value to insert
      */
     public static void setParamDefault(final Multimap<String, String> params, final String key, final String value) {
         if (!params.containsKey(key)) {
@@ -193,7 +193,7 @@ public final class URIUtils {
     /**
      * Construct a new uri by replacing query parameters in initialUri with the query parameters provided.
      *
-     * @param initialUri  the initial/template URI
+     * @param initialUri the initial/template URI
      * @param queryParams the new query parameters.
      */
     public static URI setQueryParams(final URI initialUri, final Multimap<String, String> queryParams) {
@@ -222,7 +222,7 @@ public final class URIUtils {
      * Read all the data from the provided URI and return the data as a string.
      *
      * @param requestFactory Request factory for making the request.
-     * @param uri            the uri to load data from.
+     * @param uri the uri to load data from.
      * @return the data in string form.
      */
     public static String toString(final MfClientHttpRequestFactory requestFactory, final URI uri) throws IOException {
@@ -244,7 +244,7 @@ public final class URIUtils {
      * Read all the data from the provided URI and return the data as a string.
      *
      * @param requestFactory Request factory for making the request.
-     * @param url            the uri to load data from.
+     * @param url the uri to load data from.
      * @return the data in string form.
      */
     public static String toString(final MfClientHttpRequestFactory requestFactory, final URL url) throws IOException {
@@ -259,7 +259,7 @@ public final class URIUtils {
      * Set the replace of the uri and return the new URI.
      *
      * @param initialUri the starting URI, the URI to update
-     * @param path    the path to set on the baeURI
+     * @param path the path to set on the baeURI
      */
     public static URI setPath(final URI initialUri, final String path) {
         String finalPath = path;
