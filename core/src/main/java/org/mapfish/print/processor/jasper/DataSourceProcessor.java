@@ -17,15 +17,17 @@ import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.CustomDependencies;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
-import org.mapfish.print.processor.RequireAttribute;
+import org.mapfish.print.processor.RequireAttributes;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -72,7 +74,7 @@ import static org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttribut
  */
 public final class DataSourceProcessor
         extends AbstractProcessor<DataSourceProcessor.Input, DataSourceProcessor.Output>
-        implements RequireAttribute {
+        implements RequireAttributes, CustomDependencies {
 
     private Map<String, Attribute> internalAttributes = Maps.newHashMap();
     private Map<String, Attribute> allAttributes = Maps.newHashMap();
@@ -157,12 +159,19 @@ public final class DataSourceProcessor
     }
 
     /**
-     * The attributes that will by copy from the previous level.
+     * The attributes that will be copied from the previous level.
      *
      * @param copyAttributes the attributes name
      */
     public void setCopyAttributes(final List<String> copyAttributes) {
         this.copyAttributes = copyAttributes;
+    }
+
+
+    @Nonnull
+    @Override
+    public Collection<String> getDependencies() {
+        return this.copyAttributes;
     }
 
     /**
@@ -203,6 +212,7 @@ public final class DataSourceProcessor
         //CSON:RedundantThrows
         List<Values> dataSourceValues = Lists.newArrayList();
         for (Map<String, Object> o : input.datasource.attributesValues) {
+            // copy only the required values
             Values rowValues = new Values(input.values);
             for (String attributeName: this.copyAttributes) {
                 rowValues.put(attributeName, input.values.getObject(attributeName, Object.class));
@@ -261,7 +271,7 @@ public final class DataSourceProcessor
                     + this.reportTemplate));
         }
 
-        for (Attribute attribute : this.allAttributes.values()) {
+        for (Attribute attribute : this.internalAttributes.values()) {
             attribute.validate(validationErrors, configuration);
         }
 

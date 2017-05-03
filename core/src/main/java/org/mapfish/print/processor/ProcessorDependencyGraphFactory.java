@@ -74,7 +74,7 @@ public final class ProcessorDependencyGraphFactory {
         final Map<String, Class<?>> outputTypes = new HashMap<String, Class<?>>(attributes);
 
         // Add internal values
-        outputTypes.put("values", Values.class);
+        outputTypes.put(Values.VALUES_KEY, Values.class);
         outputTypes.put(Values.TASK_DIRECTORY_KEY, File.class);
         outputTypes.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, MfClientHttpRequestFactoryProvider.class);
         outputTypes.put(Values.TEMPLATE_KEY, Template.class);
@@ -86,38 +86,60 @@ public final class ProcessorDependencyGraphFactory {
         final List<ProcessorGraphNode<Object, Object>> nodes =
                 new ArrayList<ProcessorGraphNode<Object, Object>>(processors.size());
 
-        for (Processor<Object, Object> processor : processors) {
+        for (Processor<Object, Object> processor: processors) {
             final ProcessorGraphNode<Object, Object> node =
                     new ProcessorGraphNode<Object, Object>(processor, this.metricRegistry);
 
             final Set<InputValue> inputs = getInputs(node.getProcessor());
             boolean isRoot = true;
             // check input/output value dependencies
-            for (InputValue input : inputs) {
-                if (input.getName() == Values.VALUES_KEY) {
-                    for (String name : provideByProcessor.keySet()) {
-                        final ProcessorGraphNode<Object, Object> processorSolution =
-                                provideByProcessor.get(name);
-                        processorSolution.addDependency(node);
-                        isRoot = false;
+            for (InputValue input: inputs) {
+                if (input.getName().equals(Values.VALUES_KEY)) {
+                    if (processor instanceof CustomDependencies) {
+                        for (String name: ((CustomDependencies) processor).getDependencies()) {
+                            final Class<?> outputType = outputTypes.get(input.getName());
+                            if (outputType == null) {
+                                throw new IllegalArgumentException("The Processor '" + processor + "' has " +
+                                        "no value for the dynamic input '" + name + "'.");
+                            }
+                            final ProcessorGraphNode<Object, Object> processorSolution =
+                                    provideByProcessor.get(name);
+                            if (processorSolution != null) {
+                                processorSolution.addDependency(node);
+                                isRoot = false;
+                            }
+                        }
+                    } else {
+                        for (String name : provideByProcessor.keySet()) {
+                            final ProcessorGraphNode<Object, Object> processorSolution =
+                                    provideByProcessor.get(name);
+                            processorSolution.addDependency(node);
+                            isRoot = false;
+                        }
                     }
                 } else {
                     final Class<?> outputType = outputTypes.get(input.getName());
                     if (outputType != null) {
+                        final Class<?> inputType = input.getType();
                         final ProcessorGraphNode<Object, Object> processorSolution = provideByProcessor.get(input.getName());
-                        if (processorSolution != null) {
-                            // check that the outputTypes output has the same type
-                            final Class<?> inputType = input.getType();
-                            if (inputType.isAssignableFrom(outputType)) {
+                        if (inputType.isAssignableFrom(outputType)) {
+                            if (processorSolution != null) {
                                 processorSolution.addDependency(node);
                                 isRoot = false;
-                            } else {
+                            }
+                        } else {
+                            if (processorSolution != null) {
                                 throw new IllegalArgumentException("Type conflict: Processor '" +
                                         processorSolution.getName() + "' provides an output with name '" +
                                         input.getName() + "' and of type '" + outputType + " ', while " +
                                         "processor '" + node.getName() + "' expects an input of that name " +
                                         "with type '" + inputType + "'! Please rename one of the attributes" +
                                         " in the mappings of the processors.");
+                            } else {
+                                throw new IllegalArgumentException("Type conflict: the attribute '" +
+                                        input.getName() + "' of type '" + outputType + " ', while " +
+                                        "processor '" + node.getName() + "' expects an input of that name " +
+                                        "with type '" + inputType + "'!");
                             }
                         }
                     } else {
@@ -170,17 +192,9 @@ public final class ProcessorDependencyGraphFactory {
             }
         }
 
-        ArrayList<ProcessorDependency> allDependencies = Lists.newArrayList(this.dependencies);
-        for (ProcessorGraphNode<Object, Object> node : nodes) {
-            if (node.getProcessor() instanceof CustomDependencies) {
-                CustomDependencies custom = (CustomDependencies) node.getProcessor();
-                allDependencies.addAll(custom.createDependencies(nodes));
-            }
-        }
-
         final Collection<? extends Processor> missingProcessors = CollectionUtils.subtract(
                 processors, graph.getAllProcessors());
-        final StringBuffer missingProcessorsName = new StringBuffer();
+        final StringBuilder missingProcessorsName = new StringBuilder();
         for (Processor p : missingProcessors) {
             missingProcessorsName.append("\n- ");
             missingProcessorsName.append(p.toString());
@@ -235,7 +249,7 @@ public final class ProcessorDependencyGraphFactory {
 
     /**
      * Fill the attributes in the processor.
-     * @see RequireAttribute
+     * @see RequireAttributes
      * @see ProvideAttributes
      *
      * @param processors The processors
@@ -246,17 +260,17 @@ public final class ProcessorDependencyGraphFactory {
             final Map<String, Attribute> initialAttributes) {
         Map<String, Attribute> currentAttributes = new HashMap<String, Attribute>(initialAttributes);
         for (Processor processor : processors) {
-            if (processor instanceof RequireAttribute) {
+            if (processor instanceof RequireAttributes) {
                 for (ProcessorDependencyGraphFactory.InputValue inputValue :
                         ProcessorDependencyGraphFactory.getInputs(processor)) {
                     if (inputValue.getType() == Values.class) {
                         for (String attributeName:  currentAttributes.keySet()) {
-                            ((RequireAttribute) processor).setAttribute(
+                            ((RequireAttributes) processor).setAttribute(
                                     attributeName, currentAttributes.get(attributeName));
                         }
                     } else {
                         try {
-                            ((RequireAttribute) processor).setAttribute(
+                            ((RequireAttributes) processor).setAttribute(
                                     inputValue.getInternalName(),
                                     currentAttributes.get(inputValue.getName()));
                         } catch (ClassCastException e) {

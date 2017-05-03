@@ -46,14 +46,8 @@ import java.util.List;
  * processors:
  *    ...
  *    - !createOverviewMap
- *      inputMapper: {
- *        map: map,
- *        overviewMap: overviewMap
- *      }
- *      outputMapper: {
- *        overviewMapSubReport: overviewMapSubReport,
+ *      outputMapper:
  *        layerGraphics: overviewMapLayerGraphics
- *      }
  * </code></pre>
  * <p></p>
  * <strong>Features:</strong>

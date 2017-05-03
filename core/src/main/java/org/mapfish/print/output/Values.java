@@ -25,6 +25,7 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.mapfish.print.wrapper.multi.PMultiObject;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
@@ -270,6 +271,7 @@ public final class Values {
         this.values.put(TEMPLATE_KEY, template);
         this.values.put(PDF_CONFIG_KEY, pdfConfig);
         this.values.put(SUBREPORT_DIR_KEY, subReportDir);
+        this.values.put(VALUES_KEY, this);
     }
 
     /**
@@ -385,7 +387,7 @@ public final class Values {
 
     @Override
     public String toString() {
-        Map<String, Object> display = new ConcurrentHashMap<String, Object>(this.values);
+        Map<String, Object> display = new HashMap<String, Object>(this.values);
         display.remove(VALUES_KEY);
         return display.toString();
     }

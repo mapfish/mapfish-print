@@ -111,7 +111,7 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
     }
 
     @Override
-    public void validate(final List<Throwable> errors, final Configuration configuration) {
+    public final void validate(final List<Throwable> errors, final Configuration configuration) {
         final In inputParameter = createInputParameter();
         final Set<String> allInputAttributeNames;
         if (inputParameter != null) {

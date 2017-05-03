@@ -5,7 +5,7 @@ import org.mapfish.print.attribute.Attribute;
 /**
  * Processor that requires attribute.
  */
-public interface RequireAttribute {
+public interface RequireAttributes {
     /**
      * Set the attribute.
      *

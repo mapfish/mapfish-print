@@ -28,21 +28,14 @@ import java.util.List;
  * <pre><code>
  * attributes:
  *   ...
- *   northArrowDef: !northArrow
+ *   northArrow: !northArrow
  *     size: 50
  *     default:
  *       graphic: "file://NorthArrow_10.svg"
  *
  * processors:
  * ...
- *   - !createNorthArrow
- *     inputMapper: {
- *       map: map,
- *       northArrowDef: northArrow
- *     }
- *     outputMapper: {
- *       northArrowSubReport: northArrowSubReport
- *     }
+ *   - !createNorthArrow {}
  * </code></pre>
  * <p>See also: <a href="attributes.html#!northArrow">!northArrow</a> attribute</p>
  * [[examples=verboseExample,print_osm_new_york_nosubreports]]

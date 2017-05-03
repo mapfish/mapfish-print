@@ -1,7 +1,6 @@
 package org.mapfish.print.processor.jasper;
 
 import com.google.common.annotations.Beta;
-import com.google.common.collect.BiMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -14,17 +13,10 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.ConfigurationObject;
 import org.mapfish.print.output.Values;
-import org.mapfish.print.parser.ParserUtils;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.CustomDependencies;
-import org.mapfish.print.processor.Processor;
-import org.mapfish.print.processor.ProcessorDependency;
-import org.mapfish.print.processor.ProcessorGraphNode;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -115,41 +107,12 @@ public final class MergeDataSourceProcessor
 
     @Nonnull
     @Override
-    public List<ProcessorDependency> createDependencies(@Nonnull final List<ProcessorGraphNode<Object, Object>> nodes) {
+    public Collection<String> getDependencies() {
         HashSet<String> sourceKeys = Sets.newHashSet();
         for (Source source : this.sources) {
             source.type.addValuesKeys(source, sourceKeys);
         }
-
-        final ArrayList<ProcessorDependency> dependencies = Lists.newArrayList();
-        for (ProcessorGraphNode<Object, Object> node : nodes) {
-            if (node.getProcessor() == this) {
-                continue;
-            }
-            final Processor<?, ?> processor = node.getProcessor();
-            final Collection<Field> allAttributes = ParserUtils.getAllAttributes(processor.getOutputType());
-            final BiMap<String, String> outputMapper = node.getOutputMapper();
-            ProcessorDependency customDependency = null;
-            for (Field allAttribute : allAttributes) {
-                String attributeName = allAttribute.getName();
-                final String mappedName = outputMapper.get(attributeName);
-                if (mappedName != null) {
-                    attributeName = mappedName;
-                }
-                if (sourceKeys.contains(attributeName)) {
-                    if (customDependency == null) {
-                        final Class<Processor<?, ?>> processorClass =
-                                (Class<Processor<?, ?>>) processor.getClass();
-                        customDependency = new ProcessorDependency(processorClass, getClass(),
-                                Collections.singleton(attributeName));
-                        dependencies.add(customDependency);
-                    } else {
-                        customDependency.addCommonInput(attributeName);
-                    }
-                }
-            }
-        }
-        return dependencies;
+        return sourceKeys;
     }
 
     private static String indexString(final int i) {

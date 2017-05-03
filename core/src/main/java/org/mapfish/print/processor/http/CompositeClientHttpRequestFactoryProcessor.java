@@ -83,14 +83,14 @@ public final class CompositeClientHttpRequestFactoryProcessor
     @SuppressWarnings("unchecked")
     @Override
     public MfClientHttpRequestFactory createFactoryWrapper(
-            final Input values,
+            final Input input,
             final MfClientHttpRequestFactory requestFactory) {
         MfClientHttpRequestFactory finalRequestFactory = requestFactory;
         // apply the parts in reverse so that the last part is the inner most wrapper (will be last to be called)
         for (int i = this.httpProcessors.size() - 1; i > -1; i--) {
             final HttpProcessor processor = this.httpProcessors.get(i);
-            Object input = ProcessorUtils.populateInputParameter(processor, values.values);
-            finalRequestFactory = processor.createFactoryWrapper(input, finalRequestFactory);
+            Object populatedInput = ProcessorUtils.populateInputParameter(processor, input.values);
+            finalRequestFactory = processor.createFactoryWrapper(populatedInput, finalRequestFactory);
         }
         return finalRequestFactory;
     }

@@ -6,6 +6,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
+import com.vividsolutions.jts.util.Assert;
 import jsr166y.RecursiveTask;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.output.Values;
@@ -57,7 +58,7 @@ public final class ProcessorGraphNode<In, Out> {
      * @param node the dependency to add.
      */
     public void addDependency(final ProcessorGraphNode node) {
-        assert node != this;
+        Assert.isTrue(node != this, "A processor can't depends on himself");
 
         this.dependencies.add(node);
         node.addRequirement(this);

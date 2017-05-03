@@ -16,6 +16,7 @@ import org.mapfish.print.processor.ProcessorGraphNode;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -58,9 +59,8 @@ public class MergeDataSourceProcessorIntegrationTest extends AbstractMapfishSpri
             }
         }
 
-        List<ProcessorDependency> result = mergeDataSourceProcessor.createDependencies(allNodes);
+        Collection<String> result = mergeDataSourceProcessor.getDependencies();
         assertEquals(3, result.size());
-
     }
 
     private int count(String string, String toFind) {

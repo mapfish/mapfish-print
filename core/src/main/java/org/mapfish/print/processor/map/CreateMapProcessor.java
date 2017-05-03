@@ -690,6 +690,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         /**
          * The required parameters for the map.
          */
+        // e.g. the grid layer will be self modified on drawing, and we needs the result for the overview map.
         @InputOutputValue
         public GenericMapAttributeValues map;
 

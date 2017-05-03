@@ -21,7 +21,7 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.ProvideAttributes;
-import org.mapfish.print.processor.RequireAttribute;
+import org.mapfish.print.processor.RequireAttributes;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +59,7 @@ import javax.annotation.Nullable;
  */
 public class CreateMapPagesProcessor
         extends AbstractProcessor<CreateMapPagesProcessor.Input, CreateMapPagesProcessor.Output>
-        implements ProvideAttributes, RequireAttribute {
+        implements ProvideAttributes, RequireAttributes {
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateMapPagesProcessor.class);
     private static final int DO_NOT_RENDER_BBOX_INDEX = -1;
 
