@@ -56,7 +56,7 @@ public final class MergeDataSourceProcessor
      * object each row in the datasource will be used to form a row in the merged DataSource.  If the
      * source type is {@link org.mapfish.print.processor.jasper.MergeDataSourceProcessor.SourceType#SINGLE}
      * the object will be a single row even if it is in fact a DataSource.</p>
-     * 
+     *
      * <p>See also: <a href="configuration.html#!mergeSource">!mergeSource</a></p>
      *
      * @param sources the source objects to merge

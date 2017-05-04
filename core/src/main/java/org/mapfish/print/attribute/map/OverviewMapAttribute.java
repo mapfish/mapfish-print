@@ -16,7 +16,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * [[examples=verboseExample,overviewmap_tyger_ny_EPSG_900913]]
  */
 public final class OverviewMapAttribute extends GenericMapAttribute {
-    
+
     private static final double DEFAULT_ZOOM_FACTOR = 5.0;
 
     private double zoomFactor = DEFAULT_ZOOM_FACTOR;
@@ -51,12 +51,12 @@ public final class OverviewMapAttribute extends GenericMapAttribute {
     public OverviewMapAttributeValues createValue(final Template template) {
         return new OverviewMapAttributeValues(template, this.getWidth(), this.getHeight());
     }
-    
+
     /**
      * The value of {@link MapAttribute}.
      */
     public final class OverviewMapAttributeValues extends GenericMapAttribute.GenericMapAttributeValues {
-        
+
         /**
          * The json with all the layer information.  This will be parsed in postConstruct into a list of layers and
          * therefore this field should not normally be accessed.
@@ -178,6 +178,6 @@ public final class OverviewMapAttribute extends GenericMapAttribute {
         public String getProjection() {
             return getValueOr(super.getProjection(), DEFAULT_PROJECTION);
         }
-      
+
     }
 }

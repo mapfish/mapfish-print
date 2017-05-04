@@ -289,7 +289,7 @@ public class MapPrinterServlet extends BaseMapServlet {
 
     /**
      * Cancel a job.
-     * 
+     *
      * Even if a job was already finished, subsequent status requests will
      * return that the job was canceled.
      *
@@ -918,10 +918,10 @@ public class MapPrinterServlet extends BaseMapServlet {
         final String templateName = specJson.getString(Constants.JSON_LAYOUT_KEY);
         final MapPrinter mapPrinter = this.mapPrinterFactory.create(appId);
         final Template template = mapPrinter.getConfiguration().getTemplate(templateName);
-        
+
         PrintJobEntryImpl jobEntry = new PrintJobEntryImpl(ref, specJson, System.currentTimeMillis());
         jobEntry.configureAccess(template, this.context);
-        
+
         try {
             this.jobManager.submit(jobEntry);
         } catch (RuntimeException exc) {
@@ -930,7 +930,7 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
         return ref;
     }
-    
+
     private <R> R loadReport(final String referenceId, final HttpServletResponse httpServletResponse,
                              final HandleReportLoadResult<R> handler) throws IOException, ServletException {
         PrintJobStatus metadata;
@@ -960,7 +960,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             }
         } else {
             return handler.failedPrint(metadata, httpServletResponse);
-        } 
+        }
 
     }
 

@@ -36,10 +36,10 @@ public interface AccessAssertion extends ConfigurationObject {
      * @param encodedAssertion the assertion encoded as JSON.
      */
     void unmarshal(JSONObject encodedAssertion);
-    
+
     /**
      * Deep copy of this access assertion.
-     *  
+     *
      * @return the copy
      */
     AccessAssertion copy();

@@ -26,7 +26,7 @@ public class BarSubScalebarDrawer extends BarScalebarDrawer {
             if (getSettings().getLabels().get(i).getLabelLayout().getCharacterCount() > 0) {
                 float pos = i * getSettings().getIntervalLengthInPixels();
                 getGraphics2d().drawLine(
-                        (int) pos, 0, 
+                        (int) pos, 0,
                         (int) pos, (int) (getSettings().getLineWidth() * 1.5f));
             }
         }

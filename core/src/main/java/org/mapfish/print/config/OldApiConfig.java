@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * <p>Configuration options for how requests to the old API are handled.</p>
- * 
+ *
  * <p>Example</p>
  * <pre><code>
  * oldApi: !oldApi

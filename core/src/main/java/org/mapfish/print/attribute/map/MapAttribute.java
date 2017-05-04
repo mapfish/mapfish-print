@@ -112,7 +112,7 @@ public final class MapAttribute extends GenericMapAttribute {
         public MapAttributeValues(final Template template, final Integer width, final Integer height) {
             super(template, width, height);
         }
-        
+
         /**
          * Constructor.
          *

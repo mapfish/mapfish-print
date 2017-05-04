@@ -14,22 +14,22 @@ import javax.persistence.Entity;
  */
 @Entity
 public class PrintJobStatusExtImpl extends PrintJobStatusImpl {
-        
+
     @Column
     private long lastCheckTime = System.currentTimeMillis();
-    
-        
+
+
     /**
      * Constructor.
-     * 
+     *
      */
     public PrintJobStatusExtImpl() {
-        
+
     }
-    
+
     /**
      * Constructor.
-     * 
+     *
      * @param entry the print job entry.
      * @param requestCount the request count
      */
@@ -44,5 +44,5 @@ public class PrintJobStatusExtImpl extends PrintJobStatusImpl {
     public final void setLastCheckTime(final long lastCheckTime) {
         this.lastCheckTime = lastCheckTime;
     }
-    
+
 }

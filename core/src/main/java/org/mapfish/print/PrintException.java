@@ -8,7 +8,7 @@ public class PrintException extends RuntimeException {
 
     /**
      * Construct exception.
-     * 
+     *
      * @param message the message
      */
     public PrintException(final String message) {
@@ -16,7 +16,7 @@ public class PrintException extends RuntimeException {
     }
 
     /**
-     * Constructor. 
+     * Constructor.
      * @param message message
      * @param cause the cause
      */

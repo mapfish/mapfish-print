@@ -151,7 +151,7 @@ public final class GridLayer implements MapLayer {
     public RenderType getRenderType() {
         return this.grid.getRenderType();
     }
-    
+
     @Override
     public void cacheResources(final HttpRequestCache httpRequestCache,
             final MfClientHttpRequestFactory clientHttpRequestFactory, final MapfishMapContext transformer) {

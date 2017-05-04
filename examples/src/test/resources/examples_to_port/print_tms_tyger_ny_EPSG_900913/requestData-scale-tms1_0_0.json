@@ -1,9 +1,9 @@
 {
     "layout": "A4 landscape",
     "outputFormat": "pdf",
-    "attributes": 
+    "attributes":
     {
-        "map": 
+        "map":
         {
             "projection": "EPSG:900913",
             "dpi": 72,
@@ -11,7 +11,7 @@
             "center": [3570451.1286428, 9077780.2262548],
 
             "scale": 100000,
-            "layers": 
+            "layers":
             [
                 {
                     "baseURL": "http://localhost:8080/gs-web-app/gwc/service/tms/",
@@ -19,21 +19,21 @@
                     "singleTile": false,
                     "type": "TMS",
                     "layer": "tiger-ny",
-                    "maxExtent": 
+                    "maxExtent":
                     [
                         -20037508.34,
                         -20037508.34,
                         20037508.34,
                         20037508.34
                     ],
-        
-                    "tileSize": 
+
+                    "tileSize":
                     [
                         256,
                         256
                     ],
-        
-                    "resolutions": 
+
+                    "resolutions":
                     [
                         156543.03390625,
                         78271.516953125,
@@ -52,25 +52,25 @@
                         9.554628534317017,
                         4.777314267158508
                     ],
-        
+
                     "format": "png"
                 },
                 {
                     "baseURL": "http://localhost:8080/gs-web-app/wms",
                     "opacity": 1,
                     "type": "WMS",
-                    "layers": 
+                    "layers":
                     [
                         "tiger:tiger_roads"
                     ],
-        
+
                     "imageFormat": "image/png",
-                    "styles": 
+                    "styles":
                     [
                         "line"
                     ],
-        
-                    "customParams": 
+
+                    "customParams":
                     {
                         "TRANSPARENT": "true"
                     }

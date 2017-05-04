@@ -13,20 +13,20 @@ import javax.persistence.Entity;
  */
 @Entity
 public class PrintJobResultExtImpl extends PrintJobResultImpl {
-    
+
     @Column
     private byte[] data;
-    
+
     /**
      * Default Constructor.
      */
     public PrintJobResultExtImpl() {
         this.data = null;
     }
-    
+
     /**
      * Constructor.
-     * 
+     *
      * @param reportURI the report URI
      * @param fileName the file name
      * @param fileExtension the file extension
@@ -39,7 +39,7 @@ public class PrintJobResultExtImpl extends PrintJobResultImpl {
         this.data = data;
     }
 
-   
+
     public final byte[] getData() {
         return this.data;
     }

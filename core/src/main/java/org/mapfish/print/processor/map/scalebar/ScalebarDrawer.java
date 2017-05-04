@@ -48,7 +48,7 @@ public abstract class ScalebarDrawer {
         //sets the transformation for drawing the labels and do it
         final AffineTransform labelTransform = new AffineTransform(transform);
         setLabelTranslate(labelTransform);
-                        
+
         this.graphics2d.setColor(this.params.getFontColor());
         drawLabels(labelTransform, this.params.getOrientation(), Math.toRadians(this.params.getLabelRotation()));
 
@@ -116,9 +116,9 @@ public abstract class ScalebarDrawer {
                     + this.settings.getMaxLabelSize().width * Math.sin(Math.toRadians(this.params.getLabelRotation())));
         } else if (this.params.getOrientation() == Orientation.VERTICAL_LABELS_LEFT) {
             lineTransform.translate(
-                    this.settings.getPadding() 
+                    this.settings.getPadding()
                     + this.settings.getMaxLabelSize().height * Math.sin(Math.toRadians(this.params.getLabelRotation()))
-                    + this.settings.getMaxLabelSize().width * Math.cos(Math.toRadians(this.params.getLabelRotation()))                   
+                    + this.settings.getMaxLabelSize().width * Math.cos(Math.toRadians(this.params.getLabelRotation()))
                     + this.settings.getLabelDistance(),
                     this.settings.getPadding() + this.settings.getTopLabelMargin());
         } else if (this.params.getOrientation() == Orientation.VERTICAL_LABELS_RIGHT) {
@@ -137,7 +137,7 @@ public abstract class ScalebarDrawer {
         } else if (this.params.getOrientation() == Orientation.HORIZONTAL_LABELS_ABOVE) {
             labelTransform.translate(
                     this.settings.getPadding() + this.settings.getLeftLabelMargin(),
-                    this.settings.getPadding() 
+                    this.settings.getPadding()
                     + this.settings.getMaxLabelSize().height * Math.cos(Math.toRadians(this.params.getLabelRotation()))
                     + this.settings.getMaxLabelSize().width * Math.sin(Math.toRadians(this.params.getLabelRotation())));
         } else if (this.params.getOrientation() == Orientation.VERTICAL_LABELS_LEFT) {
@@ -180,7 +180,7 @@ public abstract class ScalebarDrawer {
             AffineTransform transform = new AffineTransform(labelTransform);
             if (orientation.isHorizontal()) {
                 final float offsetH = (-label.getWidth() / 2) * (float) Math.cos(labelRotation)
-                        + (-label.getHeight() / 2) * 
+                        + (-label.getHeight() / 2) *
                         (float) Math.sin(orientation == Orientation.HORIZONTAL_LABELS_ABOVE ? -labelRotation : labelRotation);
                 posX = label.getGraphicOffset() + offsetH;
                 posY = 0;
@@ -200,7 +200,7 @@ public abstract class ScalebarDrawer {
             }
             if (labelRotation != 0) {
                 transform.concatenate(AffineTransform.getRotateInstance(
-                        orientation == Orientation.HORIZONTAL_LABELS_ABOVE ? -labelRotation : labelRotation, 
+                        orientation == Orientation.HORIZONTAL_LABELS_ABOVE ? -labelRotation : labelRotation,
                         posX, posY));
             }
             this.graphics2d.setTransform(transform);

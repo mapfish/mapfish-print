@@ -1,38 +1,38 @@
 {
     "layout": "A4 landscape",
     "outputFormat": "pdf",
-    "attributes": 
+    "attributes":
     {
-        "map": 
+        "map":
         {
             "projection": "EPSG:900913",
             "dpi": 72,
             "rotation": 0,
               "center": [-8234566.427097, 4979131.070529],
             "scale": 25000,
-            "layers": 
+            "layers":
             [
                 {
                     "baseURL": "http://localhost:8080/gs-web-app/wms",
                     "opacity": 1,
                     "type": "WMS",
-                    "layers": 
+                    "layers":
                     [
                         "tiger-ny"
                     ],
-        
+
                     "imageFormat": "image/png",
-                    "styles": 
+                    "styles":
                     [
                         ""
                     ]
                 },
-        
+
                 {
                     "type": "Vector",
-                    "style": 
+                    "style":
                     {
-                        "1": 
+                        "1":
                         {
                             "fillColor": "blue",
                             "fillOpacity": 0.2,
@@ -59,8 +59,8 @@
                             "graphicName": "star",
                             "rotation": 45
                         },
-        
-                        "2": 
+
+                        "2":
                         {
                             "strokeColor": "#00FF00",
                             "strokeWidth": 3,
@@ -69,8 +69,8 @@
                             "pointerEvents": "visiblePainted",
                             "title": "this is a green line"
                         },
-        
-                        "3": 
+
+                        "3":
                         {
                             "fillColor": "#ee9900",
                             "fillOpacity": 0.2,
@@ -96,58 +96,58 @@
                             "graphicOpacity": 1
                         }
                     },
-        
+
                     "styleProperty": "_gx_style",
-                    "geoJson": 
+                    "geoJson":
                     {
                         "type": "FeatureCollection",
-                        "features": 
+                        "features":
                         [
                             {
                                 "type": "Feature",
-                                "properties": 
+                                "properties":
                                 {
                                     "_gx_style": 1
                                 },
-        
-                                "geometry": 
+
+                                "geometry":
                                 {
                                     "type": "Point",
-                                    "coordinates": 
+                                    "coordinates":
                                     [
                                         -8234566.427097,
                                         4979131.070529
                                     ]
                                 }
                             },
-        
+
                             {
                                 "type": "Feature",
-                                "properties": 
+                                "properties":
                                 {
                                     "_gx_style": 2
                                 },
-        
-                                "geometry": 
+
+                                "geometry":
                                 {
                                     "type": "LineString",
-                                    "coordinates": 
+                                    "coordinates":
                                     [
                                         [
                                             -8234566.427097,
                                             4979131.070529
                                         ],
-        
+
                                         [
                                             -8234066.427097,
                                             4979131.070529
                                         ],
-        
+
                                         [
                                             -8234566.427097,
                                             4979631.070529
                                         ],
-        
+
                                         [
                                             -8235066.427097,
                                             4980131.070529
@@ -155,50 +155,50 @@
                                     ]
                                 }
                             },
-        
+
                             {
                                 "type": "Feature",
-                                "properties": 
+                                "properties":
                                 {
                                     "_gx_style": 3
                                 },
-        
-                                "geometry": 
+
+                                "geometry":
                                 {
                                     "type": "Polygon",
-                                    "coordinates": 
+                                    "coordinates":
                                     [
                                         [
                                             [
                                                 -8233565.458722893,
                                                 4979131.070529
                                             ],
-        
+
                                             [
                                                 -8233942.387788273,
                                                 4979913.591071286
                                             ],
-        
+
                                             [
                                                 -8234789.101273956,
                                                 4980106.669842631
                                             ],
-        
+
                                             [
                                                 -8235467.769644946,
                                                 4979565.1342229415
                                             ],
-        
+
                                             [
                                                 -8235467.482027641,
                                                 4978697.145344252
                                             ],
-        
+
                                             [
                                                 -8234788.978013575,
                                                 4978156.011254383
                                             ],
-        
+
                                             [
                                                 -8233565.458722893,
                                                 4979131.070529

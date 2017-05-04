@@ -37,7 +37,7 @@
           "mergeableParams": {
             "mergeableP1": 3
           }
-        },        
+        },
         {
           "type": "geojson",
           "style": "file://thinline.sld",

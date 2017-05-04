@@ -19,4 +19,4 @@ templates:
     - !createMap {}
     - !createOverviewMap
         outputMapper:
-            layerGraphics: overviewMapLayerGraphics 
+            layerGraphics: overviewMapLayerGraphics

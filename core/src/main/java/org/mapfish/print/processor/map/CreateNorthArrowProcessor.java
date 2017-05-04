@@ -76,7 +76,7 @@ public class CreateNorthArrowProcessor extends AbstractProcessor<CreateNorthArro
                 values.clientHttpRequestFactoryProvider.get());
 
         checkCancelState(context);
-        
+
         String strScalebarSubReport = null;
         if (values.northArrow.isCreateSubReport()) {
             final URI scalebarSubReport = createNorthArrowSubReport(

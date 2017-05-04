@@ -20,7 +20,7 @@ import java.sql.Types;
 public class PJsonObjectUserType implements UserType {
 
     private static final int[] SQL_TYPES = { Types.LONGVARCHAR };
-    
+
     private static final String CONTEXT_NAME = "spec";
 
     @Override

@@ -27,17 +27,17 @@ public final class OldAPILayerConverter {
         converters.put("wmts", new WMSTConverter());
         converters.put("vector", new GeoJsonConverter());
     }
-    
+
     /**
      * Convert a layer definition of the old API.
-     * 
+     *
      * @param oldLayer the old layer definition
      * @param oldApi configuration for oldApi to newAPI conversion
      * @return the converted layer definition
      */
     public static JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi) throws JSONException {
         final String layerType = oldLayer.optString("type", "").toLowerCase();
-        
+
         if (!converters.containsKey(layerType)) {
             throw new UnsupportedOperationException("Layer type '" + layerType + "' is "
                     + "not supported by the legacy API.");
@@ -107,7 +107,7 @@ public final class OldAPILayerConverter {
                     layer.put("tileSize", oldLayer.getInternalObj().getJSONArray("tileSize"));
                 }
             }
-            
+
             if (oldLayer.has("baseURL")) {
                 layer.put("baseURL", oldLayer.getString("baseURL"));
             }
@@ -142,7 +142,7 @@ public final class OldAPILayerConverter {
             if (oldLayer.has("useNativeAngle")) {
                 layer.put("useNativeAngle", oldLayer.getBool("useNativeAngle"));
             }
-            
+
             return layer;
         }
 
@@ -163,7 +163,7 @@ public final class OldAPILayerConverter {
             layer.put("type", "geojson");
 
             if (oldLayer.has("geoJson")) {
-                // the GeoJSON can either be given directly inline, or as URL to a file 
+                // the GeoJSON can either be given directly inline, or as URL to a file
                 try {
                     // first try to get an inline GeoJSON definition
                     layer.put("geoJson", oldLayer.getInternalObj().getJSONObject("geoJson"));

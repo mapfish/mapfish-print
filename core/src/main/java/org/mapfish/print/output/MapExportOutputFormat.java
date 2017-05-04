@@ -23,14 +23,14 @@ import java.util.concurrent.CancellationException;
 
 
 /**
- * 
+ *
  * The MapExportOutputFormat class.
- * 
+ *
  * @author Niels
  *
  */
 public class MapExportOutputFormat implements OutputFormat {
-    
+
     private static final String MAP_SUBREPORT = "mapSubReport";
 
     @Autowired
@@ -41,11 +41,11 @@ public class MapExportOutputFormat implements OutputFormat {
 
     @Autowired
     private MapfishParser parser;
-    
+
     private String fileSuffix;
-    
+
     private String contentType;
-        
+
     public final void setContentType(final String contentType) {
         this.contentType = contentType;
     }
@@ -63,7 +63,7 @@ public class MapExportOutputFormat implements OutputFormat {
     public final String getFileSuffix() {
         return this.fileSuffix;
     }
-    
+
     private String getMapSubReportVariable(final Template template) {
         for (Processor<?, ?> processor : template.getProcessors()) {
             if (processor instanceof CreateMapProcessor) {
@@ -91,10 +91,10 @@ public class MapExportOutputFormat implements OutputFormat {
             throw new IllegalArgumentException("\nThere is no template with the name: " + templateName +
             ".\nAvailable templates: " + possibleTemplates);
         }
-                
-        final Values values = new Values(spec, template, this.parser, taskDirectory, this.httpRequestFactory, null, 
+
+        final Values values = new Values(spec, template, this.parser, taskDirectory, this.httpRequestFactory, null,
                 this.fileSuffix);
-        
+
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(template.getProcessorGraph().createTask(values));
 
         try {
@@ -106,22 +106,22 @@ public class MapExportOutputFormat implements OutputFormat {
             Thread.currentThread().interrupt();
             throw new CancellationException();
         }
-        
+
         String mapSubReport = values.getString(getMapSubReportVariable(template));
-        
+
         //convert URI to file path
         try {
             mapSubReport = new File(new URI(mapSubReport)).getAbsolutePath();
         } catch (URISyntaxException e) {
             throw new IllegalStateException(e); //can't really happen
         }
-        
+
         FileInputStream is = new FileInputStream(mapSubReport);
         try {
             IOUtils.copy(is, outputStream);
         } finally {
             is.close();
         }
-        
+
     }
 }

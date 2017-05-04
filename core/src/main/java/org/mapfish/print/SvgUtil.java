@@ -9,14 +9,14 @@ import java.awt.image.BufferedImage;
 import java.net.URI;
 
 /**
- * 
+ *
  * SVG Utilities.
  *
  */
 public final class SvgUtil {
-    
+
     private SvgUtil() {
-        
+
     }
 
     /**
@@ -42,10 +42,10 @@ public final class SvgUtil {
             return this.img;
         }
     }
-    
+
     /**
      * Renders an SVG image into a {@link BufferedImage}.
-     * 
+     *
      * @param svgFile the svg file
      * @param width the width
      * @param height the height

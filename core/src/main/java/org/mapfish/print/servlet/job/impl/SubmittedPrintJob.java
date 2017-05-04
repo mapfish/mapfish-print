@@ -23,7 +23,7 @@ public class SubmittedPrintJob {
         this.reportFuture = reportFuture;
         this.entry = entry;
     }
-    
+
     /**
      * Get the future for checking if the report is done and for getting the uri.
      */

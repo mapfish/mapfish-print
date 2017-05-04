@@ -19,7 +19,7 @@
           "customParams": {
             "TRANSPARENT": "true"
           }
-        },      
+        },
         {
           "baseURL": "http://localhost:8080/examples/data/www/osm",
           "type": "OSM",

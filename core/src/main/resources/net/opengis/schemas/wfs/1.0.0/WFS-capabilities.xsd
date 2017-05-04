@@ -7,13 +7,13 @@
    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
    elementFormDefault="qualified"
    version="1.0.0.3">
-   
+
    <!--
       WFS is an OGC Standard.
       Copyright (c) 2002,2010 Open Geospatial Consortium.
       To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
    -->
-   
+
    <!-- Comments in this document may impose additional constraints
         beyond those codified in the schema syntax.  A conformant
         Web Feature Server must provide Capabilities XML that
@@ -32,10 +32,10 @@
    <!-- A descriptive narrative for more
         information about this server. -->
    <xsd:element name="Abstract" type="xsd:string"/>
-   <!-- Elements containing text blocks indicating what 
-        fees or access constraints are imposed by the 
+   <!-- Elements containing text blocks indicating what
+        fees or access constraints are imposed by the
         service provider on the service or data retrieved
-        from the server. The reserved keyword "NONE" 
+        from the server. The reserved keyword "NONE"
         indicates no constraint exists. -->
    <xsd:element name="AccessConstraints" type="xsd:string"/>
    <xsd:element name="Fees" type="xsd:string"/>
@@ -43,7 +43,7 @@
         Currently, no controlled vocabulary has
         been defined. -->
    <xsd:element name="Keywords" type="xsd:string"/>
-   <!-- The top-level HTTP URL of this service. 
+   <!-- The top-level HTTP URL of this service.
         Typically the URL of a "home page" for
         the service.  See also the onlineResource
         attributes of <DCPType> children, below.
@@ -89,7 +89,7 @@
               types, how exceptions may be reported, and
               whether any vendor-specific capabilities
               are defined.  It also lists all the
-              feature types available from this feature 
+              feature types available from this feature
               server. -->
          <xsd:element name="Capability" type="wfs:CapabilityType"/>
          <xsd:element name="FeatureTypeList" type="wfs:FeatureTypeListType"/>
@@ -216,28 +216,28 @@
         specifies the number and source of the
         various elements that are available for
         describing a feature type.
-   
+
         element             number    comments
         =================   =======   ======================================
         Name                    1     this is the Name of the feature type
-   
+
         Title                 0/1     an optional Meaningful title for the
                                       feature type  (e.g. "Ontario Roads"
                                       for ROADL_1M")
 
         Abstract              0/1     optional; no Default
-   
+
         Keywords              0/1     optional; no Default
-   
+
         SRS                     1     the SRS that should be used
                                       when specifying the state of
                                       the feature
 
         Operations            0/1     a list of available operations for
                                       the feature type
-      
+
         LatLongBoundingBox      1+    bounding box(s) of data
-      
+
         MetadataURL           0/1+    optional; no default
    -->
    <xsd:complexType name="FeatureTypeType">
@@ -274,13 +274,13 @@
       </xsd:choice>
    </xsd:complexType>
 
-   <!-- The LatLongBoundingBox element is used to indicate the edges of 
+   <!-- The LatLongBoundingBox element is used to indicate the edges of
         an enclosing rectangle in the SRS of the associated feature type.
         Its purpose is to facilitate geographic searches  by indicating
         where instances of the particular feature type exist.  Since multiple
-        LatLongBoundingBoxes can be specified, a WFS can indicate where 
-        various clusters of data may exist.  This knowledge aids client 
-        applications by letting them know where they should query in order 
+        LatLongBoundingBoxes can be specified, a WFS can indicate where
+        various clusters of data may exist.  This knowledge aids client
+        applications by letting them know where they should query in order
         to have a high probability of finding data. -->
    <xsd:complexType name="LatLongBoundingBoxType">
       <xsd:attribute name="minx" type="xsd:string" use="required"/>
@@ -295,7 +295,7 @@
         attribute indicates the standard to which the metadata
         complies; the format attribute indicates how the metadata is
         structured.  Two types are defined at present:
-        'TC211' = ISO TC211 19115; 
+        'TC211' = ISO TC211 19115;
         'FGDC'  = FGDC CSDGM. -->
    <xsd:complexType name="MetadataURLType">
       <xsd:simpleContent>

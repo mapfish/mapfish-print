@@ -51,16 +51,16 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
         } catch (Throwable t) {
             throw ExceptionUtils.getRuntimeException(t);
         }
-        
+
         final MapBounds bounds = mapContext.getBounds();
         final ReferencedEnvelope mapEnvelope = bounds.toReferencedEnvelope(mapContext.getPaintArea(), mapContext.getDPI());
-        
+
         GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
         GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapEnvelope.getCoordinateReferenceSystem());
         gridEnvelope.setEnvelope(mapEnvelope.getMinX(), mapEnvelope.getMinY(), mapEnvelope.getMaxX(), mapEnvelope.getMaxY());
         final String coverageName = getClass().getSimpleName();
         final GridCoverage2D gridCoverage2D = factory.create(coverageName, image, gridEnvelope, null, null, null);
-        
+
         Style style = this.styleSupplier.load(httpRequestFactory, gridCoverage2D);
         return Collections.singletonList(new GridCoverageLayer(gridCoverage2D, style));
     }

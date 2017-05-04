@@ -23,38 +23,38 @@ import javax.annotation.PostConstruct;
  *
  */
 public class PrintJobDao {
-    
+
     @Autowired
     private SessionFactory sf;
-        
+
     /**
-     * Initialize db manager. 
+     * Initialize db manager.
      */
     @PostConstruct
     public final void init() {
         this.sf.openSession();
     }
-    
+
     public final Session getSession() {
         return this.sf.getCurrentSession();
     }
-    
+
     /**
-     * 
+     *
      * Save Job Record.
-     * 
+     *
      * @param entry the entry
      */
-    public final void save(final PrintJobStatusExtImpl entry) {  
+    public final void save(final PrintJobStatusExtImpl entry) {
         getSession().merge(entry);
         getSession().flush();
         getSession().evict(entry);
     }
-        
+
     /**
-     * 
+     *
      * Get Job Record.
-     * 
+     *
      * @param id the id
      * @return
      */
@@ -63,11 +63,11 @@ public class PrintJobDao {
         getSession().evict(result);
         return result;
     }
-    
+
     /**
-     * 
+     *
      * Get Job Record.
-     * 
+     *
      * @param id the id
      * @param lock whether record should be locked for transaction
      * @return the job status.
@@ -83,10 +83,10 @@ public class PrintJobDao {
         }
         return (PrintJobStatusExtImpl) c.uniqueResult();
     }
-    
+
     /**
      * get specific property value of job.
-     * 
+     *
      * @param id the id
      * @param property the property name/path
      * @return the property value
@@ -97,9 +97,9 @@ public class PrintJobDao {
         c.setProjection(Projections.property(property));
         return c.uniqueResult();
     }
-    
+
     /**
-     * 
+     *
      * @param statuses the statuses to include (or none if all)
      * @return the total amount of jobs
      */
@@ -111,9 +111,9 @@ public class PrintJobDao {
         c.setProjection(Projections.rowCount());
         return ((Number) c.uniqueResult()).intValue();
     }
-    
+
     /**
-     * 
+     *
      * @param statuses the statuses to include (or none if all)
      * @return the jobs
      */
@@ -125,23 +125,23 @@ public class PrintJobDao {
         }
         return (List<PrintJobStatusExtImpl>) c.list();
     }
-    
+
     /**
-     * 
+     *
      * @return total time spent printing
      */
     public final long getTotalTimeSpentPrinting() {
         Criteria c = getSession().createCriteria(PrintJobStatusExtImpl.class);
         c.add(Restrictions.isNotNull("completionTime"));
-        c.setProjection(Projections.sqlProjection("sum(completionTime - startTime) as totalTime", 
+        c.setProjection(Projections.sqlProjection("sum(completionTime - startTime) as totalTime",
                 new String[] {"totalTime"}, new Type[] { LongType.INSTANCE }));
         Number result = (Number) c.uniqueResult();
         return result == null ? 0 : result.longValue();
     }
-    
+
     /**
      * Cancel old waiting jobs.
-     * 
+     *
      * @param starttimeThreshold threshold for start time
      * @param checkTimeThreshold threshold for last check time
      * @param message the error message
@@ -173,7 +173,7 @@ public class PrintJobDao {
 
     /**
      * Delete old jobs.
-     * 
+     *
      * @param checkTimeThreshold
      *            threshold for last check time
      */
@@ -186,7 +186,7 @@ public class PrintJobDao {
 
     /**
      * Poll for the next N waiting jobs in line.
-     * 
+     *
      * @param size maximum amount of jobs to poll for
      * @return
      */
@@ -204,7 +204,7 @@ public class PrintJobDao {
 
     /**
      * Get result report.
-     * 
+     *
      * @param reportURI
      *            the URI of the report
      * @return the result report.

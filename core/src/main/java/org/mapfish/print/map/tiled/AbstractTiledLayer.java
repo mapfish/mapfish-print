@@ -62,8 +62,8 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
     @Override
     protected final List<? extends Layer> getLayers(final MfClientHttpRequestFactory httpRequestFactory,
                                                     final MapfishMapContext mapContext) throws Exception {
-        
-        final CoverageTask task = new CoverageTask(this.tilePreparationInfo, 
+
+        final CoverageTask task = new CoverageTask(this.tilePreparationInfo,
                 getFailOnError(), this.registry, this.tileCacheInformation);
         final GridCoverage2D gridCoverage2D = task.call();
 
@@ -85,12 +85,12 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
     public final double getImageBufferScaling() {
         return this.imageBufferScaling;
     }
-    
+
     @Override
     public final void cacheResources(final HttpRequestCache httpRequestCache,
             final MfClientHttpRequestFactory clientHttpRequestFactory, final MapfishMapContext transformer) {
         final MapfishMapContext layerTransformer = getLayerTransformer(transformer);
-        
+
         final double dpi = transformer.getDPI();
         final TilePreparationTask task = new TilePreparationTask(
                 clientHttpRequestFactory, dpi, layerTransformer,

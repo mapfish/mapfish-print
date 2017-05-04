@@ -372,7 +372,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
                             json.key("value").value(scaleValue);
                         }
                         json.endObject();
-                        
+
                     }
                 }
             }

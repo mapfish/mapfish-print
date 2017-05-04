@@ -121,7 +121,7 @@ dependencies {
             "org.hibernate:hibernate-core:4.1.7.Final",
             "org.postgresql:postgresql:9.4-1206-jdbc42",
             "org.springframework:spring-orm:$project.springVersion",
-            "org.springframework:spring-jdbc:$project.springVersion",       
+            "org.springframework:spring-jdbc:$project.springVersion",
             "org.springframework:spring-tx:$project.springVersion"
     )
     def metricsVersion = "3.0.2"

@@ -56,7 +56,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
 
     @Autowired
     private MetricRegistry metricRegistry;
-    
+
     @Resource(name = "requestForkJoinPool")
     private ForkJoinPool requestForkJoinPool;
 
@@ -138,7 +138,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         }
         return null;
     }
-    
+
     private class IconTask implements Callable<Object[]> {
 
         private URL icon;
@@ -146,8 +146,8 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         private MfClientHttpRequestFactory clientHttpRequestFactory;
         private int level;
         private File tempTaskDirectory;
-        
-        public IconTask(final URL icon, final ExecutionContext context, 
+
+        public IconTask(final URL icon, final ExecutionContext context,
                 final int level, final File tempTaskDirectory,
                 final MfClientHttpRequestFactory clientHttpRequestFactory) {
             this.icon = icon;
@@ -200,12 +200,12 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
             return new Object[] {null, image, report, this.level};
         }
     }
-    
+
     private class NameTask implements Callable<Object[]> {
-        
+
         private String name;
         private int level;
-        
+
         public NameTask(final String name, final int level) {
             this.name = name;
             this.level = level;
@@ -216,12 +216,12 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
             return new Object[]{this.name, null, null, this.level};
         }
     }
-    
+
     private void createTasks(final MfClientHttpRequestFactory clientHttpRequestFactory,
                             final LegendAttributeValue legendAttributes,
                             final ExecutionContext context, final File tempTaskDirectory,
                             final int level, final List<Callable<Object[]>> tasks) {
-        int insertNameIndex = tasks.size();        
+        int insertNameIndex = tasks.size();
         final URL[] icons = legendAttributes.icons;
         if (icons != null && icons.length > 0) {
             for (URL icon : icons) {
@@ -237,7 +237,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
             tasks.add(insertNameIndex, new NameTask(legendAttributes.name, level));
         }
     }
-        
+
     private void fillLegend(final MfClientHttpRequestFactory clientHttpRequestFactory,
                             final LegendAttributeValue legendAttributes,
                             final List<Object[]> legendList,
@@ -245,7 +245,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
                             final File tempTaskDirectory) throws ExecutionException, JRException, InterruptedException, IOException {
         List<Callable<Object[]>> tasks = new ArrayList<Callable<Object[]>>();
         createTasks(clientHttpRequestFactory, legendAttributes, context, tempTaskDirectory, 0, tasks);
-        List<Future<Object[]>> futures = this.requestForkJoinPool.invokeAll(tasks);            
+        List<Future<Object[]>> futures = this.requestForkJoinPool.invokeAll(tasks);
         for (Future<Object[]> future : futures) {
            legendList.add(future.get());
         }

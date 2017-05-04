@@ -69,7 +69,7 @@ task debian {
                     mapper(type:"perm", prefix:"/srv/tomcat/tomcat1/webapps/")
                 }
             }
- 
+
             signing.sign(debFile)
        }
     }

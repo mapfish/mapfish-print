@@ -33,13 +33,13 @@ public class MapPrinter {
 
     private static final String OUTPUT_FORMAT_BEAN_NAME_ENDING = "OutputFormat";
     private static final String MAP_OUTPUT_FORMAT_BEAN_NAME_ENDING = "MapOutputFormat";
-    
+
     private Configuration configuration;
     @Autowired
     private Map<String, OutputFormat> outputFormat;
     @Autowired
     private ConfigurationFactory configurationFactory;
-    
+
     private File configFile;
     @Autowired
     private WorkingDirectories workingDirectories;
@@ -102,12 +102,12 @@ public class MapPrinter {
         final String format = specJson.getString(MapPrinterServlet.JSON_OUTPUT_FORMAT);
         final boolean mapExport = this.configuration.getTemplate(specJson.getString(Constants.JSON_LAYOUT_KEY)).isMapExport();
         final String beanName = format + (mapExport ? MAP_OUTPUT_FORMAT_BEAN_NAME_ENDING : OUTPUT_FORMAT_BEAN_NAME_ENDING);
-                
+
         if (!this.outputFormat.containsKey(beanName)) {
             throw new RuntimeException("Format '" + format + "' with mapExport '" + mapExport
                     + "' is not supported.");
         }
-        
+
         return this.outputFormat.get(beanName);
     }
 
@@ -120,7 +120,7 @@ public class MapPrinter {
             throws Exception {
         final OutputFormat format = getOutputFormat(specJson);
         final File taskDirectory = this.workingDirectories.getTaskDirectory();
-        
+
         try {
             format.print(specJson, getConfiguration(), this.configFile.getParentFile(), taskDirectory, out);
         } finally {

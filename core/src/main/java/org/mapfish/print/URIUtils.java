@@ -82,7 +82,7 @@ public final class URIUtils {
      * @param params The params to add
      * @param overrideParams A set of parameter names that must be overridden and not added
      * @return The new query
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      */
     public static String addParams(final String url, final Multimap<String, String> params, final Set<String> overrideParams)
             throws URISyntaxException {

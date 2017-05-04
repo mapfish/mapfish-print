@@ -67,14 +67,14 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
 
     @Autowired
     private FeatureLayer.Plugin featureLayerParser;
-    
+
     /**
      * Constructor.
      */
     public CreateOverviewMapProcessor() {
         super(Output.class);
     }
-    
+
     @Override
     public final Input createInputParameter() {
         return new Input();
@@ -118,7 +118,7 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
         if (!FloatingPointUtil.equals(values.map.getRotation(), 0.0)) {
             mapExtent = rotateExtent(mapExtent, values.map.getRotation(), originalEnvelope);
         }
-        
+
         FeatureLayer layer = createOrignalMapExtentLayer(
                 mapExtent, mapParams,
                 ((OverviewMapAttribute.OverviewMapAttributeValues) values.overviewMap).getStyle(),

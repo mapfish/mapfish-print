@@ -50,7 +50,7 @@ public class CreateScalebarProcessor extends AbstractProcessor<CreateScalebarPro
         final URI scalebarGraphicFile = createScalebarGraphic(values);
 
         checkCancelState(context);
-        
+
         String strScalebarSubReport = null;
         if (values.scalebar.isCreateSubReport()) {
             final URI scalebarSubReport = createScalebarSubReport(

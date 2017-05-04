@@ -17,9 +17,9 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Test the old print API.
- * 
+ *
  *  To run this test make sure that the test servers are running:
- * 
+ *
  *      ./gradlew examples:farmRun
  *
  * Or run the tests with the following task (which automatically starts the servers):
@@ -27,14 +27,14 @@ import static org.junit.Assert.assertTrue;
  *      ./gradlew examples:farmIntegrationTest
  */
 public class OldPrintApiTest extends AbstractApiTest {
-    
+
     @Test
     public void testInfo() throws Exception {
         ClientHttpRequest request = getPrintRequest("info.json", HttpMethod.GET);
         response = request.execute();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
-        
+
         JSONObject info = new JSONObject(getBodyAsText(response));
         assertTrue(info.has("scales"));
         assertTrue(info.has("dpis"));
@@ -43,7 +43,7 @@ public class OldPrintApiTest extends AbstractApiTest {
         assertTrue(info.has("printURL"));
         assertTrue(info.has("createURL"));
     }
-    
+
     @Test
     public void testInfoVarAndUrl() throws Exception {
         ClientHttpRequest request = getPrintRequest(
@@ -55,10 +55,10 @@ public class OldPrintApiTest extends AbstractApiTest {
         final String result = getBodyAsText(response);
         assertTrue(result.startsWith("var printConfig="));
         assertTrue(result.endsWith(";"));
-        
+
         final JSONObject info = new JSONObject(
                 result.replace("var printConfig=", "").replace(";", ""));
-        
+
         assertTrue(info.has("scales"));
         assertEquals("http://demo.mapfish.org/2.2/print/dep/print.pdf", info.getString("printURL"));
         assertEquals("http://demo.mapfish.org/2.2/print/dep/create.json", info.getString("createURL"));
@@ -94,12 +94,12 @@ public class OldPrintApiTest extends AbstractApiTest {
 
         final JSONObject result = new JSONObject(getBodyAsText(response));
         response.close();
-        
+
         String getUrl = result.getString("getURL");
         final String prefix = "/print/print/dep/";
         assertTrue(String.format("Start of url is not as expected: \n'%s'\n'%s'", prefix, getUrl), getUrl.startsWith(prefix));
         assertTrue("Report url should end with .printout: " + getUrl, getUrl.endsWith(".printout"));
-          
+
         ClientHttpRequest requestGetPdf = getRequest(getUrl.replace("/print/", ""), HttpMethod.GET);
         response = requestGetPdf.execute();
         assertEquals(response.getStatusText(), HttpStatus.OK, response.getStatusCode());
@@ -134,7 +134,7 @@ public class OldPrintApiTest extends AbstractApiTest {
 
         final JSONObject result = new JSONObject(getBodyAsText(response));
         response.close();
-        
+
         String getUrl = result.getString("getURL");
         final String prefix = "http://localhost:8080/print/print/dep/";
         assertTrue(String.format("Start of url is not as expected: \n'%s'\n'%s'", prefix, getUrl), getUrl.startsWith(prefix));

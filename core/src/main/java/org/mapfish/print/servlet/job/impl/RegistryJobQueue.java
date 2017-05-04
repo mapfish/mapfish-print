@@ -24,12 +24,12 @@ import java.util.List;
  *
  */
 public class RegistryJobQueue implements JobQueue {
-    
+
     /**
      * Key for storing the number of print jobs currently running.
      */
     private static final String NEW_PRINT_COUNT = "newPrintCount";
-    
+
     /**
      * The number of print requests made.
      */
@@ -47,7 +47,7 @@ public class RegistryJobQueue implements JobQueue {
      * A registry tracking when the last time a metadata was check to see if it is done.
      */
     private static final String LAST_POLL = "lastPoll_";
-    
+
     /**
      * prefix for storing metadata about a job in the registry.
      */
@@ -64,14 +64,14 @@ public class RegistryJobQueue implements JobQueue {
     private static final String JSON_REPORT_URI = "reportURI";
     private static final String JSON_MIME_TYPE = "mimeType";
     private static final String JSON_FILE_EXT = "fileExtension";
-        
+
     @Autowired
     private Registry registry;
 
     @Qualifier("accessAssertionPersister")
     @Autowired
     private AccessAssertionPersister assertionPersister;
-            
+
     @Override
     public final long getTimeToKeepAfterAccessInMillis() {
         return this.registry.getTimeToKeepAfterAccessInMillis();
@@ -109,9 +109,9 @@ public class RegistryJobQueue implements JobQueue {
             if (!status.isDone()) {
                 this.registry.incrementInt(NB_PRINT_DONE, 1);
                 this.registry.incrementLong(TOTAL_PRINT_TIME, status.getElapsedTime());
-                this.registry.incrementInt(LAST_PRINT_COUNT, 1);                
+                this.registry.incrementInt(LAST_PRINT_COUNT, 1);
             }
-            
+
             status.setCompletionTime(System.currentTimeMillis());
             status.setStatus(PrintJobStatus.Status.FINISHED);
             status.setResult(result);
@@ -120,13 +120,13 @@ public class RegistryJobQueue implements JobQueue {
             throw ExceptionUtils.getRuntimeException(e);
         }
     }
-    
+
     @Override
-    public final synchronized void cancel(final String referenceId, final String message, final boolean forceFinal) 
+    public final synchronized void cancel(final String referenceId, final String message, final boolean forceFinal)
             throws NoSuchReferenceException {
         try {
             PrintJobStatusImpl status = load(referenceId);
-            
+
             if (!forceFinal && status.getStatus() == PrintJobStatus.Status.RUNNING) {
                 status.setStatus(PrintJobStatus.Status.CANCELING);
             } else {
@@ -134,7 +134,7 @@ public class RegistryJobQueue implements JobQueue {
                     this.registry.incrementInt(NB_PRINT_DONE, 1);
                     this.registry.incrementLong(TOTAL_PRINT_TIME, status.getElapsedTime());
                     this.registry.incrementInt(LAST_PRINT_COUNT, 1);
-                }               
+                }
                 // even if the job is already finished, we store it as "cancelled" in the registry,
                 // so that all subsequent status requests return "cancelled"
                 status.setCompletionTime(System.currentTimeMillis());
@@ -149,7 +149,7 @@ public class RegistryJobQueue implements JobQueue {
     }
 
     @Override
-    public final synchronized void fail(final String referenceId, final String message) 
+    public final synchronized void fail(final String referenceId, final String message)
             throws NoSuchReferenceException {
         try {
             PrintJobStatusImpl status = load(referenceId);
@@ -158,7 +158,7 @@ public class RegistryJobQueue implements JobQueue {
                 this.registry.incrementLong(TOTAL_PRINT_TIME, status.getElapsedTime());
                 this.registry.incrementInt(LAST_PRINT_COUNT, 1);
             }
-           
+
             // even if the job is already finished, we store it as "cancelled" in the registry,
             // so that all subsequent status requests return "cancelled"
             status.setCompletionTime(System.currentTimeMillis());
@@ -204,12 +204,12 @@ public class RegistryJobQueue implements JobQueue {
         try {
             PrintJobStatusImpl status = load(referenceId);
             status.setStatusTime(System.currentTimeMillis());
-            
+
             if (!status.isDone() && external) {
                 // remember when the status was polled for the last time
                 this.registry.put(LAST_POLL + referenceId, System.currentTimeMillis());
             }
-            
+
             return status;
         } catch (JSONException e) {
             throw ExceptionUtils.getRuntimeException(e);
@@ -221,7 +221,7 @@ public class RegistryJobQueue implements JobQueue {
      *
      * @param registry the registry to writer to
      * @param persister a persister for converting the access assertion to json
-     */    
+     */
     private void store(final PrintJobStatus printJobStatus) throws JSONException {
         JSONObject metadata = new JSONObject();
         metadata.put(JSON_REQUEST_DATA, printJobStatus.getEntry().getRequestData().getInternalObj());
@@ -240,16 +240,16 @@ public class RegistryJobQueue implements JobQueue {
             metadata.put(JSON_FILENAME, printJobStatus.getResult().getFileName());
             metadata.put(JSON_FILE_EXT, printJobStatus.getResult().getFileExtension());
             metadata.put(JSON_MIME_TYPE, printJobStatus.getResult().getMimeType());
-        }        
+        }
         this.registry.put(RESULT_METADATA + printJobStatus.getReferenceId(), metadata);
     }
-    
+
     private PrintJobStatusImpl load(final String referenceId) throws JSONException, NoSuchReferenceException {
         if (this.registry.containsKey(RESULT_METADATA + referenceId)) {
             JSONObject metadata = this.registry.getJSON(RESULT_METADATA + referenceId);
 
             PrintJobStatus.Status status = PrintJobStatus.Status.valueOf(metadata.getString(JSON_STATUS));
-            
+
             PJsonObject requestData = new PJsonObject(metadata.getJSONObject(JSON_REQUEST_DATA), "spec");
             Long startTime = metadata.getLong(JSON_START_DATE);
             long requestCount = metadata.getLong(JSON_REQUEST_COUNT);
@@ -260,11 +260,11 @@ public class RegistryJobQueue implements JobQueue {
             PrintJobStatusImpl report = new PrintJobStatusImpl(
                     new PrintJobEntryImpl(referenceId, requestData, startTime, accessAssertion), requestCount);
             report.setStatus(status);
-            
+
             if (metadata.has(JSON_COMPLETION_DATE)) {
-                report.setCompletionTime(metadata.getLong(JSON_COMPLETION_DATE));                             
+                report.setCompletionTime(metadata.getLong(JSON_COMPLETION_DATE));
             }
-            
+
             if (metadata.has(JSON_ERROR)) {
                 report.setError(metadata.getString(JSON_ERROR));
             }
@@ -279,11 +279,11 @@ public class RegistryJobQueue implements JobQueue {
                 String fileName = metadata.getString(JSON_FILENAME);
                 String fileExt = metadata.getString(JSON_FILE_EXT);
                 String mimeType = metadata.getString(JSON_MIME_TYPE);
-                                
+
                 PrintJobResult result = new PrintJobResultImpl(reportURI, fileName, fileExt, mimeType);
                 report.setResult(result);
             }
-                        
+
             return report;
         } else {
             throw new NoSuchReferenceException(referenceId);

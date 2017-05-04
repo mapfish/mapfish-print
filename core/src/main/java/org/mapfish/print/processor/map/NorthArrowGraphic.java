@@ -68,7 +68,7 @@ public final class NorthArrowGraphic {
     public static URI create(
             final Dimension targetSize,
             final String graphicFile,
-            final Color backgroundColor, 
+            final Color backgroundColor,
             final Double rotation,
             final File workingDir,
             final MfClientHttpRequestFactory clientHttpRequestFactory) throws Exception {

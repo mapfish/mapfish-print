@@ -45,7 +45,7 @@ import javax.annotation.PreDestroy;
  */
 public class ThreadPoolJobManager implements JobManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(ThreadPoolJobManager.class);
-    
+
     private static final int DEFAULT_MAX_WAITING_JOBS = 5000;
     private static final long DEFAULT_THREAD_IDLE_TIME = 60L;
     private static final long DEFAULT_TIMEOUT_IN_SECONDS = 600L;
@@ -86,12 +86,12 @@ public class ThreadPoolJobManager implements JobManager {
     /**
      * The interval at which old reports are deleted (in seconds).
      */
-    private long oldFileCleanupInterval = DEFAULT_CLEAN_UP_INTERVAL_IN_SECONDS;    
+    private long oldFileCleanupInterval = DEFAULT_CLEAN_UP_INTERVAL_IN_SECONDS;
     /**
      * When this true, new jobs are not put automatically in the thread pool but only on the queue, which is polled
      * repeatedly for new jobs. This way other instances can take the jobs as well.
      */
-    private boolean clustered = false;    
+    private boolean clustered = false;
     /**
      * A comparator for comparing {@link org.mapfish.print.servlet.job.impl.SubmittedPrintJob}s and
      * prioritizing them.
@@ -117,13 +117,13 @@ public class ThreadPoolJobManager implements JobManager {
 
     private ScheduledExecutorService timer;
     private ScheduledExecutorService cleanUpTimer;
-    
+
     @Autowired
     private WorkingDirectories workingDirectories;
 
     @Autowired
     private ApplicationContext context;
-    
+
     @Autowired
     private JobQueue jobQueue;
 
@@ -154,14 +154,14 @@ public class ThreadPoolJobManager implements JobManager {
     public final void setOldFileCleanupInterval(final long oldFileCleanupInterval) {
         this.oldFileCleanupInterval = oldFileCleanupInterval;
     }
-    
+
     public final void setClustered(final boolean clustered) {
         this.clustered = clustered;
     }
 
     /**
      * Initialize for testing.
-     * 
+     *
      * @param appContext application context
      */
     protected final void initForTesting(final ApplicationContext appContext) {
@@ -193,7 +193,7 @@ public class ThreadPoolJobManager implements JobManager {
         threadFactory.setDaemon(true);
         threadFactory.setThreadNamePrefix("PrintJobManager-");
 
-        PriorityBlockingQueue<Runnable> queue = new PriorityBlockingQueue<Runnable>(this.maxNumberOfWaitingJobs, 
+        PriorityBlockingQueue<Runnable> queue = new PriorityBlockingQueue<Runnable>(this.maxNumberOfWaitingJobs,
                 new Comparator<Runnable>() {
             @Override
             public int compare(final Runnable o1, final Runnable o2) {
@@ -280,16 +280,16 @@ public class ThreadPoolJobManager implements JobManager {
             this.cleanUpTimer.shutdownNow();
         }
     }
-    
+
     private void executeJob(final PrintJob job) {
         final Future<PrintJobResult> future = this.executor.submit(job);
-        this.runningTasksFutures.put(job.getEntry().getReferenceId(), 
+        this.runningTasksFutures.put(job.getEntry().getReferenceId(),
             new SubmittedPrintJob(future, job.getEntry()));
     }
 
     /**
      * Create job from entry.
-     * 
+     *
      * @param entry the entry
      * @return the job
      */
@@ -300,22 +300,22 @@ public class ThreadPoolJobManager implements JobManager {
         job.setEntry(entry);
         job.setSecurityContext(SecurityContextHolder.getContext());
         return job;
-    }    
+    }
 
     private void submitInternal(final PrintJobEntry jobEntry) {
         final int numberOfWaitingRequests = this.jobQueue.getWaitingJobsCount();
         if (numberOfWaitingRequests >= this.maxNumberOfWaitingJobs) {
             throw new RuntimeException("Max. number of waiting print job requests exceeded.  Number of waiting requests are: " +
                                        numberOfWaitingRequests);
-        } 
+        }
         jobEntry.assertAccess();
         this.jobQueue.add(jobEntry);
         LOGGER.info("Submitted print job " + jobEntry.getReferenceId());
     }
-        
+
     /**
      * Submit with custom PrintJob (for testing).
-     * 
+     *
      * @param job the job
      */
     public final void submit(final PrintJob job) {
@@ -325,7 +325,7 @@ public class ThreadPoolJobManager implements JobManager {
             executeJob(job);
         }
     }
-    
+
     @Override
     public final void submit(final PrintJobEntry entry) {
         try {
@@ -336,7 +336,7 @@ public class ThreadPoolJobManager implements JobManager {
             }
         }
     }
-    
+
     private void cancelJobIfRunning(final String referenceId) throws NoSuchReferenceException {
         synchronized (this.runningTasksFutures) {
             if (this.runningTasksFutures.containsKey(referenceId)) {
@@ -360,13 +360,13 @@ public class ThreadPoolJobManager implements JobManager {
         this.jobQueue.cancel(referenceId, "task cancelled", false);
         cancelJobIfRunning(referenceId);
     }
-    
+
     @Override
     public final PrintJobStatus getStatus(final String referenceId) throws NoSuchReferenceException {
         // check if the reference id is valid
         final PrintJobStatus jobStatus = this.jobQueue.get(referenceId, true);
         jobStatus.getEntry().assertAccess();
-                
+
         if (jobStatus.getStatus() == PrintJobStatus.Status.WAITING) {
             // calculate an estimate for how long the job still has to wait
             // before it starts running
@@ -395,7 +395,7 @@ public class ThreadPoolJobManager implements JobManager {
             if (ThreadPoolJobManager.this.executor.isShutdown()) {
                 return;
             }
-                        
+
             // run in try-catch to ensure that the timer task is not stopped
             try {
                 synchronized (ThreadPoolJobManager.this.runningTasksFutures) {
@@ -410,14 +410,14 @@ public class ThreadPoolJobManager implements JobManager {
             }
         }
     }
-    
+
     private void cancelOld() {
         //cancel old tasks
-        this.jobQueue.cancelOld(TimeUnit.MILLISECONDS.convert(this.timeout, TimeUnit.SECONDS), 
-                TimeUnit.MILLISECONDS.convert(this.abandonedTimeout, TimeUnit.SECONDS), 
+        this.jobQueue.cancelOld(TimeUnit.MILLISECONDS.convert(this.timeout, TimeUnit.SECONDS),
+                TimeUnit.MILLISECONDS.convert(this.abandonedTimeout, TimeUnit.SECONDS),
                 "task cancelled (timeout)");
     }
-    
+
     private void pollRegistry() {
         //check if anything needs to be cancelled
         for (PrintJobStatus stat : this.jobQueue.toCancel()) {
@@ -426,10 +426,10 @@ public class ThreadPoolJobManager implements JobManager {
             } catch (NoSuchReferenceException e) {
                 throw ExceptionUtils.getRuntimeException(e);
             }
-        }        
+        }
         //get new jobs to execute
         if (this.runningTasksFutures.size() < this.maxNumberOfRunningPrintJobs) {
-            for (PrintJobStatus stat : 
+            for (PrintJobStatus stat :
                     this.jobQueue.start(this.maxNumberOfRunningPrintJobs - this.runningTasksFutures.size())) {
                 executeJob(createJob(stat.getEntry()));
             }
@@ -468,7 +468,7 @@ public class ThreadPoolJobManager implements JobManager {
                         //failure occurred
                         this.jobQueue.fail(printJob.getEntry().getReferenceId(),
                                 ExceptionUtils.getRootCause(e).toString());
-                        
+
                     } catch (CancellationException e) {
                         //cancellation occurred, set cancellation status
                         this.jobQueue.cancel(printJob.getEntry().getReferenceId(),
@@ -482,14 +482,14 @@ public class ThreadPoolJobManager implements JobManager {
     }
 
     private boolean isTimeoutExceeded(final SubmittedPrintJob printJob) {
-        return printJob.getEntry().getTimeSinceStart() > 
+        return printJob.getEntry().getTimeSinceStart() >
             TimeUnit.MILLISECONDS.convert(ThreadPoolJobManager.this.timeout, TimeUnit.SECONDS);
     }
 
     /**
      * If the status of a print job is not checked for a while, we assume that the user
      * is no longer interested in the report, and we cancel the job.
-     * 
+     *
      * @param printJob
      * @return is the abandoned timeout exceeded?
      */
@@ -522,5 +522,5 @@ public class ThreadPoolJobManager implements JobManager {
         }
 
     }
-    
+
 }

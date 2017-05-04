@@ -25,45 +25,45 @@ import javax.persistence.Table;
 @Entity
 @Table
 public class PrintJobStatusImpl implements PrintJobStatus {
-    
+
     private static final int LENGTH_ERROR = 1024;
 
     @Id
     private String referenceId;
-        
+
     @Embedded
     @Target(PrintJobEntryImpl.class)
     private final PrintJobEntry entry;
-    
+
     @Column
     @Enumerated(EnumType.STRING)
     private PrintJobStatus.Status status = PrintJobStatus.Status.WAITING;
-    
+
     @Column
     private Long completionTime;
-    
+
     @Column
     private long requestCount;
-    
+
     @Column(length = LENGTH_ERROR)
     private String error;
-    
+
     @OneToOne(targetEntity = PrintJobResultImpl.class, cascade = CascadeType.ALL)
     @JoinColumn
     private PrintJobResult result;
 
     private transient long waitingTime;
-    
-    private transient Long statusTime; 
-    
+
+    private transient Long statusTime;
+
     /**
      * Constructor.
-     * 
+     *
      */
     public PrintJobStatusImpl() {
         this.entry = null;
     }
-    
+
     /**
      * Constructor.
      *
@@ -75,7 +75,7 @@ public class PrintJobStatusImpl implements PrintJobStatus {
         this.entry = entry;
         this.requestCount = requestCount;
     }
-    
+
     @Override
     public final PrintJobEntry getEntry() {
         return this.entry;
@@ -84,7 +84,7 @@ public class PrintJobStatusImpl implements PrintJobStatus {
     public final void setCompletionTime(final Long completionTime) {
         this.completionTime = completionTime;
     }
-    
+
     @Override
     public final Long getCompletionTime() {
         return this.completionTime;
@@ -99,12 +99,12 @@ public class PrintJobStatusImpl implements PrintJobStatus {
     public final String getError() {
         return this.error;
     }
-    
+
     @Override
     public final PrintJobStatus.Status getStatus() {
         return this.status;
     }
-   
+
     public final void setStatus(final PrintJobStatus.Status status) {
         this.status = status;
     }
@@ -124,13 +124,13 @@ public class PrintJobStatusImpl implements PrintJobStatus {
 
     public final void setResult(final PrintJobResult result) {
         this.result = result;
-    }    
+    }
 
     @Override
     public final String getReferenceId() {
         return this.referenceId;
     }
-    
+
     @Override
     public final long getStartTime() {
         return getEntry().getStartTime();
@@ -140,7 +140,7 @@ public class PrintJobStatusImpl implements PrintJobStatus {
     public final AccessAssertion getAccess() {
         return getEntry().getAccess();
     }
-    
+
     @Override
     public final String getAppId() {
          return getEntry().getAppId();

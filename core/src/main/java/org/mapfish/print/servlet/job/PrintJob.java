@@ -31,16 +31,16 @@ import javax.annotation.Nullable;
  */
 public abstract class PrintJob implements Callable<PrintJobResult> {
     private static final Logger LOGGER = LoggerFactory.getLogger(PrintJob.class);
-    
+
     private PrintJobEntry entry;
-    
+
     @Autowired
     private MapPrinterFactory mapPrinterFactory;
     @Autowired
     private MetricRegistry metricRegistry;
 
-    private SecurityContext securityContext;       
-    
+    private SecurityContext securityContext;
+
     public final PrintJobEntry getEntry() {
         return this.entry;
     }
@@ -56,10 +56,10 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
      * @return the
      */
     protected abstract URI withOpenOutputStream(PrintAction function) throws Exception;
-    
+
     /**
      * Create Print Job Result.
-     * 
+     *
      * @param reportURI the report URI
      * @param fileName the file name
      * @param fileExtension the file extension
@@ -67,18 +67,18 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
      * @return the job result
      */
     //CHECKSTYLE:OFF
-    protected PrintJobResult createResult(final URI reportURI, final String fileName, final String fileExtension, 
+    protected PrintJobResult createResult(final URI reportURI, final String fileName, final String fileExtension,
             final String mimeType) {
     //CHECKSTYLE:ON
         return new PrintJobResultImpl(reportURI, fileName, fileExtension, mimeType);
     }
-    
+
     @Override
     public final PrintJobResult call() throws Exception {
         SecurityContextHolder.setContext(this.securityContext);
         Timer.Context timer = this.metricRegistry.timer(getClass().getName() + " call()").time();
         PJsonObject spec = null;
-        MapPrinter mapPrinter = null;  
+        MapPrinter mapPrinter = null;
         try {
             LOGGER.info("Starting print job " + this.entry.getReferenceId());
             spec = this.entry.getRequestData();

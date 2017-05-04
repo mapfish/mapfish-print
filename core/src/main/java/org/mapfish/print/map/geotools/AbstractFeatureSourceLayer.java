@@ -93,7 +93,7 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
             }
         };
     }
-        
+
     @Override
     public final RenderType getRenderType() {
         return this.renderAsSvg ? RenderType.SVG : RenderType.UNKNOWN;

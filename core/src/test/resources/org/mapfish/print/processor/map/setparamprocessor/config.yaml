@@ -15,10 +15,10 @@ templates:
     processors:
     - !setWmsCustomParam
         paramName: customP1
-        inputMapper: 
+        inputMapper:
           customP1: value
     - !setWmsCustomParam
         paramName: customP2
-        inputMapper: 
+        inputMapper:
           customP2: value
     - !createMap {}

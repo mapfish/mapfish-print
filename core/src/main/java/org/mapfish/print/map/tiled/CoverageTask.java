@@ -31,7 +31,7 @@ import javax.imageio.ImageIO;
  * The CoverageTask class.
  */
 public final class CoverageTask implements Callable<GridCoverage2D> {
-    
+
     private static final Logger LOGGER = LoggerFactory.getLogger(CoverageTask.class);
 
     private final TileCacheInformation tiledLayer;
@@ -39,7 +39,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
     private final boolean failOnError;
     private final MetricRegistry registry;
     private final BufferedImage errorImage;
-    
+
 
     /**
      * Constructor.
@@ -48,14 +48,14 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
      * @param registry the metrics registry
      * @param tileCacheInfo the object used to create the tile requests
      */
-    public CoverageTask(@Nonnull final TilePreparationInfo tilePreparationInfo, 
+    public CoverageTask(@Nonnull final TilePreparationInfo tilePreparationInfo,
             final boolean failOnError, final MetricRegistry registry,
             @Nonnull final TileCacheInformation tileCacheInfo) {
         this.tilePreparationInfo = tilePreparationInfo;
         this.tiledLayer = tileCacheInfo;
         this.failOnError = failOnError;
         this.registry = registry;
-        
+
         final Dimension tileSize = this.tiledLayer.getTileSize();
         this.errorImage = new BufferedImage(tileSize.width, tileSize.height, BufferedImage.TYPE_4BYTE_ABGR);
         Graphics2D graphics = this.errorImage.createGraphics();
@@ -73,11 +73,11 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
      * Call the Coverage Task.
      */
     public GridCoverage2D call() {
-        try {               
-            BufferedImage coverageImage = this.tiledLayer.createBufferedImage(this.tilePreparationInfo.getImageWidth(), 
+        try {
+            BufferedImage coverageImage = this.tiledLayer.createBufferedImage(this.tilePreparationInfo.getImageWidth(),
                     this.tilePreparationInfo.getImageHeight());
             Graphics2D graphics = coverageImage.createGraphics();
-            
+
             for (SingleTilePreparationInfo tileInfo : this.tilePreparationInfo.getSingleTiles()) {
                 TileTask task;
                 if (tileInfo.getTileRequest() != null) {
@@ -85,13 +85,13 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
                                 tileInfo.getTileRequest(), this.errorImage, tileInfo.getTileIndexX(),
                                 tileInfo.getTileIndexY(), this.failOnError, this.registry);
                 } else {
-                    task = new PlaceHolderImageTask(this.tiledLayer.getMissingTileImage(), 
+                    task = new PlaceHolderImageTask(this.tiledLayer.getMissingTileImage(),
                             tileInfo.getTileIndexX(), tileInfo.getTileIndexY());
                 }
                 Tile tile = task.call();
                 if (tile.getImage() != null) {
                     graphics.drawImage(tile.getImage(),
-                            tile.getxIndex() * this.tiledLayer.getTileSize().width, 
+                            tile.getxIndex() * this.tiledLayer.getTileSize().width,
                             tile.getyIndex() * this.tiledLayer.getTileSize().height, null);
                 }
             }
@@ -99,9 +99,9 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
 
             GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
             GeneralEnvelope gridEnvelope = new GeneralEnvelope(this.tilePreparationInfo.getMapProjection());
-            gridEnvelope.setEnvelope(this.tilePreparationInfo.getGridCoverageOrigin().x, 
-                    this.tilePreparationInfo.getGridCoverageOrigin().y, 
-                    this.tilePreparationInfo.getGridCoverageMaxX(), 
+            gridEnvelope.setEnvelope(this.tilePreparationInfo.getGridCoverageOrigin().x,
+                    this.tilePreparationInfo.getGridCoverageOrigin().y,
+                    this.tilePreparationInfo.getGridCoverageMaxX(),
                     this.tilePreparationInfo.getGridCoverageMaxY());
 //            ImageIO.write(coverageImage, "png", new File(System.getProperty("java.io.tmpdir"), "coverageImage.png"));
             return factory.create(this.tiledLayer.createCommonUrl(), coverageImage, gridEnvelope, null, null, null);
@@ -109,10 +109,10 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
             throw ExceptionUtils.getRuntimeException(e);
         }
     }
-    
+
 
     /**
-     * 
+     *
      * Tile Task.
      *
      */
@@ -122,7 +122,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
 
         /**
          * Constructor.
-         * 
+         *
          * @param tileIndexX tile index x
          * @param tileIndexY tile index y
          */
@@ -146,9 +146,9 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
     }
 
     /**
-     * 
+     *
      * Single Tile Loader Task.
-     * 
+     *
      *
      */
     public static final class SingleTileLoaderTask extends TileTask {
@@ -160,16 +160,16 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
 
         /**
          * Constructor.
-         * 
+         *
          * @param tileRequest tile request
          * @param errorImage error image
          * @param tileIndexX tile index x
          * @param tileIndexY tile index y
-         * @param failOnError fail on error 
+         * @param failOnError fail on error
          * @param registry registry
          */
         public SingleTileLoaderTask(final ClientHttpRequest tileRequest, final BufferedImage errorImage,
-                                    final int tileIndexX, final int tileIndexY, final boolean failOnError, 
+                                    final int tileIndexX, final int tileIndexY, final boolean failOnError,
                                     final MetricRegistry registry) {
             super(tileIndexX, tileIndexY);
             this.tileRequest = tileRequest;
@@ -228,12 +228,12 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
      *
      */
     public static class PlaceHolderImageTask extends TileTask {
-        
+
         private final BufferedImage placeholderImage;
 
         /**
          * Constructor.
-         * 
+         *
          * @param placeholderImage placeholder image
          * @param tileOriginX tile origin x
          * @param tileOriginY tile origin y
@@ -270,7 +270,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
 
         /**
          * Constructor.
-         * 
+         *
          * @param image
          * @param xIndex
          * @param yIndex

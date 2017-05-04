@@ -108,7 +108,7 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
                     this.bounds.getProjection());
         }
     }
-    
+
     @Override
     public RenderType getRenderType() {
         return RenderType.fromMimeType(this.param.imageFormat);

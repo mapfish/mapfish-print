@@ -15,7 +15,7 @@ public class ProcessorDependency {
     private final Class<? extends Processor<?, ?>> required;
     private final Class<? extends Processor<?, ?>> dependent;
     private final Set<String> commonInputs;
-    
+
     /**
      * Constructor.
      * The processor <code>dependent</code> requires the processor <code>required</code>.
@@ -32,11 +32,11 @@ public class ProcessorDependency {
         this.dependent = dependent;
         this.commonInputs = Sets.newHashSet(commonInputs);
     }
-    
+
     /**
      * Constructor.
      * The processor <code>dependent</code> requires the processor <code>required</code>.
-     * 
+     *
      * @param required The processor which is required to be executed before the other.
      * @param dependent The processor which requires the other to be executed first.
      */

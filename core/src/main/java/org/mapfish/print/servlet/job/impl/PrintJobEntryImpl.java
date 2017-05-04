@@ -21,7 +21,7 @@ import javax.persistence.Embeddable;
  */
 @Embeddable
 public class PrintJobEntryImpl implements PrintJobEntry {
-    
+
     private static final int LENGTH_JSON = 1024;
 
     @Column(insertable = false, updatable = false)
@@ -30,21 +30,21 @@ public class PrintJobEntryImpl implements PrintJobEntry {
     @Column(length = LENGTH_JSON)
     @Type(type = "org.mapfish.print.servlet.job.impl.hibernate.PJsonObjectUserType")
     private PJsonObject requestData;
-    
+
     @Column
     private long startTime;
-    
+
     @Column(length = LENGTH_JSON)
     @Type(type = "org.mapfish.print.servlet.job.impl.hibernate.AccessAssertionUserType")
     private AccessAssertion access;
-    
+
     /**
      * Constructor.
      */
     public PrintJobEntryImpl() {
-        
+
     }
-    
+
     /**
      * Constructor.
      *
@@ -57,7 +57,7 @@ public class PrintJobEntryImpl implements PrintJobEntry {
         this.requestData = requestData;
         this.startTime = startTime;
     }
-    
+
     /**
      * Constructor.
      *
@@ -90,12 +90,12 @@ public class PrintJobEntryImpl implements PrintJobEntry {
     public final String getReferenceId() {
         return this.referenceId;
     }
-    
+
     @Override
     public final PJsonObject getRequestData() {
         return this.requestData;
     }
-        
+
     @Override
     public final long getStartTime() {
         return this.startTime;
@@ -109,28 +109,28 @@ public class PrintJobEntryImpl implements PrintJobEntry {
     public final Date getStartDate() {
         return new Date(this.startTime);
     }
-    
+
     @Override
     public final AccessAssertion getAccess() {
         return this.access;
     }
-    
+
     @Override
     public final String getAppId() {
         return getRequestData().optString(
                MapPrinterServlet.JSON_APP,
                ServletMapPrinterFactory.DEFAULT_CONFIGURATION_FILE_KEY);
     }
-    
+
     @Override
     public final long getTimeSinceStart() {
         return System.currentTimeMillis() - getStartTime();
     }
-    
+
     @Override
     public final void assertAccess() {
         this.access.assertAccess(
-                getClass().getSimpleName() + " for app '" + getAppId() + 
+                getClass().getSimpleName() + " for app '" + getAppId() +
                 "' for print job '" + getReferenceId() + "'", this);
     }
 

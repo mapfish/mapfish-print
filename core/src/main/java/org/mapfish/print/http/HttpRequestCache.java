@@ -25,22 +25,22 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
- * 
+ *
  * Creates tasks for caching Http Requests that can be run simultaneously.
  *
  */
 public final class HttpRequestCache {
-    
+
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequestCache.class);
-    
+
     private class CachedClientHttpResponse extends AbstractClientHttpResponse {
-        
+
         private final File cachedFile;
         private final HttpHeaders headers;
         private final int status;
         private final String statusText;
         private InputStream body;
-        
+
         public CachedClientHttpResponse(final ClientHttpResponse originalResponse) throws IOException {
             this.headers = originalResponse.getHeaders();
             this.status = originalResponse.getRawStatusCode();
@@ -97,11 +97,11 @@ public final class HttpRequestCache {
     private class CachedClientHttpRequest implements ClientHttpRequest, Callable<Void> {
         private final ClientHttpRequest originalRequest;
         private CachedClientHttpResponse response;
-        
+
         public CachedClientHttpRequest(final ClientHttpRequest request) throws IOException {
             this.originalRequest = request;
         }
-        
+
         @Override
         public HttpMethod getMethod() {
             return this.originalRequest.getMethod();
@@ -130,7 +130,7 @@ public final class HttpRequestCache {
             } else if (this.response == null) {
                 LOGGER.warn("Attempting to load cached URI from failed request: " + this.originalRequest.getURI());
             } else {
-                LOGGER.debug("Loading cached URI resource " + this.originalRequest.getURI());                
+                LOGGER.debug("Loading cached URI resource " + this.originalRequest.getURI());
             }
             return this.response;
         }
@@ -157,18 +157,18 @@ public final class HttpRequestCache {
             return null;
         }
     }
-    
+
     private final List<CachedClientHttpRequest> requests = new ArrayList<CachedClientHttpRequest>();
-    
+
     private final File temporaryDirectory;
-    
+
     private final MetricRegistry registry;
-    
+
     private boolean cached = false;
-    
+
     /**
      * Constructor.
-     * 
+     *
      * @param temporaryDirectory temporary directory for cached requests
      * @param registry the metric registry
      */
@@ -176,15 +176,15 @@ public final class HttpRequestCache {
         this.temporaryDirectory = temporaryDirectory;
         this.registry = registry;
     }
-    
+
     private CachedClientHttpRequest save(final CachedClientHttpRequest request) {
         this.requests.add(request);
         return request;
-    }        
-    
+    }
+
     /**
      * Register a http request for caching. Returns a handle to the HttpRequest that will be cached.
-     * 
+     *
      * @param originalRequest the original request
      * @return the cached http request
      * @throws IOException
@@ -195,7 +195,7 @@ public final class HttpRequestCache {
 
     /**
      * Register a URI for caching. Returns a handle to the HttpRequest that will be cached.
-     * 
+     *
      * @param factory the request factory
      * @param uri the uri
      * @return the cached http request
@@ -204,10 +204,10 @@ public final class HttpRequestCache {
     public ClientHttpRequest register(final MfClientHttpRequestFactory factory, final URI uri) throws IOException {
         return register(factory.createRequest(uri, HttpMethod.GET));
     }
-    
+
     /**
      * Cache all requests at once.
-     * 
+     *
      * @param requestForkJoinPool request fork join pool
      */
     public void cache(final ForkJoinPool requestForkJoinPool) {

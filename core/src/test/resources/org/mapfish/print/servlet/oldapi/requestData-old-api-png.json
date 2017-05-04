@@ -9,7 +9,7 @@
       {
          "type":"Vector",
          "styles":{
-         "1": 
+         "1":
          {
             "fillColor": "#000080",
             "strokeColor": "#4C663C",
@@ -19,7 +19,7 @@
             "strokeDashstyle": "solid"
          },
 
-         "2": 
+         "2":
          {
             "fillColor": "#C45239",
             "strokeColor": "#4C663C",
@@ -29,7 +29,7 @@
             "strokeDashstyle": "solid"
          },
 
-         "3": 
+         "3":
          {
             "fillColor": "#67C431",
             "strokeColor": "#4C663C",

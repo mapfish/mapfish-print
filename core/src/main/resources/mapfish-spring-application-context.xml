@@ -14,7 +14,7 @@
     <import resource="mapfish-spring-config-output-formats.xml" />
     <import resource="mapfish-spring-access-assertions.xml" />
     <import resource="mapfish-spring-named-styles.xml" />
-    <import resource="mapfish-spring-hibernate.xml" />    
+    <import resource="mapfish-spring-hibernate.xml" />
 
     <context:annotation-config/>
     <context:property-placeholder system-properties-mode="OVERRIDE" file-encoding="UTF-8" location="classpath:mapfish-spring.properties"/>
@@ -88,6 +88,6 @@
     <bean id="styleParser" class="org.mapfish.print.map.style.StyleParser" />
     <bean id="parser" class="org.mapfish.print.parser.MapfishParser" />
     <bean id="imageIOPluginScanner" class="org.mapfish.print.ImageIOPluginScanner" />
-    
+
     <bean class="org.mapfish.print.ApplicationContextProvider" />
 </beans>

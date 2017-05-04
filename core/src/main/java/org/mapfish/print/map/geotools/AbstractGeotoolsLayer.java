@@ -66,9 +66,9 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
             final Graphics2D graphics2D,
             final MfClientHttpRequestFactory clientHttpRequestFactory,
             final MapfishMapContext transformer) {
-        
+
         MapfishMapContext layerTransformer = getLayerTransformer(transformer);
-        
+
         if (!FloatingPointUtil.equals(transformer.getRotation(), 0.0) && !this.supportsNativeRotation()) {
             graphics2D.setTransform(transformer.getTransform());
         }
@@ -114,7 +114,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
             renderer.setMapContent(content);
             renderer.setThreadPool(this.executorService);
 
-            final ReferencedEnvelope mapArea = layerTransformer.getBounds().toReferencedEnvelope(paintArea, 
+            final ReferencedEnvelope mapArea = layerTransformer.getBounds().toReferencedEnvelope(paintArea,
                     transformer.getDPI());
             renderer.paint(graphics2D, paintArea, mapArea);
         } catch (Exception e) {
@@ -164,10 +164,10 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
     public final boolean getFailOnError() {
         return this.params.failOnError;
     }
-    
+
     /**
      * If the layer transformer has not been prepared yet, do it.
-     * 
+     *
      * @param transformer the transformer
      */
     protected final MapfishMapContext getLayerTransformer(final MapfishMapContext transformer) {
@@ -186,12 +186,12 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
                     transformer.getRequestorDPI(), transformer.isForceLongitudeFirst(),
                     transformer.isDpiSensitiveStyle());
         }
-        
+
         return layerTransformer;
     }
-    
+
     @Override
     public void cacheResources(final HttpRequestCache httpRequestCache,
-            final MfClientHttpRequestFactory clientHttpRequestFactory, final MapfishMapContext transformer) {        
+            final MfClientHttpRequestFactory clientHttpRequestFactory, final MapfishMapContext transformer) {
     }
 }

@@ -11,18 +11,18 @@ import java.util.List;
  *
  */
 public class TilePreparationInfo {
-    
+
     private final List<SingleTilePreparationInfo> singleTiles;
     private final int imageWidth;
     private final int imageHeight;
     private final Coordinate gridCoverageOrigin;
     private final double gridCoverageMaxX;
     private final double gridCoverageMaxY;
-    private final CoordinateReferenceSystem mapProjection;    
-    
+    private final CoordinateReferenceSystem mapProjection;
+
     /**
      * Constructor.
-     * 
+     *
      * @param singleTiles tiles
      * @param imageWidth image width
      * @param imageHeight image height
@@ -31,7 +31,7 @@ public class TilePreparationInfo {
      * @param gridCoverageMaxY grid coverage max y
      * @param mapProjection map projection
      */
-    public TilePreparationInfo(final List<SingleTilePreparationInfo> singleTiles, final int imageWidth, final int imageHeight, 
+    public TilePreparationInfo(final List<SingleTilePreparationInfo> singleTiles, final int imageWidth, final int imageHeight,
             final Coordinate gridCoverageOrigin, final double gridCoverageMaxX, final double gridCoverageMaxY,
             final CoordinateReferenceSystem mapProjection) {
         this.singleTiles = singleTiles;
@@ -62,15 +62,15 @@ public class TilePreparationInfo {
     public final double getGridCoverageMaxY() {
         return this.gridCoverageMaxY;
     }
-    
+
     public final Coordinate getGridCoverageOrigin() {
         return this.gridCoverageOrigin;
     }
-    
+
     public final CoordinateReferenceSystem getMapProjection() {
         return this.mapProjection;
     }
-    
+
     /**
      * Information per tile (x, y and request).
      *
@@ -79,10 +79,10 @@ public class TilePreparationInfo {
         private final int tileIndexX;
         private final int tileIndexY;
         private final ClientHttpRequest tileRequest;
-        
+
         /**
          * Constructor.
-         * 
+         *
          * @param tileIndexX tile index x
          * @param tileIndexY tile index y
          * @param tileRequest tile request
@@ -97,11 +97,11 @@ public class TilePreparationInfo {
         public final int getTileIndexX() {
             return this.tileIndexX;
         }
-        
+
         public final int getTileIndexY() {
             return this.tileIndexY;
         }
-        
+
         public final ClientHttpRequest getTileRequest() {
             return this.tileRequest;
         }

@@ -143,7 +143,7 @@ public final class OsmLayer extends AbstractTiledLayer {
             return new ReferencedEnvelope(OsmLayer.this.param.getMaxExtent(), this.bounds.getProjection());
         }
     }
-    
+
     @Override
     public RenderType getRenderType() {
         return RenderType.fromFileExtension(this.param.imageExtension);

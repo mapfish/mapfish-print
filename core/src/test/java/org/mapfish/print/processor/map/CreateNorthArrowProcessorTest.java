@@ -72,15 +72,15 @@ public class CreateNorthArrowProcessorTest extends AbstractMapfishSpringTest {
 
         new ImageSimilarity(new File(new URI(northArrowGraphic)), 2)
                 .assertSimilarity(getFile(BASE_DIR + "expectedNorthArrow.tiff"), 30);
-        
+
         assertNotNull(values.getObject("northArrowOut", String.class));
-              
+
         //now without a subreport
         final Configuration configNoReport = configurationFactory.getConfig(getFile(BASE_DIR + "config-no-report.yaml"));
         final Template templateNoReport = configNoReport.getTemplate("main");
         Values valuesNoReport = new Values(requestData, templateNoReport, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(valuesNoReport));
-        
+
         assertNull(valuesNoReport.getObject("northArrowOut", String.class));
     }
 
