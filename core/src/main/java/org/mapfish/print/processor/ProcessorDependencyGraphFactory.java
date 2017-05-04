@@ -220,7 +220,7 @@ public final class ProcessorDependencyGraphFactory {
             final Collection<Field> allProperties = getAllAttributes(inputParameter.getClass());
             for (Field field : allProperties) {
                 String name = ProcessorUtils.getInputValueName(processor.getInputPrefix(), inputMapper, field.getName());
-                inputs.add(new InputValue(name, field.getName(), field.getType(), field));
+                inputs.add(new InputValue(name, field));
             }
         }
 
@@ -321,10 +321,10 @@ public final class ProcessorDependencyGraphFactory {
         public final Class<?> type;
         public final Field field;
 
-        public InputValue(final String name, final String internalName, final Class<?> type, final Field field) {
+        public InputValue(final String name, final Field field) {
             this.name = name;
-            this.internalName = internalName;
-            this.type = type;
+            this.internalName = field.getName();
+            this.type = field.getType();
             this.field = field;
         }
 
@@ -360,7 +360,7 @@ public final class ProcessorDependencyGraphFactory {
 
         private OutputValue(
                 final String name, final boolean canBeRenamed, final Field field) {
-            super(name, field.getName(), field.getType(), field);
+            super(name, field);
             this.canBeRenamed = canBeRenamed;
         }
     }
