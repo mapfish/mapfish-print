@@ -21,7 +21,7 @@ public class LineScalebarDrawer extends ScalebarDrawer {
         final int barSize = getSettings().getBarSize();
 
         // first tick
-        getGraphics2d().drawLine(0, 0, 0, -barSize);
+        getGraphics2d().drawLine(0, -barSize, 0, 0);
 
         // horizontal line
         int intervalsLength = (int) (getSettings().getIntervalLengthInPixels() * getParams().intervals);

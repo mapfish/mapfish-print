@@ -422,7 +422,7 @@ public class ScalebarDrawerTest {
                 labelText += DistanceUnit.M;
             }
             TextLayout labelLayout = new TextLayout(labelText, font, frc);
-            labels.add(new Label(intervalWidthInPixels * i, labelLayout, params.getOrientation()));
+            labels.add(new Label(intervalWidthInPixels * i, labelLayout));
         }
         settings.setLabels(labels);
 

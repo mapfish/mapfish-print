@@ -101,7 +101,6 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
         private static final String DEFAULT_COLOR = "black";
         private static final String DEFAULT_BAR_BG_COLOR = "white";
         private static final String DEFAULT_BACKGROUND_COLOR = "rgba(255, 255, 255, 0)";
-        private static final int MAX_ROTATION = 180;
 
         private final Dimension size;
         private final boolean createSubReport;
@@ -243,7 +242,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
         public String orientation = Orientation.HORIZONTAL_LABELS_BELOW.getLabel();
 
         /**
-         * Rotate the label to some degree (value between 0 and 180).
+         * Rotate the label to some degree.
          */
         @HasDefaultValue
         public int labelRotation = 0;
@@ -288,7 +287,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
             if (this.unit != null && DistanceUnit.fromString(this.unit) == null) {
                 throw new IllegalArgumentException("invalid unit: " + this.unit);
             }
-            if (this.intervals < 2) {
+            if (this.intervals < 1) {
                 throw new IllegalArgumentException("invalid number of intervals: " + this.intervals);
             }
             if (this.color != null && !ColorParser.canParseColor(this.color)) {
@@ -311,9 +310,6 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
             }
             if (getVerticalAlign() == null) {
                 throw new IllegalArgumentException("invalid verticalAlign: " + this.verticalAlign);
-            }
-            if (this.labelRotation < 0 || this.labelRotation > MAX_ROTATION) {
-                throw new IllegalArgumentException("invalid labelRotation: " + this.labelRotation + ", must be positive value < 180.");
             }
         }
 
@@ -371,7 +367,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
         }
 
         /**
-         * @return Return the label rotation
+         * @return Return the label rotation in degree
          */
         public final int getLabelRotation() {
             return this.labelRotation;

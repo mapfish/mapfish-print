@@ -45,12 +45,9 @@ public abstract class ScalebarDrawer {
         this.graphics2d.setColor(this.params.getBackgroundColor());
         this.graphics2d.fillRect(0, 0, this.settings.getSize().width, this.settings.getSize().height);
 
-        //sets the transformation for drawing the labels and do it
-        final AffineTransform labelTransform = new AffineTransform(transform);
-        setLabelTranslate(labelTransform);
-
+        //draw the labels
         this.graphics2d.setColor(this.params.getFontColor());
-        drawLabels(labelTransform, this.params.getOrientation(), Math.toRadians(this.params.getLabelRotation()));
+        drawLabels(transform, this.params.getOrientation(), this.params.getLabelRotation());
 
         //sets the transformation for drawing the bar and do it
         final AffineTransform lineTransform = new AffineTransform(transform);
@@ -111,15 +108,13 @@ public abstract class ScalebarDrawer {
         } else if (this.params.getOrientation() == Orientation.HORIZONTAL_LABELS_ABOVE) {
             lineTransform.translate(
                     this.settings.getPadding() + this.settings.getLeftLabelMargin(),
-                    this.settings.getPadding() + this.settings.getBarSize() + this.settings.getLabelDistance()
-                    + this.settings.getMaxLabelSize().height * Math.cos(Math.toRadians(this.params.getLabelRotation()))
-                    + this.settings.getMaxLabelSize().width * Math.sin(Math.toRadians(this.params.getLabelRotation())));
+                    this.settings.getPadding() + this.settings.getBarSize() + this.settings.getLabelDistance() +
+                    Label.getRotatedHeight(this.settings.getMaxLabelSize(), this.params.getLabelRotation()));
         } else if (this.params.getOrientation() == Orientation.VERTICAL_LABELS_LEFT) {
             lineTransform.translate(
-                    this.settings.getPadding()
-                    + this.settings.getMaxLabelSize().height * Math.sin(Math.toRadians(this.params.getLabelRotation()))
-                    + this.settings.getMaxLabelSize().width * Math.cos(Math.toRadians(this.params.getLabelRotation()))
-                    + this.settings.getLabelDistance(),
+                    this.settings.getPadding() +
+                    Label.getRotatedWidth(this.settings.getMaxLabelSize(), this.params.getLabelRotation()) +
+                    this.settings.getLabelDistance(),
                     this.settings.getPadding() + this.settings.getTopLabelMargin());
         } else if (this.params.getOrientation() == Orientation.VERTICAL_LABELS_RIGHT) {
             lineTransform.translate(
@@ -128,21 +123,24 @@ public abstract class ScalebarDrawer {
         }
     }
 
+    /**
+     * Sets 0,0 in the middle of the first tick mark at labelDistance away from it.
+     */
     private void setLabelTranslate(final AffineTransform labelTransform) {
         if (this.params.getOrientation() == Orientation.HORIZONTAL_LABELS_BELOW) {
             labelTransform.translate(
                     this.settings.getPadding() + this.settings.getLeftLabelMargin(),
-                    this.settings.getPadding() + this.settings.getBarSize() + this.settings.getLabelDistance()
-                    + this.settings.getMaxLabelSize().height * Math.cos(Math.toRadians(this.params.getLabelRotation())));
+                    this.settings.getPadding() + this.settings.getBarSize() +
+                    this.settings.getLabelDistance() + 1);
         } else if (this.params.getOrientation() == Orientation.HORIZONTAL_LABELS_ABOVE) {
             labelTransform.translate(
                     this.settings.getPadding() + this.settings.getLeftLabelMargin(),
-                    this.settings.getPadding()
-                    + this.settings.getMaxLabelSize().height * Math.cos(Math.toRadians(this.params.getLabelRotation()))
-                    + this.settings.getMaxLabelSize().width * Math.sin(Math.toRadians(this.params.getLabelRotation())));
+                    this.settings.getPadding() +
+                    Label.getRotatedHeight(this.settings.getMaxLabelSize(), this.params.getLabelRotation()));
         } else if (this.params.getOrientation() == Orientation.VERTICAL_LABELS_LEFT) {
             labelTransform.translate(
-                    this.settings.getPadding(),
+                    this.settings.getPadding() +
+                    Label.getRotatedWidth(this.settings.getMaxLabelSize(), this.params.getLabelRotation()),
                     this.settings.getPadding() + this.settings.getTopLabelMargin());
         } else if (this.params.getOrientation() == Orientation.VERTICAL_LABELS_RIGHT) {
             labelTransform.translate(
@@ -157,57 +155,44 @@ public abstract class ScalebarDrawer {
      */
     protected abstract void drawBar();
 
-    private float getTotalLength(final Orientation orientation) {
-        if (orientation.isHorizontal()) {
-            return this.settings.getIntervalLengthInPixels() * this.params.intervals
-                    + this.settings.getLeftLabelMargin() + this.settings.getRightLabelMargin();
-        } else {
-            return this.settings.getIntervalLengthInPixels() * this.params.intervals
-                    + this.settings.getTopLabelMargin() + this.settings.getBottomLabelMargin();
-        }
-    }
-
-    private void drawLabels(final AffineTransform labelTransform, final Orientation orientation,
+    private void drawLabels(final AffineTransform transform, final Orientation orientation,
             final double labelRotation) {
-        float prevPos = getTotalLength(orientation);
+        float prevMargin = orientation.isHorizontal() ? this.settings.getMaxSize().width :
+                this.settings.getMaxSize().height;
+
+        final AffineTransform firstTickTransform = new AffineTransform(transform);
+        setLabelTranslate(firstTickTransform);  // 0,0 is the center of the first label
 
         for (int i = this.settings.getLabels().size() - 1; i >= 0; i--) {
             final Label label = this.settings.getLabels().get(i);
-            final float posX;
-            final float posY;
-            final float newPos;
+
+            final float newMargin;
             final boolean shouldSkipLabel;
-            AffineTransform transform = new AffineTransform(labelTransform);
+            final AffineTransform centerTransform = new AffineTransform(firstTickTransform);
+            final float halfRotatedWidth = label.getRotatedWidth(labelRotation) / 2.0f;
+            final float halfRotatedHeight = label.getRotatedHeight(labelRotation) / 2.0f;
+
             if (orientation.isHorizontal()) {
-                final float offsetH = (-label.getWidth() / 2) * (float) Math.cos(labelRotation)
-                        + (-label.getHeight() / 2) *
-                        (float) Math.sin(orientation == Orientation.HORIZONTAL_LABELS_ABOVE ? -labelRotation : labelRotation);
-                posX = label.getGraphicOffset() + offsetH;
-                posY = 0;
-                shouldSkipLabel = label.getGraphicOffset() + Math.abs(offsetH) > prevPos - 1;
-                newPos = label.getGraphicOffset() - Math.abs(offsetH);
+                centerTransform.concatenate(AffineTransform.getTranslateInstance(
+                        label.getGraphicOffset(),
+                        orientation == Orientation.HORIZONTAL_LABELS_BELOW ? halfRotatedHeight : -halfRotatedHeight));
+                shouldSkipLabel = label.getGraphicOffset() + halfRotatedWidth > prevMargin - 1;
+                newMargin = label.getGraphicOffset() - halfRotatedWidth;
             } else {
-                final float offsetV = (label.getHeight() / 2) * (float) Math.cos(labelRotation)
-                        - (label.getWidth() / 2) * (float) Math.sin(labelRotation);
-                if (orientation == Orientation.VERTICAL_LABELS_LEFT) {
-                    posX = (this.settings.getMaxLabelSize().width - label.getWidth()) * (float) Math.cos(labelRotation);
-                } else {
-                    posX = 0;
-                }
-                posY = label.getGraphicOffset() + offsetV;
-                shouldSkipLabel = label.getGraphicOffset() + offsetV > prevPos - 1;
-                newPos = label.getGraphicOffset() - Math.abs(offsetV);
+                centerTransform.concatenate(AffineTransform.getTranslateInstance(
+                        orientation == Orientation.VERTICAL_LABELS_RIGHT ? halfRotatedWidth : -halfRotatedWidth,
+                        label.getGraphicOffset()));
+                shouldSkipLabel = label.getGraphicOffset() + halfRotatedHeight > prevMargin - 1;
+                newMargin = label.getGraphicOffset() - halfRotatedHeight;
             }
-            if (labelRotation != 0) {
-                transform.concatenate(AffineTransform.getRotateInstance(
-                        orientation == Orientation.HORIZONTAL_LABELS_ABOVE ? -labelRotation : labelRotation,
-                        posX, posY));
+            if (labelRotation != 0.0) {
+                centerTransform.concatenate(AffineTransform.getRotateInstance(Math.toRadians(labelRotation)));
             }
-            this.graphics2d.setTransform(transform);
 
             if (!shouldSkipLabel) {
-                label.getLabelLayout().draw(this.graphics2d, posX, posY);
-                prevPos = newPos;
+                this.graphics2d.setTransform(centerTransform);
+                label.getLabelLayout().draw(this.graphics2d, -label.getWidth() / 2.0f, label.getHeight() / 2.0f);
+                prevMargin = newMargin;
             } else {
                 //the label would be written over the previous one => ignore it
             }
