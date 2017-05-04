@@ -55,4 +55,3 @@ public enum Orientation {
         return this.label;
     }
 }
-

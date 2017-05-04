@@ -1,6 +1,4 @@
-
 templates:
   main: !template
     attributes:
      att: !springInjectionProcessor {}
-

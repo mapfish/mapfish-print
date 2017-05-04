@@ -10,5 +10,3 @@ templates:
     - !reportBuilder
       directory: '.'
     - !createMap {}
-
-

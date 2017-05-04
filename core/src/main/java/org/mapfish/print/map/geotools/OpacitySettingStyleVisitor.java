@@ -60,6 +60,4 @@ public final class OpacitySettingStyleVisitor extends AbstractStyleVisitor {
     private Function getOpacityAdjustingExpression(final Expression opacity) {
         return this.filterFactory.function(MultiplicationFunction.NAME.getName(), opacity, this.opacityFactor);
     }
-
 }
-

@@ -29,4 +29,3 @@ templates:
       inputMapper:
         legend2: legend
       outputPrefix: legend2
-
