@@ -28,7 +28,7 @@
         <filter-name>requestSizeFilter</filter-name>
         <filter-class>org.mapfish.print.servlet.RequestSizeFilter</filter-class>
         <init-param>
-        	<!-- The maximum request size in bytes (default: 1 MB). -->
+            <!-- The maximum request size in bytes (default: 1 MB). -->
             <param-name>maxContentLength</param-name>
             <param-value>1048576</param-value>
         </init-param>

@@ -151,7 +151,7 @@
                      <xsd:documentation>
                   The traverseXlinkExpiry attribute value is specified in
                   minutes It indicates how long a Web Feature Service should
-                  wait to receive a response to a nested GetGmlObject request.	
+                  wait to receive a response to a nested GetGmlObject request.    
                      </xsd:documentation>
                   </xsd:annotation>
                </xsd:attribute>
@@ -643,7 +643,7 @@
                      The traverseXlinkExpiry attribute value is specified in
                      minutes.  It indicates how long a Web Feature Service
                      should wait to receive a response to a nested GetGmlObject
-                     request.	
+                     request.    
                      This attribute is only relevant if a value is specified 
                      for the traverseXlinkDepth attribute.
                   </xsd:documentation>
@@ -947,7 +947,7 @@
                      The traverseXlinkExpiry attribute value is specified
                      in minutes.  It indicates how long a Web Feature Service
                      should wait to receive a response to a nested GetGmlObject
-                     request.	
+                     request.    
                   </xsd:documentation>
                </xsd:annotation>
             </xsd:attribute>

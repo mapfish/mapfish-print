@@ -2,7 +2,7 @@
 <web-app>
     <display-name>Test Data</display-name>
     <servlet-mapping>
-    	<servlet-name>default</servlet-name>
-    	<url-pattern>/data/*</url-pattern>
-  	</servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/data/*</url-pattern>
+      </servlet-mapping>
 </web-app>
