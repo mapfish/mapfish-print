@@ -99,8 +99,8 @@ public final class ProcessorDependencyGraphFactory {
                         for (String name: ((CustomDependencies) processor).getDependencies()) {
                             final Class<?> outputType = outputTypes.get(input.name);
                             if (outputType == null) {
-                                throw new IllegalArgumentException("The Processor '" + processor + "' has " +
-                                        "no value for the dynamic input '" + name + "'.");
+                                throw new IllegalArgumentException(String.format("The Processor '%s' has " +
+                                        "no value for the dynamic input '%s'.", processor, name));
                             }
                             final ProcessorGraphNode<Object, Object> processorSolution =
                                     provideByProcessor.get(name);
@@ -129,23 +129,23 @@ public final class ProcessorDependencyGraphFactory {
                             }
                         } else {
                             if (processorSolution != null) {
-                                throw new IllegalArgumentException("Type conflict: Processor '" +
-                                        processorSolution.getName() + "' provides an output with name '" +
-                                        input.name + "' and of type '" + outputType + " ', while " +
-                                        "processor '" + node.getName() + "' expects an input of that name " +
-                                        "with type '" + inputType + "'! Please rename one of the attributes" +
-                                        " in the mappings of the processors.");
+                                throw new IllegalArgumentException(String.format("Type conflict: Processor" +
+                                                " '%s' provides an output with name '%s' and of type '%s', " +
+                                                "while processor '%s' expects an input of that name with " +
+                                                "type '%s'! Please rename one of the attributes in the " +
+                                                "mappings of the processors.", processorSolution.getName(),
+                                        input.name, outputType, node.getName(), inputType));
                             } else {
-                                throw new IllegalArgumentException("Type conflict: the attribute '" +
-                                        input.name + "' of type '" + outputType + " ', while " +
-                                        "processor '" + node.getName() + "' expects an input of that name " +
-                                        "with type '" + inputType + "'!");
+                                throw new IllegalArgumentException(String.format("Type conflict: the " +
+                                                "attribute '%s' of type '%s', while processor '%s' expects " +
+                                                "an input of that name with type '%s'!", input.name,
+                                        outputType, node.getName(), inputType));
                             }
                         }
                     } else {
                         if (input.field.getAnnotation(HasDefaultValue.class) == null) {
-                            throw new IllegalArgumentException("The Processor '" + processor + "' has no " +
-                                    "value for the input '" + input.name + "'.");
+                            throw new IllegalArgumentException(String.format("The Processor '%s' has no " +
+                                    "value for the input '%s'.", processor, input.name));
                         }
                     }
                 }
@@ -164,17 +164,17 @@ public final class ProcessorDependencyGraphFactory {
                     } else {
                         ProcessorGraphNode<Object, Object> provider = provideByProcessor.get(outputName);
                         if (provider == null) {
-                            throw new IllegalArgumentException("Processors '" + processor + " provide the " +
-                                    "output '" + outputName + "' who is already declared as an attribute.  " +
-                                    "You have to rename one of the outputs and the corresponding input so " +
-                                    "that  there is no ambiguity with regards to the input a processor " +
-                                    "consumes.");
+                            throw new IllegalArgumentException(String.format("Processors '%s' provide the " +
+                                    "output '%s' who is already declared as an attribute.  You have to " +
+                                    "rename one of the outputs and the corresponding input so that there " +
+                                    "is no ambiguity with regards to the input a processor consumes.",
+                                    processor, outputName));
                         } else {
-                            throw new IllegalArgumentException("Multiple processors provide the same output" +
-                                    " mapping: '" + processor + "' and '" + provider + "' both provide: '"
-                                    + outputName + "'.  You have to rename one of the outputs and the " +
-                                    "corresponding input so that  there is no ambiguity with regards to the" +
-                                    " input a processor consumes.");
+                            throw new IllegalArgumentException(String.format("Multiple processors provide " +
+                                    "the same output mapping: '%s' and '%s' both provide: '%s'.  You have " +
+                                    "to rename one of the outputs and the corresponding input so that  " +
+                                    "there is no ambiguity with regards to the input a processor consumes" +
+                                    ".", processor, provider, outputName));
                         }
                     }
                 }
@@ -268,8 +268,8 @@ public final class ProcessorDependencyGraphFactory {
                             for (String attributeName : ((CustomDependencies) processor).getDependencies()) {
                                 Attribute attribute = currentAttributes.get(attributeName);
                                 if (attribute == null) {
-                                    throw new IllegalArgumentException(("The Processor '%s' has no value " +
-                                            "for the dynamic input '%s'.").format(processor.toString(),
+                                    throw new IllegalArgumentException(String.format("The Processor '%s' " +
+                                            "has no value for the dynamic input '%s'.", processor,
                                             attributeName));
                                 }
                                 ((RequireAttributes) processor).setAttribute(
@@ -288,9 +288,9 @@ public final class ProcessorDependencyGraphFactory {
                                     inputValue.internalName,
                                     currentAttributes.get(inputValue.name));
                         } catch (ClassCastException e) {
-                            throw new RuntimeException("The processor '" + processor + "' Requires the " +
-                                    "attribute '" + inputValue.name + "' (" + inputValue
-                                    .internalName + ") but he has the wrong type: " + e.getMessage(), e);
+                            throw new IllegalArgumentException(String.format("The processor '%s' requires " +
+                                            "the attribute '%s' (%s) but he has the wrong type:\n%s",
+                                    processor, inputValue.name, inputValue.internalName, e.getMessage()), e);
                         }
                     }
                 }
