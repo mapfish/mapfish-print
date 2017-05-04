@@ -6,11 +6,11 @@
 	<parameter name="name" class="java.lang.String"/>
 	<parameter name="description" class="java.lang.String"/>
 	<parameter name="number" class="java.lang.Integer"/>
-    <parameter name="length" class="java.lang.Double"/>
-    <parameter name="tableDataSource" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
-    <parameter name="legendDataSource" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
-    <parameter name="legendSubReport" class="java.lang.String"/>
-    <field name="tableDataSource" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
+	<parameter name="length" class="java.lang.Double"/>
+	<parameter name="tableDataSource" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
+	<parameter name="legendDataSource" class="net.sf.jasperreports.engine.data.JRTableModelDataSource"/>
+	<parameter name="legendSubReport" class="java.lang.String"/>
+	<field name="tableDataSource" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
 	<field name="displayName" class="java.lang.String"/>
 	<field name="reportTemplate" class="java.lang.String"/>
 	<title>
