@@ -264,9 +264,23 @@ public final class ProcessorDependencyGraphFactory {
                 for (ProcessorDependencyGraphFactory.InputValue inputValue :
                         ProcessorDependencyGraphFactory.getInputs(processor)) {
                     if (inputValue.type == Values.class) {
-                        for (String attributeName:  currentAttributes.keySet()) {
-                            ((RequireAttributes) processor).setAttribute(
-                                    attributeName, currentAttributes.get(attributeName));
+                        if (processor instanceof CustomDependencies) {
+                            for (String attributeName : ((CustomDependencies) processor).getDependencies()) {
+                                Attribute attribute = currentAttributes.get(attributeName);
+                                if (attribute == null) {
+                                    throw new IllegalArgumentException(("The Processor '%s' has no value " +
+                                            "for the dynamic input '%s'.").format(processor.toString(),
+                                            attributeName));
+                                }
+                                ((RequireAttributes) processor).setAttribute(
+                                        attributeName, currentAttributes.get(attributeName));
+                            }
+
+                        } else {
+                            for (String attributeName : currentAttributes.keySet()) {
+                                ((RequireAttributes) processor).setAttribute(
+                                        attributeName, currentAttributes.get(attributeName));
+                            }
                         }
                     } else {
                         try {
