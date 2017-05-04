@@ -29,6 +29,7 @@ install:
 - ./gradlew examples:geoserverData
 
 script:
+- git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
 - ./gradlew build
 
 after_failure:
