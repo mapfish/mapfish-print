@@ -31,19 +31,19 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
 
     @Autowired
     private ApplicationContext context;
-        
+
     private class TestJobManager extends ThreadPoolJobManager {
         private String name;
-        
+
         private int jobsRun;
-        
+
         public TestJobManager(String name) {
             initForTesting(ClusteringTaskTest.this.context);
             setClustered(true);
             setMaxNumberOfRunningPrintJobs(1);
             this.name = name;
         }
-        
+
         protected PrintJob createJob(final PrintJobEntry entry) {
             PrintJob job = new PrintJob() {
                 @Override
@@ -51,9 +51,9 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
                     System.out.println(getEntry().getReferenceId() + " is being run by jobman " + name);
                     TestJobManager.this.jobsRun++;
                     Thread.sleep(1000);
-                    return new URI("oh:well:whatever:nevermind"); 
+                    return new URI("oh:well:whatever:nevermind");
                 }
-                
+
             };
             job.initForTesting(ClusteringTaskTest.this.context);
             job.setEntry(entry);
@@ -64,17 +64,17 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
         public final int getJobsRun() {
             return jobsRun;
         }
-        
+
     }
 
     TestJobManager jobMan1;
-    
+
     TestJobManager jobMan2;
 
     @Before
     public void setup() {
         context.getBean(ThreadPoolJobManager.class).shutdown();
-        jobMan1 = new TestJobManager("uno");        
+        jobMan1 = new TestJobManager("uno");
         jobMan2 = new TestJobManager("duo");;
     }
 
@@ -85,7 +85,7 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
         jobMan1.submit(new PrintJobEntryImpl("second job", requestData, System.currentTimeMillis(), new AlwaysAllowAssertion()));
         jobMan1.submit(new PrintJobEntryImpl("third job", requestData, System.currentTimeMillis(), new AlwaysAllowAssertion()));
         jobMan1.submit(new PrintJobEntryImpl("fourth job", requestData, System.currentTimeMillis(), new AlwaysAllowAssertion()));
-        
+
         int ready = 0;
         while (ready < 4) {
             if (jobMan2.getStatus("first job").isDone()) {
@@ -99,16 +99,16 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
             }
             if (jobMan2.getStatus("fourth job").isDone()) {
                 ready++;
-            }            
+            }
         }
-        
+
         //verify each job was run only once
         assertEquals(4, jobMan1.getJobsRun() + jobMan2.getJobsRun());
-        
+
         //verify each job manager ran some jobs
         assertTrue(jobMan1.getJobsRun() > 0);
         assertTrue(jobMan2.getJobsRun() > 0);
-        
+
     }
 
 }

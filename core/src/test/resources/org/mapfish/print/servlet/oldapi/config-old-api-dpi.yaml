@@ -19,4 +19,3 @@ templates:
         outputMapper: {mapSubReport: geojsonMap}
     - !prepareTable
       inputMapper: {entries: table}
-

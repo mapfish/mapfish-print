@@ -33,7 +33,7 @@ public final class ProcessorExecutionContext {
 
     /**
      * Try to start the node of a processor.
-     * 
+     *
      * In case the processor is already running, has already finished or if not all
      * requirements have finished, the processor can not start.
      * If the above conditions are fulfilled, the processor is added to the list of
@@ -56,7 +56,7 @@ public final class ProcessorExecutionContext {
         } finally {
             this.processorLock.unlock();
         }
-        
+
         return canStart;
     }
 
@@ -140,7 +140,7 @@ public final class ProcessorExecutionContext {
 
     /**
      * Set a {@code cancel} flag.
-     * 
+     *
      * All processors are supposed to check this flag frequently
      * and terminate the execution if requested.
      */

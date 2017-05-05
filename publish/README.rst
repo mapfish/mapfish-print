@@ -1,11 +1,11 @@
 Summary
 =======
 
-This module is responsible for deploying the project to the maven repositories.  At the time of this writing it 
+This module is responsible for deploying the project to the maven repositories.  At the time of this writing it
 uploads several artifacts to the https://oss.sonatype.org/ which is the staging repository for maven central.
 Once uploaded to https://oss.sonatype.org/ then it can be published to maven central for general consumption.
 
-See http://central.sonatype.org/pages/ossrh-guide.html for details on the general process as described by 
+See http://central.sonatype.org/pages/ossrh-guide.html for details on the general process as described by
 sonatype.
 
 Process
@@ -16,7 +16,7 @@ Credential Configuration
 
 The first thing that must be done is to configure the gradle configuration with developers credentials
 and certificates so that the gradle build can correctly log in to https://oss.sonatype.org/ and can
-sign the artifacts as required.  
+sign the artifacts as required.
 
 Prerequisites
 ~~~~~~~~~~~~~
@@ -40,7 +40,7 @@ Credential Configuration
   signing_secretKeyRingFile=<path to gnupg .gpg file for example: C:\\Users\\xyz\\.gnupg\\secring.gpg>
   sonatypeUsername=<sonatype username>
   sonatypePassword=<sonatype password>
-  
+
 Publish Workflow
 ----------------
 
@@ -71,5 +71,5 @@ Publish Workflow
   There will be a temporary Maven repository set up for you to test that the artifacts work correctly.  You can test this if you wish but it is not required unless you have some concern.
 12. Click the _Release_ button
   It can take several hours for the artifacts to show up on Maven Central after being released.  You will just have to keep checking http://search.maven.org/ (or http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.mapfish.print%22) and see if the new version is available.
-  
+
 More information about the release procedure on Sonatype can be found here: http://central.sonatype.org/pages/releasing-the-deployment.html

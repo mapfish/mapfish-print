@@ -13,7 +13,7 @@ templates:
       northArrowDef: !northArrow
         size: 200
         createSubReport: false
-        default:        
+        default:
           graphic: "file://NorthArrow_10.png"
     processors:
     - !createMap {}

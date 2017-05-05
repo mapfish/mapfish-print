@@ -8,5 +8,3 @@ templates:
     processors:
     - !reportBuilder
         directory: "."
-
-

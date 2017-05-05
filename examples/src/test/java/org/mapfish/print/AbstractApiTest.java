@@ -28,27 +28,27 @@ import java.util.Map;
         ExamplesTest.TEST_SPRING_XML
 })
 public abstract class AbstractApiTest {
-    
+
     protected static final String PRINT_SERVER = "http://localhost:8080/print/";
-    
+
     @Autowired
     protected ClientHttpRequestFactory httpRequestFactory;
 
     protected ClientHttpResponse response;
-    
+
     @After
     public void tearDown() {
         if (response != null) {
             response.close();
         }
         response = null;
-    } 
+    }
 
     protected ClientHttpRequest getRequest(String path, HttpMethod method) throws IOException,
             URISyntaxException {
         return httpRequestFactory.createRequest(new URI(PRINT_SERVER + path), method);
     }
-    
+
     protected String getBodyAsText(ClientHttpResponse response) throws IOException {
         return IOUtils.toString(response.getBody(), "UTF-8");
     }
@@ -59,7 +59,7 @@ public abstract class AbstractApiTest {
 
     protected void setPrintSpec(String printSpec, ClientHttpRequest request) throws IOException {
         request.getHeaders().setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        
+
         OutputStreamWriter writer = new OutputStreamWriter(request.getBody());
         writer.write(URLEncoder.encode(printSpec, Constants.DEFAULT_ENCODING));
         writer.flush();

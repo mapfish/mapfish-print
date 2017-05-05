@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Filter which checks the content size of requests.
- * 
+ *
  * This is to avoid that the server is flooded with overly
  * huge requests.
  */
@@ -23,7 +23,7 @@ public class RequestSizeFilter implements Filter {
 
     private static final int MAX_CONTENT_LENGTH = 1048576;
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestSizeFilter.class);
-    
+
     /**
      * The maximum allowed content length of the request in bytes.
      */
@@ -47,7 +47,7 @@ public class RequestSizeFilter implements Filter {
             this.maxContentLength = Integer.parseInt(config.getInitParameter("maxContentLength"));
         }
     }
-    
+
     @Override
     public void destroy() { }
 

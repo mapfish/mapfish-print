@@ -42,7 +42,7 @@ public class CreateMapProcessorScaleBBoxNativeRotationWms1_3_0Test extends Abstr
     private TestHttpClientFactory requestFactory;
     @Autowired
     private MapfishParser parser;
-    
+
     @Autowired
     private ForkJoinPool forkJoinPool;
 
@@ -79,7 +79,7 @@ public class CreateMapProcessorScaleBBoxNativeRotationWms1_3_0Test extends Abstr
                                 uppercaseParams.containsEntry("WIDTH", "780"));
                         assertTrue("mapSize is not rotated (height)",
                                 uppercaseParams.containsEntry("HEIGHT", "330"));
-                        
+
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data/states-native-rotation.tiff"));
                             return ok(uri, bytes, httpMethod);

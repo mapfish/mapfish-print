@@ -166,7 +166,7 @@ public class CreateMapPagesProcessor
                     mapValues.put("top", j != nbHeight - 1 ? mapIndexes[i][j + 1] : DO_NOT_RENDER_BBOX_INDEX);
 
                     final Envelope mapsBound = mapsBounds[i][j];
-                    MapAttributeValues theMap = map.copy(map.getWidth(), map.getHeight(), 
+                    MapAttributeValues theMap = map.copy(map.getWidth(), map.getHeight(),
                             new Function<MapAttributeValues, Void>() {
                         @Nullable
                         @Override

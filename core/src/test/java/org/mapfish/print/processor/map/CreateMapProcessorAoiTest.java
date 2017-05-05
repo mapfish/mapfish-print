@@ -156,7 +156,7 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
             IOException, JSONException, TranscoderException, ExecutionException, InterruptedException {
         createMap(template, expectedImageName, aoiDisplay, styleRef, useSVG, false, requestUpdater);
     }
-    
+
     private void createMap(Template template, String expectedImageName, AreaOfInterest.AoiDisplay
             aoiDisplay, String styleRef, boolean useSVG, boolean useJPEG, Function<PJsonObject, Void>
             requestUpdater) throws IOException, JSONException, TranscoderException, ExecutionException,
@@ -195,7 +195,7 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
 //        ImageIO.write(actualImage, "png", new File(TMP, expectedImageName));
         File expectedImage = getFile(BASE_DIR + "/output/" + expectedImageName);
         new ImageSimilarity(actualImage, 2).assertSimilarity(expectedImage, 55);
-        
+
     }
 
 

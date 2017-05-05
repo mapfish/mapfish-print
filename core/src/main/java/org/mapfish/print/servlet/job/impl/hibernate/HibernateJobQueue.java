@@ -22,7 +22,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 /**
- * 
+ *
  * Db Job Manager.
  *
  */

@@ -16,7 +16,7 @@ public interface JobManager {
      * Cancel a job.
      *
      * @param referenceId The referenceId of the job to cancel.
-     * @throws NoSuchReferenceException 
+     * @throws NoSuchReferenceException
      */
     void cancel(String referenceId) throws NoSuchReferenceException;
 
@@ -27,5 +27,5 @@ public interface JobManager {
      * @throws NoSuchReferenceException
      */
     PrintJobStatus getStatus(String referenceId) throws NoSuchReferenceException;
-    
+
 }

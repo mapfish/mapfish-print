@@ -35,7 +35,7 @@ public final class AlwaysAllowAssertion implements AccessAssertion {
     public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         // do nothing
     }
-    
+
     @Override
     public boolean equals(final Object o) {
         return o instanceof AlwaysAllowAssertion;

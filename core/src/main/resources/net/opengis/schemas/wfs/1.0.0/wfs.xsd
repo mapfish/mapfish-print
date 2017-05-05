@@ -7,10 +7,10 @@
    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
    elementFormDefault="unqualified"
    version="1.0.0.3">
-   
+
    <xsd:annotation>
       <xsd:documentation>All-components schema for the Web Feature Service namespace.
-         
+
          WFS is an OGC Standard.
          Copyright (c) 2002,2010 Open Geospatial Consortium.
          To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .

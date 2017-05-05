@@ -16,13 +16,13 @@ import static org.junit.Assert.assertTrue;
 
 /*
  * Test the servlet metrics API.
- * 
+ *
  *  To run this test make sure that the test servers are running:
- * 
+ *
  *      ./gradlew examples:jettyRun
- *      
+ *
  * Or run the tests with the following task (which automatically starts the servers):
- * 
+ *
  *      ./gradlew examples:test
  */
 public class MetricsApiTest extends AbstractApiTest {

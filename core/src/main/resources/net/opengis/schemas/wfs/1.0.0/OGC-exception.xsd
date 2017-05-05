@@ -5,7 +5,7 @@
    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
    elementFormDefault="qualified"
    version="1.0.0.3">
-   
+
    <!--
       WFS is an OGC Standard.
       Copyright (c) 2002,2010 Open Geospatial Consortium.
@@ -27,7 +27,7 @@
                          minOccurs="0" maxOccurs="unbounded">
                <xsd:annotation>
                   <xsd:documentation>
-                     The Service exception element is used to describe 
+                     The Service exception element is used to describe
                      a service exception.
                   </xsd:documentation>
                </xsd:annotation>
@@ -62,8 +62,8 @@
                      indicate to a client where in the client's request
                      an exception was encountered.  If the request included
                      a 'handle' attribute, this may be used to identify the
-                     offending component of the request.  Otherwise the 
-                     service may try to use other means to locate the 
+                     offending component of the request.  Otherwise the
+                     service may try to use other means to locate the
                      exception such as line numbers or byte offset from the
                      begining of the request, etc ...
                   </xsd:documentation>

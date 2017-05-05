@@ -318,7 +318,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
                 }
             }
         }
-        
+
         if (this.mapExport) {
             int count = 0;
             for (Processor<?, ?> processor : getProcessors()) {
@@ -368,5 +368,5 @@ public class Template implements ConfigurationObject, HasConfiguration {
     public final void setMapExport(final boolean mapExport) {
         this.mapExport = mapExport;
     }
-    
+
 }

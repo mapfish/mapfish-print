@@ -70,7 +70,7 @@ public class WorkingDirectories {
         createIfMissing(this.reports, "Reports");
         return this.reports;
     }
-    
+
     /**
      * Creates and returns a temporary directory for a printing task.
      */
@@ -89,7 +89,7 @@ public class WorkingDirectories {
 
     /**
      * Deletes the given directory.
-     * 
+     *
      * @param directory The directory to delete.
      */
     public final void removeDirectory(final File directory) {

@@ -20,7 +20,7 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
 
     @Autowired
     private ConfigurationFactory configurationFactory;
-    
+
     @Autowired
     private Map<String, OutputFormat> outputFormat;
 

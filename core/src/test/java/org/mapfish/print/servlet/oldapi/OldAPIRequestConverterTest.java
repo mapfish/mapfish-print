@@ -32,18 +32,18 @@ import static org.junit.Assert.assertTrue;
 public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
     @Autowired
     private ServletMapPrinterFactory printerFactory;
-        
+
     @Test
     public void testConvert() throws IOException, JSONException, NoSuchAppException, URISyntaxException {
         setUpConfigFiles();
         Configuration configuration = printerFactory.create("default").getConfiguration();
         JSONObject request = OldAPIRequestConverter.convert(loadRequestDataAsJson("requestData-old-api-all.json"), configuration).getInternalObj();
-        
+
         assertNotNull(request);
         assertEquals("A4 Portrait", request.getString(Constants.JSON_LAYOUT_KEY));
         assertEquals("political-boundaries", request.getString(Constants.OUTPUT_FILENAME_KEY));
         assertEquals("pdf", request.getString("outputFormat"));
-        
+
         assertTrue(request.has("attributes"));
         JSONObject attributes = request.getJSONObject("attributes");
         assertEquals("Map title", attributes.getString("title"));
@@ -58,7 +58,7 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertEquals(659307.58735556, map.getJSONArray("center").getDouble(0), 0.1);
         assertEquals(5711360.4205031, map.getJSONArray("center").getDouble(1), 0.1);
         assertEquals(-45.0, map.getDouble("rotation"), 0.1);
-        
+
         assertTrue(map.has("layers"));
         JSONArray layers = map.getJSONArray("layers");
         assertEquals(5, layers.length());
@@ -80,7 +80,7 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertEquals(-2.003750834E7, matrix.getJSONArray("topLeftCorner").getDouble(0),0.00001);
 
 
-        
+
         JSONObject osmLayer = layers.getJSONObject(1);
         assertEquals("osm", osmLayer.getString("type"));
         assertEquals("http://tile.openstreetmap.org/", osmLayer.getString("baseURL"));
@@ -89,7 +89,7 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertEquals(-20037508.34, osmLayer.getJSONArray("maxExtent").getDouble(0), 0.1);
         assertEquals(256, osmLayer.getJSONArray("tileSize").getInt(0));
         assertEquals(156543.03390625, osmLayer.getJSONArray("resolutions").getDouble(0), 0.1);
-        
+
         JSONObject wmsLayer = layers.getJSONObject(2);
         assertEquals("wms", wmsLayer.getString("type"));
         assertEquals("http://demo.mapfish.org/mapfishsample/2.2/mapserv", wmsLayer.getString("baseURL"));
@@ -99,7 +99,7 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertEquals(true, wmsLayer.getJSONObject("customParams").getBoolean("TRANSPARENT"));
         assertEquals(false, wmsLayer.getJSONObject("customParams").has("version"));
         assertEquals("1.1.1", wmsLayer.getString("version"));
-        
+
         JSONObject geojsonLayer1 = layers.getJSONObject(3);
         assertEquals("geojson", geojsonLayer1.getString("type"));
         JSONObject geoJson = geojsonLayer1.getJSONObject("geoJson");
@@ -117,12 +117,12 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         JSONObject table = attributes.getJSONObject("entries");
         assertTrue(table.has("columns"));
         assertTrue(table.has("data"));
-        
+
         JSONArray columns = table.getJSONArray("columns");
         assertEquals(6, columns.length());
         assertEquals("ID", columns.getString(0));
         assertEquals("BFS-Nr.", columns.getString(1));
-        
+
         JSONArray data = table.getJSONArray("data");
         assertEquals(2, data.length());
         assertEquals("27634972", data.getJSONArray(0).getString(0));
@@ -252,7 +252,7 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
     public void testConvertInvalidTemplate() throws IOException, JSONException, NoSuchAppException, URISyntaxException {
         setUpConfigFiles();
         Configuration configuration = printerFactory.create("wrong-layout").getConfiguration();
-        // will trigger an exception, because the configuration uses a 
+        // will trigger an exception, because the configuration uses a
         // different layout than specified in the request
         OldAPIRequestConverter.convert(loadRequestDataAsJson("requestData-old-api-all.json"), configuration);
     }

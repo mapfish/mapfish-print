@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
  *   mapping: {(http)://myhost.com(.*) : "$1://localhost$2"}
  * </code></pre>
  *
- * <p>Can be applied conditionally using matchers, like in {@link RestrictUrisProcessor} 
+ * <p>Can be applied conditionally using matchers, like in {@link RestrictUrisProcessor}
  * (<a href="processors.html#!restrictUris">!restrictUris</a>).</p>
  * [[examples=http_processors,osm_custom_params]]
  */

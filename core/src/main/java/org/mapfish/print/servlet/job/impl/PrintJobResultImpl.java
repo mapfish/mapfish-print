@@ -44,7 +44,7 @@ public class PrintJobResultImpl implements PrintJobResult {
 
     /**
      * Constructor.
-     * 
+     *
      * @param reportURI the report URI
      * @param fileName the file name
      * @param fileExtension the file extension

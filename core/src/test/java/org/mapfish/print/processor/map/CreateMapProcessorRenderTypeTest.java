@@ -28,9 +28,9 @@ import com.google.common.base.Predicate;
 import com.google.common.io.Files;
 
 public class CreateMapProcessorRenderTypeTest extends AbstractMapfishSpringTest {
-    
+
     public static final String BASE_DIR = "rendertype/";
- 
+
     @Autowired
     private ConfigurationFactory configurationFactory;
     @Autowired
@@ -39,7 +39,7 @@ public class CreateMapProcessorRenderTypeTest extends AbstractMapfishSpringTest 
     private MapfishParser parser;
     @Autowired
     private ForkJoinPool forkJoinPool;
-    
+
     @Test
     @DirtiesContext
     public void testExecute() throws Exception {
@@ -95,7 +95,7 @@ public class CreateMapProcessorRenderTypeTest extends AbstractMapfishSpringTest 
 
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
-        
+
         assertEquals(4, layerGraphics.size());
         assertTrue(layerGraphics.get(0).getPath().endsWith(".jpeg"));
         assertTrue(layerGraphics.get(1).getPath().endsWith(".png"));
@@ -103,7 +103,7 @@ public class CreateMapProcessorRenderTypeTest extends AbstractMapfishSpringTest 
         assertTrue(layerGraphics.get(3).getPath().endsWith(".png"));
 
     }
-    
+
     private static PJsonObject loadJsonRequestData() throws IOException {
         return parseJSONObjectFromFile(CreateMapProcessorAoiTest.class, BASE_DIR + "requestData.json");
     }

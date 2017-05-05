@@ -11,7 +11,7 @@ import java.awt.Graphics2D;
  * Encapsulates the data required to load map data for a layer and render it.
  */
 public interface MapLayer {
-    
+
     /**
      * Enumerated type to specify whether layer should be rendered as PNG, JPEG or SVG.
      */
@@ -19,9 +19,9 @@ public interface MapLayer {
         /** Unknown Rendering Format (let CreateMapProcessor decide). */
         UNKNOWN,
         /** Render as PNG. */
-        PNG, 
+        PNG,
         /** Render as JPEG. */
-        JPEG, 
+        JPEG,
         /** Render as TIFF. */
         TIFF,
         /** Render as SVG. */
@@ -49,7 +49,7 @@ public interface MapLayer {
 
         /**
          * Get RenderType from a string that represents a file extension.
-         * 
+         *
          * @param fileExtension string with file extension
          * @return render type
          */
@@ -106,7 +106,7 @@ public interface MapLayer {
             final MapfishMapContext transformer);
 
     /**
-     * Indicate if the layer supports native rotation (e.g. WMS layers with 
+     * Indicate if the layer supports native rotation (e.g. WMS layers with
      * the "angle" parameter).
      * @return True if the layer itself takes care of rotating.
      */
@@ -116,14 +116,14 @@ public interface MapLayer {
      * The layer name.
      */
     String getName();
-    
+
     /**
-     * Specify whether layer should be rendered as PNG, JPEG or SVG. 
-     * 
+     * Specify whether layer should be rendered as PNG, JPEG or SVG.
+     *
      * @return render type
      */
     RenderType getRenderType();
-    
+
     /**
      * Cache any needed resources on disk.
      * @param httpRequestCache TODO
@@ -131,6 +131,6 @@ public interface MapLayer {
      * @param transformer transformer
      */
     void cacheResources(final HttpRequestCache httpRequestCache,
-            final MfClientHttpRequestFactory clientHttpRequestFactory, 
+            final MfClientHttpRequestFactory clientHttpRequestFactory,
             final MapfishMapContext transformer);
 }

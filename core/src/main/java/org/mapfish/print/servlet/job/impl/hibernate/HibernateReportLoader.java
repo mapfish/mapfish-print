@@ -13,10 +13,10 @@ import java.net.URI;
  * <p></p>
  */
 public class HibernateReportLoader implements ReportLoader {
-    
+
     @Autowired
     private PrintJobDao dao;
-    
+
     @Override
     public final boolean accepts(final URI reportURI) {
         return reportURI.getScheme().equals("hibernate");

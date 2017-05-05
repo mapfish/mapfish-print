@@ -11,7 +11,7 @@ templates:
         maxDpi: 400
     processors:
     - !setFeatures
-        inputMapper: 
+        inputMapper:
           map1: map
     - !createMap
         inputMapper: {map1: map}

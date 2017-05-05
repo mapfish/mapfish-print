@@ -53,4 +53,3 @@ public class Label {
         return this.labelLayout;
     }
 }
-

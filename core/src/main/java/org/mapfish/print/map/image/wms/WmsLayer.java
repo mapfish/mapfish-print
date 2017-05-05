@@ -121,28 +121,28 @@ public final class WmsLayer extends AbstractSingleImageLayer {
     public boolean supportsNativeRotation() {
         return this.params.getCustomParams().containsKey("angle") ||
                this.params.getMergeableParams().containsKey("angle");
-    }    
+    }
 
     @Override
     public RenderType getRenderType() {
         return RenderType.fromMimeType(this.params.imageFormat);
     }
-     
+
     @Override
     public void cacheResources(final HttpRequestCache httpRequestCache,
             final MfClientHttpRequestFactory requestFactory, final MapfishMapContext transformer) {
         try {
             final MapfishMapContext layerTransformer = getLayerTransformer(transformer);
-            
+
             final WmsLayerParam wmsLayerParam = this.params;
             final URI commonUri = new URI(wmsLayerParam.getBaseUrl());
-    
+
             final Rectangle paintArea = layerTransformer.getPaintArea();
-            final ReferencedEnvelope envelope = layerTransformer.getBounds().toReferencedEnvelope(paintArea, 
+            final ReferencedEnvelope envelope = layerTransformer.getBounds().toReferencedEnvelope(paintArea,
                     layerTransformer.getDPI());
             URI uri = WmsUtilities.makeWmsGetLayerRequest(requestFactory, wmsLayerParam, commonUri, paintArea.getSize(),
                     layerTransformer.getDPI(), envelope);
-            
+
             this.imageRequest = httpRequestCache.register(requestFactory, uri);
         } catch (Exception e) {
             throw new RuntimeException(e);

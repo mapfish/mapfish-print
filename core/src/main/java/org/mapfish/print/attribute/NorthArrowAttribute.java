@@ -129,6 +129,6 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
         public final boolean isCreateSubReport() {
             return this.createSubReport;
         }
-        
+
     }
 }

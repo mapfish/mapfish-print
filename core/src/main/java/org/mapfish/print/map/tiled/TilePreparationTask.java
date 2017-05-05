@@ -35,7 +35,7 @@ import javax.annotation.Nonnull;
  */
 public final class TilePreparationTask implements Callable<TilePreparationInfo> {
     private static final Logger LOGGER = LoggerFactory.getLogger(TilePreparationTask.class);
-        
+
     private final MapBounds bounds;
     private final Rectangle paintArea;
     private final double dpi;
@@ -71,7 +71,7 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
      * Call the Tile Preparation Task.
      */
     public TilePreparationInfo call() {
-        try {            
+        try {
             final ReferencedEnvelope mapGeoBounds = this.bounds.toReferencedEnvelope(this.paintArea, this.dpi);
             final CoordinateReferenceSystem mapProjection = mapGeoBounds.getCoordinateReferenceSystem();
             Dimension tileSizeOnScreen = this.tiledLayer.getTileSize();
@@ -97,8 +97,8 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
 
             double gridCoverageMaxX = gridCoverageOrigin.x;
             double gridCoverageMaxY = gridCoverageOrigin.y;
-            
-            List<SingleTilePreparationInfo> tiles = Lists.newArrayList(); 
+
+            List<SingleTilePreparationInfo> tiles = Lists.newArrayList();
 
             for (double geoY = gridCoverageOrigin.y; geoY < mapGeoBounds.getMaxY(); geoY += tileSizeInWorld.y) {
                 yIndex--;
@@ -118,8 +118,8 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
 
                     int row = (int) Math.round((tileCacheBounds.getMaxY() - tileBounds.getMaxY()) * rowFactor);
                     int column = (int) Math.round((tileBounds.getMinX() - tileCacheBounds.getMinX()) * columnFactor);
-                            
-                    ClientHttpRequest tileRequest = this.tiledLayer.getTileRequest(this.httpRequestFactory, 
+
+                    ClientHttpRequest tileRequest = this.tiledLayer.getTileRequest(this.httpRequestFactory,
                             commonUrl, tileBounds, tileSizeOnScreen, column, row);
                     if (isInTileCacheBounds(tileCacheBounds, tileBounds)) {
                         if (isTileVisible(tileBounds)) {
@@ -134,8 +134,8 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
                     }
                 }
             }
-            
-            return new TilePreparationInfo(tiles, imageWidth, imageHeight, gridCoverageOrigin, 
+
+            return new TilePreparationInfo(tiles, imageWidth, imageHeight, gridCoverageOrigin,
                     gridCoverageMaxX, gridCoverageMaxY, mapProjection);
         } catch (Exception e) {
             throw ExceptionUtils.getRuntimeException(e);

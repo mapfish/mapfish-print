@@ -12,6 +12,3 @@ templates:
           table: !table {}
           name: !string {}
           count: !integer {}
-
-
-

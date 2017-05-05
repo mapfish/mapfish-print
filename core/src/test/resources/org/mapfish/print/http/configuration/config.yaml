@@ -38,4 +38,3 @@ templates:
     processors:
     - !createMap
         inputMapper: {geojsonMap: map}
-
