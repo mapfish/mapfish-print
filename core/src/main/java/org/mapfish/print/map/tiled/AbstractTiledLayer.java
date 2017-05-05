@@ -51,12 +51,11 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
     }
 
     @Override
-    public final void prepareRender(
-            final MapfishMapContext mapContext) {
-        double dpi = mapContext.getDPI();
-        MapBounds bounds = mapContext.getBounds();
-        Rectangle paintArea = new Rectangle(mapContext.getMapSize());
-        this.tileCacheInformation = createTileInformation(bounds, paintArea, dpi);
+    public final void prepareRender(final MapfishMapContext mapContext) {
+        this.tileCacheInformation = createTileInformation(
+                mapContext.getRotatedBoundsAdjustedForPreciseRotatedMapSize(),
+                new Rectangle(mapContext.getRotatedMapSize()),
+                mapContext.getDPI());
     }
 
     @Override

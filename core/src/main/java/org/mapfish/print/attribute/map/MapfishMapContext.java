@@ -143,6 +143,17 @@ public final class MapfishMapContext {
         return new BBoxMapBounds(envelope);
     }
 
+    /**
+     * Return the map bounds rotated with the set rotation. The bounds are adapted
+     * to rounding changes of the size of the set paint area.
+     * @return Rotated bounds.
+     */
+    public MapBounds getRotatedBoundsAdjustedForPreciseRotatedMapSize() {
+        Rectangle2D.Double paintAreaPrecise = getRotatedMapSizePrecise();
+        Rectangle paintArea = new Rectangle(MapfishMapContext.rectangleDoubleToDimension(paintAreaPrecise));
+        return getRotatedBounds(paintAreaPrecise, paintArea);
+    }
+
     public Dimension getMapSize() {
         return this.mapSize;
     }
