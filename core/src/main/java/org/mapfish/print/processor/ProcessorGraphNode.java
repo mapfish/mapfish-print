@@ -90,13 +90,12 @@ public final class ProcessorGraphNode<In, Out> {
      * @param execContext the execution context, used for tracking certain aspects of the execution.
      * @return a task ready to be submitted to a fork join pool.
      */
-    @SuppressWarnings("unchecked")
-    public Optional<ProcessorNodeForkJoinTask> createTask(
+    public Optional<ProcessorNodeForkJoinTask<In, Out>> createTask(
             @Nonnull final ProcessorExecutionContext execContext) {
         if (!execContext.tryStart(this)) {
             return Optional.absent();
         } else {
-            return Optional.of(new ProcessorNodeForkJoinTask(this, execContext));
+            return Optional.of(new ProcessorNodeForkJoinTask<In, Out>(this, execContext));
         }
     }
 
@@ -229,12 +228,13 @@ public final class ProcessorGraphNode<In, Out> {
         private void executeDependencyProcessors() {
             final Set<ProcessorGraphNode> dependencyNodes = this.node.dependencies;
 
-            List<ProcessorNodeForkJoinTask<?, ?>> tasks = new ArrayList<ProcessorNodeForkJoinTask<?, ?>>(dependencyNodes.size());
+            List<ProcessorNodeForkJoinTask<?, ?>> tasks = new ArrayList<ProcessorNodeForkJoinTask<?, ?>>(
+                    dependencyNodes.size());
 
             // fork all but 1 dependencies (the first will be ran in current thread)
-            for (final ProcessorGraphNode depNode : dependencyNodes) {
-                Optional<ProcessorNodeForkJoinTask> task = depNode.createTask(this.execContext);
-
+            for (final ProcessorGraphNode<?, ?> depNode : dependencyNodes) {
+                Optional<? extends ProcessorNodeForkJoinTask<?, ?>> task = depNode.createTask(
+                        this.execContext);
                 if (task.isPresent()) {
                     tasks.add(task.get());
                     if (tasks.size() > 1) {
