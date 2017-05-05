@@ -26,6 +26,7 @@ public final class OldAPILayerConverter {
         converters.put("wms", new WMSConverter());
         converters.put("wmts", new WMSTConverter());
         converters.put("vector", new GeoJsonConverter());
+        converters.put("image", new GeoImageConverter());
     }
 
     /**
@@ -55,7 +56,27 @@ public final class OldAPILayerConverter {
         public JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi) throws JSONException {
             return new JSONObject();
         }
+    }
 
+    private static class GeoImageConverter extends AbstractLayerConverter {
+        @Override
+        public JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi) throws JSONException {
+            final JSONObject layer = super.convert(oldLayer, oldApi);
+            layer.put("type", "image");
+            if (oldLayer.has("baseURL")) {
+                layer.put("baseURL", oldLayer.getString("baseURL"));
+            }
+            if (oldLayer.has("name")) {
+                layer.put("name", oldLayer.getString("name"));
+            }
+            if (oldLayer.has("opacity")) {
+                layer.put("opacity", oldLayer.getDouble("opacity"));
+            }
+            if (oldLayer.has("extent")) {
+                layer.put("extent", oldLayer.getInternalObj().getJSONArray("extent"));
+            }
+            return layer;
+         }
     }
 
     private static class OSMConverter extends AbstractLayerConverter {
