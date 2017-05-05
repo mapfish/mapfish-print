@@ -114,7 +114,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
             renderer.setMapContent(content);
             renderer.setThreadPool(this.executorService);
 
-            final ReferencedEnvelope mapArea = layerTransformer.getBounds().toReferencedEnvelope(paintArea, 
+            final ReferencedEnvelope mapArea = layerTransformer.getBounds().toReferencedEnvelope(paintArea,
                     transformer.getDPI());
             renderer.paint(graphics2D, paintArea, mapArea);
         } catch (Exception e) {
