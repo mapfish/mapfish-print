@@ -147,7 +147,6 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
     protected abstract List<? extends Layer> getLayers(MfClientHttpRequestFactory httpRequestFactory,
                                                        MapfishMapContext transformer) throws Exception;
 
-    //CHECKSTYLE:OFF: DesignForExtension - Set a default value for all sub classes.
     @Override
     public boolean supportsNativeRotation() {
         return false;

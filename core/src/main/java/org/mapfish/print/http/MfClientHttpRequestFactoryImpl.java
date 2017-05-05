@@ -66,12 +66,10 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
         return httpClientBuilder.build();
     }
 
-    // CSOFF: DesignForExtension
     // allow extension only for testing
     @Override
     public ConfigurableRequest createRequest(@Nonnull final URI uri,
                                              @Nonnull final HttpMethod httpMethod) throws IOException {
-        // CSON: DesignForExtension
         HttpRequestBase httpRequest = (HttpRequestBase) createHttpUriRequest(httpMethod, uri);
         return new Request(getHttpClient(), httpRequest, createHttpContext(httpMethod, uri));
     }
