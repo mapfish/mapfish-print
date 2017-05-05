@@ -89,28 +89,20 @@ public final class BBoxMapBounds extends MapBounds {
             final boolean geodetic,
             final Rectangle paintArea, final double dpi) {
 
-        Scale scale;
-        if (geodetic) {
-            final Scale currentScale = getScaleDenominator(paintArea, dpi);
-            final Scale geodeticScale = getGeodeticScaleDenominator(paintArea, dpi);
-            final ZoomLevelSnapStrategy.SearchResult result = zoomLevelSnapStrategy.search(
-                    geodeticScale, tolerance, zoomLevels);
-            scale = new Scale(result.getScale().getDenominator() *
-                    currentScale.getDenominator() / geodeticScale.getDenominator());
-        } else {
-            final Scale currentScale = getScaleDenominator(paintArea, dpi);
-            final ZoomLevelSnapStrategy.SearchResult result = zoomLevelSnapStrategy.search(
-                    currentScale, tolerance, zoomLevels);
-            scale = result.getScale();
-        }
+        final double initialScaleDenominator = getScaleDenominator(paintArea, dpi);
+        final double currentScaleDenominator = Scale.getDenominator(geodetic, initialScaleDenominator,
+                getProjection(), dpi, this.bbox.centre());
+        final double scaleRatio = initialScaleDenominator / currentScaleDenominator;
+        final ZoomLevelSnapStrategy.SearchResult result = zoomLevelSnapStrategy.search(
+                currentScaleDenominator, tolerance, zoomLevels);
+        final double newScaleDenominator =  result.getScaleDenominator() * scaleRatio;
 
         Coordinate center = this.bbox.centre();
-        return new CenterScaleMapBounds(getProjection(), center.x, center.y, scale);
-
+        return new CenterScaleMapBounds(getProjection(), center.x, center.y, newScaleDenominator);
     }
 
     @Override
-    public Scale getScaleDenominator(final Rectangle paintArea, final double dpi) {
+    public double getScaleDenominator(final Rectangle paintArea, final double dpi) {
         final ReferencedEnvelope bboxAdjustedToScreen = toReferencedEnvelope(paintArea, dpi);
 
         DistanceUnit projUnit = DistanceUnit.fromProjection(getProjection());
@@ -130,8 +122,7 @@ public final class BBoxMapBounds extends MapBounds {
             geoWidthInInches = projUnit.convertTo(bboxAdjustedToScreen.getWidth(), DistanceUnit.IN);
         }
 
-        double scale = geoWidthInInches * (dpi / paintArea.getWidth());
-        return new Scale(scale);
+        return geoWidthInInches * (dpi / paintArea.getWidth());
     }
 
     @Override
@@ -204,7 +195,12 @@ public final class BBoxMapBounds extends MapBounds {
     @Override
     public MapBounds zoomToScale(final double scale) {
         Coordinate center = this.bbox.centre();
-        return new CenterScaleMapBounds(getProjection(), center.x, center.y, new Scale(scale));
+        return new CenterScaleMapBounds(getProjection(), center.x, center.y, scale);
+    }
+
+    @Override
+    public Coordinate getCenter() {
+        return this.bbox.centre();
     }
 
     /**

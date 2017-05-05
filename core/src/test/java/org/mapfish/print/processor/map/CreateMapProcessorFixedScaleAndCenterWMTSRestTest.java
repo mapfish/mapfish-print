@@ -113,7 +113,8 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSRestTest extends AbstractM
         assertEquals(2, layerGraphics.size());
 
         MapfishMapContext mapContext = values.getObject("mapContext", MapfishMapContext.class);
-        assertEquals(110000.0, mapContext.getScale().getDenominator(), 1E-6);
+        assertEquals(110000.0, mapContext.getScale().getDenominator(
+                mapContext.getBounds().getProjection(), mapContext.getRequestorDPI()), 1E-6);
 
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 630, 294);
         // ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));

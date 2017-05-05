@@ -66,6 +66,6 @@ public class Matrix {
      * @param projection The map projection
      */
     public final double getResolution(final CoordinateReferenceSystem projection) {
-        return new Scale(this.scaleDenominator).toResolution(projection, OGC_DPI);
+        return new Scale(this.scaleDenominator, projection, OGC_DPI).getResolution();
     }
 }

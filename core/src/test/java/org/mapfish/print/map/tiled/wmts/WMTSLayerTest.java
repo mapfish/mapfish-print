@@ -27,7 +27,7 @@ public class WMTSLayerTest {
         WMTSLayer wmtsLayer = new WMTSLayer(null, null, null, params, null);
 
         Rectangle paintArea = new Rectangle(0, 0, 256, 256);
-        MapBounds bounds = new CenterScaleMapBounds(CRS.decode("EPSG:21781"), 595217.02, 236708.54, new Scale(7500));
+        MapBounds bounds = new CenterScaleMapBounds(CRS.decode("EPSG:21781"), 595217.02, 236708.54, 7500);
         WMTSLayer.WMTSTileCacheInfo tileInformation =
                 (WMTSLayer.WMTSTileCacheInfo) wmtsLayer.createTileInformation(bounds, paintArea, 256);
 

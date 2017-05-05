@@ -121,7 +121,7 @@ public class ScalebarGraphicTest {
     @Test
     public void testRender() throws Exception {
         MapBounds bounds = new CenterScaleMapBounds(
-                CRS.decode("EPSG:3857"), -8235878.4938425, 4979784.7605681, new Scale(26000));
+                CRS.decode("EPSG:3857"), -8235878.4938425, 4979784.7605681, 26000);
         MapfishMapContext mapParams = new MapfishMapContext(
                 bounds, new Dimension(780, 330), 0, 72, 72, true, false);
 
@@ -141,7 +141,7 @@ public class ScalebarGraphicTest {
     @Test
     public void testRenderDoubleDpi() throws Exception {
         MapBounds bounds = new CenterScaleMapBounds(
-                CRS.decode("EPSG:3857"), -8235878.4938425, 4979784.7605681, new Scale(26000));
+                CRS.decode("EPSG:3857"), -8235878.4938425, 4979784.7605681, 26000);
         MapfishMapContext mapParams = new MapfishMapContext(
                 bounds, new Dimension(780, 330), 0, 144, 72, true, false);
 
@@ -160,7 +160,7 @@ public class ScalebarGraphicTest {
     @Test
     public void testRenderSvg() throws Exception {
         MapBounds bounds = new CenterScaleMapBounds(
-                CRS.decode("EPSG:3857"), -8235878.4938425, 4979784.7605681, new Scale(26000));
+                CRS.decode("EPSG:3857"), -8235878.4938425, 4979784.7605681, 26000);
         MapfishMapContext mapParams = new MapfishMapContext(
                 bounds, new Dimension(780, 330), 0, 72, 72, true, false);
 

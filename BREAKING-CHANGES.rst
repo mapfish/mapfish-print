@@ -12,3 +12,4 @@ The processor graph is more strict
   e.g. the !createScaleBar should be after the !createMap processor.
 - In the !prepareLegend processor, the legend output is renamed to legendDataSource
 - In the !prepareTable processor, the table output is renamed to tableDataSource
+- In the mapContext the method getRoundedScale is renamed to getRoundedScaleDenominator
