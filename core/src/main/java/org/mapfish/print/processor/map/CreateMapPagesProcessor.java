@@ -62,6 +62,7 @@ public class CreateMapPagesProcessor
         implements ProvideAttributes, RequireAttributes {
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateMapPagesProcessor.class);
     private static final int DO_NOT_RENDER_BBOX_INDEX = -1;
+    private static final String MAP_KEY = "map";
 
     private final GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
     private MapAttribute mapAttribute;
@@ -188,7 +189,7 @@ public class CreateMapPagesProcessor
                             return null;
                         }
                     });
-                    mapValues.put("map", theMap);
+                    mapValues.put(MAP_KEY, theMap);
 
                     mapList.add(mapValues);
                 }
@@ -207,7 +208,7 @@ public class CreateMapPagesProcessor
      * @param attribute the attribute
      */
     public void setAttribute(final String name, final Attribute attribute) {
-        if (name.equals("map")) {
+        if (name.equals(MAP_KEY)) {
             this.mapAttribute = (MapAttribute) attribute;
         }
     }
@@ -221,7 +222,7 @@ public class CreateMapPagesProcessor
         Map<String, Attribute> result = new HashMap<String, Attribute>();
         DataSourceAttribute datasourceAttribute = new DataSourceAttribute();
         Map<String, Attribute> dsResult = new HashMap<String, Attribute>();
-        dsResult.put("map", this.mapAttribute);
+        dsResult.put(MAP_KEY, this.mapAttribute);
         datasourceAttribute.setAttributes(dsResult);
         result.put("datasource", datasourceAttribute);
         return result;
