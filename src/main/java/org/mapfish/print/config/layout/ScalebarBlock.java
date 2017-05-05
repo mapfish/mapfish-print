@@ -20,10 +20,13 @@
 package org.mapfish.print.config.layout;
 
 import com.itextpdf.text.BaseColor;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.GeodeticCalculator;
 import org.mapfish.print.ChunkDrawer;
 import org.mapfish.print.InvalidJsonValueException;
 import org.mapfish.print.InvalidValueException;
@@ -35,12 +38,16 @@ import org.mapfish.print.scalebar.Label;
 import org.mapfish.print.scalebar.ScalebarDrawer;
 import org.mapfish.print.scalebar.Type;
 import org.mapfish.print.utils.DistanceUnit;
-import org.mapfish.print.utils.Maps;
+import org.mapfish.print.utils.PJsonArray;
 import org.mapfish.print.utils.PJsonObject;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.pdf.BaseFont;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 
 /**
  * Block for drawing a !scalebar block.
@@ -87,7 +94,38 @@ public class ScalebarBlock extends FontBlock {
             throw new InvalidJsonValueException(globalParams, "units", globalParams.getString("units"));
         }
         DistanceUnit scaleUnit = (units != null ? units : mapUnits);
-        final double scale = context.getLayout().getMainPage().getMap(name).createTransformer(context, params).getScale();
+
+        double scale = context.getLayout().getMainPage().getMap(name).createTransformer(context, params).getScale();
+
+        // Apply geodetic correction on scale parameter
+        if(!scaleUnit.equals(DistanceUnit.DEGREES)){
+            try {
+                PJsonArray center = params.getJSONArray("center");
+                String srs = globalParams.getString("srs");
+                double center_x = center.getDouble(0);
+                double center_y = center.getDouble(1);
+
+                // Create a horizontal segment of 1m in map projection
+                final MathTransform transform = CRS.findMathTransform(CRS.decode(srs), CRS.decode("EPSG:4326"));
+                final Coordinate start = JTS.transform(new Coordinate(center_x - 0.5, center_y), null, transform);
+                final Coordinate end = JTS.transform(new Coordinate(center_x + 0.5, center_y), null, transform);
+
+                // Calculate length of previous segment with geodetic correction
+                CoordinateReferenceSystem crs = CRS.decode(srs);
+                GeodeticCalculator calculator = new GeodeticCalculator(crs);
+                calculator.setStartingGeographicPoint(start.x, start.y);
+                calculator.setDestinationGeographicPoint(end.x, end.y);
+                // Apply correction on the scale factor
+                scale *= calculator.getOrthodromicDistance();
+
+            } catch (FactoryException e) {
+                e.printStackTrace();
+                throw new DocumentException("Cannot compute scale factor of scalebar");
+            } catch (TransformException e) {
+                e.printStackTrace();
+                throw new DocumentException("Cannot compute scale factor of scalebar");
+            }
+        }
 
         final double maxWidthIntervaleDistance = DistanceUnit.PT.convertTo(maxSize, scaleUnit) * scale / intervals;
         final double intervalDistance = getNearestNiceValue(maxWidthIntervaleDistance, scaleUnit);
