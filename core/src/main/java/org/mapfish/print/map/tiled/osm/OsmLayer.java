@@ -102,11 +102,6 @@ public final class OsmLayer extends AbstractTiledLayer {
                 }
                 uri  = new URI(url);
             } else {
-                if (OsmLayer.this.param.imageFormat != null) {
-                    LOGGER.warn("The imageFormat is deprecated, " +
-                            "replaced by imageExtension should be a mime type");
-                    OsmLayer.this.param.imageExtension = OsmLayer.this.param.imageFormat;
-                }
                 StringBuilder path = new StringBuilder();
                 if (!commonUrl.endsWith("/")) {
                     path.append('/');

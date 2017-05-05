@@ -8,7 +8,6 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.util.Assert;
 
 import org.mapfish.print.map.tiled.AbstractTiledLayerParams;
-import org.mapfish.print.parser.CanSatisfyOneOf;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PObject;
@@ -80,16 +79,7 @@ public final class OsmLayerParam extends AbstractTiledLayerParams {
      * The image extension.  for example png, jpg, etc...
      */
     @HasDefaultValue
-    @CanSatisfyOneOf("extension")
     public String imageExtension = "png";
-
-    /**
-     * Deprecated, replaced by imageExtension.
-     * @deprecated
-     */
-    @CanSatisfyOneOf("extension")
-    @Deprecated
-    public String imageFormat = null;
 
     /**
      * Custom query parameters to use when making http requests.
