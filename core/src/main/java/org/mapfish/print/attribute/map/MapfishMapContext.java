@@ -200,6 +200,28 @@ public final class MapfishMapContext {
     }
 
     /**
+     * Utility method use to display the center in the report.
+     *
+     * @return the center X
+     */
+    public double getCenterX() {
+        return getCenter(0);
+    }
+
+    /**
+     * Utility method use to display the center in the report.
+     *
+     * @return the center Y
+     */
+    public double getCenterY() {
+        return getCenter(1);
+    }
+
+    private double getCenter(final int dimension) {
+        return getBounds().toReferencedEnvelope(new Rectangle(getMapSize()), getDPI()).getMedian(dimension);
+    }
+
+    /**
      * @return The new map size taking the rotation into account.
      */
     public Dimension getRotatedMapSize() {
