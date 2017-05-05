@@ -30,13 +30,13 @@ public class BarScalebarDrawer extends ScalebarDrawer {
             final Color color = i % 2 == 0 ? getParams().getBarBgColor() : getParams().getColor();
             if (color != null) {
                 getGraphics2d().setColor(color);
-                getGraphics2d().fillRect((int) pos, -barSize, (int) subIntervalWidth, barSize);
+                getGraphics2d().fillRect(Math.round(pos), -barSize, Math.round(subIntervalWidth), barSize);
             }
         }
 
         getGraphics2d().setColor(getParams().getColor());
         getGraphics2d().drawRect(
                 0, -barSize,
-                (int) (getSettings().getIntervalLengthInPixels() * getParams().intervals), barSize);
+                Math.round(getSettings().getIntervalLengthInPixels() * getParams().intervals), barSize);
     }
 }

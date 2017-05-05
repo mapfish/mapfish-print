@@ -72,7 +72,7 @@ public class ScalebarAttributeTest extends AbstractMapfishSpringTest {
     public void testPostConstructInvalidIntervals() throws Exception {
         ScalebarAttributeValues values = getValues();
 
-        values.intervals = 1;
+        values.intervals = 0;
         values.postConstruct();
     }
 

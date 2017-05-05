@@ -7,6 +7,7 @@ import org.mapfish.print.attribute.ScalebarAttribute.ScalebarAttributeValues;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.test.util.ImageSimilarity;
 
+import javax.imageio.ImageIO;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -68,6 +69,26 @@ public class ScalebarDrawerTest {
 //        output.getParentFile().mkdirs();
 //        ImageIO.write(bufferedImage, "png", output);
         new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-rotated.png"), 5);
+    }
+
+    @Test
+    public void testDrawLineLabelRotatedNegative() throws Exception {
+        final BufferedImage bufferedImage = new BufferedImage(180, 80, BufferedImage.TYPE_4BYTE_ABGR);
+        final Graphics2D graphics2d = bufferedImage.createGraphics();
+
+        ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
+        settings.getParams().labelRotation = -90;
+        settings.getParams().getSize().width = 180;
+        settings.getParams().getSize().height = 80;
+        settings.setMaxSize(new Dimension(180, 80));
+        settings.setSize(ScalebarGraphic.getSize(settings.getParams(), settings, settings.getMaxLabelSize()));
+        ScalebarDrawer drawer = Type.LINE.createDrawer(graphics2d, settings);
+        drawer.draw();
+
+        final File output = new File("/tmp/expected-scalebar-line-labels-rotated-negative.png");
+        output.getParentFile().mkdirs();
+        ImageIO.write(bufferedImage, "png", output);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-line-labels-rotated-negative.png"), 5);
     }
 
     @Test
@@ -238,8 +259,7 @@ public class ScalebarDrawerTest {
         ScalebarDrawer drawer = Type.BAR.createDrawer(graphics2d, settings);
         drawer.draw();
 
-//        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-bar.tiff");
-        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile(expectedDir + "expected-scalebar-bar.tiff"), 5);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-bar.png"), 300);
     }
 
     @Test
@@ -251,8 +271,7 @@ public class ScalebarDrawerTest {
         ScalebarDrawer drawer = Type.BAR.createDrawer(graphics2d, settings);
         drawer.draw();
 
-//        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-bar-subs.tiff");
-        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile(expectedDir + "expected-scalebar-bar-subs.tiff"), 5);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-bar-subs.png"), 350);
     }
 
     @Test
@@ -265,8 +284,7 @@ public class ScalebarDrawerTest {
         ScalebarDrawer drawer = Type.BAR.createDrawer(graphics2d, settings);
         drawer.draw();
 
-//        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-bar-bg.tiff");
-        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile(expectedDir + "expected-scalebar-bar-bg.tiff"), 52);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-bar-bg.png"), 450);
     }
 
     @Test
@@ -278,8 +296,7 @@ public class ScalebarDrawerTest {
         ScalebarDrawer drawer = Type.BAR_SUB.createDrawer(graphics2d, settings);
         drawer.draw();
 
-//        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-barsub.tiff");
-        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile(expectedDir + "expected-scalebar-barsub.tiff"), 5);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-barsub.png"), 300);
     }
 
     @Test
@@ -291,8 +308,7 @@ public class ScalebarDrawerTest {
         ScalebarDrawer drawer = Type.BAR_SUB.createDrawer(graphics2d, settings);
         drawer.draw();
 
-//        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-barsub-subs.tiff");
-        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile(expectedDir + "expected-scalebar-barsub-subs.tiff"), 5);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-barsub-subs.png"), 350);
     }
 
     @Test
@@ -306,8 +322,7 @@ public class ScalebarDrawerTest {
         ScalebarDrawer drawer = Type.BAR.createDrawer(graphics2d, settings);
         drawer.draw();
 
-//        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-bar-text-above.tiff");
-        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile(expectedDir + "expected-scalebar-bar-text-above.tiff"), 80);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-bar-text-above.png"), 300);
     }
 
     @Test
@@ -325,8 +340,7 @@ public class ScalebarDrawerTest {
         ScalebarDrawer drawer = Type.BAR.createDrawer(graphics2d, settings);
         drawer.draw();
 
-//        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-bar-vertical-text-left.tiff");
-        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile(expectedDir + "expected-scalebar-bar-vertical-text-left.tiff"), 44);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-bar-vertical-text-left.png"), 300);
     }
 
     @Test
@@ -344,8 +358,7 @@ public class ScalebarDrawerTest {
         ScalebarDrawer drawer = Type.BAR.createDrawer(graphics2d, settings);
         drawer.draw();
 
-//        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-bar-vertical-text-right.tiff");
-        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile(expectedDir + "expected-scalebar-bar-vertical-text-right.tiff"), 44);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-bar-vertical-text-right.png"), 250);
     }
 
     @Test
@@ -360,8 +373,7 @@ public class ScalebarDrawerTest {
         ScalebarDrawer drawer = Type.BAR.createDrawer(graphics2d, settings);
         drawer.draw();
 
-//        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-top-right.tiff");
-        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile(expectedDir + "expected-scalebar-top-right.tiff"), 44);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-top-right.png"), 400);
     }
 
     @Test
@@ -376,8 +388,7 @@ public class ScalebarDrawerTest {
         ScalebarDrawer drawer = Type.BAR.createDrawer(graphics2d, settings);
         drawer.draw();
 
-//        ImageSimilarity.writeUncompressedImage(bufferedImage, "/tmp/expected-scalebar-middle-center.tiff");
-        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile(expectedDir + "expected-scalebar-middle-center.tiff"), 40);
+        new ImageSimilarity(bufferedImage, 4).assertSimilarity(getFile("expected-scalebar-middle-center.png"), 600);
     }
 
     private ScaleBarRenderSettings getSettings(final Graphics2D graphics2d, int numSubIntervals) {
@@ -422,7 +433,7 @@ public class ScalebarDrawerTest {
                 labelText += DistanceUnit.M;
             }
             TextLayout labelLayout = new TextLayout(labelText, font, frc);
-            labels.add(new Label(intervalWidthInPixels * i, labelLayout, params.getOrientation()));
+            labels.add(new Label(intervalWidthInPixels * i, labelLayout, graphics2d));
         }
         settings.setLabels(labels);
 

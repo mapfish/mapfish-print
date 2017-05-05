@@ -162,23 +162,22 @@ public class ScalebarGraphic {
                     labelText += intervalUnit;
                 }
                 TextLayout labelLayout = new TextLayout(labelText, font, frc);
-                labels.add(new Label(intervalLengthInPixels * i, labelLayout, scalebarParams.getOrientation()));
+                labels.add(new Label(intervalLengthInPixels * i, labelLayout, graphics2D));
             }
-            leftLabelMargin = labels.get(0).getWidth() / 2.0f;
-            rightLabelMargin = labels.get(labels.size() - 1).getWidth() / 2.0f;
-            topLabelMargin = labels.get(0).getHeight() / 2.0f;
-            bottomLabelMargin = labels.get(labels.size() - 1).getHeight() / 2.0f;
+            leftLabelMargin = labels.get(0).getRotatedWidth(scalebarParams.labelRotation) / 2.0f;
+            rightLabelMargin = labels.get(labels.size() - 1).getRotatedWidth(scalebarParams.labelRotation) / 2.0f;
+            topLabelMargin = labels.get(0).getRotatedHeight(scalebarParams.labelRotation) / 2.0f;
+            bottomLabelMargin = labels.get(labels.size() - 1).getRotatedHeight(scalebarParams.labelRotation) / 2.0f;
         } else {
             //if there is only one interval, place the label centered between the two tick marks
             String labelText = createLabelText(scaleUnit, intervalLengthInWorldUnits, intervalUnit) + intervalUnit;
             TextLayout labelLayout = new TextLayout(labelText, font, frc);
-            final Label label = new Label(intervalLengthInPixels / 2.0f,
-                    labelLayout, scalebarParams.getOrientation());
+            final Label label = new Label(intervalLengthInPixels / 2.0f, labelLayout, graphics2D);
             labels.add(label);
-            rightLabelMargin = Math.max(0.0f, label.getWidth() - intervalLengthInPixels) / 2.0f;
-            leftLabelMargin = rightLabelMargin;
-            topLabelMargin = Math.max(0.0f, label.getHeight() - intervalLengthInPixels) / 2.0f;
-            bottomLabelMargin = topLabelMargin;
+            rightLabelMargin = 0;
+            leftLabelMargin = 0;
+            topLabelMargin = 0;
+            bottomLabelMargin = 0;
         }
 
         if (fitsAvailableSpace(scalebarParams, intervalLengthInPixels,
@@ -255,24 +254,22 @@ public class ScalebarGraphic {
             final ScaleBarRenderSettings settings, final Dimension maxLabelSize) {
         final float width;
         final float height;
+        final double angle = Math.abs(Math.toRadians(scalebarParams.labelRotation));
         if (scalebarParams.getOrientation().isHorizontal()) {
             width = 2 * settings.getPadding()
                 + settings.getIntervalLengthInPixels() * scalebarParams.intervals
                 + settings.getLeftLabelMargin() + settings.getRightLabelMargin();
             height = 2 * settings.getPadding()
                 + settings.getBarSize() + settings.getLabelDistance()
-                + (long) Math.ceil(maxLabelSize.height * Math.cos(Math.toRadians(scalebarParams.labelRotation))
-                + maxLabelSize.width * Math.sin(Math.toRadians(scalebarParams.labelRotation)));
+                + Label.getRotatedHeight(maxLabelSize, scalebarParams.labelRotation);
         } else {
             width = 2 * settings.getPadding()
                 + settings.getLabelDistance() + settings.getBarSize()
-                + (long) Math.ceil(maxLabelSize.width * Math.cos(Math.toRadians(scalebarParams.labelRotation))
-                + maxLabelSize.height * Math.sin(Math.toRadians(scalebarParams.labelRotation)));
+                + Label.getRotatedWidth(maxLabelSize, scalebarParams.labelRotation);
             height = 2 * settings.getPadding()
                 + settings.getTopLabelMargin()
                 + settings.getIntervalLengthInPixels() * scalebarParams.intervals
-                + settings.getBottomLabelMargin()
-                + (long) Math.ceil(maxLabelSize.width / 2 * Math.sin(Math.toRadians(scalebarParams.labelRotation)));
+                + settings.getBottomLabelMargin();
         }
         return new Dimension((int) Math.ceil(width), (int) Math.ceil(height));
     }
@@ -285,8 +282,7 @@ public class ScalebarGraphic {
     protected static Dimension getMaxLabelSize(final ScaleBarRenderSettings settings) {
         float maxLabelHeight = 0.0f;
         float maxLabelWidth = 0.0f;
-        for (int i = 0; i < settings.getLabels().size(); i++) {
-            Label label = settings.getLabels().get(i);
+        for (final Label label: settings.getLabels()) {
             maxLabelHeight = Math.max(maxLabelHeight, label.getHeight());
             maxLabelWidth = Math.max(maxLabelWidth, label.getWidth());
         }

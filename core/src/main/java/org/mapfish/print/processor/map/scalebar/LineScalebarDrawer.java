@@ -21,10 +21,10 @@ public class LineScalebarDrawer extends ScalebarDrawer {
         final int barSize = getSettings().getBarSize();
 
         // first tick
-        getGraphics2d().drawLine(0, 0, 0, -barSize);
+        getGraphics2d().drawLine(0, -barSize, 0, 0);
 
         // horizontal line
-        int intervalsLength = (int) (getSettings().getIntervalLengthInPixels() * getParams().intervals);
+        int intervalsLength = Math.round(getSettings().getIntervalLengthInPixels() * getParams().intervals);
         getGraphics2d().drawLine(0, -barSize, intervalsLength, -barSize);
 
         // last tick
@@ -34,12 +34,12 @@ public class LineScalebarDrawer extends ScalebarDrawer {
         for (int i = 0; i < getParams().intervals; i++) {
             float pos = i * getSettings().getIntervalLengthInPixels();
             if (i > 0) {
-                getGraphics2d().drawLine((int) pos, 0, (int) pos, -barSize);
+                getGraphics2d().drawLine(Math.round(pos), 0, Math.round(pos), -barSize);
             }
             // draw the ticks for the sub-intervals
             for (int j = 1; j < getSettings().getNumSubIntervals(); j++) {
                 pos += getSettings().getIntervalLengthInPixels() / getSettings().getNumSubIntervals();
-                getGraphics2d().drawLine((int) pos, -barSize, (int) pos, (int) -(barSize / 2.0f));
+                getGraphics2d().drawLine(Math.round(pos), -barSize, Math.round(pos), -Math.round(barSize / 2.0f));
             }
         }
     }

@@ -39,6 +39,7 @@ public final class ImageSimilarity {
     // The reference image "signature" (25 representative pixels, each in R,G,B).
     // We use instances of Color to make things simpler.
     private final Color[][] signature;
+    private final BufferedImage referenceImage;
     // The size of the sampling area.
     private int sampleSize = DEFAULT_SAMPLESIZE;
     // values that are used to generate the position of the sample pixels
@@ -56,6 +57,7 @@ public final class ImageSimilarity {
      * The constructor, which creates the GUI and start the image processing task.
      */
     public ImageSimilarity(BufferedImage referenceImage, int sampleSize) throws IOException {
+        this.referenceImage = referenceImage;
         if (referenceImage.getWidth() * prop[0] - sampleSize < 0 ||
             referenceImage.getWidth() * prop[4] + sampleSize > referenceImage.getWidth()) {
             throw new IllegalArgumentException("sample size is too big for the image.");
@@ -149,10 +151,20 @@ public final class ImageSimilarity {
      * @param maxDistance the maximum distance between the two images.
      */
     public void assertSimilarity(File other, double maxDistance) throws IOException {
+        final File actualOutput = new File(other.getParentFile(),
+                "actual" + other.getName().replace("expected", "").replace(".tiff", ".png"));
+        if (!other.exists()) {
+            ImageIO.write(referenceImage, "png", actualOutput);
+            throw new AssertionError("The expected file was missing and has been generated: " +
+                    actualOutput.getAbsolutePath());
+        }
         final double distance = calcDistance(ImageIO.read(other));
         if (distance > maxDistance) {
+            ImageIO.write(referenceImage, "png", actualOutput);
             throw new AssertionError("similarity difference between images is: " + distance +
-                                     " which is greater than the max distance of " + maxDistance);
+                                     " which is greater than the max distance of " + maxDistance +
+                                     "\nactual=" + actualOutput.getAbsolutePath() + "\nexpected=" +
+                                     other.getAbsolutePath());
         }
     }
 
