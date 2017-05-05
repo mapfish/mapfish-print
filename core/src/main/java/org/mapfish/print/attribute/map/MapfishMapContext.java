@@ -37,9 +37,12 @@ public final class MapfishMapContext {
      * @param forceLongitudeFirst If true then force longitude coordinates as the first coordinate.
      * @param dpiSensitiveStyle Scale the vector styles?
      */
-    public MapfishMapContext(final MapBounds bounds, final Dimension mapSize, final double rotationInDegree, final double dpi,
-                             final double requestorDpi, final Boolean forceLongitudeFirst, final boolean dpiSensitiveStyle) {
-        this(null, bounds, mapSize, rotationInDegree, dpi, requestorDpi, forceLongitudeFirst, dpiSensitiveStyle);
+    public MapfishMapContext(
+            final MapBounds bounds, final Dimension mapSize, final double rotationInDegree,
+            final double dpi, final double requestorDpi, final Boolean forceLongitudeFirst,
+            final boolean dpiSensitiveStyle) {
+        this(null, bounds, mapSize, rotationInDegree, dpi, requestorDpi, forceLongitudeFirst,
+                dpiSensitiveStyle);
     }
 
     /**
@@ -54,10 +57,12 @@ public final class MapfishMapContext {
      * @param dpiSensitiveStyle Scale the vector styles?
      */
     // CSOFF: ParameterNumber
-    public MapfishMapContext(final MapfishMapContext parent, final MapBounds bounds, final Dimension mapSize,
-                             final double rotationInDegree, final double dpi, final double requestorDpi,
-                             final Boolean forceLongitudeFirst, final boolean dpiSensitiveStyle) {
-        this(parent, bounds, mapSize, rotationInDegree, true, dpi, requestorDpi, forceLongitudeFirst, dpiSensitiveStyle);
+    public MapfishMapContext(
+            final MapfishMapContext parent, final MapBounds bounds, final Dimension mapSize,
+            final double rotationInDegree, final double dpi, final double requestorDpi,
+            final Boolean forceLongitudeFirst, final boolean dpiSensitiveStyle) {
+        this(parent, bounds, mapSize, rotationInDegree, true, dpi, requestorDpi, forceLongitudeFirst,
+                dpiSensitiveStyle);
     }
 
     /**
@@ -73,9 +78,10 @@ public final class MapfishMapContext {
      * @param dpiSensitiveStyle Scale the vector styles?
      */
     // CSOFF: ParameterNumber
-    public MapfishMapContext(final MapfishMapContext parent, final MapBounds bounds, final Dimension mapSize,
-                             final double rotation, final boolean rotationInDegree, final double dpi, final double requestorDpi,
-                             final Boolean forceLongitudeFirst, final boolean dpiSensitiveStyle) {
+    public MapfishMapContext(
+            final MapfishMapContext parent, final MapBounds bounds, final Dimension mapSize,
+            final double rotation, final boolean rotationInDegree, final double dpi,
+            final double requestorDpi, final Boolean forceLongitudeFirst, final boolean dpiSensitiveStyle) {
         // CSON: ParameterNumber
         this.parent = parent;
         this.bounds = bounds;
@@ -151,8 +157,9 @@ public final class MapfishMapContext {
     /**
      * Get a nicely rounded scale for to use for displaying the map scale.
      * <p>
-     *     One of the output parameters of the {@link org.mapfish.print.processor.map.CreateMapProcessor} is 'mapContext' which can
-     *     be accessed in a template.  If the scale is required in the template then it can be accessed via:
+     *     One of the output parameters of the {@link org.mapfish.print.processor.map.CreateMapProcessor}
+     *     is 'mapContext' which can be accessed in a template.  If the scale is required in the template
+     *     then it can be accessed via:
      *     <code>$P{mapContext}.getRoundedScale()</code>
      * </p>
      */
@@ -163,8 +170,9 @@ public final class MapfishMapContext {
     /**
      * Get a nicely rounded scale for to use for displaying the map scale.
      * <p>
-     *     One of the output parameters of the {@link org.mapfish.print.processor.map.CreateMapProcessor} is 'mapContext' which can
-     *     be accessed in a template.  If the scale is required in the template then it can be accessed via:
+     *     One of the output parameters of the {@link org.mapfish.print.processor.map.CreateMapProcessor}
+     *     is 'mapContext' which can be accessed in a template.  If the scale is required in the template
+     *     then it can be accessed via:
      *     <code>$P{mapContext}.getRoundedScale()</code>
      * </p>
      *
@@ -189,6 +197,28 @@ public final class MapfishMapContext {
         }
 
         return scale;
+    }
+
+    /**
+     * Utility method use to display the center in the report.
+     *
+     * @return the center X
+     */
+    public double getCenterX() {
+        return getCenter(0);
+    }
+
+    /**
+     * Utility method use to display the center in the report.
+     *
+     * @return the center Y
+     */
+    public double getCenterY() {
+        return getCenter(1);
+    }
+
+    private double getCenter(final int dimension) {
+        return getBounds().toReferencedEnvelope(new Rectangle(getMapSize()), getDPI()).getMedian(dimension);
     }
 
     /**
@@ -302,10 +332,12 @@ public final class MapfishMapContext {
     }
 
     /**
-     * Get the parent context if there is one.  A parent context is the context that this context is derived from.
-     * Normally there are some parameters that have been changed for this context from the parent.  An example of when
-     * there might be a parent is when the child has been rotated and has a bounds to envelope the original bounds.  It can be
-     * useful in some cases to be able to access the parent (and original bounds).
+     * Get the parent context if there is one.  A parent context is the context that this context is
+     * derived from.
+     * Normally there are some parameters that have been changed for this context from the parent.  An
+     * example of when there might be a parent is when the child has been rotated and has a bounds to
+     * envelope the original bounds.  It can be useful in some cases to be able to access the parent (and
+     * original bounds).
      *
      * @return the parent context or null if there is no parent.
      */
@@ -315,7 +347,8 @@ public final class MapfishMapContext {
     }
 
     /**
-     * Return the root context which is this context or the context found by recursively calling parent.getRootContext().
+     * Return the root context which is this context or the context found by recursively calling
+     * parent.getRootContext().
      * @return
      */
     @Nonnull
