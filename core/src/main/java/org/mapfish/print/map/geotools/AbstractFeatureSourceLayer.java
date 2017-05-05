@@ -57,8 +57,9 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
      * @param httpRequestFactory The factory for making http requests.
      * @param mapContext The map context.
      */
-    public final FeatureSource<?, ?> getFeatureSource(final MfClientHttpRequestFactory httpRequestFactory,
-            final MapfishMapContext mapContext) {
+    public final FeatureSource<?, ?> getFeatureSource(
+            @Nonnull final MfClientHttpRequestFactory httpRequestFactory,
+            @Nonnull final MapfishMapContext mapContext) {
         if (this.featureSource == null) {
             this.featureSource = this.featureSourceSupplier.load(httpRequestFactory, mapContext);
         }
@@ -66,8 +67,9 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
     }
 
     @Override
-    public final List<? extends Layer> getLayers(final MfClientHttpRequestFactory httpRequestFactory,
-                                                 final MapfishMapContext mapContext) throws Exception {
+    public final List<? extends Layer> getLayers(
+            @Nonnull final MfClientHttpRequestFactory httpRequestFactory,
+            @Nonnull final MapfishMapContext mapContext) throws Exception {
         FeatureSource<?, ?> source = getFeatureSource(httpRequestFactory, mapContext);
         Style style = this.styleSupplier.load(httpRequestFactory, source);
 

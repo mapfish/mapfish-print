@@ -153,7 +153,7 @@ public abstract class ScalebarDrawer {
     protected abstract void drawBar();
 
     private void drawLabels(final AffineTransform transform, final Orientation orientation,
-            final double labelRotation) {
+            final float labelRotation) {
         float prevMargin = orientation.isHorizontal() ? this.settings.getMaxSize().width :
                 this.settings.getMaxSize().height;
 

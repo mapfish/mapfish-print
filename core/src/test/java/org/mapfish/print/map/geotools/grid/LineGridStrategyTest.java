@@ -52,7 +52,7 @@ public class LineGridStrategyTest {
         double rotation = 0;
         double dpi = 72;
         MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, Constants.PDF_DPI, null, true);
-        final List<? extends Layer> layers = layer.getLayers(null, context);
+        final List<? extends Layer> layers = layer.getLayers(new TestHttpClientFactory(), context);
         assertEquals(1, layers.size());
 
         FeatureSource<?, ?> fs = layers.get(0).getFeatureSource();

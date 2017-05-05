@@ -490,17 +490,19 @@ public final class MapfishStyleParserPlugin implements StyleParserPlugin {
     enum Versions {
         ONE("1") {
             @Override
-            Style parseStyle(final PJsonObject json,
-                             final StyleBuilder styleBuilder,
-                             final Configuration configuration) {
+            Style parseStyle(
+                    @Nonnull final PJsonObject json,
+                    @Nonnull final StyleBuilder styleBuilder,
+                    @Nullable final Configuration configuration) {
                 return new MapfishJsonStyleVersion1(
                         json, styleBuilder, configuration, DEFAULT_GEOM_ATT_NAME).parseStyle();
             }
         }, TWO("2") {
             @Override
-            Style parseStyle(final PJsonObject json,
-                             final StyleBuilder styleBuilder,
-                             final Configuration configuration) {
+            Style parseStyle(
+                    @Nonnull final PJsonObject json,
+                    @Nonnull final StyleBuilder styleBuilder,
+                    @Nullable final Configuration configuration) {
                 return new MapfishJsonStyleVersion2(json, styleBuilder, configuration).parseStyle();
             }
         };
@@ -519,9 +521,10 @@ public final class MapfishStyleParserPlugin implements StyleParserPlugin {
 
 
     @Override
-    public Optional<Style> parseStyle(@Nullable final Configuration configuration,
-                                      @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
-                                      @Nonnull final String styleString) throws Throwable {
+    public Optional<Style> parseStyle(
+            @Nullable final Configuration configuration,
+            @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
+            @Nonnull final String styleString) throws Throwable {
         final Optional<Style> styleOptional = tryParse(
                 configuration, styleString, clientHttpRequestFactory);
 

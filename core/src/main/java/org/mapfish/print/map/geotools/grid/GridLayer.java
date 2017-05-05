@@ -25,6 +25,8 @@ import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
+import javax.annotation.Nonnull;
+
 /**
  * A layer which is a spatial grid of lines on the map.
  */
@@ -102,8 +104,7 @@ public final class GridLayer implements MapLayer {
 
             applyOffset(transform, label.side);
 
-            final double rotationDegrees = Math.toDegrees(transformer.getRotation());
-            RotationQuadrant.getQuadrant(rotationDegrees, this.params.rotateLabels)
+            RotationQuadrant.getQuadrant(transformer.getRotation(), this.params.rotateLabels)
                     .updateTransform(transform, this.params.indent, label.side,
                             halfCharHeight, textBounds);
             graphics2D.setTransform(transform);
@@ -142,8 +143,9 @@ public final class GridLayer implements MapLayer {
     }
 
     @VisibleForTesting
-    List<? extends Layer> getLayers(final MfClientHttpRequestFactory httpRequestFactory,
-                                    final MapfishMapContext mapContext) throws Exception {
+    List<? extends Layer> getLayers(
+            @Nonnull final MfClientHttpRequestFactory httpRequestFactory,
+            @Nonnull final MapfishMapContext mapContext) throws Exception {
         return this.grid.getLayers(httpRequestFactory, mapContext);
     }
 

@@ -136,40 +136,41 @@ enum RotationQuadrant {
         }
     };
 
-    public static final int THREE_SIXTY_DEGREES = 360;
+    public static final double THREE_SIXTY_RADIANS = Math.PI * 2;
 
-    abstract void updateTransform(AffineTransform baseTransform, int indent, GridLabel.Side side,
-                                  int halfCharHeight, Rectangle2D textBounds);
+    abstract void updateTransform(
+            AffineTransform baseTransform, int indent, GridLabel.Side side,
+            int halfCharHeight, Rectangle2D textBounds);
 
-    static RotationQuadrant getQuadrant(final double rotationDegrees, final boolean rotate) {
+    static RotationQuadrant getQuadrant(final double rotation, final boolean rotate) {
         if (!rotate) {
             return NO_ROTATION;
         }
 
-        double rotation = rotationDegrees;
-        while (rotation > THREE_SIXTY_DEGREES) {
-            rotation -= THREE_SIXTY_DEGREES;
+        double rot = rotation;
+        while (rot > THREE_SIXTY_RADIANS) {
+            rot -= THREE_SIXTY_RADIANS;
         }
 
-        while (rotation < 0) {
-            rotation += THREE_SIXTY_DEGREES;
+        while (rot < 0) {
+            rot += THREE_SIXTY_RADIANS;
         }
 
-        if (rotation > 0 && rotation <= 90) {
+        if (rotation > 0 && rotation <= Math.PI / 2) {
             return QUADRANT_1;
         }
-        if (rotation > 90 && rotation <= 180) {
+        if (rot > Math.PI / 2 && rot <= Math.PI) {
             return QUADRANT_2;
         }
-        if (rotation > 180 && rotation <= 270) {
+        if (rot > Math.PI && rot <= Math.PI * 3 / 2) {
             return QUADRANT_3;
         }
         return QUADRANT_4;
     }
 
     private static class Constants {
-        public static final double MINUS_NINETY_RADIANS = Math.toRadians(-90);
-        public static final double ONE_EIGHTY_RADIANS = Math.toRadians(180);
-        public static final double NINETY_RADIANS = Math.toRadians(90);
+        public static final double MINUS_NINETY_RADIANS = -Math.PI / 2;
+        public static final double ONE_EIGHTY_RADIANS = Math.PI;
+        public static final double NINETY_RADIANS = Math.PI / 2;
     }
 }

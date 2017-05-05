@@ -130,10 +130,11 @@ public final class JsonStyleParserHelper {
      * @param allowNullSymbolizer If true then create*Symbolizer() methods can return null if expected params are missing.
      * @param version the version being parsed.
      */
-    public JsonStyleParserHelper(@Nonnull final Configuration configuration,
-                                 @Nonnull final StyleBuilder styleBuilder,
-                                 final boolean allowNullSymbolizer,
-                                 final Versions version) {
+    public JsonStyleParserHelper(
+            @Nullable final Configuration configuration,
+            @Nonnull final StyleBuilder styleBuilder,
+            final boolean allowNullSymbolizer,
+            final Versions version) {
         this.configuration = configuration;
         this.styleBuilder = styleBuilder;
         this.allowNullSymbolizer = allowNullSymbolizer;
@@ -165,8 +166,9 @@ public final class JsonStyleParserHelper {
     @Nullable
     public PointSymbolizer createPointSymbolizer(final PJsonObject styleJson) {
 
-        if (this.allowNullSymbolizer && !(styleJson.has(JSON_EXTERNAL_GRAPHIC) || styleJson.has(JSON_GRAPHIC_NAME) ||
-                                          styleJson.has(JSON_POINT_RADIUS))) {
+        if (this.allowNullSymbolizer && !(
+                styleJson.has(JSON_EXTERNAL_GRAPHIC) || styleJson.has(JSON_GRAPHIC_NAME) ||
+                styleJson.has(JSON_POINT_RADIUS))) {
             return null;
         }
 
@@ -175,7 +177,8 @@ public final class JsonStyleParserHelper {
         if (styleJson.has(JSON_EXTERNAL_GRAPHIC)) {
             String externalGraphicUrl = validateURL(styleJson.getString(JSON_EXTERNAL_GRAPHIC));
             final String graphicFormat = getGraphicFormat(externalGraphicUrl, styleJson);
-            final ExternalGraphic externalGraphic = this.styleBuilder.createExternalGraphic(externalGraphicUrl, graphicFormat);
+            final ExternalGraphic externalGraphic =
+                    this.styleBuilder.createExternalGraphic(externalGraphicUrl, graphicFormat);
 
             graphic.graphicalSymbols().add(externalGraphic);
         }
@@ -364,7 +367,9 @@ public final class JsonStyleParserHelper {
 
         if (!Strings.isNullOrEmpty(styleJson.optString(JSON_FONT_COLOR)) ||
             !Strings.isNullOrEmpty(styleJson.optString(JSON_FONT_OPACITY))) {
-            textSymbolizer.setFill(addFill(styleJson.optString(JSON_FONT_COLOR, "black"), styleJson.optString(JSON_FONT_OPACITY, "1.0")));
+            textSymbolizer.setFill(addFill(
+                    styleJson.optString(JSON_FONT_COLOR, "black"),
+                    styleJson.optString(JSON_FONT_OPACITY, "1.0")));
         }
 
         this.addVendorOptions(JSON_LABEL_ALLOW_OVERRUNS, styleJson, textSymbolizer);
@@ -424,12 +429,14 @@ public final class JsonStyleParserHelper {
             fontSize = defaultFont.getSize();
         }
 
-        Expression fontWeight = parseExpression(null, styleJson, JSON_FONT_WEIGHT, Functions.<String>identity());
+        Expression fontWeight = parseExpression(null, styleJson, JSON_FONT_WEIGHT,
+                Functions.<String>identity());
         if (fontWeight == null) {
             fontWeight = defaultFont.getWeight();
         }
 
-        Expression fontStyle = parseExpression(null, styleJson, JSON_FONT_STYLE, Functions.<String>identity());
+        Expression fontStyle = parseExpression(null, styleJson, JSON_FONT_STYLE,
+                Functions.<String>identity());
         if (fontStyle == null) {
             fontStyle = defaultFont.getStyle();
         }
@@ -482,7 +489,8 @@ public final class JsonStyleParserHelper {
     }
 
     private LinePlacement createLinePlacement(final PJsonObject styleJson) {
-        Expression linePlacement = parseExpression(null, styleJson, JSON_LABEL_PERPENDICULAR_OFFSET, new Function<String, Object>() {
+        Expression linePlacement = parseExpression(null, styleJson,
+                JSON_LABEL_PERPENDICULAR_OFFSET, new Function<String, Object>() {
             @Nullable
             @Override
             public Object apply(final String input) {
@@ -608,7 +616,9 @@ public final class JsonStyleParserHelper {
 
             final Fill fill;
             if (styleJson.has(JSON_HALO_COLOR) || styleJson.has(JSON_HALO_OPACITY)) {
-                fill = addFill(styleJson.optString(JSON_HALO_COLOR, "white"), styleJson.optString(JSON_HALO_OPACITY, "1.0"));
+                fill = addFill(
+                        styleJson.optString(JSON_HALO_COLOR, "white"),
+                        styleJson.optString(JSON_HALO_OPACITY, "1.0"));
                 return this.styleBuilder.createHalo(fill, radius);
             }
         }
@@ -656,7 +666,8 @@ public final class JsonStyleParserHelper {
     }
 
     private Object toColorExpression(final String color) {
-        return ((Literal) JsonStyleParserHelper.this.styleBuilder.colorExpression(ColorParser.toColor(color))).getValue();
+        return ((Literal) JsonStyleParserHelper.this.styleBuilder.colorExpression(
+                ColorParser.toColor(color))).getValue();
     }
 
     @Nullable
@@ -694,7 +705,8 @@ public final class JsonStyleParserHelper {
         });
 
         float[] dashArray = null;
-        if (styleJson.has(JSON_STROKE_DASHSTYLE) && !STROKE_DASHSTYLE_SOLID.equals(styleJson.getString(JSON_STROKE_DASHSTYLE))) {
+        if (styleJson.has(JSON_STROKE_DASHSTYLE) && !STROKE_DASHSTYLE_SOLID.equals(
+                styleJson.getString(JSON_STROKE_DASHSTYLE))) {
             Double width = 1.0;
             if (widthExpression instanceof Literal) {
                 Literal expression = (Literal) widthExpression;
@@ -739,7 +751,8 @@ public final class JsonStyleParserHelper {
             }
         }
 
-        Expression lineCap = parseExpression(null, styleJson, JSON_STROKE_LINECAP, Functions.<String>identity());
+        Expression lineCap = parseExpression(null, styleJson, JSON_STROKE_LINECAP,
+                Functions.<String>identity());
 
         final Stroke stroke = this.styleBuilder.createStroke(strokeColor, widthExpression);
         stroke.setLineCap(lineCap);

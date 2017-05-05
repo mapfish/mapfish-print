@@ -109,7 +109,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
     public void testCreatePngNoSquareRotatedDownScaled() throws Exception {
         URI file = NorthArrowGraphic.create(
                 new Dimension(200, 200), "file://" + getFile(BASE_DIR + "NorthArrow_10.png").toString(),
-                this.bgColor, 45.0, getTaskDirectory(), this.requestFactoryWrapper);
+                this.bgColor, Math.PI / 4, getTaskDirectory(), this.requestFactoryWrapper);
 
 //        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow.tiff"));
 //        ImageSimilarity.writeUncompressedImage(ImageIO.read(new File(file)), "/tmp/expected-north-arrow_10-png-nosquare-45-down.tiff");
@@ -120,7 +120,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
     public void testCreatePngNoSquareRotatedUpScaled() throws Exception {
         URI file = NorthArrowGraphic.create(
                 new Dimension(50, 50), "file://" + getFile(BASE_DIR + "NorthArrow_10.png").toString(),
-                this.bgColor, 45.0, getTaskDirectory(), this.requestFactoryWrapper);
+                this.bgColor, Math.PI / 4, getTaskDirectory(), this.requestFactoryWrapper);
 
 //        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow.tiff"));
 //        ImageSimilarity.writeUncompressedImage(ImageIO.read(new File(file)), "/tmp/expected-north-arrow_10-png-nosquare-45-up.tiff");
@@ -155,7 +155,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
     public void testCreateSvgWidthAndHeightNotSet() throws Exception {
         URI file = NorthArrowGraphic.create(
                 new Dimension(200, 200), "file://" + getFile(BASE_DIR + "NorthArrow_10.svg").toString(),
-                this.bgColor, 90.0, getTaskDirectory(), this.requestFactoryWrapper);
+                this.bgColor, Math.PI / 2, getTaskDirectory(), this.requestFactoryWrapper);
 
         BufferedImage referenceImage = ImageSimilarity.convertFromSvg(file, 200, 200);
 //        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow_10.svg"));
@@ -168,7 +168,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
         Color backgroundColor = ColorParser.toColor("rgba(214, 214, 214, 200)");
         URI file = NorthArrowGraphic.create(
                 new Dimension(200, 200), "file://" + getFile(BASE_DIR + "NorthArrow.svg").toString(),
-                backgroundColor, 90.0, getTaskDirectory(), this.requestFactoryWrapper);
+                backgroundColor, Math.PI / 2, getTaskDirectory(), this.requestFactoryWrapper);
 
         BufferedImage referenceImage = ImageSimilarity.convertFromSvg(file, 200, 200);
 //        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow.svg"));
@@ -181,7 +181,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
         Color backgroundColor = ColorParser.toColor("rgba(214, 214, 214, 200)");
         URI file = NorthArrowGraphic.create(
                 new Dimension(200, 200), "file://" + getFile(BASE_DIR + "NorthArrow_10.svg").toString(),
-                backgroundColor, 90.0, getTaskDirectory(), this.requestFactoryWrapper);
+                backgroundColor, Math.PI / 2, getTaskDirectory(), this.requestFactoryWrapper);
 
         BufferedImage referenceImage = ImageSimilarity.convertFromSvg(file, 200, 200);
 //        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow_10.svg"));
@@ -193,7 +193,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
     public void testCreateDefaultGraphic() throws Exception {
         URI file = NorthArrowGraphic.create(
                 new Dimension(200, 200), null,
-                this.bgColor, 90.0, getTaskDirectory(), this.requestFactoryWrapper);
+                this.bgColor, Math.PI / 2, getTaskDirectory(), this.requestFactoryWrapper);
 
         BufferedImage referenceImage = ImageSimilarity.convertFromSvg(file, 200, 200);
 //        FileUtils.copyFile(new File(file), new File("/tmp/north-arrow_10-default.svg"));

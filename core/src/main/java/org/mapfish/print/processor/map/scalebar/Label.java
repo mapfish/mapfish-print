@@ -58,58 +58,56 @@ public class Label {
     }
 
     /**
-     * @param angleDegree Angle in degree
+     * @param angle Angle
      * @return The width of the rotated label
      */
-    public float getRotatedWidth(final double angleDegree) {
-        return getRotatedWidth(this.width, this.height, angleDegree);
+    public float getRotatedWidth(final float angle) {
+        return getRotatedWidth(this.width, this.height, angle);
     }
 
     /**
-     * @param angleDegree Angle in degree
+     * @param angle Angle
      * @return The height of the rotated label
      */
-    public float getRotatedHeight(final double angleDegree) {
-        return getRotatedHeight(this.width, this.height, angleDegree);
+    public float getRotatedHeight(final float angle) {
+        return getRotatedHeight(this.width, this.height, angle);
     }
 
     /**
      * @param width Unrotated width
      * @param height Unrotated height
-     * @param angleDegree Angle in degree
+     * @param angle Angle
      * @return The width of the rotated label
      */
-    private static float getRotatedWidth(final float width, final float height, final double angleDegree) {
-        final double angle = Math.toRadians(angleDegree);
+    private static float getRotatedWidth(final float width, final float height, final float angle) {
         return (float) (Math.abs(width * Math.cos(angle)) + Math.abs(height * Math.sin(angle)));
     }
 
     /**
      * @param width Unrotated width
      * @param height Unrotated height
-     * @param angleDegree Angle in degree
+     * @param angle Angle
      * @return The height of the rotated label
      */
-    private static float getRotatedHeight(final float width, final float height, final double angleDegree) {
-        final double angle = Math.toRadians(angleDegree);
+    private static float getRotatedHeight(final float width, final float height, final float angle) {
         return (float) (Math.abs(height * Math.cos(angle)) + Math.abs(width * Math.sin(angle)));
     }
 
     /**
      * @param dimension Unrotated dimension
-     * @param angleDegree Angle in degree
+     * @param angle Angle
      * @return The height of the rotated label
      */
-    public static float getRotatedHeight(final Dimension dimension, final int angleDegree) {
-        return getRotatedHeight(dimension.width, dimension.height, angleDegree);
+    public static float getRotatedHeight(final Dimension dimension, final float angle) {
+        return getRotatedHeight(dimension.width, dimension.height, angle);
     }
 
     /**
      * @param dimension Unrotated dimension
-     * @param angleDegree Angle in degree
+     * @param angle Angle
      * @return The width of the rotated label
      */
-    public static float getRotatedWidth(final Dimension dimension, final int angleDegree) {
-        return getRotatedWidth(dimension.width, dimension.height, angleDegree);
+    public static float getRotatedWidth(final Dimension dimension, final float angle) {
+        return getRotatedWidth(dimension.width, dimension.height, angle);
     }
 }

@@ -76,7 +76,7 @@ public final class NorthArrowGraphic {
         try {
             final RasterReference input = loadGraphic(graphicFile, clientHttpRequestFactory, closer);
             if (graphicFile == null || graphicFile.toLowerCase().trim().endsWith("svg")) {
-                return createSvg(targetSize, input, rotation, backgroundColor, workingDir, clientHttpRequestFactory);
+                return createSvg(targetSize, input, rotation, backgroundColor, workingDir);
             } else {
                 return createRaster(targetSize, input, rotation, backgroundColor, workingDir);
             }
@@ -152,7 +152,7 @@ public final class NorthArrowGraphic {
 
             if (!FloatingPointUtil.equals(rotation, 0.0)) {
                 final AffineTransform rotate = AffineTransform.getRotateInstance(
-                        Math.toRadians(rotation), targetSize.width / 2.0, targetSize.height / 2.0);
+                        rotation, targetSize.width / 2.0, targetSize.height / 2.0);
                 graphics2d.setTransform(rotate);
             }
 
@@ -175,8 +175,7 @@ public final class NorthArrowGraphic {
      */
     private static URI createSvg(final Dimension targetSize,
             final RasterReference rasterReference, final Double rotation,
-            final Color backgroundColor, final File workingDir,
-            final MfClientHttpRequestFactory clientHttpRequestFactory)
+            final Color backgroundColor, final File workingDir)
             throws IOException {
         // load SVG graphic
         final SVGElement svgRoot = parseSvg(rasterReference.inputStream);
@@ -295,7 +294,7 @@ public final class NorthArrowGraphic {
 
     private static String getRotateTransformation(final Dimension targetSize,
             final double rotation) {
-        return "rotate(" + Double.toString(rotation) + " "
+        return "rotate(" + Double.toString(Math.toDegrees(rotation)) + " "
                 + Integer.toString(targetSize.width / 2) + " "
                 + Integer.toString(targetSize.height / 2) + ")";
     }
