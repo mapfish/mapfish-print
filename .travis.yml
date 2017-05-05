@@ -15,7 +15,6 @@ services:
 - docker
 
 jdk:
-- oraclejdk7
 - openjdk7
 - oraclejdk8
 
@@ -44,4 +43,4 @@ deploy:
   skip_cleanup: true
   on:
     repo: mapfish/mapfish-print
-    java: oraclejdk7
+    java: openjdk7
