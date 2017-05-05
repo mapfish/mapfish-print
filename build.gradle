@@ -80,6 +80,14 @@ allprojects {
     }
 }
 
+if (JavaVersion.current().isJava8Compatible()) {
+    allprojects {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
+    }
+}
+
 def gitRevision() {
 	try {
 		def cmd = "git rev-parse HEAD"
