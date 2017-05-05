@@ -97,56 +97,53 @@ public abstract class ScalebarDrawer {
             break;
         }
 
-        return AffineTransform.getTranslateInstance(offsetX, offsetY);
+        return AffineTransform.getTranslateInstance(Math.round(offsetX), Math.round(offsetY));
     }
 
     private void setLineTranslate(final AffineTransform lineTransform) {
+        final float x;
+        final float y;
         if (this.params.getOrientation() == Orientation.HORIZONTAL_LABELS_BELOW) {
-            lineTransform.translate(
-                    this.settings.getPadding() + this.settings.getLeftLabelMargin(),
-                    this.settings.getPadding() + this.settings.getBarSize());
+            x = this.settings.getPadding() + this.settings.getLeftLabelMargin();
+            y = this.settings.getPadding() + this.settings.getBarSize();
         } else if (this.params.getOrientation() == Orientation.HORIZONTAL_LABELS_ABOVE) {
-            lineTransform.translate(
-                    this.settings.getPadding() + this.settings.getLeftLabelMargin(),
-                    this.settings.getPadding() + this.settings.getBarSize() + this.settings.getLabelDistance() +
-                    Label.getRotatedHeight(this.settings.getMaxLabelSize(), this.params.getLabelRotation()));
+            x = this.settings.getPadding() + this.settings.getLeftLabelMargin();
+            y = this.settings.getPadding() + this.settings.getBarSize() + this.settings.getLabelDistance() +
+                    Label.getRotatedHeight(this.settings.getMaxLabelSize(), this.params.getLabelRotation());
         } else if (this.params.getOrientation() == Orientation.VERTICAL_LABELS_LEFT) {
-            lineTransform.translate(
-                    this.settings.getPadding() +
+            x = this.settings.getPadding() +
                     Label.getRotatedWidth(this.settings.getMaxLabelSize(), this.params.getLabelRotation()) +
-                    this.settings.getLabelDistance(),
-                    this.settings.getPadding() + this.settings.getTopLabelMargin());
-        } else if (this.params.getOrientation() == Orientation.VERTICAL_LABELS_RIGHT) {
-            lineTransform.translate(
-                    this.settings.getPadding(),
-                    this.settings.getPadding() + this.settings.getTopLabelMargin());
+                    this.settings.getLabelDistance();
+            y = this.settings.getPadding() + this.settings.getTopLabelMargin();
+        } else {  // if (this.params.getOrientation() == Orientation.VERTICAL_LABELS_RIGHT)
+            x = this.settings.getPadding();
+            y = this.settings.getPadding() + this.settings.getTopLabelMargin();
         }
+        lineTransform.translate(Math.round(x), Math.round(y));
     }
 
     /**
      * Sets 0,0 in the middle of the first tick mark at labelDistance away from it.
      */
     private void setLabelTranslate(final AffineTransform labelTransform) {
+        final float x;
+        final float y;
         if (this.params.getOrientation() == Orientation.HORIZONTAL_LABELS_BELOW) {
-            labelTransform.translate(
-                    this.settings.getPadding() + this.settings.getLeftLabelMargin(),
-                    this.settings.getPadding() + this.settings.getBarSize() +
-                    this.settings.getLabelDistance() + 1);
+            x = this.settings.getPadding() + this.settings.getLeftLabelMargin();
+            y = this.settings.getPadding() + this.settings.getBarSize() + this.settings.getLabelDistance();
         } else if (this.params.getOrientation() == Orientation.HORIZONTAL_LABELS_ABOVE) {
-            labelTransform.translate(
-                    this.settings.getPadding() + this.settings.getLeftLabelMargin(),
-                    this.settings.getPadding() +
-                    Label.getRotatedHeight(this.settings.getMaxLabelSize(), this.params.getLabelRotation()));
+            x = this.settings.getPadding() + this.settings.getLeftLabelMargin();
+            y = this.settings.getPadding() +
+                    Label.getRotatedHeight(this.settings.getMaxLabelSize(), this.params.getLabelRotation());
         } else if (this.params.getOrientation() == Orientation.VERTICAL_LABELS_LEFT) {
-            labelTransform.translate(
-                    this.settings.getPadding() +
-                    Label.getRotatedWidth(this.settings.getMaxLabelSize(), this.params.getLabelRotation()),
-                    this.settings.getPadding() + this.settings.getTopLabelMargin());
-        } else if (this.params.getOrientation() == Orientation.VERTICAL_LABELS_RIGHT) {
-            labelTransform.translate(
-                    this.settings.getPadding() + this.settings.getBarSize() + this.settings.getLabelDistance(),
-                    this.settings.getPadding() + this.settings.getTopLabelMargin());
+            x = this.settings.getPadding() +
+                    Label.getRotatedWidth(this.settings.getMaxLabelSize(), this.params.getLabelRotation());
+            y = this.settings.getPadding() + this.settings.getTopLabelMargin();
+        } else { //if (this.params.getOrientation() == Orientation.VERTICAL_LABELS_RIGHT)
+            x = this.settings.getPadding() + this.settings.getBarSize() + this.settings.getLabelDistance();
+            y = this.settings.getPadding() + this.settings.getTopLabelMargin();
         }
+        labelTransform.translate(Math.round(x), Math.round(y));
     }
 
     /**
@@ -174,14 +171,16 @@ public abstract class ScalebarDrawer {
 
             if (orientation.isHorizontal()) {
                 centerTransform.concatenate(AffineTransform.getTranslateInstance(
-                        label.getGraphicOffset(),
-                        orientation == Orientation.HORIZONTAL_LABELS_BELOW ? halfRotatedHeight : -halfRotatedHeight));
+                        Math.round(label.getGraphicOffset()),
+                        Math.round(orientation == Orientation.HORIZONTAL_LABELS_BELOW ?
+                                halfRotatedHeight : -halfRotatedHeight)));
                 shouldSkipLabel = label.getGraphicOffset() + halfRotatedWidth > prevMargin - 1;
                 newMargin = label.getGraphicOffset() - halfRotatedWidth;
             } else {
                 centerTransform.concatenate(AffineTransform.getTranslateInstance(
-                        orientation == Orientation.VERTICAL_LABELS_RIGHT ? halfRotatedWidth : -halfRotatedWidth,
-                        label.getGraphicOffset()));
+                        Math.round(orientation == Orientation.VERTICAL_LABELS_RIGHT ?
+                                halfRotatedWidth : -halfRotatedWidth),
+                        Math.round(label.getGraphicOffset())));
                 shouldSkipLabel = label.getGraphicOffset() + halfRotatedHeight > prevMargin - 1;
                 newMargin = label.getGraphicOffset() - halfRotatedHeight;
             }
@@ -191,7 +190,9 @@ public abstract class ScalebarDrawer {
 
             if (!shouldSkipLabel) {
                 this.graphics2d.setTransform(centerTransform);
-                label.getLabelLayout().draw(this.graphics2d, -label.getWidth() / 2.0f, label.getHeight() / 2.0f);
+                //for some reason, we need to floor the coordinates for the text to be nicely centered
+                label.getLabelLayout().draw(this.graphics2d, (float) Math.floor(-label.getWidth() / 2.0f),
+                        (float) Math.floor(label.getHeight() / 2.0f));
                 prevMargin = newMargin;
             } else {
                 //the label would be written over the previous one => ignore it

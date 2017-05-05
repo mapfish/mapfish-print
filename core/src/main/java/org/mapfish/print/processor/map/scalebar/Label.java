@@ -1,6 +1,8 @@
 package org.mapfish.print.processor.map.scalebar;
 
 import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.font.TextLayout;
 
 
@@ -23,18 +25,20 @@ public class Label {
      */
     private final float height;
 
-    private TextLayout labelLayout;
+    private final TextLayout labelLayout;
 
     /**
      * Constructor.
      * @param graphicOffset Position offset.
      * @param labelLayout Layout for the label.
+     * @param graphics2D Where it is going to be rendered (more accurate size computation
      */
-    public Label(final float graphicOffset, final TextLayout labelLayout) {
+    public Label(final float graphicOffset, final TextLayout labelLayout, final Graphics2D graphics2D) {
         this.graphicOffset = graphicOffset;
         this.labelLayout = labelLayout;
-        this.width = (float) labelLayout.getBounds().getWidth();
-        this.height = (float) labelLayout.getBounds().getHeight();
+        Rectangle bounds = this.labelLayout.getPixelBounds(graphics2D.getFontRenderContext(), 0, 0);
+        this.width = (float) bounds.getWidth();
+        this.height = (float) bounds.getHeight();
     }
 
     public final float getWidth() {

@@ -162,7 +162,7 @@ public class ScalebarGraphic {
                     labelText += intervalUnit;
                 }
                 TextLayout labelLayout = new TextLayout(labelText, font, frc);
-                labels.add(new Label(intervalLengthInPixels * i, labelLayout));
+                labels.add(new Label(intervalLengthInPixels * i, labelLayout, graphics2D));
             }
             leftLabelMargin = labels.get(0).getRotatedWidth(scalebarParams.labelRotation) / 2.0f;
             rightLabelMargin = labels.get(labels.size() - 1).getRotatedWidth(scalebarParams.labelRotation) / 2.0f;
@@ -172,7 +172,7 @@ public class ScalebarGraphic {
             //if there is only one interval, place the label centered between the two tick marks
             String labelText = createLabelText(scaleUnit, intervalLengthInWorldUnits, intervalUnit) + intervalUnit;
             TextLayout labelLayout = new TextLayout(labelText, font, frc);
-            final Label label = new Label(intervalLengthInPixels / 2.0f, labelLayout);
+            final Label label = new Label(intervalLengthInPixels / 2.0f, labelLayout, graphics2D);
             labels.add(label);
             rightLabelMargin = 0;
             leftLabelMargin = 0;
@@ -261,13 +261,11 @@ public class ScalebarGraphic {
                 + settings.getLeftLabelMargin() + settings.getRightLabelMargin();
             height = 2 * settings.getPadding()
                 + settings.getBarSize() + settings.getLabelDistance()
-                + (float) Math.ceil(maxLabelSize.height * Math.cos(angle) +
-                                    maxLabelSize.width * Math.sin(angle));
+                + Label.getRotatedHeight(maxLabelSize, scalebarParams.labelRotation);
         } else {
             width = 2 * settings.getPadding()
                 + settings.getLabelDistance() + settings.getBarSize()
-                + (float) Math.ceil(maxLabelSize.width * Math.cos(angle) +
-                                    maxLabelSize.height * Math.sin(angle));
+                + Label.getRotatedWidth(maxLabelSize, scalebarParams.labelRotation);
             height = 2 * settings.getPadding()
                 + settings.getTopLabelMargin()
                 + settings.getIntervalLengthInPixels() * scalebarParams.intervals
