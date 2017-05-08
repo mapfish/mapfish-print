@@ -93,7 +93,7 @@ public final class OldAPILayerConverter {
                 layer.put("opacity", oldLayer.getDouble("opacity"));
             }
             if (oldLayer.has("extension")) {
-                layer.put("imageFormat", oldLayer.getString("extension"));
+                layer.put("imageExtension", oldLayer.getString("extension"));
             }
             if (oldLayer.has("maxExtent")) {
                 layer.put("maxExtent", oldLayer.getInternalObj().getJSONArray("maxExtent"));
