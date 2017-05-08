@@ -29,6 +29,7 @@ install:
 
 script:
 - git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
+- .travis/test-eof-newline
 - ./gradlew build
 
 after_failure:
