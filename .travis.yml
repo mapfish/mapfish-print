@@ -44,3 +44,4 @@ deploy:
   on:
     repo: mapfish/mapfish-print
     java: openjdk7
+    all_branches: true
