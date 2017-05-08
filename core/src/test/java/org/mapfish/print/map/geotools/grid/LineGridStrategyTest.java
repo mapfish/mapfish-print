@@ -10,7 +10,6 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.map.Layer;
 import org.geotools.referencing.crs.DefaultEngineeringCRS;
 import org.junit.Test;
-import org.mapfish.print.Constants;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.attribute.map.BBoxMapBounds;
 import org.mapfish.print.attribute.map.MapBounds;
@@ -51,7 +50,7 @@ public class LineGridStrategyTest {
         Dimension mapSize = new Dimension(400, 400);
         double rotation = 0;
         double dpi = 72;
-        MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, Constants.PDF_DPI, null, true);
+        MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, true, true);
         final List<? extends Layer> layers = layer.getLayers(new TestHttpClientFactory(), context);
         assertEquals(1, layers.size());
 
@@ -62,9 +61,12 @@ public class LineGridStrategyTest {
         assertEquals(3, features.size());
 
         Map<String, SimpleFeature> idToFeature = idToFeatureMap(features);
-        checkFeature(layerData, idToFeature.get("grid.y.1"), new Coordinate(100, 110), new Coordinate(140, 110));
-        checkFeature(layerData, idToFeature.get("grid.x.1"), new Coordinate(110, 100), new Coordinate(110, 140));
-        checkFeature(layerData, idToFeature.get("grid.x.2"), new Coordinate(130, 100), new Coordinate(130, 140));
+        checkFeature(layerData, idToFeature.get("grid.y.1"),
+                new Coordinate(100, 110), new Coordinate(140, 110));
+        checkFeature(layerData, idToFeature.get("grid.x.1"),
+                new Coordinate(110, 100), new Coordinate(110, 140));
+        checkFeature(layerData, idToFeature.get("grid.x.2"),
+                new Coordinate(130, 100), new Coordinate(130, 140));
     }
 
     @Test
@@ -87,7 +89,7 @@ public class LineGridStrategyTest {
         Dimension mapSize = new Dimension(400, 400);
         double rotation = 0;
         double dpi = 72;
-        MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, Constants.PDF_DPI, null, true);
+        MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, true, true);
         final List<? extends Layer> layers = layer.getLayers(new TestHttpClientFactory(), context);
         assertEquals(1, layers.size());
 

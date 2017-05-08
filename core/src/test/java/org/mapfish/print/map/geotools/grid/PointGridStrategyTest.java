@@ -8,7 +8,6 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.referencing.crs.DefaultEngineeringCRS;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
-import org.mapfish.print.Constants;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.attribute.map.BBoxMapBounds;
 import org.mapfish.print.attribute.map.MapBounds;
@@ -45,7 +44,7 @@ public class PointGridStrategyTest extends AbstractMapfishSpringTest {
         Dimension mapSize = new Dimension(400, 600);
         double rotation = 0;
         double dpi = 72;
-        MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, Constants.PDF_DPI, null, true);
+        MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, true, true);
 
         FeatureSourceSupplier supplier = pointGridStrategy.createFeatureSource(template, layerData, new LabelPositionCollector());
         SimpleFeatureSource featureSource = (SimpleFeatureSource) supplier.load(requestFactory, context);
@@ -82,7 +81,7 @@ public class PointGridStrategyTest extends AbstractMapfishSpringTest {
         Dimension mapSize = new Dimension(400, 600);
         double rotation = 0;
         double dpi = 72;
-        MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, Constants.PDF_DPI, null, true);
+        MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, true, true);
 
         FeatureSourceSupplier supplier = pointGridStrategy.createFeatureSource(template, layerData, new LabelPositionCollector());
         SimpleFeatureSource featureSource = (SimpleFeatureSource) supplier.load(requestFactory, context);

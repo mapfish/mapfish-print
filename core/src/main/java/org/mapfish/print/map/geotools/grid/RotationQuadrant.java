@@ -3,6 +3,8 @@ package org.mapfish.print.map.geotools.grid;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
+import static java.lang.Math.PI;
+
 /**
  * The strategies for rotating and translating the  when the rotation is in a specific rotation.
  *
@@ -136,7 +138,7 @@ enum RotationQuadrant {
         }
     };
 
-    public static final double THREE_SIXTY_RADIANS = Math.PI * 2;
+    public static final double THREE_SIXTY_RADIANS = PI * 2;
 
     abstract void updateTransform(
             AffineTransform baseTransform, int indent, GridLabel.Side side,
@@ -156,21 +158,21 @@ enum RotationQuadrant {
             rot += THREE_SIXTY_RADIANS;
         }
 
-        if (rotation > 0 && rotation <= Math.PI / 2) {
+        if (rotation > 0 && rotation <= PI / 2) {
             return QUADRANT_1;
         }
-        if (rot > Math.PI / 2 && rot <= Math.PI) {
+        if (rot > PI / 2 && rot <= PI) {
             return QUADRANT_2;
         }
-        if (rot > Math.PI && rot <= Math.PI * 3 / 2) {
+        if (rot > PI && rot <= PI * 3 / 2) {
             return QUADRANT_3;
         }
         return QUADRANT_4;
     }
 
     private static class Constants {
-        public static final double MINUS_NINETY_RADIANS = -Math.PI / 2;
-        public static final double ONE_EIGHTY_RADIANS = Math.PI;
-        public static final double NINETY_RADIANS = Math.PI / 2;
+        public static final double MINUS_NINETY_RADIANS = -PI / 2;
+        public static final double ONE_EIGHTY_RADIANS = PI;
+        public static final double NINETY_RADIANS = PI / 2;
     }
 }

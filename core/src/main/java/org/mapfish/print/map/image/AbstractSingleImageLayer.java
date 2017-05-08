@@ -53,7 +53,7 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
         }
 
         final MapBounds bounds = mapContext.getBounds();
-        final ReferencedEnvelope mapEnvelope = bounds.toReferencedEnvelope(mapContext.getPaintArea(), mapContext.getDPI());
+        final ReferencedEnvelope mapEnvelope = bounds.toReferencedEnvelope(mapContext.getPaintArea());
 
         GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
         GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapEnvelope.getCoordinateReferenceSystem());

@@ -43,6 +43,7 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.http.HttpRequestCache;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.mapfish.print.map.Scale;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.map.geotools.FeatureLayer;
 import org.mapfish.print.map.geotools.grid.GridLayer;
@@ -91,6 +92,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import static org.geotools.renderer.lite.RendererUtilities.worldToScreenTransform;
+import static org.mapfish.print.Constants.PDF_DPI;
 
 
 /**
@@ -166,8 +168,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         checkCancelState(context);
         MapAttributeValues mapValues = (MapAttributeValues) param.map;
         if (mapValues.zoomToFeatures != null) {
-            zoomToFeatures(param.tempTaskDirectory, param.clientHttpRequestFactoryProvider.get(), mapValues,
-                    context);
+            zoomToFeatures(param.clientHttpRequestFactoryProvider.get(), mapValues, context);
         }
         final MapfishMapContext mapContext = createMapContext(mapValues);
         final List<URI> graphics = createLayerGraphics(
@@ -298,7 +299,6 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 ),
                 mapContext.getRotation(),
                 mapContext.getDPI(),
-                mapContext.getRequestorDPI(),
                 mapContext.isForceLongitudeFirst(),
                 mapContext.isDpiSensitiveStyle()
         );
@@ -415,18 +415,19 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         Rectangle paintArea = new Rectangle(mapSize);
 
         final double dpi = mapValues.getDpi();
-        final double dpiOfRequestor = mapValues.getRequestorDPI();
+
+        MapBounds bounds = mapValues.getMapBounds();
+        bounds = adjustBoundsToScaleAndMapSize(mapValues, paintArea, bounds, dpi);
 
         // if the DPI is higher than the PDF DPI we need to make the image larger so the image put in the PDF is large enough for the
         // higher DPI printer
-        final double dpiRatio = dpi / dpiOfRequestor;
-        paintArea.setBounds(0, 0, (int) (mapSize.getWidth() * dpiRatio), (int) (mapSize.getHeight() * dpiRatio));
-
-        MapBounds bounds = mapValues.getMapBounds();
-        bounds = adjustBoundsToScaleAndMapSize(mapValues, dpi, paintArea, bounds);
+        final double dpiRatio = dpi / PDF_DPI;
+        paintArea.setBounds(0, 0,
+                (int) Math.ceil(mapSize.getWidth() * dpiRatio),
+                (int) Math.ceil(mapSize.getHeight() * dpiRatio));
 
         return new MapfishMapContext(bounds, paintArea.getSize(), mapValues.getRotation(), dpi,
-                mapValues.getRequestorDPI(), mapValues.longitudeFirst, mapValues.isDpiSensitiveStyle());
+                mapValues.longitudeFirst, mapValues.isDpiSensitiveStyle());
     }
 
     private AreaOfInterest addAreaOfInterestLayer(
@@ -447,9 +448,10 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         return areaOfInterest;
     }
 
-    private Graphics2D createClippedGraphics(@Nonnull final MapfishMapContext transformer,
-                                             @Nullable final AreaOfInterest areaOfInterest,
-                                             @Nonnull final Graphics2D graphics2D
+    private Graphics2D createClippedGraphics(
+            @Nonnull final MapfishMapContext transformer,
+            @Nullable final AreaOfInterest areaOfInterest,
+            @Nonnull final Graphics2D graphics2D
     ) {
         if (areaOfInterest != null && areaOfInterest.display == AreaOfInterest.AoiDisplay.CLIP) {
             final Polygon screenGeometry = areaOfInterestInScreenCRS(transformer, areaOfInterest);
@@ -461,8 +463,9 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         return graphics2D;
     }
 
-    private Polygon areaOfInterestInScreenCRS(@Nonnull final MapfishMapContext transformer,
-                                              @Nullable final AreaOfInterest areaOfInterest) {
+    private Polygon areaOfInterestInScreenCRS(
+            @Nonnull final MapfishMapContext transformer,
+            @Nullable final AreaOfInterest areaOfInterest) {
         if (areaOfInterest != null) {
             final AffineTransform worldToScreenTransform = worldToScreenTransform(
                     transformer.toReferencedEnvelope(),
@@ -485,14 +488,16 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
     /**
      * If requested, adjust the bounds to the nearest scale and the map size.
      *
-     * @param mapValues Map parameters
-     * @param dpiOfRequestor The DPI.
+     * @param mapValues Map parameters.
      * @param paintArea The size of the painting area.
      * @param bounds The map bounds.
+     * @param dpi the DPI.
      */
     public static MapBounds adjustBoundsToScaleAndMapSize(
-            final GenericMapAttributeValues mapValues, final double dpiOfRequestor,
-            final Rectangle paintArea, final MapBounds bounds) {
+            final GenericMapAttributeValues mapValues,
+            final Rectangle paintArea,
+            final MapBounds bounds,
+            final double dpi) {
         MapBounds newBounds = bounds;
         if (mapValues.isUseNearestScale()) {
             newBounds = newBounds.adjustBoundsToNearestScale(
@@ -500,10 +505,10 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                     mapValues.getZoomSnapTolerance(),
                     mapValues.getZoomLevelSnapStrategy(),
                     mapValues.getZoomSnapGeodetic(),
-                    paintArea, dpiOfRequestor);
+                    paintArea, dpi);
         }
 
-        newBounds = new BBoxMapBounds(newBounds.toReferencedEnvelope(paintArea, dpiOfRequestor));
+        newBounds = new BBoxMapBounds(newBounds.toReferencedEnvelope(paintArea));
 
         if (mapValues.isUseAdjustBounds()) {
             newBounds = newBounds.adjustedEnvelope(paintArea);
@@ -551,9 +556,10 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         }
     }
 
-    private void zoomToFeatures(final File tempTaskDirectory, final MfClientHttpRequestFactory clientHttpRequestFactory,
-            final MapAttributeValues mapValues, final ExecutionContext context) {
-
+    private void zoomToFeatures(
+            final MfClientHttpRequestFactory clientHttpRequestFactory,
+            final MapAttributeValues mapValues,
+            final ExecutionContext context) {
         ReferencedEnvelope bounds = getFeatureBounds(clientHttpRequestFactory,
                 mapValues, context);
 
@@ -565,7 +571,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 if (mapValues.zoomToFeatures.minScale != null) {
                     LOGGER.warn(
                         "The map.zoomToFeatures.minScale is deprecated, " +
-                        "please use dirrectly the map.scale");
+                        "please use directly the map.scale");
                     mapValues.scale = mapValues.zoomToFeatures.minScale;
                 }
                 mapValues.recalculateBounds();
@@ -593,10 +599,13 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                         mapBounds = ((BBoxMapBounds) mapBounds).expand(mapValues.zoomToFeatures.minMargin, paintArea);
                     }
 
-                    final double scaleDenominator = mapBounds.getScaleDenominator(paintArea, mapValues.getDpi());
-                    if (scaleDenominator < mapValues.zoomToFeatures.minScale) {
+                    final Scale scale = mapBounds.getScale(paintArea, mapValues.getDpi());
+                    final Scale minScale = new Scale(mapValues.zoomToFeatures.minScale,
+                            mapValues.getMapBounds().getProjection(),
+                            mapValues.getDpi());
+                    if (scale.getResolution() < minScale.getResolution()) {
                         // if the current scale is smaller than the min. scale, change it
-                        mapBounds = mapBounds.zoomToScale(mapValues.zoomToFeatures.minScale);
+                        mapBounds = mapBounds.zoomToScale(minScale);
                     }
 
                     if (mapValues.isUseNearestScale()) {
@@ -605,7 +614,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                                 mapValues.getZoomLevels(), 0.0,
                                 ZoomLevelSnapStrategy.HIGHER_SCALE,
                                 mapValues.getZoomSnapGeodetic(),
-                                paintArea, mapValues.getRequestorDPI());
+                                paintArea, mapValues.getDpi());
                     }
 
                     mapValues.setMapBounds(mapBounds);

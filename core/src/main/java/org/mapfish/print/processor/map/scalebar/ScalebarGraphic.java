@@ -29,6 +29,8 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.xml.parsers.ParserConfigurationException;
 
+import static org.mapfish.print.Constants.PDF_DPI;
+
 /**
  * Creates a scalebar graphic.
  */
@@ -44,21 +46,21 @@ public class ScalebarGraphic {
      * @param tempFolder The directory in which the graphic file is created.
      * @param template The template that containts the scalebar processor
      */
-    public final URI render(final MapfishMapContext mapContext,
-                            final ScalebarAttributeValues scalebarParams,
-                            final File tempFolder,
-                            final Template template)
+    public final URI render(
+            final MapfishMapContext mapContext,
+            final ScalebarAttributeValues scalebarParams,
+            final File tempFolder,
+            final Template template)
             throws IOException, ParserConfigurationException {
         final double dpi = mapContext.getDPI();
-        final double dpiRatio = dpi / mapContext.getRequestorDPI();
+        final double dpiRatio = dpi / PDF_DPI;
 
         // get the map bounds
         final Rectangle paintArea = new Rectangle(mapContext.getMapSize());
         MapBounds bounds = mapContext.getBounds();
 
         final DistanceUnit mapUnit = getUnit(bounds);
-        final Scale scale = new Scale(bounds.getScaleDenominator(paintArea, mapContext.getRequestorDPI()),
-                bounds.getProjection(), dpi);
+        final Scale scale = bounds.getScale(paintArea, PDF_DPI);
         final double scaleDenominator = scale.getDenominator(scalebarParams.geodetic,
                 bounds.getProjection(), dpi, bounds.getCenter());
 

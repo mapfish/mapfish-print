@@ -164,8 +164,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         final Double extentMaxY = layerParam.extent[3];
         final Rectangle paintArea = transformer.getPaintArea();
 
-        final ReferencedEnvelope envelope = transformer.getBounds().toReferencedEnvelope(paintArea,
-                transformer.getDPI());
+        final ReferencedEnvelope envelope = transformer.getBounds().toReferencedEnvelope(paintArea);
         final CoordinateReferenceSystem mapProjection = envelope.getCoordinateReferenceSystem();
 
         Closer closer = Closer.create();
@@ -227,7 +226,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
             renderer.setMapContent(content);
             renderer.setThreadPool(this.executorService);
 
-            final ReferencedEnvelope mapArea = bounds.toReferencedEnvelope(paintArea, transformer.getDPI());
+            final ReferencedEnvelope mapArea = bounds.toReferencedEnvelope(paintArea);
             renderer.paint(graphics, paintArea, mapArea);
             return bufferedImage;
         } finally {

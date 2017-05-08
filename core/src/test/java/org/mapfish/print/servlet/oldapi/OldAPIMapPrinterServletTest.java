@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
+import javax.servlet.ServletException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -157,7 +158,9 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         final MockHttpServletRequest infoRequest = new MockHttpServletRequest();
         infoRequest.setContextPath("/print-old");
         final MockHttpServletResponse infoResponse = new MockHttpServletResponse();
-        this.servlet.getInfo(null, null,null, infoRequest, infoResponse);
+        try {
+            this.servlet.getInfo(null, null, null, infoRequest, infoResponse);
+        } catch (ServletException e) {}
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), infoResponse.getStatus());
         assertTrue(infoResponse.getContentAsString().contains("Error while processing request"));
     }

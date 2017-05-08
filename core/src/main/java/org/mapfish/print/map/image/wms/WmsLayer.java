@@ -136,8 +136,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
             final URI commonUri = new URI(wmsLayerParam.getBaseUrl());
 
             final Rectangle paintArea = layerTransformer.getPaintArea();
-            final ReferencedEnvelope envelope = layerTransformer.getBounds().toReferencedEnvelope(paintArea,
-                    layerTransformer.getDPI());
+            final ReferencedEnvelope envelope = layerTransformer.getBounds().toReferencedEnvelope(paintArea);
             URI uri = WmsUtilities.makeWmsGetLayerRequest(requestFactory, wmsLayerParam, commonUri, paintArea.getSize(),
                     layerTransformer.getDPI(), envelope);
 

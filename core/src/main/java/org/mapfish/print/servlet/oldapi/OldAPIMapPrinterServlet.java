@@ -14,6 +14,8 @@ import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.attribute.map.ZoomLevels;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.map.DistanceUnit;
+import org.mapfish.print.map.Scale;
 import org.mapfish.print.servlet.BaseMapServlet;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.servlet.NoSuchAppException;
@@ -40,6 +42,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static org.mapfish.print.Constants.PDF_DPI;
 import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGURATION_FILE_KEY;
 
 /**
@@ -262,8 +265,10 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
             }
         } catch (UnsupportedOperationException exc) {
             error(resp, exc.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ServletException(exc);
         } catch (Exception exc) {
             error(resp, "Unexpected error, please see the server logs", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ServletException(exc);
         } finally {
             writer.close();
         }
@@ -310,16 +315,16 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
                 for (Attribute attribute : template.getAttributes().values()) {
                     if (attribute instanceof MapAttribute) {
                         if (map != null) {
-                            throw new UnsupportedOperationException("Template '" + name + "' contains "
-                                                                    + "more than one map configuration. The legacy API "
-                                                                    + "supports only one map per template.");
+                            throw new UnsupportedOperationException(String.format(
+                                    "Template '%s' contains more than one map configuration. " +
+                                    "The legacy API supports only one map per template.", name));
                         } else {
                             map = (MapAttribute) attribute;
                         }
                     }
                 }
                 if (map == null) {
-                    LOGGER.warn("Template '" + name + "' contains no map configuration.");
+                    LOGGER.warn(String.format("Template '%s' contains no map configuration.", name));
                 } else {
                     MapAttributeValues mapValues = map.createValue(template);
                     json.key("map");
@@ -366,10 +371,11 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
             if (zoomLevels != null) {
                 {
                     for (int i = 0; i < zoomLevels.size(); i++) {
-                        double scale = zoomLevels.get(i);
+                        Scale scale = zoomLevels.get(i, DistanceUnit.M);
                         json.object();
                         {
-                            String scaleValue = new DecimalFormat("#.##").format(scale);
+                            String scaleValue = new DecimalFormat("#.##").format(
+                                    scale.getDenominator(PDF_DPI));
                             json.key("name").value("1:" + scaleValue);
                             json.key("value").value(scaleValue);
                         }

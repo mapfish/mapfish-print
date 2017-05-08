@@ -20,7 +20,6 @@ import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.DistanceUnit;
-import org.mapfish.print.map.Scale;
 import org.mapfish.print.test.util.ImageSimilarity;
 
 
@@ -123,7 +122,7 @@ public class ScalebarGraphicTest {
         MapBounds bounds = new CenterScaleMapBounds(
                 CRS.decode("EPSG:3857"), -8235878.4938425, 4979784.7605681, 26000);
         MapfishMapContext mapParams = new MapfishMapContext(
-                bounds, new Dimension(780, 330), 0, 72, 72, true, false);
+                bounds, new Dimension(780, 330), 0, 72, true, false);
 
         ScalebarAttribute scalebarAttibute = new ScalebarAttribute();
         scalebarAttibute.setWidth(300);
@@ -143,7 +142,7 @@ public class ScalebarGraphicTest {
         MapBounds bounds = new CenterScaleMapBounds(
                 CRS.decode("EPSG:3857"), -8235878.4938425, 4979784.7605681, 26000);
         MapfishMapContext mapParams = new MapfishMapContext(
-                bounds, new Dimension(780, 330), 0, 144, 72, true, false);
+                bounds, new Dimension(780, 330), 0, 144, true, false);
 
         ScalebarAttribute scalebarAttibute = new ScalebarAttribute();
         scalebarAttibute.setWidth(300);
@@ -162,7 +161,7 @@ public class ScalebarGraphicTest {
         MapBounds bounds = new CenterScaleMapBounds(
                 CRS.decode("EPSG:3857"), -8235878.4938425, 4979784.7605681, 26000);
         MapfishMapContext mapParams = new MapfishMapContext(
-                bounds, new Dimension(780, 330), 0, 72, 72, true, false);
+                bounds, new Dimension(780, 330), 0, 72, true, false);
 
         ScalebarAttribute scalebarAttibute = new ScalebarAttribute();
         scalebarAttibute.setWidth(300);

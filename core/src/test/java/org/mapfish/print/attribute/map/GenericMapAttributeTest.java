@@ -136,6 +136,4 @@ public class GenericMapAttributeTest {
         assertEquals(typeDescriptor.toString(2), 1, typeDescriptor.length());
         assertElem(typeDescriptor, "embeddedElem", "boolean", null, false);
     }
-
-
 }

@@ -7,7 +7,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
-import org.mapfish.print.map.Scale;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.tiled.AbstractTiledLayer;
 import org.mapfish.print.map.tiled.TileCacheInformation;
@@ -60,8 +59,7 @@ public final class OsmLayer extends AbstractTiledLayer {
                 final MapBounds bounds, final Rectangle paintArea, final double dpi) {
             super(bounds, paintArea, dpi, OsmLayer.this.param);
 
-            final double targetResolution = new Scale(
-                    bounds.getScaleDenominator(paintArea, dpi), bounds.getProjection(), dpi).getResolution();
+            final double targetResolution = bounds.getScale(paintArea, dpi).getResolution();
 
             Double[] resolutions = OsmLayer.this.param.resolutions;
             int pos = resolutions.length - 1;

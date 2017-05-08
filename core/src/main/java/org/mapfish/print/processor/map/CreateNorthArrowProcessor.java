@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
+import static org.mapfish.print.Constants.PDF_DPI;
+
 
 /**
  * <p>Processor to create a north-arrow for a map.</p>
@@ -62,7 +64,7 @@ public class CreateNorthArrowProcessor extends AbstractProcessor<CreateNorthArro
     public final Output execute(final Input values, final ExecutionContext context) throws Exception {
         checkCancelState(context);
 
-        final double dpiRatio = values.map.getDpi() / values.map.getRequestorDPI();
+        final double dpiRatio = values.map.getDpi() / PDF_DPI;
         final Dimension size = new Dimension(
                 (int) (values.northArrow.getSize().getWidth() * dpiRatio),
                 (int) (values.northArrow.getSize().getHeight() * dpiRatio));

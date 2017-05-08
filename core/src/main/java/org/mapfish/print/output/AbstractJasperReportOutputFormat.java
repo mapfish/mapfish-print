@@ -131,7 +131,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         final Values values = new Values(requestData, template, this.parser, taskDirectory, this.httpRequestFactory,
                 jasperTemplateBuild.getParentFile());
 
-        double[] maxDpi = maxDpi(values);
+        double maxDpi = maxDpi(values);
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(template.getProcessorGraph().createTask(values));
 
@@ -192,8 +192,8 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                     values.asMap(),
                     dataSource);
         }
-        print.setProperty(Renderable.PROPERTY_IMAGE_DPI, String.valueOf(Math.round(maxDpi[0])));
-        return new Print(getLocalJasperReportsContext(config), print, values, maxDpi[0], maxDpi[1]);
+        print.setProperty(Renderable.PROPERTY_IMAGE_DPI, String.valueOf(Math.round(maxDpi)));
+        return new Print(getLocalJasperReportsContext(config), print, values, maxDpi);
     }
 
     private void checkRequiredFields(final Configuration configuration, final JRDataSource dataSource, final String reportTemplate) {
@@ -324,20 +324,15 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         return new JRMapCollectionDataSource(rows);
     }
 
-    private double[] maxDpi(final Values values) {
+    private double maxDpi(final Values values) {
         Map<String, MapAttribute.MapAttributeValues> maps = values.find(MapAttribute.MapAttributeValues.class);
         double maxDpi = Constants.PDF_DPI;
-        double maxRequestorDpi = Constants.PDF_DPI;
         for (MapAttribute.MapAttributeValues attributeValues : maps.values()) {
             if (attributeValues.getDpi() > maxDpi) {
                 maxDpi = attributeValues.getDpi();
             }
-
-            if (attributeValues.getRequestorDPI() > maxRequestorDpi) {
-                maxRequestorDpi = attributeValues.getRequestorDPI();
-            }
         }
-        return new double[]{maxDpi, maxRequestorDpi};
+        return maxDpi;
     }
 
     /**
@@ -347,20 +342,17 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         // CHECKSTYLE:OFF
         @Nonnull public final JasperPrint print;
         @Nonnegative public final double dpi;
-        @Nonnegative public final double requestorDpi;
         @Nonnull public final JasperReportsContext context;
         @Nonnull public final Values values;
 
         // CHECKSTYLE:ON
 
         private Print(@Nonnull final JasperReportsContext context, @Nonnull final JasperPrint print,
-                      @Nonnull final Values values, @Nonnegative final double dpi,
-                      @Nonnegative final double requestorDpi) {
+                      @Nonnull final Values values, @Nonnegative final double dpi) {
             this.print = print;
             this.context = context;
             this.values = values;
             this.dpi = dpi;
-            this.requestorDpi = requestorDpi;
         }
     }
 
