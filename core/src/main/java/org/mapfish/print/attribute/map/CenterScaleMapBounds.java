@@ -159,7 +159,6 @@ public final class CenterScaleMapBounds extends MapBounds {
         }
     }
 
-    // CSOFF: MagicNumber
     private double rollLongitude(final double x) {
         return x - (((int) (x + Math.signum(x) * 180)) / 360) * 360.0;
     }
@@ -167,7 +166,6 @@ public final class CenterScaleMapBounds extends MapBounds {
     private double rollLatitude(final double y) {
         return y - (((int) (y + Math.signum(y) * 90)) / 180) * 180.0;
     }
-    // CSON: MagicNumber
 
     // CHECKSTYLE:OFF
 

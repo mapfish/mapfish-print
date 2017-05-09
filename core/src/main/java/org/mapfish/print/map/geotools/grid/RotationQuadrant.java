@@ -155,7 +155,6 @@ enum RotationQuadrant {
             rotation += THREE_SIXTY_DEGREES;
         }
 
-        // CSOFF: MagicNumber
         if (rotation > 0 && rotation <= 90) {
             return QUADRANT_1;
         }
@@ -165,7 +164,6 @@ enum RotationQuadrant {
         if (rotation > 180 && rotation <= 270) {
             return QUADRANT_3;
         }
-        // CSON: MagicNumber
         return QUADRANT_4;
     }
 

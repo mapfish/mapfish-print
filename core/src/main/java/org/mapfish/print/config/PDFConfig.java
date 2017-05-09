@@ -11,7 +11,6 @@ import java.util.List;
  * <p>Naturally this only applies to reports that are exported as PDFs.</p>
  * [[examples=config_aliases_defaults,verboseExample]]
  */
-// CSOFF: DesignForExtension  -- Note: This is disabled so that I can use Mockito.spy in tests
 public class PDFConfig implements ConfigurationObject {
     private static final String MAPFISH_PRINT = "Mapfish Print";
     private Optional<Boolean> compressed = Optional.absent();

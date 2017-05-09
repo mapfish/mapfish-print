@@ -204,9 +204,7 @@ public final class NorthArrowGraphic {
         rect.setAttributeNS(null, "height", Integer.toString(targetSize.height));
         String bgColor = ColorParser.toRGB(backgroundColor);
         rect.setAttributeNS(null, "fill", bgColor);
-        // CSOFF: MagicNumber
         String opacity = Double.toString(backgroundColor.getAlpha() / 255.0);
-        // CSON: MagicNumber
         rect.setAttributeNS(null, "fill-opacity", opacity);
         newSvgRoot.appendChild(rect);
     }

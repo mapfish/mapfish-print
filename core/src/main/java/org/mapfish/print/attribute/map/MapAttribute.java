@@ -121,7 +121,6 @@ public final class MapAttribute extends GenericMapAttribute {
             super(template);
         }
 
-        //CSOFF: DesignForExtension
         @Override
         public Double getDpi() {
             return this.dpi;
@@ -187,9 +186,7 @@ public final class MapAttribute extends GenericMapAttribute {
                 Envelope area = this.areaOfInterest.getArea().getEnvelopeInternal();
                 bounds = new BBoxMapBounds(crs, area);
             } else if (this.zoomToFeatures != null) {
-                // CSOFF: MagicNumber
                 bounds = new BBoxMapBounds(crs, 0, 0, 10, 10);
-                // CSON: MagicNumber
             } else {
                 throw new IllegalArgumentException("Expected either: center and scale, bbox, or an " +
                         "areaOfInterest defined in order to calculate the map bounds");
@@ -251,7 +248,6 @@ public final class MapAttribute extends GenericMapAttribute {
         public Boolean isUseAdjustBounds() {
             return getValueOr(super.isUseAdjustBounds(), DEFAULT_ADJUST_BOUNDS);
         }
-        //CSON: DesignForExtension
 
         /**
          * Creates an {@link org.mapfish.print.attribute.map.MapAttribute.OverriddenMapAttributeValues} instance with the current object
@@ -272,10 +268,8 @@ public final class MapAttribute extends GenericMapAttribute {
          * @param updater a function which will be called after copy is made but before postConstruct is called in order
          *                to do other configuration changes.
          */
-        // CSOFF: DesignForExtension
         public MapAttribute.MapAttributeValues copy(final int width, final int height,
                                                     @Nonnull final Function<MapAttributeValues, Void> updater) {
-            // CSON: DesignForExtension
             MapAttributeValues copy = new MapAttributeValues(getTemplate(), width, height);
             copy.areaOfInterest = this.areaOfInterest.copy();
             copy.bbox = this.bbox;

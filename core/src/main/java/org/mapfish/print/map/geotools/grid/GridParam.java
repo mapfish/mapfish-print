@@ -17,7 +17,6 @@ import java.util.IllegalFormatException;
 
 /**
  * Parameters relevant to creating Grid layers.
- * CSOFF: VisibilityModifier
  */
 public final class GridParam extends AbstractLayerParams {
     private static final int DEFAULT_POINTS_IN_GRID_LINE = 10000;

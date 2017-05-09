@@ -23,7 +23,6 @@ import javax.annotation.Nullable;
  * for credentials.</em>
  * </p>
  */
-// CSOFF: DesignForExtension
 public class HttpCredential implements ConfigurationObject {
     private String username;
     private char[] password;

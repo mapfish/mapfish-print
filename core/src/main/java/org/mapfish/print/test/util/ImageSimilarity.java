@@ -30,8 +30,7 @@ import javax.media.jai.iterator.RandomIterFactory;
 /**
  * Class for comparing an image to another image.
  *
- *         <p></p>
- *         CHECKSTYLE:OFF
+ * CHECKSTYLE:OFF
  */
 public final class ImageSimilarity {
 
@@ -53,7 +52,7 @@ public final class ImageSimilarity {
         this(ImageIO.read(referenceImage), sampleSize);
     }
 
-    /*
+    /**
      * The constructor, which creates the GUI and start the image processing task.
      */
     public ImageSimilarity(BufferedImage referenceImage, int sampleSize) throws IOException {
@@ -71,7 +70,7 @@ public final class ImageSimilarity {
         signature = calcSignature(referenceImage);
     }
 
-    /*
+    /**
      * This method calculates and returns signature vectors for the input image.
      */
     private Color[][] calcSignature(BufferedImage i) {
@@ -87,7 +86,7 @@ public final class ImageSimilarity {
         return sig;
     }
 
-    /*
+    /**
      * This method averages the pixel values around a central point and return the
      * average as an instance of Color. The point coordinates are proportional to
      * the image.
@@ -117,7 +116,7 @@ public final class ImageSimilarity {
         return new Color((int) accum[0], (int) accum[1], (int) accum[2]);
     }
 
-    /*
+    /**
      * This method calculates the distance between the signatures of an image and
      * the reference one. The signatures for the image passed as the parameter are
      * calculated inside the method.

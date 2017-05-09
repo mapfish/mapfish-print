@@ -60,39 +60,27 @@
       <property name="tokens" value="BNOT,DEC,DOT,INC,LNOT,UNARY_MINUS,UNARY_PLUS"/>
     </module>
     <module name="NoWhitespaceBefore"/>
-    <!-- <module name="OperatorWrap"/>  -->
     <module name="ParenPad"/>
     <module name="TypecastParenPad"/>
     <module name="WhitespaceAfter"/>
     <module name="WhitespaceAround"/>
     <module name="ModifierOrder"/>
     <module name="RedundantModifier"/>
-    <!-- <module name="AvoidNestedBlocks"/>  -->
     <module name="EmptyBlock">
         <property name="option" value="text"/>
     </module>
     <module name="LeftCurly"/>
     <module name="NeedBraces"/>
     <module name="RightCurly"/>
-    <!-- <module name="AvoidInlineConditionals"/> -->
     <module name="EmptyStatement"/>
     <module name="EqualsHashCode"/>
-    <module name="HiddenField">
-        <property name="ignoreSetter" value="true"/>
-        <property name="ignoreConstructorParameter" value="true"/>
-    </module>
     <module name="IllegalInstantiation"/>
     <module name="InnerAssignment"/>
-    <module name="MagicNumber"/>
     <module name="MissingSwitchDefault"/>
-    <!--<module name="RedundantThrows">-->
-      <!--<property name="suppressLoadErrors" value="true"/>-->
-    <!--</module>-->
     <module name="SimplifyBooleanExpression"/>
     <module name="SimplifyBooleanReturn"/>
     <module name="FinalClass"/>
     <module name="HideUtilityClassConstructor"/>
-    <!-- <module name="InterfaceIsType"/>  -->
     <module name="ArrayTypeStyle"/>
     <module name="FinalParameters"/>
     <module name="TodoComment">
@@ -101,6 +89,7 @@
     </module>
     <module name="UpperEll"/>
   </module>
+  <module name="NewlineAtEndOfFile"/>
   <module name="JavadocPackage"/>
   <module name="Translation"/>
   <module name="FileLength"/>

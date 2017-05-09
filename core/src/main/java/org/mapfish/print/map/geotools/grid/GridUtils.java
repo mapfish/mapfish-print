@@ -48,7 +48,6 @@ final class GridUtils {
         Coordinate centre = env.centre();
         AffineTransform rotateInstance = AffineTransform.getRotateInstance(rotation, centre.x, centre.y);
 
-        // CSOFF: MagicNumber
         double[] dstPts = new double[8];
         double[] srcPts = {
                 env.getMinX(), env.getMinY(), env.getMinX(), env.getMaxY(),
@@ -61,7 +60,6 @@ final class GridUtils {
                 new Coordinate(dstPts[4], dstPts[5]), new Coordinate(dstPts[6], dstPts[7]),
                 new Coordinate(dstPts[0], dstPts[1])
         });
-        // CSON: MagicNumber
     }
 
     /**

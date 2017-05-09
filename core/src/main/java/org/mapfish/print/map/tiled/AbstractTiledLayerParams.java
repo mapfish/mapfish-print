@@ -8,8 +8,6 @@ import java.net.URISyntaxException;
 
 /**
  * Contains the standard parameters for tiled layers.
- *
- *         // CSOFF:VisibilityModifier
  */
 public abstract class AbstractTiledLayerParams extends AbstractLayerParams {
     /**

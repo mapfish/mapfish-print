@@ -24,7 +24,6 @@ import javax.annotation.Nonnull;
  * Represents an area on the map which is of particular interest for some reason.  It consists of polygon geojson and a method
  * for displaying the area the geometry intersects with.
  */
-// CSOFF: VisibilityModifier
 public final class AreaOfInterest {
     private Geometry polygon;
 

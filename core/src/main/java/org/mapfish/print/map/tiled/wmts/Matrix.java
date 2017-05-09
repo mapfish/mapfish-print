@@ -10,7 +10,6 @@ import static org.mapfish.print.Constants.OGC_DPI;
 
 /**
  * A class representing a matrix.
- * // CSOFF:VisibilityModifier
  */
 public class Matrix {
 

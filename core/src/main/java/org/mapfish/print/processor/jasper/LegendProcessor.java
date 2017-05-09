@@ -60,9 +60,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     @Resource(name = "requestForkJoinPool")
     private ForkJoinPool requestForkJoinPool;
 
-    // CSOFF:MagicNumber
     private Dimension missingImageSize = new Dimension(24, 24);
-    // CSON:MagicNumber
     private BufferedImage missingImage;
     private Color missingImageColor = Color.PINK;
     private String template;

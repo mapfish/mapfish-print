@@ -30,9 +30,7 @@ import java.util.List;
  */
 public final class HttpProxy extends HttpCredential {
     private String host;
-    // CSOFF: MagicNumber
     private int port = 80;
-    // CSON: MagicNumber
     private String scheme;
 
     public HttpHost getHttpHost() {

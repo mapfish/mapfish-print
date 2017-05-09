@@ -71,9 +71,7 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
     /**
      * Validate some of the properties of this layer.
      */
-    // CSOFF: DesignForExtension
     public void postConstruct() throws URISyntaxException {
-        // CSON: DesignForExtension
         WmsVersion.lookup(this.version);
         Assert.isTrue(validateBaseUrl(), "invalid baseURL");
 

@@ -250,10 +250,8 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
 
     /**
      * Return an object that will be added to the client config with the key <em>clientInfo</em>.
-     * CSOFF: DesignForExtension
      */
     protected Optional<JSONObject> getClientInfo() throws JSONException {
-        // CSON: DesignForExtension
         return Optional.absent();
     }
 

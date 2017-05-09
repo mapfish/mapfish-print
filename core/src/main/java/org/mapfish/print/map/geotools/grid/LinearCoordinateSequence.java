@@ -8,7 +8,6 @@ import org.opengis.referencing.cs.AxisDirection;
 
 /**
  * The LinearCoordinateSequence class.
- * CSOFF: HiddenField
  */
 public final class LinearCoordinateSequence implements CoordinateSequence {
     private int dimension;

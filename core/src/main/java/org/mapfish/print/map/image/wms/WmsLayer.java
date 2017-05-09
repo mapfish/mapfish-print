@@ -92,9 +92,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
         final BufferedImage bufferedImage = new BufferedImage(area.width, area.height, TYPE_INT_ARGB_PRE);
         final Graphics2D graphics = bufferedImage.createGraphics();
         try {
-            // CSOFF: MagicNumber
             graphics.setBackground(new Color(255, 255, 255, 125));
-            // CSON: MagicNumber
 
             graphics.clearRect(0, 0, area.width, area.height);
             return bufferedImage;

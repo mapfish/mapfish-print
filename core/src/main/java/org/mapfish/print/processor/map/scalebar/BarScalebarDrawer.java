@@ -17,10 +17,8 @@ public class BarScalebarDrawer extends ScalebarDrawer {
         super(graphics2d, settings);
     }
 
-    //CSOFF: DesignForExtension
     @Override
     protected void drawBar() {
-    //CSON: DesignForExtension
         final int barSize = getSettings().getBarSize();
 
         float subIntervalWidth = getSettings().getIntervalLengthInPixels() / getSettings().getNumSubIntervals();

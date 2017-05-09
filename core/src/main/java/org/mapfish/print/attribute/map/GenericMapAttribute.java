@@ -178,10 +178,8 @@ public abstract class GenericMapAttribute
         this.zoomSnapGeodetic = zoomSnapGeodetic;
     }
 
-    //CSOFF: DesignForExtension
     @Override
     public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
-        //CSON: DesignForExtension
 
         if (this.width != null && this.maxWidth != null) {
             validationErrors.add(new ConfigurationException("cannot set both width and maxWidth in " + getClass().getName()));
@@ -337,9 +335,7 @@ public abstract class GenericMapAttribute
         /**
          * Validate the values provided by the request data and construct MapBounds and parse the layers.
          */
-        //CSOFF: DesignForExtension
         public void postConstruct() throws FactoryException {
-            //CSON: DesignForExtension
 
             if (this.width == null) {
                 throw new IllegalArgumentException("width parameter was not set.");
@@ -456,9 +452,7 @@ public abstract class GenericMapAttribute
          */
         public abstract void setRawLayers(PArray layers);
 
-        //CSOFF: DesignForExtension
         public List<MapLayer> getLayers() {
-            //CSON: DesignForExtension
             return Lists.newArrayList(this.mapLayers);
         }
 
@@ -478,33 +472,25 @@ public abstract class GenericMapAttribute
             return this.height;
         }
 
-        //CSOFF: DesignForExtension
         public Double getRotation() {
-            //CSON: DesignForExtension
             return this.rotation;
         }
 
-        //CSOFF: DesignForExtension
         public String getProjection() {
-            //CSON: DesignForExtension
             return this.projection;
         }
 
         /**
          * Return true if requestData has useNearestScale and configuration has some zoom levels defined.
          */
-        //CSOFF: DesignForExtension
         public Boolean isUseNearestScale() {
-            //CSON: DesignForExtension
             return this.useNearestScale && GenericMapAttribute.this.zoomLevels != null;
         }
 
         /**
          * Return true if requestData has useNearestScale and configuration has some zoom levels defined.
          */
-        //CSOFF: DesignForExtension
         public Boolean isUseAdjustBounds() {
-            //CSON: DesignForExtension
             return this.useAdjustBounds;
         }
 
@@ -512,39 +498,27 @@ public abstract class GenericMapAttribute
             return this.dpiSensitiveStyle;
         }
 
-        //CSOFF: DesignForExtension
         public ZoomLevels getZoomLevels() {
-            //CSON: DesignForExtension
             return GenericMapAttribute.this.zoomLevels;
         }
 
-        //CSOFF: DesignForExtension
         public Double getZoomSnapTolerance() {
-            //CSON: DesignForExtension
             return GenericMapAttribute.this.zoomSnapTolerance;
         }
 
-        //CSOFF: DesignForExtension
         public ZoomLevelSnapStrategy getZoomLevelSnapStrategy() {
-            //CSON: DesignForExtension
             return GenericMapAttribute.this.zoomLevelSnapStrategy;
         }
 
-        //CSOFF: DesignForExtension
         public Boolean getZoomSnapGeodetic() {
-            //CSON: DesignForExtension
             return GenericMapAttribute.this.zoomSnapGeodetic;
         }
 
-        //CSOFF: DesignForExtension
         public double[] getDpiSuggestions() {
-            //CSON: DesignForExtension
             return GenericMapAttribute.this.getDpiSuggestions();
         }
 
-        //CSOFF: DesignForExtension
         public double getRequestorDPI() {
-            //CSON: DesignForExtension
             // We are making the same assumption as Openlayers 2.x versions, that the DPI is 72.
             // In the future we probably need to change this assumption and allow the client software to
             // specify the DPI they are using for creating the bounds.

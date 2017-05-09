@@ -18,7 +18,6 @@ public class BarSubScalebarDrawer extends BarScalebarDrawer {
     }
 
     @Override
-    //CSOFF: MagicNumber
     protected final void drawBar() {
         super.drawBar();
 
@@ -30,5 +29,4 @@ public class BarSubScalebarDrawer extends BarScalebarDrawer {
             }
         }
     }
-    //CSON: MagicNumber
 }

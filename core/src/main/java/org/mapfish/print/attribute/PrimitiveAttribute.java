@@ -78,10 +78,8 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
     /**
      * Returns a string that is a technical description of the type.  In other words, a string that the client software
      * (user of the capabilities response) can use to create a request or UI.
-     * CSOFF: DesignForExtension
      */
     protected String clientConfigTypeDescription() {
-        //CSON: DesignForExtension
         return this.valueClass.getSimpleName();
     }
 }

@@ -191,9 +191,7 @@ public class WorkingDirectories {
         }
 
         private void removeOldFiles(final File dir, final String prefix, final long maxAge) {
-            //CSOFF: MagicNumber
             final long ageThreshold = new Date().getTime() - maxAge * 1000;
-            //CSON: MagicNumber
 
             int deletedFiles = 0;
             if (dir.exists()) {

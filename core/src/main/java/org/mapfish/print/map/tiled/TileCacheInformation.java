@@ -19,7 +19,6 @@ import javax.annotation.Nullable;
  */
 public abstract class TileCacheInformation {
 
-    //CSOFF:VisibilityModifier
     /**
      * the map bounds.
      */
@@ -35,7 +34,6 @@ public abstract class TileCacheInformation {
 
     private final AbstractTiledLayerParams params;
 
-    //CSON:VisibilityModifier
 
     /**
      * Constructor.
@@ -107,10 +105,8 @@ public abstract class TileCacheInformation {
      * @param envelope the area that will be displayed.
      * @param geoTileSize the size of each tile in world space.
      */
-    // CSOFF:DesignForExtension
     @Nonnull
     public Coordinate getMinGeoCoordinate(final ReferencedEnvelope envelope, final Coordinate geoTileSize) {
-        // CSON:DesignForExtension
         final ReferencedEnvelope tileCacheBounds = getTileCacheBounds();
         final double tileCacheMinX = tileCacheBounds.getMinX();
         double minGeoX = envelope.getMinX();
@@ -128,10 +124,8 @@ public abstract class TileCacheInformation {
      * @param imageWidth width of the image to create
      * @param imageHeight height of the image to create.
      */
-    // CSOFF:DesignForExtension
     @Nonnull
     public BufferedImage createBufferedImage(final int imageWidth, final int imageHeight) {
-        // CSON:DesignForExtension
         return new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_4BYTE_ABGR);
     }
 
@@ -140,9 +134,7 @@ public abstract class TileCacheInformation {
      * That is up to the layer implementation because the layer is responsible for taking the commonUrl and transforming it to
      * a final tile URI.
      */
-    // CSOFF:DesignForExtension
     protected String createCommonUrl() throws URISyntaxException, UnsupportedEncodingException {
-        // CSOFF:DesignForExtension
         return this.params.createCommonUrl();
     }
 

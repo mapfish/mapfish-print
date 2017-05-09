@@ -193,9 +193,7 @@ public class ScalebarGraphic {
             doLayout(graphics2D, scalebarParams, settings);
         } else {
             //not enough room because of the labels, try a smaller bar
-            //CSOFF: MagicNumber
             double nextIntervalDistance = getNearestNiceValue(intervalLengthInWorldUnits * 0.9, scaleUnit, scalebarParams.lockUnits);
-            //CSOFF: MagicNumber
             tryLayout(graphics2D, scaleUnit, scaleDenominator, nextIntervalDistance, settings, tryNumber + 1);
         }
     }
@@ -296,10 +294,8 @@ public class ScalebarGraphic {
     protected static String createLabelText(final DistanceUnit scaleUnit, final double value, final DistanceUnit intervalUnit) {
         double scaledValue = scaleUnit.convertTo(value, intervalUnit);
 
-        //CSOFF: MagicNumber
         // assume that there is no interval smaller then 0.0001
         scaledValue = Math.round(scaledValue * 10000) / 10000;
-        //CSON: MagicNumber
         String decimals = Double.toString(scaledValue).split("\\.")[1];
 
         if (Double.valueOf(decimals) == 0) {
@@ -325,7 +321,6 @@ public class ScalebarGraphic {
      * @param lockUnits if set, the values are not scaled to a "nicer" unit.
      */
     @VisibleForTesting
-    //CSOFF: MagicNumber
     protected final double getNearestNiceValue(final double value, final DistanceUnit scaleUnit, final boolean lockUnits) {
         DistanceUnit bestUnit = bestUnit(scaleUnit, value, lockUnits);
         double factor = scaleUnit.convertTo(1.0, bestUnit);
@@ -352,12 +347,10 @@ public class ScalebarGraphic {
         // scale it up the correct power of 10
         return barLen * pow10 / factor;
     }
-    //CSON: MagicNumber
 
     /**
      * @return The "nicest" number of sub intervals in function of the interval distance.
      */
-    //CSOFF: MagicNumber
     private int getNbSubIntervals(final DistanceUnit scaleUnit, final double intervalDistance, final DistanceUnit intervalUnit) {
         double value = scaleUnit.convertTo(intervalDistance, intervalUnit);
         int digits = (int) (Math.log(value) / Math.log(10));
@@ -378,13 +371,11 @@ public class ScalebarGraphic {
                 throw new RuntimeException("Invalid interval: " + value + intervalUnit + " (" + firstChar + ")");
         }
     }
-    //CSON: MagicNumber
 
     private int getFontSize(final ScaleBarRenderSettings settings) {
         return (int) Math.ceil(settings.getParams().fontSize * settings.getDpiRatio());
     }
 
-    //CSOFF: MagicNumber
     private static int getLineWidth(final ScaleBarRenderSettings settings) {
         if (settings.getParams().lineWidth != null) {
             return (int) Math.ceil(settings.getParams().lineWidth * settings.getDpiRatio());
@@ -396,13 +387,11 @@ public class ScalebarGraphic {
             }
         }
     }
-    //CSON: MagicNumber
 
     /**
      * Get the bar size.
      * @param settings Parameters for rendering the scalebar.
      */
-    //CSOFF: MagicNumber
     @VisibleForTesting
     protected static int getBarSize(final ScaleBarRenderSettings settings) {
         if (settings.getParams().barSize != null) {
@@ -415,13 +404,11 @@ public class ScalebarGraphic {
             }
         }
     }
-    //CSON: MagicNumber
 
     /**
      * Get the label distance..
      * @param settings Parameters for rendering the scalebar.
      */
-    //CSOFF: MagicNumber
     @VisibleForTesting
     protected static int getLabelDistance(final ScaleBarRenderSettings settings) {
         if (settings.getParams().labelDistance != null) {
@@ -434,9 +421,7 @@ public class ScalebarGraphic {
             }
         }
     }
-    //CSON: MagicNumber
 
-    //CSOFF: MagicNumber
     private static int getPadding(final ScaleBarRenderSettings settings) {
         if (settings.getParams().padding != null) {
             return (int) Math.ceil(settings.getParams().padding * settings.getDpiRatio());
@@ -448,5 +433,4 @@ public class ScalebarGraphic {
             }
         }
     }
-    //CSON: MagicNumber
 }
