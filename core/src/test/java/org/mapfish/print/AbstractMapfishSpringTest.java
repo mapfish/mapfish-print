@@ -7,13 +7,11 @@ import org.junit.runner.RunWith;
 import org.mapfish.print.attribute.map.CenterScaleMapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.WorkingDirectories;
-import org.mapfish.print.map.Scale;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.imageio.ImageIO;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -98,7 +96,7 @@ public abstract class AbstractMapfishSpringTest {
     public static MapfishMapContext createTestMapContext() {
         try {
             final CenterScaleMapBounds bounds = new CenterScaleMapBounds(CRS.decode("CRS:84"), 0, 0, 30000);
-            return new MapfishMapContext(bounds, new Dimension(500,500), 0, 72, Constants.PDF_DPI, null, true);
+            return new MapfishMapContext(bounds, new Dimension(500,500), 0, 72, true, true);
         } catch (Throwable e) {
             throw new Error(e);
         }

@@ -17,8 +17,9 @@ import javax.annotation.Nonnull;
 /**
  * Represent a scale and provide transformation.
  */
-public final class Scale {
+public final class Scale implements Comparable<Scale> {
     private final double resolution;
+    private final DistanceUnit unit;
     private static final Logger LOGGER = LoggerFactory.getLogger(Scale.class);
 
     /**
@@ -28,7 +29,10 @@ public final class Scale {
      * @param projection the projection.
      * @param dpi the DPI on witch the scale is valid.
      */
-    public Scale(final double denominator, @Nonnull final CoordinateReferenceSystem projection, final double dpi) {
+    public Scale(
+            final double denominator,
+            @Nonnull final CoordinateReferenceSystem projection,
+            final double dpi) {
         this(denominator, DistanceUnit.fromProjection(projection), dpi);
     }
 
@@ -36,28 +40,60 @@ public final class Scale {
      * Constructor.
      *
      * @param denominator the scale denominator.  a value of 1'000 would be a scale of 1:1'000.
-     * @param projectionUnit the unit used by the projection.
+     * @param unit the unit used by the projection.
      * @param dpi the DPI on witch the scale is valid.
      */
-    public Scale(final double denominator, @Nonnull final DistanceUnit projectionUnit, final double dpi) {
-        this(1.0 / (projectionUnit.convertTo(1.0 / denominator, DistanceUnit.IN) * dpi));
+    public Scale(final double denominator, @Nonnull final DistanceUnit unit, final double dpi) {
+        this(
+                1.0 / (unit.convertTo(1.0 / denominator, DistanceUnit.IN) * dpi),
+                unit);
     }
 
     /**
      * Constructor.
      *
      * @param resolution the resolution.
+     * @param unit the unit used by the projection.
      */
-    private Scale(final double resolution) {
+    private Scale(final double resolution, @Nonnull final DistanceUnit unit) {
         this.resolution = resolution;
+        this.unit = unit;
     }
 
     /**
-     * Get the resolution.
+     * Constructor.
+     *
+     * @param resolution the resolution.
+     * @param projection the projection.
+     */
+    private Scale(final double resolution, @Nonnull final CoordinateReferenceSystem projection) {
+        this.resolution = resolution;
+        this.unit = DistanceUnit.fromProjection(projection);
+    }
+
+
+    /**
+     * Get the resolution in meters.
      * @return the resolution
      */
     public double getResolution() {
         return this.resolution;
+    }
+
+    /**
+     * Get the resolution in inches.
+     * @return the resolution
+     */
+    public double getResolutionInInches() {
+        return this.unit.convertTo(this.resolution, DistanceUnit.IN);
+    }
+
+    /**
+     * Get the scale unit.
+     * @return the unit
+     */
+    public DistanceUnit getUnit() {
+        return this.unit;
     }
 
     /**
@@ -72,46 +108,35 @@ public final class Scale {
             final double dpi, final Coordinate position) {
         return geodetic ?
                 getGeodeticDenominator(projection, dpi, position) :
-                getDenominator(projection, dpi);
+                getDenominator(dpi);
     }
 
     /**
-     * @param projection the projection to perform the calculation in
      * @param dpi the dpi of the display device.
      * @return the scale denominator
      */
-    public double getDenominator(@Nonnull final CoordinateReferenceSystem projection, final double dpi) {
-        return getDenominator(DistanceUnit.fromProjection(projection), dpi);
-    }
-
-    /**
-     * @param projectionUnit the projection unit
-     * @param dpi the dpi of the display device.
-     * @return the scale denominator
-     */
-    public double getDenominator(@Nonnull final DistanceUnit projectionUnit, final double dpi) {
-        final double resolutionInInches = projectionUnit.convertTo(this.resolution, DistanceUnit.IN);
+    public double getDenominator(final double dpi) {
+        final double resolutionInInches = getResolutionInInches();
         return resolutionInInches * dpi;
     }
 
     /**
-     * @param projection the projection to perform the calculation in
+     * @param projection the projection to perform the calculation in.
      * @param dpi the dpi of the display device.
      * @param position the position on the map.
      * @return the scale denominator
      */
-    public double getGeodeticDenominator(@Nonnull final CoordinateReferenceSystem projection, final double dpi, final Coordinate position) {
-        final DistanceUnit projectionUnit = DistanceUnit.fromProjection(projection);
-        double scaleDenominator = getDenominator(projectionUnit, dpi);
-
-        if (projectionUnit == DistanceUnit.DEGREES) {
-            return scaleDenominator;
+    public double getGeodeticDenominator(
+            @Nonnull final CoordinateReferenceSystem projection, final double dpi,
+            final Coordinate position) {
+        if (this.unit == DistanceUnit.DEGREES) {
+            return getDenominator(dpi);
         }
 
         try {
             double width = 1;
-            double geoWidthInches = scaleDenominator * width / dpi;
-            double geoWidth = DistanceUnit.IN.convertTo(geoWidthInches, projectionUnit);
+            double geoWidthInches = getResolutionInInches() * width;
+            double geoWidth = DistanceUnit.IN.convertTo(geoWidthInches, this.unit);
             double minGeoX = position.y - (geoWidth / 2.0);
             double maxGeoX = minGeoX + geoWidth;
 
@@ -136,7 +161,7 @@ public final class Scale {
         }
 
         // fall back
-        return getDenominator(projectionUnit, dpi);
+        return getDenominator(dpi);
     }
 
     /**
@@ -167,19 +192,48 @@ public final class Scale {
         return new Scale(scaleDenominator, DistanceUnit.fromProjection(projection), dpi).getGeodeticDenominator(projection, dpi, position);
     }
 
+
+    /**
+     * Construct a scale object from a resolution.
+     *
+     * @param newResolution the resolution of the map
+     */
+    public Scale toResolution(final double newResolution) {
+        return Scale.fromResolution(newResolution, this.unit);
+    }
+
     /**
      * Construct a scale object from a resolution.
      *
      * @param resolution the resolution of the map
+     * @param projectionUnit the unit used by the projection.
      */
-    public static Scale fromResolution(final double resolution) {
-        return new Scale(resolution);
+    public static Scale fromResolution(
+            final double resolution, @Nonnull final DistanceUnit projectionUnit) {
+        return new Scale(resolution, projectionUnit);
     }
 
-    // CHECKSTYLE:OFF
+    /**
+     * Construct a scale object from a resolution.
+     *
+     * @param resolution the resolution of the map
+     * @param projection the projection to perform the calculation in.
+     */
+    public static Scale fromResolution(
+            final double resolution, @Nonnull final CoordinateReferenceSystem projection) {
+        return new Scale(resolution, projection);
+    }
 
     @Override
-    public boolean equals(Object o) {
+    public int compareTo(final Scale scale) {
+        if (!this.unit.equals(scale.unit)) {
+            throw new RuntimeException("Unable to compare scales in different units");
+        }
+        return Double.compare(this.resolution, scale.resolution);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -187,23 +241,26 @@ public final class Scale {
             return false;
         }
 
-        Scale scale = (Scale) o;
+        final Scale scale = (Scale) o;
 
-        if (Double.compare(scale.resolution, resolution) != 0) {
+        if (Double.compare(scale.resolution, this.resolution) != 0) {
             return false;
         }
-
-        return true;
+        return this.unit == scale.unit;
     }
 
     @Override
     public int hashCode() {
-        return new Double(resolution).hashCode();
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(this.resolution);
+        result = (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (this.unit != null ? this.unit.hashCode() : 0);
+        return result;
     }
 
     @Override
     public String toString() {
-        return "Scale{resolution=" + resolution + '}';
+        return String.format("Scale{resolution=%s}", this.resolution);
     }
-    // CHECKSTYLE:ON
 }

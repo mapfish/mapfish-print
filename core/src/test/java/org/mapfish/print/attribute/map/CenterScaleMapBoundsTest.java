@@ -4,7 +4,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
-import org.mapfish.print.map.Scale;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.awt.Rectangle;
@@ -35,7 +34,7 @@ public class CenterScaleMapBoundsTest {
         final double startScaleDenominator = 18984.396150703426;
         final CenterScaleMapBounds bounds = new CenterScaleMapBounds(CH1903, 659596.5, 185610.5, startScaleDenominator);
         final Rectangle paintArea = new Rectangle(521, 330);
-        final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea, OPENLAYERS_2_DPI);
+        final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea);
 
         // It would be nice to nail this down in the future to the exact value but the method I used for measurement was openlayers and
         // I don't know what the DPI it was using and I don't know how accurate its calculation is either.
@@ -51,7 +50,7 @@ public class CenterScaleMapBoundsTest {
         final double startScaleDenominator = 17983.582534790035;
         final CenterScaleMapBounds bounds = new CenterScaleMapBounds(LAMBERT, 445000, 6355000, startScaleDenominator);
         final Rectangle paintArea = new Rectangle(418, 512);
-        final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea, OPENLAYERS_2_DPI);
+        final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea);
 
         // It would be nice to nail this down in the future to the exact value but the method I used for measurement was openlayers and
         // I don't know what the DPI it was using and I don't know how accurate its calculation is either.
@@ -68,7 +67,7 @@ public class CenterScaleMapBoundsTest {
         final CenterScaleMapBounds bounds = new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 8.2335427805083, 46.801424340241,
                 startScaleDenominator);
         final Rectangle paintArea = new Rectangle(521, 330);
-        final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea, OPENLAYERS_2_DPI);
+        final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea);
 
         // It would be nice to nail this down in the future to the exact value but the method I used for measurement was openlayers and
         // I don't know what the DPI it was using and I don't know how accurate its calculation is either.
@@ -85,10 +84,10 @@ public class CenterScaleMapBoundsTest {
         final double Denominator = 2500.0;
         final CenterScaleMapBounds bounds = new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 0.0, 0.0, Denominator);
         final Rectangle paintArea = new Rectangle(400, 200);
-        final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea, OPENLAYERS_2_DPI);
+        final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea);
 
         CenterScaleMapBounds newBounds = bounds.zoomOut(1);
-        ReferencedEnvelope newEnvelope = newBounds.toReferencedEnvelope(paintArea, OPENLAYERS_2_DPI);
+        ReferencedEnvelope newEnvelope = newBounds.toReferencedEnvelope(paintArea);
 
         final double delta = 0.000001;
         assertEquals(envelope.getMinX(), newEnvelope.getMinX(), delta);
@@ -97,7 +96,7 @@ public class CenterScaleMapBoundsTest {
         assertEquals(envelope.getMaxY(), newEnvelope.getMaxY(), delta);
 
         newBounds = bounds.zoomOut(2);
-        newEnvelope = newBounds.toReferencedEnvelope(paintArea, OPENLAYERS_2_DPI);
+        newEnvelope = newBounds.toReferencedEnvelope(paintArea);
 
         assertEquals(envelope.getMinX() * 2, newEnvelope.getMinX(), delta);
         assertEquals(envelope.getMaxX() * 2, newEnvelope.getMaxX(), delta);

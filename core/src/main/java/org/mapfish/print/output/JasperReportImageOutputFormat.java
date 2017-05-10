@@ -15,6 +15,8 @@ import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
 
+import static org.mapfish.print.Constants.PDF_DPI;
+
 /**
  * An PDF output format that uses Jasper reports to generate the result.
  */
@@ -43,7 +45,7 @@ public final class JasperReportImageOutputFormat extends AbstractJasperReportOut
         JasperPrint jasperPrint = print.print;
         final int numPages = jasperPrint.getPages().size();
 
-        final float dpiRatio = (float) (print.dpi / print.requestorDpi);
+        final float dpiRatio = (float) (print.dpi / PDF_DPI);
         final int pageHeightOnImage = (int) (jasperPrint.getPageHeight() * dpiRatio);
         final int pageWidthOnImage = (int) (jasperPrint.getPageWidth() * dpiRatio);
         final int separatorHeight = 1;

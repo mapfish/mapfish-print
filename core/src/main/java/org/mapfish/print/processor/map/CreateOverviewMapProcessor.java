@@ -109,10 +109,9 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
             throws IOException {
         Rectangle originalPaintArea = new Rectangle(values.map.getMapSize());
         MapBounds adjustedBounds = CreateMapProcessor.adjustBoundsToScaleAndMapSize(
-                (MapAttribute.MapAttributeValues) values.map,
-                values.map.getDpi(), originalPaintArea, originalBounds);
+                values.map, originalPaintArea, originalBounds, values.map.getDpi());
         ReferencedEnvelope originalEnvelope =
-                adjustedBounds.toReferencedEnvelope(originalPaintArea, values.map.getDpi());
+                adjustedBounds.toReferencedEnvelope(originalPaintArea);
 
         Geometry mapExtent = JTS.toGeometry(originalEnvelope);
         if (!FloatingPointUtil.equals(values.map.getRotation(), 0.0)) {

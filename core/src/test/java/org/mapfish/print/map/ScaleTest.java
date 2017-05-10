@@ -32,12 +32,12 @@ public class ScaleTest{
     public void testToResolution() throws Exception {
         final double resolution = new Scale(SCALE, CH1903, PDF_DPI).getResolution();
         assertEquals(RESOLUTION, resolution, DELTA);
-        assertEquals(SCALE, Scale.fromResolution(resolution).getDenominator(CH1903, PDF_DPI), DELTA);
+        assertEquals(SCALE, Scale.fromResolution(resolution, CH1903).getDenominator(PDF_DPI), DELTA);
     }
 
     @Test
     public void fromResolution() {
-        assertEquals(SCALE, Scale.fromResolution(RESOLUTION).getDenominator(CH1903, PDF_DPI), DELTA);
+        assertEquals(SCALE, Scale.fromResolution(RESOLUTION, CH1903).getDenominator(PDF_DPI), DELTA);
     }
 
     @Test
@@ -45,7 +45,7 @@ public class ScaleTest{
         final Scale scale = new Scale(15432.0, SPHERICAL_MERCATOR, 254);
 
         assertEquals(
-                scale.getDenominator(SPHERICAL_MERCATOR, 254),
+                scale.getDenominator(254),
                 15432.0, 1.0);
         assertEquals(
                 scale.getGeodeticDenominator(SPHERICAL_MERCATOR, 254, new Coordinate(682433.0, 6379270.0)),

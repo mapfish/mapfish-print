@@ -56,7 +56,8 @@ public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".wms")) || input.getAuthority().contains(host + ".wms");
+                        return (("" + input.getHost()).contains(host + ".wms")) ||
+                                input.getAuthority().contains(host + ".wms");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
@@ -67,16 +68,23 @@ public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
                             uppercaseParams.put(entry.getKey().toUpperCase(), entry.getValue().toUpperCase());
                         }
 
-                        assertTrue("SERVICE != WMS: " + uppercaseParams.get("WMS"), uppercaseParams.containsEntry("SERVICE", "WMS"));
-                        assertTrue("FORMAT != IMAGE/TIFF: " + uppercaseParams.get("FORMAT"), uppercaseParams.containsEntry("FORMAT",
+                        assertTrue("SERVICE != WMS: " + uppercaseParams.get("WMS"),
+                                uppercaseParams.containsEntry("SERVICE", "WMS"));
+                        assertTrue("FORMAT != IMAGE/TIFF: " + uppercaseParams.get("FORMAT"),
+                                uppercaseParams.containsEntry("FORMAT",
                                 "IMAGE/TIFF"));
-                        assertTrue("REQUEST != MAP: " + uppercaseParams.get("REQUEST"), uppercaseParams.containsEntry("REQUEST", "MAP"));
-                        assertTrue("VERSION != 1.0.0: " + uppercaseParams.get("VERSION"), uppercaseParams.containsEntry("VERSION",
+                        assertTrue("REQUEST != MAP: " + uppercaseParams.get("REQUEST"),
+                                uppercaseParams.containsEntry("REQUEST", "MAP"));
+                        assertTrue("VERSION != 1.0.0: " + uppercaseParams.get("VERSION"),
+                                uppercaseParams.containsEntry("VERSION",
                                 "1.0.0"));
-                        assertTrue("LAYERS != TIGER-NY: " + uppercaseParams.get("LAYERS"), uppercaseParams.containsEntry("LAYERS",
+                        assertTrue("LAYERS != TIGER-NY: " + uppercaseParams.get("LAYERS"),
+                                uppercaseParams.containsEntry("LAYERS",
                                 "TIGER-NY"));
-                        assertTrue("STYLES != LINE: " + uppercaseParams.get("STYLES"), uppercaseParams.containsEntry("STYLES", "LINE"));
-                        assertTrue("CUSTOMP1 != 1: " + uri, uppercaseParams.containsEntry("CUSTOMP1", "1"));
+                        assertTrue("STYLES != LINE: " + uppercaseParams.get("STYLES"),
+                                uppercaseParams.containsEntry("STYLES", "LINE"));
+                        assertTrue("CUSTOMP1 != 1: " + uri,
+                                uppercaseParams.containsEntry("CUSTOMP1", "1"));
                         assertTrue("CUSTOMP2 != 2", uppercaseParams.containsEntry("CUSTOMP2", "2"));
                         assertTrue("BBOX is missing", uppercaseParams.containsKey("BBOX"));
                         assertTrue("EXCEPTIONS is missing", uppercaseParams.containsKey("EXCEPTIONS"));
@@ -94,7 +102,8 @@ public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".json")) || input.getAuthority().contains(host + ".json");
+                        return (("" + input.getHost()).contains(host + ".json")) ||
+                                input.getAuthority().contains(host + ".json");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
@@ -111,7 +120,8 @@ public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(),
+                this.requestFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         @SuppressWarnings("unchecked")

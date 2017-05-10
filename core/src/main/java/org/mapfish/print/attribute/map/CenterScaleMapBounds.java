@@ -13,6 +13,8 @@ import org.opengis.referencing.operation.TransformException;
 
 import java.awt.Rectangle;
 
+import static org.mapfish.print.Constants.PDF_DPI;
+
 /**
  * Represent Map Bounds with a center location and a scale of the map.
  * <p></p>
@@ -20,41 +22,54 @@ import java.awt.Rectangle;
  */
 public final class CenterScaleMapBounds extends MapBounds {
     private final Coordinate center;
-    private final double scaleDenominator;
+    private final Scale scale;
+
     /**
      * Constructor.
      *
      * @param projection the projection these bounds are defined in.
      * @param centerX the x coordinate of the center point.
      * @param centerY the y coordinate of the center point.
-     * @param scaleDenominator the scale denominator of the map
+     * @param scaleDenominator the scale denominator of the map.
      */
     public CenterScaleMapBounds(
             final CoordinateReferenceSystem projection, final double centerX,
             final double centerY, final double scaleDenominator) {
         super(projection);
         this.center = new Coordinate(centerX, centerY);
-        this.scaleDenominator = scaleDenominator;
+        this.scale = new Scale(scaleDenominator, getProjection(), PDF_DPI);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param projection the projection these bounds are defined in.
+     * @param centerX the x coordinate of the center point.
+     * @param centerY the y coordinate of the center point.
+     * @param scale the scale of the map.
+     */
+    public CenterScaleMapBounds(
+            final CoordinateReferenceSystem projection, final double centerX,
+            final double centerY, final Scale scale) {
+        super(projection);
+        this.center = new Coordinate(centerX, centerY);
+        this.scale = scale;
+    }
 
     @Override
-    public ReferencedEnvelope toReferencedEnvelope(final Rectangle paintArea, final double dpi) {
-
-        double geoWidthInches = this.scaleDenominator * paintArea.width / dpi;
-        double geoHeightInches = this.scaleDenominator * paintArea.height / dpi;
-
+    public ReferencedEnvelope toReferencedEnvelope(final Rectangle paintArea) {
         ReferencedEnvelope bbox;
-
         final DistanceUnit projectionUnit = DistanceUnit.fromProjection(getProjection());
         if (projectionUnit == DistanceUnit.DEGREES) {
+            double geoWidthInches = this.scale.getResolutionInInches() * paintArea.width;
+            double geoHeightInches = this.scale.getResolutionInInches() * paintArea.height;
             bbox = computeGeodeticBBox(geoWidthInches, geoHeightInches);
         } else {
             final double centerX = this.center.getOrdinate(0);
             final double centerY = this.center.getOrdinate(1);
 
-            double geoWidth = DistanceUnit.IN.convertTo(geoWidthInches, projectionUnit);
-            double geoHeight = DistanceUnit.IN.convertTo(geoHeightInches, projectionUnit);
+            double geoWidth = this.scale.getResolution() * paintArea.width;
+            double geoHeight = this.scale.getResolution() * paintArea.height;
 
             double minGeoX = centerX - (geoWidth / 2.0);
             double minGeoY = centerY - (geoHeight / 2.0);
@@ -76,22 +91,19 @@ public final class CenterScaleMapBounds extends MapBounds {
             final ZoomLevels zoomLevels, final double tolerance,
             final ZoomLevelSnapStrategy zoomLevelSnapStrategy,
             final boolean geodetic,
-            final Rectangle paintArea, final double dpi) {
+            final Rectangle paintArea,
+            final double dpi) {
 
-        final double currentScaleDenominator = getScaleDenominator(paintArea, dpi);
-        final double geodeticScaleDenominator = new Scale(currentScaleDenominator, getProjection(), dpi)
-                .getDenominator(geodetic, getProjection(), dpi, this.center);
-        final ZoomLevelSnapStrategy.SearchResult result = zoomLevelSnapStrategy.search(
-                geodeticScaleDenominator, tolerance, zoomLevels);
-        final double resultScaleDenominator = result.getScaleDenominator();
+        final Scale newScale = getNearestScale(zoomLevels, tolerance, zoomLevelSnapStrategy,
+                geodetic, paintArea, dpi);
 
         return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y,
-                resultScaleDenominator);
+                newScale);
     }
 
     @Override
-    public double getScaleDenominator(final Rectangle paintArea, final double dpi) {
-        return this.scaleDenominator;
+    public Scale getScale(final Rectangle paintArea, final double dpi) {
+        return this.scale;
     }
 
     @Override
@@ -106,13 +118,14 @@ public final class CenterScaleMapBounds extends MapBounds {
             return this;
         }
 
-        final double newDenominator = this.scaleDenominator * factor;
-        return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y, newDenominator);
+        final double newResolution = this.scale.getResolution() * factor;
+        return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y,
+                this.scale.toResolution(newResolution));
     }
 
     @Override
-    public MapBounds zoomToScale(final double newScaleDenominator) {
-        return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y, newScaleDenominator);
+    public MapBounds zoomToScale(final Scale newScale) {
+        return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y, newScale);
     }
 
     @Override
@@ -122,7 +135,6 @@ public final class CenterScaleMapBounds extends MapBounds {
 
     private ReferencedEnvelope computeGeodeticBBox(final double geoWidthInInches, final double geoHeightInInches) {
         try {
-
             CoordinateReferenceSystem crs = getProjection();
 
             GeodeticCalculator calc = new GeodeticCalculator(crs);
@@ -167,10 +179,8 @@ public final class CenterScaleMapBounds extends MapBounds {
         return y - (((int) (y + Math.signum(y) * 90)) / 180) * 180.0;
     }
 
-    // CHECKSTYLE:OFF
-
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -181,32 +191,24 @@ public final class CenterScaleMapBounds extends MapBounds {
             return false;
         }
 
-        CenterScaleMapBounds that = (CenterScaleMapBounds) o;
+        final CenterScaleMapBounds that = (CenterScaleMapBounds) o;
 
-        if (!center.equals(that.center)) {
+        if (this.center != null ? !this.center.equals(that.center) : that.center != null) {
             return false;
         }
-        if (this.scaleDenominator != that.scaleDenominator) {
-            return false;
-        }
-
-        return true;
+        return this.scale != null ? this.scale.equals(that.scale) : that.scale == null;
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + center.hashCode();
-        result = 31 * result + new Double(scaleDenominator).hashCode();
+        result = 31 * result + (this.center != null ? this.center.hashCode() : 0);
+        result = 31 * result + (this.scale != null ? this.scale.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return "CenterScaleMapBounds{" +
-               "center=" + center +
-               ", scaleDenominator=" + scaleDenominator +
-               '}';
+        return String.format("CenterScaleMapBounds{center=%s, scale=%s}", this.center, this.scale);
     }
-    // CHECKSTYLE:ON
 }

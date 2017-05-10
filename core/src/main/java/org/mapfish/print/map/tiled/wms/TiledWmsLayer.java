@@ -6,7 +6,6 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
-import org.mapfish.print.map.Scale;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.tiled.AbstractTiledLayer;
 import org.mapfish.print.map.tiled.TileCacheInformation;
@@ -87,8 +86,8 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
 
         @Override
         public double getResolution() {
-            return new Scale(WmsTileCacheInformation.this.bounds.getScaleDenominator(WmsTileCacheInformation.this.paintArea, dpi),
-                    bounds.getProjection(), dpi).getResolution();
+            return WmsTileCacheInformation.this.bounds.getScale(WmsTileCacheInformation.this.paintArea, dpi)
+                   .getResolution();
         }
 
         @Override
@@ -105,7 +104,7 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
         @Override
         protected ReferencedEnvelope getTileCacheBounds() {
             return new ReferencedEnvelope(
-                    this.bounds.toReferencedEnvelope(paintArea, dpi),
+                    this.bounds.toReferencedEnvelope(paintArea),
                     this.bounds.getProjection());
         }
     }

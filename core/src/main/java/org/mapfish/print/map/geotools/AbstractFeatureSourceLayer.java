@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
 
+import static org.mapfish.print.Constants.PDF_DPI;
+
 /**
  * A layer that wraps a Geotools Feature Source and a style object.
  */
@@ -73,9 +75,9 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
         FeatureSource<?, ?> source = getFeatureSource(httpRequestFactory, mapContext);
         Style style = this.styleSupplier.load(httpRequestFactory, source);
 
-        if (mapContext.isDpiSensitiveStyle() && mapContext.getDPI() > mapContext.getRequestorDPI()) {
+        if (mapContext.isDpiSensitiveStyle() && mapContext.getDPI() > PDF_DPI) {
             // rescale styles for a higher dpi print
-            double scaleFactor = mapContext.getDPI() / mapContext.getRequestorDPI();
+            double scaleFactor = mapContext.getDPI() / PDF_DPI;
             RescaleStyleVisitor scale = new RescaleStyleVisitor(scaleFactor);
             style.accept(scale);
             style = (Style) scale.getCopy();

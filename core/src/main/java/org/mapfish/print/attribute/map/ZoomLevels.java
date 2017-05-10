@@ -4,10 +4,14 @@ import com.google.common.collect.Ordering;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.ConfigurationObject;
+import org.mapfish.print.map.DistanceUnit;
+import org.mapfish.print.map.Scale;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
+
+import static org.mapfish.print.Constants.PDF_DPI;
 
 /**
  * <p>Encapsulates a sorted set of scale denominators representing the allowed scales.</p>
@@ -20,15 +24,15 @@ import java.util.TreeSet;
  * [[examples=datasource_many_dynamictables_legend]]
  */
 public final class ZoomLevels implements ConfigurationObject {
-    private double[] scales;
+    private double[] scaleDenominators;
 
     /**
      * Constructor.
      *
-     * @param scales do not need to be sorted or unique.
+     * @param scaleDenominators do not need to be sorted or unique.
      */
-    public ZoomLevels(final double... scales) {
-        setScales(scales);
+    public ZoomLevels(final double... scaleDenominators) {
+        setScales(scaleDenominators);
     }
 
     /**
@@ -40,17 +44,17 @@ public final class ZoomLevels implements ConfigurationObject {
 
     /**
      * Set the scales (sorts from largest to smallest).
-     * @param scales The scales (may be unsorted).
+     * @param newScaleDenominators The scales (may be unsorted).
      */
-    public void setScales(final double[] scales) {
+    public void setScales(final double[] newScaleDenominators) {
         TreeSet<Double> sortedSet = new TreeSet<Double>(Ordering.natural().reverse());
-        for (int i = 0; i < scales.length; i++) {
-            sortedSet.add(scales[i]);
+        for (int i = 0; i < newScaleDenominators.length; i++) {
+            sortedSet.add(newScaleDenominators[i]);
         }
-        this.scales = new double[sortedSet.size()];
+        this.scaleDenominators = new double[sortedSet.size()];
         int i = 0;
-        for (Double aDouble : sortedSet) {
-            this.scales[i] = aDouble;
+        for (Double scaleDenominator : sortedSet) {
+            this.scaleDenominators[i] = scaleDenominator;
             i++;
         }
     }
@@ -59,20 +63,21 @@ public final class ZoomLevels implements ConfigurationObject {
      * The number of zoom levels.
      */
     public int size() {
-        return this.scales.length;
+        return this.scaleDenominators.length;
     }
 
     /**
-     * Get the zoom level at the given index.
+     * Get the scale at the given index.
      * @param index the index of the zoom level to access.
+     * @param unit the unit.
      */
-    public double get(final int index) {
-        return this.scales[index];
+    public Scale get(final int index, final DistanceUnit unit) {
+        return new Scale(this.scaleDenominators[index], unit, PDF_DPI);
     }
 
     @Override
     public String toString() {
-        return Arrays.toString(this.scales);
+        return Arrays.toString(this.scaleDenominators);
     }
 
     // CHECKSTYLE:OFF
@@ -83,20 +88,20 @@ public final class ZoomLevels implements ConfigurationObject {
 
         ZoomLevels that = (ZoomLevels) o;
 
-        if (!Arrays.equals(scales, that.scales)) return false;
+        if (!Arrays.equals(scaleDenominators, that.scaleDenominators)) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(scales);
+        return Arrays.hashCode(scaleDenominators);
     }
 
 
     @Override
     public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
-        if (scales == null || scales.length == 0) {
+        if (scaleDenominators == null || scaleDenominators.length == 0) {
             validationErrors.add(new ConfigurationException("There are no scales defined in " + getClass().getName()));
         }
     }
@@ -104,9 +109,9 @@ public final class ZoomLevels implements ConfigurationObject {
     /**
      * Return a copy of the zoom level scale denominators. Scales are sorted greatest to least.
      */
-    public double[] getScales() {
-        double[] dest = new double[this.scales.length];
-        System.arraycopy(this.scales, 0, dest, 0, this.scales.length);
+    public double[] getScaleDenominators() {
+        double[] dest = new double[this.scaleDenominators.length];
+        System.arraycopy(this.scaleDenominators, 0, dest, 0, this.scaleDenominators.length);
         return dest;
     }
 

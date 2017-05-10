@@ -1,6 +1,7 @@
 package org.mapfish.print.processor.map;
 
 import static org.junit.Assert.assertEquals;
+import static org.mapfish.print.Constants.PDF_DPI;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -113,8 +114,7 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSRestTest extends AbstractM
         assertEquals(2, layerGraphics.size());
 
         MapfishMapContext mapContext = values.getObject("mapContext", MapfishMapContext.class);
-        assertEquals(110000.0, mapContext.getScale().getDenominator(
-                mapContext.getBounds().getProjection(), mapContext.getRequestorDPI()), 1E-6);
+        assertEquals(110000.0, mapContext.getScale().getDenominator(PDF_DPI), 1E-6);
 
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 630, 294);
         // ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));

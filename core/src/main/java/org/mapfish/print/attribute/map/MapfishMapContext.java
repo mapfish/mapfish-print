@@ -22,7 +22,6 @@ public final class MapfishMapContext {
     private final Dimension mapSize;
     private final double rotation;
     private final double dpi;
-    private final double requestorDpi;
     private final boolean forceLongitudeFirst;
     private final boolean dpiSensitiveStyle;
     private final MapfishMapContext parent;
@@ -32,16 +31,13 @@ public final class MapfishMapContext {
      * @param bounds the map bounds
      * @param mapSize the map size
      * @param dpi the dpi of the printed map
-     * @param requestorDpi the dpi of the client map
      * @param forceLongitudeFirst If true then force longitude coordinates as the first coordinate.
      * @param dpiSensitiveStyle Scale the vector styles?
      */
     public MapfishMapContext(
-            final MapBounds bounds, final Dimension mapSize,
-            final double dpi, final double requestorDpi, final Boolean forceLongitudeFirst,
-            final boolean dpiSensitiveStyle) {
-        this(null, bounds, mapSize, dpi, requestorDpi, forceLongitudeFirst,
-                dpiSensitiveStyle);
+            final MapBounds bounds, final Dimension mapSize, final double dpi,
+            final Boolean forceLongitudeFirst, final boolean dpiSensitiveStyle) {
+        this(null, bounds, mapSize, dpi, forceLongitudeFirst, dpiSensitiveStyle);
     }
     /**
      * Constructor.
@@ -49,16 +45,13 @@ public final class MapfishMapContext {
      * @param mapSize the map size
      * @param rotation the rotation
      * @param dpi the dpi of the printed map
-     * @param requestorDpi the dpi of the client map
      * @param forceLongitudeFirst If true then force longitude coordinates as the first coordinate.
      * @param dpiSensitiveStyle Scale the vector styles?
      */
     public MapfishMapContext(
             final MapBounds bounds, final Dimension mapSize, final double rotation,
-            final double dpi, final double requestorDpi, final Boolean forceLongitudeFirst,
-            final boolean dpiSensitiveStyle) {
-        this(null, bounds, mapSize, rotation, dpi, requestorDpi, forceLongitudeFirst,
-                dpiSensitiveStyle);
+            final double dpi, final Boolean forceLongitudeFirst, final boolean dpiSensitiveStyle) {
+        this(null, bounds, mapSize, rotation, dpi, forceLongitudeFirst, dpiSensitiveStyle);
     }
 
     /**
@@ -67,17 +60,15 @@ public final class MapfishMapContext {
      * @param bounds the map bounds
      * @param mapSize the map size
      * @param dpi the dpi of the printed map
-     * @param requestorDpi the dpi of the client map
      * @param forceLongitudeFirst If true then force longitude coordinates as the first coordinate.
      * @param dpiSensitiveStyle Scale the vector styles?
      */
     // CSOFF: ParameterNumber
     public MapfishMapContext(
             final MapfishMapContext parent, final MapBounds bounds, final Dimension mapSize,
-            final double dpi, final double requestorDpi,
+            final double dpi,
             final Boolean forceLongitudeFirst, final boolean dpiSensitiveStyle) {
-        this(parent, bounds, mapSize, 0, dpi, requestorDpi, forceLongitudeFirst,
-                dpiSensitiveStyle);
+        this(parent, bounds, mapSize, 0, dpi, forceLongitudeFirst, dpiSensitiveStyle);
     }
 
     /**
@@ -87,22 +78,20 @@ public final class MapfishMapContext {
      * @param mapSize the map size
      * @param rotation the rotation
      * @param dpi the dpi of the printed map
-     * @param requestorDpi the dpi of the client map
      * @param forceLongitudeFirst If true then force longitude coordinates as the first coordinate.
      * @param dpiSensitiveStyle Scale the vector styles?
      */
     // CSOFF: ParameterNumber
     public MapfishMapContext(
             final MapfishMapContext parent, final MapBounds bounds, final Dimension mapSize,
-            final double rotation, final double dpi,
-            final double requestorDpi, final Boolean forceLongitudeFirst, final boolean dpiSensitiveStyle) {
+            final double rotation, final double dpi, final Boolean forceLongitudeFirst,
+            final boolean dpiSensitiveStyle) {
         // CSON: ParameterNumber
         this.parent = parent;
         this.bounds = bounds;
         this.mapSize = mapSize;
         this.rotation = rotation;
         this.dpi = dpi;
-        this.requestorDpi = requestorDpi;
         this.forceLongitudeFirst = forceLongitudeFirst == null ? false : forceLongitudeFirst;
         this.dpiSensitiveStyle = dpiSensitiveStyle;
     }
@@ -147,7 +136,7 @@ public final class MapfishMapContext {
             return rotatedBounds;
         }
 
-        final ReferencedEnvelope envelope = ((BBoxMapBounds) rotatedBounds).toReferencedEnvelope(null, -1);
+        final ReferencedEnvelope envelope = ((BBoxMapBounds) rotatedBounds).toReferencedEnvelope(null);
         // the paint area size and the map bounds are rotated independently. because
         // the paint area size is rounded to integers, the map bounds have to be adjusted
         // to these rounding changes.
@@ -180,7 +169,7 @@ public final class MapfishMapContext {
     }
 
     public Scale getScale() {
-        return new Scale(this.bounds.getScaleDenominator(getPaintArea(), this.dpi), getBounds().getProjection(), getRequestorDPI());
+        return this.bounds.getScale(getPaintArea(), this.dpi);
     }
     public double getGeodeticScaleDenominator() {
         return getScale().getGeodeticDenominator(this.bounds.getProjection(), this.dpi, getBounds().getCenter());
@@ -211,9 +200,8 @@ public final class MapfishMapContext {
      * @param geodetic Get geodetic scale
      */
     public double getRoundedScaleDenominator(final boolean geodetic) {
-        final double scaleDenominator = new Scale(
-                this.bounds.getScaleDenominator(getPaintArea(), this.dpi), getBounds().getProjection(), this.dpi
-        ).getDenominator(geodetic, getBounds().getProjection(), this.dpi, getBounds().getCenter());
+        final double scaleDenominator = this.bounds.getScale(getPaintArea(), this.dpi)
+                .getDenominator(geodetic, getBounds().getProjection(), this.dpi, getBounds().getCenter());
 
         final int numChars = String.format("%d", Math.round(scaleDenominator)).length();
         if (numChars > 2) {
@@ -244,7 +232,7 @@ public final class MapfishMapContext {
     }
 
     private double getCenter(final int dimension) {
-        return getBounds().toReferencedEnvelope(new Rectangle(getMapSize()), getDPI()).getMedian(dimension);
+        return getBounds().toReferencedEnvelope(new Rectangle(getMapSize())).getMedian(dimension);
     }
 
     /**
@@ -311,10 +299,6 @@ public final class MapfishMapContext {
         return this.dpi;
     }
 
-    public double getRequestorDPI() {
-        return this.requestorDpi;
-    }
-
     private double getRotatedMapWidth() {
         double width = this.mapSize.getWidth();
         if (!FloatingPointUtil.equals(this.rotation, 0.0)) {
@@ -354,7 +338,7 @@ public final class MapfishMapContext {
      * @return bounds as a referenced envelope.
      */
     public ReferencedEnvelope toReferencedEnvelope() {
-        return this.bounds.toReferencedEnvelope(getPaintArea(), this.dpi);
+        return this.bounds.toReferencedEnvelope(getPaintArea());
     }
 
     /**

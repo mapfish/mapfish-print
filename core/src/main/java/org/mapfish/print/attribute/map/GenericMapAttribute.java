@@ -227,7 +227,7 @@ public abstract class GenericMapAttribute
         final JSONObject jsonObject = new JSONObject();
         jsonObject.put(JSON_DPI_SUGGESTIONS, getDpiSuggestions());
         if (this.zoomLevels != null) {
-            jsonObject.put(JSON_ZOOM_LEVEL_SUGGESTIONS, this.zoomLevels.getScales());
+            jsonObject.put(JSON_ZOOM_LEVEL_SUGGESTIONS, this.zoomLevels.getScaleDenominators());
         }
         jsonObject.put(JSON_MAX_DPI, this.maxDpi);
         jsonObject.put(JSON_MAP_WIDTH, this.width);
@@ -308,7 +308,7 @@ public abstract class GenericMapAttribute
          * If this property is set to `true`, the style definitions will be scaled to the target DPI value.
          */
         @HasDefaultValue
-        public Boolean dpiSensitiveStyle = true;
+        public boolean dpiSensitiveStyle = true;
 
         /**
          * Constructor.
@@ -502,7 +502,7 @@ public abstract class GenericMapAttribute
             return this.useAdjustBounds;
         }
 
-        public final Boolean isDpiSensitiveStyle() {
+        public final boolean isDpiSensitiveStyle() {
             return this.dpiSensitiveStyle;
         }
 
@@ -524,14 +524,6 @@ public abstract class GenericMapAttribute
 
         public double[] getDpiSuggestions() {
             return GenericMapAttribute.this.getDpiSuggestions();
-        }
-
-        public double getRequestorDPI() {
-            // We are making the same assumption as Openlayers 2.x versions, that the DPI is 72.
-            // In the future we probably need to change this assumption and allow the client software to
-            // specify the DPI they are using for creating the bounds.
-            // For the moment we require the client to convert their bounds to 72 DPI
-            return Constants.PDF_DPI;
         }
 
         /**

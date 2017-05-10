@@ -111,8 +111,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
             renderer.setMapContent(content);
             renderer.setThreadPool(this.executorService);
 
-            final ReferencedEnvelope mapArea = layerTransformer.getBounds().toReferencedEnvelope(paintArea,
-                    transformer.getDPI());
+            final ReferencedEnvelope mapArea = layerTransformer.getBounds().toReferencedEnvelope(paintArea);
             renderer.paint(graphics2D, paintArea, mapArea);
         } catch (Exception e) {
             throw ExceptionUtils.getRuntimeException(e);
@@ -178,7 +177,6 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
                     transformer.getRotatedMapSize(),
                     0,
                     transformer.getDPI(),
-                    transformer.getRequestorDPI(),
                     transformer.isForceLongitudeFirst(),
                     transformer.isDpiSensitiveStyle());
         }

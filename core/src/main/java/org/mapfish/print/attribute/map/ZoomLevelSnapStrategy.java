@@ -1,23 +1,29 @@
 package org.mapfish.print.attribute.map;
 
+import org.mapfish.print.map.DistanceUnit;
+import org.mapfish.print.map.Scale;
+
 /**
  * Enumerates the different strategies for finding the closest zoom-level/scale.
  */
 public enum ZoomLevelSnapStrategy {
     /**
-     * Find the closest zoom level.  If the targetScale is directly between two zoomLevels then the smaller/higher resolution scale
-     * will be chosen.
+     * Find the closest zoom level.  If the targetScale is directly between two zoomLevels then the
+     * smaller/higher resolution scale will be chosen.
      */
     CLOSEST_LOWER_SCALE_ON_TIE {
         @Override
-        protected SearchResult search(final double scaleDenominator, final double tolerance, final ZoomLevels zoomLevels) {
-            int pos = zoomLevels.size() - 1;
-            double distance = Math.abs(zoomLevels.get(pos) - scaleDenominator);
+        protected SearchResult search(
+                final Scale scale, final double tolerance,
+                final ZoomLevels zoomLevels) {
+            double resolution = scale.getResolution();
+            int pos = -1;
+            double distance = Double.POSITIVE_INFINITY;
 
-            for (int i = zoomLevels.size() - 2; i >= 0; --i) {
-                double cur = zoomLevels.get(i);
+            for (int i = zoomLevels.size() - 1; i >= 0; --i) {
+                Scale cur = zoomLevels.get(i, scale.getUnit());
 
-                double newDistance = Math.abs(scaleDenominator - cur);
+                double newDistance = Math.abs(resolution - cur.getResolution());
                 if (newDistance < distance) {
                     distance = newDistance;
                     pos = i;
@@ -30,19 +36,22 @@ public enum ZoomLevelSnapStrategy {
         }
     },
     /**
-     * Find the closest zoom level.  If the targetScale is directly between two zoomLevels then the larger/lower resolution scale
-     * will be chosen.
+     * Find the closest zoom level.  If the targetScale is directly between two zoomLevels then the
+     * larger/lower resolution scale will be chosen.
      */
     CLOSEST_HIGHER_SCALE_ON_TIE {
         @Override
-        protected SearchResult search(final double scaleDenominator, final double tolerance, final ZoomLevels zoomLevels) {
-            int pos = zoomLevels.size() - 1;
-            double distance = Math.abs(zoomLevels.get(pos) - scaleDenominator);
+        protected SearchResult search(
+                final Scale scale, final double tolerance,
+                final ZoomLevels zoomLevels) {
+            double resolution = scale.getResolution();
+            int pos = -1;
+            double distance = Double.POSITIVE_INFINITY;
 
-            for (int i = 1; i < zoomLevels.size(); i++) {
-                double cur = zoomLevels.get(i);
+            for (int i = 0; i < zoomLevels.size(); i++) {
+                Scale cur = zoomLevels.get(i, scale.getUnit());
 
-                double newDistance = Math.abs(scaleDenominator - cur);
+                double newDistance = Math.abs(resolution - cur.getResolution());
                 if (newDistance < distance) {
                     distance = newDistance;
                     pos = i;
@@ -59,14 +68,16 @@ public enum ZoomLevelSnapStrategy {
      */
     HIGHER_SCALE {
         @Override
-        protected SearchResult search(final double scaleDenominator, final double tolerance, final ZoomLevels zoomLevels) {
-            final double cutOff = scaleDenominator * (1 - tolerance);
+        protected SearchResult search(
+                final Scale scale, final double tolerance,
+                final ZoomLevels zoomLevels) {
+            final double cutOff = scale.getResolution() * (1 - tolerance);
 
             int pos = zoomLevels.size() - 1;
             for (int i = zoomLevels.size() - 1; i >= 0; --i) {
-                double cur = zoomLevels.get(i);
+                Scale cur = zoomLevels.get(i, scale.getUnit());
 
-                if (cur >= cutOff) {
+                if (cur.getResolution() >= cutOff) {
                     pos = i;
                     break;
                 }
@@ -80,14 +91,16 @@ public enum ZoomLevelSnapStrategy {
      */
     LOWER_SCALE {
         @Override
-        protected SearchResult search(final double scaleDenominator, final double tolerance, final ZoomLevels zoomLevels) {
-            final double cutOff = scaleDenominator * (1 + tolerance);
+        protected SearchResult search(
+                final Scale scale, final double tolerance,
+                final ZoomLevels zoomLevels) {
+            final double cutOff = scale.getResolution() * (1 + tolerance);
 
-            int pos = 0;
-            for (int i = 1; i < zoomLevels.size(); i++) {
-                double cur = zoomLevels.get(i);
+            int pos = -1;
+            for (int i = 0; i < zoomLevels.size(); i++) {
+                Scale cur = zoomLevels.get(i, scale.getUnit());
 
-                if (cur <= cutOff) {
+                if (cur.getResolution() <= cutOff) {
                     pos = i;
                     break;
                 }
@@ -100,13 +113,14 @@ public enum ZoomLevelSnapStrategy {
     /**
      * Search the provided zoomLevels for the scale that is the closest according to the current strategy.
      *
-     * @param scaleDenominator the reference scale
+     * @param scale the reference scale
      * @param tolerance the amount from one of the zoomLevels to still be considered <em>at</em> the scale.
      *      This is important for all strategies other than CLOSEST in order to prevent the scale from jumping
      *      to a different version even when it is very close to one of the zoomLevels.
-     * @param zoomLevels the allowed zoomLevels
+     * @param zoomLevels the allowed zoomLevels.
      */
-    protected abstract SearchResult search(double scaleDenominator, double tolerance, ZoomLevels zoomLevels);
+    protected abstract SearchResult search(
+            Scale scale, double tolerance, ZoomLevels zoomLevels);
 
     /**
      * The results of a search.
@@ -120,16 +134,29 @@ public enum ZoomLevelSnapStrategy {
             this.zoomLevels = zoomLevels;
         }
 
+        /**
+         * Gets the zoom level.
+         * @return the zoom level
+         */
         public int getZoomLevel() {
             return this.zoomLevel;
         }
 
+        /**
+         * Gets the zoom levels.
+         * @return the zoom levels
+         */
         public ZoomLevels getZoomLevels() {
             return this.zoomLevels;
         }
 
-        public double getScaleDenominator() {
-            return this.zoomLevels.get(this.zoomLevel);
+        /**
+         * Gets the scale.
+         * @param unit the unit
+         * @return the scale
+         */
+        public Scale getScale(final DistanceUnit unit) {
+            return this.zoomLevels.get(this.zoomLevel, unit);
         }
 
         // CHECKSTYLE:OFF
@@ -156,11 +183,8 @@ public enum ZoomLevelSnapStrategy {
 
         @Override
         public String toString() {
-            return "SearchResult{" +
-                   "zoomLevel=" + zoomLevel +
-                   ", scale=" + zoomLevels.get(zoomLevel) +
-                   ", zoomLevels=" + zoomLevels +
-                   '}';
+            return String.format("SearchResult{zoomLevel=%s, scale=%s, zoomLevels=%s}",
+                    zoomLevel, zoomLevels.get(zoomLevel, DistanceUnit.M), zoomLevels);
         }
 
 // CHECKSTYLE:ON

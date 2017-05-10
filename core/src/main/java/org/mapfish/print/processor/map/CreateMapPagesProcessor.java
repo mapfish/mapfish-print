@@ -34,6 +34,8 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import static org.mapfish.print.Constants.PDF_DPI;
+
 /**
  * <p>Processor used to display a map on multiple pages.</p>
  * <p>
@@ -91,27 +93,26 @@ public class CreateMapPagesProcessor
         final PagingAttribute.PagingProcessorValues paging = values.paging;
         CoordinateReferenceSystem projection = map.getMapBounds().getProjection();
         final Rectangle paintArea = new Rectangle(map.getMapSize());
-        final double dpi = map.getRequestorDPI();
         final DistanceUnit projectionUnit = DistanceUnit.fromProjection(projection);
 
         AreaOfInterest areaOfInterest = map.areaOfInterest;
         if (areaOfInterest == null) {
             areaOfInterest = new AreaOfInterest();
             areaOfInterest.display = AreaOfInterest.AoiDisplay.NONE;
-            ReferencedEnvelope mapBBox = map.getMapBounds().toReferencedEnvelope(paintArea, dpi);
+            ReferencedEnvelope mapBBox = map.getMapBounds().toReferencedEnvelope(paintArea);
 
             areaOfInterest.setPolygon(this.geometryFactory.toGeometry(mapBBox));
         }
 
         Envelope aoiBBox = areaOfInterest.getArea().getEnvelopeInternal();
 
-        final double paintAreaWidthIn = paintArea.getWidth() * paging.scale / dpi;
-        final double paintAreaHeightIn = paintArea.getHeight() * paging.scale / dpi;
+        final double paintAreaWidthIn = paintArea.getWidth() * paging.scale / PDF_DPI;
+        final double paintAreaHeightIn = paintArea.getHeight() * paging.scale / PDF_DPI;
 
         final double paintAreaWidth = DistanceUnit.IN.convertTo(paintAreaWidthIn, projectionUnit);
         final double paintAreaHeight = DistanceUnit.IN.convertTo(paintAreaHeightIn, projectionUnit);
 
-        final double overlapProj = DistanceUnit.IN.convertTo(paging.overlap * paging.scale / dpi, projectionUnit);
+        final double overlapProj = DistanceUnit.IN.convertTo(paging.overlap * paging.scale / PDF_DPI, projectionUnit);
 
         final int nbWidth = (int) Math.ceil((aoiBBox.getWidth() + overlapProj) / (paintAreaWidth - overlapProj));
         final int nbHeight = (int) Math.ceil((aoiBBox.getHeight() + overlapProj) / (paintAreaHeight - overlapProj));
@@ -179,7 +180,7 @@ public class CreateMapPagesProcessor
                                     mapsBound.getMaxX(),
                                     mapsBound.getMaxY()
                             };
-                            input.dpi = dpi;
+                            input.dpi = PDF_DPI;
                             if (paging.aoiDisplay != null) {
                                 input.areaOfInterest.display = paging.aoiDisplay;
                             }

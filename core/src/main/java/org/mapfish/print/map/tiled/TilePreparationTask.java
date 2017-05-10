@@ -72,7 +72,7 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
      */
     public TilePreparationInfo call() {
         try {
-            final ReferencedEnvelope mapGeoBounds = this.bounds.toReferencedEnvelope(this.paintArea, this.dpi);
+            final ReferencedEnvelope mapGeoBounds = this.bounds.toReferencedEnvelope(this.paintArea);
             final CoordinateReferenceSystem mapProjection = mapGeoBounds.getCoordinateReferenceSystem();
             Dimension tileSizeOnScreen = this.tiledLayer.getTileSize();
 
@@ -178,7 +178,7 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
 
         // get the bounds for the unrotated map area
         final ReferencedEnvelope mapBounds = this.transformer.getBounds().toReferencedEnvelope(
-                new Rectangle(this.transformer.getMapSize()), this.dpi);
+                new Rectangle(this.transformer.getMapSize()));
 
         // then rotate the geometry around its center
         final Coordinate center = mapBounds.centre();
