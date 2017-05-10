@@ -19,7 +19,6 @@ import javax.annotation.Nullable;
  */
 public abstract class TileCacheInformation {
 
-    //CSOFF:VisibilityModifier
     /**
      * the map bounds.
      */
@@ -35,7 +34,6 @@ public abstract class TileCacheInformation {
 
     private final AbstractTiledLayerParams params;
 
-    //CSON:VisibilityModifier
 
     /**
      * Constructor.

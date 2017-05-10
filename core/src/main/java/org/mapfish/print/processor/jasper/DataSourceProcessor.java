@@ -206,10 +206,8 @@ public final class DataSourceProcessor
         return new Output(jrDataSource);
     }
 
-    //CSOFF:RedundantThrows
     private JRDataSource processInput(@Nonnull final Input input)
             throws JSONException, JRException {
-        //CSON:RedundantThrows
         List<Values> dataSourceValues = Lists.newArrayList();
         for (Map<String, Object> o : input.datasource.attributesValues) {
             // copy only the required values

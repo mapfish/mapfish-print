@@ -8,8 +8,6 @@ import java.nio.charset.Charset;
  * Date: Sep 30, 2010
  * Time: 4:27:46 PM
  * <p></p>
- * CSOFF:MagicNumber
- * CSOFF:RequireThis
  */
 public interface Constants {
     /**
@@ -42,11 +40,23 @@ public interface Constants {
     double PDF_DPI = 72.0;
 
     /**
+     * Used to convert inches in mm.
+     */
+    double INCH_TO_MM = 25.4;
+
+    /**
+     * The OGC standard pixel size in mm.
+     */
+    double OGC_PIXEL_SIZE = 0.28;
+
+    /**
      * The OGC standard dpi. (About 90 dpi)
      */
-    double OGC_DPI = 25.4 / 0.28;
+    double OGC_DPI = INCH_TO_MM / OGC_PIXEL_SIZE;
+
     /**
-     * The amount of precision to use when comparing opacity levels.  For example 0.0009 is considered the same as 0.0 for opacity
+     * The amount of precision to use when comparing opacity levels.  For example 0.0009 is considered the
+     * same as 0.0 for opacity
      */
     double OPACITY_PRECISION = 0.001;
 

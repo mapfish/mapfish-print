@@ -59,8 +59,6 @@ import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGU
 
 /**
  * The default servlet.
- *
- *         CSOFF: RedundantThrowsCheck
  */
 @Controller
 public class MapPrinterServlet extends BaseMapServlet {

@@ -186,9 +186,7 @@ public final class MapAttribute extends GenericMapAttribute {
                 Envelope area = this.areaOfInterest.getArea().getEnvelopeInternal();
                 bounds = new BBoxMapBounds(crs, area);
             } else if (this.zoomToFeatures != null) {
-                // CSOFF: MagicNumber
                 bounds = new BBoxMapBounds(crs, 0, 0, 10, 10);
-                // CSON: MagicNumber
             } else {
                 throw new IllegalArgumentException("Expected either: center and scale, bbox, or an " +
                         "areaOfInterest defined in order to calculate the map bounds");

@@ -106,7 +106,6 @@ public final class ColorParser {
 
         return color;
     }
-    // CSOFF: MagicNumber
     private static Color parseRgbColor(final String colorString) {
         final Matcher matcher = RGB_COLOR_EXTRACTOR.matcher(colorString);
         if (matcher.matches()) {
@@ -154,7 +153,6 @@ public final class ColorParser {
 
         return null;
     }
-    // CSOFF: MagicNumber
     private static Color toColorRGBA(final String red, final String green, final String blue, final String alpha) {
         float finalRed = parsePercent(red).
                 or(parseInt(red)).

@@ -26,9 +26,7 @@ public final class LineGridStyle {
         final LineSymbolizer lineSymbolizer = builder.createLineSymbolizer();
         final Color strokeColor = ColorParser.toColor(params.gridColor);
 
-        //CSOFF:MagicNumber
         lineSymbolizer.setStroke(builder.createStroke(strokeColor, 1, new float[]{4f, 4f}));
-        //CSON:MagicNumber
 
         return builder.createStyle(lineSymbolizer);
     }

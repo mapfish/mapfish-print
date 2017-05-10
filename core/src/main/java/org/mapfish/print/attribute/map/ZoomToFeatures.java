@@ -5,7 +5,6 @@ import org.mapfish.print.parser.HasDefaultValue;
 /**
  * Zoom the map to the features of a specific layer or all features of the map.
  */
-//CSOFF: VisibilityModifier
 public class ZoomToFeatures {
     private static final int DEFAULT_ZOOM_TO_MIN_MARGIN = 10;
 
@@ -67,4 +66,3 @@ public class ZoomToFeatures {
         EXTENT
     }
 }
-//CSON: VisibilityModifier

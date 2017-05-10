@@ -196,9 +196,7 @@ public final class MapfishMapContext {
 
         final int numChars = String.format("%d", Math.round(scaleDenominator)).length();
         if (numChars > 2) {
-            // CSOFF: MagicNumber
             double factor = Math.pow(10, (numChars - 2));
-            // CSON: MagicNumber
             return Math.round(scaleDenominator / factor) * factor;
         } else if (scaleDenominator > 1) {
             return Math.round(scaleDenominator);

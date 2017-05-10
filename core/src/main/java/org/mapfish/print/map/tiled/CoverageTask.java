@@ -60,9 +60,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
         this.errorImage = new BufferedImage(tileSize.width, tileSize.height, BufferedImage.TYPE_4BYTE_ABGR);
         Graphics2D graphics = this.errorImage.createGraphics();
         try {
-            // CSOFF:MagicNumber
             graphics.setBackground(new Color(255, 155, 155));
-            // CSON:MagicNumber
             graphics.clearRect(0, 0, tileSize.width, tileSize.height);
         } finally {
             graphics.dispose();

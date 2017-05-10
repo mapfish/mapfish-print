@@ -10,8 +10,6 @@ import javax.swing.JLabel;
 
 /**
  * Configuration object for the grid labels.
- *
- *         CSOFF: VisibilityModifier
  */
 public final class GridFontParam {
     private static final Font DEFAULT_FONT_NAME = new JLabel().getFont();

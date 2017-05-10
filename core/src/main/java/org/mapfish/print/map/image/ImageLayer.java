@@ -161,9 +161,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         final Double extentMinX = layerParam.extent[0];
         final Double extentMinY = layerParam.extent[1];
         final Double extentMaxX = layerParam.extent[2];
-        // CSOFF: MagicNumber
         final Double extentMaxY = layerParam.extent[3];
-        // CSON: MagicNumber
         final Rectangle paintArea = transformer.getPaintArea();
 
         final ReferencedEnvelope envelope = transformer.getBounds().toReferencedEnvelope(paintArea,
@@ -242,9 +240,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         final BufferedImage bufferedImage = new BufferedImage(area.width, area.height, TYPE_INT_ARGB_PRE);
         final Graphics2D graphics = bufferedImage.createGraphics();
         try {
-            // CSOFF: MagicNumber
             graphics.setBackground(new Color(255, 255, 255, 125));
-            // CSON: MagicNumber
 
             graphics.clearRect(0, 0, area.width, area.height);
             return bufferedImage;

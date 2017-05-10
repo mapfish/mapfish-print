@@ -10,13 +10,14 @@ import java.util.List;
 import java.util.Map;
 import javax.measure.unit.Unit;
 
+import static org.mapfish.print.Constants.INCH_TO_MM;
+
 
 /**
  * An enum for expressing distance units. Contains everything needed for
  * conversions and others.
  */
 public enum DistanceUnit {
-    // CSOFF: MagicNumber
     /**
      * Represents the meter unit.
      */
@@ -37,7 +38,7 @@ public enum DistanceUnit {
     /**
      * Represents the american foot unit.
      */
-    FT(25.4 / 1000.0 * 12.0, new String[]{"ft", "foot", "feet"}),
+    FT(INCH_TO_MM / 1000.0 * 12.0, new String[]{"ft", "foot", "feet"}),
     /**
      * Represents the american inch unit.
      */
@@ -68,7 +69,7 @@ public enum DistanceUnit {
      * Represents the pixel unit.
      * The conversion factor is the one used by JasperReports (1 inch = 72 pixel).
      */
-    PX(1 / 72.0 * (25.4 / 1000.0), new String[]{"px", "pixel"}),
+    PX(1 / 72.0 * (INCH_TO_MM / 1000.0), new String[]{"px", "pixel"}),
 
     /** Represents the point unit. */
     PT(DistanceUnit.IN, 1.0 / 72.0, new String[]{"pt", "point"}),

@@ -112,12 +112,10 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
      * @return a jasper print object which can be used to generate a PDF or other outputs.
      * @throws ExecutionException
      */
-     // CSOFF: RedundantThrows
     @VisibleForTesting
     public final Print getJasperPrint(final PJsonObject requestData, final Configuration config,
                                       final File configDir, final File taskDirectory)
             throws JRException, SQLException, ExecutionException, JSONException {
-        // CSON: RedundantThrows
         final String templateName = requestData.getString(Constants.JSON_LAYOUT_KEY);
 
         final Template template = config.getTemplate(templateName);

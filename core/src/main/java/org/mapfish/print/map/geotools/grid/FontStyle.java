@@ -19,9 +19,7 @@ public enum FontStyle {
      */
     ITALIC(Font.ITALIC);
 
-    // CSOFF: VisibilityModifier
     final int styleId;
-    // CSON: VisibilityModifier
 
     private FontStyle(final int styleId) {
         this.styleId = styleId;

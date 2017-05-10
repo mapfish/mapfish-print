@@ -20,9 +20,7 @@ public enum GridType {
     /**
      * The strategy to use for this type.
      */
-    // CSOFF:VisibilityModifier
     final GridTypeStrategy strategy;
-    // CSON:VisibilityModifier
 
     GridType(final GridTypeStrategy strategy) {
         this.strategy = strategy;
