@@ -472,8 +472,16 @@ public abstract class GenericMapAttribute
             return this.height;
         }
 
+        /**
+         * Gets the rotation.
+         *
+         * @return the rotation
+         */
         public Double getRotation() {
-            return this.rotation;
+            if (this.rotation == null) {
+                return null;
+            }
+            return Math.toRadians(this.rotation);
         }
 
         public String getProjection() {

@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import static org.mapfish.print.map.style.json.MapfishStyleParserPlugin.Versions;
 
@@ -67,9 +68,10 @@ public final class MapfishJsonStyleVersion2 {
     private final StyleBuilder styleBuilder;
     private final JsonStyleParserHelper parserHelper;
 
-    MapfishJsonStyleVersion2(@Nonnull final PJsonObject json,
-                             @Nonnull final StyleBuilder styleBuilder,
-                             @Nonnull final Configuration configuration) {
+    MapfishJsonStyleVersion2(
+            @Nonnull final PJsonObject json,
+            @Nonnull final StyleBuilder styleBuilder,
+            @Nullable final Configuration configuration) {
         this.json = json;
         this.styleBuilder = styleBuilder;
         this.parserHelper = new JsonStyleParserHelper(configuration, styleBuilder, false, Versions.TWO);

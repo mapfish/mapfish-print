@@ -296,7 +296,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                         (int) Math.round(mapContext.getMapSize().width * imageBufferScaling),
                         (int) Math.round(mapContext.getMapSize().height * imageBufferScaling)
                 ),
-                mapContext.getRotation(), false,
+                mapContext.getRotation(),
                 mapContext.getDPI(),
                 mapContext.getRequestorDPI(),
                 mapContext.isForceLongitudeFirst(),
@@ -425,13 +425,13 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         MapBounds bounds = mapValues.getMapBounds();
         bounds = adjustBoundsToScaleAndMapSize(mapValues, dpi, paintArea, bounds);
 
-        return new MapfishMapContext(bounds, paintArea.getSize(),
-                mapValues.getRotation(), dpi, mapValues.getRequestorDPI(), mapValues.longitudeFirst, mapValues.isDpiSensitiveStyle());
+        return new MapfishMapContext(bounds, paintArea.getSize(), mapValues.getRotation(), dpi,
+                mapValues.getRequestorDPI(), mapValues.longitudeFirst, mapValues.isDpiSensitiveStyle());
     }
 
-
-    private AreaOfInterest addAreaOfInterestLayer(@Nonnull final MapAttributeValues mapValues,
-                                                  @Nonnull final List<MapLayer> layers) throws IOException {
+    private AreaOfInterest addAreaOfInterestLayer(
+            @Nonnull final MapAttributeValues mapValues,
+            @Nonnull final List<MapLayer> layers) throws IOException {
         final AreaOfInterest areaOfInterest = mapValues.areaOfInterest;
         if (areaOfInterest != null && areaOfInterest.display == AreaOfInterest.AoiDisplay.RENDER) {
             FeatureLayer.FeatureLayerParam param = new FeatureLayer.FeatureLayerParam();

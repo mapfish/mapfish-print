@@ -50,10 +50,11 @@ public final class MapfishJsonStyleVersion1 {
     private final StyleBuilder sldStyleBuilder;
     private final JsonStyleParserHelper parserHelper;
 
-    MapfishJsonStyleVersion1(@Nonnull final PJsonObject json,
-                             @Nonnull final StyleBuilder styleBuilder,
-                             @Nonnull final Configuration configuration,
-                             @Nonnull final String defaultGeomAttName) {
+    MapfishJsonStyleVersion1(
+            @Nonnull final PJsonObject json,
+            @Nonnull final StyleBuilder styleBuilder,
+            @Nullable final Configuration configuration,
+            @Nonnull final String defaultGeomAttName) {
         this.json = json;
         this.sldStyleBuilder = styleBuilder;
         this.parserHelper = new JsonStyleParserHelper(configuration, this.sldStyleBuilder, true, Versions.ONE);

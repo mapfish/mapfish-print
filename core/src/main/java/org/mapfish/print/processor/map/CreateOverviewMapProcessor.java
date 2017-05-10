@@ -130,7 +130,7 @@ public class CreateOverviewMapProcessor extends AbstractProcessor<CreateOverview
             final ReferencedEnvelope originalEnvelope) {
         final Coordinate center = originalEnvelope.centre();
         final AffineTransform affineTransform = AffineTransform.getRotateInstance(
-                Math.toRadians(rotation), center.x, center.y);
+                rotation, center.x, center.y);
         final MathTransform mathTransform = new AffineTransform2D(affineTransform);
 
         try {

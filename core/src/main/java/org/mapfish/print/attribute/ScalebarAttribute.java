@@ -245,7 +245,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
          * Rotate the label to some degree.
          */
         @HasDefaultValue
-        public int labelRotation = 0;
+        public float labelRotation = 0.0f;
 
         /**
          * The horizontal alignment of the scalebar inside the scalebar graphic (default: left).
@@ -367,10 +367,10 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
         }
 
         /**
-         * @return Return the label rotation in degree
+         * @return Return the label rotation
          */
-        public final int getLabelRotation() {
-            return this.labelRotation;
+        public final float getLabelRotation() {
+            return (float) Math.toRadians(this.labelRotation);
         }
 
         /**

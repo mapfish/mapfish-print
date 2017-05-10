@@ -177,7 +177,6 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
                     transformer.getRotatedBoundsAdjustedForPreciseRotatedMapSize(),
                     transformer.getRotatedMapSize(),
                     0,
-                    false,
                     transformer.getDPI(),
                     transformer.getRequestorDPI(),
                     transformer.isForceLongitudeFirst(),
