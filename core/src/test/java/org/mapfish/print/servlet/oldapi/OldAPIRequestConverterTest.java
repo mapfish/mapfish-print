@@ -85,7 +85,7 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertEquals("osm", osmLayer.getString("type"));
         assertEquals("http://tile.openstreetmap.org/", osmLayer.getString("baseURL"));
         assertEquals(1.0, osmLayer.getDouble("opacity"), 0.1);
-        assertEquals("png", osmLayer.getString("imageFormat"));
+        assertEquals("png", osmLayer.getString("imageExtension"));
         assertEquals(-20037508.34, osmLayer.getJSONArray("maxExtent").getDouble(0), 0.1);
         assertEquals(256, osmLayer.getJSONArray("tileSize").getInt(0));
         assertEquals(156543.03390625, osmLayer.getJSONArray("resolutions").getDouble(0), 0.1);

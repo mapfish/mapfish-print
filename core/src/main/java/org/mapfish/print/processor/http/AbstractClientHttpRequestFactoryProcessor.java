@@ -61,12 +61,10 @@ public abstract class AbstractClientHttpRequestFactoryProcessor
         this.matchers.setMatchers(matchers);
     }
 
-    //CSOFF: DesignForExtension
     @Override
     protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
         this.matchers.validate(validationErrors);
     }
-    //CSON: DesignForExtension
 
     @Nullable
     @Override

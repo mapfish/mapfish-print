@@ -93,9 +93,7 @@ public abstract class AbstractWMXLayerParams extends AbstractTiledLayerParams {
     }
 
 
-    //CSOFF: DesignForExtension
     @Override
-    //CSON: DesignForExtension
     public String createCommonUrl()
             throws URISyntaxException, UnsupportedEncodingException {
         return getBaseUrl();
@@ -110,9 +108,7 @@ public abstract class AbstractWMXLayerParams extends AbstractTiledLayerParams {
         this.additionalCustomParam.put(name, value);
     }
 
-    //CSOFF: DesignForExtension
     @Override
-    //CSON: DesignForExtension
     public boolean validateBaseUrl() {
         try {
             return new URI(getBaseUrl()) != null;

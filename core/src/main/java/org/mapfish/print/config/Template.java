@@ -89,7 +89,6 @@ public class Template implements ConfigurationObject, HasConfiguration {
      * Get the merged configuration between this template and the configuration's template.  The settings in the template take
      * priority over the configurations settings but if not set in the template then the default will be the configuration's options.
      */
-    // CSOFF: DesignForExtension -- Note this is disabled so that I can use Mockito and inject my own objects
     public PDFConfig getPdfConfig() {
         return this.pdfConfig.getMergedInstance(this.configuration.getPdfConfig());
     }

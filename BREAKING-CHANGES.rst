@@ -13,3 +13,4 @@ The processor graph is more strict
 - In the !prepareLegend processor, the legend output is renamed to legendDataSource
 - In the !prepareTable processor, the table output is renamed to tableDataSource
 - In the mapContext the method getRoundedScale is renamed to getRoundedScaleDenominator
+- The longtime deprecated imageFormat on OSM layer is removed

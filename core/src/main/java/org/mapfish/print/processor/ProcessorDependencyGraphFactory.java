@@ -86,7 +86,7 @@ public final class ProcessorDependencyGraphFactory {
         final List<ProcessorGraphNode<Object, Object>> nodes =
                 new ArrayList<ProcessorGraphNode<Object, Object>>(processors.size());
 
-        for (Processor<Object, Object> processor: processors) {
+        for (Processor processor: processors) {
             final ProcessorGraphNode<Object, Object> node =
                     new ProcessorGraphNode<Object, Object>(processor, this.metricRegistry);
 
@@ -207,7 +207,7 @@ public final class ProcessorDependencyGraphFactory {
         return graph;
     }
 
-    private static Set<InputValue> getInputs(final Processor processor) {
+    private static Set<InputValue> getInputs(final Processor<?, ?> processor) {
         final BiMap<String, String> inputMapper = processor.getInputMapperBiMap();
         final Set<InputValue> inputs = Sets.newHashSet();
 
@@ -227,7 +227,7 @@ public final class ProcessorDependencyGraphFactory {
         return inputs;
     }
 
-    private static Collection<OutputValue> getOutputValues(final Processor processor) {
+    private static Collection<OutputValue> getOutputValues(final Processor<?, ?> processor) {
         final Map<String, String> outputMapper = processor.getOutputMapperBiMap();
         final Set<OutputValue> values = Sets.newHashSet();
 
