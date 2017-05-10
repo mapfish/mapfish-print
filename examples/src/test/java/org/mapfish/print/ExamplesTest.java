@@ -21,6 +21,7 @@ import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.servlet.oldapi.OldAPIRequestConverter;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -57,6 +58,7 @@ import static org.mapfish.print.servlet.MapPrinterServlet.JSON_REQUEST_HEADERS;
         ExamplesTest.TEST_SPRING_XML
 })
 public class ExamplesTest {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExamplesTest.class);
 
     public static final String DEFAULT_SPRING_XML = "classpath:mapfish-spring-application-context.xml";
     public static final String TEST_SPRING_XML = "classpath:test-http-request-factory-application-context.xml";
@@ -189,6 +191,7 @@ public class ExamplesTest {
                 }
                 try {
                     if (isRequestDataFile(requestFile)) {
+                        LOGGER.info("Run example '{}' ({})", example.getName(), requestFile.getName());
                         String requestData = Files.asCharSource(requestFile, Charset.forName(Constants.DEFAULT_ENCODING)).read();
 
                         final PJsonObject jsonSpec;
