@@ -249,7 +249,6 @@ public class ScalebarGraphic {
             final ScaleBarRenderSettings settings, final Dimension maxLabelSize) {
         final float width;
         final float height;
-        final double angle = Math.abs(Math.toRadians(scalebarParams.labelRotation));
         if (scalebarParams.getOrientation().isHorizontal()) {
             width = 2 * settings.getPadding()
                 + settings.getIntervalLengthInPixels() * scalebarParams.intervals

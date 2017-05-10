@@ -68,6 +68,7 @@ task integrationTest(type: Test) {
         showCauses true
         showExceptions true
         showStackTraces true
+        showStandardStreams = true
     }
 }
 integrationTest.dependsOn ':core:compileJava', 'geoserverData'
