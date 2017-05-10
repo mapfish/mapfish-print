@@ -8,10 +8,8 @@
         </encoder>
     </appender>
 
-    <logger name="org.mapfish" level="ALL" />
-    <!-- Set spec logger to INFO to log all print spec json data -->
-    <logger name="org.mapfish.print.servlet.BaseMapServlet.spec" level="OFF" />
-    <logger name="com.codahale.metrics.JmxReporter" level="INFO" />
+    <logger name="org.mapfish" level="WARN" />
+    <logger name="com.codahale" level="WARN" />
     <logger name="org.springframework" level="WARN" />
     <logger name="org.apache" level="WARN" />
     <logger name="org.hibernate" level="WARN" />

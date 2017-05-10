@@ -415,14 +415,13 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
      * @param spec the json specification in the old API format
      * @param httpServletRequest the request
      */
-    private String doCreatePDFFile(final String spec,
-                                   final HttpServletRequest httpServletRequest,
-                                   final HttpServletResponse httpServletResponse)
+    private String doCreatePDFFile(
+            final String spec,
+            final HttpServletRequest httpServletRequest,
+            final HttpServletResponse httpServletResponse)
             throws IOException, ServletException,
             InterruptedException, NoSuchAppException, NoSuchReferenceException {
-        if (SPEC_LOGGER.isInfoEnabled()) {
-            SPEC_LOGGER.info("\nOLD-API:\n" + spec);
-        }
+        LOGGER.debug("\nOLD-API:\n{}", spec);
 
         PJsonObject specJson = MapPrinterServlet.parseJson(spec, httpServletResponse);
         String appId;

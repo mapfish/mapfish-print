@@ -191,7 +191,8 @@ public class ExamplesTest {
                 }
                 try {
                     if (isRequestDataFile(requestFile)) {
-                        LOGGER.info("Run example '{}' ({})", example.getName(), requestFile.getName());
+                        // WARN to be displayed in the Travis logs
+                        LOGGER.warn("Run example '{}' ({})", example.getName(), requestFile.getName());
                         String requestData = Files.asCharSource(requestFile, Charset.forName(Constants.DEFAULT_ENCODING)).read();
 
                         final PJsonObject jsonSpec;

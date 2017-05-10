@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 apply plugin: 'war'
 apply plugin: 'org.akhikhl.gretty'
 
@@ -68,7 +70,7 @@ task integrationTest(type: Test) {
         showCauses true
         showExceptions true
         showStackTraces true
-        showStandardStreams = true
+        events TestLogEvent.STANDARD_OUT
     }
 }
 integrationTest.dependsOn ':core:compileJava', 'geoserverData'

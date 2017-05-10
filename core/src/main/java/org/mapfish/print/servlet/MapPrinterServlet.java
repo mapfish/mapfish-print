@@ -898,9 +898,7 @@ public class MapPrinterServlet extends BaseMapServlet {
         if (specJson == null) {
             return null;
         }
-        if (SPEC_LOGGER.isInfoEnabled()) {
-            SPEC_LOGGER.info(specJson.toString());
-        }
+        LOGGER.debug("\nspec:\n{}", specJson);
 
         specJson.getInternalObj().remove(JSON_OUTPUT_FORMAT);
         specJson.getInternalObj().put(JSON_OUTPUT_FORMAT, format);

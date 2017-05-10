@@ -3,8 +3,6 @@
 <included>
     <logger name="org.mapfish" level="${LOG_LEVEL}" />
     <logger name="org.springframework" level="${SPRING_LOG_LEVEL}" />
-    <!-- Set spec logger to INFO to log all print spec json data -->
-    <logger name="org.mapfish.print.servlet.spec" level="OFF" />
     <logger name="com.codahale.metrics" level="INFO" />
     <logger name="net.sf.jasperreports" level="${JASPER_LOG_LEVEL}" />
     <logger name="org.apache" level="${APACHE_LOG_LEVEL}" />

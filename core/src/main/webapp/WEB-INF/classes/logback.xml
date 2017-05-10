@@ -23,15 +23,10 @@
         </encoder>
     </appender>
 
-    <logger name="org.mapfish" level="INFO" />
+    <logger name="org.mapfish" level="WARN" />
     <logger name="org.springframework" level="WARN" />
     <logger name="org.apache" level="WARN" />
-    <!-- Set spec logger to INFO to log all print spec json data -->
-    <logger name="org.mapfish.print.servlet.spec" level="OFF" />
-    <!-- Set ValuesLogger to INFO to show all template parameters -->
-    <logger name="org.mapfish.print.output.ValuesLogger" level="OFF" />
     <logger name="com.codahale.metrics" level="INFO" />
-    <logger name="com.codahale.metrics.JmxReporter" level="INFO" />
     <logger name="net.sf.jasperreports" level="INFO" />
 
 

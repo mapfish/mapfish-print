@@ -9,8 +9,6 @@
     </appender>
 
     <logger name="org.mapfish" level="WARN" />
-    <!-- Set spec logger to INFO to log all print spec json data -->
-    <logger name="org.mapfish.print.servlet.spec" level="OFF" />
     <!-- Set ValuesLogger to INFO to show all template parameters -->
     <logger name="org.mapfish.print.output.ValuesLogger" level="OFF" />
 
