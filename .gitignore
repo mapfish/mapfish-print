@@ -1,5 +1,4 @@
 *~
-/build/
 /bin/
 */bin
 /.classpath
@@ -7,8 +6,6 @@
 /.project
 */.settings/
 /examples/*.jasper
-/examples/build/
-/core/build/
 
 core/gradle/
 /core/gradlew
@@ -17,3 +14,10 @@ core/gradle/
 /projectTests/
 /.idea/
 *.iml
+
+/build/
+/core/build/
+/debian/build
+/docs/build
+/examples/build/
+/publish/build
