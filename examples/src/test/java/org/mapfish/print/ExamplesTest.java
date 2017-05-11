@@ -191,7 +191,8 @@ public class ExamplesTest {
                 }
                 try {
                     if (isRequestDataFile(requestFile)) {
-                        LOGGER.info("Run example '{}' ({})", example.getName(), requestFile.getName());
+                        // WARN to be displayed in the Travis logs
+                        LOGGER.warn("Run example '{}' ({})", example.getName(), requestFile.getName());
                         String requestData = Files.asCharSource(requestFile, Charset.forName(Constants.DEFAULT_ENCODING)).read();
 
                         final PJsonObject jsonSpec;
@@ -229,10 +230,6 @@ public class ExamplesTest {
                         this.mapPrinter.print(jsonSpec, out);
 
                         BufferedImage image = ImageIO.read(new ByteArrayInputStream(out.toByteArray()));
-
-//                        File outDir = new File("/tmp/examples_test", example.getName()+ "/expected_output");
-//                        outDir.mkdirs();
-//                        ImageIO.write(image, outputFormat, new File(outDir, requestFile.getName().replace(".json", "." + outputFormat)));
 
                         File expectedOutputDir = new File(example, "expected_output");
                         File expectedOutput = getExpectedOutput(outputFormat, requestFile, expectedOutputDir);
