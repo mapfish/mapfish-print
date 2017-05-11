@@ -5,11 +5,10 @@
     {
         "map":
         {
-            "projection": "EPSG:900913",
+            "projection": "EPSG:3857",
             "dpi": 72,
             "rotation": 0,
             "center": [3570451.1286428, 9077780.2262548],
-
             "scale": 100000,
             "layers":
             [

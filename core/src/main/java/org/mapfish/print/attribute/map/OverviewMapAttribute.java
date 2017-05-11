@@ -12,7 +12,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 /**
  * <p>The attributes for an overview map (see
  * <a href="processors.html#!createOverviewMap">!createOverviewMap</a> processor).</p>
- * [[examples=verboseExample,overviewmap_tyger_ny_EPSG_900913]]
+ * [[examples=verboseExample,overviewmap_tyger_ny_EPSG_3857]]
  */
 public final class OverviewMapAttribute extends GenericMapAttribute {
 

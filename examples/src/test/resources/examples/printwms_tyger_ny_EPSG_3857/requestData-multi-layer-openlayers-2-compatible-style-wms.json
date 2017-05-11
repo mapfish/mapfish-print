@@ -3,27 +3,29 @@
   "outputFormat": "pdf",
   "attributes": {
     "map": {
-      "projection": "EPSG:900913",
+      "projection": "EPSG:3857",
       "dpi": 72,
       "rotation": 0,
-      "center": [-8235878.4938425, 4979784.7605681],
-      "scale": 26000,
+      "center": [-8240656,4969880, -8235548,4973782],
+      "scale": 25000,
       "layers": [
         {
           "baseURL": "http://localhost:8080/gs-web-app/wms",
           "opacity": 1,
           "type": "WMS",
-          "layers": ["tiger:tiger_roads"],
+          "layers": [
+            "nurc:Img_Sample",
+            "tiger:poly_landmarks",
+            "tiger:tiger_roads",
+            "tiger:poi"
+          ],
+
           "imageFormat": "image/png",
-          "styles": ["line"],
+          "styles": [""],
+
           "customParams": {
             "TRANSPARENT": "true"
           }
-        },
-        {
-          "baseURL": "http://localhost:8080/examples/data/www/osm",
-          "type": "OSM",
-          "imageExtension": "png"
         }
       ]
     }

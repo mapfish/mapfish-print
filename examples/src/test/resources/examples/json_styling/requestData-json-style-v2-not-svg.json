@@ -8,7 +8,7 @@
       "dpi": 128,
       "layers": [
         {
-          "geoJson": "http://localhost:8080/gs-web-app/tiger/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=tiger:tiger_roads&maxFeatures=1000000&outputFormat=application%2Fjson&srsName=EPSG:900913",
+          "geoJson": "http://localhost:8080/gs-web-app/tiger/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=tiger:tiger_roads&maxFeatures=1000000&outputFormat=application%2Fjson&srsName=EPSG:3857",
           "style": {
             "version": "2",
             "strokeColor": "gray",
@@ -72,7 +72,7 @@
           "type": "geojson"
         }
       ],
-      "projection": "EPSG:900913",
+      "projection": "EPSG:3857",
       "rotation": 0,
       "scale": 100000
     }

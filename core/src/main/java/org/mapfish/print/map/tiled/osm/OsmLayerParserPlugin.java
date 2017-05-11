@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 /**
  * <p>Renders OpenStreetMap or other tiled layers.</p>
  * <p>Type: <code>osm</code></p>
- * [[examples=print_osm_new_york_EPSG_900913]]
+ * [[examples=print_osm_new_york_EPSG_3857]]
  */
 public final class OsmLayerParserPlugin extends AbstractGridCoverageLayerPlugin implements MapLayerFactoryPlugin<OsmLayerParam> {
     @Autowired

@@ -548,9 +548,6 @@ public abstract class GenericMapAttribute
      */
     public static CoordinateReferenceSystem parseProjection(final String projection, final Boolean longitudeFirst) {
         String epsgCode = projection;
-        if (epsgCode.equalsIgnoreCase("EPSG:900913")) {
-            epsgCode = "EPSG:3857";
-        }
 
         try {
             if (longitudeFirst == null) {

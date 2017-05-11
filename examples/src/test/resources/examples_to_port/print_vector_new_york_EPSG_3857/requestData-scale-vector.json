@@ -5,10 +5,10 @@
     {
         "map":
         {
-            "projection": "EPSG:900913",
+            "projection": "EPSG:3857",
             "dpi": 72,
             "rotation": 0,
-              "center": [-8234566.427097, 4979131.070529],
+            "center": [-8234566.427097, 4979131.070529],
             "scale": 25000,
             "layers":
             [
@@ -16,18 +16,9 @@
                     "baseURL": "http://localhost:8080/gs-web-app/wms",
                     "opacity": 1,
                     "type": "WMS",
-                    "layers":
-                    [
-                        "tiger-ny"
-                    ],
-
-                    "imageFormat": "image/png",
-                    "styles":
-                    [
-                        ""
-                    ]
+                    "layers": ["tiger-ny"],
+                    "imageFormat": "image/png"
                 },
-
                 {
                     "type": "Vector",
                     "style":
@@ -120,14 +111,12 @@
                                     ]
                                 }
                             },
-
                             {
                                 "type": "Feature",
                                 "properties":
                                 {
                                     "_gx_style": 2
                                 },
-
                                 "geometry":
                                 {
                                     "type": "LineString",
@@ -162,7 +151,6 @@
                                 {
                                     "_gx_style": 3
                                 },
-
                                 "geometry":
                                 {
                                     "type": "Polygon",

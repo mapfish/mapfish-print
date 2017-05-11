@@ -19,11 +19,18 @@
           "customParams": {
             "TRANSPARENT": "true"
           }
+        },
+        {
+          "baseURL": "http://localhost:8080/gs-web-app/wms",
+          "opacity": 1,
+          "type": "WMS",
+          "layers": ["tiger-ny"],
+          "imageFormat": "image/png",
+          "customParams": {
+            "TRANSPARENT": "true"
+          }
         }
       ]
-    },
-    "backgroundLayers": {
-      "layers": [ ]
     }
   }
 }

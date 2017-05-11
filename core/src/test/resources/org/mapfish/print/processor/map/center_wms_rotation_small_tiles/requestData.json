@@ -3,7 +3,7 @@
     "mapDef": {
       "center": [-8236566.427097, 4976131.070529],
       "scale": 50000,
-      "projection": "EPSG:900913",
+      "projection": "EPSG:3857",
       "dpi": 75,
       "rotation": 45,
 

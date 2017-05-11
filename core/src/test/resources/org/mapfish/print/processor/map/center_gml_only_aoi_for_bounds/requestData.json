@@ -22,7 +22,7 @@
           ]
         }
       },
-      "projection": "EPSG:900913",
+      "projection": "EPSG:3857",
       "dpi": 72,
       "layers": [
         {
