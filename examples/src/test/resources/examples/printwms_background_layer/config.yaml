@@ -26,7 +26,7 @@ templates:
               dimensions: null
               dimensionParams: {}
               matrixSet: "EPSG:900913"
-              imageFormat: "png"
+              imageFormat: "image/png"
               matrices:
                 - identifier: "EPSG:900913:12"
                   matrixSize: [4096, 4096]
