@@ -186,23 +186,30 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
                 final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
                 response = this.tileRequest.execute();
                 final HttpStatus statusCode = response.getStatusCode();
-                if (statusCode != HttpStatus.OK && statusCode != HttpStatus.NO_CONTENT) {
-                    String errorMessage = "Error making tile request: " + this.tileRequest.getURI() + "\n\tStatus: " + statusCode +
-                            "\n\toutMessage: " + response.getStatusText();
+                if (statusCode == HttpStatus.NO_CONTENT || statusCode == HttpStatus.NOT_FOUND) {
+                    if (statusCode == HttpStatus.NOT_FOUND) {
+                        LOGGER.info("The request {} returns a not fond status code, we consider it as an " +
+                                "empty tile.", this.tileRequest.getURI());
+                    }
+                    // Empty response, nothing special to do
+                    return new Tile(null, getTileIndexX(), getTileIndexY());
+                } else if (statusCode != HttpStatus.OK) {
+                    String errorMessage = String.format("Error making tile request: %s\n\t" +
+                            "Status: %s\n" +
+                            "\toutMessage: %s",
+                            this.tileRequest.getURI(), statusCode, response.getStatusText());
                     LOGGER.error(errorMessage);
                     this.registry.counter(baseMetricName + ".error").inc();
                     if (this.failOnError) {
                         throw new RuntimeException(errorMessage);
                     }
                     return new Tile(this.errorImage, getTileIndexX(), getTileIndexY());
-                } else if (statusCode == HttpStatus.NO_CONTENT) {
-                    // Empty response, nothing special to do
-                    return new Tile(null, getTileIndexX(), getTileIndexY());
-                }
+                    }
 
                 BufferedImage image = ImageIO.read(response.getBody());
                 if (image == null) {
-                    LOGGER.warn("The URL: " + this.tileRequest.getURI() + " is an image format that cannot be decoded");
+                    LOGGER.warn(String.format("The URL: %s is an image format that cannot be decoded",
+                            this.tileRequest.getURI()));
                     image = this.errorImage;
                     this.registry.counter(baseMetricName + ".error").inc();
                 } else {
