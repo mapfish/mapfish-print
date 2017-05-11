@@ -49,7 +49,7 @@ if (Boolean.parseBoolean(enablePublishing)) {
     }
 
     uploadArchives {
-        dependsOn tasks.getByPath(':core:test')
+        dependsOn tasks.getByPath(':core:war')
         repositories {
             mavenDeployer {
                 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
