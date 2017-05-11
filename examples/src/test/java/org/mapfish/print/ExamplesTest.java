@@ -231,10 +231,6 @@ public class ExamplesTest {
 
                         BufferedImage image = ImageIO.read(new ByteArrayInputStream(out.toByteArray()));
 
-//                        File outDir = new File("/tmp/examples_test", example.getName()+ "/expected_output");
-//                        outDir.mkdirs();
-//                        ImageIO.write(image, outputFormat, new File(outDir, requestFile.getName().replace(".json", "." + outputFormat)));
-
                         File expectedOutputDir = new File(example, "expected_output");
                         File expectedOutput = getExpectedOutput(outputFormat, requestFile, expectedOutputDir);
                         if (!expectedOutput.exists()) {
