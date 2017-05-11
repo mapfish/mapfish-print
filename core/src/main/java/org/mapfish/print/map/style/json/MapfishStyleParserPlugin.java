@@ -493,17 +493,20 @@ public final class MapfishStyleParserPlugin implements StyleParserPlugin {
             Style parseStyle(
                     @Nonnull final PJsonObject json,
                     @Nonnull final StyleBuilder styleBuilder,
-                    @Nullable final Configuration configuration) {
+                    @Nullable final Configuration configuration,
+                    @Nonnull final ClientHttpRequestFactory requestFactory) {
                 return new MapfishJsonStyleVersion1(
-                        json, styleBuilder, configuration, DEFAULT_GEOM_ATT_NAME).parseStyle();
+                        json, styleBuilder, configuration, requestFactory, DEFAULT_GEOM_ATT_NAME).parseStyle();
             }
         }, TWO("2") {
             @Override
             Style parseStyle(
                     @Nonnull final PJsonObject json,
                     @Nonnull final StyleBuilder styleBuilder,
-                    @Nullable final Configuration configuration) {
-                return new MapfishJsonStyleVersion2(json, styleBuilder, configuration).parseStyle();
+                    @Nullable final Configuration configuration,
+                    @Nonnull final ClientHttpRequestFactory requestFactory) {
+                return new MapfishJsonStyleVersion2(json, styleBuilder, configuration, requestFactory)
+                        .parseStyle(requestFactory);
             }
         };
         private final String versionNumber;
@@ -512,7 +515,9 @@ public final class MapfishStyleParserPlugin implements StyleParserPlugin {
             this.versionNumber = versionNumber;
         }
 
-        abstract Style parseStyle(PJsonObject json, StyleBuilder styleBuilder, Configuration configuration);
+        abstract Style parseStyle(
+                PJsonObject json, StyleBuilder styleBuilder, Configuration configuration,
+                ClientHttpRequestFactory requestFactory);
     }
 
     static final String JSON_VERSION = "version";
@@ -558,7 +563,8 @@ public final class MapfishStyleParserPlugin implements StyleParserPlugin {
             final String jsonVersion = json.optString(JSON_VERSION, "1");
             for (Versions versions : Versions.values()) {
                 if (versions.versionNumber.equals(jsonVersion)) {
-                    return Optional.of(versions.parseStyle(json, this.sldStyleBuilder, configuration));
+                    return Optional.of(versions.parseStyle(
+                            json, this.sldStyleBuilder, configuration, clientHttpRequestFactory));
                 }
             }
         } else if (trimmed.startsWith("<") && trimmed.endsWith(">")) {

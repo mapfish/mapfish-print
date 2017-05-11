@@ -24,6 +24,7 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Function;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -54,10 +55,12 @@ public final class MapfishJsonStyleVersion1 {
             @Nonnull final PJsonObject json,
             @Nonnull final StyleBuilder styleBuilder,
             @Nullable final Configuration configuration,
+            @Nonnull final ClientHttpRequestFactory requestFactory,
             @Nonnull final String defaultGeomAttName) {
         this.json = json;
         this.sldStyleBuilder = styleBuilder;
-        this.parserHelper = new JsonStyleParserHelper(configuration, this.sldStyleBuilder, true, Versions.ONE);
+        this.parserHelper = new JsonStyleParserHelper(configuration, requestFactory, this.sldStyleBuilder,
+                true, Versions.ONE);
         this.geometryProperty = defaultGeomAttName;
     }
 
@@ -92,9 +95,10 @@ public final class MapfishJsonStyleVersion1 {
     }
 
     @SuppressWarnings("unchecked")
-    private List<Rule> createStyleRule(final String styleKey,
-                                       final PJsonObject styleJson,
-                                       final String styleProperty) {
+    private List<Rule> createStyleRule(
+            final String styleKey,
+            final PJsonObject styleJson,
+            final String styleProperty) {
 
         final PointSymbolizer pointSymbolizer = this.parserHelper.createPointSymbolizer(styleJson);
         final LineSymbolizer lineSymbolizer = this.parserHelper.createLineSymbolizer(styleJson);

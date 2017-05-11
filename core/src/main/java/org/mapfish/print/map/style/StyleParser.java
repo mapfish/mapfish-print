@@ -38,7 +38,8 @@ public final class StyleParser {
         if (styleString != null) {
         for (StyleParserPlugin plugin : this.plugins) {
             try {
-                Optional<? extends Style> style = plugin.parseStyle(configuration, clientHttpRequestFactory, styleString);
+                Optional<? extends Style> style = plugin.parseStyle(
+                        configuration, clientHttpRequestFactory, styleString);
                 if (style.isPresent()) {
                     if (LOGGER.isDebugEnabled()) {
                         try {
@@ -49,10 +50,12 @@ public final class StyleParser {
                             final StyledLayerDescriptor sld = styleFactory.createStyledLayerDescriptor();
                             sld.addStyledLayer(userLayer);
                             if (LOGGER.isDebugEnabled()) {
-                                LOGGER.debug("Loaded style from: \n\n '" + styleString + "': \n\n" + transformer.transform(sld));
+                                LOGGER.debug(String.format("Loaded style from: \n\n '%s': \n\n%s",
+                                        styleString, transformer.transform(sld)));
                             }
                         } catch (Exception e) {
-                            LOGGER.debug("Loaded style from: \n\n '" + styleString + "' \n\n<Unable to transform it to xml>: " + e, e);
+                            LOGGER.debug(String.format("Loaded style from: \n\n '%s' \n\n<Unable to " +
+                                    "transform it to xml>: %s", styleString, e), e);
                         }
                     }
                     return style;
