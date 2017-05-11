@@ -22,6 +22,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.net.URI;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import javax.imageio.ImageIO;
 
@@ -65,20 +66,32 @@ public final class WmsLayer extends AbstractSingleImageLayer {
             final ClientHttpResponse response = closer.register(this.imageRequest.execute());
 
             Assert.isTrue(response != null, "No response, see error above");
-            Assert.equals(HttpStatus.OK, response.getStatusCode(), "Http status code for " +
-                    this.imageRequest.getURI() + " was not OK.  It was: " + response .getStatusCode() + ". " +
-                    " The response message was: '" + response.getStatusText() + "'");
+            Assert.equals(HttpStatus.OK, response.getStatusCode(), String.format("Http status code for %s " +
+                    "was not OK.  It was: %s. The response message was: '%s'",
+                    this.imageRequest.getURI(), response.getStatusCode(), response.getStatusText()));
+
+            final List<String> contentType = response.getHeaders().get("Content-Type");
+            if (contentType == null || contentType.size() != 1) {
+                LOGGER.debug("The WMS image {} don't return a valid content type header.",
+                        this.imageRequest.getURI());
+            } else if (!contentType.get(0).startsWith("image/")) {
+                byte[] data = new byte[response.getBody().available()];
+                response.getBody().read(data);
+                LOGGER.debug("We get a wrong WMS image for {}, content type: {}\nresult:\n{}",
+                        this.imageRequest.getURI(), contentType.get(0), new String(data, "UTF-8"));
+                this.registry.counter(baseMetricName + ".error").inc();
+                return createErrorImage(transformer.getPaintArea());
+            }
 
             final BufferedImage image = ImageIO.read(response.getBody());
             if (image == null) {
-                LOGGER.warn("The URI: " + this.imageRequest.getURI() + " is an image format that can be " +
-                        "decoded");
+                LOGGER.warn("The WMS image {} is an image format that can be decoded",
+                        this.imageRequest.getURI());
                 this.registry.counter(baseMetricName + ".error").inc();
                 return createErrorImage(transformer.getPaintArea());
             } else {
                 timerDownload.stop();
             }
-
             return image;
         } catch (Throwable e) {
             this.registry.counter(baseMetricName + ".error").inc();
@@ -92,7 +105,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
         final BufferedImage bufferedImage = new BufferedImage(area.width, area.height, TYPE_INT_ARGB_PRE);
         final Graphics2D graphics = bufferedImage.createGraphics();
         try {
-            graphics.setBackground(new Color(255, 255, 255, 125));
+            graphics.setBackground(new Color(255, 78, 78, 125));
 
             graphics.clearRect(0, 0, area.width, area.height);
             return bufferedImage;

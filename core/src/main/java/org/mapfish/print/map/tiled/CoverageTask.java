@@ -72,7 +72,8 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
      */
     public GridCoverage2D call() {
         try {
-            BufferedImage coverageImage = this.tiledLayer.createBufferedImage(this.tilePreparationInfo.getImageWidth(),
+            BufferedImage coverageImage = this.tiledLayer.createBufferedImage(
+                    this.tilePreparationInfo.getImageWidth(),
                     this.tilePreparationInfo.getImageHeight());
             Graphics2D graphics = coverageImage.createGraphics();
 
