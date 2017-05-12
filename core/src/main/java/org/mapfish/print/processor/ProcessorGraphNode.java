@@ -188,7 +188,7 @@ public final class ProcessorGraphNode<In, Out> {
 
             final Processor<In, Out> process = this.node.processor;
             final MetricRegistry registry = this.node.metricRegistry;
-            final String name = String.format("{}.compute(): {}",
+            final String name = String.format("%s.compute(): %s",
                     ProcessorGraphNode.class.getName(), process.getClass());
             Timer.Context timerContext = registry.timer(name).time();
             try {
@@ -196,9 +196,9 @@ public final class ProcessorGraphNode<In, Out> {
 
                 Out output;
                 try {
-                    LOGGER.info("Executing process: " + process);
+                    LOGGER.debug("Executing process: " + process);
                     output = process.execute(inputParameter, this.execContext.getContext());
-                    LOGGER.info("Succeeded in executing process: " + process);
+                    LOGGER.debug("Succeeded in executing process: " + process);
                 } catch (Exception e) {
                     if (this.execContext.getContext().isCanceled()) {
                         // the processor is already canceled, so we don't care if something fails
@@ -214,8 +214,10 @@ public final class ProcessorGraphNode<In, Out> {
                 }
             } finally {
                 this.execContext.finished(this.node);
-                final long processorTime = TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS);
-                LOGGER.debug("Time taken to run processor: '" + process.getClass() + "' was " + processorTime + " ms");
+                final long processorTime = TimeUnit.MILLISECONDS.convert(
+                        timerContext.stop(), TimeUnit.NANOSECONDS);
+                LOGGER.info("Time taken to run processor: '{}' was {} ms",
+                        process.getClass(), processorTime);
             }
 
             if (this.execContext.getContext().isCanceled()) {
