@@ -188,7 +188,8 @@ public final class ProcessorGraphNode<In, Out> {
 
             final Processor<In, Out> process = this.node.processor;
             final MetricRegistry registry = this.node.metricRegistry;
-            final String name = ProcessorGraphNode.class.getName() + "_compute():" + process.getClass();
+            final String name = String.format("{}.compute(): {}",
+                    ProcessorGraphNode.class.getName(), process.getClass());
             Timer.Context timerContext = registry.timer(name).time();
             try {
                 In inputParameter = ProcessorUtils.populateInputParameter(process, values);

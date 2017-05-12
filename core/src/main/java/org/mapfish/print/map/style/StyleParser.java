@@ -50,8 +50,8 @@ public final class StyleParser {
                             final StyledLayerDescriptor sld = styleFactory.createStyledLayerDescriptor();
                             sld.addStyledLayer(userLayer);
                             if (LOGGER.isDebugEnabled()) {
-                                LOGGER.debug(String.format("Loaded style from: \n\n '%s': \n\n%s",
-                                        styleString, transformer.transform(sld)));
+                                LOGGER.debug("Loaded style from: \n\n '{}': \n\n{}",
+                                        styleString, transformer.transform(sld));
                             }
                         } catch (Exception e) {
                             LOGGER.debug(String.format("Loaded style from: \n\n '%s' \n\n<Unable to " +

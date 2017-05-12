@@ -78,9 +78,8 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
                 final int row)
                 throws IOException, URISyntaxException, FactoryException {
 
-            URI uri =
-                    makeWmsGetLayerRequest(httpRequestFactory, TiledWmsLayer.this.param,
-                            new URI(commonUrl), tileSizeOnScreen, this.dpi, tileBounds);
+            URI uri = makeWmsGetLayerRequest(httpRequestFactory, TiledWmsLayer.this.param,
+                    new URI(commonUrl), tileSizeOnScreen, this.dpi, tileBounds);
             return httpRequestFactory.createRequest(uri, HttpMethod.GET);
         }
 
