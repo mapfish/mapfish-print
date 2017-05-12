@@ -7,6 +7,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.io.Files;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.design.JRValidationException;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.HasConfiguration;
 import org.mapfish.print.config.WorkingDirectories;
@@ -85,15 +86,19 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
                 // of once.
                 File tmpBuildFile = File.createTempFile("temp_", JASPER_REPORT_COMPILED_FILE_EXT, buildFile.getParentFile());
 
-                LOGGER.info("Building Jasper report: " + jasperFile.getAbsolutePath());
-                LOGGER.debug("To: " + buildFile.getAbsolutePath());
-                final Timer.Context compileJasperReport = this.metricRegistry.timer("compile_" + jasperFile).time();
+                LOGGER.info("Building Jasper report: {}", jasperFile.getAbsolutePath());
+                LOGGER.debug("To: {}", buildFile.getAbsolutePath());
+                final Timer.Context compileJasperReport = this.metricRegistry.timer(
+                        "compile_" + jasperFile).time();
                 try {
-                    JasperCompileManager.compileReportToFile(jasperFile.getAbsolutePath(), tmpBuildFile
-                             .getAbsolutePath());
+                    JasperCompileManager.compileReportToFile(jasperFile.getAbsolutePath(),
+                            tmpBuildFile.getAbsolutePath());
+                } catch (JRValidationException e) {
+                    LOGGER.error("The report '{}' isn't valid.", jasperFile.getAbsolutePath());
+                    throw e;
                 } finally {
                     final long compileTime = TimeUnit.MILLISECONDS.convert(compileJasperReport.stop(), TimeUnit.NANOSECONDS);
-                    LOGGER.info("Report built in " + compileTime + "ms.");
+                    LOGGER.info("Report built in {}ms.", compileTime);
                 }
 
                 java.nio.file.Files.move(tmpBuildFile.toPath(), buildFile.toPath(), StandardCopyOption.ATOMIC_MOVE);

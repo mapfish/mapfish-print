@@ -63,6 +63,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
                 this.imageRequest.getURI().getHost();
         try {
             final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
+            LOGGER.info("Query the WMS image {}.", this.imageRequest.getURI());
             final ClientHttpResponse response = closer.register(this.imageRequest.execute());
 
             Assert.isTrue(response != null, "No response, see error above");
