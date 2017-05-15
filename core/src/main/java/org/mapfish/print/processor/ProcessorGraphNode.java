@@ -196,9 +196,9 @@ public final class ProcessorGraphNode<In, Out> {
 
                 Out output;
                 try {
-                    LOGGER.debug("Executing process: " + process);
+                    LOGGER.debug("Executing process: {}", process);
                     output = process.execute(inputParameter, this.execContext.getContext());
-                    LOGGER.debug("Succeeded in executing process: " + process);
+                    LOGGER.debug("Succeeded in executing process: {}", process);
                 } catch (Exception e) {
                     if (this.execContext.getContext().isCanceled()) {
                         // the processor is already canceled, so we don't care if something fails
