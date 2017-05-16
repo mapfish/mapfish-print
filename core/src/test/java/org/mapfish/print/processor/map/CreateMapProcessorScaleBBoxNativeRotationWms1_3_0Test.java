@@ -73,7 +73,7 @@ public class CreateMapProcessorScaleBBoxNativeRotationWms1_3_0Test extends Abstr
                                 "1.3.0"));
                         assertTrue("LAYERS != TOPP:STATES: " + uppercaseParams.get("LAYERS"), uppercaseParams.containsEntry("LAYERS",
                                 "TOPP:STATES"));
-                        assertTrue("ANGLE != 90", uppercaseParams.containsEntry("ANGLE", "90"));
+                        assertTrue("ANGLE != 90", uppercaseParams.containsEntry("ANGLE", "90.0"));
                         assertTrue("BBOX is missing", uppercaseParams.containsKey("BBOX"));
                         assertTrue("mapSize is not rotated (width)",
                                 uppercaseParams.containsEntry("WIDTH", "780"));

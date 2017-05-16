@@ -16,3 +16,5 @@ The processor graph is more strict
 - The longtime deprecated imageFormat on OSM layer is removed
 - The fake projection EPSG:900913 is no more supported, you should use the projection EPSG:3857
 - The KVP WMTS layers should specify a real mime type in the FORMAT
+- For native WMS rotation, the angle or map_angle shouldn't be in the customParams,
+  and the serverType is required, to disable it useNativeAngle to false on the layer.

@@ -50,7 +50,7 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
      * MapServer.
      */
     @HasDefaultValue
-    public boolean useNativeAngle = false;
+    public boolean useNativeAngle = true;
 
     /**
      * The server type ("mapserver", "geoserver" or "qgisserver"). By specifying the server type

@@ -35,6 +35,7 @@ public final class WmsUtilities {
      * @param commonURI the uri to use for the requests (excepting parameters of course.)
      * @param imageSize the size of the image to request
      * @param dpi the dpi of the image to request
+     * @param angle the angle of the image to request
      * @param bounds the area and projection of the request on the world.
      */
     public static URI makeWmsGetLayerRequest(
@@ -42,8 +43,10 @@ public final class WmsUtilities {
             final URI commonURI,
             final Dimension imageSize,
             final double dpi,
+            final double angle,
             final ReferencedEnvelope bounds) throws FactoryException, URISyntaxException, IOException {
-        final GetMapRequest getMapRequest = WmsVersion.lookup(wmsLayerParam.version).getGetMapRequest(commonURI.toURL());
+        final GetMapRequest getMapRequest = WmsVersion.lookup(wmsLayerParam.version).
+                getGetMapRequest(commonURI.toURL());
         getMapRequest.setBBox(bounds);
         getMapRequest.setDimensions(imageSize.width, imageSize.height);
         getMapRequest.setFormat(wmsLayerParam.imageFormat);
@@ -65,6 +68,9 @@ public final class WmsUtilities {
 
         if (wmsLayerParam.serverType != null && dpi != Constants.PDF_DPI) {
             addDpiParam(extraParams, (int) Math.round(dpi), wmsLayerParam.serverType);
+            if (wmsLayerParam.useNativeAngle && angle != 0.0) {
+                addAngleParam(extraParams, angle, wmsLayerParam.serverType);
+            }
         }
         return URIUtils.addParams(getMapUri, extraParams, Collections.<String>emptySet());
 
@@ -92,6 +98,26 @@ public final class WmsUtilities {
             break;
         default:
             break;
+        }
+    }
+
+    private static void addAngleParam(
+            final Multimap<String, String> extraParams, final double angle, final ServerType type) {
+        switch (type) {
+            case MAPSERVER:
+                if (!contains(extraParams, "MAP_ANGLE")) {
+                    extraParams.put("MAP_ANGLE", Double.toString(Math.toDegrees(angle)));
+                }
+                break;
+            case QGISSERVER:
+                break;
+            case GEOSERVER:
+                if (!contains(extraParams, "ANGLE")) {
+                    extraParams.put("ANGLE", Double.toString(Math.toDegrees(angle)));
+                }
+                break;
+            default:
+                break;
         }
     }
 
