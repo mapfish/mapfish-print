@@ -96,7 +96,8 @@ public final class OsmLayer extends AbstractTiledLayer {
                         .replace("{y}", Integer.toString(row));
                 if (commonUrl.contains("{-y}")) {
                     // {-y} is for  OSGeo TMS layers, see also: https://josm.openstreetmap.de/wiki/Maps#TileMapServicesTMS
-                    url = url.replace("{-y}", Integer.toString((int) Math.pow(2, this.resolutionIndex) - 1 - row));
+                    url = url.replace("{-y}", Integer.toString(
+                            (int) Math.pow(2, this.resolutionIndex) - 1 - row));
                 }
                 uri  = new URI(url);
             } else {

@@ -18,8 +18,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * An abstract class to support implementing layers that consist of Raster tiles which are combined to compose a single raster
- * to be drawn on the map.
+ * An abstract class to support implementing layers that consist of Raster tiles which are combined to
+ * compose a single raster to be drawn on the map.
  */
 public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
 
@@ -78,7 +78,8 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
      * @param paintArea the area to paint
      * @param dpi the DPI to render at
      */
-    protected abstract TileCacheInformation createTileInformation(MapBounds bounds, Rectangle paintArea, double dpi);
+    protected abstract TileCacheInformation createTileInformation(
+            MapBounds bounds, Rectangle paintArea, double dpi);
 
     @Override
     public final double getImageBufferScaling() {

@@ -22,7 +22,8 @@ import javax.annotation.Resource;
  * <p>Type: <code>osm</code></p>
  * [[examples=print_osm_new_york_EPSG_3857]]
  */
-public final class OsmLayerParserPlugin extends AbstractGridCoverageLayerPlugin implements MapLayerFactoryPlugin<OsmLayerParam> {
+public final class OsmLayerParserPlugin extends AbstractGridCoverageLayerPlugin
+        implements MapLayerFactoryPlugin<OsmLayerParam> {
     @Autowired
     private StyleParser parser;
     @Autowired
@@ -46,9 +47,9 @@ public final class OsmLayerParserPlugin extends AbstractGridCoverageLayerPlugin 
 
     @Nonnull
     @Override
-    public OsmLayer parse(@Nonnull final Template template,
-                          @Nonnull final OsmLayerParam param) throws Throwable {
-
+    public OsmLayer parse(
+            @Nonnull final Template template,
+            @Nonnull final OsmLayerParam param) {
         String styleRef = param.rasterStyle;
         return new OsmLayer(this.forkJoinPool,
                 super.<GridCoverage2D>createStyleSupplier(template, styleRef),

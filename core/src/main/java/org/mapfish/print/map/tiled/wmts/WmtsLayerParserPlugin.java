@@ -21,7 +21,8 @@ import javax.annotation.Resource;
  * <p>Type: <code>wmts</code></p>
  * [[examples=printwmts_tyger_ny_EPSG_3857]]
  */
-public final class WmtsLayerParserPlugin extends AbstractGridCoverageLayerPlugin implements MapLayerFactoryPlugin<WMTSLayerParam> {
+public final class WmtsLayerParserPlugin extends AbstractGridCoverageLayerPlugin
+        implements MapLayerFactoryPlugin<WMTSLayerParam> {
     @Autowired
     private ForkJoinPool forkJoinPool;
     @Autowired
@@ -43,10 +44,11 @@ public final class WmtsLayerParserPlugin extends AbstractGridCoverageLayerPlugin
 
     @Nonnull
     @Override
-    public WMTSLayer parse(@Nonnull final Template template,
-                           @Nonnull final WMTSLayerParam param) throws Throwable {
+    public WMTSLayer parse(
+            @Nonnull final Template template,
+            @Nonnull final WMTSLayerParam param) {
         String styleRef = param.rasterStyle;
-        return new WMTSLayer(this.forkJoinPool, this.requestForkJoinPool,
+        return new WMTSLayer(this.forkJoinPool,
                 super.<GridCoverage2D>createStyleSupplier(template, styleRef),
                 param, this.registry);
     }

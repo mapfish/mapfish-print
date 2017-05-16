@@ -54,7 +54,8 @@ public class WMTSLayer extends AbstractTiledLayer {
     }
 
     @Override
-    protected final TileCacheInformation createTileInformation(final MapBounds bounds, final Rectangle paintArea, final double dpi) {
+    protected final TileCacheInformation createTileInformation(
+            final MapBounds bounds, final Rectangle paintArea, final double dpi) {
         return new WMTSTileCacheInfo(bounds, paintArea, dpi);
     }
 
@@ -78,7 +79,8 @@ public class WMTSLayer extends AbstractTiledLayer {
             }
 
             if (this.matrix == null) {
-                throw new IllegalArgumentException("Unable to find a matrix for the resolution: " + targetResolution);
+                throw new IllegalArgumentException("Unable to find a matrix for the resolution: " +
+                        targetResolution);
             }
         }
 
@@ -117,7 +119,7 @@ public class WMTSLayer extends AbstractTiledLayer {
             URI uri;
             final WMTSLayerParam layerParam = WMTSLayer.this.param;
             if (RequestEncoding.REST == layerParam.requestEncoding) {
-                uri = createRestURI(commonUrl, this.matrix.identifier, row, column, layerParam);
+                uri = createRestURI(this.matrix.identifier, row, column, layerParam);
             } else {
                 URI commonUri = new URI(commonUrl);
                 uri = createKVPUri(commonUri, row, column, layerParam);
@@ -167,14 +169,14 @@ public class WMTSLayer extends AbstractTiledLayer {
     /**
      * Prepare the baseURL to make a request.
      *
-     * @param commonURL Base URL
      * @param matrixId matrixId
      * @param row row
      * @param col cold
      * @param layerParam layerParam
      */
-    public static URI createRestURI(final String commonURL, final String matrixId, final int row, final int col,
-                              final WMTSLayerParam layerParam) throws URISyntaxException {
+    public static URI createRestURI(
+            final String matrixId, final int row, final int col,
+            final WMTSLayerParam layerParam) throws URISyntaxException {
         String path = layerParam.baseURL;
         if (layerParam.dimensions != null) {
             for (int i = 0; i < layerParam.dimensions.length; i++) {

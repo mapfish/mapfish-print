@@ -52,7 +52,8 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
       * <p>Renders a GeoTIFF image as layer.</p>
       * <p>Type: <code>geotiff</code></p>
       */
-    public static final class Plugin extends AbstractGridCoverageLayerPlugin implements MapLayerFactoryPlugin<GeotiffParam> {
+    public static final class Plugin extends AbstractGridCoverageLayerPlugin
+            implements MapLayerFactoryPlugin<GeotiffParam> {
         @Autowired
         private ExecutorService forkJoinPool;
 

@@ -59,8 +59,9 @@ import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
 public final class ImageLayer extends AbstractSingleImageLayer {
 
     private final ImageParam params;
-    private StyleSupplier<GridCoverage2D> styleSupplier;
-    private ExecutorService executorService;
+    private final StyleSupplier<GridCoverage2D> styleSupplier;
+    private final ExecutorService executorService;
+    private final Configuration configuration;
 
     /**
      * Constructor.
@@ -105,8 +106,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         @Override
         public ImageLayer parse(
                 @Nonnull final Template template,
-                @Nonnull final ImageParam layerData) throws Throwable {
-
+                @Nonnull final ImageParam layerData) {
             String styleRef = layerData.style;
             return new ImageLayer(this.forkJoinPool,
                     super.<GridCoverage2D>createStyleSupplier(template, styleRef),
