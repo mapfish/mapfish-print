@@ -71,9 +71,11 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
 
         @Nonnull
         @Override
-        public GeotiffLayer parse(final Template template,
-                              @Nonnull final GeotiffParam param) throws IOException {
-            Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> geotiffReader = getGeotiffReader(template, param.url);
+        public GeotiffLayer parse(
+                @Nonnull final Template template,
+                @Nonnull final GeotiffParam param) throws IOException {
+            Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> geotiffReader =
+                    getGeotiffReader(template, param.url);
 
             String styleRef = param.style;
 
@@ -83,9 +85,9 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
                     param);
         }
 
-        private Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> getGeotiffReader(final Template template,
-                                                                                                  final String geotiffUrl) throws
-                IOException {
+        private Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> getGeotiffReader(
+                final Template template,
+                final String geotiffUrl) throws IOException {
             final URL url = FileUtils.testForLegalFileUrl(template.getConfiguration(), new URL(geotiffUrl));
             return new Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader>() {
                 @Nullable
@@ -100,7 +102,8 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
                             Closer closer = Closer.create();
 
                             try {
-                                final ClientHttpRequest request = requestFactory.createRequest(url.toURI(), HttpMethod.GET);
+                                final ClientHttpRequest request = requestFactory.createRequest(url.toURI(),
+                                        HttpMethod.GET);
                                 final ClientHttpResponse httpResponse = closer.register(request.execute());
                                 FileOutputStream output = closer.register(new FileOutputStream(geotiffFile));
                                 ByteStreams.copy(httpResponse.getBody(), output);
@@ -124,7 +127,8 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
      */
     public static final class GeotiffParam extends AbstractLayerParams {
         /**
-         * The url of the geotiff.  It can be a file but if it is the file must be contained within the config directory.
+         * The url of the geotiff.  It can be a file but if it is the file must be contained within the
+         * config directory.
          */
         public String url;
         /**

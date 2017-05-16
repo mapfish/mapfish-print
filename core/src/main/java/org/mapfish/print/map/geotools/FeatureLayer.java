@@ -62,8 +62,9 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
 
         @Nonnull
         @Override
-        public FeatureLayer parse(@Nonnull final Template template,
-                                  @Nonnull final FeatureLayerParam param) throws IOException {
+        public FeatureLayer parse(
+                @Nonnull final Template template,
+                @Nonnull final FeatureLayerParam param) throws IOException {
             return new FeatureLayer(
                     this.forkJoinPool,
                     createFeatureSourceSupplier(param.features),

@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.mapfish.print.attribute.map.CenterScaleMapBounds;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.config.Configuration;
-import org.mapfish.print.map.Scale;
 
 import java.awt.Rectangle;
 

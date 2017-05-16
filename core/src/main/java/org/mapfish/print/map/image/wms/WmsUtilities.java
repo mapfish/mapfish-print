@@ -9,7 +9,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.mapfish.print.Constants;
 import org.mapfish.print.URIUtils;
-import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.image.wms.WmsLayerParam.ServerType;
 import org.opengis.referencing.FactoryException;
 
@@ -32,19 +31,18 @@ public final class WmsUtilities {
 
     /**
      * Make a WMS getLayer request and return the image read from the server.
-     * @param requestFactory the factory for making http requests
      * @param wmsLayerParam the wms request parameters
      * @param commonURI the uri to use for the requests (excepting parameters of course.)
      * @param imageSize the size of the image to request
      * @param dpi the dpi of the image to request
      * @param bounds the area and projection of the request on the world.
      */
-    public static URI makeWmsGetLayerRequest(final MfClientHttpRequestFactory requestFactory,
-                                             final WmsLayerParam wmsLayerParam,
-                                             final URI commonURI,
-                                             final Dimension imageSize,
-                                             final double dpi,
-                                             final ReferencedEnvelope bounds) throws FactoryException, URISyntaxException, IOException {
+    public static URI makeWmsGetLayerRequest(
+            final WmsLayerParam wmsLayerParam,
+            final URI commonURI,
+            final Dimension imageSize,
+            final double dpi,
+            final ReferencedEnvelope bounds) throws FactoryException, URISyntaxException, IOException {
         final GetMapRequest getMapRequest = WmsVersion.lookup(wmsLayerParam.version).getGetMapRequest(commonURI.toURL());
         getMapRequest.setBBox(bounds);
         getMapRequest.setDimensions(imageSize.width, imageSize.height);

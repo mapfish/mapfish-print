@@ -26,7 +26,6 @@ import javax.annotation.Nullable;
  */
 public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
 
-
     private final StyleSupplier<GridCoverage2D> styleSupplier;
     private final MetricRegistry registry;
     private final Configuration configuration;
@@ -67,8 +66,9 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
     }
 
     @Override
-    protected final List<? extends Layer> getLayers(final MfClientHttpRequestFactory httpRequestFactory,
-                                                    final MapfishMapContext mapContext) throws Exception {
+    protected final List<? extends Layer> getLayers(
+            final MfClientHttpRequestFactory httpRequestFactory,
+            final MapfishMapContext mapContext) throws Exception {
 
         final CoverageTask task = new CoverageTask(this.tilePreparationInfo,
                 getFailOnError(), this.registry, this.tileCacheInformation, this.configuration);

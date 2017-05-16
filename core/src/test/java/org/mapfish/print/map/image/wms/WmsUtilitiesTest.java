@@ -31,8 +31,8 @@ public class WmsUtilitiesTest {
         URI commonURI = new URI("http://test.xyz/geoserver/wms?SERVICE=WMS");
         Dimension imageSize = new Dimension(200,300);
         ReferencedEnvelope env = new ReferencedEnvelope(0,10, 40, 50, CRS.decode("EPSG:4326"));
-        final URI wmsURI = WmsUtilities.makeWmsGetLayerRequest(new TestHttpClientFactory(), wmsLayerParams, commonURI, imageSize,
-                72.0, env);
+        final URI wmsURI = WmsUtilities.makeWmsGetLayerRequest(
+                wmsLayerParams, commonURI, imageSize, 72.0, env);
         final Multimap<String, String> finalParams = URIUtils.getParameters(wmsURI);
         final Collection<String> layersParam = finalParams.get("LAYERS");
         assertNotNull(layersParam);
@@ -51,8 +51,8 @@ public class WmsUtilitiesTest {
         URI commonURI = new URI("http://test.xyz/geoserver/wms?SERVICE=WMS");
         Dimension imageSize = new Dimension(200,300);
         ReferencedEnvelope env = new ReferencedEnvelope(0,10, 40, 50, CRS.decode("EPSG:4326"));
-        final URI wmsURI = WmsUtilities.makeWmsGetLayerRequest(new TestHttpClientFactory(), wmsLayerParams, commonURI, imageSize,
-                300.0, env);
+        final URI wmsURI = WmsUtilities.makeWmsGetLayerRequest(
+                wmsLayerParams, commonURI, imageSize, 300.0, env);
         final Multimap<String, String> finalParams = URIUtils.getParameters(wmsURI);
         final String mapResolution = finalParams.get("MAP_RESOLUTION").iterator().next();
         assertEquals("300", mapResolution);
@@ -69,8 +69,8 @@ public class WmsUtilitiesTest {
         URI commonURI = new URI("http://test.xyz/geoserver/wms?SERVICE=WMS");
         Dimension imageSize = new Dimension(200,300);
         ReferencedEnvelope env = new ReferencedEnvelope(0,10, 40, 50, CRS.decode("EPSG:4326"));
-        final URI wmsURI = WmsUtilities.makeWmsGetLayerRequest(new TestHttpClientFactory(), wmsLayerParams, commonURI, imageSize,
-                300.0, env);
+        final URI wmsURI = WmsUtilities.makeWmsGetLayerRequest(
+                wmsLayerParams, commonURI, imageSize, 300.0, env);
         final Multimap<String, String> finalParams = URIUtils.getParameters(wmsURI);
         assertFalse(finalParams.containsKey("MAP_RESOLUTION"));
         final String mapResolution = finalParams.get("map_resolution").iterator().next();
@@ -87,8 +87,8 @@ public class WmsUtilitiesTest {
         URI commonURI = new URI("http://test.xyz/geoserver/wms?SERVICE=WMS");
         Dimension imageSize = new Dimension(200,300);
         ReferencedEnvelope env = new ReferencedEnvelope(0,10, 40, 50, CRS.decode("EPSG:4326"));
-        final URI wmsURI = WmsUtilities.makeWmsGetLayerRequest(new TestHttpClientFactory(), wmsLayerParams, commonURI, imageSize,
-                300.0, env);
+        final URI wmsURI = WmsUtilities.makeWmsGetLayerRequest(
+                wmsLayerParams, commonURI, imageSize, 300.0, env);
         final Multimap<String, String> finalParams = URIUtils.getParameters(wmsURI);
         final String mapResolution = finalParams.get("FORMAT_OPTIONS").iterator().next();
         assertEquals("dpi:300", mapResolution);
@@ -105,8 +105,8 @@ public class WmsUtilitiesTest {
         URI commonURI = new URI("http://test.xyz/geoserver/wms?SERVICE=WMS");
         Dimension imageSize = new Dimension(200,300);
         ReferencedEnvelope env = new ReferencedEnvelope(0,10, 40, 50, CRS.decode("EPSG:4326"));
-        final URI wmsURI = WmsUtilities.makeWmsGetLayerRequest(new TestHttpClientFactory(), wmsLayerParams, commonURI, imageSize,
-                300.0, env);
+        final URI wmsURI = WmsUtilities.makeWmsGetLayerRequest(
+                wmsLayerParams, commonURI, imageSize, 300.0, env);
         final Multimap<String, String> finalParams = URIUtils.getParameters(wmsURI);
         assertFalse(finalParams.containsKey("FORMAT_OPTIONS"));
         final String mapResolution = finalParams.get("format_options").iterator().next();
@@ -124,8 +124,8 @@ public class WmsUtilitiesTest {
         URI commonURI = new URI("http://test.xyz/geoserver/wms?SERVICE=WMS");
         Dimension imageSize = new Dimension(200,300);
         ReferencedEnvelope env = new ReferencedEnvelope(0,10, 40, 50, CRS.decode("EPSG:4326"));
-        final URI wmsURI = WmsUtilities.makeWmsGetLayerRequest(new TestHttpClientFactory(), wmsLayerParams, commonURI, imageSize,
-                300.0, env);
+        final URI wmsURI = WmsUtilities.makeWmsGetLayerRequest(
+                wmsLayerParams, commonURI, imageSize, 300.0, env);
         final Multimap<String, String> finalParams = URIUtils.getParameters(wmsURI);
         assertFalse(finalParams.containsKey("FORMAT_OPTIONS"));
         final String mapResolution = finalParams.get("format_options").iterator().next();

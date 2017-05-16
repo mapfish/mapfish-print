@@ -78,8 +78,9 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
 
         @Nonnull
         @Override
-        public GmlLayer parse(@Nonnull final Template template,
-                              @Nonnull final GmlParam param) throws IOException {
+        public GmlLayer parse(
+                @Nonnull final Template template,
+                @Nonnull final GmlParam param) throws IOException {
             return new GmlLayer(
                     this.forkJoinPool,
                     createFeatureSourceSupplier(template, param.url),
