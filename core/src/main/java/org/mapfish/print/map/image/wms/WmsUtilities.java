@@ -7,7 +7,6 @@ import com.google.common.collect.Multimap;
 import org.geotools.data.wms.request.GetMapRequest;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.mapfish.print.Constants;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.map.image.wms.WmsLayerParam.ServerType;
 import org.opengis.referencing.FactoryException;
@@ -66,7 +65,7 @@ public final class WmsUtilities {
         extraParams.putAll(wmsLayerParam.getMergeableParams());
         extraParams.putAll(wmsLayerParam.getCustomParams());
 
-        if (wmsLayerParam.serverType != null && dpi != Constants.PDF_DPI) {
+        if (wmsLayerParam.serverType != null) {
             addDpiParam(extraParams, (int) Math.round(dpi), wmsLayerParam.serverType);
             if (wmsLayerParam.useNativeAngle && angle != 0.0) {
                 addAngleParam(extraParams, angle, wmsLayerParam.serverType);
