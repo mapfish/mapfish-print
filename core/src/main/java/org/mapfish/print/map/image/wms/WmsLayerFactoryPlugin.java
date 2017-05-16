@@ -18,7 +18,8 @@ import javax.annotation.Nonnull;
  * <p>Type: <code>wms</code></p>
  * [[examples=printwms_tyger_ny_EPSG_3857,printwms_UsaPopulation_EPSG_4326]]
  */
-public final class WmsLayerFactoryPlugin extends AbstractGridCoverageLayerPlugin implements MapLayerFactoryPlugin<WmsLayerParam> {
+public final class WmsLayerFactoryPlugin extends AbstractGridCoverageLayerPlugin
+        implements MapLayerFactoryPlugin<WmsLayerParam> {
     private static final String TYPE = "wms";
     @Autowired
     private ForkJoinPool forkJoinPool;
@@ -39,12 +40,12 @@ public final class WmsLayerFactoryPlugin extends AbstractGridCoverageLayerPlugin
 
     @Nonnull
     @Override
-    public WmsLayer parse(@Nonnull final Template template,
-                          @Nonnull final WmsLayerParam layerData) throws Throwable {
-
+    public WmsLayer parse(
+            @Nonnull final Template template,
+            @Nonnull final WmsLayerParam layerData) {
         String styleRef = layerData.rasterStyle;
         return new WmsLayer(this.forkJoinPool,
                 super.<GridCoverage2D>createStyleSupplier(template, styleRef),
-                layerData, this.metricRegistry);
+                layerData, this.metricRegistry, template.getConfiguration());
     }
 }

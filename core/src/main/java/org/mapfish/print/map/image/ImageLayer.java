@@ -20,6 +20,7 @@ import org.geotools.styling.Style;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
@@ -33,7 +34,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -59,8 +59,9 @@ import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
 public final class ImageLayer extends AbstractSingleImageLayer {
 
     private final ImageParam params;
-    private StyleSupplier<GridCoverage2D> styleSupplier;
-    private ExecutorService executorService;
+    private final StyleSupplier<GridCoverage2D> styleSupplier;
+    private final ExecutorService executorService;
+    private final Configuration configuration;
 
     /**
      * Constructor.
@@ -68,15 +69,18 @@ public final class ImageLayer extends AbstractSingleImageLayer {
      * @param executorService the thread pool for doing the rendering.
      * @param styleSupplier the style to use when drawing the constructed grid coverage on the map.
      * @param params the params from the request data.
+     * @param configuration the configuration.
      */
     protected ImageLayer(
-            final ExecutorService executorService,
-            final StyleSupplier<GridCoverage2D> styleSupplier,
-            final ImageParam params) {
+            @Nonnull final ExecutorService executorService,
+            @Nonnull final StyleSupplier<GridCoverage2D> styleSupplier,
+            @Nonnull final ImageParam params,
+            @Nonnull final Configuration configuration) {
         super(executorService, styleSupplier, params);
         this.params = params;
         this.styleSupplier = styleSupplier;
         this.executorService = executorService;
+        this.configuration = configuration;
     }
 
     /**
@@ -105,12 +109,11 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         @Override
         public ImageLayer parse(
                 @Nonnull final Template template,
-                @Nonnull final ImageParam layerData) throws Throwable {
-
+                @Nonnull final ImageParam layerData) {
             String styleRef = layerData.style;
             return new ImageLayer(this.forkJoinPool,
                     super.<GridCoverage2D>createStyleSupplier(template, styleRef),
-                    layerData);
+                    layerData, template.getConfiguration());
         }
     }
 
@@ -239,7 +242,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         final BufferedImage bufferedImage = new BufferedImage(area.width, area.height, TYPE_INT_ARGB_PRE);
         final Graphics2D graphics = bufferedImage.createGraphics();
         try {
-            graphics.setBackground(new Color(255, 255, 255, 125));
+            graphics.setBackground(this.configuration.getTransparentTileErrorColor());
 
             graphics.clearRect(0, 0, area.width, area.height);
             return bufferedImage;

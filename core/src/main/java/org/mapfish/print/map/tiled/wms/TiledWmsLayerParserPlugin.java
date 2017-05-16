@@ -21,7 +21,8 @@ import javax.annotation.Resource;
  * <p>Type: <code>tiledwms</code></p>
  * [[examples=printtiledwms]]
  */
-public final class TiledWmsLayerParserPlugin extends AbstractGridCoverageLayerPlugin implements MapLayerFactoryPlugin<TiledWmsLayerParam> {
+public final class TiledWmsLayerParserPlugin extends AbstractGridCoverageLayerPlugin
+        implements MapLayerFactoryPlugin<TiledWmsLayerParam> {
 
     @Autowired
     private ForkJoinPool forkJoinPool;
@@ -46,11 +47,10 @@ public final class TiledWmsLayerParserPlugin extends AbstractGridCoverageLayerPl
     @Override
     public TiledWmsLayer parse(
             @Nonnull final Template template,
-            @Nonnull final TiledWmsLayerParam param) throws Throwable {
-
+            @Nonnull final TiledWmsLayerParam param) {
         String styleRef = param.rasterStyle;
         return new TiledWmsLayer(this.forkJoinPool,
                 super.<GridCoverage2D>createStyleSupplier(template, styleRef),
-                param, this.registry);
+                param, this.registry, template.getConfiguration());
     }
 }

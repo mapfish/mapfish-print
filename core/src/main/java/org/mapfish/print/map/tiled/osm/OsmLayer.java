@@ -6,6 +6,7 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.attribute.map.MapBounds;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.tiled.AbstractTiledLayer;
@@ -36,12 +37,15 @@ public final class OsmLayer extends AbstractTiledLayer {
      * @param styleSupplier strategy for loading the style for this layer.
      * @param param the information needed to create OSM requests.
      * @param registry the metrics registry.
+     * @param configuration the configuration.
      */
-    public OsmLayer(final ForkJoinPool forkJoinPool,
-                    final StyleSupplier<GridCoverage2D> styleSupplier,
-                    final OsmLayerParam param,
-                    final MetricRegistry registry) {
-        super(forkJoinPool, styleSupplier, param, registry);
+    public OsmLayer(
+            @Nonnull final ForkJoinPool forkJoinPool,
+            @Nonnull final StyleSupplier<GridCoverage2D> styleSupplier,
+            @Nonnull final OsmLayerParam param,
+            @Nonnull final MetricRegistry registry,
+            @Nonnull final Configuration configuration) {
+        super(forkJoinPool, styleSupplier, param, registry, configuration);
         this.param = param;
     }
 
@@ -96,7 +100,8 @@ public final class OsmLayer extends AbstractTiledLayer {
                         .replace("{y}", Integer.toString(row));
                 if (commonUrl.contains("{-y}")) {
                     // {-y} is for  OSGeo TMS layers, see also: https://josm.openstreetmap.de/wiki/Maps#TileMapServicesTMS
-                    url = url.replace("{-y}", Integer.toString((int) Math.pow(2, this.resolutionIndex) - 1 - row));
+                    url = url.replace("{-y}", Integer.toString(
+                            (int) Math.pow(2, this.resolutionIndex) - 1 - row));
                 }
                 uri  = new URI(url);
             } else {

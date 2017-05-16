@@ -1,0 +1,16 @@
+throwErrorOnExtraParameters: true
+
+templates:
+  A0 landscape: !template
+    reportTemplate: report.jrxml
+    attributes:
+      title: !string
+        default: "Countries"
+      map: !map
+        maxDpi: 150
+        width: 3320
+        height: 2289
+    processors:
+    - !reportBuilder
+      directory: '.'
+    - !createMap {}

@@ -30,6 +30,8 @@ import org.mapfish.print.http.CertificateStore;
 import org.mapfish.print.http.HttpCredential;
 import org.mapfish.print.http.HttpProxy;
 import org.mapfish.print.map.style.StyleParser;
+import org.mapfish.print.map.style.json.ColorParser;
+import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -95,6 +97,17 @@ public class Configuration {
     private boolean defaultToSvg = false;
     private Set<String> jdbcDrivers = Sets.newHashSet();
     private Map<String, Style> namedStyles = Maps.newHashMap();
+
+    /**
+     * The color used to draw the WMS tiles error default: transparent pink.
+     */
+    @HasDefaultValue
+    private String transparentTileErrorColor = "rgba(255, 78, 78, 125)";
+    /**
+     * The color used to draw the other tiles error default: pink.
+     */
+    @HasDefaultValue
+    private String opaqueTileErrorColor = "rgba(255, 155, 155, 0)";
 
     @Autowired
     private StyleParser styleParser;
@@ -571,5 +584,19 @@ public class Configuration {
      */
     public final void setOldApi(final OldApiConfig oldApi) {
         this.oldApi = oldApi;
+    }
+
+    /**
+     * Get the color used to draw the WMS tiles error default: transparent pink.
+     */
+    public Color getTransparentTileErrorColor() {
+        return ColorParser.toColor(this.transparentTileErrorColor);
+    }
+
+    /**
+     * Get the color used to draw the other tiles error default: pink.
+     */
+    public Color getOpaqueTileErrorColor() {
+        return ColorParser.toColor(this.opaqueTileErrorColor);
     }
 }

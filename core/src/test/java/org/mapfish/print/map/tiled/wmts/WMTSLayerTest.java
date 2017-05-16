@@ -5,6 +5,7 @@ import org.geotools.referencing.CRS;
 import org.junit.Test;
 import org.mapfish.print.attribute.map.CenterScaleMapBounds;
 import org.mapfish.print.attribute.map.MapBounds;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.Scale;
 
 import java.awt.Rectangle;
@@ -24,10 +25,12 @@ public class WMTSLayerTest {
         matrix.scaleDenominator = 7500;
         params.matrices = new Matrix[] {matrix};
 
-        WMTSLayer wmtsLayer = new WMTSLayer(null, null, null, params, null);
+        WMTSLayer wmtsLayer = new WMTSLayer(null, null, params, null,
+                new Configuration());
 
         Rectangle paintArea = new Rectangle(0, 0, 256, 256);
-        MapBounds bounds = new CenterScaleMapBounds(CRS.decode("EPSG:21781"), 595217.02, 236708.54, 7500);
+        MapBounds bounds = new CenterScaleMapBounds(CRS.decode("EPSG:21781"),
+                595217.02, 236708.54, 7500);
         WMTSLayer.WMTSTileCacheInfo tileInformation =
                 (WMTSLayer.WMTSTileCacheInfo) wmtsLayer.createTileInformation(bounds, paintArea, 256);
 
@@ -54,7 +57,7 @@ public class WMTSLayerTest {
         param.layer = "wmts_layer";
         param.matrixSet = "matrix_set";
         param.baseURL = "http://test_server/mapproxy_4_v3/wmts/{Layer}/{TileMatrixSet}/{TileMatrix}/{TileCol}/{TileRow}.png";
-        String restURI = WMTSLayer.createRestURI(param.baseURL, "the_matrix_id", 4, 5, param).toString();
+        String restURI = WMTSLayer.createRestURI("the_matrix_id", 4, 5, param).toString();
 
         assertEquals("http://test_server/mapproxy_4_v3/wmts/wmts_layer/matrix_set/the_matrix_id/5/4.png", restURI);
     }

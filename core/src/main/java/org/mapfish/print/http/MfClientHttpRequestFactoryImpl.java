@@ -69,7 +69,8 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
     // allow extension only for testing
     @Override
     public ConfigurableRequest createRequest(
-            @Nonnull final URI uri, @Nonnull final HttpMethod httpMethod) throws IOException {
+            @Nonnull final URI uri,
+            @Nonnull final HttpMethod httpMethod) throws IOException {
         HttpRequestBase httpRequest = (HttpRequestBase) createHttpUriRequest(httpMethod, uri);
         return new Request(getHttpClient(), httpRequest, createHttpContext(httpMethod, uri));
     }
@@ -89,7 +90,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
 
         Request(@Nonnull final HttpClient client,
                 @Nonnull final HttpRequestBase request,
-                @Nonnull final HttpContext context) {
+                @Nullable final HttpContext context) {
             this.client = client;
             this.request = request;
             this.context = context;
@@ -192,7 +193,8 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
             try {
                 getBody();
             } catch (IOException e) {
-                LOGGER.error("Error occurred while trying to retrieve Http Response " + this.id + " in order to close it.", e);
+                LOGGER.error(String.format("Error occurred while trying to retrieve Http Response %s in " +
+                        "order to close it.", this.id), e);
             } finally {
                 try {
                     this.closer.close();

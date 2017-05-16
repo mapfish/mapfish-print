@@ -22,16 +22,18 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
      */
     public String baseURL;
     /**
-     * The wms layer to request in the GetMap request.  The order is important.  It is the order that they will appear in the
-     * request.
+     * The wms layer to request in the GetMap request.  The order is important.  It is the order that they
+     * will appear in the request.
      *
-     * As with the WMS specification, the first layer will be the first layer drawn on the map (the bottom/base layer) of the map.  This
-     * means that layer at position 0 in the array will covered by layer 1 (where not transparent) and so on.
+     * As with the WMS specification, the first layer will be the first layer drawn on the map (the
+     * bottom/base layer) of the map.  This means that layer at position 0 in the array will covered by
+     * layer 1 (where not transparent) and so on.
      */
     public String[] layers;
 
     /**
-     * The styles to apply to the layers.  If this is defined there should be the same number as the layers and the style are applied
+     * The styles to apply to the layers.  If this is defined there should be the same number as the layers
+     * and the style are applied
      * to the layer in the {@link #layers} field.
      */
     @HasDefaultValue
@@ -75,16 +77,18 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
         WmsVersion.lookup(this.version);
         Assert.isTrue(validateBaseUrl(), "invalid baseURL");
 
-        Assert.isTrue(this.layers.length > 0, "There must be at least one layer defined for a WMS request to make sense");
+        Assert.isTrue(this.layers.length > 0, "There must be at least one layer defined for a WMS request" +
+                " to make sense");
 
         // OpenLayers 2 compatibility.  It will post a single empty style no matter how many layers there are
 
-        if (this.styles != null && this.styles.length != this.layers.length && this.styles.length == 1 && this.styles[0].trim().isEmpty()) {
+        if (this.styles != null && this.styles.length != this.layers.length && this.styles.length == 1 &&
+                this.styles[0].trim().isEmpty()) {
             this.styles = null;
         } else {
             Assert.isTrue(this.styles == null || this.layers.length == this.styles.length,
-                    "If styles are defined then there must be one for each layer.  Number of layers: " + this.layers.length + "\nStyles: "
-                    + Arrays.toString(this.styles));
+                    String.format("If styles are defined then there must be one for each layer.  Number of" +
+                            " layers: %s\nStyles: %s", this.layers.length, Arrays.toString(this.styles)));
         }
         if (this.imageFormat.indexOf('/') < 0) {
             LOGGER.warn("The format should be a mime type");

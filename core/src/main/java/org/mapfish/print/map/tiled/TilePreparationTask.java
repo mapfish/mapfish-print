@@ -80,7 +80,7 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
             Coordinate tileSizeInWorld = new Coordinate(tileSizeOnScreen.width * layerResolution,
                     tileSizeOnScreen.height * layerResolution);
 
-            // The minX minY of the first (minY,minY) tile
+            // The minX minY of the first (minY, minY) tile
             Coordinate gridCoverageOrigin = this.tiledLayer.getMinGeoCoordinate(mapGeoBounds, tileSizeInWorld);
 
             final String commonUrl = this.tiledLayer.createCommonUrl();
@@ -93,14 +93,16 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
             int imageWidth = 0;
             int imageHeight = 0;
             int xIndex;
-            int yIndex = (int) Math.floor((mapGeoBounds.getMaxY() - gridCoverageOrigin.y) / tileSizeInWorld.y) + 1;
+            int yIndex = (int) Math.floor((mapGeoBounds.getMaxY() - gridCoverageOrigin.y) /
+                    tileSizeInWorld.y) + 1;
 
             double gridCoverageMaxX = gridCoverageOrigin.x;
             double gridCoverageMaxY = gridCoverageOrigin.y;
 
             List<SingleTilePreparationInfo> tiles = Lists.newArrayList();
 
-            for (double geoY = gridCoverageOrigin.y; geoY < mapGeoBounds.getMaxY(); geoY += tileSizeInWorld.y) {
+            for (double geoY = gridCoverageOrigin.y; geoY < mapGeoBounds.getMaxY();
+                    geoY += tileSizeInWorld.y) {
                 yIndex--;
                 imageHeight += tileSizeOnScreen.height;
                 imageWidth = 0;
@@ -108,16 +110,20 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
 
                 gridCoverageMaxX = gridCoverageOrigin.x;
                 gridCoverageMaxY += tileSizeInWorld.y;
-                for (double geoX = gridCoverageOrigin.x; geoX < mapGeoBounds.getMaxX(); geoX += tileSizeInWorld.x) {
+                for (double geoX = gridCoverageOrigin.x; geoX < mapGeoBounds.getMaxX();
+                        geoX += tileSizeInWorld.x) {
                     xIndex++;
                     imageWidth += tileSizeOnScreen.width;
                     gridCoverageMaxX += tileSizeInWorld.x;
 
                     ReferencedEnvelope tileBounds = new ReferencedEnvelope(
-                            geoX, geoX + tileSizeInWorld.x, geoY, geoY + tileSizeInWorld.y, mapProjection);
+                            geoX, geoX + tileSizeInWorld.x, geoY, geoY + tileSizeInWorld.y,
+                            mapProjection);
 
-                    int row = (int) Math.round((tileCacheBounds.getMaxY() - tileBounds.getMaxY()) * rowFactor);
-                    int column = (int) Math.round((tileBounds.getMinX() - tileCacheBounds.getMinX()) * columnFactor);
+                    int row = (int) Math.round((tileCacheBounds.getMaxY() -
+                            tileBounds.getMaxY()) * rowFactor);
+                    int column = (int) Math.round((tileBounds.getMinX() -
+                            tileCacheBounds.getMinX()) * columnFactor);
 
                     ClientHttpRequest tileRequest = this.tiledLayer.getTileRequest(this.httpRequestFactory,
                             commonUrl, tileBounds, tileSizeOnScreen, column, row);
@@ -127,9 +133,7 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
                             tiles.add(new SingleTilePreparationInfo(xIndex, yIndex, tileRequest));
                         }
                     } else {
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("Tile out of bounds: " + tileRequest);
-                        }
+                        LOGGER.debug("Tile out of bounds: {}", tileRequest);
                         tiles.add(new SingleTilePreparationInfo(xIndex, yIndex, null));
                     }
                 }
@@ -142,12 +146,14 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
         }
     }
 
-    private boolean isInTileCacheBounds(final ReferencedEnvelope tileCacheBounds, final ReferencedEnvelope tilesBounds) {
+    private boolean isInTileCacheBounds(
+            final ReferencedEnvelope tileCacheBounds,
+            final ReferencedEnvelope tilesBounds) {
         final double boundsMinX = tilesBounds.getMinX();
         final double boundsMinY = tilesBounds.getMinY();
         return boundsMinX >= tileCacheBounds.getMinX() && boundsMinX <= tileCacheBounds.getMaxX()
                && boundsMinY >= tileCacheBounds.getMinY() && boundsMinY <= tileCacheBounds.getMaxY();
-        //we don't use maxX and maxY since tilecache doesn't seems to care about those...
+        // we don't use maxX and maxY since tilecache doesn't seems to care about those...
     }
 
     /**
@@ -198,5 +204,4 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
 
         return this.cachedRotatedMapBounds;
     }
-
 }

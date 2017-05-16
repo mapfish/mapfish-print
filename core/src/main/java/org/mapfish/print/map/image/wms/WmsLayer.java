@@ -7,6 +7,7 @@ import com.vividsolutions.jts.util.Assert;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.HttpRequestCache;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.StyleSupplier;
@@ -17,12 +18,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.net.URI;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
+import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
@@ -34,6 +36,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
     private static final Logger LOGGER = LoggerFactory.getLogger(WmsLayer.class);
     private final WmsLayerParam params;
     private final MetricRegistry registry;
+    private final Configuration configuration;
     private ClientHttpRequest imageRequest;
 
     /**
@@ -43,14 +46,18 @@ public final class WmsLayer extends AbstractSingleImageLayer {
      * @param styleSupplier the style to use when drawing the constructed grid coverage on the map.
      * @param params the params from the request data.
      * @param registry the metrics registry.
+     * @param configuration the configuration.
      */
-    protected WmsLayer(final ExecutorService executorService,
-                       final StyleSupplier<GridCoverage2D> styleSupplier,
-                       final WmsLayerParam params,
-                       final MetricRegistry registry) {
+    protected WmsLayer(
+            @Nonnull final ExecutorService executorService,
+            @Nonnull final StyleSupplier<GridCoverage2D> styleSupplier,
+            @Nonnull final WmsLayerParam params,
+            @Nonnull final MetricRegistry registry,
+            @Nonnull final Configuration configuration) {
         super(executorService, styleSupplier, params);
         this.params = params;
         this.registry = registry;
+        this.configuration = configuration;
     }
 
     @Override
@@ -62,23 +69,36 @@ public final class WmsLayer extends AbstractSingleImageLayer {
                 this.imageRequest.getURI().getHost();
         try {
             final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
+            LOGGER.info("Query the WMS image {}.", this.imageRequest.getURI());
             final ClientHttpResponse response = closer.register(this.imageRequest.execute());
 
             Assert.isTrue(response != null, "No response, see error above");
-            Assert.equals(HttpStatus.OK, response.getStatusCode(), "Http status code for " +
-                    this.imageRequest.getURI() + " was not OK.  It was: " + response .getStatusCode() + ". " +
-                    " The response message was: '" + response.getStatusText() + "'");
+            Assert.equals(HttpStatus.OK, response.getStatusCode(), String.format("Http status code for %s " +
+                    "was not OK.  It was: %s. The response message was: '%s'",
+                    this.imageRequest.getURI(), response.getStatusCode(), response.getStatusText()));
+
+            final List<String> contentType = response.getHeaders().get("Content-Type");
+            if (contentType == null || contentType.size() != 1) {
+                LOGGER.debug("The WMS image {} don't return a valid content type header.",
+                        this.imageRequest.getURI());
+            } else if (!contentType.get(0).startsWith("image/")) {
+                byte[] data = new byte[response.getBody().available()];
+                response.getBody().read(data);
+                LOGGER.debug("We get a wrong WMS image for {}, content type: {}\nresult:\n{}",
+                        this.imageRequest.getURI(), contentType.get(0), new String(data, "UTF-8"));
+                this.registry.counter(baseMetricName + ".error").inc();
+                return createErrorImage(transformer.getPaintArea());
+            }
 
             final BufferedImage image = ImageIO.read(response.getBody());
             if (image == null) {
-                LOGGER.warn("The URI: " + this.imageRequest.getURI() + " is an image format that can be " +
-                        "decoded");
+                LOGGER.warn("The WMS image {} is an image format that can be decoded",
+                        this.imageRequest.getURI());
                 this.registry.counter(baseMetricName + ".error").inc();
                 return createErrorImage(transformer.getPaintArea());
             } else {
                 timerDownload.stop();
             }
-
             return image;
         } catch (Throwable e) {
             this.registry.counter(baseMetricName + ".error").inc();
@@ -92,8 +112,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
         final BufferedImage bufferedImage = new BufferedImage(area.width, area.height, TYPE_INT_ARGB_PRE);
         final Graphics2D graphics = bufferedImage.createGraphics();
         try {
-            graphics.setBackground(new Color(255, 255, 255, 125));
-
+            graphics.setBackground(this.configuration.getTransparentTileErrorColor());
             graphics.clearRect(0, 0, area.width, area.height);
             return bufferedImage;
         } finally {

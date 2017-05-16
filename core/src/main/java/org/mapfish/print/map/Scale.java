@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 
+import static org.mapfish.print.Constants.PDF_DPI;
+
 /**
  * Represent a scale and provide transformation.
  */
@@ -118,6 +120,13 @@ public final class Scale implements Comparable<Scale> {
     public double getDenominator(final double dpi) {
         final double resolutionInInches = getResolutionInInches();
         return resolutionInInches * dpi;
+    }
+
+    /**
+     * @return the scale denominator in the PDF resolution
+     */
+    public double getDenominator() {
+        return getDenominator(PDF_DPI);
     }
 
     /**
