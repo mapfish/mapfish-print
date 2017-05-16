@@ -5,6 +5,7 @@ import org.geotools.referencing.CRS;
 import org.junit.Test;
 import org.mapfish.print.attribute.map.CenterScaleMapBounds;
 import org.mapfish.print.attribute.map.MapBounds;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.Scale;
 
 import java.awt.Rectangle;
@@ -24,7 +25,8 @@ public class WMTSLayerTest {
         matrix.scaleDenominator = 7500;
         params.matrices = new Matrix[] {matrix};
 
-        WMTSLayer wmtsLayer = new WMTSLayer(null, null, null, params, null);
+        WMTSLayer wmtsLayer = new WMTSLayer(null, null, params, null,
+                new Configuration());
 
         Rectangle paintArea = new Rectangle(0, 0, 256, 256);
         MapBounds bounds = new CenterScaleMapBounds(CRS.decode("EPSG:21781"),

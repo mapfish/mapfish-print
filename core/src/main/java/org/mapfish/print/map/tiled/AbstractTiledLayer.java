@@ -7,6 +7,7 @@ import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.Layer;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.HttpRequestCache;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
@@ -16,6 +17,8 @@ import org.mapfish.print.map.geotools.StyleSupplier;
 import java.awt.Rectangle;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * An abstract class to support implementing layers that consist of Raster tiles which are combined to
@@ -26,6 +29,7 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
 
     private final StyleSupplier<GridCoverage2D> styleSupplier;
     private final MetricRegistry registry;
+    private final Configuration configuration;
     private TileCacheInformation tileCacheInformation;
     private TilePreparationInfo tilePreparationInfo;
 
@@ -37,17 +41,21 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
     /**
      * Constructor.
      * @param forkJoinPool the thread pool for doing the rendering.
-     * @param styleSupplier strategy for loading the style for this layer
-     * @param params the parameters for this layer
-     * @param registry the metrics registry
+     * @param styleSupplier strategy for loading the style for this layer.
+     * @param params the parameters for this layer.
+     * @param registry the metrics registry.
+     * @param configuration the configuration.
      */
-    protected AbstractTiledLayer(final ForkJoinPool forkJoinPool,
-                                 final StyleSupplier<GridCoverage2D> styleSupplier,
-                                 final AbstractLayerParams params,
-                                 final MetricRegistry registry) {
+    protected AbstractTiledLayer(
+            @Nullable final ForkJoinPool forkJoinPool,
+            @Nullable final StyleSupplier<GridCoverage2D> styleSupplier,
+            @Nonnull final AbstractLayerParams params,
+            @Nullable final MetricRegistry registry,
+            @Nonnull final Configuration configuration) {
         super(forkJoinPool, params);
         this.styleSupplier = styleSupplier;
         this.registry = registry;
+        this.configuration = configuration;
     }
 
     @Override
@@ -63,7 +71,7 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
                                                     final MapfishMapContext mapContext) throws Exception {
 
         final CoverageTask task = new CoverageTask(this.tilePreparationInfo,
-                getFailOnError(), this.registry, this.tileCacheInformation);
+                getFailOnError(), this.registry, this.tileCacheInformation, this.configuration);
         final GridCoverage2D gridCoverage2D = task.call();
 
         GridCoverageLayer layer = new GridCoverageLayer(

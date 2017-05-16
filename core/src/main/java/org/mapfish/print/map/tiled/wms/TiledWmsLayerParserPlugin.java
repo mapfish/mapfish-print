@@ -51,6 +51,6 @@ public final class TiledWmsLayerParserPlugin extends AbstractGridCoverageLayerPl
         String styleRef = param.rasterStyle;
         return new TiledWmsLayer(this.forkJoinPool,
                 super.<GridCoverage2D>createStyleSupplier(template, styleRef),
-                param, this.registry);
+                param, this.registry, template.getConfiguration());
     }
 }

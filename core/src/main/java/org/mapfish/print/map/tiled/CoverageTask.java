@@ -9,6 +9,7 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.geometry.GeneralEnvelope;
 import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.tiled.TilePreparationInfo.SingleTilePreparationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -43,14 +43,18 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
 
     /**
      * Constructor.
-     * @param tilePreparationInfo tileLoader Results
-     * @param failOnError fail on tile download error
-     * @param registry the metrics registry
-     * @param tileCacheInfo the object used to create the tile requests
+     * @param tilePreparationInfo tileLoader Results.
+     * @param failOnError fail on tile download error.
+     * @param registry the metrics registry.
+     * @param tileCacheInfo the object used to create the tile requests.
+     * @param configuration the configuration.
      */
-    public CoverageTask(@Nonnull final TilePreparationInfo tilePreparationInfo,
-            final boolean failOnError, final MetricRegistry registry,
-            @Nonnull final TileCacheInformation tileCacheInfo) {
+    public CoverageTask(
+            @Nonnull final TilePreparationInfo tilePreparationInfo,
+            final boolean failOnError,
+            @Nonnull final MetricRegistry registry,
+            @Nonnull final TileCacheInformation tileCacheInfo,
+            @Nonnull final Configuration configuration) {
         this.tilePreparationInfo = tilePreparationInfo;
         this.tiledLayer = tileCacheInfo;
         this.failOnError = failOnError;
@@ -60,7 +64,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
         this.errorImage = new BufferedImage(tileSize.width, tileSize.height, BufferedImage.TYPE_4BYTE_ABGR);
         Graphics2D graphics = this.errorImage.createGraphics();
         try {
-            graphics.setBackground(new Color(255, 155, 155));
+            graphics.setBackground(configuration.getOpaqueTileErrorColor());
             graphics.clearRect(0, 0, tileSize.width, tileSize.height);
         } finally {
             graphics.dispose();

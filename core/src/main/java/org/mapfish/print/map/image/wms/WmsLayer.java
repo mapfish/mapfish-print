@@ -7,6 +7,7 @@ import com.vividsolutions.jts.util.Assert;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.HttpRequestCache;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.StyleSupplier;
@@ -17,13 +18,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
@@ -35,6 +36,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
     private static final Logger LOGGER = LoggerFactory.getLogger(WmsLayer.class);
     private final WmsLayerParam params;
     private final MetricRegistry registry;
+    private final Configuration configuration;
     private ClientHttpRequest imageRequest;
 
     /**
@@ -44,14 +46,18 @@ public final class WmsLayer extends AbstractSingleImageLayer {
      * @param styleSupplier the style to use when drawing the constructed grid coverage on the map.
      * @param params the params from the request data.
      * @param registry the metrics registry.
+     * @param configuration the configuration.
      */
-    protected WmsLayer(final ExecutorService executorService,
-                       final StyleSupplier<GridCoverage2D> styleSupplier,
-                       final WmsLayerParam params,
-                       final MetricRegistry registry) {
+    protected WmsLayer(
+            @Nonnull final ExecutorService executorService,
+            @Nonnull final StyleSupplier<GridCoverage2D> styleSupplier,
+            @Nonnull final WmsLayerParam params,
+            @Nonnull final MetricRegistry registry,
+            @Nonnull final Configuration configuration) {
         super(executorService, styleSupplier, params);
         this.params = params;
         this.registry = registry;
+        this.configuration = configuration;
     }
 
     @Override
@@ -106,8 +112,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
         final BufferedImage bufferedImage = new BufferedImage(area.width, area.height, TYPE_INT_ARGB_PRE);
         final Graphics2D graphics = bufferedImage.createGraphics();
         try {
-            graphics.setBackground(new Color(255, 78, 78, 125));
-
+            graphics.setBackground(this.configuration.getTransparentTileErrorColor());
             graphics.clearRect(0, 0, area.width, area.height);
             return bufferedImage;
         } finally {

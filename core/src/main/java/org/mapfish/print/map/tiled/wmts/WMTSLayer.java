@@ -8,6 +8,7 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.attribute.map.MapBounds;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.tiled.AbstractTiledLayer;
@@ -24,6 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import static org.mapfish.print.Constants.OGC_DPI;
 
@@ -39,17 +41,18 @@ public class WMTSLayer extends AbstractTiledLayer {
      * Constructor.
      *
      * @param forkJoinPool the thread pool for doing the rendering.
-     * @param requestForkJoinPool the thread pool for making tile/image requests.
      * @param styleSupplier strategy for loading the style for this layer
      * @param param the information needed to create WMTS requests.
      * @param registry the metrics registry.
+     * @param configuration the configuration.
      */
-    protected WMTSLayer(final ForkJoinPool forkJoinPool,
-                        final ForkJoinPool requestForkJoinPool,
-                        final StyleSupplier<GridCoverage2D> styleSupplier,
-                        final WMTSLayerParam param,
-                        final MetricRegistry registry) {
-        super(forkJoinPool, styleSupplier, param, registry);
+    protected WMTSLayer(
+            @Nullable final ForkJoinPool forkJoinPool,
+            @Nullable final StyleSupplier<GridCoverage2D> styleSupplier,
+            @Nonnull final WMTSLayerParam param,
+            @Nullable final MetricRegistry registry,
+            @Nonnull final Configuration configuration) {
+        super(forkJoinPool, styleSupplier, param, registry, configuration);
         this.param = param;
     }
 
