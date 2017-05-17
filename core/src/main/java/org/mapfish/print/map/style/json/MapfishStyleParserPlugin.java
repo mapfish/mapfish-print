@@ -506,7 +506,7 @@ public final class MapfishStyleParserPlugin implements StyleParserPlugin {
                     @Nullable final Configuration configuration,
                     @Nonnull final ClientHttpRequestFactory requestFactory) {
                 return new MapfishJsonStyleVersion2(json, styleBuilder, configuration, requestFactory)
-                        .parseStyle(requestFactory);
+                        .parseStyle();
             }
         };
         private final String versionNumber;

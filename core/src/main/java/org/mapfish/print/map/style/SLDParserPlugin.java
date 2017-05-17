@@ -8,6 +8,7 @@ import com.google.common.io.Closeables;
 import com.vividsolutions.jts.util.Assert;
 
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.styling.DefaultResourceLocator;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.mapfish.print.Constants;
@@ -15,6 +16,8 @@ import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.config.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -23,6 +26,9 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -50,7 +56,8 @@ public class SLDParserPlugin implements StyleParserPlugin {
 
         // try to load xml
         final ByteSource straightByteSource = ByteSource.wrap(styleString.getBytes(Constants.DEFAULT_CHARSET));
-        final Optional<Style> styleOptional = tryLoadSLD(straightByteSource, null);
+        final Optional<Style> styleOptional = tryLoadSLD(straightByteSource, null,
+                clientHttpRequestFactory);
 
         if (styleOptional.isPresent()) {
             return styleOptional;
@@ -63,7 +70,7 @@ public class SLDParserPlugin implements StyleParserPlugin {
             public Optional<Style> apply(final byte[] input) {
                 final ByteSource bytes = ByteSource.wrap(input);
                 try {
-                    return tryLoadSLD(bytes, styleIndex);
+                    return tryLoadSLD(bytes, styleIndex, clientHttpRequestFactory);
                 } catch (IOException e) {
                     throw ExceptionUtils.getRuntimeException(e);
                 }
@@ -90,8 +97,11 @@ public class SLDParserPlugin implements StyleParserPlugin {
         return Optional.absent();
     }
 
-    private Optional<Style> tryLoadSLD(final ByteSource byteSource, final Integer styleIndex) throws IOException {
-        Assert.isTrue(styleIndex == null || styleIndex > -1, "styleIndex must be > -1 but was: " + styleIndex);
+    private Optional<Style> tryLoadSLD(
+            final ByteSource byteSource, final Integer styleIndex,
+            final ClientHttpRequestFactory clientHttpRequestFactory) throws IOException {
+        Assert.isTrue(styleIndex == null || styleIndex > -1,
+                "styleIndex must be > -1 but was: " + styleIndex);
 
         final CharSource charSource = byteSource.asCharSource(Constants.DEFAULT_CHARSET);
         BufferedReader readerXML = null;
@@ -112,6 +122,30 @@ public class SLDParserPlugin implements StyleParserPlugin {
             // then read the styles
             readerSLD = charSource.openBufferedStream();
             final SLDParser sldParser = new SLDParser(CommonFactoryFinder.getStyleFactory());
+            sldParser.setOnLineResourceLocator(new DefaultResourceLocator() {
+                @Override
+                public URL locateResource(final String uri) {
+                    try {
+                        final URL theUrl = super.locateResource(uri);
+                        final URI theUri;
+                        if (theUrl != null) {
+                            theUri = theUrl.toURI();
+                        } else {
+                            theUri = URI.create(uri);
+                        }
+                        if (theUri.getScheme().startsWith("http")) {
+                            final ClientHttpRequest request = clientHttpRequestFactory.createRequest(
+                                    theUri, HttpMethod.GET);
+                            return request.getURI().toURL();
+                        }
+                        return null;
+                    } catch (IOException e) {
+                        return null;
+                    } catch (URISyntaxException e) {
+                        return null;
+                    }
+                }
+            });
             sldParser.setInput(readerSLD);
             styles = sldParser.readXML();
 
@@ -123,12 +157,12 @@ public class SLDParserPlugin implements StyleParserPlugin {
         }
 
         if (styleIndex != null) {
-            Assert.isTrue(styleIndex < styles.length, "There where " + styles.length + " styles in file but requested index was: " +
-                                                      (styleIndex + 1));
+            Assert.isTrue(styleIndex < styles.length, String.format("There where %s styles in file but " +
+                            "requested index was: %s", styles.length, styleIndex + 1));
         } else {
-            Assert.isTrue(styles.length < 2, "There are " + styles.length + " therefore the styleRef must contain an index " +
-                                             "identifying the style.  The index starts at 1 for the first style." +
-                                             "\n\tExample: thinline.sld##1");
+            Assert.isTrue(styles.length < 2, String.format("There are %s therefore the styleRef must " +
+                    "contain an index identifying the style.  The index starts at 1 for the first style.\n" +
+                    "\tExample: thinline.sld##1", styles.length));
         }
 
         if (styleIndex == null) {
@@ -139,8 +173,8 @@ public class SLDParserPlugin implements StyleParserPlugin {
     }
 
     /**
-     * A default error handler to avoid that error messages like "[Fatal Error] :1:1: Content is not allowed in prolog."
-     * are directly printed to STDERR.
+     * A default error handler to avoid that error messages like "[Fatal Error] :1:1: Content is not
+     * allowed in prolog." are directly printed to STDERR.
      */
     public static class ErrorHandler extends DefaultHandler {
 

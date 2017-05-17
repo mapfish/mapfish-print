@@ -44,44 +44,40 @@ public final class MapfishJsonStyleVersion2 {
             @Override
             protected Symbolizer parseJson(
                     final JsonStyleParserHelper parser,
-                    final PJsonObject symbolizerJson,
-                    final ClientHttpRequestFactory requestFactory) {
+                    final PJsonObject symbolizerJson) {
                 return parser.createPointSymbolizer(symbolizerJson);
             }
         }, LINE {
             @Override
             protected Symbolizer parseJson(
                     final JsonStyleParserHelper parser,
-                    final PJsonObject symbolizerJson,
-                    final ClientHttpRequestFactory requestFactory) {
+                    final PJsonObject symbolizerJson) {
                 return parser.createLineSymbolizer(symbolizerJson);
             }
         }, POLYGON {
             @Override
             protected Symbolizer parseJson(
                     final JsonStyleParserHelper parser,
-                    final PJsonObject symbolizerJson,
-                    final ClientHttpRequestFactory requestFactory) {
+                    final PJsonObject symbolizerJson) {
                 return parser.createPolygonSymbolizer(symbolizerJson);
             }
         }, TEXT {
             @Override
             protected Symbolizer parseJson(
                     final JsonStyleParserHelper parser,
-                    final PJsonObject symbolizerJson,
-                    final ClientHttpRequestFactory requestFactory) {
+                    final PJsonObject symbolizerJson) {
                 return parser.createTextSymbolizer(symbolizerJson);
             }
         };
 
         protected abstract Symbolizer parseJson(
                 final JsonStyleParserHelper parser,
-                final PJsonObject symbolizerJson,
-                final ClientHttpRequestFactory requestFactory);
+                final PJsonObject symbolizerJson);
         }
 
     private final PJsonObject json;
     private final StyleBuilder styleBuilder;
+    private final ClientHttpRequestFactory clientHttpRequestFactory;
     private final JsonStyleParserHelper parserHelper;
 
     MapfishJsonStyleVersion2(
@@ -93,16 +89,17 @@ public final class MapfishJsonStyleVersion2 {
         this.styleBuilder = styleBuilder;
         this.parserHelper = new JsonStyleParserHelper(configuration, requestFactory, styleBuilder,
                 false, Versions.TWO);
+        this.clientHttpRequestFactory = requestFactory;
     }
 
-    Style parseStyle(final ClientHttpRequestFactory requestFactory) {
+    Style parseStyle() {
         List<Rule> rules = Lists.newArrayList();
 
         final Iterator<String> keys = this.json.keys();
         while (keys.hasNext()) {
             String next = keys.next().trim();
             if (isRule(next)) {
-                rules.add(createRule(next, requestFactory));
+                rules.add(createRule(next));
             }
         }
 
@@ -115,7 +112,7 @@ public final class MapfishJsonStyleVersion2 {
         return this.parserHelper.createStyle(rules);
     }
 
-    private Rule createRule(final String jsonKey, final ClientHttpRequestFactory requestFactory) {
+    private Rule createRule(final String jsonKey) {
         PJsonObject ruleJson = this.json.getJSONObject(jsonKey);
         Filter filter = Filter.INCLUDE;
         if (!jsonKey.equals(JSON_FILTER_INCLUDE)) {
@@ -134,7 +131,7 @@ public final class MapfishJsonStyleVersion2 {
             updateSymbolizerProperties(ruleJson, symbolizerJson);
 
             SymbolizerType type = SymbolizerType.valueOf(symbolizerJson.getString(JSON_TYPE).toUpperCase());
-            symbolizers[i] = type.parseJson(this.parserHelper, symbolizerJson, requestFactory);
+            symbolizers[i] = type.parseJson(this.parserHelper, symbolizerJson);
             if (symbolizers[i] == null) {
                 throw new RuntimeException("Error creating symbolizer " + symbolizerJson.getString(JSON_TYPE) + " in rule " + jsonKey);
             }
