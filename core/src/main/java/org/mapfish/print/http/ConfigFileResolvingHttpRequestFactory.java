@@ -62,8 +62,9 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
         private ConfigurableRequest request;
 
 
-        ConfigFileResolvingRequest(final URI uri,
-                                   final HttpMethod httpMethod) {
+        ConfigFileResolvingRequest(
+                @Nonnull final URI uri,
+                @Nonnull final HttpMethod httpMethod) {
             this.uri = uri;
             this.httpMethod = httpMethod;
         }

@@ -383,7 +383,8 @@ public abstract class GenericMapAttribute
             final Map<String, MapLayerFactoryPlugin> layerParsers =
                     GenericMapAttribute.this.applicationContext.getBeansOfType(MapLayerFactoryPlugin.class);
             for (MapLayerFactoryPlugin layerParser : layerParsers.values()) {
-                final boolean layerApplies = layerParser.getTypeNames().contains(layer.getString(TYPE).toLowerCase());
+                final boolean layerApplies = layerParser.getTypeNames().contains(layer.getString(TYPE).
+                        toLowerCase());
                 if (layerApplies) {
                     Object param = layerParser.createParameter();
 
@@ -410,8 +411,8 @@ public abstract class GenericMapAttribute
                 }
             }
 
-            StringBuilder message = new StringBuilder("\nLayer with type: '" + layer.getString(TYPE) + "' is not currently " +
-                    "supported.  Options include: ");
+            StringBuilder message = new StringBuilder(String.format("\nLayer with type: '%s' is not " +
+                    "currently supported.  Options include: ", layer.getString(TYPE)));
             for (MapLayerFactoryPlugin<?> mapLayerFactoryPlugin : layerParsers.values()) {
                 for (Object name : mapLayerFactoryPlugin.getTypeNames()) {
                     message.append("\n");

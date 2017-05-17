@@ -24,8 +24,10 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
      * Constructor.
      *
      * @param executorService the thread pool for doing the rendering.
-     * @param featureSourceSupplier a function that creates the feature source.  This will only be called once.
-     * @param styleSupplier a function that creates the style for styling the features. This will only be called once.
+     * @param featureSourceSupplier a function that creates the feature source.  This will only be called
+     *                              once.
+     * @param styleSupplier a function that creates the style for styling the features. This will only be
+     *                      called once.
      * @param renderAsSvg is the layer rendered as SVG?
      * @param params the parameters for this layer
      */
@@ -61,8 +63,9 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
 
         @Nonnull
         @Override
-        public GeoJsonLayer parse(@Nonnull final Template template,
-                                  @Nonnull final GeoJsonParam param) throws IOException {
+        public GeoJsonLayer parse(
+                @Nonnull final Template template,
+                @Nonnull final GeoJsonParam param) {
             return new GeoJsonLayer(
                     this.forkJoinPool,
                     createFeatureSourceSupplier(template, param.geoJson),
@@ -71,14 +74,16 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
                     param);
         }
 
-        private FeatureSourceSupplier createFeatureSourceSupplier(final Template template,
-                                                                    final String geoJsonString) {
+        private FeatureSourceSupplier createFeatureSourceSupplier(
+                final Template template,
+                final String geoJsonString) {
             return new FeatureSourceSupplier() {
                 @Nonnull
                 @Override
                 public FeatureSource load(@Nonnull final MfClientHttpRequestFactory requestFactory,
                                           @Nonnull final MapfishMapContext mapContext) {
-                    final FeaturesParser parser = new FeaturesParser(requestFactory, mapContext.isForceLongitudeFirst());
+                    final FeaturesParser parser = new FeaturesParser(requestFactory,
+                            mapContext.isForceLongitudeFirst());
                     SimpleFeatureCollection featureCollection;
                     try {
                         featureCollection = parser.autoTreat(template, geoJsonString);

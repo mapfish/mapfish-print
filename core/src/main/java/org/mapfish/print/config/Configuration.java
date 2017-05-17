@@ -67,7 +67,8 @@ public class Configuration {
         map.put("multigeometry", Geometry.class.getSimpleName().toLowerCase());
 
         map.put("line", LineString.class.getSimpleName().toLowerCase());
-        map.put(LineString.class.getSimpleName().toLowerCase(), LineString.class.getSimpleName().toLowerCase());
+        map.put(LineString.class.getSimpleName().toLowerCase(),
+                LineString.class.getSimpleName().toLowerCase());
         map.put("linearring", LineString.class.getSimpleName().toLowerCase());
         map.put("multilinestring", LineString.class.getSimpleName().toLowerCase());
         map.put("multiline", LineString.class.getSimpleName().toLowerCase());
@@ -140,11 +141,12 @@ public class Configuration {
     }
 
     /**
-     * If true then all vector layers (and other parts of the system that can be either SVG or Bitmap, like scalebar) will
-     * be rendered as SVG (unless layer specifically indicates useSvg as false).
+     * If true then all vector layers (and other parts of the system that can be either SVG or Bitmap, like
+     * scalebar) will be rendered as SVG (unless layer specifically indicates useSvg as false).
      * <p>
-     *     The default is false.
+     * The default is false.
      * </p>
+     *
      * @param defaultToSvg whether or not to create svg layers by default
      */
     public final void setDefaultToSvg(final boolean defaultToSvg) {
@@ -153,28 +155,33 @@ public class Configuration {
 
     /**
      * Configure various properties related to the reports generated as PDFs.
+     *
      * @param pdfConfig the pdf configuration
      */
     public final void setPdfConfig(final PDFConfig pdfConfig) {
         this.pdfConfig = pdfConfig;
     }
+
     private AccessAssertion accessAssertion = AlwaysAllowAssertion.INSTANCE;
 
     /**
      * The default output file name of the report.  This can be overridden by
-     * {@link org.mapfish.print.config.Template#setOutputFilename(String)} and the outputFilename parameter in the request JSON.
+     * {@link org.mapfish.print.config.Template#setOutputFilename(String)} and the outputFilename parameter
+     * in the request JSON.
      * <p>
-     *     This can be a string and can also have a date section in the string that will be filled when the report is created for
-     *     example a section with ${&lt;dateFormatString&gt;} will be replaced with the current date formatted in the way defined
-     *     by the &lt;dateFormatString&gt; string.  The format rules are the rules in
-     *     <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">java.text.SimpleDateFormat</a>
-     *     (do a google search if the link above is broken).
+     * This can be a string and can also have a date section in the string that will be filled when the
+     * report is created for example a section with ${&lt;dateFormatString&gt;} will be replaced with the
+     * current date formatted in the way defined by the &lt;dateFormatString&gt; string.  The format rules
+     * are the rules in
+     * <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">java.text.SimpleDateFormat</a>
+     * (do a google search if the link above is broken).
      * </p>
      * <p>
-     *     Example: <code>outputFilename: print-${dd-MM-yyyy}</code> should output: <code>print-22-11-2014.pdf</code>
+     * Example: <code>outputFilename: print-${dd-MM-yyyy}</code> should output:
+     * <code>print-22-11-2014.pdf</code>
      * </p>
      * <p>
-     *     Note: the suffix will be appended to the end of the name.
+     * Note: the suffix will be appended to the end of the name.
      * </p>
      *
      * @param outputFilename default output file name of the report.
@@ -192,9 +199,9 @@ public class Configuration {
     }
 
     /**
-     * The configuration for locating a custom certificate store.  This is only required if the default certificate store
-     * which ships with all java installations does not contain the certificates needed by this server.  Usually it is to
-     * accept a self-signed certificate, for example on a test server.
+     * The configuration for locating a custom certificate store.  This is only required if the default
+     * certificate store which ships with all java installations does not contain the certificates needed
+     * by this server.  Usually it is to accept a self-signed certificate, for example on a test server.
      *
      * @param certificateStore The configuration for locating a custom certificate store
      */
@@ -203,8 +210,8 @@ public class Configuration {
     }
 
     /**
-     * Get the http credentials.  Should also getProxies since {@link org.mapfish.print.http.HttpProxy} is a subclass
-     * of {@link org.mapfish.print.http.HttpCredential}.
+     * Get the http credentials.  Should also getProxies since {@link org.mapfish.print.http.HttpProxy} is
+     * a subclass of {@link org.mapfish.print.http.HttpCredential}.
      */
     public final List<HttpCredential> getCredentials() {
         return this.credentials;
@@ -213,9 +220,10 @@ public class Configuration {
     /**
      * Http credentials to be used when making http requests.
      * <p>
-     *     If a proxy needs credentials you don't need to configure it here because the proxy configuration object also
-     *     has options for declaring the credentials.
+     * If a proxy needs credentials you don't need to configure it here because the proxy configuration
+     * object also has options for declaring the credentials.
      * </p>
+     *
      * @param credentials the credentials
      */
     public final void setCredentials(final List<HttpCredential> credentials) {
@@ -234,7 +242,7 @@ public class Configuration {
     /**
      * Configuration for proxying http requests.  Each proxy can be configured with authentication
      * and with the uris that they apply to.
-     *<p></p>
+     * <p></p>
      * See {@link org.mapfish.print.http.HttpProxy} for details on how to configure them.
      *
      * @param proxies the proxy configuration objects
@@ -274,7 +282,8 @@ public class Configuration {
                     return false;
                 }
                 try {
-                    Configuration.this.accessAssertion.assertAccess("Configuration", this);
+                    Configuration.this.accessAssertion.assertAccess("Configuration",
+                            this);
                     input.getValue().assertAccessible(input.getKey());
                     return true;
                 } catch (AccessDeniedException e) {
@@ -297,7 +306,8 @@ public class Configuration {
             this.accessAssertion.assertAccess("Configuration", this);
             template.assertAccessible(name);
         } else {
-            throw new IllegalArgumentException("Template '" + name + "' does not exist.  Options are: " + this.templates.keySet());
+            throw new IllegalArgumentException(String.format("Template '%s' does not exist.  Options are: " +
+                            "%s", name, this.templates.keySet()));
         }
         return template;
     }
@@ -383,18 +393,18 @@ public class Configuration {
 
     private boolean isPolygonType(@Nonnull final String normalizedGeomName) {
         return normalizedGeomName.equalsIgnoreCase(Polygon.class.getSimpleName())
-                   || normalizedGeomName.equalsIgnoreCase(MultiPolygon.class.getSimpleName());
+                || normalizedGeomName.equalsIgnoreCase(MultiPolygon.class.getSimpleName());
     }
 
     private boolean isLineType(@Nonnull final String normalizedGeomName) {
         return normalizedGeomName.equalsIgnoreCase(LineString.class.getSimpleName())
-                   || normalizedGeomName.equalsIgnoreCase(MultiLineString.class.getSimpleName())
-                   || normalizedGeomName.equalsIgnoreCase(LinearRing.class.getSimpleName());
+                || normalizedGeomName.equalsIgnoreCase(MultiLineString.class.getSimpleName())
+                || normalizedGeomName.equalsIgnoreCase(LinearRing.class.getSimpleName());
     }
 
     private boolean isPointType(@Nonnull final String normalizedGeomName) {
         return normalizedGeomName.equalsIgnoreCase(Point.class.getSimpleName())
-            || normalizedGeomName.equalsIgnoreCase(MultiPoint.class.getSimpleName());
+                || normalizedGeomName.equalsIgnoreCase(MultiPoint.class.getSimpleName());
     }
 
     private Symbolizer createMapOverviewStyle(@Nonnull final String normalizedGeomName,
@@ -421,9 +431,11 @@ public class Configuration {
     }
 
     /**
-     * Set the default styles.  the case of the keys are not important.  The retrieval will be case insensitive.
+     * Set the default styles.  the case of the keys are not important.  The retrieval will be case
+     * insensitive.
      *
-     * @param defaultStyle the mapping from geometry type name (point, polygon, etc...) to the style to use for that type.
+     * @param defaultStyle the mapping from geometry type name (point, polygon, etc...) to the style to use
+     *                    for that type.
      */
     public final void setDefaultStyle(final Map<String, Style> defaultStyle) {
         this.defaultStyle = Maps.newHashMapWithExpectedSize(defaultStyle.size());
@@ -439,7 +451,8 @@ public class Configuration {
     }
 
     /**
-     * If true then if the request JSON has extra parameters exceptions will be thrown.  Otherwise the information will be logged.
+     * If true then if the request JSON has extra parameters exceptions will be thrown.  Otherwise the
+     * information will be logged.
      */
     public final boolean isThrowErrorOnExtraParameters() {
         return this.throwErrorOnExtraParameters;
@@ -465,14 +478,16 @@ public class Configuration {
                 try {
                     Configuration.class.getClassLoader().loadClass(jdbcDriver);
                 } catch (ClassNotFoundException e1) {
-                    validationErrors.add(new ConfigurationException("Unable to load JDBC driver: " + jdbcDriver +
-                                                                    " ensure that the web application has the jar on its classpath"));
+                    validationErrors.add(new ConfigurationException(String.format("Unable to load JDBC " +
+                            "driver: %s ensure that the web application has the jar on its classpath",
+                            jdbcDriver)));
                 }
             }
         }
 
         if (this.configurationFile == null) {
-            validationErrors.add(new ConfigurationException("Configuration file is field on configuration object is null"));
+            validationErrors.add(new ConfigurationException("Configuration file is field on configuration " +
+                    "object is null"));
         }
         if (this.templates.isEmpty()) {
             validationErrors.add(new ConfigurationException("There are not templates defined."));
@@ -491,20 +506,23 @@ public class Configuration {
     /**
      * check if the file exists and can be accessed by the user/template/config/etc...
      *
-     * @param pathToSubResource a string representing a file that is accessible for use in printing templates within
-     *                          the configuration file.  In the case of a file based URI the path could be a relative path (relative
-     *                          to the configuration file) or an absolute path, but it must be an allowed file (you can't allow access
+     * @param pathToSubResource a string representing a file that is accessible for use in printing
+     *                          templates within the configuration file.  In the case of a file based URI
+     *                          the path could be a relative path (relative to the configuration file) or
+     *                          an absolute path, but it must be an allowed file (you can't allow access
      *                          to any file on the file system).
      */
     public final boolean isAccessible(final String pathToSubResource) throws IOException {
         return this.fileLoaderManager.isAccessible(this.configurationFile.toURI(), pathToSubResource);
     }
+
     /**
      * Load the file related to the configuration file.
      *
-     * @param pathToSubResource a string representing a file that is accessible for use in printing templates within
-     *                          the configuration file.  In the case of a file based URI the path could be a relative path (relative
-     *                          to the configuration file) or an absolute path, but it must be an allowed file (you can't allow access
+     * @param pathToSubResource a string representing a file that is accessible for use in printing
+     *                          templates within the configuration file.  In the case of a file based URI
+     *                          the path could be a relative path (relative to the configuration file) or
+     *                          an absolute path, but it must be an allowed file (you can't allow access
      *                          to any file on the file system).
      */
     public final byte[] loadFile(final String pathToSubResource) throws IOException {
@@ -521,8 +539,9 @@ public class Configuration {
     }
 
     /**
-     * Set the JDBC drivers that are required to connect to the databases in the configuration.  JDBC drivers are needed (for example)
-     * when database sources are used in templates.  For example if in one of the template you have:
+     * Set the JDBC drivers that are required to connect to the databases in the configuration.  JDBC
+     * drivers are needed (for example) when database sources are used in templates.  For example if in one
+     * of the template you have:
      *
      * <pre><code>
      *     jdbcUrl: "jdbc:postgresql://localhost:5432/morges_dpfe"
@@ -550,13 +569,15 @@ public class Configuration {
     }
 
     /**
-     * The roles required to access this configuration/app.  If empty or not set then it is a <em>public</em> app.  If there are
-     * many roles then a user must have one of the roles in order to access the configuration/app.
+     * The roles required to access this configuration/app.  If empty or not set then it is a
+     * <em>public</em> app.  If there are many roles then a user must have one of the roles in order to
+     * access the configuration/app.
      * <p></p>
-     * The security (how authentication/authorization is done) is configured in the /WEB-INF/classes/mapfish-spring-security.xml
+     * The security (how authentication/authorization is done) is configured in the
+     * /WEB-INF/classes/mapfish-spring-security.xml
      * <p>
-     * Any user without the required role will get an error when trying to access any of the templates and no templates will
-     * be listed in the capabilities requests.
+     * Any user without the required role will get an error when trying to access any of the templates and
+     * no templates will be listed in the capabilities requests.
      * </p>
      *
      * @param access the roles needed to access this
@@ -580,6 +601,7 @@ public class Configuration {
 
     /**
      * Set the configuration options on how to interpret the request in the form of the old API.
+     *
      * @param oldApi the old api configuration object
      */
     public final void setOldApi(final OldApiConfig oldApi) {

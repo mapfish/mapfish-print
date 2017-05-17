@@ -4,9 +4,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 /**
- *
  * Provides application context in static context.
- *
  */
 public class ApplicationContextProvider implements ApplicationContextAware {
 

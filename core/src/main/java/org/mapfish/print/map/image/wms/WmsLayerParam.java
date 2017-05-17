@@ -46,14 +46,15 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
     public String version = "1.1.1";
 
     /**
-     *  If true transform the map angle to customParams.angle for GeoServer, and customParams.map_angle for MapServer.
+     * If true transform the map angle to customParams.angle for GeoServer, and customParams.map_angle for
+     * MapServer.
      */
     @HasDefaultValue
-    public boolean useNativeAngle = false;
+    public boolean useNativeAngle = true;
 
     /**
-     *  The server type ("mapserver", "geoserver" or "qgisserver"). By specifying the server type
-     *  vendor specific parameters (like for the DPI value) can be used when making the request.
+     * The server type ("mapserver", "geoserver" or "qgisserver"). By specifying the server type
+     * vendor specific parameters (like for the DPI value) can be used when making the request.
      */
     @HasDefaultValue
     public ServerType serverType;

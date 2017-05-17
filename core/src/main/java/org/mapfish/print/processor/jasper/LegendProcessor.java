@@ -87,7 +87,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
      * The maximum width in pixels for the legend graphics.
      * If this parameter is set, the legend graphics are cropped to the given maximum
      * width. In this case a sub-report is created containing the graphic.
-     * For reference see the example `legend_dynamic`.
+     * For reference see the example [[examples=legend_cropped]].
      *
      * @param maxWidth The max. width.
      */
