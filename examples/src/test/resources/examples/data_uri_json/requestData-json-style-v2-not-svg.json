@@ -8,7 +8,7 @@
       "dpi": 128,
       "layers": [
         {
-          "geoJson": "http://localhost:8080/geoserver/tiger/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=tiger:tiger_roads&maxFeatures=1000000&outputFormat=application%2Fjson&srsName=EPSG:3857",
+          "geoJson": "http://localhost:8080/gs-web-app/tiger/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=tiger:tiger_roads&maxFeatures=1000000&outputFormat=application%2Fjson&srsName=EPSG:3857",
           "style": {
             "version": "2",
             "strokeColor": "gray",

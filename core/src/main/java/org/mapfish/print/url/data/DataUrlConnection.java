@@ -15,7 +15,7 @@ public class DataUrlConnection extends URLConnection {
 
     /**
      * Must be overridden.
-     * 
+     *
      * @param url the data url
      */
     protected DataUrlConnection(final URL url) {
