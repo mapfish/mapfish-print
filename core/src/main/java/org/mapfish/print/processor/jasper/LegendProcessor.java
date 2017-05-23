@@ -25,6 +25,8 @@ import org.springframework.http.client.ClientHttpResponse;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -40,10 +42,11 @@ import java.util.concurrent.Future;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 
+
 /**
  * <p>Create a legend.</p>
  * <p>See also: <a href="attributes.html#!legend">!legend</a> attribute</p>
- * [[examples=verboseExample,legend_cropped]]
+ * [[examples=verboseExample,legend_cropped,legend_scaled]]
  */
 public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, LegendProcessor.Output> {
     private static final Logger LOGGER = LoggerFactory.getLogger(LegendProcessor.class);
@@ -66,6 +69,8 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     private String template;
     private Integer maxWidth = null;
     private Double dpi = Constants.PDF_DPI;
+    private boolean scaled = false;
+
 
     /**
      * Constructor.
@@ -85,11 +90,11 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
 
     /**
      * The maximum width in pixels for the legend graphics.
-     * If this parameter is set, the legend graphics are cropped to the given maximum
+     * If this parameter is set, the legend graphics are cropped or scaled to the given maximum
      * width. In this case a sub-report is created containing the graphic.
-     * For reference see the example [[examples=legend_cropped]].
+     * For reference see the example [[examples=legend_cropped,legend_scaled]].
      *
-     * @param maxWidth The max. width.
+     * @param maxWidth The maximum width.
      */
     public void setMaxWidth(final Integer maxWidth) {
         this.maxWidth = maxWidth;
@@ -97,12 +102,22 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
 
     /**
      * The DPI value that is used for the legend graphics.
-     * Note: This parameter is only considered when `maxWidth` is set.
      *
      * @param dpi The DPI value.
      */
     public void setDpi(final Double dpi) {
         this.dpi = dpi;
+    }
+
+    /**
+     * When the image is too big do a scaled (default) otherwise do a scale.
+     * See the example  [[examples=legend_scaled]]
+     * Note: This parameter is only considered when `maxWidth` is set.
+     *
+     * @param scaled do a scaled.
+     */
+    public void setScaled(final boolean scaled) {
+        this.scaled = scaled;
     }
 
     @Override
@@ -263,7 +278,11 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         double scaleFactor = getScaleFactor();
         BufferedImage image = originalImage;
         if (image.getWidth() * scaleFactor > this.maxWidth) {
-            image = cropToMaxWidth(image, scaleFactor);
+            if (this.scaled) {
+                image = scaleToMaxWidth(image, scaleFactor);
+            } else {
+                image = cropToMaxWidth(image, scaleFactor);
+            }
         }
 
         URI imageFile = writeToFile(image, tempTaskDirectory);
@@ -282,8 +301,19 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     }
 
     private BufferedImage cropToMaxWidth(final BufferedImage image, final double scaleFactor) {
-        int width = (int) Math.round(this.maxWidth / scaleFactor);
+        final int width = (int) Math.round(this.maxWidth / scaleFactor);
         return image.getSubimage(0, 0, width, image.getHeight());
+    }
+
+    private BufferedImage scaleToMaxWidth(final BufferedImage image, final double scaleFactor) {
+        final double factor = this.maxWidth / scaleFactor / image.getWidth();
+        final BufferedImage result = new BufferedImage(
+                (int) Math.round(image.getWidth() * factor),
+                (int) Math.round(image.getHeight() * factor), image.getType());
+        AffineTransform at = new AffineTransform();
+        at.scale(factor, factor);
+        AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+        return scaleOp.filter(image, result);
     }
 
     private double getScaleFactor() {
