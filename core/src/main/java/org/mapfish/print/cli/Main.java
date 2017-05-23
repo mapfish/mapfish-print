@@ -37,6 +37,16 @@ import java.util.List;
  * from other languages than Java.
  */
 public final class Main {
+
+    static {
+        String pkgs = System.getProperty("java.protocol.handler.pkgs");
+        String newValue = "org.mapfish.print.url";
+        if (pkgs != null) {
+            newValue = pkgs + "|" + newValue;
+        }
+        System.setProperty("java.protocol.handler.pkgs", newValue);
+    }
+
     private static boolean exceptionOnFailure;
 
     private Main() {

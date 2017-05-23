@@ -62,6 +62,15 @@ import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGU
  */
 @Controller
 public class MapPrinterServlet extends BaseMapServlet {
+    static {
+        String pkgs = System.getProperty("java.protocol.handler.pkgs");
+        String newValue = "org.mapfish.print.url";
+        if (pkgs != null) {
+            newValue = pkgs + "|" + newValue;
+        }
+        System.setProperty("java.protocol.handler.pkgs", newValue);
+    }
+
     private static final Logger LOGGER = LoggerFactory.getLogger(MapPrinterServlet.class);
 
     /**
