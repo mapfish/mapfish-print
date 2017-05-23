@@ -128,14 +128,12 @@ public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(1, layerGraphics.size());
 
-//        Files.copy(new File(layerGraphics.get(0)), new File("/tmp/0_"+getClass().getSimpleName()+".tiff"));
-//        Files.copy(new File(layerGraphics.get(1)), new File("/tmp/1_"+getClass().getSimpleName()+".tiff"));
-
-        new ImageSimilarity(ImageSimilarity.mergeImages(layerGraphics, 630, 294), 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 20);
+        new ImageSimilarity(ImageSimilarity.mergeImages(layerGraphics, 630, 294))
+                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 20);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleCenterWms1_0_0Test.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleCenterWms1_0_0Test.class,
+                BASE_DIR + "requestData.json");
     }
 }

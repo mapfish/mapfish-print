@@ -81,9 +81,7 @@ public class CreateMapProcessorFlexibleScaleCenterTiledWmsTest extends AbstractM
         assertEquals(1, layerGraphics.size());
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
 
-//        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
-
-        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 30);
+        new ImageSimilarity(referenceImage).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 30);
 
     }
 

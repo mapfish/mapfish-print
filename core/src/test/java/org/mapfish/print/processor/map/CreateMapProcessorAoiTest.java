@@ -65,7 +65,8 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".wms")) || input.getAuthority().contains(host + ".wms");
+                        return (("" + input.getHost()).contains(host + ".wms")) ||
+                                input.getAuthority().contains(host + ".wms");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
@@ -83,7 +84,8 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".json")) || input.getAuthority().contains(host + ".json");
+                        return (("" + input.getHost()).contains(host + ".json")) ||
+                                input.getAuthority().contains(host + ".json");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
@@ -100,23 +102,36 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
 
-        createMap(template, "expectedSimpleImage-default.png", RENDER, null, false, null);
-        /* jpeg */ createMap(template, "expectedSimpleImage-default.png", RENDER, null, false, true, null);
-        createMap(template, "expectedSimpleImage-render-thinline.png", RENDER, "file://thinline.sld", false, null);
-        /* jpeg */ createMap(template, "expectedSimpleImage-render-thinline.png", RENDER, "file://thinline.sld", false, true, null);
-        createMap(template, "expectedSimpleImage-render-jsonStyle.png", RENDER, createJsonStyle().toString(), false, null);
-        createMap(template, "expectedSimpleImage-render-polygon.png", RENDER, "polygon",
-                false, null);
-        createMap(template, "expectedSimpleImage-none.png", AreaOfInterest.AoiDisplay.NONE, null, false, null);
-        /* jpeg */ createMap(template, "expectedSimpleImage-none.png", AreaOfInterest.AoiDisplay.NONE, null, false, true, null);
-        createMap(template, "expectedSimpleImage-clip.png", AreaOfInterest.AoiDisplay.CLIP, null, false, null);
-        /* jpeg */ createMap(template, "expectedSimpleImage-clip.png", AreaOfInterest.AoiDisplay.CLIP, null, false, true, null);
+        createMap(template, "expectedSimpleImage-default-transparent.png",
+                RENDER, null, false, null);
+        /* jpeg */ createMap(template, "expectedSimpleImage-default.png",
+                RENDER, null, false, true, null);
+        createMap(template, "expectedSimpleImage-render-thinline-transparent.png",
+                RENDER, "file://thinline.sld", false, null);
+        /* jpeg */ createMap(template, "expectedSimpleImage-render-thinline.png",
+                RENDER, "file://thinline.sld", false, true, null);
+        createMap(template, "expectedSimpleImage-render-jsonStyle.png",
+                RENDER, createJsonStyle().toString(), false, null);
+        createMap(template, "expectedSimpleImage-render-polygon.png",
+                RENDER, "polygon", false, null);
+        createMap(template, "expectedSimpleImage-none-transparent.png",
+                AreaOfInterest.AoiDisplay.NONE, null, false, null);
+        /* jpeg */ createMap(template, "expectedSimpleImage-none.png",
+                AreaOfInterest.AoiDisplay.NONE, null, false, true, null);
+        createMap(template, "expectedSimpleImage-clip-transparent.png",
+                AreaOfInterest.AoiDisplay.CLIP, null, false, null);
+        /* jpeg */ createMap(template, "expectedSimpleImage-clip.png",
+                AreaOfInterest.AoiDisplay.CLIP, null, false, true, null);
 
         // Test when SVG is used for vector layers
-        createMap(template, "expectedSimpleImage-render-polygon-svg.png", RENDER, createJsonStyle().toString(), true, null);
-        /* jpeg */ createMap(template, "expectedSimpleImage-render-polygon-svg.png", RENDER, createJsonStyle().toString(), true, true, null);
-        createMap(template, "expectedSimpleImage-clip-svg.png", AreaOfInterest.AoiDisplay.CLIP, null, true, null);
-        /* jpeg */ createMap(template, "expectedSimpleImage-clip-svg.png", AreaOfInterest.AoiDisplay.CLIP, null, true, true, null);
+        createMap(template, "expectedSimpleImage-render-polygon-svg-transparent.png",
+                RENDER, createJsonStyle().toString(), true, null);
+        /* jpeg */ createMap(template, "expectedSimpleImage-render-polygon-svg.png",
+                RENDER, createJsonStyle().toString(), true, true, null);
+        createMap(template, "expectedSimpleImage-clip-svg-transparent.png",
+                AreaOfInterest.AoiDisplay.CLIP, null, true, null);
+        /* jpeg */ createMap(template, "expectedSimpleImage-clip-svg.png",
+                AreaOfInterest.AoiDisplay.CLIP, null, true, true, null);
         Function<PJsonObject, Void> setRotationUpdater = new Function<PJsonObject, Void>() {
 
             @Nullable
@@ -130,8 +145,10 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
                 return null;
             }
         };
-        createMap(template, "expectedSimpleImage-rotate-clip-svg.png", AreaOfInterest.AoiDisplay.CLIP, null, true, setRotationUpdater);
-        createMap(template, "expectedSimpleImage-rotate-render-svg.png", AreaOfInterest.AoiDisplay.RENDER, null, true, setRotationUpdater);
+        createMap(template, "expectedSimpleImage-rotate-clip-svg.png",
+                AreaOfInterest.AoiDisplay.CLIP, null, true, setRotationUpdater);
+        createMap(template, "expectedSimpleImage-rotate-render-svg.png",
+                AreaOfInterest.AoiDisplay.RENDER, null, true, setRotationUpdater);
     }
 
     private JSONObject createJsonStyle() throws JSONException {
@@ -169,15 +186,16 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
         }
 
         final PJsonObject areaOfInterest = mapAttribute.getJSONObject("areaOfInterest");
-        areaOfInterest.getInternalObj().put("display", aoiDisplay.name().toLowerCase()); // doesn't have to be lowercase,
-        // this is to make things more interesting
+        // doesn't have to be lowercase, this is to make things more interesting
+        areaOfInterest.getInternalObj().put("display", aoiDisplay.name().toLowerCase());
         areaOfInterest.getInternalObj().put("style", styleRef);
 
         if (requestUpdater != null) {
             requestUpdater.apply(requestData);
         }
 
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(),
+                this.requestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -192,10 +210,8 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
         }
 
         final BufferedImage actualImage = ImageSimilarity.mergeImages(layerGraphics, 630, 294);
-//        ImageIO.write(actualImage, "png", new File(TMP, expectedImageName));
         File expectedImage = getFile(BASE_DIR + "/output/" + expectedImageName);
-        new ImageSimilarity(actualImage, 2).assertSimilarity(expectedImage, 55);
-
+        new ImageSimilarity(actualImage).assertSimilarity(expectedImage, 55);
     }
 
 

@@ -59,11 +59,8 @@ public class CreateMapProcessorGridFixedNumlinesLinesNoRotateLabelsTest extends 
         assertEquals(1, layerGraphics.size());
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
 
-        //ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
-
         String imageName = getExpectedImageName("", referenceImage, BASE_DIR);
-
-        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + imageName), 30);
+        new ImageSimilarity(referenceImage).assertSimilarity(getFile(BASE_DIR + imageName), 30);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

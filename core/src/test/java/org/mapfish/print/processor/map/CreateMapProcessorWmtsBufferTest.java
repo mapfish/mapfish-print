@@ -84,7 +84,7 @@ public class CreateMapProcessorWmtsBufferTest extends AbstractMapfishSpringTest 
         assertEquals(1, layerGraphics.size());
 
 //        Files.copy(new File(layerGraphics.get(0)), new File(TMP + "/expectedSimpleImage.png"));
-        new ImageSimilarity(new File(layerGraphics.get(0)), 2).assertSimilarity(getFile(BASE_DIR + "/expectedSimpleImage.png"), 0);
+        new ImageSimilarity(new File(layerGraphics.get(0))).assertSimilarity(getFile(BASE_DIR + "/expectedSimpleImage.png"), 0);
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {

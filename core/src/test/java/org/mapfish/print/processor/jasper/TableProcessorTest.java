@@ -69,10 +69,9 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         JasperPrint print = format.getJasperPrint(requestData, config, file, getTaskDirectory()).print;
         BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
 
-//        ImageIO.write(reportImage, "png", new File("/tmp/testDefaultDynamicTableProperties.png"));
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
-        new ImageSimilarity(reportImage, 50).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
+        new ImageSimilarity(reportImage).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
     }
 
     @Test
@@ -109,7 +108,7 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
 
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
-        new ImageSimilarity(reportImage, 50).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
+        new ImageSimilarity(reportImage).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
     }
 
     @Test
@@ -123,11 +122,9 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         JasperPrint print = format.getJasperPrint(requestData, config, file, getTaskDirectory()).print;
         BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
 
-//        ImageIO.write(reportImage, "png", new File("/tmp/expectedImage.png"));
-
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
-        new ImageSimilarity(reportImage, 50).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
+        new ImageSimilarity(reportImage).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
     }
 
     @Test
@@ -156,10 +153,9 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         final File file = getFile(TableProcessorTest.class, baseDir);
         JasperPrint print = format.getJasperPrint(requestData, config, file, getTaskDirectory()).print;
         BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
-//        ImageIO.write(reportImage, "png", new File("/tmp/testColumnImageConverter.png"));
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
-        new ImageSimilarity(reportImage, 50).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
+        new ImageSimilarity(reportImage).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
     }
 
     @Test
@@ -189,10 +185,9 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         final File file = getFile(TableProcessorTest.class, baseDir);
         JasperPrint print = format.getJasperPrint(requestData, config, file, getTaskDirectory()).print;
         BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
-//        ImageIO.write(reportImage, "png", new File("/tmp/testColumnImageConverter.png"));
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
-        new ImageSimilarity(reportImage, 50).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
+        new ImageSimilarity(reportImage).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
     }
 
     @Test
@@ -205,10 +200,9 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         final File file = getFile(TableProcessorTest.class, baseDir);
         JasperPrint print = format.getJasperPrint(requestData, config, file, getTaskDirectory()).print;
         BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
-//        ImageIO.write(reportImage, "png", new File("/tmp/expectedImage.png"));
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
-        new ImageSimilarity(reportImage, 50).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
+        new ImageSimilarity(reportImage).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
     }
 
     private static PJsonObject loadJsonRequestData(String baseDir) throws IOException {

@@ -97,12 +97,12 @@ public class CreateScaleBarProcessorFixedScaleCenterOsmTest extends AbstractMapf
 
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
 
-        new ImageSimilarity(referenceImage, 2)
+        new ImageSimilarity(referenceImage)
                 .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 60);
 
         String scalebarGraphic = values.getObject("scalebarGraphic", String.class);
 
-        new ImageSimilarity(new File(new URI(scalebarGraphic)), 4).assertSimilarity(getFile(BASE_DIR + "expectedScalebar.png"), 250);
+        new ImageSimilarity(new File(new URI(scalebarGraphic))).assertSimilarity(getFile(BASE_DIR + "expectedScalebar.png"), 250);
         assertNotNull(values.getObject("scalebarSubReport", String.class));
 
         // now without a subreport

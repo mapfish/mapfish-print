@@ -128,7 +128,7 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0_DPITest extends Abstr
 
 //        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
 
-        new ImageSimilarity(referenceImage, 2)
+        new ImageSimilarity(referenceImage)
                 .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 15);
     }
 

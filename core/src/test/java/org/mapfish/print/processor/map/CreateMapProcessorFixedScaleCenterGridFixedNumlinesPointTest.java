@@ -82,13 +82,11 @@ public class CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest extend
 
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
 
-//        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
-
         assertEquals(2, layerGraphics.size());
 
         String imageName = getExpectedImageName("", referenceImage, BASE_DIR);
 
-        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + imageName), 85);
+        new ImageSimilarity(referenceImage).assertSimilarity(getFile(BASE_DIR + imageName), 85);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

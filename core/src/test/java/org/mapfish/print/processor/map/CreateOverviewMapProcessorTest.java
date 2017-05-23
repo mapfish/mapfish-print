@@ -97,8 +97,7 @@ public class CreateOverviewMapProcessorTest extends AbstractMapfishSpringTest {
         assertEquals(2, layerGraphics.size());
 
         final BufferedImage actualImage = ImageSimilarity.mergeImages(layerGraphics, 300, 200);
-//        ImageIO.write(actualImage, "png", new File("/tmp/expectedSimpleImage.png"));
-        new ImageSimilarity(actualImage, 2)
+        new ImageSimilarity(actualImage)
                 .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 50);
     }
 

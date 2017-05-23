@@ -36,7 +36,7 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
 
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
-        new ImageSimilarity(reportImage, 50).assertSimilarity(getFile(BASE_DIR + "expectedReport.png"), 10);
+        new ImageSimilarity(reportImage).assertSimilarity(getFile(BASE_DIR + "expectedReport.png"), 10);
     }
 
     @Test

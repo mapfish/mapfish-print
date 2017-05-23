@@ -42,7 +42,8 @@ public class SetFeaturesProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(),
+                this.httpRequestFactory, new File("."));
 
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
@@ -50,12 +51,12 @@ public class SetFeaturesProcessorTest extends AbstractMapfishSpringTest {
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(1, layerGraphics.size());
 
-//        Files.copy(new File(layerGraphics.get(0)), new File(TMP, getClass().getSimpleName()+".tiff"));
-        new ImageSimilarity(new File(layerGraphics.get(0)), 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 0);
+        new ImageSimilarity(new File(layerGraphics.get(0))).assertSimilarity(
+                getFile(BASE_DIR + "expectedSimpleImage.png"), 0);
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleBBoxGeoJsonTest.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleBBoxGeoJsonTest.class,
+                BASE_DIR + "requestData.json");
     }
-
 }

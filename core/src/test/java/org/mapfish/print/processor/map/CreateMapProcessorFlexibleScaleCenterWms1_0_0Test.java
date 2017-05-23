@@ -56,7 +56,8 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0Test extends AbstractM
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".wms")) || input.getAuthority().contains(host + ".wms");
+                        return (("" + input.getHost()).contains(host + ".wms")) ||
+                                input.getAuthority().contains(host + ".wms");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
@@ -67,15 +68,21 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0Test extends AbstractM
                             uppercaseParams.put(entry.getKey().toUpperCase(), entry.getValue().toUpperCase());
                         }
 
-                        assertTrue("SERVICE != WMS: " + uppercaseParams.get("WMS"), uppercaseParams.containsEntry("SERVICE", "WMS"));
-                        assertTrue("FORMAT != IMAGE/TIFF: " + uppercaseParams.get("FORMAT"), uppercaseParams.containsEntry("FORMAT",
+                        assertTrue("SERVICE != WMS: " + uppercaseParams.get("WMS"),
+                                uppercaseParams.containsEntry("SERVICE", "WMS"));
+                        assertTrue("FORMAT != IMAGE/TIFF: " + uppercaseParams.get("FORMAT"),
+                                uppercaseParams.containsEntry("FORMAT",
                                 "IMAGE/TIFF"));
-                        assertTrue("REQUEST != MAP: " + uppercaseParams.get("REQUEST"), uppercaseParams.containsEntry("REQUEST", "MAP"));
-                        assertTrue("VERSION != 1.0.0: " + uppercaseParams.get("VERSION"), uppercaseParams.containsEntry("VERSION",
+                        assertTrue("REQUEST != MAP: " + uppercaseParams.get("REQUEST"),
+                                uppercaseParams.containsEntry("REQUEST", "MAP"));
+                        assertTrue("VERSION != 1.0.0: " + uppercaseParams.get("VERSION"),
+                                uppercaseParams.containsEntry("VERSION",
                                 "1.0.0"));
-                        assertTrue("LAYERS != TIGER-NY: " + uppercaseParams.get("LAYERS"), uppercaseParams.containsEntry("LAYERS",
+                        assertTrue("LAYERS != TIGER-NY: " + uppercaseParams.get("LAYERS"),
+                                uppercaseParams.containsEntry("LAYERS",
                                 "TIGER-NY"));
-                        assertTrue("STYLES != LINE: " + uppercaseParams.get("STYLES"), uppercaseParams.containsEntry("STYLES", "LINE"));
+                        assertTrue("STYLES != LINE: " + uppercaseParams.get("STYLES"),
+                                uppercaseParams.containsEntry("STYLES", "LINE"));
                         assertTrue("CUSTOMP1 != 1", uppercaseParams.containsEntry("CUSTOMP1", "1"));
                         assertTrue("CUSTOMP2 != 2", uppercaseParams.containsEntry("CUSTOMP2", "2"));
                         assertTrue("MERGEABLEP1 != 3", uppercaseParams.containsEntry("MERGEABLEP1", "3"));
@@ -95,7 +102,8 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0Test extends AbstractM
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".json")) || input.getAuthority().contains(host + ".json");
+                        return (("" + input.getHost()).contains(host + ".json")) ||
+                                input.getAuthority().contains(host + ".json");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
@@ -112,7 +120,8 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0Test extends AbstractM
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(),
+                this.requestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -122,15 +131,12 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0Test extends AbstractM
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(1, layerGraphics.size());
 
-//        Files.copy(new File(layerGraphics.get(0)), new File("/tmp/0_"+getClass().getSimpleName()+".tiff"));
-//        Files.copy(new File(layerGraphics.get(1)), new File("/tmp/1_"+getClass().getSimpleName()+".tiff"));
-
-        new ImageSimilarity(ImageSimilarity.mergeImages(layerGraphics, 630, 294), 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 10);
-
+        new ImageSimilarity(ImageSimilarity.mergeImages(layerGraphics, 630, 294))
+                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 10);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleCenterWms1_0_0Test.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleCenterWms1_0_0Test.class,
+                BASE_DIR + "requestData.json");
     }
 }

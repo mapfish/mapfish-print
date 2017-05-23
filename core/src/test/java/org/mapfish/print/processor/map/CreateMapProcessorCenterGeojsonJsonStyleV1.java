@@ -53,7 +53,8 @@ public class CreateMapProcessorCenterGeojsonJsonStyleV1 extends AbstractMapfishS
             InterruptedException {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
-        Values values = new Values(requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
+        Values values = new Values(requestData, template, parser, getTaskDirectory(),
+                this.httpRequestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -64,11 +65,12 @@ public class CreateMapProcessorCenterGeojsonJsonStyleV1 extends AbstractMapfishS
         assertEquals(1, layerGraphics.size());
 
         final BufferedImage img = ImageIO.read(new File(layerGraphics.get(0)));
-//        ImageIO.write(img, "tiff", new File("/tmp/expectedSimpleImage.tiff"));
-        new ImageSimilarity(img, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 30);
+        new ImageSimilarity(img).assertSimilarity(
+                getFile(BASE_DIR + "expectedSimpleImage.png"), 30);
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorLineVsPolygonStyleGeoJsonTest.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateMapProcessorLineVsPolygonStyleGeoJsonTest.class,
+                BASE_DIR + "requestData.json");
     }
 }

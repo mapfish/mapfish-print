@@ -63,7 +63,7 @@ public class CreateMapProcessorGridFixedNumlinesPointCRS84Test extends AbstractM
 
         String imageName = getExpectedImageName("", referenceImage, BASE_DIR);
 
-        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + imageName), 30);
+        new ImageSimilarity(referenceImage).assertSimilarity(getFile(BASE_DIR + imageName), 30);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

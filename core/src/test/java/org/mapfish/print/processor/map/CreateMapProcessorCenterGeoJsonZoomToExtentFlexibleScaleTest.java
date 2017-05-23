@@ -46,7 +46,8 @@ public class CreateMapProcessorCenterGeoJsonZoomToExtentFlexibleScaleTest extend
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(),
+                this.httpRequestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -56,13 +57,13 @@ public class CreateMapProcessorCenterGeoJsonZoomToExtentFlexibleScaleTest extend
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(1, layerGraphics.size());
 
-        // Files.copy(new File(layerGraphics.get(0)), new File(TMP, getClass().getSimpleName() + ".svg"));
         final BufferedImage referenceImage = ImageSimilarity.convertFromSvg(layerGraphics.get(0), 500, 400);
-        // ImageSimilarity.writeUncompressedImage(referenceImage, "/tmp/expectedSimpleImage.tiff");
-        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 0);
+        new ImageSimilarity(referenceImage).assertSimilarity(
+                getFile(BASE_DIR + "expectedSimpleImage.png"), 0);
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorCenterGeoJsonZoomToExtentFlexibleScaleTest.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateMapProcessorCenterGeoJsonZoomToExtentFlexibleScaleTest.class,
+                BASE_DIR + "requestData.json");
     }
 }

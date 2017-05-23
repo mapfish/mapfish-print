@@ -158,7 +158,7 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
 
         final BufferedImage reportAsImage = ImageIO.read(new ByteArrayInputStream(report));
 
-        new ImageSimilarity(reportAsImage, 2).assertSimilarity(getFile(MapPrinterServletSecurityTest.class, "expectedSimpleImage.png"), 10);
+        new ImageSimilarity(reportAsImage).assertSimilarity(getFile(MapPrinterServletSecurityTest.class, "expectedSimpleImage.png"), 10);
         return report;
     }
 

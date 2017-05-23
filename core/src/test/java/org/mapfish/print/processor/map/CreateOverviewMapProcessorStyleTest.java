@@ -105,8 +105,7 @@ public class CreateOverviewMapProcessorStyleTest extends AbstractMapfishSpringTe
 //        Files.copy(new File(layerGraphics.get(2)), new File("/tmp/2_ov_"+getClass().getSimpleName()+".tiff"));
 
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 300, 200);
-//        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
-        new ImageSimilarity(referenceImage, 2)
+        new ImageSimilarity(referenceImage)
                 .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 50);
     }
 

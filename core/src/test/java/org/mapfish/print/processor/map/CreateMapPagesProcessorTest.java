@@ -53,7 +53,8 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".json")) || input.getAuthority().contains(host + ".json");
+                        return (("" + input.getHost()).contains(host + ".json")) ||
+                                input.getAuthority().contains(host + ".json");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
@@ -75,7 +76,8 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
         Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         PJsonObject requestData = loadJsonRequestData();
 
-        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
+        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat)
+                this.outputFormat.get("pngOutputFormat");
         testPrint(config, requestData, "default-aoi", format);
 
         getAreaOfInterest(requestData).put("display", "CLIP");
@@ -133,19 +135,18 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
         return attributes.getInternalObj().optJSONObject("map");
     }
 
-    private void testPrint(Configuration config, PJsonObject requestData, String testName, AbstractJasperReportOutputFormat format) throws Exception {
-        JasperPrint print = format.getJasperPrint(requestData, config, config.getDirectory(), getTaskDirectory()).print;
+    private void testPrint(Configuration config, PJsonObject requestData, String testName,
+                           AbstractJasperReportOutputFormat format) throws Exception {
+        JasperPrint print = format.getJasperPrint(requestData, config, config.getDirectory(),
+                getTaskDirectory()).print;
 
         assertEquals(7, print.getPages().size());
         for (int i = 0; i < print.getPages().size(); i++) {
             BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, i);
 
-//            final File output = new File("/tmp/test/" + testName + "/expected-page-" + i + ".png");
-//            output.getParentFile().mkdirs();
-//            ImageIO.write(reportImage, "png", output);
-
-            File expectedImage = getFile(BASE_DIR + "output/"+testName+"/expected-page-" + i + ".png");
-            new ImageSimilarity(reportImage, 2).assertSimilarity(expectedImage, 50);
+            File expectedImage = getFile(String.format("%soutput/%s/expected-page-%s.png",
+                    BASE_DIR, testName, i));
+            new ImageSimilarity(reportImage).assertSimilarity(expectedImage, 50);
         }
     }
 

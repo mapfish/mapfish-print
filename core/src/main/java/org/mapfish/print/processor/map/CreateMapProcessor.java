@@ -283,9 +283,8 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
 
     private void warnIfDifferentRenderType(final RenderType renderType, final MapLayer layer) {
         if (renderType != layer.getRenderType()) {
-            LOGGER.warn(
-                    "Layer " + layer.getName() + " has " +
-                    layer.getRenderType().toString() + " format, storing as PNG.");
+            LOGGER.info("Layer {} has {} format, storing as PNG.",
+                    layer.getName(), layer.getRenderType().toString());
         }
     }
 

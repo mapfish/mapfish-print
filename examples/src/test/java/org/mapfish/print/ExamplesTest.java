@@ -72,8 +72,8 @@ public class ExamplesTest {
     private static final String OLD_API_REQUEST_DATA_FILE = "oldApi-requestData(-.*)?.json";
     private static final String CONFIG_FILE = "config.yaml";
     /**
-     * If this system property is set then it will be interpreted as a regular expression and will be used to filter the
-     * examples that are run.
+     * If this system property is set then it will be interpreted as a regular expression and will be used
+     * to filter the examples that are run.
      *
      * For example:
      * -Dexamples.filter=verbose.*
@@ -135,8 +135,8 @@ public class ExamplesTest {
             }
         }
 
-        assertEquals("All example directory names must match the pattern: '" + namePattern + "'.  The following fail that test: " +
-                     errors, 0, errors.length());
+        assertEquals(String.format("All example directory names must match the pattern: '%s'.  " +
+                "The following fail that test: %s", namePattern, errors), 0, errors.length());
     }
     @Test
     public void testAllExamples() throws Exception {
@@ -188,7 +188,8 @@ public class ExamplesTest {
             this.mapPrinter.setConfiguration(configFile);
 
             if (!hasRequestFile(example)) {
-                throw new AssertionError("Example: '" + example.getName() + "' does not have any request data files.");
+                throw new AssertionError(String.format("Example: '%s' does not have any request " +
+                        "data files.", example.getName()));
             }
             for (File requestFile : Files.fileTreeTraverser().children(example)) {
                 if (!requestFile.isFile() || !requestFilter.matcher(requestFile.getName()).matches()) {
@@ -198,12 +199,14 @@ public class ExamplesTest {
                     if (isRequestDataFile(requestFile)) {
                         // WARN to be displayed in the Travis logs
                         LOGGER.warn("Run example '{}' ({})", example.getName(), requestFile.getName());
-                        String requestData = Files.asCharSource(requestFile, Charset.forName(Constants.DEFAULT_ENCODING)).read();
+                        String requestData = Files.asCharSource(requestFile,
+                                Charset.forName(Constants.DEFAULT_ENCODING)).read();
 
                         final PJsonObject jsonSpec;
                         if (requestFile.getName().matches(OLD_API_REQUEST_DATA_FILE)) {
                             PJsonObject oldSpec = MapPrinterServlet.parseJson(requestData, null);
-                            jsonSpec = OldAPIRequestConverter.convert(oldSpec, this.mapPrinter.getConfiguration());
+                            jsonSpec = OldAPIRequestConverter.convert(oldSpec,
+                                    this.mapPrinter.getConfiguration());
 //                            continue;
                         } else {
                             jsonSpec = MapPrinter.parseSpec(requestData);
@@ -222,8 +225,10 @@ public class ExamplesTest {
                         headers.append("Cookie", "examplesTestCookie=value");
                         headers.append("Referer", "http://localhost:8080/print");
                         headers.append("Host","localhost");
-                        headers.append("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0");
-                        headers.append("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+                        headers.append("User-Agent",
+                                "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0");
+                        headers.append("Accept",
+                                "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
                         headers.append("Accept-Language", "en-US,en;q=0.5");
                         headers.append("Accept-Encoding", "gzip, deflate");
                         headers.append("Connection", "keep-alive");
@@ -231,7 +236,8 @@ public class ExamplesTest {
                         JSONObject headersAttribute = new JSONObject();
                         headersAttribute.put(JSON_REQUEST_HEADERS, headers);
 
-                        jsonSpec.getJSONObject(JSON_ATTRIBUTES).getInternalObj().put(JSON_REQUEST_HEADERS, headersAttribute);
+                        jsonSpec.getJSONObject(JSON_ATTRIBUTES).getInternalObj().put(
+                                JSON_REQUEST_HEADERS, headersAttribute);
                         this.mapPrinter.print(jsonSpec, out);
 
                         BufferedImage image = ImageIO.read(new ByteArrayInputStream(out.toByteArray()));
@@ -251,7 +257,7 @@ public class ExamplesTest {
                             String similarityString = Files.toString(file, Constants.DEFAULT_CHARSET);
                             similarity = Integer.parseInt(similarityString.trim());
                         }
-                        new ImageSimilarity(image, 50).assertSimilarity(expectedOutput, similarity);
+                        new ImageSimilarity(image).assertSimilarity(expectedOutput, similarity);
                     }
                 } catch (Throwable e) {
                     errors.put(example.getName() + " (" + requestFile.getName() + ")", e);
@@ -274,7 +280,8 @@ public class ExamplesTest {
             platformSpecificDir = new File(expectedOutputDir, "linux");
         }
 
-        final String imageName = requestFile.getName().replace(".json", "." + outputFormat);
+        final String imageName = requestFile.getName().replace(".json",
+                "." + outputFormat);
         if (new File(platformSpecificDir, imageName).exists()) {
             return new File(platformSpecificDir, imageName);
         }
@@ -291,7 +298,8 @@ public class ExamplesTest {
     }
 
     private boolean isRequestDataFile(File requestFile) {
-        return requestFile.getName().matches(REQUEST_DATA_FILE) || requestFile.getName().matches(OLD_API_REQUEST_DATA_FILE);
+        return requestFile.getName().matches(REQUEST_DATA_FILE) ||
+                requestFile.getName().matches(OLD_API_REQUEST_DATA_FILE);
     }
 
 
@@ -307,11 +315,13 @@ public class ExamplesTest {
     public static void main(String[] args) {
         JUnitCore junit = new JUnitCore();
         if (args.length < 1) {
-            System.err.println("This main is expected to have at least one parameter, it is a regular expression for selecting the examples to run");
+            System.err.println("This main is expected to have at least one parameter, it is a regular " +
+                    "expression for selecting the examples to run");
             System.exit(1);
         }
         if (args.length > 2) {
-            System.err.println("A maximum of 2 parameters are allowed.  param 1=example regex, param2 = configRegexp");
+            System.err.println("A maximum of 2 parameters are allowed.  param 1=example regex, param2 = " +
+                    "configRegexp");
             System.exit(1);
         }
 

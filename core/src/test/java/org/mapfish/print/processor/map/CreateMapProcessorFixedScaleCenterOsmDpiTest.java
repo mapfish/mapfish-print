@@ -103,12 +103,8 @@ public class CreateMapProcessorFixedScaleCenterOsmDpiTest extends AbstractMapfis
         MapfishMapContext mapContext = values.getObject("mapContext", MapfishMapContext.class);
         assertEquals(25000.0, mapContext.getScale().getDenominator(144), 1E-6);
 
-//        Files.copy(new File(layerGraphics.get(0)), new File("/tmp/0_"+getClass().getSimpleName()+".tiff"));
-//        Files.copy(new File(layerGraphics.get(1)), new File("/tmp/1_"+getClass().getSimpleName()+".tiff"));
-
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 1560, 660);
-//        ImageIO.write(referenceImage, "png", new File(TMP + "/expectedSimpleImage.png"));
-        new ImageSimilarity(referenceImage, 2)
+        new ImageSimilarity(referenceImage)
                 .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 30);
     }
 

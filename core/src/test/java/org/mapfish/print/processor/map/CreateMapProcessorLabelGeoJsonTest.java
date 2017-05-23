@@ -63,7 +63,7 @@ public class CreateMapProcessorLabelGeoJsonTest extends AbstractMapfishSpringTes
 
         final BufferedImage img = ImageIO.read(new File(layerGraphics.get(0)));
 //        ImageIO.write(img, "png", new File(TMP, getClass().getSimpleName() + ".png"));
-        new ImageSimilarity(img, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 500);
+        new ImageSimilarity(img).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 500);
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {
