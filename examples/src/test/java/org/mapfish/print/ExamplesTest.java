@@ -1,20 +1,13 @@
 package org.mapfish.print;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mapfish.print.servlet.MapPrinterServlet.JSON_ATTRIBUTES;
-import static org.mapfish.print.servlet.MapPrinterServlet.JSON_REQUEST_HEADERS;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
+import ch.qos.logback.core.util.StatusPrinter;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.Map;
-import java.util.regex.Pattern;
-
-import javax.imageio.ImageIO;
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+import com.google.common.io.Files;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.json.JSONObject;
@@ -34,14 +27,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import com.google.common.io.Files;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.Map;
+import java.util.regex.Pattern;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
-import ch.qos.logback.core.util.StatusPrinter;
+import javax.imageio.ImageIO;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mapfish.print.servlet.MapPrinterServlet.JSON_ATTRIBUTES;
+import static org.mapfish.print.servlet.MapPrinterServlet.JSON_REQUEST_HEADERS;
 
 /**
  * To run this test make sure that the test GeoServer is running:
@@ -58,15 +58,6 @@ import ch.qos.logback.core.util.StatusPrinter;
         ExamplesTest.TEST_SPRING_XML
 })
 public class ExamplesTest {
-    static {
-        String pkgs = System.getProperty("java.protocol.handler.pkgs");
-        String newValue = "org.mapfish.print.url";
-        if (pkgs != null) {
-            newValue = pkgs + "|" + newValue;
-        }
-        System.setProperty("java.protocol.handler.pkgs", newValue);
-    }
-
     private static final Logger LOGGER = LoggerFactory.getLogger(ExamplesTest.class);
 
     public static final String DEFAULT_SPRING_XML = "classpath:mapfish-spring-application-context.xml";
@@ -256,7 +247,6 @@ public class ExamplesTest {
                             similarity = Integer.parseInt(similarityString.trim());
                         }
                         new ImageSimilarity(image, 50).assertSimilarity(expectedOutput, similarity);
-                        System.out.println(example + " PASSED");
                     }
                 } catch (Throwable e) {
                     errors.put(example.getName() + " (" + requestFile.getName() + ")", e);
