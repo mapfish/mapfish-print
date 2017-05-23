@@ -58,6 +58,15 @@ import static org.mapfish.print.servlet.MapPrinterServlet.JSON_REQUEST_HEADERS;
         ExamplesTest.TEST_SPRING_XML
 })
 public class ExamplesTest {
+    static {
+        String pkgs = System.getProperty("java.protocol.handler.pkgs");
+        String newValue = "org.mapfish.print.url";
+        if (pkgs != null) {
+            newValue = pkgs + "|" + newValue;
+        }
+        System.setProperty("java.protocol.handler.pkgs", newValue);
+    }
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ExamplesTest.class);
 
     public static final String DEFAULT_SPRING_XML = "classpath:mapfish-spring-application-context.xml";
