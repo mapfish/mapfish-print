@@ -20,6 +20,7 @@ import org.junit.runner.notification.RunListener;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.servlet.oldapi.OldAPIRequestConverter;
 import org.mapfish.print.test.util.ImageSimilarity;
+import org.mapfish.print.url.data.Handler;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,12 +60,7 @@ import static org.mapfish.print.servlet.MapPrinterServlet.JSON_REQUEST_HEADERS;
 })
 public class ExamplesTest {
     static {
-        String pkgs = System.getProperty("java.protocol.handler.pkgs");
-        String newValue = "org.mapfish.print.url";
-        if (pkgs != null) {
-            newValue = pkgs + "|" + newValue;
-        }
-        System.setProperty("java.protocol.handler.pkgs", newValue);
+        Handler.configureProtocolHandler();
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExamplesTest.class);
