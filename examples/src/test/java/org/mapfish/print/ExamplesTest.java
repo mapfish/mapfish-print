@@ -20,6 +20,7 @@ import org.junit.runner.notification.RunListener;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.servlet.oldapi.OldAPIRequestConverter;
 import org.mapfish.print.test.util.ImageSimilarity;
+import org.mapfish.print.url.data.Handler;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +59,10 @@ import static org.mapfish.print.servlet.MapPrinterServlet.JSON_REQUEST_HEADERS;
         ExamplesTest.TEST_SPRING_XML
 })
 public class ExamplesTest {
+    static {
+        Handler.configureProtocolHandler();
+    }
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ExamplesTest.class);
 
     public static final String DEFAULT_SPRING_XML = "classpath:mapfish-spring-application-context.xml";

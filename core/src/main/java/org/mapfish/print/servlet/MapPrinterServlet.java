@@ -18,6 +18,7 @@ import org.mapfish.print.servlet.job.NoSuchReferenceException;
 import org.mapfish.print.servlet.job.PrintJobStatus;
 import org.mapfish.print.servlet.job.impl.PrintJobEntryImpl;
 import org.mapfish.print.servlet.job.loader.ReportLoader;
+import org.mapfish.print.url.data.Handler;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +63,10 @@ import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGU
  */
 @Controller
 public class MapPrinterServlet extends BaseMapServlet {
+    static {
+        Handler.configureProtocolHandler();
+    }
+
     private static final Logger LOGGER = LoggerFactory.getLogger(MapPrinterServlet.class);
 
     /**

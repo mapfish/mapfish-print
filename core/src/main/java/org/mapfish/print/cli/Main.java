@@ -13,6 +13,7 @@ import org.json.JSONWriter;
 import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.servlet.oldapi.OldAPIRequestConverter;
+import org.mapfish.print.url.data.Handler;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,11 @@ import java.util.List;
  * from other languages than Java.
  */
 public final class Main {
+
+    static {
+        Handler.configureProtocolHandler();
+    }
+
     private static boolean exceptionOnFailure;
 
     private Main() {
