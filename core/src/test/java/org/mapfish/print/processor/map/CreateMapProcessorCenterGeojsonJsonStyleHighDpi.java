@@ -63,9 +63,8 @@ public class CreateMapProcessorCenterGeojsonJsonStyleHighDpi extends AbstractMap
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(1, layerGraphics.size());
 
-        final BufferedImage img = ImageIO.read(new File(layerGraphics.get(0)));
-        new ImageSimilarity(img).assertSimilarity(
-                getFile(BASE_DIR + "expectedSimpleImage.png"), 30);
+        new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png")).assertSimilarity(
+                new File(layerGraphics.get(0)), 30);
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {

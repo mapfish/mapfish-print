@@ -95,9 +95,8 @@ public class CreateOverviewMapProcessorCustomBounds extends AbstractMapfishSprin
         List<URI> layerGraphics = (List<URI>) values.getObject("overviewMapLayerGraphics", List.class);
         assertEquals(1, layerGraphics.size());
 
-        final BufferedImage actualImage = ImageSimilarity.mergeImages(layerGraphics, 300, 200);
-        new ImageSimilarity(actualImage)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 50);
+        new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
+                .assertSimilarity(layerGraphics, 300, 200, 50);
 
     }
 
@@ -105,5 +104,4 @@ public class CreateOverviewMapProcessorCustomBounds extends AbstractMapfishSprin
         return parseJSONObjectFromFile(CreateOverviewMapProcessorCustomBounds.class,
                 BASE_DIR + "requestData.json");
     }
-
 }

@@ -58,7 +58,8 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
 
         String requestData = loadRequestDataAsString();
 
-        this.servlet.createReportAndGetNoAppId("png", requestData, false, servletCreateRequest, servletCreateResponse);
+        this.servlet.createReportAndGetNoAppId("png", requestData, false,
+                servletCreateRequest, servletCreateResponse);
         assertEquals(HttpStatus.OK.value(), servletCreateResponse.getStatus());
 
         assertCorrectResponse(servletCreateResponse);
@@ -74,7 +75,8 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
 
         String requestData = loadRequestDataAsString();
 
-        this.servlet.createReportAndGetNoAppId("png", requestData, false, servletCreateRequest, servletCreateResponse);
+        this.servlet.createReportAndGetNoAppId("png", requestData, false,
+                servletCreateRequest, servletCreateResponse);
 
     }
 
@@ -87,7 +89,8 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
 
         String requestData = loadRequestDataAsString();
 
-        this.servlet.createReportAndGetNoAppId("png", requestData, false, servletCreateRequest, servletCreateResponse);
+        this.servlet.createReportAndGetNoAppId("png", requestData, false,
+                servletCreateRequest, servletCreateResponse);
     }
 
     @Test(timeout = 60000)
@@ -156,21 +159,21 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
         String fileName = servletGetReportResponse.getHeader("Content-disposition").split("=")[1];
         assertEquals("test_report-" + year + ".png", fileName);
 
-        final BufferedImage reportAsImage = ImageIO.read(new ByteArrayInputStream(report));
-
-        new ImageSimilarity(reportAsImage).assertSimilarity(getFile(MapPrinterServletSecurityTest.class, "expectedSimpleImage.png"), 10);
+        new ImageSimilarity(getFile(MapPrinterServletSecurityTest.class, "expectedSimpleImage.png"))
+                .assertSimilarity(report, 10);
         return report;
     }
 
     private void setUpConfigFiles() throws URISyntaxException {
         final HashMap<String, String> configFiles = Maps.newHashMap();
-        configFiles.put("default", getFile(MapPrinterServletSecurityTest.class, "config-security.yaml").getAbsolutePath());
+        configFiles.put("default",
+                getFile(MapPrinterServletSecurityTest.class, "config-security.yaml").getAbsolutePath());
         printerFactory.setConfigurationFiles(configFiles);
     }
 
     private String loadRequestDataAsString() throws IOException {
-        final PJsonObject requestJson = parseJSONObjectFromFile(MapPrinterServletSecurityTest.class, "requestData.json");
+        final PJsonObject requestJson =
+                parseJSONObjectFromFile(MapPrinterServletSecurityTest.class, "requestData.json");
         return requestJson.getInternalObj().toString();
     }
-
 }

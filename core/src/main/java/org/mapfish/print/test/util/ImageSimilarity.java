@@ -17,6 +17,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -44,21 +45,7 @@ public final class ImageSimilarity {
      * The constructor, which creates the GUI and start the image processing task.
      */
     public ImageSimilarity(final File expectedFile) throws IOException {
-        this(ImageIO.read(expectedFile), expectedFile);
-    }
-
-    /**
-     * The constructor, which creates the GUI and start the image processing task.
-     */
-    public ImageSimilarity(final BufferedImage expectedImage) throws IOException {
-        this(expectedImage, null);
-    }
-
-    /**
-     * The constructor, which creates the GUI and start the image processing task.
-     */
-    private ImageSimilarity(final BufferedImage expectedImage, final File expectedFile) throws IOException {
-        this.expectedImage = expectedImage;
+        this.expectedImage = ImageIO.read(expectedFile);
         this.expectedPath = expectedFile;
     }
 
@@ -119,6 +106,17 @@ public final class ImageSimilarity {
      */
     public void assertSimilarity(final File actual) throws IOException {
         assertSimilarity(actual, 0);
+    }
+
+    /**
+     * Check that the actual image and the image calculated by this object are within the given distance.
+     *
+     * @param maxDistance the maximum distance between the two images.
+     */
+    public void assertSimilarity(
+            final byte[] graphicData, final double maxDistance)
+            throws IOException {
+        assertSimilarity(ImageIO.read(new ByteArrayInputStream(graphicData)), maxDistance);
     }
 
     /**
@@ -189,15 +187,13 @@ public final class ImageSimilarity {
     private void assertSimilarity(
             final BufferedImage actualImage, final File actualFile, final double maxDistance)
             throws IOException {
-        final File referanceActualOutput = this.expectedPath != null ? this.expectedPath : actualFile;
-        final File actualOutput = referanceActualOutput != null ?
-                new File(referanceActualOutput.getParentFile(),
-                        (referanceActualOutput.getName().contains("expected") ?
-                                referanceActualOutput.getName().replace("expected", "actual") :
-                                "actual-" + referanceActualOutput.getName())
-                        .replace(".tiff", ".png")) : null;
-        if (actualFile != null && !actualFile.exists()) {
-            ImageIO.write(expectedImage, "png", actualOutput);
+        final File actualOutput = new File(this.expectedPath.getParentFile(),
+            (this.expectedPath.getName().contains("expected") ?
+                    this.expectedPath.getName().replace("expected", "actual") :
+                    "actual-" + this.expectedPath.getName())
+            .replace(".tiff", ".png"));
+        if (!this.expectedPath.exists()) {
+            ImageIO.write(actualImage, "png", expectedPath);
             throw new AssertionError("The expected file was missing and has been generated: " +
                     actualOutput.getAbsolutePath());
         }
@@ -208,8 +204,7 @@ public final class ImageSimilarity {
             throw new AssertionError(String.format("similarity difference between images is: %s which is " +
                     "greater than the max distance of %s%n" +
                     "actual=%s%n" +
-                    "expected=%s", distance, maxDistance,
-                    actualOutput != null ? actualOutput.getAbsolutePath() : "unknown",
+                    "expected=%s", distance, maxDistance, actualOutput.getAbsolutePath(),
                     this.expectedPath != null ? this.expectedPath.getAbsolutePath() : "unknown"));
         }
     }
@@ -253,7 +248,6 @@ public final class ImageSimilarity {
      * @param width the graphic width (required for svg files)
      * @param height the graphic height (required for svg files)
      * @return a single graphic
-     * @throws IOException, TranscoderException
      */
     public static BufferedImage mergeImages(List<URI> graphicFiles, int width, int height)
             throws IOException, TranscoderException {

@@ -1098,10 +1098,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         assertEquals(outputNamePrefix + year + ".png", fileName);
 
-        final BufferedImage reportAsImage = ImageIO.read(new ByteArrayInputStream(report));
-
-        new ImageSimilarity(reportAsImage).assertSimilarity(getFile(MapPrinterServletTest.class,
-                "expectedSimpleImage.png"), 10);
+        new ImageSimilarity(getFile(MapPrinterServletTest.class,"expectedSimpleImage.png"))
+                .assertSimilarity(report, 10);
         return report;
     }
 
