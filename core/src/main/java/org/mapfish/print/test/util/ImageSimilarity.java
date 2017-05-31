@@ -29,36 +29,36 @@ import javax.media.jai.iterator.RandomIter;
 import javax.media.jai.iterator.RandomIterFactory;
 
 /**
- * Class for comparing an image to another image.
+ * Class for comparing an image to anactual image.
  *
  * CHECKSTYLE:OFF
  */
 public final class ImageSimilarity {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageSimilarity.class);
 
-    private final BufferedImage referenceImage;
-    private final File referencePath;
+    private final BufferedImage expectedImage;
+    private final File expectedPath;
 
     /**
      * The constructor, which creates the GUI and start the image processing task.
      */
-    public ImageSimilarity(final File referenceFile) throws IOException {
-        this(ImageIO.read(referenceFile), referenceFile);
+    public ImageSimilarity(final File expectedFile) throws IOException {
+        this(ImageIO.read(expectedFile), expectedFile);
     }
 
     /**
      * The constructor, which creates the GUI and start the image processing task.
      */
-    public ImageSimilarity(BufferedImage referenceImage) throws IOException {
-        this(referenceImage, null);
+    public ImageSimilarity(BufferedImage expectedImage) throws IOException {
+        this(expectedImage, null);
     }
 
     /**
      * The constructor, which creates the GUI and start the image processing task.
      */
-    private ImageSimilarity(BufferedImage referenceImage, final File referenceFile) throws IOException {
-        this.referenceImage = referenceImage;
-        this.referencePath = referenceFile;
+    private ImageSimilarity(BufferedImage expectedImage, final File expectedFile) throws IOException {
+        this.expectedImage = expectedImage;
+        this.expectedPath = expectedFile;
     }
 
     /**
@@ -66,40 +66,41 @@ public final class ImageSimilarity {
      * the reference one. The signatures for the image passed as the parameter are
      * calculated inside the method.
      */
-    private double calcDistance(final BufferedImage other) {
+    private double calcDistance(final BufferedImage actual) {
         // There are several ways to calculate distances between two vectors,
         // we will calculate the sum of the distances between the RGB values of
         // pixels in the same positions.
-        if (other.getWidth() != this.referenceImage.getWidth()) {
+        if (actual.getWidth() != this.expectedImage.getWidth()) {
             LOGGER.error("Not the same width (expected: {}, actual: {})",
-                    this.referenceImage.getWidth(), other.getWidth());
+                    this.expectedImage.getWidth(), actual.getWidth());
             return Double.MAX_VALUE;
         }
-        if (other.getHeight() != this.referenceImage.getHeight()) {
+        if (actual.getHeight() != this.expectedImage.getHeight()) {
             LOGGER.error("Not the same height (expected: {}, actual: {})",
-                    this.referenceImage.getHeight(), other.getHeight());
+                    this.expectedImage.getHeight(), actual.getHeight());
             return Double.MAX_VALUE;
         }
-        if (other.getSampleModel().getNumBands() != this.referenceImage.getSampleModel().getNumBands()) {
+        if (actual.getSampleModel().getNumBands() != this.expectedImage.getSampleModel().getNumBands()) {
             LOGGER.error("Not the same number of bands (expected: {}, actual: {})",
-                    this.referenceImage.getSampleModel().getNumBands(), other.getSampleModel().getNumBands());
+                    this.expectedImage.getSampleModel().getNumBands(), actual.getSampleModel().getNumBands());
             return Double.MAX_VALUE;
         }
         double dist = 0;
-        double[] expectedPixel = new double[this.referenceImage.getSampleModel().getNumBands()];
-        double[] actualPixel = new double[this.referenceImage.getSampleModel().getNumBands()];
-        RandomIter expectedIterator = RandomIterFactory.create(this.referenceImage, null);
-        RandomIter actualIterator = RandomIterFactory.create(other, null);
-        for (int x = 0; x < other.getWidth(); x++) {
-            for (int y = 0; y < other.getHeight(); y++) {
+        double[] expectedPixel = new double[this.expectedImage.getSampleModel().getNumBands()];
+        double[] actualPixel = new double[this.expectedImage.getSampleModel().getNumBands()];
+        RandomIter expectedIterator = RandomIterFactory.create(this.expectedImage, null);
+        RandomIter actualIterator = RandomIterFactory.create(actual, null);
+        for (int x = 0; x < actual.getWidth(); x++) {
+            for (int y = 0; y < actual.getHeight(); y++) {
                 expectedIterator.getPixel(x, y, expectedPixel);
                 actualIterator.getPixel(x, y, actualPixel);
                 double squareDist = 0.0;
-                for (int i = 0; i < this.referenceImage.getSampleModel().getNumBands(); i++) {
+                for (int i = 0; i < this.expectedImage.getSampleModel().getNumBands(); i++) {
                     double colorDist = expectedPixel[i] - actualPixel[i];
                     squareDist += colorDist * colorDist;
                 }
                 double tempDist = Math.sqrt(squareDist);
+
                 dist += tempDist;
             }
         }
@@ -111,67 +112,67 @@ public final class ImageSimilarity {
     }
 
     /**
-     * Check that the other image and the image calculated by this object are within the given distance.
+     * Check that the actual image and the image calculated by this object are within the given distance.
      *
-     * @param other the image to compare to "this" image.
+     * @param actual the image to compare to "this" image.
      */
-    public void assertSimilarity(final File other) throws IOException {
-        assertSimilarity(other, 0);
+    public void assertSimilarity(final File actual) throws IOException {
+        assertSimilarity(actual, 0);
     }
 
     /**
-     * Check that the other image and the image calculated by this object are within the given distance.
+     * Check that the actual image and the image calculated by this object are within the given distance.
      *
-     * @param otherImage the image to compare to "this" image.
+     * @param actualImage the image to compare to "this" image.
      * @param maxDistance the maximum distance between the two images.
      */
-    public void assertSimilarity(final BufferedImage otherImage, final double maxDistance)
+    public void assertSimilarity(final BufferedImage actualImage, final double maxDistance)
             throws IOException {
-        assertSimilarity(otherImage, null, maxDistance);
+        assertSimilarity(actualImage, null, maxDistance);
     }
 
     /**
-     * Check that the other image and the image calculated by this object are within the given distance.
+     * Check that the actual image and the image calculated by this object are within the given distance.
      *
-     * @param otherFile the file to compare to "this" image.
+     * @param actualFile the file to compare to "this" image.
      * @param maxDistance the maximum distance between the two images.
      */
-    public void assertSimilarity(final File otherFile, final double maxDistance) throws IOException {
-        assertSimilarity(otherFile.exists() ? ImageIO.read(otherFile) : null, otherFile, maxDistance);
+    public void assertSimilarity(final File actualFile, final double maxDistance) throws IOException {
+        assertSimilarity(actualFile.exists() ? ImageIO.read(actualFile) : null, actualFile, maxDistance);
     }
 
     /**
-     * Check that the other image and the image calculated by this object are within the given distance.
+     * Check that the actual image and the image calculated by this object are within the given distance.
      *
-     * @param otherImage the image to compare to "this" image.
-     * @param otherFile the file to compare to "this" image.
+     * @param actualImage the image to compare to "this" image.
+     * @param actualFile the file to compare to "this" image.
      * @param maxDistance the maximum distance between the two images.
      */
     private void assertSimilarity(
-            final BufferedImage otherImage, final File otherFile, final double maxDistance)
+            final BufferedImage actualImage, final File actualFile, final double maxDistance)
             throws IOException {
-        final File referanceActualOutput = this.referencePath != null ? this.referencePath : otherFile;
+        final File referanceActualOutput = this.expectedPath != null ? this.expectedPath : actualFile;
         final File actualOutput = referanceActualOutput != null ?
                 new File(referanceActualOutput.getParentFile(),
                         (referanceActualOutput.getName().contains("expected") ?
                                 referanceActualOutput.getName().replace("expected", "actual") :
                                 "actual-" + referanceActualOutput.getName())
                         .replace(".tiff", ".png")) : null;
-        if (otherFile != null && !otherFile.exists()) {
-            ImageIO.write(referenceImage, "png", actualOutput);
+        if (actualFile != null && !actualFile.exists()) {
+            ImageIO.write(expectedImage, "png", actualOutput);
             throw new AssertionError("The expected file was missing and has been generated: " +
                     actualOutput.getAbsolutePath());
         }
         // * 25 to Normalise with the previous calculation
-        final double distance = calcDistance(otherImage) * 25;
+        final double distance = calcDistance(actualImage) * 25;
         if (distance > maxDistance) {
-            ImageIO.write(referenceImage, "png", actualOutput);
+            ImageIO.write(expectedImage, "png", actualOutput);
             throw new AssertionError(String.format("similarity difference between images is: %s which is " +
                     "greater than the max distance of %s%n" +
                     "actual=%s%n" +
                     "expected=%s", distance, maxDistance,
                     actualOutput != null ? actualOutput.getAbsolutePath() : "unknown",
-                    this.referencePath != null ? this.referencePath.getAbsolutePath() : "unknown"));
+                    this.expectedPath != null ? this.expectedPath.getAbsolutePath() : "unknown"));
         }
     }
 
