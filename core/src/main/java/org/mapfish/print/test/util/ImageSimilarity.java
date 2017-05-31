@@ -122,26 +122,55 @@ public final class ImageSimilarity {
     /**
      * Check that the other image and the image calculated by this object are within the given distance.
      *
-     * @param other the image to compare to "this" image.
+     * @param otherImage the image to compare to "this" image.
      * @param maxDistance the maximum distance between the two images.
      */
-    public void assertSimilarity(final File other, final double maxDistance) throws IOException {
-        final File actualOutput = new File(other.getParentFile(),
-                "actual" + other.getName().replace("expected", "")
-                        .replace(".tiff", ".png"));
-        if (!other.exists()) {
+    public void assertSimilarity(final BufferedImage otherImage, final double maxDistance)
+            throws IOException {
+        assertSimilarity(otherImage, null, maxDistance);
+    }
+
+    /**
+     * Check that the other image and the image calculated by this object are within the given distance.
+     *
+     * @param otherFile the file to compare to "this" image.
+     * @param maxDistance the maximum distance between the two images.
+     */
+    public void assertSimilarity(final File otherFile, final double maxDistance) throws IOException {
+        assertSimilarity(otherFile.exists() ? ImageIO.read(otherFile) : null, otherFile, maxDistance);
+    }
+
+    /**
+     * Check that the other image and the image calculated by this object are within the given distance.
+     *
+     * @param otherImage the image to compare to "this" image.
+     * @param otherFile the file to compare to "this" image.
+     * @param maxDistance the maximum distance between the two images.
+     */
+    private void assertSimilarity(
+            final BufferedImage otherImage, final File otherFile, final double maxDistance)
+            throws IOException {
+        final File referanceActualOutput = this.referencePath != null ? this.referencePath : otherFile;
+        final File actualOutput = referanceActualOutput != null ?
+                new File(referanceActualOutput.getParentFile(),
+                        (referanceActualOutput.getName().contains("expected") ?
+                                referanceActualOutput.getName().replace("expected", "actual") :
+                                "actual-" + referanceActualOutput.getName())
+                        .replace(".tiff", ".png")) : null;
+        if (otherFile != null && !otherFile.exists()) {
             ImageIO.write(referenceImage, "png", actualOutput);
             throw new AssertionError("The expected file was missing and has been generated: " +
                     actualOutput.getAbsolutePath());
         }
         // * 25 to Normalise with the previous calculation
-        final double distance = calcDistance(ImageIO.read(other)) * 25;
+        final double distance = calcDistance(otherImage) * 25;
         if (distance > maxDistance) {
             ImageIO.write(referenceImage, "png", actualOutput);
             throw new AssertionError(String.format("similarity difference between images is: %s which is " +
                     "greater than the max distance of %s%n" +
                     "actual=%s%n" +
-                    "expected=%s", distance, maxDistance, actualOutput.getAbsolutePath(),
+                    "expected=%s", distance, maxDistance,
+                    actualOutput != null ? actualOutput.getAbsolutePath() : "unknown",
                     this.referencePath != null ? this.referencePath.getAbsolutePath() : "unknown"));
         }
     }

@@ -188,8 +188,8 @@ public class ExamplesTest {
             this.mapPrinter.setConfiguration(configFile);
 
             if (!hasRequestFile(example)) {
-                throw new AssertionError(String.format("Example: '%s' does not have any request " +
-                        "data files.", example.getName()));
+                throw new AssertionError(String.format(
+                        "Example: '%s' does not have any request data files.", example.getName()));
             }
             for (File requestFile : Files.fileTreeTraverser().children(example)) {
                 if (!requestFile.isFile() || !requestFilter.matcher(requestFile.getName()).matches()) {
@@ -207,10 +207,8 @@ public class ExamplesTest {
                             PJsonObject oldSpec = MapPrinterServlet.parseJson(requestData, null);
                             jsonSpec = OldAPIRequestConverter.convert(oldSpec,
                                     this.mapPrinter.getConfiguration());
-//                            continue;
                         } else {
                             jsonSpec = MapPrinter.parseSpec(requestData);
-//                            continue;
                         }
 
                         testsRan++;
@@ -257,10 +255,10 @@ public class ExamplesTest {
                             String similarityString = Files.toString(file, Constants.DEFAULT_CHARSET);
                             similarity = Integer.parseInt(similarityString.trim());
                         }
-                        new ImageSimilarity(image).assertSimilarity(expectedOutput, similarity);
+                        new ImageSimilarity(expectedOutput).assertSimilarity(image, similarity);
                     }
                 } catch (Throwable e) {
-                    errors.put(example.getName() + " (" + requestFile.getName() + ")", e);
+                    errors.put(String.format("%s (%s)", example.getName(), requestFile.getName()), e);
                 }
             }
         } catch (Throwable e) {
