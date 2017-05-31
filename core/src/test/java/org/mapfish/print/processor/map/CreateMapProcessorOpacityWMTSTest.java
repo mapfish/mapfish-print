@@ -64,7 +64,7 @@ public class CreateMapProcessorOpacityWMTSTest extends AbstractMapfishSpringTest
                         String row = parameters.get("TILEROW").iterator().next();
                         try {
                             byte[] bytes = Files.toByteArray(getFile(
-                                    "/map-data/ny-tiles/" + column + "x" + row + "" + ".tiff"));
+                                    "/map-data/ny-tiles/" + column + "x" + row + ".png"));
                             return ok(uri, bytes, httpMethod);
                         } catch (AssertionError e) {
                             return error404(uri, httpMethod);

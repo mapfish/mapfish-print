@@ -57,7 +57,8 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0_DPI_SVG_Test extends 
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".wms")) || input.getAuthority().contains(host + ".wms");
+                        return (("" + input.getHost()).contains(host + ".wms")) ||
+                                input.getAuthority().contains(host + ".wms");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
@@ -68,15 +69,18 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0_DPI_SVG_Test extends 
                             uppercaseParams.put(entry.getKey().toUpperCase(), entry.getValue().toUpperCase());
                         }
 
-                        assertTrue("SERVICE != WMS: " + uppercaseParams.get("WMS"), uppercaseParams.containsEntry("SERVICE", "WMS"));
-                        assertTrue("FORMAT != IMAGE/TIFF: " + uppercaseParams.get("FORMAT"), uppercaseParams.containsEntry("FORMAT",
-                                "IMAGE/TIFF"));
-                        assertTrue("REQUEST != MAP: " + uppercaseParams.get("REQUEST"), uppercaseParams.containsEntry("REQUEST", "MAP"));
-                        assertTrue("VERSION != 1.0.0: " + uppercaseParams.get("VERSION"), uppercaseParams.containsEntry("VERSION",
-                                "1.0.0"));
-                        assertTrue("LAYERS != TIGER-NY: " + uppercaseParams.get("LAYERS"), uppercaseParams.containsEntry("LAYERS",
-                                "TIGER-NY"));
-                        assertTrue("STYLES != LINE: " + uppercaseParams.get("STYLES"), uppercaseParams.containsEntry("STYLES", "LINE"));
+                        assertTrue("SERVICE != WMS: " + uppercaseParams.get("WMS"),
+                                uppercaseParams.containsEntry("SERVICE", "WMS"));
+                        assertTrue("FORMAT != IMAGE/TIFF: " + uppercaseParams.get("FORMAT"),
+                                uppercaseParams.containsEntry("FORMAT", "IMAGE/PNG"));
+                        assertTrue("REQUEST != MAP: " + uppercaseParams.get("REQUEST"),
+                                uppercaseParams.containsEntry("REQUEST", "MAP"));
+                        assertTrue("VERSION != 1.0.0: " + uppercaseParams.get("VERSION"),
+                                uppercaseParams.containsEntry("VERSION", "1.0.0"));
+                        assertTrue("LAYERS != TIGER-NY: " + uppercaseParams.get("LAYERS"),
+                                uppercaseParams.containsEntry("LAYERS", "TIGER-NY"));
+                        assertTrue("STYLES != LINE: " + uppercaseParams.get("STYLES"),
+                                uppercaseParams.containsEntry("STYLES", "LINE"));
                         assertTrue("CUSTOMP1 != 1", uppercaseParams.containsEntry("CUSTOMP1", "1"));
                         assertTrue("CUSTOMP2 != 2", uppercaseParams.containsEntry("CUSTOMP2", "2"));
                         assertTrue("MERGEABLEP1 != 3", uppercaseParams.containsEntry("MERGEABLEP1", "3"));
@@ -84,7 +88,7 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0_DPI_SVG_Test extends 
                         assertTrue("EXCEPTIONS is missing", uppercaseParams.containsKey("EXCEPTIONS"));
 
                         try {
-                            byte[] bytes = Files.toByteArray(getFile("/map-data/tiger-ny.tiff"));
+                            byte[] bytes = Files.toByteArray(getFile("/map-data/tiger-ny.png"));
                             return ok(uri, bytes, httpMethod);
                         } catch (AssertionError e) {
                             return error404(uri, httpMethod);
@@ -96,7 +100,8 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0_DPI_SVG_Test extends 
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".json")) || input.getAuthority().contains(host + ".json");
+                        return (("" + input.getHost()).contains(host + ".json")) ||
+                                input.getAuthority().contains(host + ".json");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
@@ -113,7 +118,8 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0_DPI_SVG_Test extends 
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(),
+                this.requestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -131,6 +137,7 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0_DPI_SVG_Test extends 
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleCenterWms1_0_0_DPI_SVG_Test.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleCenterWms1_0_0_DPI_SVG_Test.class,
+                BASE_DIR + "requestData.json");
     }
 }

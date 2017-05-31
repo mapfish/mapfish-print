@@ -53,7 +53,8 @@ public class CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest extend
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".osm")) || input.getAuthority().contains(host + ".osm");
+                        return (("" + input.getHost()).contains(host + ".osm")) ||
+                                input.getAuthority().contains(host + ".osm");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
@@ -71,7 +72,8 @@ public class CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest extend
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(),
+                this.requestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -85,11 +87,11 @@ public class CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest extend
         assertEquals(2, layerGraphics.size());
 
         String imageName = getExpectedImageName("", referenceImage, BASE_DIR);
-
-        new ImageSimilarity(referenceImage).assertSimilarity(getFile(BASE_DIR + imageName), 85);
+        new ImageSimilarity(getFile(BASE_DIR + imageName)).assertSimilarity(referenceImage, 85);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest.class,
+                BASE_DIR + "requestData.json");
     }
 }

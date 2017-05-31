@@ -12,12 +12,11 @@
           "origin": [8200000, 4980000],
           "pointsInLine": 100,
           "renderAsSvg": false
-        },{
+        }, {
           "type": "osm",
           "baseURL": "http://center_osm_fixedscale.osm:1234",
-          "imageExtension": "tiff"
+          "imageExtension": "png"
         }
-
       ]
     }
   }

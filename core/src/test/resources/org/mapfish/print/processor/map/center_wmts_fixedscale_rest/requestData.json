@@ -10,7 +10,7 @@
           "type": "geojson",
           "style": "file://thinline.sld",
           "geojson": "http://center_wmts_fixedscale_rest.json/geojson/ny-roads-3857.json"
-        },{
+        }, {
           "type": "WMTS",
           "baseURL": "http://center_wmts_fixedscale_rest.com:1234/wmts/tiger-ny/{TileMatrixSet}/{TileMatrix}/{TileCol}/{TileRow}.tiff",
           "opacity": 1.0,
@@ -57,9 +57,8 @@
             "tileSize": [256, 256],
             "topLeftCorner": [-2.003750834E7, 2.0037508E7]
           }],
-          "imageFormat": "image/tiff"
+          "imageFormat": "image/png"
         }
-
       ]
     }
   }

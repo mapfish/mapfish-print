@@ -63,9 +63,8 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSTest extends AbstractMapfi
                         String column = parameters.get("TILECOL").iterator().next();
                         String row = parameters.get("TILEROW").iterator().next();
                         try {
-                            byte[] bytes = Files.toByteArray(getFile("/map-data/ny-tiles/" + column + "x" + row + "" +
-
-                                                                     ".tiff"));
+                            byte[] bytes = Files.toByteArray(
+                                    getFile("/map-data/ny-tiles/" + column + "x" + row + ".png"));
                             return ok(uri, bytes, httpMethod);
                         } catch (AssertionError e) {
                             return error404(uri, httpMethod);
@@ -96,7 +95,8 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSTest extends AbstractMapfi
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, parser, getTaskDirectory(), this.requestFactory, new File("."));
+        Values values = new Values(requestData, template, parser, getTaskDirectory(),
+                this.requestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -113,6 +113,7 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSTest extends AbstractMapfi
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleAndCenterWMTSTest.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleAndCenterWMTSTest.class,
+                BASE_DIR + "requestData.json");
     }
 }

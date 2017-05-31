@@ -53,7 +53,8 @@ public class CreateScaleBarProcessorFixedScaleCenterOsmTest extends AbstractMapf
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".osm")) || input.getAuthority().contains(host + ".osm");
+                        return (("" + input.getHost()).contains(host + ".osm")) ||
+                                input.getAuthority().contains(host + ".osm");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
@@ -71,7 +72,8 @@ public class CreateScaleBarProcessorFixedScaleCenterOsmTest extends AbstractMapf
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".json")) || input.getAuthority().contains(host + ".json");
+                        return (("" + input.getHost()).contains(host + ".json")) ||
+                                input.getAuthority().contains(host + ".json");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
@@ -88,7 +90,8 @@ public class CreateScaleBarProcessorFixedScaleCenterOsmTest extends AbstractMapf
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(),
+                this.requestFactory, new File("."));
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         @SuppressWarnings("unchecked")
@@ -102,19 +105,23 @@ public class CreateScaleBarProcessorFixedScaleCenterOsmTest extends AbstractMapf
 
         String scalebarGraphic = values.getObject("scalebarGraphic", String.class);
 
-        new ImageSimilarity(new File(new URI(scalebarGraphic))).assertSimilarity(getFile(BASE_DIR + "expectedScalebar.png"), 250);
+        new ImageSimilarity(getFile(BASE_DIR + "expectedScalebar.png")).assertSimilarity(
+                new File(new URI(scalebarGraphic)), 250);
         assertNotNull(values.getObject("scalebarSubReport", String.class));
 
         // now without a subreport
-        final Configuration config_noreport = configurationFactory.getConfig(getFile(BASE_DIR + "config-no-report.yaml"));
+        final Configuration config_noreport = configurationFactory.getConfig(
+                getFile(BASE_DIR + "config-no-report.yaml"));
         final Template template_noreport = config_noreport.getTemplate("main");
-        Values values_noreport = new Values(requestData, template_noreport, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
+        Values values_noreport = new Values(requestData, template_noreport, this.parser,
+                getTaskDirectory(), this.requestFactory, new File("."));
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values_noreport));
 
         assertNull(values_noreport.getObject("scalebarSubReport", String.class));
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateScaleBarProcessorFixedScaleCenterOsmTest.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateScaleBarProcessorFixedScaleCenterOsmTest.class,
+                BASE_DIR + "requestData.json");
     }
 }

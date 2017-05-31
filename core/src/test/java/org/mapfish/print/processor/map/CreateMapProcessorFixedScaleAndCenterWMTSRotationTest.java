@@ -62,7 +62,7 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSRotationTest extends Abstr
                         String row = parameters.get("TILEROW").iterator().next();
                         try {
                             byte[] bytes = Files.toByteArray(getFile(
-                                    "/map-data/ny-tiles/" + column + "x" + row + "" +  ".tiff"));
+                                    "/map-data/ny-tiles/" + column + "x" + row + ".png"));
                             return ok(uri, bytes, httpMethod);
                         } catch (AssertionError e) {
                             return error404(uri, httpMethod);
@@ -93,7 +93,8 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSRotationTest extends Abstr
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "/config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, parser, getTaskDirectory(), this.requestFactory, new File("."));
+        Values values = new Values(requestData, template, parser, getTaskDirectory(),
+                this.requestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -103,15 +104,13 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSRotationTest extends Abstr
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(2, layerGraphics.size());
 
-//      Files.copy(new File(layerGraphics.get(0)), new File("/tmp/0_" + getClass().getSimpleName() + ".tiff"));
-//      Files.copy(new File(layerGraphics.get(1)), new File("/tmp/1_" + getClass().getSimpleName() + ".tiff"));
-
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 630, 294);
         new ImageSimilarity(referenceImage)
                 .assertSimilarity(getFile(BASE_DIR + "/expectedSimpleImage.png"), 25);
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleAndCenterWMTSRotationTest.class, BASE_DIR + "/requestData.json");
+        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleAndCenterWMTSRotationTest.class,
+                BASE_DIR + "/requestData.json");
     }
 }

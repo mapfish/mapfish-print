@@ -12,10 +12,10 @@
         {
           "type": "geojson",
           "geojson": "http://overview_map_custom_bounds.json/geojson/ny-roads-3857.json"
-        },{
+        }, {
           "type": "osm",
           "baseURL": "http://overview_map_custom_bounds.osm:1234",
-          "imageExtension": "tiff"
+          "imageExtension": "png"
         }
       ]
     },
