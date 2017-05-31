@@ -100,13 +100,8 @@ public class CreateOverviewMapProcessorStyleTest extends AbstractMapfishSpringTe
         List<URI> layerGraphics = (List<URI>) values.getObject("overviewMapLayerGraphics", List.class);
         assertEquals(2, layerGraphics.size());
 
-//        Files.copy(new File(layerGraphics.get(0)), new File("/tmp/0_ov_"+getClass().getSimpleName()+".tiff"));
-//        Files.copy(new File(layerGraphics.get(1)), new File("/tmp/1_ov_"+getClass().getSimpleName()+".tiff"));
-//        Files.copy(new File(layerGraphics.get(2)), new File("/tmp/2_ov_"+getClass().getSimpleName()+".tiff"));
-
-        final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 300, 200);
-        new ImageSimilarity(referenceImage)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 50);
+        new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
+                .assertSimilarity(layerGraphics, 300, 200, 50);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

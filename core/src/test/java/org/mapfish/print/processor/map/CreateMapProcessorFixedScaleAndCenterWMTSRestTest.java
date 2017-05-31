@@ -116,9 +116,8 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSRestTest extends AbstractM
         MapfishMapContext mapContext = values.getObject("mapContext", MapfishMapContext.class);
         assertEquals(110000.0, mapContext.getScale().getDenominator(PDF_DPI), 1E-6);
 
-        final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 630, 294);
-        new ImageSimilarity(referenceImage)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 20);
+        new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
+                .assertSimilarity(layerGraphics, 630, 294, 20);
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {

@@ -64,14 +64,15 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(baseDir + "config.yaml"));
         PJsonObject requestData = loadJsonRequestData(baseDir);
 
-        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
+        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat)
+                this.outputFormat.get("pngOutputFormat");
         final File file = getFile(TableProcessorTest.class, baseDir);
         JasperPrint print = format.getJasperPrint(requestData, config, file, getTaskDirectory()).print;
-        BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
 
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
-        new ImageSimilarity(reportImage).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
+        new ImageSimilarity(getFile(baseDir + "expectedImage.png"))
+                .assertSimilarity(print, 0, 10);
     }
 
     @Test
@@ -81,7 +82,8 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(baseDir + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData(baseDir);
-        Values values = new Values(requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
+        Values values = new Values(requestData, template, parser, getTaskDirectory(),
+                this.httpRequestFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final JRMapCollectionDataSource tableDataSource = values.getObject(
@@ -101,14 +103,15 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(baseDir + "config.yaml"));
         PJsonObject requestData = loadJsonRequestData(baseDir);
 
-        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
+        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat)
+                this.outputFormat.get("pngOutputFormat");
         final File file = getFile(TableProcessorTest.class, baseDir);
         JasperPrint print = format.getJasperPrint(requestData, config, file, getTaskDirectory()).print;
-        BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
 
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
-        new ImageSimilarity(reportImage).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
+        new ImageSimilarity(getFile(baseDir + "expectedImage.png"))
+                .assertSimilarity(print, 0, 10);
     }
 
     @Test
@@ -117,14 +120,15 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(baseDir + "config.yaml"));
         PJsonObject requestData = loadJsonRequestData(baseDir);
 
-        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
+        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat)
+                this.outputFormat.get("pngOutputFormat");
         final File file = getFile(TableProcessorTest.class, baseDir);
         JasperPrint print = format.getJasperPrint(requestData, config, file, getTaskDirectory()).print;
-        BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
 
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
-        new ImageSimilarity(reportImage).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
+        new ImageSimilarity(getFile(baseDir + "expectedImage.png"))
+                .assertSimilarity(print, 0, 10);
     }
 
     @Test
@@ -149,13 +153,15 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(baseDir + "config.yaml"));
         PJsonObject requestData = loadJsonRequestData(baseDir);
 
-        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
+        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat)
+                this.outputFormat.get("pngOutputFormat");
         final File file = getFile(TableProcessorTest.class, baseDir);
         JasperPrint print = format.getJasperPrint(requestData, config, file, getTaskDirectory()).print;
-        BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
+
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
-        new ImageSimilarity(reportImage).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
+        new ImageSimilarity(getFile(baseDir + "expectedImage.png"))
+                .assertSimilarity(print, 0, 10);
     }
 
     @Test
@@ -181,13 +187,15 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(baseDir + "config.yaml"));
         PJsonObject requestData = loadJsonRequestData(baseDir);
 
-        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
+        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat)
+                this.outputFormat.get("pngOutputFormat");
         final File file = getFile(TableProcessorTest.class, baseDir);
         JasperPrint print = format.getJasperPrint(requestData, config, file, getTaskDirectory()).print;
-        BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
+
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
-        new ImageSimilarity(reportImage).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
+        new ImageSimilarity(getFile(baseDir + "expectedImage.png"))
+                .assertSimilarity(print, 0, 10);
     }
 
     @Test
@@ -196,13 +204,15 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(baseDir + "config.yaml"));
         PJsonObject requestData = loadJsonRequestData(baseDir);
 
-        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
+        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat)
+                this.outputFormat.get("pngOutputFormat");
         final File file = getFile(TableProcessorTest.class, baseDir);
         JasperPrint print = format.getJasperPrint(requestData, config, file, getTaskDirectory()).print;
-        BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
+
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
-        new ImageSimilarity(reportImage).assertSimilarity(getFile(baseDir + "expectedImage.png"), 10);
+        new ImageSimilarity(getFile(baseDir + "expectedImage.png"))
+                .assertSimilarity(print, 0, 10);
     }
 
     private static PJsonObject loadJsonRequestData(String baseDir) throws IOException {

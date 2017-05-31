@@ -130,10 +130,8 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0_DPITest extends Abstr
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(1, layerGraphics.size());
 
-        final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 2625, 1225);
-
-        new ImageSimilarity(referenceImage)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 15);
+        new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
+                .assertSimilarity(layerGraphics, 2625, 1225, 15);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

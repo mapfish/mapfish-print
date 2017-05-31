@@ -107,8 +107,8 @@ public class CreateMapProcessorOpacityWMTSTest extends AbstractMapfishSpringTest
         assertEquals(3, layerGraphics.size());
 
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 630, 294);
-        new ImageSimilarity(referenceImage)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 20);
+        new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
+                .assertSimilarity(referenceImage, 20);
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {

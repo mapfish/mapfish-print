@@ -80,11 +80,9 @@ public class CreateMapProcessorFixedScaleCenterGridFixedSpacingPointTest extends
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
 
-        final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
-
         assertEquals(2, layerGraphics.size());
-        new ImageSimilarity(referenceImage)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 30);
+        new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
+                .assertSimilarity(layerGraphics, 780, 330, 30);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

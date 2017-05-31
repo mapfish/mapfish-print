@@ -97,9 +97,8 @@ public class CreateMapProcessorFixedScaleCenterOsmRotationTest extends AbstractM
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(2, layerGraphics.size());
 
-        final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
-        new ImageSimilarity(referenceImage)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 45);
+        new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
+                .assertSimilarity(layerGraphics, 780, 330, 45);
 
     }
 

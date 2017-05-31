@@ -76,10 +76,9 @@ public class DataSourceProcessorTest extends AbstractMapfishSpringTest {
         JasperPrint print = format.getJasperPrint(requestData, config, config.getDirectory(), getTaskDirectory()).print;
 
         assertEquals(1, print.getPages().size());
-        BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
 
-        File expectedImage = getFile(BASE_DIR + "expected-page.png");
-        new ImageSimilarity(reportImage).assertSimilarity(expectedImage, 10);
+        new ImageSimilarity(getFile(BASE_DIR + "expected-page.png"))
+                .assertSimilarity(print, 0, 10);
 
     }
 

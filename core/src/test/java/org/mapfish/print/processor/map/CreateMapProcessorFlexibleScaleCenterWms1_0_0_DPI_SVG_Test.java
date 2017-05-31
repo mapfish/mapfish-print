@@ -129,10 +129,8 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0_DPI_SVG_Test extends 
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(2, layerGraphics.size());
 
-        final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 2625, 1225);
-
-        new ImageSimilarity(referenceImage)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 20);
+        new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
+                .assertSimilarity(layerGraphics, 2625, 1225, 20);
 
     }
 

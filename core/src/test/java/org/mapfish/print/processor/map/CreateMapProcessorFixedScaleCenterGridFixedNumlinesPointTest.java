@@ -82,12 +82,11 @@ public class CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest extend
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
 
-        final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
-
         assertEquals(2, layerGraphics.size());
 
-        String imageName = getExpectedImageName("", referenceImage, BASE_DIR);
-        new ImageSimilarity(getFile(BASE_DIR + imageName)).assertSimilarity(referenceImage, 85);
+        String imageName = getExpectedImageName("", BASE_DIR);
+        new ImageSimilarity(getFile(BASE_DIR + imageName))
+                .assertSimilarity(layerGraphics, 780, 330, 85);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

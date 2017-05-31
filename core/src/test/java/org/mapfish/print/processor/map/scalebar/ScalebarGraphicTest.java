@@ -139,8 +139,8 @@ public class ScalebarGraphicTest {
 
         ScalebarGraphic scalebar = new ScalebarGraphic();
         URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);
-        new ImageSimilarity(new File(file)).assertSimilarity(
-                getFile("expected-scalebar-graphic.png"), 15);
+        new ImageSimilarity(getFile("expected-scalebar-graphic.png"))
+                .assertSimilarity(new File(file), 15);
     }
 
     @Test
@@ -158,8 +158,8 @@ public class ScalebarGraphicTest {
 
         ScalebarGraphic scalebar = new ScalebarGraphic();
         URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);
-        new ImageSimilarity(new File(file)).assertSimilarity(
-                getFile("expected-scalebar-graphic-dpi.png"), 15);
+        new ImageSimilarity(getFile("expected-scalebar-graphic-dpi.png"))
+                .assertSimilarity(new File(file), 15);
     }
 
     @Test
@@ -179,8 +179,8 @@ public class ScalebarGraphicTest {
 
         ScalebarGraphic scalebar = new ScalebarGraphic();
         URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);
-        new ImageSimilarity(ImageSimilarity.convertFromSvg(file, 300, 40)).assertSimilarity(
-                getFile("expected-scalebar-graphic-svg.png"), 15);
+        new ImageSimilarity(getFile("expected-scalebar-graphic-svg.png"))
+            .assertSimilarity(file, 300, 40, 15);
     }
 
     private File getFile(String fileName) {

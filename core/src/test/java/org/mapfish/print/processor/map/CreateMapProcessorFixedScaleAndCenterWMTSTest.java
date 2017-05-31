@@ -106,10 +106,8 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSTest extends AbstractMapfi
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(2, layerGraphics.size());
 
-        final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 630, 294);
-//        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
-        new ImageSimilarity(referenceImage)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 20);
+        new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
+                .assertSimilarity(layerGraphics, 630, 294, 20);
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {

@@ -51,7 +51,8 @@ public class CreateOverviewMapProcessorRotateTest extends AbstractMapfishSpringT
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".osm")) || input.getAuthority().contains(host + ".osm");
+                        return (("" + input.getHost()).contains(host + ".osm")) ||
+                                input.getAuthority().contains(host + ".osm");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
@@ -69,7 +70,8 @@ public class CreateOverviewMapProcessorRotateTest extends AbstractMapfishSpringT
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".json")) || input.getAuthority().contains(host + ".json");
+                        return (("" + input.getHost()).contains(host + ".json")) ||
+                                input.getAuthority().contains(host + ".json");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
@@ -86,7 +88,8 @@ public class CreateOverviewMapProcessorRotateTest extends AbstractMapfishSpringT
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(),
+                this.requestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -97,11 +100,12 @@ public class CreateOverviewMapProcessorRotateTest extends AbstractMapfishSpringT
         assertEquals(2, layerGraphics.size());
 
         final BufferedImage actualImage = ImageSimilarity.mergeImages(layerGraphics, 300, 200);
-        new ImageSimilarity(actualImage)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 50);
+        new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
+                .assertSimilarity(actualImage, 50);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateOverviewMapProcessorRotateTest.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateOverviewMapProcessorRotateTest.class,
+                BASE_DIR + "requestData.json");
     }
 }

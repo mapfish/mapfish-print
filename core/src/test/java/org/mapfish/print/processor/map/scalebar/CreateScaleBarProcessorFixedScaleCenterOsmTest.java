@@ -100,8 +100,8 @@ public class CreateScaleBarProcessorFixedScaleCenterOsmTest extends AbstractMapf
 
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
 
-        new ImageSimilarity(referenceImage)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 60);
+        new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
+                .assertSimilarity(referenceImage, 60);
 
         String scalebarGraphic = values.getObject("scalebarGraphic", String.class);
 

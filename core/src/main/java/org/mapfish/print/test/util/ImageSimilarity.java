@@ -2,6 +2,7 @@ package org.mapfish.print.test.util;
 
 import com.google.common.collect.FluentIterable;
 import com.google.common.io.Files;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.JRGraphics2DExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
@@ -49,14 +50,14 @@ public final class ImageSimilarity {
     /**
      * The constructor, which creates the GUI and start the image processing task.
      */
-    public ImageSimilarity(BufferedImage expectedImage) throws IOException {
+    public ImageSimilarity(final BufferedImage expectedImage) throws IOException {
         this(expectedImage, null);
     }
 
     /**
      * The constructor, which creates the GUI and start the image processing task.
      */
-    private ImageSimilarity(BufferedImage expectedImage, final File expectedFile) throws IOException {
+    private ImageSimilarity(final BufferedImage expectedImage, final File expectedFile) throws IOException {
         this.expectedImage = expectedImage;
         this.expectedPath = expectedFile;
     }
@@ -123,6 +124,43 @@ public final class ImageSimilarity {
     /**
      * Check that the actual image and the image calculated by this object are within the given distance.
      *
+     * @param graphicFiles a list of graphic files
+     * @param width the graphic width (required for svg files)
+     * @param height the graphic height (required for svg files)
+     * @param maxDistance the maximum distance between the two images.
+     */
+    public void assertSimilarity(
+            final List<URI> graphicFiles, final int width, final int height, final double maxDistance)
+            throws IOException, TranscoderException {
+        assertSimilarity(mergeImages(graphicFiles, width, height), maxDistance);
+    }
+
+    /**
+     * Check that the actual image and the image calculated by this object are within the given distance.
+     *
+     * @param maxDistance the maximum distance between the two images.
+     */
+    public void assertSimilarity(
+            final URI svgFile, final int width, final int height, final double maxDistance)
+            throws IOException, TranscoderException {
+        assertSimilarity(convertFromSvg(svgFile, width, height), maxDistance);
+    }
+
+
+    /**
+     * Check that the actual image and the image calculated by this object are within the given distance.
+     *
+     * @param maxDistance the maximum distance between the two images.
+     */
+    public void assertSimilarity(
+            final JasperPrint jasperPrint, final Integer page, final double maxDistance)
+            throws IOException, JRException {
+        assertSimilarity(exportReportToImage(jasperPrint, page), maxDistance);
+    }
+
+    /**
+     * Check that the actual image and the image calculated by this object are within the given distance.
+     *
      * @param actualImage the image to compare to "this" image.
      * @param maxDistance the maximum distance between the two images.
      */
@@ -163,8 +201,8 @@ public final class ImageSimilarity {
             throw new AssertionError("The expected file was missing and has been generated: " +
                     actualOutput.getAbsolutePath());
         }
-        // * 25 to Normalise with the previous calculation
-        final double distance = calcDistance(actualImage) * 25;
+        // * 50 to Normalise with the previous calculation
+        final double distance = calcDistance(actualImage) * 50;
         if (distance > maxDistance) {
             ImageIO.write(expectedImage, "png", actualOutput);
             throw new AssertionError(String.format("similarity difference between images is: %s which is " +
@@ -234,7 +272,8 @@ public final class ImageSimilarity {
         return mergedImage;
     }
 
-    private static BufferedImage loadGraphic(URI path, int width, int height) throws IOException, TranscoderException {
+    private static BufferedImage loadGraphic(final URI path, final int width, final int height)
+            throws IOException, TranscoderException {
         File file = new File(path);
 
         if (file.getName().endsWith(".svg")) {
@@ -253,14 +292,16 @@ public final class ImageSimilarity {
     /**
      * Renders an SVG image into a {@link BufferedImage}.
      */
-    public static BufferedImage convertFromSvg(URI svgFile, int width, int height) throws TranscoderException {
+    public static BufferedImage convertFromSvg(final URI svgFile, final int width, final int height)
+            throws TranscoderException {
         return SvgUtil.convertFromSvg(svgFile, width, height);
     }
 
     /**
      * Exports a rendered {@link JasperPrint} to a {@link BufferedImage}.
      */
-    public static BufferedImage exportReportToImage(JasperPrint jasperPrint, Integer page) throws Exception {
+    public static BufferedImage exportReportToImage(final JasperPrint jasperPrint, final Integer page)
+            throws JRException {
         BufferedImage pageImage = new BufferedImage(jasperPrint.getPageWidth(), jasperPrint.getPageHeight(),
                 BufferedImage.TYPE_INT_RGB);
 
@@ -281,7 +322,7 @@ public final class ImageSimilarity {
         return pageImage;
     }
 
-    public static void main(String args[]) throws IOException {
+    public static void main(final String args[]) throws IOException {
         final String path = "core/src/test/resources/map-data";
         final File root = new File(path);
         final FluentIterable<File> files = Files.fileTreeTraverser().postOrderTraversal(root);

@@ -144,9 +144,9 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
         for (int i = 0; i < print.getPages().size(); i++) {
             BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, i);
 
-            File expectedImage = getFile(String.format("%soutput/%s/expected-page-%s.png",
-                    BASE_DIR, testName, i));
-            new ImageSimilarity(reportImage).assertSimilarity(expectedImage, 50);
+            new ImageSimilarity(getFile(String.format("%soutput/%s/expected-page-%s.png",
+                    BASE_DIR, testName, i)))
+                    .assertSimilarity(reportImage, 50);
         }
     }
 

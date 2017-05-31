@@ -57,10 +57,10 @@ public class CreateMapProcessorGridFixedNumlinesLinesNoRotateLabelsTest extends 
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(1, layerGraphics.size());
-        final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
 
-        String imageName = getExpectedImageName("", referenceImage, BASE_DIR);
-        new ImageSimilarity(referenceImage).assertSimilarity(getFile(BASE_DIR + imageName), 30);
+        String imageName = getExpectedImageName("", BASE_DIR);
+        new ImageSimilarity(getFile(BASE_DIR + imageName))
+                .assertSimilarity(layerGraphics, 780, 330, 30);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
