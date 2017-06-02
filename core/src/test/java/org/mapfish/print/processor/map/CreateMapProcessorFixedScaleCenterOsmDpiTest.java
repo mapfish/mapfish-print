@@ -104,7 +104,7 @@ public class CreateMapProcessorFixedScaleCenterOsmDpiTest extends AbstractMapfis
         assertEquals(25000.0, mapContext.getScale().getDenominator(144), 1E-6);
 
         new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
-                .assertSimilarity(layerGraphics, 1560, 660, 30);
+                .assertSimilarity(layerGraphics, 1560, 660, 25);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

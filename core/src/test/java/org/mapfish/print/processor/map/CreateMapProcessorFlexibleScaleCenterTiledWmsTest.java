@@ -83,7 +83,7 @@ public class CreateMapProcessorFlexibleScaleCenterTiledWmsTest extends AbstractM
         assertEquals(1, layerGraphics.size());
 
         new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
-                .assertSimilarity(layerGraphics, 780, 330, 30);
+                .assertSimilarity(layerGraphics, 780, 330, 20);
 
     }
 

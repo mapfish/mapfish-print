@@ -1099,7 +1099,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals(outputNamePrefix + year + ".png", fileName);
 
         new ImageSimilarity(getFile(MapPrinterServletTest.class,"expectedSimpleImage.png"))
-                .assertSimilarity(report, 10);
+                .assertSimilarity(report, 1);
         return report;
     }
 

@@ -161,7 +161,7 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
         new ImageSimilarity(getFile(baseDir + "expectedImage.png"))
-                .assertSimilarity(print, 0, 10);
+                .assertSimilarity(print, 0, 5);
     }
 
     @Test

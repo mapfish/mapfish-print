@@ -160,7 +160,7 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
         assertEquals("test_report-" + year + ".png", fileName);
 
         new ImageSimilarity(getFile(MapPrinterServletSecurityTest.class, "expectedSimpleImage.png"))
-                .assertSimilarity(report, 10);
+                .assertSimilarity(report, 1);
         return report;
     }
 

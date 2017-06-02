@@ -98,20 +98,20 @@ public class AddBackgroundLayersTest extends AbstractMapfishSpringTest {
         taskFuture.get();
 
         assertImage(values, 1, "layerGraphics",
-                "expectedSimpleImage.png", 630, 294);
+                "expectedSimpleImage.png", 630, 294, 40);
         assertImage(values, 1, "overviewMapLayerGraphics",
-                "expectedOverviewImage.png", 320, 200);
+                "expectedOverviewImage.png", 320, 200, 10);
     }
 
     private void assertImage(
             Values values, int numberOfLayers, String graphicsValueKey, String imageName,
-            int width, int height) throws IOException, TranscoderException {
+            int width, int height, double tolerance) throws IOException, TranscoderException {
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject(graphicsValueKey, List.class);
         assertEquals(numberOfLayers, layerGraphics.size());
 
-        new ImageSimilarity(getFile(BASE_DIR + imageName)).
-                assertSimilarity(layerGraphics, width, height, 10);
+        new ImageSimilarity(getFile(BASE_DIR + imageName))
+                .assertSimilarity(layerGraphics, width, height, tolerance);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

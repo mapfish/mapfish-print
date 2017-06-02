@@ -106,7 +106,7 @@ public class OsmCustomParamsTest extends AbstractMapfishSpringTest {
 
         String expectedSimpleImage = getExpectedImageName("", BASE_DIR);
         new ImageSimilarity(getFile(BASE_DIR + expectedSimpleImage))
-                .assertSimilarity(layerGraphics, 780, 330, 30);
+                .assertSimilarity(layerGraphics, 780, 330, 50);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

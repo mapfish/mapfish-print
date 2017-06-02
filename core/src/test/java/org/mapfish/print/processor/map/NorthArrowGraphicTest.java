@@ -147,7 +147,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
                 this.bgColor, 90.0, getTaskDirectory(), this.requestFactoryWrapper);
 
         new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow.png"))
-                .assertSimilarity(file, 200, 200, 0);
+                .assertSimilarity(file, 200, 200, 4);
     }
 
     @Test
@@ -158,7 +158,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
                 this.bgColor, Math.PI / 2, getTaskDirectory(), this.requestFactoryWrapper);
 
         new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow_10.png"))
-                .assertSimilarity(file, 200, 200, 75);
+                .assertSimilarity(file, 200, 200, 70);
     }
 
     @Test
@@ -170,7 +170,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
                 backgroundColor, Math.PI / 2, getTaskDirectory(), this.requestFactoryWrapper);
 
         new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow-bg.png"))
-                .assertSimilarity(file, 200, 200, 0);
+                .assertSimilarity(file, 200, 200, 5);
     }
 
     @Test
@@ -182,7 +182,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
                 backgroundColor, Math.PI / 2, getTaskDirectory(), this.requestFactoryWrapper);
 
         new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow_10-bg.png")).assertSimilarity(
-                file, 200, 200, 75);
+                file, 200, 200, 70);
     }
 
     @Test
@@ -192,6 +192,6 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
                 this.bgColor, Math.PI / 2, getTaskDirectory(), this.requestFactoryWrapper);
 
         new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow_10-default.png"))
-                .assertSimilarity(file, 200, 200, 75);
+                .assertSimilarity(file, 200, 200, 70);
     }
 }

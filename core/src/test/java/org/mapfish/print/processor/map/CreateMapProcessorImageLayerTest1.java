@@ -76,7 +76,7 @@ public class CreateMapProcessorImageLayerTest1 extends AbstractMapfishSpringTest
         assertEquals(1, layerGraphics.size());
 
         new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
-                .assertSimilarity(layerGraphics, 630, 294, 100);
+                .assertSimilarity(layerGraphics, 630, 294, 1);
 
     }
 

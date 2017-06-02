@@ -129,7 +129,7 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0Test extends AbstractM
         assertEquals(1, layerGraphics.size());
 
         new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
-                .assertSimilarity(layerGraphics, 630, 294, 10);
+                .assertSimilarity(layerGraphics, 630, 294, 40);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

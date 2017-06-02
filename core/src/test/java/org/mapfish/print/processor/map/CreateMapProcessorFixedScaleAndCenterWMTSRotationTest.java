@@ -105,7 +105,7 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSRotationTest extends Abstr
         assertEquals(2, layerGraphics.size());
 
         new ImageSimilarity(getFile(BASE_DIR + "/expectedSimpleImage.png"))
-                .assertSimilarity(layerGraphics, 630, 294, 25);
+                .assertSimilarity(layerGraphics, 630, 294, 50);
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {

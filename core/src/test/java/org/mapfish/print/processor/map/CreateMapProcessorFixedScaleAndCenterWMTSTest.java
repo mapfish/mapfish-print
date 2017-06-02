@@ -107,7 +107,7 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSTest extends AbstractMapfi
         assertEquals(2, layerGraphics.size());
 
         new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
-                .assertSimilarity(layerGraphics, 630, 294, 20);
+                .assertSimilarity(layerGraphics, 630, 294, 40);
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {

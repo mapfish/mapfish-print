@@ -101,7 +101,7 @@ public class CreateOverviewMapProcessorStyleTest extends AbstractMapfishSpringTe
         assertEquals(2, layerGraphics.size());
 
         new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
-                .assertSimilarity(layerGraphics, 300, 200, 50);
+                .assertSimilarity(layerGraphics, 300, 200, 110);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

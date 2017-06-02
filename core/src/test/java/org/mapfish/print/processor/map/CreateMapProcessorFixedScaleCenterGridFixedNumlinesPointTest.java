@@ -86,7 +86,7 @@ public class CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest extend
 
         String imageName = getExpectedImageName("", BASE_DIR);
         new ImageSimilarity(getFile(BASE_DIR + imageName))
-                .assertSimilarity(layerGraphics, 780, 330, 85);
+                .assertSimilarity(layerGraphics, 780, 330, 10);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

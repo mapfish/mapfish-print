@@ -82,9 +82,8 @@ public class CreateMapProcessorAoiForBoundsTest extends AbstractMapfishSpringTes
         assertEquals(2, layerGraphics.size());
 
         new ImageSimilarity(getFile(BASE_DIR + "/expectedSimpleImage-no-bounds.png"))
-                .assertSimilarity(layerGraphics, 630, 294, 50);
+                .assertSimilarity(layerGraphics, 630, 294, 100);
     }
-
 
     private static PJsonObject loadJsonRequestData() throws IOException {
         return parseJSONObjectFromFile(CreateMapProcessorAoiForBoundsTest.class, BASE_DIR + "requestData.json");

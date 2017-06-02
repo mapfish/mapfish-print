@@ -254,8 +254,8 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
 
         final BufferedImage reportAsImage = ImageIO.read(new ByteArrayInputStream(report));
         new ImageSimilarity(
-                getFile(OldAPIMapPrinterServletTest.class, "expectedSimpleImage.png")).
-                assertSimilarity(reportAsImage, 10);
+                getFile(OldAPIMapPrinterServletTest.class, "expectedSimpleImage.png"))
+                .assertSimilarity(reportAsImage, 5);
     }
 
     @Test

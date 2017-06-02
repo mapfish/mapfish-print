@@ -71,8 +71,7 @@ public class CreateNorthArrowProcessorSvgTest extends AbstractMapfishSpringTest 
         String northArrowGraphic = values.getObject("northArrowGraphic", String.class);
 
         new ImageSimilarity(getFile(BASE_DIR + "expectedNorthArrow.png"))
-                .assertSimilarity(new URI(northArrowGraphic), 200, 200, 90);
-
+                .assertSimilarity(new URI(northArrowGraphic), 200, 200, 75);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

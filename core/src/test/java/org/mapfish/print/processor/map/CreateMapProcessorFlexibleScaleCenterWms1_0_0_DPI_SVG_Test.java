@@ -130,8 +130,7 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0_DPI_SVG_Test extends 
         assertEquals(2, layerGraphics.size());
 
         new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
-                .assertSimilarity(layerGraphics, 2625, 1225, 20);
-
+                .assertSimilarity(layerGraphics, 2625, 1225, 15);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

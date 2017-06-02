@@ -60,11 +60,10 @@ public class CreateMapProcessorGridFixedNumlinesLinesNoRotateLabelsTest extends 
 
         String imageName = getExpectedImageName("", BASE_DIR);
         new ImageSimilarity(getFile(BASE_DIR + imageName))
-                .assertSimilarity(layerGraphics, 780, 330, 30);
+                .assertSimilarity(layerGraphics, 780, 330, 20);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
         return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleCenterTiledWmsTest.class, BASE_DIR + "requestData.json");
     }
-
 }
