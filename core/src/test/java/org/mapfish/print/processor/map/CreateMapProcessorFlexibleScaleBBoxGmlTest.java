@@ -88,8 +88,8 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
             List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
             assertEquals(1, layerGraphics.size());
 
-            new ImageSimilarity(new File(layerGraphics.get(0))).assertSimilarity(
-                    getFile(String.format("%sexpected%s.png", BASE_DIR, gmlDataName)));
+            new ImageSimilarity(getFile(String.format("%sexpected%s.png", BASE_DIR, gmlDataName)))
+                    .assertSimilarity(new File(layerGraphics.get(0)), 0);
         }
 
     }
