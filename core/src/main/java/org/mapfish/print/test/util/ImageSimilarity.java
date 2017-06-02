@@ -58,6 +58,14 @@ public final class ImageSimilarity {
         }
     }
 
+    private File getRelatedFile(final String name) {
+        final String expectedFileName = this.expectedPath.getName();
+        return new File(this.expectedPath.getParentFile(),
+            (expectedFileName.contains("expected") ?
+                    expectedFileName.replace("expected", name) :
+                    name + "-" + expectedFileName));
+    }
+
     /**
      * This method calculates the distance between the signatures of an image and
      * the reference one. The signatures for the image passed as the parameter are
@@ -183,11 +191,7 @@ public final class ImageSimilarity {
     public void assertSimilarity(
             final BufferedImage actualImage, final double maxDistance)
             throws IOException {
-        final File actualOutput = new File(this.expectedPath.getParentFile(),
-            (this.expectedPath.getName().contains("expected") ?
-                    this.expectedPath.getName().replace("expected", "actual") :
-                    "actual-" + this.expectedPath.getName())
-            .replace(".tiff", ".png"));
+        final File actualOutput = getRelatedFile("actual");
         if (!this.expectedPath.exists()) {
             ImageIO.write(actualImage, "png", expectedPath);
             throw new AssertionError("The expected file was missing and has been generated: " +
