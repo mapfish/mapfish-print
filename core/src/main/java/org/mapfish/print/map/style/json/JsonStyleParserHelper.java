@@ -32,6 +32,7 @@ import org.geotools.styling.TextSymbolizer;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.DistanceUnit;
+import org.mapfish.print.url.data.Handler;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
@@ -203,9 +204,23 @@ public final class JsonStyleParserHelper {
             }
 
             final String graphicFormat = getGraphicFormat(externalGraphicUrl, styleJson);
-            final ExternalGraphic externalGraphic =
-                    this.styleBuilder.createExternalGraphic(externalGraphicUrl, graphicFormat);
-            graphic.graphicalSymbols().add(externalGraphic);
+            ExternalGraphic externalGraphic = null;
+            if (externalGraphicUrl.startsWith("data:")) {
+                try {
+                    externalGraphic = this.styleBuilder.createExternalGraphic(
+                        new URL(null, externalGraphicUrl, new Handler()),
+                        graphicFormat
+                    );
+                } catch (MalformedURLException e) {
+                    // ignored
+                }
+            } else {
+                externalGraphic =
+                        this.styleBuilder.createExternalGraphic(externalGraphicUrl, graphicFormat);
+            }
+            if (externalGraphic != null) {
+                graphic.graphicalSymbols().add(externalGraphic);
+            }
         }
 
         if (styleJson.has(JSON_GRAPHIC_NAME)) {
@@ -295,8 +310,12 @@ public final class JsonStyleParserHelper {
         try {
             new URL(externalGraphicUrl);
         } catch (MalformedURLException e) {
-            // not a url so assume a file url and verify that it is valid
+            // not a url so assume a file or data url and verify that it is valid
             try {
+                if (externalGraphicUrl.startsWith("data:")) {
+                    new URL(null, externalGraphicUrl, new Handler());
+                    return externalGraphicUrl;
+                }
                 final URL fileURL = new URL("file://" + externalGraphicUrl);
                 return testForLegalFileUrl(this.configuration, fileURL).toExternalForm();
             } catch (MalformedURLException e1) {
