@@ -13,6 +13,7 @@ import org.mapfish.print.SvgUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -41,6 +42,8 @@ public final class ImageSimilarity {
     private static final boolean GENERATE_IN_SOURCE = false;
 
     private final BufferedImage expectedImage;
+    private final BufferedImage maskImage;
+    private final BufferedImage diffImage;
     private final File expectedPath;
 
     /**
@@ -56,6 +59,26 @@ public final class ImageSimilarity {
         else {
             this.expectedPath = expectedFile;
         }
+        final File maskFile = getRelatedFile("mask");
+        if (maskFile.exists()) {
+            this.maskImage = ImageIO.read(maskFile);
+            assert this.maskImage.getSampleModel().getNumBands() == 1;
+        }
+        else {
+            this.maskImage = new BufferedImage(
+                    this.expectedImage.getWidth(), this.expectedImage.getHeight(),
+                    BufferedImage.TYPE_BYTE_GRAY);
+
+            final Graphics2D graphics = this.maskImage.createGraphics();
+            try {
+                graphics.setBackground(new Color(255, 255, 255));
+                graphics.clearRect(0, 0, this.expectedImage.getWidth(), this.expectedImage.getHeight());
+            } finally {
+                graphics.dispose();
+            }
+        }
+        this.diffImage = new BufferedImage(
+                this.expectedImage.getWidth(), this.expectedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
     }
 
     private File getRelatedFile(final String name) {
@@ -95,23 +118,32 @@ public final class ImageSimilarity {
         double dist = 0;
         double[] expectedPixel = new double[this.expectedImage.getSampleModel().getNumBands()];
         double[] actualPixel = new double[this.expectedImage.getSampleModel().getNumBands()];
+        int[] maskPixel = new int[1];
         RandomIter expectedIterator = RandomIterFactory.create(this.expectedImage, null);
         RandomIter actualIterator = RandomIterFactory.create(actual, null);
+        RandomIter maskIterator = RandomIterFactory.create(this.maskImage, null);
+        Graphics2D diffGraphics = this.diffImage.createGraphics();
         for (int x = 0; x < actual.getWidth(); x++) {
             for (int y = 0; y < actual.getHeight(); y++) {
                 expectedIterator.getPixel(x, y, expectedPixel);
                 actualIterator.getPixel(x, y, actualPixel);
+                maskIterator.getPixel(x, y, maskPixel);
                 double squareDist = 0.0;
                 for (int i = 0; i < this.expectedImage.getSampleModel().getNumBands(); i++) {
                     double colorDist = expectedPixel[i] - actualPixel[i];
                     squareDist += colorDist * colorDist;
                 }
-                dist += Math.sqrt(squareDist);
+                double pxDiff = Math.sqrt(squareDist) /
+                        Math.sqrt(this.expectedImage.getSampleModel().getNumBands()) *
+                        (maskPixel[0] / 255.0);
+                dist += pxDiff / 255;
+                diffGraphics.setColor(new Color((int)Math.round(pxDiff), 0, 0));
+                diffGraphics.drawRect(x, y, 1, 1);
             }
         }
+        diffGraphics.dispose();
         // Normalise
-        dist = dist / this.expectedImage.getWidth() / this.expectedImage.getHeight() /
-                Math.sqrt(this.expectedImage.getSampleModel().getNumBands()) / 255 * 10000;
+        dist = dist / this.expectedImage.getWidth() / this.expectedImage.getHeight() * 10000;
         LOGGER.debug("Current distance: {}", dist);
         return dist;
     }
@@ -191,15 +223,17 @@ public final class ImageSimilarity {
     public void assertSimilarity(
             final BufferedImage actualImage, final double maxDistance)
             throws IOException {
-        final File actualOutput = getRelatedFile("actual");
         if (!this.expectedPath.exists()) {
             ImageIO.write(actualImage, "png", expectedPath);
             throw new AssertionError("The expected file was missing and has been generated: " +
-                    actualOutput.getAbsolutePath());
+                    expectedPath.getAbsolutePath());
         }
         final double distance = calcDistance(actualImage);
         if (distance > maxDistance) {
+            final File actualOutput = getRelatedFile("actual");
             ImageIO.write(actualImage, "png", actualOutput);
+            final File diffOutput = getRelatedFile("diff");
+            ImageIO.write(this.diffImage, "png", diffOutput);
             throw new AssertionError(String.format("similarity difference between images is: %s which is " +
                     "greater than the max distance of %s%n" +
                     "actual=%s%n" +
