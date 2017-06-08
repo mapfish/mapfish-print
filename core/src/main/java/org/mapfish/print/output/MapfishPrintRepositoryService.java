@@ -12,6 +12,8 @@ import net.sf.jasperreports.repo.StreamRepositoryService;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.ConfigFileResolvingHttpRequestFactory;
 import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
 
@@ -27,6 +29,7 @@ import javax.annotation.Nonnull;
  * The class responsible for accessing resources and streams when generating jasper reports.
  */
 class MapfishPrintRepositoryService implements StreamRepositoryService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapfishPrintRepositoryService.class);
 
     private final ConfigFileResolvingHttpRequestFactory httpRequestFactory;
     private JasperReportsContext jasperReportsContext;
@@ -66,19 +69,25 @@ class MapfishPrintRepositoryService implements StreamRepositoryService {
 
     @Override
     public <K extends Resource> K getResource(final String uri, final Class<K> resourceType) {
-        if (resourceType.isAssignableFrom(InputStreamResource.class)) {
-            final InputStream inputStream = getInputStream(uri);
-            if (inputStream != null) {
-                final InputStreamResource resource = new InputStreamResource();
-                resource.setInputStream(inputStream);
-                return resourceType.cast(resource);
+        try {
+            if (resourceType.isAssignableFrom(InputStreamResource.class)) {
+                final InputStream inputStream = getInputStream(uri);
+                if (inputStream != null) {
+                    final InputStreamResource resource = new InputStreamResource();
+                    resource.setInputStream(inputStream);
+                    return resourceType.cast(resource);
+                }
             }
-        }
 
-        final PersistenceUtil persistenceUtil = PersistenceUtil.getInstance(this.jasperReportsContext);
-        PersistenceService persistenceService = persistenceUtil.getService(FileRepositoryService.class, resourceType);
-        if (persistenceService != null) {
-            return resourceType.cast(persistenceService.load(uri, this));
+            final PersistenceUtil persistenceUtil = PersistenceUtil.getInstance(this.jasperReportsContext);
+            PersistenceService persistenceService = persistenceUtil.getService(FileRepositoryService.class, resourceType);
+            if (persistenceService != null) {
+                return resourceType.cast(persistenceService.load(uri, this));
+            }
+        } catch (IllegalStateException e) {
+            LOGGER.info("Resource not found {} ({}).", uri, e.toString());
+        } catch (Exception e) {
+            LOGGER.trace(String.format("Error on getting resource %s.", uri), e);
         }
         return null;
     }
