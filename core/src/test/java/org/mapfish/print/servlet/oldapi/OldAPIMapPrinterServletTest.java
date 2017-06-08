@@ -129,8 +129,8 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         final MockHttpServletRequest infoRequest = new MockHttpServletRequest();
         infoRequest.setContextPath("/print-old");
         final MockHttpServletResponse infoResponse = new MockHttpServletResponse();
-        this.servlet.getInfo("http://demo.mapfish.org/2.2/print/dep/info.json", "printConfig",null,
-                infoRequest, infoResponse);
+        this.servlet.getInfo("http://demo.mapfish.org/2.2/print/dep/info.json",
+                "printConfig",null, infoRequest, infoResponse);
         assertEquals(HttpStatus.OK.value(), infoResponse.getStatus());
 
         final String result = infoResponse.getContentAsString();
@@ -147,8 +147,10 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         assertTrue(info.has("printURL"));
         assertTrue(info.has("createURL"));
 
-        assertEquals("http://demo.mapfish.org/2.2/print/dep/print.pdf", info.getString("printURL"));
-        assertEquals("http://demo.mapfish.org/2.2/print/dep/create.json", info.getString("createURL"));
+        assertEquals("http://demo.mapfish.org/2.2/print/dep/print.pdf",
+                info.getString("printURL"));
+        assertEquals("http://demo.mapfish.org/2.2/print/dep/create.json",
+                info.getString("createURL"));
     }
 
     @Test
@@ -181,9 +183,11 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         final String result = createResponse.getContentAsString();
         final String url = parseJSONObjectFromString(result).getString("getURL");
         final String reportUrl = "http://demo.mapfish.org/2.2/print/dep/";
-        assertTrue(String.format("Start of url is not as expected: \n'%s'\n'%s'", reportUrl, url), url.startsWith(reportUrl));
+        assertTrue(String.format("Start of url is not as expected: \n'%s'\n'%s'", reportUrl, url),
+                url.startsWith(reportUrl));
         assertFalse(url.startsWith(reportUrl + "report/"));
-        assertTrue("Report url should end with .printout: " + url, url.endsWith(OldAPIMapPrinterServlet.REPORT_SUFFIX));
+        assertTrue("Report url should end with .printout: " + url,
+                url.endsWith(OldAPIMapPrinterServlet.REPORT_SUFFIX));
         final String printId = Files.getNameWithoutExtension(url.substring(url.lastIndexOf('/') + 1));
 
         final MockHttpServletResponse getReportResponse = new MockHttpServletResponse();
@@ -204,7 +208,8 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         createRequest.setPathInfo("/create.json");
         final MockHttpServletResponse createResponse = new MockHttpServletResponse();
 
-        this.servlet.createReportPost("http://demo.mapfish.org/2.2/print/pdf/create.json", null, null, createRequest, createResponse);
+        this.servlet.createReportPost("http://demo.mapfish.org/2.2/print/pdf/create.json",
+                null, null, createRequest, createResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), createResponse.getStatus());
         assertTrue(createResponse.getContentAsString().contains("Missing 'spec' parameter"));
     }
@@ -218,7 +223,8 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         createRequest.setPathInfo("/print.pdf");
         final MockHttpServletResponse createResponse = new MockHttpServletResponse();
 
-        this.servlet.printReport(loadRequestDataAsString("requestData-old-api.json"), createRequest, createResponse);
+        this.servlet.printReport(loadRequestDataAsString("requestData-old-api.json"),
+                createRequest, createResponse);
         assertEquals(HttpStatus.OK.value(), createResponse.getStatus());
     }
 
@@ -231,12 +237,14 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         createRequest.setPathInfo("/print.pdf");
         final MockHttpServletResponse createResponse = new MockHttpServletResponse();
 
-        this.servlet.printReport(loadRequestDataAsString("requestData-old-api-png.json"), createRequest, createResponse);
+        this.servlet.printReport(loadRequestDataAsString("requestData-old-api-png.json"),
+                createRequest, createResponse);
         assertEquals(HttpStatus.OK.value(), createResponse.getStatus());
-        assertCorrectResponse(createResponse, "expectedSimpleImage.tiff");
+        assertCorrectResponse(createResponse, "expectedSimpleImage.png");
     }
 
-    private void assertCorrectResponse(MockHttpServletResponse servletGetReportResponse, String expectedImage) throws IOException {
+    private void assertCorrectResponse(
+            MockHttpServletResponse servletGetReportResponse, String expectedImage) throws IOException {
         byte[] report = servletGetReportResponse.getContentAsByteArray();
 
         final String contentType = servletGetReportResponse.getHeader("Content-Type");
@@ -245,8 +253,9 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals("political-boundaries.png", fileName);
 
         final BufferedImage reportAsImage = ImageIO.read(new ByteArrayInputStream(report));
-//        ImageSimilarity.writeUncompressedImage(reportAsImage, "/expectedSimpleImage.tiff");
-        new ImageSimilarity(reportAsImage, 2).assertSimilarity(getFile(OldAPIMapPrinterServletTest.class, "expectedSimpleImage.tiff"), 10);
+        new ImageSimilarity(
+                getFile(OldAPIMapPrinterServletTest.class, "expectedSimpleImage.png"))
+                .assertSimilarity(reportAsImage, 5);
     }
 
     @Test
@@ -258,7 +267,8 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         createRequest.setPathInfo("/print.pdf");
         final MockHttpServletResponse createResponse = new MockHttpServletResponse();
 
-        this.servlet.printReportPost(loadRequestDataAsString("requestData-old-api.json"), createRequest, createResponse);
+        this.servlet.printReportPost(loadRequestDataAsString("requestData-old-api.json"),
+                createRequest, createResponse);
         assertEquals(HttpStatus.OK.value(), createResponse.getStatus());
     }
 
@@ -293,14 +303,17 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         final MockHttpServletRequest infoRequest = new MockHttpServletRequest();
         infoRequest.setContextPath("/print-old");
         final MockHttpServletResponse infoResponse = new MockHttpServletResponse();
-        this.servlet.getInfo("http://ref.geoview.bl.ch/print/wsgi/printproxy", null,null, infoRequest, infoResponse);
+        this.servlet.getInfo("http://ref.geoview.bl.ch/print/wsgi/printproxy", null,null,
+                infoRequest, infoResponse);
         assertEquals(HttpStatus.OK.value(), infoResponse.getStatus());
 
         final String result = infoResponse.getContentAsString();
         final PJsonObject info = parseJSONObjectFromString(result);
 
-        assertEquals("http://ref.geoview.bl.ch/print/wsgi/printproxy/create.json", info.getString(OldAPIMapPrinterServlet.JSON_CREATE_URL));
-        assertEquals("http://ref.geoview.bl.ch/print/wsgi/printproxy/print.pdf", info.getString(OldAPIMapPrinterServlet.JSON_PRINT_URL));
+        assertEquals("http://ref.geoview.bl.ch/print/wsgi/printproxy/create.json",
+                info.getString(OldAPIMapPrinterServlet.JSON_CREATE_URL));
+        assertEquals("http://ref.geoview.bl.ch/print/wsgi/printproxy/print.pdf",
+                info.getString(OldAPIMapPrinterServlet.JSON_PRINT_URL));
     }
 
     @Test
@@ -320,8 +333,10 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         final String result = createResponse.getContentAsString();
         final String url = parseJSONObjectFromString(result).getString("getURL");
         final String reportUrl = "http://ref.geoview.bl.ch/print/wsgi/printproxy/";
-        assertTrue(String.format("Start of url is not as expected: \n'%s'\n'%s'", reportUrl, url), url.startsWith(reportUrl));
-        assertTrue("Report url should end with .printout: " + url, url.endsWith(OldAPIMapPrinterServlet.REPORT_SUFFIX));
+        assertTrue(String.format("Start of url is not as expected: \n'%s'\n'%s'", reportUrl, url),
+                url.startsWith(reportUrl));
+        assertTrue("Report url should end with .printout: " + url,
+                url.endsWith(OldAPIMapPrinterServlet.REPORT_SUFFIX));
         assertFalse(url.startsWith(reportUrl + "report/"));
         final String printId = Files.getNameWithoutExtension(url.substring(url.lastIndexOf('/') + 1));
 
@@ -336,25 +351,29 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
 
     private void setUpConfigFiles() throws URISyntaxException {
         final HashMap<String, String> configFiles = Maps.newHashMap();
-        configFiles.put("default", getFile(OldAPIMapPrinterServletTest.class, "config-old-api.yaml").getAbsolutePath());
+        configFiles.put("default", getFile(OldAPIMapPrinterServletTest.class,
+                "config-old-api.yaml").getAbsolutePath());
         printerFactory.setConfigurationFiles(configFiles);
     }
 
     private void setUpConfigFilesDpi() throws URISyntaxException {
         final HashMap<String, String> configFiles = Maps.newHashMap();
-        configFiles.put("default", getFile(OldAPIMapPrinterServletTest.class, "config-old-api-dpi.yaml").getAbsolutePath());
+        configFiles.put("default", getFile(OldAPIMapPrinterServletTest.class,
+                "config-old-api-dpi.yaml").getAbsolutePath());
         printerFactory.setConfigurationFiles(configFiles);
     }
 
     private void setUpConfigFilesNoMap() throws URISyntaxException {
         final HashMap<String, String> configFiles = Maps.newHashMap();
-        configFiles.put("default", getFile(OldAPIMapPrinterServletTest.class, "config-old-api-no-map.yaml").getAbsolutePath());
+        configFiles.put("default", getFile(OldAPIMapPrinterServletTest.class,
+                "config-old-api-no-map.yaml").getAbsolutePath());
         printerFactory.setConfigurationFiles(configFiles);
     }
 
     private void setUpInvalidConfigFiles() throws URISyntaxException {
         final HashMap<String, String> configFiles = Maps.newHashMap();
-        configFiles.put("default", getFile(MapPrinterServletTest.class, "config.yaml").getAbsolutePath());
+        configFiles.put("default", getFile(MapPrinterServletTest.class,
+                "config.yaml").getAbsolutePath());
         printerFactory.setConfigurationFiles(configFiles);
     }
 

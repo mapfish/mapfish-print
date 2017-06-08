@@ -11,7 +11,7 @@
           "type": "WMS",
           "layers": ["topp:states"],
           "baseURL": "http://bbox_native_rotation_wms1_3_0_scale.wms:1234/wms",
-          "imageFormat": "image/tiff",
+          "imageFormat": "image/png",
           "version": "1.3.0",
           "serverType": "geoserver",
           "customParams": {

@@ -111,7 +111,7 @@ public abstract class AbstractMapfishSpringTest {
             return "linux";
         }
     }
-    protected String getExpectedImageName(String classifier, BufferedImage actualImage, String baseDir) throws IOException {
+    protected String getExpectedImageName(String classifier, String baseDir) throws IOException {
         int javaVersion;
 
         String fullVersion = System.getProperty("java.specification.version");

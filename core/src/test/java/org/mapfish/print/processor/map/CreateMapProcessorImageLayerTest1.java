@@ -54,7 +54,7 @@ public class CreateMapProcessorImageLayerTest1 extends AbstractMapfishSpringTest
                     @Override
                     public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
                         try {
-                            byte[] bytes = Files.toByteArray(getFile("/map-data/tiger-ny.tiff"));
+                            byte[] bytes = Files.toByteArray(getFile("/map-data/tiger-ny.png"));
                             return ok(uri, bytes, httpMethod);
                         } catch (AssertionError e) {
                             return error404(uri, httpMethod);
@@ -75,8 +75,8 @@ public class CreateMapProcessorImageLayerTest1 extends AbstractMapfishSpringTest
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(1, layerGraphics.size());
 
-        new ImageSimilarity(ImageSimilarity.mergeImages(layerGraphics, 630, 294), 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 100);
+        new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
+                .assertSimilarity(layerGraphics, 630, 294, 1);
 
     }
 

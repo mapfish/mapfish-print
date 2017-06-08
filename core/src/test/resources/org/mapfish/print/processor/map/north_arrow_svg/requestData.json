@@ -12,7 +12,6 @@
           "baseURL": "http://north_arrow.osm:1234",
           "imageExtension": "tiff"
         }
-
       ]
     }
   }

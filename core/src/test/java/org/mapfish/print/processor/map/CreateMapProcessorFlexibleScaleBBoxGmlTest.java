@@ -70,14 +70,15 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
         final Template template = config.getTemplate("main");
 
         PJsonObject requestData = loadJsonRequestData();
-        final JSONObject jsonLayer = requestData.getJSONObject("attributes").getJSONObject("map").getJSONArray("layers")
-                .getJSONObject(0).getInternalObj();
+        final JSONObject jsonLayer = requestData.getJSONObject("attributes").getJSONObject("map")
+                .getJSONArray("layers").getJSONObject(0).getInternalObj();
 
         for (String gmlDataName : new String[]{"spearfish-streams-v2.gml", "spearfish-streams-v311.gml"}) {
             jsonLayer.remove("url");
             jsonLayer.accumulate("url", "http://" + host + ":23432" + "/gml/" + gmlDataName);
 
-            Values values = new Values(requestData, template, parser, getTaskDirectory(), this.requestFactory, new File("."));
+            Values values = new Values(requestData, template, parser, getTaskDirectory(),
+                    this.requestFactory, new File("."));
 
             final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                     template.getProcessorGraph().createTask(values));
@@ -87,13 +88,14 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
             List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
             assertEquals(1, layerGraphics.size());
 
-//            Files.copy(new File(layerGraphics.get(0)), new File("/tmp/"+gmlDataName+".tiff"));
-            new ImageSimilarity(new File(layerGraphics.get(0)), 2).assertSimilarity(getFile(BASE_DIR + gmlDataName + ".tiff"), 0);
+            new ImageSimilarity(getFile(String.format("%sexpected%s.png", BASE_DIR, gmlDataName)))
+                    .assertSimilarity(new File(layerGraphics.get(0)), 20);
         }
 
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleBBoxGmlTest.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleBBoxGmlTest.class,
+                BASE_DIR + "requestData.json");
     }
 }

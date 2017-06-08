@@ -25,6 +25,8 @@ import org.springframework.http.client.ClientHttpResponse;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -40,10 +42,11 @@ import java.util.concurrent.Future;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 
+
 /**
  * <p>Create a legend.</p>
  * <p>See also: <a href="attributes.html#!legend">!legend</a> attribute</p>
- * [[examples=verboseExample,legend_cropped]]
+ * [[examples=verboseExample,legend_cropped,legend_scaled]]
  */
 public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, LegendProcessor.Output> {
     private static final Logger LOGGER = LoggerFactory.getLogger(LegendProcessor.class);
@@ -66,6 +69,8 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     private String template;
     private Integer maxWidth = null;
     private Double dpi = Constants.PDF_DPI;
+    private boolean scaled = false;
+
 
     /**
      * Constructor.
@@ -85,11 +90,11 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
 
     /**
      * The maximum width in pixels for the legend graphics.
-     * If this parameter is set, the legend graphics are cropped to the given maximum
+     * If this parameter is set, the legend graphics are cropped or scaled to the given maximum
      * width. In this case a sub-report is created containing the graphic.
-     * For reference see the example [[examples=legend_cropped]].
+     * For reference see the example [[examples=legend_cropped,legend_scaled]].
      *
-     * @param maxWidth The max. width.
+     * @param maxWidth The maximum width.
      */
     public void setMaxWidth(final Integer maxWidth) {
         this.maxWidth = maxWidth;
@@ -97,12 +102,22 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
 
     /**
      * The DPI value that is used for the legend graphics.
-     * Note: This parameter is only considered when `maxWidth` is set.
      *
      * @param dpi The DPI value.
      */
     public void setDpi(final Double dpi) {
         this.dpi = dpi;
+    }
+
+    /**
+     * When the image is too big do a scaled (default) otherwise do a scale.
+     * See the example  [[examples=legend_scaled]]
+     * Note: This parameter is only considered when `maxWidth` is set.
+     *
+     * @param scaled do a scaled.
+     */
+    public void setScaled(final boolean scaled) {
+        this.scaled = scaled;
     }
 
     @Override
@@ -121,8 +136,8 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
                 values.tempTaskDirectory);
         final Object[][] legend = new Object[legendList.size()][];
 
-        final JRTableModelDataSource dataSource = new JRTableModelDataSource(new TableDataSource(legendColumns,
-                legendList.toArray(legend)));
+        final JRTableModelDataSource dataSource = new JRTableModelDataSource(new TableDataSource(
+                legendColumns, legendList.toArray(legend)));
 
         String compiledTemplatePath = compileTemplate(values.template.getConfiguration());
 
@@ -162,21 +177,24 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
             final String metricName = LegendProcessor.class.getName() + ".read." + uri.getHost();
             try {
                 checkCancelState(this.context);
-                final ClientHttpRequest request = this.clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
+                final ClientHttpRequest request = this.clientHttpRequestFactory.createRequest(
+                        uri, HttpMethod.GET);
                 final Timer.Context timer = LegendProcessor.this.metricRegistry.timer(metricName).time();
                 final ClientHttpResponse httpResponse = request.execute();
                 try {
                     if (httpResponse.getStatusCode() == HttpStatus.OK) {
                         image = ImageIO.read(httpResponse.getBody());
                         if (image == null) {
-                            LOGGER.warn("The URL: " + this.icon + " is NOT an image format that can be decoded");
+                            LOGGER.warn("The URL: {} is NOT an image format that can be decoded", this.icon);
                         } else {
                             timer.stop();
                         }
                     } else {
-                        LOGGER.warn("Failed to load image from: " + this.icon
-                                + " due to server side error.\n\tResponse Code: " + httpResponse.getStatusCode()
-                                + "\n\tResponse Text: " + httpResponse.getStatusText());
+                        LOGGER.warn(
+                                "Failed to load image from: {} due to server side error.\n" +
+                                "\tResponse Code: {}\n" +
+                                "\tResponse Text: {}",
+                                this.icon, httpResponse.getStatusCode(), httpResponse.getStatusText());
                     }
                 } finally {
                     httpResponse.close();
@@ -228,7 +246,8 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         }
         if (legendAttributes.classes != null) {
             for (LegendAttributeValue value : legendAttributes.classes) {
-                createTasks(clientHttpRequestFactory, value, context, tempTaskDirectory, level + 1, tasks);
+                createTasks(clientHttpRequestFactory, value, context, tempTaskDirectory,
+                        level + 1, tasks);
             }
         }
         if (!tasks.isEmpty()) {
@@ -236,11 +255,13 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         }
     }
 
-    private void fillLegend(final MfClientHttpRequestFactory clientHttpRequestFactory,
-                            final LegendAttributeValue legendAttributes,
-                            final List<Object[]> legendList,
-                            final ExecutionContext context,
-                            final File tempTaskDirectory) throws ExecutionException, JRException, InterruptedException, IOException {
+    private void fillLegend(
+            final MfClientHttpRequestFactory clientHttpRequestFactory,
+            final LegendAttributeValue legendAttributes,
+            final List<Object[]> legendList,
+            final ExecutionContext context,
+            final File tempTaskDirectory)
+            throws ExecutionException, JRException, InterruptedException, IOException {
         List<Callable<Object[]>> tasks = new ArrayList<Callable<Object[]>>();
         createTasks(clientHttpRequestFactory, legendAttributes, context, tempTaskDirectory, 0, tasks);
         List<Future<Object[]>> futures = this.requestForkJoinPool.invokeAll(tasks);
@@ -249,21 +270,27 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         }
     }
 
-    private URI createSubReport(final BufferedImage originalImage,
-                                final File tempTaskDirectory) throws IOException, JRException {
-        assert (this.maxWidth != null);
+    private URI createSubReport(
+            final BufferedImage originalImage, final File tempTaskDirectory)
+            throws IOException, JRException {
+        assert this.maxWidth != null;
 
         double scaleFactor = getScaleFactor();
         BufferedImage image = originalImage;
         if (image.getWidth() * scaleFactor > this.maxWidth) {
-            image = cropToMaxWidth(image, scaleFactor);
+            if (this.scaled) {
+                image = scaleToMaxWidth(image, scaleFactor);
+            } else {
+                image = cropToMaxWidth(image, scaleFactor);
+            }
         }
 
         URI imageFile = writeToFile(image, tempTaskDirectory);
 
         final ImagesSubReport subReport = new ImagesSubReport(
                 Lists.newArrayList(imageFile),
-                new Dimension((int) (image.getWidth() * scaleFactor), (int) (image.getHeight() * scaleFactor)),
+                new Dimension((int) Math.round(image.getWidth() * scaleFactor),
+                        (int) Math.round(image.getHeight() * scaleFactor)),
                 this.dpi);
 
         final File compiledReport = File.createTempFile("legend-report-",
@@ -274,8 +301,19 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     }
 
     private BufferedImage cropToMaxWidth(final BufferedImage image, final double scaleFactor) {
-        int width = (int) Math.round(this.maxWidth / scaleFactor);
+        final int width = (int) Math.round(this.maxWidth / scaleFactor);
         return image.getSubimage(0, 0, width, image.getHeight());
+    }
+
+    private BufferedImage scaleToMaxWidth(final BufferedImage image, final double scaleFactor) {
+        final double factor = this.maxWidth / scaleFactor / image.getWidth();
+        final BufferedImage result = new BufferedImage(
+                (int) Math.round(image.getWidth() * factor),
+                (int) Math.round(image.getHeight() * factor), image.getType());
+        AffineTransform at = new AffineTransform();
+        at.scale(factor, factor);
+        AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+        return scaleOp.filter(image, result);
     }
 
     private double getScaleFactor() {
@@ -295,7 +333,8 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
 
     private synchronized BufferedImage getMissingImage() {
         if (this.missingImage == null) {
-            this.missingImage = new BufferedImage(this.missingImageSize.width, this.missingImageSize.height, BufferedImage.TYPE_INT_RGB);
+            this.missingImage = new BufferedImage(this.missingImageSize.width, this.missingImageSize.height,
+                    BufferedImage.TYPE_INT_RGB);
             final Graphics2D graphics = this.missingImage.createGraphics();
 
             try {
@@ -348,7 +387,9 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
          */
         public final int numberOfLegendRows;
 
-        Output(final JRTableModelDataSource legendDataSource, final int numberOfLegendRows, final String legendSubReport) {
+        Output(
+                final JRTableModelDataSource legendDataSource, final int numberOfLegendRows,
+                final String legendSubReport) {
             this.legendDataSource = legendDataSource;
             this.numberOfLegendRows = numberOfLegendRows;
             this.legendSubReport = legendSubReport;

@@ -50,7 +50,8 @@ public class CreateOverviewMapProcessorCustomBounds extends AbstractMapfishSprin
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".osm")) || input.getAuthority().contains(host + ".osm");
+                        return (("" + input.getHost()).contains(host + ".osm")) ||
+                                input.getAuthority().contains(host + ".osm");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
@@ -68,7 +69,8 @@ public class CreateOverviewMapProcessorCustomBounds extends AbstractMapfishSprin
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".json")) || input.getAuthority().contains(host + ".json");
+                        return (("" + input.getHost()).contains(host + ".json")) ||
+                                input.getAuthority().contains(host + ".json");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
@@ -85,23 +87,21 @@ public class CreateOverviewMapProcessorCustomBounds extends AbstractMapfishSprin
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(),
+                this.requestFactory, new File("."));
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("overviewMapLayerGraphics", List.class);
         assertEquals(1, layerGraphics.size());
 
-        final BufferedImage actualImage = ImageSimilarity.mergeImages(layerGraphics, 300, 200);
-//        ImageSimilarity.writeUncompressedImage(actualImage, "/tmp/expectedSimpleImage.tiff");
-//        ImageIO.write(actualImage, "tiff", new File("/tmp/expectedSimpleImage.tiff"));
-        new ImageSimilarity(actualImage, 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 50);
+        new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
+                .assertSimilarity(layerGraphics, 300, 200, 10);
 
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateOverviewMapProcessorCustomBounds.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateOverviewMapProcessorCustomBounds.class,
+                BASE_DIR + "requestData.json");
     }
-
 }

@@ -71,16 +71,13 @@ public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
                         assertTrue("SERVICE != WMS: " + uppercaseParams.get("WMS"),
                                 uppercaseParams.containsEntry("SERVICE", "WMS"));
                         assertTrue("FORMAT != IMAGE/TIFF: " + uppercaseParams.get("FORMAT"),
-                                uppercaseParams.containsEntry("FORMAT",
-                                "IMAGE/TIFF"));
+                                uppercaseParams.containsEntry("FORMAT", "IMAGE/PNG"));
                         assertTrue("REQUEST != MAP: " + uppercaseParams.get("REQUEST"),
                                 uppercaseParams.containsEntry("REQUEST", "MAP"));
                         assertTrue("VERSION != 1.0.0: " + uppercaseParams.get("VERSION"),
-                                uppercaseParams.containsEntry("VERSION",
-                                "1.0.0"));
+                                uppercaseParams.containsEntry("VERSION", "1.0.0"));
                         assertTrue("LAYERS != TIGER-NY: " + uppercaseParams.get("LAYERS"),
-                                uppercaseParams.containsEntry("LAYERS",
-                                "TIGER-NY"));
+                                uppercaseParams.containsEntry("LAYERS", "TIGER-NY"));
                         assertTrue("STYLES != LINE: " + uppercaseParams.get("STYLES"),
                                 uppercaseParams.containsEntry("STYLES", "LINE"));
                         assertTrue("CUSTOMP1 != 1: " + uri,
@@ -90,7 +87,7 @@ public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
                         assertTrue("EXCEPTIONS is missing", uppercaseParams.containsKey("EXCEPTIONS"));
 
                         try {
-                            byte[] bytes = Files.toByteArray(getFile("/map-data/tiger-ny.tiff"));
+                            byte[] bytes = Files.toByteArray(getFile("/map-data/tiger-ny.png"));
                             return ok(uri, bytes, httpMethod);
                         } catch (AssertionError e) {
                             return error404(uri, httpMethod);
@@ -128,14 +125,12 @@ public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(1, layerGraphics.size());
 
-//        Files.copy(new File(layerGraphics.get(0)), new File("/tmp/0_"+getClass().getSimpleName()+".tiff"));
-//        Files.copy(new File(layerGraphics.get(1)), new File("/tmp/1_"+getClass().getSimpleName()+".tiff"));
-
-        new ImageSimilarity(ImageSimilarity.mergeImages(layerGraphics, 630, 294), 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 20);
+        new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
+                .assertSimilarity(layerGraphics, 630, 294, 40);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleCenterWms1_0_0Test.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleCenterWms1_0_0Test.class,
+                BASE_DIR + "requestData.json");
     }
 }

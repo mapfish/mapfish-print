@@ -19,7 +19,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -70,22 +69,22 @@ public class CreateMapProcessorCenterWMSRotationSmallTilesTest extends AbstractM
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "/config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, parser, getTaskDirectory(), this.requestFactory, new File("."));
+        Values values = new Values(requestData, template, parser, getTaskDirectory(),
+                this.requestFactory, new File("."));
         template.getProcessorGraph().createTask(values).invoke();
 
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(1, layerGraphics.size());
 
-        final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 625, 625);
-        //ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
-        new ImageSimilarity(referenceImage, 2)
-                .assertSimilarity(getFile(BASE_DIR + "/expectedSimpleImage.png"), 25);
+        new ImageSimilarity(getFile(BASE_DIR + "/expectedSimpleImage.png"))
+                .assertSimilarity(layerGraphics, 625, 625, 1);
     }
 
 
     public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorCenterWMSRotationSmallTilesTest.class, BASE_DIR + "/requestData.json");
+        return parseJSONObjectFromFile(CreateMapProcessorCenterWMSRotationSmallTilesTest.class,
+                BASE_DIR + "/requestData.json");
     }
 
     private File getTile(String bbox) {

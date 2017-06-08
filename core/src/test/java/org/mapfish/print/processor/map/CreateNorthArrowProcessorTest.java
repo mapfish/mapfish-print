@@ -45,7 +45,8 @@ public class CreateNorthArrowProcessorTest extends AbstractMapfishSpringTest {
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".osm")) || input.getAuthority().contains(host + ".osm");
+                        return (("" + input.getHost()).contains(host + ".osm")) ||
+                                input.getAuthority().contains(host + ".osm");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
@@ -63,28 +64,30 @@ public class CreateNorthArrowProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(),
+                this.requestFactory, new File("."));
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         String northArrowGraphic = values.getObject("northArrowGraphic", String.class);
 
-//        Files.copy(new File(northArrowGraphic), new File(TMP, getClass().getSimpleName() + ".tiff"));
-
-        new ImageSimilarity(new File(new URI(northArrowGraphic)), 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedNorthArrow.tiff"), 30);
+        new ImageSimilarity(new File(new URI(northArrowGraphic)))
+                .assertSimilarity(getFile(BASE_DIR + "expectedNorthArrow.png"), 1);
 
         assertNotNull(values.getObject("northArrowOut", String.class));
 
         //now without a subreport
-        final Configuration configNoReport = configurationFactory.getConfig(getFile(BASE_DIR + "config-no-report.yaml"));
+        final Configuration configNoReport = configurationFactory.getConfig(
+                getFile(BASE_DIR + "config-no-report.yaml"));
         final Template templateNoReport = configNoReport.getTemplate("main");
-        Values valuesNoReport = new Values(requestData, templateNoReport, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
+        Values valuesNoReport = new Values(requestData, templateNoReport, this.parser, getTaskDirectory(),
+                this.requestFactory, new File("."));
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(valuesNoReport));
 
         assertNull(valuesNoReport.getObject("northArrowOut", String.class));
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleCenterOsmTest.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleCenterOsmTest.class,
+                BASE_DIR + "requestData.json");
     }
 }

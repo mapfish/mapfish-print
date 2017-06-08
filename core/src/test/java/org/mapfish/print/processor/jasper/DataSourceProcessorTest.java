@@ -76,19 +76,12 @@ public class DataSourceProcessorTest extends AbstractMapfishSpringTest {
         JasperPrint print = format.getJasperPrint(requestData, config, config.getDirectory(), getTaskDirectory()).print;
 
         assertEquals(1, print.getPages().size());
-        BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
 
-//            final File output = new File("/tmp/expected-page.png");
-//            output.getParentFile().mkdirs();
-//            ImageIO.write(reportImage, "png", output);
-
-        File expectedImage = getFile(BASE_DIR + "expected-page.png");
-        new ImageSimilarity(reportImage, 50).assertSimilarity(expectedImage, 10);
-
+        new ImageSimilarity(getFile(BASE_DIR + "expected-page.png"))
+                .assertSimilarity(print, 0, 15);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
         return parseJSONObjectFromFile(DataSourceProcessorTest.class, BASE_DIR + "requestData.json");
     }
-
 }

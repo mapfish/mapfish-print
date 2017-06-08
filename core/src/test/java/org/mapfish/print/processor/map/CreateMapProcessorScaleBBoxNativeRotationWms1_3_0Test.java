@@ -54,7 +54,8 @@ public class CreateMapProcessorScaleBBoxNativeRotationWms1_3_0Test extends Abstr
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".wms")) || input.getAuthority().contains(host + ".wms");
+                        return (("" + input.getHost()).contains(host + ".wms")) ||
+                                input.getAuthority().contains(host + ".wms");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
@@ -65,14 +66,16 @@ public class CreateMapProcessorScaleBBoxNativeRotationWms1_3_0Test extends Abstr
                             uppercaseParams.put(entry.getKey().toUpperCase(), entry.getValue().toUpperCase());
                         }
 
-                        assertTrue("SERVICE != WMS: " + uppercaseParams.get("WMS"), uppercaseParams.containsEntry("SERVICE", "WMS"));
-                        assertTrue("FORMAT != IMAGE/TIFF: " + uppercaseParams.get("FORMAT"), uppercaseParams.containsEntry("FORMAT",
-                                "IMAGE/TIFF"));
-                        assertTrue("REQUEST != GETMAP: " + uppercaseParams.get("REQUEST"), uppercaseParams.containsEntry("REQUEST", "GETMAP"));
-                        assertTrue("VERSION != 1.3.0: " + uppercaseParams.get("VERSION"), uppercaseParams.containsEntry("VERSION",
-                                "1.3.0"));
-                        assertTrue("LAYERS != TOPP:STATES: " + uppercaseParams.get("LAYERS"), uppercaseParams.containsEntry("LAYERS",
-                                "TOPP:STATES"));
+                        assertTrue("SERVICE != WMS: " + uppercaseParams.get("WMS"),
+                                uppercaseParams.containsEntry("SERVICE", "WMS"));
+                        assertTrue("FORMAT != IMAGE/PNG: " + uppercaseParams.get("FORMAT"),
+                                uppercaseParams.containsEntry("FORMAT", "IMAGE/PNG"));
+                        assertTrue("REQUEST != GETMAP: " + uppercaseParams.get("REQUEST"),
+                                uppercaseParams.containsEntry("REQUEST", "GETMAP"));
+                        assertTrue("VERSION != 1.3.0: " + uppercaseParams.get("VERSION"),
+                                uppercaseParams.containsEntry("VERSION", "1.3.0"));
+                        assertTrue("LAYERS != TOPP:STATES: " + uppercaseParams.get("LAYERS"),
+                                uppercaseParams.containsEntry("LAYERS", "TOPP:STATES"));
                         assertTrue("ANGLE != 90", uppercaseParams.containsEntry("ANGLE", "90.0"));
                         assertTrue("BBOX is missing", uppercaseParams.containsKey("BBOX"));
                         assertTrue("mapSize is not rotated (width)",
@@ -81,7 +84,8 @@ public class CreateMapProcessorScaleBBoxNativeRotationWms1_3_0Test extends Abstr
                                 uppercaseParams.containsEntry("HEIGHT", "330"));
 
                         try {
-                            byte[] bytes = Files.toByteArray(getFile("/map-data/states-native-rotation.tiff"));
+                            byte[] bytes = Files.toByteArray(
+                                    getFile("/map-data/states-native-rotation.png"));
                             return ok(uri, bytes, httpMethod);
                         } catch (AssertionError e) {
                             return error404(uri, httpMethod);
@@ -92,21 +96,21 @@ public class CreateMapProcessorScaleBBoxNativeRotationWms1_3_0Test extends Abstr
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(),
+                this.requestFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(1, layerGraphics.size());
 
-        //Files.copy(new File(layerGraphics.get(0)), new File("/tmp/0_"+getClass().getSimpleName()+".tiff"));
-
-        new ImageSimilarity(new File(layerGraphics.get(0)), 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 10);
+        new ImageSimilarity(new File(layerGraphics.get(0)))
+                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 1);
 
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorScaleBBoxNativeRotationWms1_3_0Test.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateMapProcessorScaleBBoxNativeRotationWms1_3_0Test.class,
+                BASE_DIR + "requestData.json");
     }
 }

@@ -15,14 +15,11 @@ import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
-import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
 
@@ -51,7 +48,8 @@ public class CreateMapProcessorCenterGeojsonEmptyCollection extends AbstractMapf
             InterruptedException {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
-        Values values = new Values(requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
+        Values values = new Values(requestData, template, parser, getTaskDirectory(),
+                this.httpRequestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -61,12 +59,12 @@ public class CreateMapProcessorCenterGeojsonEmptyCollection extends AbstractMapf
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(1, layerGraphics.size());
 
-        final BufferedImage img = ImageIO.read(new File(layerGraphics.get(0)));
-//        ImageIO.write(img, "tiff", new File("/tmp/expectedSimpleImage.tiff"));
-        new ImageSimilarity(img, 2).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.tiff"), 30);
+        new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
+                .assertSimilarity(new File(layerGraphics.get(0)), 1);
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorCenterGeojsonEmptyCollection.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateMapProcessorCenterGeojsonEmptyCollection.class,
+                BASE_DIR + "requestData.json");
     }
 }

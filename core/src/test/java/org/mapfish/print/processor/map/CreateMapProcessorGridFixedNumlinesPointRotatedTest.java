@@ -85,20 +85,16 @@ public class CreateMapProcessorGridFixedNumlinesPointRotatedTest extends Abstrac
             List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
             assertEquals(2, layerGraphics.size());
 
-            final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
-
-            String imageName = getExpectedImageName("_" + rotation, referenceImage, BASE_DIR);
+            String imageName = getExpectedImageName("_" + rotation, BASE_DIR);
             try {
-                new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + imageName), 30);
+                new ImageSimilarity(getFile(BASE_DIR + imageName))
+                        .assertSimilarity(layerGraphics, 780, 330, 30);
             } catch (AssertionError e) {
-//                throw new AssertionError("Image Similarity test failed for the rotation: " + rotation);
             }
-
         }
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
         return parseJSONObjectFromFile(CreateMapProcessorGridFixedNumlinesPointRotatedTest.class, BASE_DIR + "requestData.json");
     }
-
 }

@@ -70,9 +70,8 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSRestTest extends AbstractM
                         String column = matcher.group(1);
                         String row = matcher.group(2);
                         try {
-                            byte[] bytes = Files.toByteArray(getFile("/map-data/ny-tiles/" + column + "x" + row + "" +
-
-                                                                     ".tiff"));
+                            byte[] bytes = Files.toByteArray(
+                                    getFile("/map-data/ny-tiles/" + column + "x" + row + ".png"));
                             return ok(uri, bytes, httpMethod);
                         } catch (AssertionError e) {
                             return error404(uri, httpMethod);
@@ -103,7 +102,8 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSRestTest extends AbstractM
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, parser, getTaskDirectory(), this.requestFactory, new File("."));
+        Values values = new Values(requestData, template, parser, getTaskDirectory(),
+                this.requestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -116,13 +116,12 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSRestTest extends AbstractM
         MapfishMapContext mapContext = values.getObject("mapContext", MapfishMapContext.class);
         assertEquals(110000.0, mapContext.getScale().getDenominator(PDF_DPI), 1E-6);
 
-        final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 630, 294);
-        // ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
-        new ImageSimilarity(referenceImage, 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 20);
+        new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
+                .assertSimilarity(layerGraphics, 630, 294, 40);
     }
 
     public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleAndCenterWMTSRestTest.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleAndCenterWMTSRestTest.class,
+                BASE_DIR + "requestData.json");
     }
 }

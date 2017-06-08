@@ -57,12 +57,10 @@ public class CreateMapProcessorGridFixedNumlinesPointAltLabelProjTest extends Ab
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(1, layerGraphics.size());
-        final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
 
-        String imageName = getExpectedImageName("", referenceImage, BASE_DIR);
-//        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
-
-        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + imageName), 70);
+        String imageName = getExpectedImageName("", BASE_DIR);
+        new ImageSimilarity(getFile(BASE_DIR + imageName))
+                .assertSimilarity(layerGraphics, 780, 330, 20);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

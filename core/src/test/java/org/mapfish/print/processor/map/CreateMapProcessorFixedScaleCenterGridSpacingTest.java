@@ -80,13 +80,8 @@ public class CreateMapProcessorFixedScaleCenterGridSpacingTest extends AbstractM
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(2, layerGraphics.size());
 
-        final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
-
-//        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
-
-        new ImageSimilarity(referenceImage, 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 30);
-
+        new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
+                .assertSimilarity(layerGraphics, 780, 330, 15);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

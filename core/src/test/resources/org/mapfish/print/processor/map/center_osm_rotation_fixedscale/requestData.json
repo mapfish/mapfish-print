@@ -12,12 +12,11 @@
           "renderAsSvg": true,
           "style": "file://thinline.sld",
           "geojson": "http://center_osm_rotation_fixedscale.json/geojson/ny-roads-3857.json"
-        },{
+        }, {
           "type": "osm",
           "baseURL": "http://center_osm_rotation_fixedscale.osm:1234",
-          "imageExtension": "tiff"
+          "imageExtension": "png"
         }
-
       ]
     }
   }

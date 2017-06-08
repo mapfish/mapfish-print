@@ -32,11 +32,11 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
         final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
         JasperPrint print = format.getJasperPrint(requestData, config,
                 getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR), getTaskDirectory()).print;
-        BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, 0);
 
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
-        new ImageSimilarity(reportImage, 50).assertSimilarity(getFile(BASE_DIR + "expectedReport.png"), 10);
+        new ImageSimilarity(getFile(BASE_DIR + "expectedReport.png"))
+                .assertSimilarity(print, 0, 5);
     }
 
     @Test
@@ -47,8 +47,8 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
         for (OutputFormat format : this.outputFormat.values()) {
             OutputStream outputStream = new ByteArrayOutputStream();
             format.print(requestData, config,
-                    getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR), getTaskDirectory(),
-                    outputStream);
+                    getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR),
+                    getTaskDirectory(), outputStream);
             // no error?  its a pass
 
 

@@ -53,7 +53,8 @@ public class CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest extend
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".osm")) || input.getAuthority().contains(host + ".osm");
+                        return (("" + input.getHost()).contains(host + ".osm")) ||
+                                input.getAuthority().contains(host + ".osm");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
@@ -71,7 +72,8 @@ public class CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest extend
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(),
+                this.requestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -80,18 +82,15 @@ public class CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest extend
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
 
-        final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
-
-//        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
-
         assertEquals(2, layerGraphics.size());
 
-        String imageName = getExpectedImageName("", referenceImage, BASE_DIR);
-
-        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + imageName), 85);
+        String imageName = getExpectedImageName("", BASE_DIR);
+        new ImageSimilarity(getFile(BASE_DIR + imageName))
+                .assertSimilarity(layerGraphics, 780, 330, 10);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest.class,
+                BASE_DIR + "requestData.json");
     }
 }

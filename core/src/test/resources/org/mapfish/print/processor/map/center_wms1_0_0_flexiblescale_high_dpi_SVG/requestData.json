@@ -19,7 +19,7 @@
           "layers": ["tiger-ny"],
           "styles": ["line"],
           "version": "1.0.0",
-          "imageFormat": "image/tiff",
+          "imageFormat": "image/png",
           "customParams": {
             "customP1": 1,
             "customP2": 2
@@ -28,7 +28,6 @@
             "mergeableP1": 3
           }
         }
-
       ]
     }
   }

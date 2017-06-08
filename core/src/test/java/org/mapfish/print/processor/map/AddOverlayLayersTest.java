@@ -53,13 +53,14 @@ public class AddOverlayLayersTest extends AbstractMapfishSpringTest {
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".wms")) || input.getAuthority().contains(host + ".wms");
+                        return (("" + input.getHost()).contains(host + ".wms")) ||
+                                input.getAuthority().contains(host + ".wms");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
                     public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
                         try {
-                            byte[] bytes = Files.toByteArray(getFile("/map-data/tiger-ny.tiff"));
+                            byte[] bytes = Files.toByteArray(getFile("/map-data/tiger-ny.png"));
                             return ok(uri, bytes, httpMethod);
                         } catch (AssertionError e) {
                             return error404(uri, httpMethod);
@@ -71,7 +72,8 @@ public class AddOverlayLayersTest extends AbstractMapfishSpringTest {
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".json")) || input.getAuthority().contains(host + ".json");
+                        return (("" + input.getHost()).contains(host + ".json")) ||
+                                input.getAuthority().contains(host + ".json");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
@@ -88,24 +90,28 @@ public class AddOverlayLayersTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(),
+                this.requestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
         taskFuture.get();
 
-        assertImage(values, 1, "layerGraphics", "expectedSimpleImage.tiff", 630, 294);
-        assertImage(values, 1, "overviewMapLayerGraphics", "expectedOverviewImage.tiff", 300, 200);
+        assertImage(values, 1, "layerGraphics",
+                "expectedSimpleImage.png", 630, 294, 100);
+        assertImage(values, 1, "overviewMapLayerGraphics",
+                "expectedOverviewImage.png", 300, 200, 25);
     }
 
-    private void assertImage(Values values, int numberOfLayers, String graphicsValueKey, String imageName, int width, int height) throws IOException, TranscoderException {
+    private void assertImage(
+            Values values, int numberOfLayers, String graphicsValueKey, String imageName,
+            int width, int height, int tollerance) throws IOException, TranscoderException {
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject(graphicsValueKey, List.class);
         assertEquals(numberOfLayers, layerGraphics.size());
 
-        final BufferedImage bufferedImage = ImageSimilarity.mergeImages(layerGraphics, width, height);
-//        ImageIO.write(bufferedImage, "tiff", new File("/tmp/" + imageName));
-        new ImageSimilarity(bufferedImage, 2).assertSimilarity(getFile(BASE_DIR + imageName), 40);
+        new ImageSimilarity(getFile(BASE_DIR + imageName))
+                .assertSimilarity(layerGraphics, width, height, tollerance);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {

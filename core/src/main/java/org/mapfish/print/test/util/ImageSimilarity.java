@@ -2,6 +2,7 @@ package org.mapfish.print.test.util;
 
 import com.google.common.collect.FluentIterable;
 import com.google.common.io.Files;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.JRGraphics2DExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
@@ -9,12 +10,14 @@ import net.sf.jasperreports.export.SimpleGraphics2DExporterOutput;
 import net.sf.jasperreports.export.SimpleGraphics2DReportConfiguration;
 import org.apache.batik.transcoder.TranscoderException;
 import org.mapfish.print.SvgUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -28,142 +31,180 @@ import javax.media.jai.iterator.RandomIter;
 import javax.media.jai.iterator.RandomIterFactory;
 
 /**
- * Class for comparing an image to another image.
+ * Class for comparing an expected image to an actual image.
  *
  * CHECKSTYLE:OFF
  */
 public final class ImageSimilarity {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImageSimilarity.class);
 
-    static final int DEFAULT_SAMPLESIZE = 15;
-    // The reference image "signature" (25 representative pixels, each in R,G,B).
-    // We use instances of Color to make things simpler.
-    private final Color[][] signature;
-    private final BufferedImage referenceImage;
-    // The size of the sampling area.
-    private int sampleSize = DEFAULT_SAMPLESIZE;
-    // values that are used to generate the position of the sample pixels
-    private final float[] prop = new float[]
-            {1f / 10f, 3f / 10f, 5f / 10f, 7f / 10f, 9f / 10f};
+    private static final boolean GENERATE_IN_SOURCE = false;
+
+    private final BufferedImage expectedImage;
+    private final File expectedPath;
 
     /**
      * The constructor, which creates the GUI and start the image processing task.
      */
-    public ImageSimilarity(final File referenceImage, final int sampleSize) throws IOException {
-        this(ImageIO.read(referenceImage), sampleSize);
+    public ImageSimilarity(final File expectedFile) throws IOException {
+        this.expectedImage = ImageIO.read(expectedFile);
+        if (GENERATE_IN_SOURCE) {
+            this.expectedPath = new File(expectedFile.toString().replaceAll(
+                    "/build/classes/([a-z]+)/",
+                    "/src/$1/resources/"));
+        }
+        else {
+            this.expectedPath = expectedFile;
+        }
     }
 
-    /**
-     * The constructor, which creates the GUI and start the image processing task.
-     */
-    public ImageSimilarity(BufferedImage referenceImage, int sampleSize) throws IOException {
-        this.referenceImage = referenceImage;
-        if (referenceImage.getWidth() * prop[0] - sampleSize < 0 ||
-            referenceImage.getWidth() * prop[4] + sampleSize > referenceImage.getWidth()) {
-            throw new IllegalArgumentException("sample size is too big for the image.");
-        }
-        if (referenceImage.getHeight() * prop[0] - sampleSize < 0 ||
-            referenceImage.getHeight() * prop[4] + sampleSize > referenceImage.getHeight()) {
-            throw new IllegalArgumentException("sample size is too big for the image.");
-        }
-        this.sampleSize = sampleSize;
-
-        signature = calcSignature(referenceImage);
-    }
-
-    /**
-     * This method calculates and returns signature vectors for the input image.
-     */
-    private Color[][] calcSignature(BufferedImage i) {
-        // Get memory for the signature.
-        Color[][] sig = new Color[5][5];
-        // For each of the 25 signature values average the pixels around it.
-        // Note that the coordinate of the central pixel is in proportions.
-        for (int x = 0; x < 5; x++) {
-            for (int y = 0; y < 5; y++) {
-                sig[x][y] = averageAround(i, prop[x], prop[y]);
-            }
-        }
-        return sig;
-    }
-
-    /**
-     * This method averages the pixel values around a central point and return the
-     * average as an instance of Color. The point coordinates are proportional to
-     * the image.
-     */
-    private Color averageAround(BufferedImage i, double px, double py) {
-        // Get an iterator for the image.
-        RandomIter iterator = RandomIterFactory.create(i, null);
-        // Get memory for a pixel and for the accumulator.
-        double[] pixel = new double[i.getSampleModel().getNumBands()];
-        double[] accum = new double[3];
-        int numPixels = 0;
-        // Sample the pixels.
-
-        for (double x = px * i.getWidth() - sampleSize; x < px * i.getWidth() + sampleSize; x++) {
-            for (double y = py * i.getHeight() - sampleSize; y < py * i.getHeight() + sampleSize; y++) {
-                iterator.getPixel((int) x, (int) y, pixel);
-                accum[0] += pixel[0];
-                accum[1] += pixel[1];
-                accum[2] += pixel[2];
-                numPixels++;
-            }
-        }
-        // Average the accumulated values.
-        accum[0] /= numPixels;
-        accum[1] /= numPixels;
-        accum[2] /= numPixels;
-        return new Color((int) accum[0], (int) accum[1], (int) accum[2]);
+    private File getRelatedFile(final String name) {
+        final String expectedFileName = this.expectedPath.getName();
+        return new File(this.expectedPath.getParentFile(),
+            (expectedFileName.contains("expected") ?
+                    expectedFileName.replace("expected", name) :
+                    name + "-" + expectedFileName));
     }
 
     /**
      * This method calculates the distance between the signatures of an image and
      * the reference one. The signatures for the image passed as the parameter are
      * calculated inside the method.
+     *
+     * @return a number between 0 and 10000 or Double.MAX_VALUE on images format error.
      */
-    private double calcDistance(final BufferedImage other) {
-        // Calculate the signature for that image.
-        Color[][] sigOther = calcSignature(other);
+    private double calcDistance(final BufferedImage actual) {
         // There are several ways to calculate distances between two vectors,
         // we will calculate the sum of the distances between the RGB values of
         // pixels in the same positions.
+        if (actual.getWidth() != this.expectedImage.getWidth()) {
+            LOGGER.error("Not the same width (expected: {}, actual: {})",
+                    this.expectedImage.getWidth(), actual.getWidth());
+            return Double.MAX_VALUE;
+        }
+        if (actual.getHeight() != this.expectedImage.getHeight()) {
+            LOGGER.error("Not the same height (expected: {}, actual: {})",
+                    this.expectedImage.getHeight(), actual.getHeight());
+            return Double.MAX_VALUE;
+        }
+        if (actual.getSampleModel().getNumBands() != this.expectedImage.getSampleModel().getNumBands()) {
+            LOGGER.error("Not the same number of bands (expected: {}, actual: {})",
+                    this.expectedImage.getSampleModel().getNumBands(), actual.getSampleModel().getNumBands());
+            return Double.MAX_VALUE;
+        }
         double dist = 0;
-        for (int x = 0; x < 5; x++) {
-            for (int y = 0; y < 5; y++) {
-                int r1 = this.signature[x][y].getRed();
-                int g1 = this.signature[x][y].getGreen();
-                int b1 = this.signature[x][y].getBlue();
-                int r2 = sigOther[x][y].getRed();
-                int g2 = sigOther[x][y].getGreen();
-                int b2 = sigOther[x][y].getBlue();
-                double tempDist = Math.sqrt((r1 - r2) * (r1 - r2) + (g1 - g2) * (g1 - g2) + (b1 - b2) * (b1 - b2));
-                dist += tempDist;
+        double[] expectedPixel = new double[this.expectedImage.getSampleModel().getNumBands()];
+        double[] actualPixel = new double[this.expectedImage.getSampleModel().getNumBands()];
+        RandomIter expectedIterator = RandomIterFactory.create(this.expectedImage, null);
+        RandomIter actualIterator = RandomIterFactory.create(actual, null);
+        for (int x = 0; x < actual.getWidth(); x++) {
+            for (int y = 0; y < actual.getHeight(); y++) {
+                expectedIterator.getPixel(x, y, expectedPixel);
+                actualIterator.getPixel(x, y, actualPixel);
+                double squareDist = 0.0;
+                for (int i = 0; i < this.expectedImage.getSampleModel().getNumBands(); i++) {
+                    double colorDist = expectedPixel[i] - actualPixel[i];
+                    squareDist += colorDist * colorDist;
+                }
+                dist += Math.sqrt(squareDist);
             }
         }
+        // Normalise
+        dist = dist / this.expectedImage.getWidth() / this.expectedImage.getHeight() /
+                Math.sqrt(this.expectedImage.getSampleModel().getNumBands()) / 255 * 10000;
+        LOGGER.debug("Current distance: {}", dist);
         return dist;
     }
 
     /**
-     * Check that the other image and the image calculated by this object are within the given distance.
+     * Check that the actual image and the image calculated by this object are within the given distance.
      *
-     * @param other the image to compare to "this" image.
+     * @param actual the image to compare to "this" image.
+     */
+    public void assertSimilarity(final File actual) throws IOException {
+        assertSimilarity(actual, 1);
+    }
+
+    /**
+     * Check that the actual image and the image calculated by this object are within the given distance.
+     *
      * @param maxDistance the maximum distance between the two images.
      */
-    public void assertSimilarity(File other, double maxDistance) throws IOException {
-        final File actualOutput = new File(other.getParentFile(),
-                "actual" + other.getName().replace("expected", "").replace(".tiff", ".png"));
-        if (!other.exists()) {
-            ImageIO.write(referenceImage, "png", actualOutput);
+    public void assertSimilarity(
+            final byte[] graphicData, final double maxDistance)
+            throws IOException {
+        assertSimilarity(ImageIO.read(new ByteArrayInputStream(graphicData)), maxDistance);
+    }
+
+    /**
+     * Check that the actual image and the image calculated by this object are within the given distance.
+     *
+     * @param graphicFiles a list of graphic files
+     * @param width the graphic width (required for svg files)
+     * @param height the graphic height (required for svg files)
+     * @param maxDistance the maximum distance between the two images.
+     */
+    public void assertSimilarity(
+            final List<URI> graphicFiles, final int width, final int height, final double maxDistance)
+            throws IOException, TranscoderException {
+        assertSimilarity(mergeImages(graphicFiles, width, height), maxDistance);
+    }
+
+    /**
+     * Check that the actual image and the image calculated by this object are within the given distance.
+     *
+     * @param maxDistance the maximum distance between the two images.
+     */
+    public void assertSimilarity(
+            final URI svgFile, final int width, final int height, final double maxDistance)
+            throws IOException, TranscoderException {
+        assertSimilarity(convertFromSvg(svgFile, width, height), maxDistance);
+    }
+
+
+    /**
+     * Check that the actual image and the image calculated by this object are within the given distance.
+     *
+     * @param maxDistance the maximum distance between the two images.
+     */
+    public void assertSimilarity(
+            final JasperPrint jasperPrint, final Integer page, final double maxDistance)
+            throws IOException, JRException {
+        assertSimilarity(exportReportToImage(jasperPrint, page), maxDistance);
+    }
+
+    /**
+     * Check that the actual image and the image calculated by this object are within the given distance.
+     *
+     * @param actualFile the file to compare to "this" image.
+     * @param maxDistance the maximum distance between the two images.
+     */
+    public void assertSimilarity(final File actualFile, final double maxDistance) throws IOException {
+        assertSimilarity(ImageIO.read(actualFile), maxDistance);
+    }
+
+    /**
+     * Check that the actual image and the image calculated by this object are within the given distance.
+     * @param actualImage the image to compare to "this" image.
+     * @param maxDistance the maximum distance between the two images.
+     */
+    public void assertSimilarity(
+            final BufferedImage actualImage, final double maxDistance)
+            throws IOException {
+        final File actualOutput = getRelatedFile("actual");
+        if (!this.expectedPath.exists()) {
+            ImageIO.write(actualImage, "png", expectedPath);
             throw new AssertionError("The expected file was missing and has been generated: " +
                     actualOutput.getAbsolutePath());
         }
-        final double distance = calcDistance(ImageIO.read(other));
+        final double distance = calcDistance(actualImage);
         if (distance > maxDistance) {
-            ImageIO.write(referenceImage, "png", actualOutput);
-            throw new AssertionError(String.format(
-                    "similarity difference between images is: %s which is greater than the max distance of" +
-                            " %s\nactual=%s\nexpected=%s", distance, maxDistance,
-                    actualOutput.getAbsolutePath(),actualOutput.getAbsolutePath()));
+            ImageIO.write(actualImage, "png", actualOutput);
+            throw new AssertionError(String.format("similarity difference between images is: %s which is " +
+                    "greater than the max distance of %s%n" +
+                    "actual=%s%n" +
+                    "expected=%s", distance, maxDistance, actualOutput.getAbsolutePath(),
+                    this.expectedPath.getAbsolutePath()));
         }
     }
 
@@ -173,17 +214,17 @@ public final class ImageSimilarity {
      * @param image image to write
      * @param file path and file name (extension will be ignored and changed to tiff.
      */
-    public static void writeUncompressedImage(BufferedImage image, String file) throws IOException {
+    private static void writeUncompressedImage(BufferedImage image, String file) throws IOException {
         FileImageOutputStream out = null;
         try {
             final File parentFile = new File(file).getParentFile();
-            Iterator<ImageWriter> writers = ImageIO.getImageWritersBySuffix("tiff");
+            Iterator<ImageWriter> writers = ImageIO.getImageWritersBySuffix("png");
             final ImageWriter next = writers.next();
 
             final ImageWriteParam param = next.getDefaultWriteParam();
             param.setCompressionMode(ImageWriteParam.MODE_DISABLED);
 
-            final File outputFile = new File(parentFile, Files.getNameWithoutExtension(file) + ".tiff");
+            final File outputFile = new File(parentFile, Files.getNameWithoutExtension(file) + ".png");
 
             out = new FileImageOutputStream(outputFile);
             next.setOutput(out);
@@ -206,7 +247,6 @@ public final class ImageSimilarity {
      * @param width the graphic width (required for svg files)
      * @param height the graphic height (required for svg files)
      * @return a single graphic
-     * @throws TranscoderException
      */
     public static BufferedImage mergeImages(List<URI> graphicFiles, int width, int height)
             throws IOException, TranscoderException {
@@ -222,12 +262,11 @@ public final class ImageSimilarity {
         }
         g.dispose();
 
-        // ImageIO.write(mergedImage, "tiff", new File("/tmp/expectedSimpleImage.tiff"));
-
         return mergedImage;
     }
 
-    private static BufferedImage loadGraphic(URI path, int width, int height) throws IOException, TranscoderException {
+    private static BufferedImage loadGraphic(final URI path, final int width, final int height)
+            throws IOException, TranscoderException {
         File file = new File(path);
 
         if (file.getName().endsWith(".svg")) {
@@ -246,15 +285,18 @@ public final class ImageSimilarity {
     /**
      * Renders an SVG image into a {@link BufferedImage}.
      */
-    public static BufferedImage convertFromSvg(URI svgFile, int width, int height) throws TranscoderException {
+    public static BufferedImage convertFromSvg(final URI svgFile, final int width, final int height)
+            throws TranscoderException {
         return SvgUtil.convertFromSvg(svgFile, width, height);
     }
 
     /**
      * Exports a rendered {@link JasperPrint} to a {@link BufferedImage}.
      */
-    public static BufferedImage exportReportToImage(JasperPrint jasperPrint, Integer page) throws Exception {
-        BufferedImage pageImage = new BufferedImage(jasperPrint.getPageWidth(), jasperPrint.getPageHeight(), BufferedImage.TYPE_INT_RGB);
+    public static BufferedImage exportReportToImage(final JasperPrint jasperPrint, final Integer page)
+            throws JRException {
+        BufferedImage pageImage = new BufferedImage(jasperPrint.getPageWidth(), jasperPrint.getPageHeight(),
+                BufferedImage.TYPE_INT_RGB);
 
         JRGraphics2DExporter exporter = new JRGraphics2DExporter();
 
@@ -273,16 +315,8 @@ public final class ImageSimilarity {
         return pageImage;
     }
 
-    /**
-     * Exports a rendered {@link JasperPrint} to a graphics file.
-     */
-    public static void exportReportToFile(JasperPrint jasperPrint, String fileName, Integer page) throws Exception {
-        BufferedImage pageImage = exportReportToImage(jasperPrint, page);
-        ImageIO.write(pageImage, Files.getFileExtension(fileName), new File(fileName));
-    }
-
-    public static void main(String args[]) throws IOException {
-        final String path = "C:\\GitHub\\mapfish-printV3\\core\\src\\test\\resources\\map-data";
+    public static void main(final String args[]) throws IOException {
+        final String path = "core/src/test/resources/map-data";
         final File root = new File(path);
         final FluentIterable<File> files = Files.fileTreeTraverser().postOrderTraversal(root);
         for (File file : files) {

@@ -45,7 +45,8 @@ public class CreateNorthArrowProcessorSvgTest extends AbstractMapfishSpringTest 
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".osm")) || input.getAuthority().contains(host + ".osm");
+                        return (("" + input.getHost()).contains(host + ".osm")) ||
+                                input.getAuthority().contains(host + ".osm");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
@@ -63,21 +64,18 @@ public class CreateNorthArrowProcessorSvgTest extends AbstractMapfishSpringTest 
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
+        Values values = new Values(requestData, template, this.parser, getTaskDirectory(),
+                this.requestFactory, new File("."));
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         String northArrowGraphic = values.getObject("northArrowGraphic", String.class);
-        BufferedImage graphic = ImageSimilarity.convertFromSvg(new URI(northArrowGraphic), 200, 200);
 
-//        Files.copy(new File(northArrowGraphic), new File(TMP, getClass().getSimpleName() + ".svg"));
-//        ImageSimilarity.writeUncompressedImage(graphic, TMP + "/" + getClass().getSimpleName() + ".tiff");
-
-        new ImageSimilarity(graphic, 2)
-                .assertSimilarity(getFile(BASE_DIR + "expectedNorthArrow.tiff"), 90);
-
+        new ImageSimilarity(getFile(BASE_DIR + "expectedNorthArrow.png"))
+                .assertSimilarity(new URI(northArrowGraphic), 200, 200, 75);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleCenterOsmTest.class, BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleCenterOsmTest.class,
+                BASE_DIR + "requestData.json");
     }
 }

@@ -104,11 +104,9 @@ public class OsmCustomParamsTest extends AbstractMapfishSpringTest {
         List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
         assertEquals(2, layerGraphics.size());
 
-        final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 780, 330);
-        String expectedSimpleImage = getExpectedImageName("", referenceImage, BASE_DIR);
-
-//        ImageIO.write(referenceImage, "png", new File("/tmp/expectedSimpleImage.png"));
-        new ImageSimilarity(referenceImage, 2).assertSimilarity(getFile(BASE_DIR + expectedSimpleImage), 30);
+        String expectedSimpleImage = getExpectedImageName("", BASE_DIR);
+        new ImageSimilarity(getFile(BASE_DIR + expectedSimpleImage))
+                .assertSimilarity(layerGraphics, 780, 330, 50);
     }
 
     private static PJsonObject loadJsonRequestData() throws IOException {
