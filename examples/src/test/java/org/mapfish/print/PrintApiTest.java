@@ -20,6 +20,7 @@ import java.net.URISyntaxException;
 import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -477,7 +478,7 @@ public class PrintApiTest extends AbstractApiTest {
         ClientHttpRequest request = getPrintRequest(MapPrinterServlet.LIST_APPS_URL, HttpMethod.GET);
         response = request.execute();
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(!response.getHeaders().containsKey("Access-Control-Allow-Origin"));
+        assertFalse(response.getHeaders().containsKey("Access-Control-Allow-Origin"));
 
         request = getPrintRequest(MapPrinterServlet.LIST_APPS_URL, HttpMethod.GET);
         request.getHeaders().set("Origin", "http://example.com/");

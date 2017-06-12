@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class DataSourceProcessorTest extends AbstractMapfishSpringTest {
@@ -50,7 +51,7 @@ public class DataSourceProcessorTest extends AbstractMapfishSpringTest {
 
         final List<Throwable> validate = config.validate();
 
-        assertTrue(!validate.isEmpty());
+        assertFalse(validate.isEmpty());
     }
 
     @Test

@@ -3,7 +3,6 @@ package org.mapfish.print.parser;
 import com.vividsolutions.jts.util.AssertionFailedException;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Assert;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.ExtraPropertyException;
@@ -18,6 +17,7 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -34,7 +34,7 @@ public class MapfishParserTest {
         final PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"sa\":null}");
 
         this.mapfishJsonParser.parse(true, json, p, "toIgnore");
-        Assert.assertNull(p.sa);
+        assertNull(p.sa);
     }
 
     @Test
@@ -44,9 +44,9 @@ public class MapfishParserTest {
         final PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"e1\":\"VAL1\", \"e2\": [1, \"VAL2\"]}");
 
         this.mapfishJsonParser.parse(true, json, p, "toIgnore");
-        Assert.assertEquals(TestEnum.DEF, p.def2);
-        Assert.assertEquals(TestEnum.VAL1, p.e1);
-        Assert.assertArrayEquals(new TestEnum[]{TestEnum.VAL2, TestEnum.VAL2}, p.e2);
+        assertEquals(TestEnum.DEF, p.def2);
+        assertEquals(TestEnum.VAL1, p.e1);
+        assertArrayEquals(new TestEnum[]{TestEnum.VAL2, TestEnum.VAL2}, p.e2);
     }
 
     @Test
@@ -56,37 +56,37 @@ public class MapfishParserTest {
 
         String[] ignore = null; // done this way to remove compiler warning.
         this.mapfishJsonParser.parse(true, json, p, ignore);
-        Assert.assertEquals(1, p.choiceA);
-        Assert.assertEquals(0.0, p.choiceB, 0.0000000001);
-        Assert.assertEquals(0, p.choiceC);
+        assertEquals(1, p.choiceA);
+        assertEquals(0.0, p.choiceB, 0.0000000001);
+        assertEquals(0, p.choiceC);
 
         p = new TestChoiceClass();
         json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"choiceB\":2.0}");
         this.mapfishJsonParser.parse(true, json, p);
-        Assert.assertEquals(0, p.choiceA);
-        Assert.assertEquals(2.0, p.choiceB, 0.0000000001);
-        Assert.assertEquals(0, p.choiceC);
+        assertEquals(0, p.choiceA);
+        assertEquals(2.0, p.choiceB, 0.0000000001);
+        assertEquals(0, p.choiceC);
 
         p = new TestChoiceClass();
         json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"choiceC\":2}");
         this.mapfishJsonParser.parse(true, json, p);
-        Assert.assertEquals(0, p.choiceA);
-        Assert.assertEquals(0.0, p.choiceB, 0.0000000001);
-        Assert.assertEquals(2, p.choiceC, 0.0000000001);
+        assertEquals(0, p.choiceA);
+        assertEquals(0.0, p.choiceB, 0.0000000001);
+        assertEquals(2, p.choiceC, 0.0000000001);
 
         p = new TestChoiceClass();
         json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"choiceA\":3,\"choiceC\":2}");
         this.mapfishJsonParser.parse(true, json, p);
-        Assert.assertEquals(3, p.choiceA);
-        Assert.assertEquals(0.0, p.choiceB, 0.0000000001);
-        Assert.assertEquals(2, p.choiceC, 0.0000000001);
+        assertEquals(3, p.choiceA);
+        assertEquals(0.0, p.choiceB, 0.0000000001);
+        assertEquals(2, p.choiceC, 0.0000000001);
 
         p = new TestChoiceClass();
         json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"choiceB\":3.0,\"choiceC\":2}");
         this.mapfishJsonParser.parse(true, json, p);
-        Assert.assertEquals(0, p.choiceA);
-        Assert.assertEquals(3.0, p.choiceB, 0.0000000001);
-        Assert.assertEquals(2, p.choiceC, 0.0000000001);
+        assertEquals(0, p.choiceA);
+        assertEquals(3.0, p.choiceB, 0.0000000001);
+        assertEquals(2, p.choiceC, 0.0000000001);
     }
 
     @Test(expected = AssertionFailedException.class)
@@ -186,55 +186,52 @@ public class MapfishParserTest {
 
         this.mapfishJsonParser.parse(true, json, param, "toIgnore");
 
-        Assert.assertEquals("string", param.s);
-        Assert.assertEquals("newValue", param.defS);
-        Assert.assertEquals("default2", param.defS2);
-        Assert.assertEquals(11, param.bigI.intValue());
-        Assert.assertEquals(1, param.littleI);
+        assertEquals("string", param.s);
+        assertEquals("newValue", param.defS);
+        assertEquals("default2", param.defS2);
+        assertEquals(11, param.bigI.intValue());
+        assertEquals(1, param.littleI);
         final double delta = 0.00001;
-        Assert.assertEquals(12.0, param.bigD, delta);
-        Assert.assertEquals(2, param.littleD, delta);
-        Assert.assertEquals(13.0f, param.bigF, delta);
-        Assert.assertEquals(3.0f, param.littleF, delta);
-        Assert.assertEquals(true, param.bigB);
-        Assert.assertEquals(true, param.littleB);
-        Assert.assertEquals("fieldValue", param.po.getString("poField"));
-        Assert.assertEquals("http://localhost:8080", param.url.toExternalForm());
+        assertEquals(12.0, param.bigD, delta);
+        assertEquals(2, param.littleD, delta);
+        assertEquals(13.0f, param.bigF, delta);
+        assertEquals(3.0f, param.littleF, delta);
+        assertEquals(true, param.bigB);
+        assertEquals(true, param.littleB);
+        assertEquals("fieldValue", param.po.getString("poField"));
+        assertEquals("http://localhost:8080", param.url.toExternalForm());
 
-        Assert.assertEquals(3, param.pa.size());
-        Assert.assertEquals(1, param.pa.getInt(0));
-        Assert.assertEquals("hi", param.pa.getString(1));
-        Assert.assertEquals(3, param.pa.getJSONObject(2).getInt("faField"));
+        assertEquals(3, param.pa.size());
+        assertEquals(1, param.pa.getInt(0));
+        assertEquals("hi", param.pa.getString(1));
+        assertEquals(3, param.pa.getJSONObject(2).getInt("faField"));
 
-        Assert.assertArrayEquals(new String[]{"s1", "s2"}, param.sa);
+        assertArrayEquals(new String[]{"s1", "s2"}, param.sa);
 
-        Assert.assertEquals(2, param.ba.length);
-        Assert.assertEquals(true, param.ba[0]);
-        Assert.assertEquals(false, param.ba[1]);
-        Assert.assertArrayEquals(new double[]{2.1, 2.2}, param.da, delta);
+        assertEquals(2, param.ba.length);
+        assertEquals(true, param.ba[0]);
+        assertEquals(false, param.ba[1]);
+        assertArrayEquals(new double[]{2.1, 2.2}, param.da, delta);
 
+        assertEquals(2, param.oa.length);
+        assertEquals(true, param.oa[0].has("f"));
+        assertEquals(true, param.oa[1].has("b"));
+        assertEquals(true, param.calledByPostConstruct);
 
-        Assert.assertEquals(2, param.oa.length);
-        Assert.assertEquals(true, param.oa[0].has("f"));
-        Assert.assertEquals(true, param.oa[1].has("b"));
-        Assert.assertEquals(true, param.calledByPostConstruct);
-
-        Assert.assertEquals("embeddedValue", param.e.embeddedValue);
-        Assert.assertEquals("def", param.e.embeddedDefault);
+        assertEquals("embeddedValue", param.e.embeddedValue);
+        assertEquals("def", param.e.embeddedDefault);
         assertTrue(param.e.calledByPostConstruct);
 
-        Assert.assertEquals(2, param.ea.length);
+        assertEquals(2, param.ea.length);
 
-        Assert.assertEquals("embeddedValue2", param.ea[0].embeddedValue);
-        Assert.assertEquals("updateddef", param.ea[0].embeddedDefault);
+        assertEquals("embeddedValue2", param.ea[0].embeddedValue);
+        assertEquals("updateddef", param.ea[0].embeddedDefault);
         assertTrue(param.ea[0].calledByPostConstruct);
 
-        Assert.assertEquals("embeddedValue3", param.ea[1].embeddedValue);
-        Assert.assertEquals("def", param.ea[1].embeddedDefault);
+        assertEquals("embeddedValue3", param.ea[1].embeddedValue);
+        assertEquals("def", param.ea[1].embeddedDefault);
         assertTrue(param.ea[1].calledByPostConstruct);
     }
-
-
 
     @Test
     public void testPopulateLayerParam_MissingParam() throws Exception {
@@ -250,10 +247,10 @@ public class MapfishParserTest {
                 errorCount ++;
             }
             int totalAttributes = ParserUtils.getAllAttributeNames(param.getClass()).size();
-            Assert.assertEquals(18 + totalAttributes, errorCount);
+            assertEquals(18 + totalAttributes, errorCount);
 
-            Assert.assertEquals(18, e.getMissingProperties().size());
-            Assert.assertEquals(totalAttributes, e.getAttributeNames().size());
+            assertEquals(18, e.getMissingProperties().size());
+            assertEquals(totalAttributes, e.getAttributeNames().size());
         }
 
     }
@@ -272,10 +269,10 @@ public class MapfishParserTest {
                 errorCount ++;
             }
             int totalAttributes = ParserUtils.getAllAttributeNames(param.getClass()).size();
-            Assert.assertEquals(2 + totalAttributes, errorCount);
+            assertEquals(2 + totalAttributes, errorCount);
 
-            Assert.assertEquals(2, e.getExtraProperties().size());
-            Assert.assertEquals(totalAttributes, e.getAttributeNames().size());
+            assertEquals(2, e.getExtraProperties().size());
+            assertEquals(totalAttributes, e.getAttributeNames().size());
             assertTrue(e.getExtraProperties().contains("extraProperty"));
         }
     }
