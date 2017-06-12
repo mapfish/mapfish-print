@@ -73,7 +73,7 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
     public void setup() {
         context.getBean(ThreadPoolJobManager.class).shutdown();
         jobMan1 = new TestJobManager("uno");
-        jobMan2 = new TestJobManager("duo");;
+        jobMan2 = new TestJobManager("duo");
     }
 
     @Test(timeout = 60000)
