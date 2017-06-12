@@ -3,7 +3,6 @@ package org.mapfish.print.processor.map;
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 
 import jsr166y.ForkJoinPool;

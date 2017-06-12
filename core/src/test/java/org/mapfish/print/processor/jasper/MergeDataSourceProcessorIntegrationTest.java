@@ -10,7 +10,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.processor.Processor;
-import org.mapfish.print.processor.ProcessorDependency;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.ProcessorGraphNode;
 import org.springframework.beans.factory.annotation.Autowired;
