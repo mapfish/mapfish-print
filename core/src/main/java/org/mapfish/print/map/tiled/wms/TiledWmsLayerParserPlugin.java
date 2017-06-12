@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Resource;
 
 /**
  * <p>Renders tiled WMS layers.</p>
@@ -28,8 +27,6 @@ public final class TiledWmsLayerParserPlugin extends AbstractGridCoverageLayerPl
     private ForkJoinPool forkJoinPool;
     @Autowired
     private MetricRegistry registry;
-    @Resource(name = "requestForkJoinPool")
-    private ForkJoinPool requestForkJoinPool;
 
     private final Set<String> typenames = Sets.newHashSet("tiledwms");
 

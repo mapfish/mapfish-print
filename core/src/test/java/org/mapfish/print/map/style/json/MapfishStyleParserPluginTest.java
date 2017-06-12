@@ -33,7 +33,6 @@ import org.junit.Test;
 import org.mapfish.print.Constants;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.attribute.map.CenterScaleMapBounds;
-import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.opengis.feature.simple.SimpleFeature;
@@ -44,7 +43,6 @@ import org.opengis.filter.PropertyIsLessThan;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 
-import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -277,9 +275,6 @@ public class MapfishStyleParserPluginTest {
 
         final CenterScaleMapBounds bounds = new CenterScaleMapBounds(
                 CRS.decode("CRS:84"), 0, 0,300000);
-        MapfishMapContext context = new MapfishMapContext(
-                bounds, new Dimension(500, 500), 0, 72,
-                true, true);
         final Optional<Style> styleOptional = mapfishStyleParserPlugin.parseStyle(
                 config, httpClient, styleJson);
 

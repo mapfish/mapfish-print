@@ -3,7 +3,6 @@ package org.mapfish.print.processor;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Objects;
 import com.google.common.collect.BiMap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.vividsolutions.jts.util.Assert;
 
@@ -39,22 +38,6 @@ public final class ProcessorDependencyGraphFactory {
 
     @Autowired
     private MetricRegistry metricRegistry;
-
-    /**
-     * External dependencies between processor types.
-     */
-    @Autowired(required = false)
-    private List<ProcessorDependency> dependencies = Lists.newArrayList();
-
-    /**
-     * Sets the external dependencies between processors. Usually configured in
-     * <code>mapfish-spring-processors.xml</code>
-     *
-     * @param dependencies the dependencies
-     */
-    public void setDependencies(final List<ProcessorDependency> dependencies) {
-        this.dependencies = dependencies;
-    }
 
     /**
      * Create a {@link ProcessorDependencyGraph}.

@@ -6,7 +6,6 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.map.geotools.AbstractGridCoverageLayerPlugin;
-import org.mapfish.print.map.style.StyleParser;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
@@ -23,8 +22,6 @@ public final class WmsLayerFactoryPlugin extends AbstractGridCoverageLayerPlugin
     private static final String TYPE = "wms";
     @Autowired
     private ForkJoinPool forkJoinPool;
-    @Autowired
-    private StyleParser styleParser;
     @Autowired
     private MetricRegistry metricRegistry;
 

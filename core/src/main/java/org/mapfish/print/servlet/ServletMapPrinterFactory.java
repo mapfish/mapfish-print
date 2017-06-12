@@ -6,7 +6,6 @@ import com.google.common.io.Files;
 import com.vividsolutions.jts.util.Assert;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
-import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +38,6 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
 
     @Autowired
     private ApplicationContext applicationContext;
-    @Autowired
-    private ConfigurationFactory configurationFactory;
 
     @Autowired
     private ConfigFileLoaderManager configFileLoader;

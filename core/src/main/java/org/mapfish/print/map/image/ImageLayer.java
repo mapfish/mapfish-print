@@ -1,7 +1,5 @@
 package org.mapfish.print.map.image;
 
-import com.codahale.metrics.MetricRegistry;
-
 import com.google.common.collect.Maps;
 import com.google.common.io.Closer;
 import com.vividsolutions.jts.util.Assert;
@@ -92,8 +90,6 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         private static final String TYPE = "image";
         @Autowired
         private ForkJoinPool forkJoinPool;
-        @Autowired
-        private MetricRegistry metricRegistry;
 
         @Override
         public Set<String> getTypeNames() {

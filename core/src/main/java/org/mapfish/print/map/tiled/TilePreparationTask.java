@@ -38,7 +38,6 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
 
     private final MapBounds bounds;
     private final Rectangle paintArea;
-    private final double dpi;
     private final MapfishMapContext transformer;
     private final TileCacheInformation tiledLayer;
     private final MfClientHttpRequestFactory httpRequestFactory;
@@ -48,20 +47,18 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
     /**
      * Constructor.
      * @param httpRequestFactory the factory to use for making http requests
-     * @param dpi the DPI to render at
      * @param transformer a transformer for making calculations
      * @param tileCacheInfo the object used to create the tile requests
      * @param requestCache request cache
      */
-    public TilePreparationTask(final MfClientHttpRequestFactory httpRequestFactory,
-                          final double dpi,
-                          @Nonnull final MapfishMapContext transformer,
-                          @Nonnull final TileCacheInformation tileCacheInfo,
-                          final HttpRequestCache requestCache) {
+    public TilePreparationTask(
+            @Nonnull final MfClientHttpRequestFactory httpRequestFactory,
+            @Nonnull final MapfishMapContext transformer,
+            @Nonnull final TileCacheInformation tileCacheInfo,
+            final HttpRequestCache requestCache) {
         this.requestCache = requestCache;
         this.bounds = transformer.getBounds();
         this.paintArea = new Rectangle(transformer.getMapSize());
-        this.dpi = dpi;
         this.httpRequestFactory = httpRequestFactory;
         this.transformer = transformer;
         this.tiledLayer = tileCacheInfo;

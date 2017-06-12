@@ -7,8 +7,6 @@ import com.sun.net.httpserver.HttpServer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mapfish.print.config.ConfigurationFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
 
@@ -21,11 +19,6 @@ import static org.junit.Assert.assertEquals;
 public class MfClientHttpRequestFactoryImpl_ResponseTest {
     private static final int TARGET_PORT = 33212;
     private static HttpServer targetServer;
-
-    @Autowired
-    ConfigurationFactory configurationFactory;
-    @Autowired
-    private MfClientHttpRequestFactoryImpl requestFactory;
 
     @BeforeClass
     public static void setUp() throws Exception {
