@@ -314,8 +314,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         final ArrayList<TestProcessor> processors = Lists.newArrayList(NeedsMap, RootMapOut,
                 NeedsMapList);
 
-        ProcessorDependencyGraph graph = this.processorDependencyGraphFactory.build(processors,
-                Collections.<String, Class<?>>emptyMap());
+        this.processorDependencyGraphFactory.build(processors, Collections.<String, Class<?>>emptyMap());
     }
 
     /**
@@ -325,7 +324,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     public void testBuildWhenOutputsMapToAllOtherInputs() throws Exception {
         final ArrayList<TestProcessor> processors = Lists.newArrayList(NeedsMapProducesMap, NeedsTableProducesTable);
         try {
-            ProcessorDependencyGraph graph = this.processorDependencyGraphFactory.build(processors,
+            this.processorDependencyGraphFactory.build(processors,
                     Collections.<String, Class<?>>emptyMap());
             assertTrue("A prossessor shouldn't be able to depends on himself", false);
         } catch (IllegalArgumentException e) {
