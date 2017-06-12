@@ -40,6 +40,8 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     @Autowired
     private ProcessorDependencyGraphFactory processorDependencyGraphFactory;
 
+    private ForkJoinPool forkJoinPool;
+
     static class TestOrderExecution {
         List<TestProcessor> testOrderExecution = new ArrayList<TestProcessor>();
 
@@ -47,8 +49,6 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
             testOrderExecution.add(p);
         }
     }
-
-    private ForkJoinPool forkJoinPool;
 
     @Before
     public void setUp() throws Exception {

@@ -72,6 +72,8 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
     @Autowired
     private MfClientHttpRequestFactoryImpl httpRequestFactory;
 
+    @Autowired
+    private MapfishParser parser;
 
     /**
      * Export the report to the output stream.
@@ -80,9 +82,6 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
      * @param print the report
      */
     protected abstract void doExport(final OutputStream outputStream, final Print print) throws JRException, IOException;
-
-    @Autowired
-    private MapfishParser parser;
 
     @Override
     public final void print(final PJsonObject requestData, final Configuration config, final File configDir,

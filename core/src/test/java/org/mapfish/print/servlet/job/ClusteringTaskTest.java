@@ -31,6 +31,8 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
 
     @Autowired
     private ApplicationContext context;
+    TestJobManager jobMan1;
+    TestJobManager jobMan2;
 
     private class TestJobManager extends ThreadPoolJobManager {
         private String name;
@@ -66,10 +68,6 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
         }
 
     }
-
-    TestJobManager jobMan1;
-
-    TestJobManager jobMan2;
 
     @Before
     public void setup() {

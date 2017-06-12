@@ -6,10 +6,6 @@ import com.sampullara.cli.Argument;
  * The CLI API definition.
  */
 public final class CliDefinition extends CliHelpDefinition {
-    CliDefinition() {
-        // this is intentionally empty
-    }
-
     /**
      * Filename for the configuration (templates and CO).
      */
@@ -55,4 +51,8 @@ public final class CliDefinition extends CliHelpDefinition {
     @Argument(description = "If true then request data (spec) is in a old api request data (Mapfish v2 " +
             "compatible).", alias = "v2")
     public boolean v2Api = false;
+
+    CliDefinition() {
+        // this is intentionally empty
+    }
 }
