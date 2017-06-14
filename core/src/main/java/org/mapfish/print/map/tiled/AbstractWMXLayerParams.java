@@ -111,7 +111,8 @@ public abstract class AbstractWMXLayerParams extends AbstractTiledLayerParams {
     @Override
     public boolean validateBaseUrl() {
         try {
-            return new URI(getBaseUrl()) != null;
+            new URI(getBaseUrl());
+            return true;
         } catch (URISyntaxException exc) {
             return false;
         }

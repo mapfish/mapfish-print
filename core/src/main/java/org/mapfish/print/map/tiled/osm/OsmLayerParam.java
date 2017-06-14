@@ -172,7 +172,8 @@ public final class OsmLayerParam extends AbstractTiledLayerParams {
                 .replace("{-y}", "0");
 
         try {
-            return new URI(url) != null;
+            new URI(url);
+            return true;
         } catch (URISyntaxException exc) {
             return false;
         }

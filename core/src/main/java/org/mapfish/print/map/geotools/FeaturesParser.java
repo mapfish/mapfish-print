@@ -187,7 +187,7 @@ public class FeaturesParser {
                         if (thisGeomType != null) {
                             if (geomType == null) {
                                 geomType = thisGeomType;
-                            } else if (geomType != thisGeomType) {
+                            } else if (!geomType.equals(thisGeomType)) {
                                 geomType = Geometry.class;
                             }
                         }
