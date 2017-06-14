@@ -273,8 +273,6 @@ public class MapfishStyleParserPluginTest {
         config.setConfigurationFile(getFile(styleJsonFileName));
         final String styleJson = getSpec(styleJsonFileName);
 
-        final CenterScaleMapBounds bounds = new CenterScaleMapBounds(
-                CRS.decode("CRS:84"), 0, 0,300000);
         final Optional<Style> styleOptional = mapfishStyleParserPlugin.parseStyle(
                 config, httpClient, styleJson);
 
