@@ -1,12 +1,5 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
-apply plugin: 'war'
-apply plugin: 'distribution'
-apply plugin: 'org.akhikhl.gretty'
-apply plugin: 'docker'
-
-defaultTasks 'build'
-
 buildscript {
     repositories {
         jcenter()
@@ -16,6 +9,16 @@ buildscript {
     }
 }
 
+plugins {
+    id "com.palantir.jacoco-coverage" version "0.4.0"
+}
+
+apply plugin: 'war'
+apply plugin: 'distribution'
+apply plugin: 'org.akhikhl.gretty'
+apply plugin: 'docker'
+
+defaultTasks 'build'
 
 // the task `run` of the gretty plugin conflicts with the task with the same
 // name of the plugin `application`. that's why the following tasks are defined
@@ -338,4 +341,12 @@ task createDocker(type: Docker, dependsOn: 'unzipWar') {
     setEnvironment('JASPER_LOG_LEVEL', 'WARN')
     setEnvironment('APACHE_LOG_LEVEL', 'WARN')
     setEnvironment('SQL_LOG_LEVEL', 'WARN')
+}
+
+jacocoTestReport {
+    reports {
+        xml.destination "${buildDir}/jacoco.xml"
+        csv.enabled false
+        html.enabled false
+    }
 }

@@ -11,6 +11,10 @@ cache:
   - $HOME/.gradle/caches/
   - $HOME/.gradle/wrapper/
 
+env:
+    global:
+    - secure: "Dz36eEyZpO61+UkJDZvmsbGLC0Twu6jcGl2XpXGA4H/jXk5PzXh1UEzhsAI0QhJ6KOWkdoYRNwAhvA/jB+ljAw7tpiafMZcVNRM+yBImv5qcQKBGkR8eke45fNfHjdzGsWitdwUfUArbWk7fm7mFYzcqJ/B+Gk761HGJkSKRHM8="
+
 services:
 - docker
 
@@ -31,6 +35,11 @@ script:
 - git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
 - .travis/test-eof-newline
 - ./gradlew build
+
+after_success:
+- sudo apt-get install jq
+- wget -O ~/codacy-coverage-reporter-assembly-latest.jar $(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r .assets[0].browser_download_url)
+- java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r core/build/jacoco.xml
 
 after_failure:
 - cat core/build/reports/checkstyleReports/main.xml
