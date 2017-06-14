@@ -104,16 +104,22 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
                 printer.setConfiguration(configFile, bytes);
 
                 this.printers.put(finalApp, printer);
+            } catch (ClosedByInterruptException e) {
+                // because of a bug in the JDK, the interrupted status might not be set
+                // when throwing a ClosedByInterruptException. so, we do it manually.
+                // see also http://bugs.java.com/view_bug.do?bug_id=7043425
+                Thread.currentThread().interrupt();
+                LOGGER.error(String.format(
+                        "Error occurred while reading configuration file '%s'", configFile), e);
+                throw new RuntimeException(String.format(
+                        "Error occurred while reading configuration file '%s': ", configFile),
+                        e);
             } catch (Throwable e) {
-                if (e instanceof ClosedByInterruptException) {
-                    // because of a bug in the JDK, the interrupted status might not be set
-                    // when throwing a ClosedByInterruptException. so, we do it manually.
-                    // see also http://bugs.java.com/view_bug.do?bug_id=7043425
-                    Thread.currentThread().interrupt();
-                }
-                LOGGER.error("Error occurred while reading configuration file", e);
-                throw new RuntimeException("Error occurred while reading configuration file '"
-                                           + configFile + "': ", e);
+                LOGGER.error(String.format(
+                        "Error occurred while reading configuration file '%s'", configFile), e);
+                throw new RuntimeException(String.format(
+                        "Error occurred while reading configuration file '%s': ", configFile),
+                        e);
             }
         }
 
