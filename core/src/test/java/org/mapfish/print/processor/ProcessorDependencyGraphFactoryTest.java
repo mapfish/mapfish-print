@@ -288,8 +288,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         final ArrayList<TestProcessor> processors = Lists.newArrayList(NeedsMap, RootMapOut,
                 NeedsMapAndWidthOutputsMap, RootTableAndWidthOut);
 
-        ProcessorDependencyGraph graph = this.processorDependencyGraphFactory.build(processors,
-                Collections.<String, Class<?>>emptyMap());
+        this.processorDependencyGraphFactory.build(processors, Collections.<String, Class<?>>emptyMap());
     }
 
     /**

@@ -32,8 +32,6 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static org.mapfish.print.map.style.json.MapfishStyleParserPlugin.Versions;
-
 /**
  * The strategy for parsing the Mapfish json style version 1.
  */
@@ -60,7 +58,7 @@ public final class MapfishJsonStyleVersion1 {
         this.json = json;
         this.sldStyleBuilder = styleBuilder;
         this.parserHelper = new JsonStyleParserHelper(configuration, requestFactory, this.sldStyleBuilder,
-                true, Versions.ONE);
+                true);
         this.geometryProperty = defaultGeomAttName;
     }
 
@@ -153,7 +151,7 @@ public final class MapfishJsonStyleVersion1 {
     }
 
     @Nullable
-    private org.opengis.filter.Filter createFilter(final String styleKey, final String styleProperty) {
+    private Filter createFilter(final String styleKey, final String styleProperty) {
         if (Strings.isNullOrEmpty(styleProperty) || Strings.isNullOrEmpty(styleKey)) {
             return null;
         }

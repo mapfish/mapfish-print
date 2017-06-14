@@ -32,19 +32,19 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
     @Test
     public void testRun() throws Exception {
 
-        assertRegistryValues(null, 0, 0, true);
+        assertRegistryValues(0, 0, true);
         TestPrintJob printJob = new TestPrintJob();
         PrintJobEntryImpl entry = (PrintJobEntryImpl) printJob.getEntry();
         entry.setStartTime(System.currentTimeMillis());
         jobManager.submit(printJob);
 
-        assertRegistryValues(printJob, 1, 1, false);
+        assertRegistryValues(1, 1, false);
 
         printJob = new FailingPrintJob();
         entry.setStartTime(System.currentTimeMillis());
         jobManager.submit(printJob);
 
-        assertRegistryValues(printJob, 2, 2, false);
+        assertRegistryValues(2, 2, false);
 
         final AtomicBoolean finishFlag = new AtomicBoolean(false);
 
@@ -60,15 +60,15 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
         entry.setStartTime(System.currentTimeMillis());
         jobManager.submit(printJob);
 
-        assertRegistryValues(printJob, 2, 3, false);
+        assertRegistryValues(2, 3, false);
 
         finishFlag.set(true);
 
-        assertRegistryValues(printJob, 3, 3, false);
+        assertRegistryValues(3, 3, false);
     }
 
-    private void assertRegistryValues(TestPrintJob printJob, int expectedLastPrintCount, int expectedRequestsMade, boolean
-            timeSpentIsZero) {
+    private void assertRegistryValues(
+            int expectedLastPrintCount, int expectedRequestsMade, boolean timeSpentIsZero) {
 
         long start = System.currentTimeMillis();
         AssertionError error = null;

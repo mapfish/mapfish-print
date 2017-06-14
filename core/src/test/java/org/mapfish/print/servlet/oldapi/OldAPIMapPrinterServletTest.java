@@ -240,11 +240,11 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         this.servlet.printReport(loadRequestDataAsString("requestData-old-api-png.json"),
                 createRequest, createResponse);
         assertEquals(HttpStatus.OK.value(), createResponse.getStatus());
-        assertCorrectResponse(createResponse, "expectedSimpleImage.png");
+        assertCorrectResponse(createResponse);
     }
 
     private void assertCorrectResponse(
-            MockHttpServletResponse servletGetReportResponse, String expectedImage) throws IOException {
+            MockHttpServletResponse servletGetReportResponse) throws IOException {
         byte[] report = servletGetReportResponse.getContentAsByteArray();
 
         final String contentType = servletGetReportResponse.getHeader("Content-Type");

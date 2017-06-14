@@ -99,7 +99,6 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
             final MfClientHttpRequestFactory clientHttpRequestFactory, final MapfishMapContext transformer) {
         final MapfishMapContext layerTransformer = getLayerTransformer(transformer);
 
-        final double dpi = transformer.getDPI();
         final TilePreparationTask task = new TilePreparationTask(
                 clientHttpRequestFactory, layerTransformer,
                 this.tileCacheInformation, httpRequestCache);

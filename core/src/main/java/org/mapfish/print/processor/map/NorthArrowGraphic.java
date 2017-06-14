@@ -133,7 +133,8 @@ public final class NorthArrowGraphic {
             graphics2d.fillRect(0, 0, targetSize.width, targetSize.height);
 
             // scale the original image to fit the new size
-            int newWidth, newHeight;
+            int newWidth;
+            int newHeight;
             if (originalImage.getWidth() > originalImage.getHeight()) {
                 newWidth = targetSize.width;
                 newHeight = Math.min(

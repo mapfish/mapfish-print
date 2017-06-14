@@ -15,9 +15,6 @@ import java.util.Map;
  */
 public final class OldAPILayerConverter {
 
-    private OldAPILayerConverter() {
-    }
-
     private static Map<String, LayerConverter> converters = new HashMap<String, LayerConverter>();
 
     static {
@@ -27,6 +24,9 @@ public final class OldAPILayerConverter {
         converters.put("wmts", new WMSTConverter());
         converters.put("vector", new GeoJsonConverter());
         converters.put("image", new GeoImageConverter());
+    }
+
+    private OldAPILayerConverter() {
     }
 
     /**

@@ -26,8 +26,6 @@ import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static org.mapfish.print.map.style.json.MapfishStyleParserPlugin.Versions;
-
 /**
  * Support a more flexible json styling than that which is supported by version 1.
  */
@@ -87,7 +85,7 @@ public final class MapfishJsonStyleVersion2 {
         this.json = json;
         this.styleBuilder = styleBuilder;
         this.parserHelper = new JsonStyleParserHelper(configuration, requestFactory, styleBuilder,
-                false, Versions.TWO);
+                false);
     }
 
     Style parseStyle() {

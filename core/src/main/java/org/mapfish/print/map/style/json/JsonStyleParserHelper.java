@@ -60,7 +60,6 @@ import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 
 import static org.mapfish.print.FileUtils.testForLegalFileUrl;
-import static org.mapfish.print.map.style.json.MapfishStyleParserPlugin.Versions;
 import static org.springframework.http.HttpMethod.HEAD;
 
 /**
@@ -133,7 +132,6 @@ public final class JsonStyleParserHelper {
     private final ClientHttpRequestFactory requestFactory;
     private boolean allowNullSymbolizer;
     private StyleBuilder styleBuilder;
-    private Versions version;
 
     /**
      * Constructor.
@@ -142,19 +140,16 @@ public final class JsonStyleParserHelper {
      * @param requestFactory Request factory for making the request.
      * @param styleBuilder a style builder to use for creating the style objects.
      * @param allowNullSymbolizer If true then create*Symbolizer() methods can return null if expected params are missing.
-     * @param version the version being parsed.
      */
     public JsonStyleParserHelper(
             @Nullable final Configuration configuration,
             @Nonnull final ClientHttpRequestFactory requestFactory,
             @Nonnull final StyleBuilder styleBuilder,
-            final boolean allowNullSymbolizer,
-            final Versions version) {
+            final boolean allowNullSymbolizer) {
         this.configuration = configuration;
         this.requestFactory = requestFactory;
         this.styleBuilder = styleBuilder;
         this.allowNullSymbolizer = allowNullSymbolizer;
-        this.version = version;
     }
 
     void setAllowNullSymbolizer(final boolean allowNullSymbolizer) {
@@ -864,10 +859,6 @@ public final class JsonStyleParserHelper {
             }
         }
         return false;
-    }
-
-    public void setVersion(final Versions version) {
-        this.version = version;
     }
 
     private <T> Expression parseExpression(final T defaultValue,
