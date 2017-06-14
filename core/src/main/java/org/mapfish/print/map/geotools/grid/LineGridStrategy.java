@@ -33,9 +33,10 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
     }
 
     @Override
-    public FeatureSourceSupplier createFeatureSource(final Template template,
-                                                     final GridParam layerData,
-                                                     final LabelPositionCollector labels) {
+    public FeatureSourceSupplier createFeatureSource(
+            final Template template,
+            final GridParam layerData,
+            final LabelPositionCollector labels) {
         return new FeatureSourceSupplier() {
             @Nonnull
             @Override
@@ -55,10 +56,11 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
     }
 
     @Nonnull
-    private DefaultFeatureCollection createFeaturesFromNumberOfLines(@Nonnull final MapfishMapContext mapContext,
-                                                                     @Nonnull final SimpleFeatureBuilder featureBuilder,
-                                                                     @Nonnull final GridParam layerData,
-                                                                     @Nonnull final LabelPositionCollector labels) {
+    private DefaultFeatureCollection createFeaturesFromNumberOfLines(
+            @Nonnull final MapfishMapContext mapContext,
+            @Nonnull final SimpleFeatureBuilder featureBuilder,
+            @Nonnull final GridParam layerData,
+            @Nonnull final LabelPositionCollector labels) {
 
         ReferencedEnvelope bounds = mapContext.toReferencedEnvelope();
 
@@ -71,10 +73,11 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
     }
 
     @Nonnull
-    private DefaultFeatureCollection createFeaturesFromSpacing(@Nonnull final MapfishMapContext mapContext,
-                                                               @Nonnull final SimpleFeatureBuilder featureBuilder,
-                                                               @Nonnull final GridParam layerData,
-                                                               @Nonnull final LabelPositionCollector labels) {
+    private DefaultFeatureCollection createFeaturesFromSpacing(
+            @Nonnull final MapfishMapContext mapContext,
+            @Nonnull final SimpleFeatureBuilder featureBuilder,
+            @Nonnull final GridParam layerData,
+            @Nonnull final LabelPositionCollector labels) {
 
         ReferencedEnvelope bounds = mapContext.toReferencedEnvelope();
 
@@ -87,14 +90,13 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
     }
 
     // CSOFF: ParameterNumber
-    private DefaultFeatureCollection sharedCreateFeatures(final LabelPositionCollector labels,
-                                                          final SimpleFeatureBuilder featureBuilder,
-                                                          final GridParam layerData,
-                                                          final MapfishMapContext mapContext,
-                                                          final double xSpace,
-                                                          final double ySpace,
-                                                          final double minX,
-                                                          final double minY) {
+    private DefaultFeatureCollection sharedCreateFeatures(
+            final LabelPositionCollector labels,
+            final SimpleFeatureBuilder featureBuilder,
+            final GridParam layerData,
+            final MapfishMapContext mapContext,
+            final double xSpace, final double ySpace,
+            final double minX, final double minY) {
         // CSON: ParameterNumber
         GeometryFactory geometryFactory = new GeometryFactory();
 
@@ -168,5 +170,4 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
 
         return featureBuilder.buildFeature("grid." + (ordinate == 1 ? 'x' : 'y') + "." + i);
     }
-
 }
