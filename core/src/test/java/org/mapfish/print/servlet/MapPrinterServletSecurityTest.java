@@ -18,14 +18,10 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.HashMap;
-
-import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

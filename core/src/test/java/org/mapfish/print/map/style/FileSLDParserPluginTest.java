@@ -6,14 +6,11 @@ import org.geotools.styling.Style;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
-import org.mapfish.print.attribute.map.BBoxMapBounds;
-import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.ConfigFileResolvingHttpRequestFactory;
 import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.awt.Dimension;
 import java.io.File;
 
 import static org.junit.Assert.assertEquals;
@@ -30,8 +27,6 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
     private TestHttpClientFactory clientHttpRequestFactory;
     @Autowired
     private ConfigFileLoaderManager fileLoaderManager;
-    private MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0,
-            72, true, true);
 
     @Test
     public void testParseStyle_SingleStyleRelativeToConfig() throws Throwable {

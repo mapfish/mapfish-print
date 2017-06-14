@@ -101,7 +101,7 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
 
         final double dpi = transformer.getDPI();
         final TilePreparationTask task = new TilePreparationTask(
-                clientHttpRequestFactory, dpi, layerTransformer,
+                clientHttpRequestFactory, layerTransformer,
                 this.tileCacheInformation, httpRequestCache);
         this.tilePreparationInfo = task.call();
     }

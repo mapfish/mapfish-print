@@ -7,7 +7,6 @@ import org.mapfish.print.attribute.ScalebarAttribute.ScalebarAttributeValues;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.test.util.ImageSimilarity;
 
-import javax.imageio.ImageIO;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -21,15 +20,6 @@ import java.util.List;
 import static org.junit.Assert.assertNotNull;
 
 public class ScalebarDrawerTest {
-
-    private static String expectedDir;
-    static {
-        if (System.getProperty("os.name", "linux").toLowerCase().contains("win")) {
-            expectedDir = "expected-win/";
-        } else {
-            expectedDir = "expected-linux/";
-        }
-    }
 
     @Test
     public void testCreate() {

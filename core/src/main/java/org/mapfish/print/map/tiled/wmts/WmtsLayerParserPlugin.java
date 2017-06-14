@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Resource;
 
 /**
  * <p>Renders WMTS layers.</p>
@@ -27,8 +26,6 @@ public final class WmtsLayerParserPlugin extends AbstractGridCoverageLayerPlugin
     private ForkJoinPool forkJoinPool;
     @Autowired
     private MetricRegistry registry;
-    @Resource(name = "requestForkJoinPool")
-    private ForkJoinPool requestForkJoinPool;
 
     private Set<String> typenames = Sets.newHashSet("wmts");
 

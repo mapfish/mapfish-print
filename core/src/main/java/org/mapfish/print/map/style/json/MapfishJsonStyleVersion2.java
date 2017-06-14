@@ -77,7 +77,6 @@ public final class MapfishJsonStyleVersion2 {
 
     private final PJsonObject json;
     private final StyleBuilder styleBuilder;
-    private final ClientHttpRequestFactory clientHttpRequestFactory;
     private final JsonStyleParserHelper parserHelper;
 
     MapfishJsonStyleVersion2(
@@ -89,7 +88,6 @@ public final class MapfishJsonStyleVersion2 {
         this.styleBuilder = styleBuilder;
         this.parserHelper = new JsonStyleParserHelper(configuration, requestFactory, styleBuilder,
                 false, Versions.TWO);
-        this.clientHttpRequestFactory = requestFactory;
     }
 
     Style parseStyle() {

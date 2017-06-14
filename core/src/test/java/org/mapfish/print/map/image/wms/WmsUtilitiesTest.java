@@ -5,7 +5,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.json.JSONObject;
 import org.junit.Test;
-import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.map.image.wms.WmsLayerParam.ServerType;
 import org.mapfish.print.wrapper.json.PJsonObject;

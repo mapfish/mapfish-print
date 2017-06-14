@@ -41,14 +41,6 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
                     JSONObject.class, JSONArray.class);
     private static final HashSet<Class<? extends Object>> VALUE_OBJ_FIELD_NON_RECURSIVE_TYPE =
             createClassSet(PElement.class, PArray.class, PObject.class);
-
-    private static HashSet<Class<? extends Object>> createClassSet(final Object... args) {
-        final HashSet<Class<?>> classes = Sets.newHashSet();
-        for (Object arg : args) {
-            classes.add((Class<?>) arg);
-        }
-        return classes;
-    }
     /**
      * Name of attribute in the client config json.
      *
@@ -87,6 +79,14 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
 
     private PYamlObject defaults;
     private String configName;
+
+    private static HashSet<Class<? extends Object>> createClassSet(final Object... args) {
+        final HashSet<Class<?>> classes = Sets.newHashSet();
+        for (Object arg : args) {
+            classes.add((Class<?>) arg);
+        }
+        return classes;
+    }
 
     private void validateParamObject(final Class<?> typeToTest, final Set<Class> tested) {
         if (!tested.contains(typeToTest)) {

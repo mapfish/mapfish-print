@@ -31,6 +31,8 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
 
     @Autowired
     private ApplicationContext context;
+    TestJobManager jobMan1;
+    TestJobManager jobMan2;
 
     private class TestJobManager extends ThreadPoolJobManager {
         private String name;
@@ -67,15 +69,11 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
 
     }
 
-    TestJobManager jobMan1;
-
-    TestJobManager jobMan2;
-
     @Before
     public void setup() {
         context.getBean(ThreadPoolJobManager.class).shutdown();
         jobMan1 = new TestJobManager("uno");
-        jobMan2 = new TestJobManager("duo");;
+        jobMan2 = new TestJobManager("duo");
     }
 
     @Test(timeout = 60000)

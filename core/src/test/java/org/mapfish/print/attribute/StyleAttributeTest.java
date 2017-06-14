@@ -30,8 +30,6 @@ public class StyleAttributeTest extends AbstractMapfishSpringTest {
 
     @Test
     public void testAttributesFromJson() throws Exception {
-        MapfishMapContext mapContext = new MapfishMapContext(new BBoxMapBounds(null, 0,0,10,10), new Dimension(20,20), 0,
-                72, true, true);
         configurationFactory.setDoValidation(false);
         final File configFile = getFile(StyleAttributeTest.class, "style_attributes/config.yaml");
         final Configuration config = configurationFactory.getConfig(configFile);

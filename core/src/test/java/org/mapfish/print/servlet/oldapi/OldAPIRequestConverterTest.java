@@ -49,7 +49,7 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertEquals("Map title", attributes.getString("title"));
         assertEquals("Comment on the map", attributes.getString("comment"));
         assertEquals(1, attributes.getInt("customParam1"));
-        assertTrue(!attributes.has("units"));
+        assertFalse(attributes.has("units"));
 
         // map
         assertTrue(attributes.has("map"));

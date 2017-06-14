@@ -33,6 +33,14 @@ public final class HttpRequestCache {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequestCache.class);
 
+    private final List<CachedClientHttpRequest> requests = new ArrayList<CachedClientHttpRequest>();
+
+    private final File temporaryDirectory;
+
+    private final MetricRegistry registry;
+
+    private boolean cached = false;
+
     private class CachedClientHttpResponse extends AbstractClientHttpResponse {
 
         private final File cachedFile;
@@ -157,14 +165,6 @@ public final class HttpRequestCache {
             return null;
         }
     }
-
-    private final List<CachedClientHttpRequest> requests = new ArrayList<CachedClientHttpRequest>();
-
-    private final File temporaryDirectory;
-
-    private final MetricRegistry registry;
-
-    private boolean cached = false;
 
     /**
      * Constructor.

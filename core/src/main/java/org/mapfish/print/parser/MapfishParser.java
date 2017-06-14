@@ -229,7 +229,6 @@ public final class MapfishParser {
 
     @SuppressWarnings("unchecked")
     private Object parseEnum(final Class<?> type, final String path, final String enumString) {
-        Object value;
         // not the name, maybe the ordinal;
         try {
             int ordinal = Integer.parseInt(enumString);

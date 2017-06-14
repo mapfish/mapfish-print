@@ -3,14 +3,10 @@ package org.mapfish.print.map;
 import com.vividsolutions.jts.geom.Coordinate;
 import org.geotools.referencing.CRS;
 import org.junit.Test;
-import org.mapfish.print.attribute.map.CenterScaleMapBounds;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
-import java.awt.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.mapfish.print.Constants.PDF_DPI;
-import static org.mapfish.print.attribute.map.CenterScaleMapBoundsTest.CH1903;
 
 public class ScaleTest{
     private static final double DELTA = 0.00001;

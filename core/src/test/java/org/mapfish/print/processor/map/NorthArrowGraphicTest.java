@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;

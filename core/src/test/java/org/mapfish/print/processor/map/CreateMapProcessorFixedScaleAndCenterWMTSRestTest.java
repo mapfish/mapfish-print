@@ -3,7 +3,6 @@ package org.mapfish.print.processor.map;
 import static org.junit.Assert.assertEquals;
 import static org.mapfish.print.Constants.PDF_DPI;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;

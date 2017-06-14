@@ -17,6 +17,7 @@ import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest;
 import org.mapfish.print.servlet.job.impl.ThreadPoolJobManager;
 import org.mapfish.print.test.util.ImageSimilarity;
+
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -31,10 +32,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -45,7 +43,6 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 
 import static org.junit.Assert.assertArrayEquals;

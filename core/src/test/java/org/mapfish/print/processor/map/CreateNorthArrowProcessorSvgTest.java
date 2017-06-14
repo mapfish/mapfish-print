@@ -19,7 +19,6 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 
-import java.awt.image.BufferedImage;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import java.io.IOException;
 import java.net.URI;

@@ -9,7 +9,6 @@ import java.awt.Rectangle;
 
 import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
 import static org.junit.Assert.assertEquals;
-import static org.mapfish.print.Constants.PDF_DPI;
 import static org.mapfish.print.attribute.map.CenterScaleMapBoundsTest.CH1903;
 
 public class BBoxMapBoundsTest {

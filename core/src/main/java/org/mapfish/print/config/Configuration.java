@@ -119,6 +119,8 @@ public class Configuration {
     @Autowired
     private ApplicationContext context;
 
+    private AccessAssertion accessAssertion = AlwaysAllowAssertion.INSTANCE;
+
     final PDFConfig getPdfConfig() {
         return this.pdfConfig;
     }
@@ -161,8 +163,6 @@ public class Configuration {
     public final void setPdfConfig(final PDFConfig pdfConfig) {
         this.pdfConfig = pdfConfig;
     }
-
-    private AccessAssertion accessAssertion = AlwaysAllowAssertion.INSTANCE;
 
     /**
      * The default output file name of the report.  This can be overridden by
