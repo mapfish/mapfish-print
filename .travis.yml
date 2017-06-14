@@ -29,6 +29,7 @@ before_install:
 
 # Don't run eval ./gradlew assemble"
 install:
+- ./gradlew --version
 - ./gradlew examples:geoserverData
 
 script:
