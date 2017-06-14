@@ -98,13 +98,14 @@ public class CreateMapProcessorCenterWMSRotationSmallTilesTest extends AbstractM
 
     private int keyHash(String key)
     {
-        int k = (int)key.length();
-        int u = 0,n = 0;
+        int k = key.length();
+        int u = 0;
+        int n = 0;
 
         for (int i=0; i<k; i++)
         {
             n = (int)key.charAt(i);
-            u += i*n%31;
+            u += i * n % 31;
         }
         return u%139;
     }
