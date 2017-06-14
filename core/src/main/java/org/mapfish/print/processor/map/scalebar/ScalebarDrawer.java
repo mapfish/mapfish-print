@@ -190,13 +190,12 @@ public abstract class ScalebarDrawer {
 
             if (!shouldSkipLabel) {
                 this.graphics2d.setTransform(centerTransform);
-                //for some reason, we need to floor the coordinates for the text to be nicely centered
+                // For some reason, we need to floor the coordinates for the text to be nicely centered
                 label.getLabelLayout().draw(this.graphics2d, (float) Math.floor(-label.getWidth() / 2.0f),
                         (float) Math.floor(label.getHeight() / 2.0f));
                 prevMargin = newMargin;
-            } else {
-                //the label would be written over the previous one => ignore it
             }
+            // else: the label would be written over the previous one => ignore it
         }
     }
 
