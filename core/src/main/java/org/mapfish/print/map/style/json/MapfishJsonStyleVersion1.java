@@ -153,7 +153,7 @@ public final class MapfishJsonStyleVersion1 {
     }
 
     @Nullable
-    private org.opengis.filter.Filter createFilter(final String styleKey, final String styleProperty) {
+    private Filter createFilter(final String styleKey, final String styleProperty) {
         if (Strings.isNullOrEmpty(styleProperty) || Strings.isNullOrEmpty(styleKey)) {
             return null;
         }

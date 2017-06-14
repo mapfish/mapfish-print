@@ -161,8 +161,8 @@ public final class Values {
                                        @Nonnull final PObject requestJsonAttributes) throws JSONException {
         if (requestJsonAttributes.has(JSON_REQUEST_HEADERS) &&
             requestJsonAttributes.getObject(JSON_REQUEST_HEADERS).has(JSON_REQUEST_HEADERS)) {
-            if (!attributes.containsKey(MapPrinterServlet.JSON_REQUEST_HEADERS)) {
-                attributes.put(MapPrinterServlet.JSON_REQUEST_HEADERS, new HttpRequestHeadersAttribute());
+            if (!attributes.containsKey(JSON_REQUEST_HEADERS)) {
+                attributes.put(JSON_REQUEST_HEADERS, new HttpRequestHeadersAttribute());
             }
         }
         for (String attributeName : attributes.keySet()) {

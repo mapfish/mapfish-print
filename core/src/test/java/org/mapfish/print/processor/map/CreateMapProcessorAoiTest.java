@@ -37,6 +37,7 @@ import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mapfish.print.attribute.map.AreaOfInterest.AoiDisplay.CLIP;
 import static org.mapfish.print.attribute.map.AreaOfInterest.AoiDisplay.RENDER;
 
 /**
@@ -118,9 +119,9 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
         /* jpeg */ createMap(template, "expectedSimpleImage-none.png",
                 AreaOfInterest.AoiDisplay.NONE, null, false, true, null, 50);
         createMap(template, "expectedSimpleImage-clip-transparent.png",
-                AreaOfInterest.AoiDisplay.CLIP, null, false, null, 10);
+                CLIP, null, false, null, 10);
         /* jpeg */ createMap(template, "expectedSimpleImage-clip.png",
-                AreaOfInterest.AoiDisplay.CLIP, null, false, true, null, 10);
+                CLIP, null, false, true, null, 10);
 
         // Test when SVG is used for vector layers
         createMap(template, "expectedSimpleImage-render-polygon-svg-transparent.png",
@@ -128,9 +129,9 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
         /* jpeg */ createMap(template, "expectedSimpleImage-render-polygon-svg.png",
                 RENDER, createJsonStyle().toString(), true, true, null, 50);
         createMap(template, "expectedSimpleImage-clip-svg-transparent.png",
-                AreaOfInterest.AoiDisplay.CLIP, null, true, null, 5);
+                CLIP, null, true, null, 5);
         /* jpeg */ createMap(template, "expectedSimpleImage-clip-svg.png",
-                AreaOfInterest.AoiDisplay.CLIP, null, true, true, null, 10);
+                CLIP, null, true, true, null, 10);
         Function<PJsonObject, Void> setRotationUpdater = new Function<PJsonObject, Void>() {
 
             @Nullable
@@ -145,9 +146,9 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
             }
         };
         createMap(template, "expectedSimpleImage-rotate-clip-svg.png",
-                AreaOfInterest.AoiDisplay.CLIP, null, true, setRotationUpdater, 10);
+                CLIP, null, true, setRotationUpdater, 10);
         createMap(template, "expectedSimpleImage-rotate-render-svg.png",
-                AreaOfInterest.AoiDisplay.RENDER, null, true, setRotationUpdater, 75);
+                RENDER, null, true, setRotationUpdater, 75);
     }
 
     private JSONObject createJsonStyle() throws JSONException {

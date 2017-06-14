@@ -144,16 +144,16 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
     }
 
     // CSOFF: ParameterNumber
-    private org.opengis.feature.simple.SimpleFeature createFeature(final SimpleFeatureBuilder featureBuilder,
-                                                                   final GeometryFactory geometryFactory,
-                                                                   final GridParam layerData,
-                                                                   final AxisDirection direction,
-                                                                   final int numDimensions,
-                                                                   final double spacing,
-                                                                   final double x,
-                                                                   final double y,
-                                                                   final int i,
-                                                                   final int ordinate) {
+    private SimpleFeature createFeature(
+            final SimpleFeatureBuilder featureBuilder,
+            final GeometryFactory geometryFactory,
+            final GridParam layerData,
+            final AxisDirection direction,
+            final int numDimensions,
+            final double spacing,
+            final double x, final double y,
+            final int i,
+            final int ordinate) {
         // CSON: ParameterNumber
 
         featureBuilder.reset();
