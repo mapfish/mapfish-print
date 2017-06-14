@@ -27,12 +27,11 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
     private TestHttpClientFactory requestFactory;
     private ConfigFileResolvingHttpRequestFactory requestFactoryWrapper;
 
-    private Configuration config;
     private Color bgColor;
 
     @Before
     public void setup() throws IOException {
-        this.config = this.configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
+        Configuration config = this.configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         this.requestFactoryWrapper =
                 new ConfigFileResolvingHttpRequestFactory(this.requestFactory, config);
         this.bgColor = ColorParser.toColor("rgba(255, 255, 255, 0)");
