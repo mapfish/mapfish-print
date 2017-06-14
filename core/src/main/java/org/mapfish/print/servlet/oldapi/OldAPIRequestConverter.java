@@ -37,11 +37,11 @@ public final class OldAPIRequestConverter {
 
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(OldAPIRequestConverter.class);
 
-    private OldAPIRequestConverter() { }
-
     private static final Set<String> NON_CUSTOM_PARAMS = Sets.newHashSet(
             "units", "srs", "layout", "dpi", "layers", "pages", "legends",
             "geodetic", "outputFilename", "outputFormat");
+
+    private OldAPIRequestConverter() { }
 
     /**
      * Converts a print request of the old API into the new request format.

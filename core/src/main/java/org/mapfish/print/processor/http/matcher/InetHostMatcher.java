@@ -18,6 +18,8 @@ import javax.annotation.Nullable;
 public abstract class InetHostMatcher extends HostMatcher {
     private static final Logger LOGGER = LoggerFactory.getLogger(InetHostMatcher.class);
 
+    private List<AddressMask> authorizedIPs = null;
+
     /**
      * The ip addresses that are considered legal.
      */
@@ -74,8 +76,6 @@ public abstract class InetHostMatcher extends HostMatcher {
             return Arrays.equals(this.address, other.address) && Arrays.equals(this.mask, other.mask);
         }
     }
-
-    private List<AddressMask> authorizedIPs = null;
 
     @Override
     protected final Optional<Boolean> tryOverrideValidation(final MatchInfo matchInfo) throws UnknownHostException, SocketException {

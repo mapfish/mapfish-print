@@ -39,6 +39,12 @@ import java.util.List;
  */
 public final class Main {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    private static final int LOGLEVEL_QUIET = 0;
+    private static final int LOGLEVEL_INFO = 1;
+    private static final int LOGLEVEL_DEFAULT = 2;
+    private static final int LOGLEVEL_VERBOSE = 3;
+
     static {
         Handler.configureProtocolHandler();
     }
@@ -48,13 +54,6 @@ public final class Main {
     private Main() {
         // intentionally empty
     }
-
-    @SuppressWarnings("unused")
-    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
-    private static final int LOGLEVEL_QUIET = 0;
-    private static final int LOGLEVEL_INFO = 1;
-    private static final int LOGLEVEL_DEFAULT = 2;
-    private static final int LOGLEVEL_VERBOSE = 3;
 
     /**
      * Name of the default spring context file.
