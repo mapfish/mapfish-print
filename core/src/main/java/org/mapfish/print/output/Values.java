@@ -160,10 +160,9 @@ public final class Values {
                                        @Nonnull final Map<String, Attribute> attributes,
                                        @Nonnull final PObject requestJsonAttributes) throws JSONException {
         if (requestJsonAttributes.has(JSON_REQUEST_HEADERS) &&
-            requestJsonAttributes.getObject(JSON_REQUEST_HEADERS).has(JSON_REQUEST_HEADERS)) {
-            if (!attributes.containsKey(JSON_REQUEST_HEADERS)) {
-                attributes.put(JSON_REQUEST_HEADERS, new HttpRequestHeadersAttribute());
-            }
+                requestJsonAttributes.getObject(JSON_REQUEST_HEADERS).has(JSON_REQUEST_HEADERS) &&
+                !attributes.containsKey(JSON_REQUEST_HEADERS)) {
+            attributes.put(JSON_REQUEST_HEADERS, new HttpRequestHeadersAttribute());
         }
         for (String attributeName : attributes.keySet()) {
             final Attribute attribute = attributes.get(attributeName);
