@@ -62,7 +62,7 @@ public class JsonStyleParserHelperTest {
         final File file = getFile(MapfishStyleParserPluginTest.class, REQUEST_DATA_STYLE_JSON_V1_STYLE_JSON);
         configuration.setConfigurationFile(file);
         helper = new JsonStyleParserHelper(
-                configuration, new TestHttpClientFactory(), new StyleBuilder(), true, Versions.ONE);
+                configuration, new TestHttpClientFactory(), new StyleBuilder(), true);
     }
 
     private File getFile(Class<?> base, String fileName) throws URISyntaxException {
@@ -530,7 +530,6 @@ public class JsonStyleParserHelperTest {
     @Test
     public void testSomeDefaultPointSymbolizer() throws Exception {
         helper.setAllowNullSymbolizer(false);
-        helper.setVersion(Versions.TWO);
         JSONObject json = new JSONObject();
         json.put(JsonStyleParserHelper.JSON_STROKE_DASHSTYLE, "5 4");
 
@@ -561,7 +560,6 @@ public class JsonStyleParserHelperTest {
     @Test
     public void testSomeDefaultLineSymbolizer() throws Exception {
         helper.setAllowNullSymbolizer(false);
-        helper.setVersion(Versions.TWO);
         JSONObject json = new JSONObject();
         json.put(JsonStyleParserHelper.JSON_STROKE_DASHSTYLE, "5 4");
 
@@ -591,7 +589,6 @@ public class JsonStyleParserHelperTest {
     @Test
     public void testSomeDefaultPolygonSymbolizer() throws Exception {
         helper.setAllowNullSymbolizer(false);
-        helper.setVersion(Versions.TWO);
         JSONObject json = new JSONObject();
         json.put(JsonStyleParserHelper.JSON_STROKE_DASHSTYLE, "5 4");
 
@@ -610,7 +607,6 @@ public class JsonStyleParserHelperTest {
         final String label = "label";
 
         helper.setAllowNullSymbolizer(false);
-        helper.setVersion(Versions.TWO);
         JSONObject json = new JSONObject();
         json.put(JsonStyleParserHelper.JSON_LABEL, label);
         PJsonObject pJson = new PJsonObject(json, "symbolizers");
@@ -625,7 +621,6 @@ public class JsonStyleParserHelperTest {
         final String label = "label";
 
         helper.setAllowNullSymbolizer(false);
-        helper.setVersion(Versions.TWO);
         JSONObject json = new JSONObject();
         json.put(JsonStyleParserHelper.JSON_LABEL, label);
         json.put(JsonStyleParserHelper.JSON_FONT_COLOR, "red");
