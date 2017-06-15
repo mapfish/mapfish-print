@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 echo "Current directory is $(pwd)"
-echo "\n=== SUREFIRE REPORTS ===\n"
+echo
+echo "=== SUREFIRE REPORTS ==="
+echo
 
 for F in examples/build/test-results/*.xml
 do
