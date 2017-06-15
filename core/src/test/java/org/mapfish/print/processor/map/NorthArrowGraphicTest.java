@@ -30,7 +30,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
     private Color bgColor;
 
     @Before
-    public void setup() throws IOException {
+    public void setUp() throws IOException {
         Configuration config = this.configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         this.requestFactoryWrapper =
                 new ConfigFileResolvingHttpRequestFactory(this.requestFactory, config);
