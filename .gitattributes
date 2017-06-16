@@ -14,3 +14,24 @@
 *.woff binary
 *.jks binary
 *.enc binary
+*.sh    eol=lf
+*.html  eol=lf
+*.js    eol=lf
+*.env   eol=lf
+*.md    eol=lf
+*.gitignore eol=lf
+*.gitattributes eol=lf
+
+# Declare files that will always have CRLF line endings on checkout.
+*.h         eol=crlf
+*.cpp       eol=crlf
+*.rc        eol=crlf
+*.vcproj    eol=crlf
+*.bat       eol=crlf
+*.sln       eol=crlf
+*.java      eol=crlf
+
+# Denote all files that are truly binary and should not be modified.
+*.png binary
+*.jpg binary
+*.ico binary 
