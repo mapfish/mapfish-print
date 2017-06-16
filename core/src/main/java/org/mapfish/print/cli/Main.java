@@ -45,6 +45,14 @@ public final class Main {
     private static final int LOGLEVEL_DEFAULT = 2;
     private static final int LOGLEVEL_VERBOSE = 3;
 
+    /**
+     * Name of the default spring context file.
+     */
+    public static final String DEFAULT_SPRING_CONTEXT = "/mapfish-cli-spring-application-context.xml";
+
+    @Autowired
+    private MapPrinter mapPrinter;
+
     static {
         Handler.configureProtocolHandler();
     }
@@ -54,14 +62,6 @@ public final class Main {
     private Main() {
         // intentionally empty
     }
-
-    /**
-     * Name of the default spring context file.
-     */
-    public static final String DEFAULT_SPRING_CONTEXT = "/mapfish-cli-spring-application-context.xml";
-
-    @Autowired
-    private MapPrinter mapPrinter;
 
     /**
      * Main method.

@@ -41,11 +41,5 @@ public final class StyleAttribute extends ReflectiveAttribute<StylesAttributeVal
          * The style string.
          */
         public String style;
-
-        /**
-         * Constructor.
-         */
-        public StylesAttributeValues() {
-        }
     }
 }
