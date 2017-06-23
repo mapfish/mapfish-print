@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public abstract class BaseMapServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseMapServlet.class);
+    private int cacheDurationInSeconds = 3600;
 
     /**
      * Remove commas and whitespace from a string.
@@ -116,5 +117,29 @@ public abstract class BaseMapServlet {
             baseURL.append(httpServletRequest.getServletPath());
         }
         return baseURL;
+    }
+
+    /**
+     * Set the cache duration for the queries that can be cached.
+     * @param cacheDurationInSeconds the duration
+     */
+    public final void setCacheDuration(final int cacheDurationInSeconds) {
+        this.cacheDurationInSeconds = cacheDurationInSeconds;
+    }
+
+    /**
+     * Disable caching of the response.
+     * @param response the response
+     */
+    protected void setNoCache(final HttpServletResponse response) {
+        response.setHeader("Cache-Control", "max-age=0, must-revalidate, no-cache, no-store");
+    }
+
+    /**
+     * Enable caching of the response.
+     * @param response the response
+     */
+    protected void setCache(final HttpServletResponse response) {
+        response.setHeader("Cache-Control", "max-age=" + String.valueOf(this.cacheDurationInSeconds));
     }
 }
