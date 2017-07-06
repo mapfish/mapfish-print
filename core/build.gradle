@@ -134,7 +134,7 @@ dependencies {
             "com.codahale.metrics:metrics-logback:$metricsVersion",
             "com.readytalk:metrics3-statsd:4.1.0"
     )
-    def geotoolsVersion = "14.3"
+    def geotoolsVersion = "17.1"
     geotools (
             "org.geotools:gt-epsg-hsql:$geotoolsVersion",
             "org.geotools:gt-render:$geotoolsVersion",
