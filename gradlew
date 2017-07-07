@@ -12,6 +12,9 @@ DEFAULT_JVM_OPTS="-Xmx2G"
 APP_NAME="Gradle"
 APP_BASE_NAME=`basename "$0"`
 
+# set LANG to fix unit tests (fix: org.junit.ComparisonFailure: expected:<49[.]123457 °> but was:<49[,]123457 °>)
+LANG=C
+
 # Use the maximum available, or set MAX_FD != -1 to use that value.
 MAX_FD="maximum"
 

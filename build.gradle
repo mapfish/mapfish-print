@@ -10,7 +10,7 @@ allprojects {
     version = '3.11-SNAPSHOT'
     ext.junitVersion = "4.11"
     ext.springVersion = "3.2.8.RELEASE"
-    ext.jasperReportVersion = "6.1.1"
+    ext.jasperReportVersion = "6.4.1"
     ext.groovyVersion = "2.3.3"
     ext."signing.keyId" = signing_keyId
     ext."signing.secretKeyRingFile" = signing_secretKeyRingFile
@@ -49,6 +49,7 @@ configure(subprojects.findAll {['core', 'examples', 'docs'].contains(it.name)}) 
         maven {url "http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts"}
         maven {url "http://maven.geo-solutions.it"}
         maven {url "https://jaspersoft.artifactoryonline.com/jaspersoft/jr-ce-releases"}
+        maven {url "https://repository.jboss.org/nexus/content/repositories/thirdparty-releases/"}
     }
 }
 configure(subprojects.findAll {['core', 'examples'].contains(it.name)}) {

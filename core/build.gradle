@@ -148,7 +148,7 @@ dependencies {
     jasper (
             "net.sf.jasperreports:jasperreports:$project.jasperReportVersion",
             "org.codehaus.groovy:groovy-all:$project.groovyVersion",
-            'ar.com.fdvs:DynamicJasper:5.0.7',
+            'ar.com.fdvs:DynamicJasper:5.1.0',
             "net.sf.jasperreports:jasperreports-fonts:6.0.0",
             "net.sf.jasperreports:jasperreports-functions:$project.jasperReportVersion",
             'joda-time:joda-time:1.6'
@@ -176,11 +176,12 @@ dependencies {
     // This jsr166 dependendency is here only so long as Java 6 is supported
     // it is the forkjoin code and can be removed if java 7 is a required library
     compile ('org.codehaus.jsr166-mirror:jsr166y:1.7.0')
-
-    compile ('org.apache.xmlgraphics:batik-transcoder:1.7'){
-        exclude module: 'fop'
-    }
-    compile ('org.apache.xmlgraphics:batik-codec:1.7')
+    compile ( 'org.apache.xmlgraphics:xmlgraphics-commons:2.2')
+    compile ('org.apache.xmlgraphics:batik-transcoder:1.8')
+//            {
+//                exclude module: 'fop'
+//            }
+    compile ('org.apache.xmlgraphics:batik-codec:1.8')
     providedCompile('com.google.code.findbugs:jsr305:2.0.1')
 
     providedCompile('javax.servlet:servlet-api:2.5')
