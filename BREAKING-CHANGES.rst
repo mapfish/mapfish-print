@@ -1,6 +1,13 @@
 Known breaking changes
 ======================
 
+Version 3.10
+------------
+
+The DB schema in multi-instance mode has been changed. You can drop the
+printjobresultimpl and printjobstatusimpl tables since they are not used anymore.
+
+
 Version 3.9
 -----------
 

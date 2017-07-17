@@ -280,7 +280,7 @@ public class RegistryJobQueue implements JobQueue {
                 String fileExt = metadata.getString(JSON_FILE_EXT);
                 String mimeType = metadata.getString(JSON_MIME_TYPE);
 
-                PrintJobResult result = new PrintJobResultImpl(reportURI, fileName, fileExt, mimeType);
+                PrintJobResult result = new PrintJobResultImpl(reportURI, fileName, fileExt, mimeType, referenceId);
                 report.setResult(result);
             }
 

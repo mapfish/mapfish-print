@@ -32,5 +32,4 @@ public interface PrintJobResult {
      * Get the report URI as String.
      */
     String getReportURIString();
-
 }

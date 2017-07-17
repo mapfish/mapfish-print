@@ -1,14 +1,20 @@
 package org.mapfish.print.servlet.job.impl;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.servlet.job.PrintJobResult;
+import org.mapfish.print.servlet.job.PrintJobStatus;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
@@ -16,7 +22,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table
+@Table(name = "print_job_results")
 public class PrintJobResultImpl implements PrintJobResult {
 
     @Column
@@ -32,6 +38,14 @@ public class PrintJobResultImpl implements PrintJobResult {
     @Column
     private final String fileName;
 
+    @OneToOne(targetEntity = PrintJobStatusImpl.class, fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "referenceId", insertable = false, updatable = false)
+    private PrintJobStatus status = null;
+
+    @Column(insertable = true, updatable = true)
+    private String referenceId;
+
     /**
      * Default Constructor.
      */
@@ -40,6 +54,7 @@ public class PrintJobResultImpl implements PrintJobResult {
         this.mimeType = null;
         this.fileExtension = null;
         this.fileName = null;
+        this.referenceId = null;
     }
 
     /**
@@ -49,13 +64,15 @@ public class PrintJobResultImpl implements PrintJobResult {
      * @param fileName the file name
      * @param fileExtension the file extension
      * @param mimeType the mime type
+     * @param referenceId the reference ID
      */
     public PrintJobResultImpl(final URI reportURI, final String fileName, final String fileExtension,
-            final String mimeType) {
+                              final String mimeType, final String referenceId) {
         this.reportURI = reportURI.toString();
         this.mimeType = mimeType;
         this.fileName = fileName;
         this.fileExtension = fileExtension;
+        this.referenceId = referenceId;
     }
 
     @Override
@@ -86,5 +103,4 @@ public class PrintJobResultImpl implements PrintJobResult {
     public final String getFileName() {
         return this.fileName;
     }
-
 }

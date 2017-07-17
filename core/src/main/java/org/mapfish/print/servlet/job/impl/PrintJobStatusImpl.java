@@ -23,7 +23,7 @@ import javax.persistence.Table;
  * Represent a print job that has completed.  Contains the information about the print job.
  */
 @Entity
-@Table
+@Table(name = "print_job_statuses")
 public class PrintJobStatusImpl implements PrintJobStatus {
 
     private static final int LENGTH_ERROR = 1024;
@@ -48,8 +48,8 @@ public class PrintJobStatusImpl implements PrintJobStatus {
     @Column(length = LENGTH_ERROR)
     private String error;
 
-    @OneToOne(targetEntity = PrintJobResultImpl.class, cascade = CascadeType.ALL)
-    @JoinColumn
+    @OneToOne(targetEntity = PrintJobResultImpl.class, cascade = CascadeType.ALL, mappedBy = "status")
+    @JoinColumn(name = "reference_id")
     private PrintJobResult result;
 
     private transient long waitingTime;
@@ -122,6 +122,10 @@ public class PrintJobStatusImpl implements PrintJobStatus {
         return this.result;
     }
 
+    /**
+     * Set the result.
+     * @param result The result
+     */
     public final void setResult(final PrintJobResult result) {
         this.result = result;
     }

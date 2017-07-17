@@ -32,10 +32,11 @@ public class PrintJobResultExtImpl extends PrintJobResultImpl {
      * @param fileExtension the file extension
      * @param mimeType the mime type
      * @param data the data
+     * @param referenceId the reference ID
      */
     public PrintJobResultExtImpl(final URI reportURI, final String fileName, final String fileExtension, final String mimeType,
-            final byte[] data) {
-        super(reportURI, fileName, fileExtension, mimeType);
+            final byte[] data, final String referenceId) {
+        super(reportURI, fileName, fileExtension, mimeType, referenceId);
         this.data = data;
     }
 
