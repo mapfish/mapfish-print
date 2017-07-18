@@ -30,7 +30,8 @@ public class HibernatePrintJob extends PrintJob {
 
     @Override
     protected final PrintJobResult createResult(final URI reportURI, final String fileName,
-            final String fileExtension, final String mimeType) {
-        return new PrintJobResultExtImpl(reportURI, fileName, fileExtension, mimeType, this.data);
+            final String fileExtension, final String mimeType, final String referenceId) {
+        return new PrintJobResultExtImpl(reportURI, fileName, fileExtension, mimeType, this.data,
+                referenceId);
     }
 }

@@ -68,9 +68,9 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
      */
     //CHECKSTYLE:OFF
     protected PrintJobResult createResult(final URI reportURI, final String fileName, final String fileExtension,
-            final String mimeType) {
+            final String mimeType, final String referenceId) {
     //CHECKSTYLE:ON
-        return new PrintJobResultImpl(reportURI, fileName, fileExtension, mimeType);
+        return new PrintJobResultImpl(reportURI, fileName, fileExtension, mimeType, referenceId);
     }
 
     @Override
@@ -103,7 +103,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
                 mimeType = outputFormat.getContentType();
                 fileExtension = outputFormat.getFileSuffix();
             }
-            return createResult(reportURI, fileName, fileExtension, mimeType);
+            return createResult(reportURI, fileName, fileExtension, mimeType, this.entry.getReferenceId());
         } catch (Exception e) {
             String canceledText = "";
             if (Thread.currentThread().isInterrupted()) {
