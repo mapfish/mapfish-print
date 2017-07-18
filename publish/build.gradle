@@ -54,10 +54,10 @@ if (Boolean.parseBoolean(enablePublishing)) {
             mavenDeployer {
                 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-                repository(url: "https://$host/service/local/staging/deploy/maven2") {
+                repository(url: "https://$host/service/local/staging/deploy/maven2/") {
                     authentication(userName: sonatypeUsername, password: sonatypePassword)
                 }
-                snapshotRepository(url: "https://$host/content/repositories/snapshots")  {
+                snapshotRepository(url: "https://$host/content/repositories/snapshots/")  {
                     authentication(userName: sonatypeUsername, password: sonatypePassword)
                     uniqueVersion = true
                 }
@@ -135,6 +135,10 @@ if (Boolean.parseBoolean(enablePublishing)) {
                             developer {
                                 id 'miblon'
                                 name 'Milo van der Linden'
+                            }
+                            developer {
+                                id 'pvalsecc'
+                                name 'Patrick Valsecchi'
                             }
                         }
                         mailingLists {
