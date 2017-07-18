@@ -236,6 +236,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             @RequestParam(value = "jsonp", defaultValue = "") final String jsonpCallback,
             final HttpServletRequest statusRequest,
             final HttpServletResponse statusResponse) {
+        setNoCache(statusResponse);
         PrintWriter writer = null;
         try {
             PrintJobStatus status = this.jobManager.getStatus(referenceId);
@@ -303,6 +304,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     public final void cancel(
             @PathVariable final String referenceId,
             final HttpServletResponse statusResponse) {
+        setNoCache(statusResponse);
         try {
             this.jobManager.cancel(referenceId);
         } catch (NoSuchReferenceException e) {
@@ -325,6 +327,7 @@ public class MapPrinterServlet extends BaseMapServlet {
                                    @RequestBody final String requestData,
                                    final HttpServletRequest createReportRequest,
                                    final HttpServletResponse createReportResponse) throws JSONException, NoSuchAppException {
+        setNoCache(createReportResponse);
         String ref = createAndSubmitPrintJob(appId, format, requestData, createReportRequest, createReportResponse);
         if (ref == null) {
             error(createReportResponse, "Failed to create a print job", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -381,6 +384,7 @@ public class MapPrinterServlet extends BaseMapServlet {
                                 @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
                                 final HttpServletResponse getReportResponse)
             throws IOException, ServletException {
+        setNoCache(getReportResponse);
         loadReport(referenceId, getReportResponse, new HandleReportLoadResult<Void>() {
 
             @Override
@@ -429,6 +433,7 @@ public class MapPrinterServlet extends BaseMapServlet {
                                    @RequestBody final String requestData,
                                    final HttpServletRequest createReportRequest,
                                    final HttpServletResponse createReportResponse) throws JSONException, NoSuchAppException {
+        setNoCache(createReportResponse);
         PJsonObject spec = parseJson(requestData, createReportResponse);
 
         String appId = spec.optString(JSON_APP, DEFAULT_CONFIGURATION_FILE_KEY);
@@ -453,6 +458,7 @@ public class MapPrinterServlet extends BaseMapServlet {
                                          final HttpServletRequest createReportRequest,
                                          final HttpServletResponse createReportResponse)
             throws IOException, ServletException, InterruptedException, JSONException, NoSuchAppException {
+        setNoCache(createReportResponse);
 
         String ref = createAndSubmitPrintJob(appId, format, requestData, createReportRequest, createReportResponse);
         if (ref == null) {
@@ -519,6 +525,7 @@ public class MapPrinterServlet extends BaseMapServlet {
                                                 final HttpServletRequest createReportRequest,
                                                 final HttpServletResponse createReportResponse)
             throws IOException, ServletException, InterruptedException, JSONException, NoSuchAppException {
+        setNoCache(createReportResponse);
         PJsonObject spec = parseJson(requestData, createReportResponse);
 
         String appId = spec.optString(JSON_APP, DEFAULT_CONFIGURATION_FILE_KEY);
@@ -536,6 +543,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             @RequestParam(value = "jsonp", defaultValue = "") final String jsonpCallback,
             final HttpServletResponse listAppsResponse) throws ServletException,
             IOException {
+        setCache(listAppsResponse);
         Set<String> appIds = this.printerFactory.getAppIds();
 
         setContentType(listAppsResponse, jsonpCallback);
@@ -594,6 +602,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             @RequestParam(value = "jsonp", defaultValue = "") final String jsonpCallback,
             final HttpServletResponse capabilitiesResponse) throws ServletException,
             IOException, JSONException {
+        setCache(capabilitiesResponse);
         MapPrinter printer;
         try {
             printer = this.printerFactory.create(appId);
@@ -688,7 +697,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             @RequestParam(value = "jsonp", defaultValue = "") final String jsonpCallback,
             final HttpServletResponse getExampleResponse) throws ServletException,
             IOException {
-
+        setCache(getExampleResponse);
         PrintWriter writer = null;
         try {
             final MapPrinter mapPrinter = this.printerFactory.create(appId);

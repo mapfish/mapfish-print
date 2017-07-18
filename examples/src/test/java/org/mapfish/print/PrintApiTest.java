@@ -1,5 +1,6 @@
 package org.mapfish.print;
 
+import com.google.common.base.Joiner;
 import com.google.common.io.BaseEncoding;
 import com.google.common.io.ByteStreams;
 import org.json.JSONArray;
@@ -244,6 +245,8 @@ public class PrintApiTest extends AbstractApiTest {
         response = request.execute();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
+        assertEquals("max-age=0, must-revalidate, no-cache, no-store",
+                Joiner.on(", ").join(response.getHeaders().get("Cache-Control")));
 
         responseAsText = getBodyAsText(response);
         JSONObject statusResult = new JSONObject(responseAsText);
