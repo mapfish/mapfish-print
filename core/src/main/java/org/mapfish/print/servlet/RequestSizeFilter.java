@@ -18,6 +18,9 @@ import javax.servlet.http.HttpServletResponse;
  *
  * This is to avoid that the server is flooded with overly
  * huge requests.
+ *
+ * You can tune this filter by setting the mapfish.maxContentLength (bytes) system property before starting
+ * the JVM.
  */
 public class RequestSizeFilter implements Filter {
 
@@ -43,7 +46,9 @@ public class RequestSizeFilter implements Filter {
 
     @Override
     public final void init(final FilterConfig config) throws ServletException {
-        if (config.getInitParameter("maxContentLength") != null) {
+        if (System.getProperty("mapfish.maxContentLength") != null) {
+            this.maxContentLength = Integer.parseInt(System.getProperty("mapfish.maxContentLength"));
+        } else if (config.getInitParameter("maxContentLength") != null) {
             this.maxContentLength = Integer.parseInt(config.getInitParameter("maxContentLength"));
         }
     }
