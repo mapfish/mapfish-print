@@ -185,7 +185,7 @@ public abstract class ScalebarDrawer {
                 newMargin = label.getGraphicOffset() - halfRotatedHeight;
             }
             if (labelRotation != 0.0) {
-                centerTransform.concatenate(AffineTransform.getRotateInstance(Math.toRadians(labelRotation)));
+                centerTransform.concatenate(AffineTransform.getRotateInstance(labelRotation));
             }
 
             if (!shouldSkipLabel) {

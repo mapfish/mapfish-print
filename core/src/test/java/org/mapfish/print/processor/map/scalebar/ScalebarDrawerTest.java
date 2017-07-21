@@ -92,7 +92,7 @@ public class ScalebarDrawerTest {
         drawer.draw();
 
         new ImageSimilarity(getFile("expected-scalebar-line-labels-partially-rotated.png"))
-                .assertSimilarity(bufferedImage, 200);
+                .assertSimilarity(bufferedImage, 270);
     }
 
     @Test
@@ -130,7 +130,7 @@ public class ScalebarDrawerTest {
         drawer.draw();
 
         new ImageSimilarity(getFile("expected-scalebar-line-labels-above-partially-rotated.png")).
-                assertSimilarity(bufferedImage, 85);
+                assertSimilarity(bufferedImage, 210);
     }
 
     @Test
@@ -149,7 +149,7 @@ public class ScalebarDrawerTest {
         drawer.draw();
 
         new ImageSimilarity(getFile("expected-scalebar-line-labels-left-rotated.png"))
-                .assertSimilarity(bufferedImage, 160);
+                .assertSimilarity(bufferedImage, 210);
     }
 
     @Test
@@ -168,7 +168,7 @@ public class ScalebarDrawerTest {
         drawer.draw();
 
         new ImageSimilarity(getFile("expected-scalebar-line-labels-left-partially-rotated.png"))
-                .assertSimilarity(bufferedImage, 190);
+                .assertSimilarity(bufferedImage, 210);
     }
 
     @Test
@@ -187,7 +187,7 @@ public class ScalebarDrawerTest {
         drawer.draw();
 
         new ImageSimilarity(getFile("expected-scalebar-line-labels-right-rotated.png"))
-                .assertSimilarity(bufferedImage, 100);
+                .assertSimilarity(bufferedImage, 130);
     }
 
     @Test
@@ -206,7 +206,7 @@ public class ScalebarDrawerTest {
         drawer.draw();
 
         new ImageSimilarity(getFile("expected-scalebar-line-labels-right-partially-rotated.png"))
-                .assertSimilarity(bufferedImage, 85);
+                .assertSimilarity(bufferedImage, 100);
     }
 
     @Test
