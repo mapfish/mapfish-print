@@ -128,7 +128,7 @@ public class ScalebarGraphic {
     /**
      * Try recursively to find the correct layout.
      */
-    private void tryLayout(final Graphics2D graphics2D, final DistanceUnit scaleUnit, final double scaleDenominator,
+    private static void tryLayout(final Graphics2D graphics2D, final DistanceUnit scaleUnit, final double scaleDenominator,
             final double intervalLengthInWorldUnits, final ScaleBarRenderSettings settings, final int tryNumber) {
         if (tryNumber > MAX_NUMBER_LAYOUTING_TRIES) {
             // if no good layout can be found, stop. an empty scalebar graphic will be shown.
@@ -163,10 +163,10 @@ public class ScalebarGraphic {
                 TextLayout labelLayout = new TextLayout(labelText, font, frc);
                 labels.add(new Label(intervalLengthInPixels * i, labelLayout, graphics2D));
             }
-            leftLabelMargin = labels.get(0).getRotatedWidth(scalebarParams.labelRotation) / 2.0f;
-            rightLabelMargin = labels.get(labels.size() - 1).getRotatedWidth(scalebarParams.labelRotation) / 2.0f;
-            topLabelMargin = labels.get(0).getRotatedHeight(scalebarParams.labelRotation) / 2.0f;
-            bottomLabelMargin = labels.get(labels.size() - 1).getRotatedHeight(scalebarParams.labelRotation) / 2.0f;
+            leftLabelMargin = labels.get(0).getRotatedWidth(scalebarParams.getLabelRotation()) / 2.0f;
+            rightLabelMargin = labels.get(labels.size() - 1).getRotatedWidth(scalebarParams.getLabelRotation()) / 2.0f;
+            topLabelMargin = labels.get(0).getRotatedHeight(scalebarParams.getLabelRotation()) / 2.0f;
+            bottomLabelMargin = labels.get(labels.size() - 1).getRotatedHeight(scalebarParams.getLabelRotation()) / 2.0f;
         } else {
             //if there is only one interval, place the label centered between the two tick marks
             String labelText = createLabelText(scaleUnit, intervalLengthInWorldUnits, intervalUnit) + intervalUnit;
@@ -200,7 +200,7 @@ public class ScalebarGraphic {
         }
     }
 
-    private boolean fitsAvailableSpace(final ScalebarAttributeValues scalebarParams,
+    private static boolean fitsAvailableSpace(final ScalebarAttributeValues scalebarParams,
             final float intervalWidthInPixels, final float leftLabelMargin,
             final float rightLabelMargin, final float topLabelMargin,
             final float bottomLabelMargin, final ScaleBarRenderSettings settings) {
@@ -218,7 +218,7 @@ public class ScalebarGraphic {
      * <p></p>
      * Creates the drawer which draws the scalebar.
      */
-    private void doLayout(final Graphics2D graphics2d, final ScalebarAttributeValues scalebarParams,
+    private static void doLayout(final Graphics2D graphics2d, final ScalebarAttributeValues scalebarParams,
             final ScaleBarRenderSettings settings) {
         final Dimension maxLabelSize = getMaxLabelSize(settings);
 
@@ -257,11 +257,11 @@ public class ScalebarGraphic {
                 + settings.getLeftLabelMargin() + settings.getRightLabelMargin();
             height = 2 * settings.getPadding()
                 + settings.getBarSize() + settings.getLabelDistance()
-                + Label.getRotatedHeight(maxLabelSize, scalebarParams.labelRotation);
+                + Label.getRotatedHeight(maxLabelSize, scalebarParams.getLabelRotation());
         } else {
             width = 2 * settings.getPadding()
                 + settings.getLabelDistance() + settings.getBarSize()
-                + Label.getRotatedWidth(maxLabelSize, scalebarParams.labelRotation);
+                + Label.getRotatedWidth(maxLabelSize, scalebarParams.getLabelRotation());
             height = 2 * settings.getPadding()
                 + settings.getTopLabelMargin()
                 + settings.getIntervalLengthInPixels() * scalebarParams.intervals
@@ -306,7 +306,7 @@ public class ScalebarGraphic {
         }
     }
 
-    private DistanceUnit bestUnit(final DistanceUnit scaleUnit, final double intervalDistance, final boolean lockUnits) {
+    private static DistanceUnit bestUnit(final DistanceUnit scaleUnit, final double intervalDistance, final boolean lockUnits) {
         if (lockUnits) {
             return scaleUnit;
         } else {
@@ -322,7 +322,7 @@ public class ScalebarGraphic {
      * @param lockUnits if set, the values are not scaled to a "nicer" unit.
      */
     @VisibleForTesting
-    protected final double getNearestNiceValue(final double value, final DistanceUnit scaleUnit, final boolean lockUnits) {
+    protected static double getNearestNiceValue(final double value, final DistanceUnit scaleUnit, final boolean lockUnits) {
         DistanceUnit bestUnit = bestUnit(scaleUnit, value, lockUnits);
         double factor = scaleUnit.convertTo(1.0, bestUnit);
 
@@ -352,7 +352,7 @@ public class ScalebarGraphic {
     /**
      * @return The "nicest" number of sub intervals in function of the interval distance.
      */
-    private int getNbSubIntervals(final DistanceUnit scaleUnit, final double intervalDistance, final DistanceUnit intervalUnit) {
+    private static int getNbSubIntervals(final DistanceUnit scaleUnit, final double intervalDistance, final DistanceUnit intervalUnit) {
         double value = scaleUnit.convertTo(intervalDistance, intervalUnit);
         int digits = (int) (Math.log(value) / Math.log(10));
         double pow10 = Math.pow(10, digits);
@@ -373,7 +373,7 @@ public class ScalebarGraphic {
         }
     }
 
-    private int getFontSize(final ScaleBarRenderSettings settings) {
+    private static int getFontSize(final ScaleBarRenderSettings settings) {
         return (int) Math.ceil(settings.getParams().fontSize * settings.getDpiRatio());
     }
 
