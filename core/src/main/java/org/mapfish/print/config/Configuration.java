@@ -609,10 +609,26 @@ public class Configuration {
     }
 
     /**
+     * Color used for tiles in error on transparent layers.
+     * @param transparentTileErrorColor The color
+     */
+    public void setTransparentTileErrorColor(final String transparentTileErrorColor) {
+        this.transparentTileErrorColor = transparentTileErrorColor;
+    }
+
+    /**
      * Get the color used to draw the WMS tiles error default: transparent pink.
      */
     public Color getTransparentTileErrorColor() {
         return ColorParser.toColor(this.transparentTileErrorColor);
+    }
+
+    /**
+     * Color used for tiles in error on opaque layers.
+     * @param opaqueTileErrorColor The color
+     */
+    public void setOpaqueTileErrorColor(final String opaqueTileErrorColor) {
+        this.opaqueTileErrorColor = opaqueTileErrorColor;
     }
 
     /**
