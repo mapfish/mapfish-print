@@ -46,7 +46,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mapfish.print.map.style.json.MapfishStyleParserPlugin.Versions;
 import static org.mapfish.print.map.style.json.MapfishStyleParserPluginTest.REQUEST_DATA_STYLE_JSON_V1_STYLE_JSON;
 
 public class JsonStyleParserHelperTest {

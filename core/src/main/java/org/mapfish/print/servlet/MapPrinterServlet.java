@@ -904,9 +904,10 @@ public class MapPrinterServlet extends BaseMapServlet {
      * @param httpServletResponse the response object
      * @return the job reference id
      */
-    public final String createAndSubmitPrintJob(final String appId, final String format, final String requestDataRaw,
-                                           final HttpServletRequest httpServletRequest,
-                                           final HttpServletResponse httpServletResponse) throws JSONException, NoSuchAppException {
+    public final String createAndSubmitPrintJob(
+            final String appId, final String format, final String requestDataRaw,
+            final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse)
+            throws JSONException, NoSuchAppException {
 
         PJsonObject specJson = parseJson(requestDataRaw, httpServletResponse);
         if (specJson == null) {

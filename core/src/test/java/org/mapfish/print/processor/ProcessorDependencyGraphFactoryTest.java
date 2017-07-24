@@ -2,7 +2,6 @@ package org.mapfish.print.processor;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import jsr166y.ForkJoinPool;
 
