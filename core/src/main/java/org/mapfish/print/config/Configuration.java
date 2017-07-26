@@ -31,7 +31,6 @@ import org.mapfish.print.http.HttpCredential;
 import org.mapfish.print.http.HttpProxy;
 import org.mapfish.print.map.style.StyleParser;
 import org.mapfish.print.map.style.json.ColorParser;
-import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -102,12 +101,10 @@ public class Configuration {
     /**
      * The color used to draw the WMS tiles error default: transparent pink.
      */
-    @HasDefaultValue
     private String transparentTileErrorColor = "rgba(255, 78, 78, 125)";
     /**
      * The color used to draw the other tiles error default: pink.
      */
-    @HasDefaultValue
     private String opaqueTileErrorColor = "rgba(255, 155, 155, 0)";
 
     @Autowired
@@ -500,6 +497,18 @@ public class Configuration {
             proxy.validate(validationErrors, this);
         }
 
+        try {
+            ColorParser.toColor(this.opaqueTileErrorColor);
+        } catch (RuntimeException ex) {
+            validationErrors.add(new ConfigurationException("Cannot parse opaqueTileErrorColor", ex));
+        }
+
+        try {
+            ColorParser.toColor(this.transparentTileErrorColor);
+        } catch (RuntimeException ex) {
+            validationErrors.add(new ConfigurationException("Cannot parse transparentTileErrorColor", ex));
+        }
+
         return validationErrors;
     }
 
@@ -612,29 +621,29 @@ public class Configuration {
      * Color used for tiles in error on transparent layers.
      * @param transparentTileErrorColor The color
      */
-    public void setTransparentTileErrorColor(final String transparentTileErrorColor) {
+    public final void setTransparentTileErrorColor(final String transparentTileErrorColor) {
         this.transparentTileErrorColor = transparentTileErrorColor;
     }
 
     /**
      * Get the color used to draw the WMS tiles error default: transparent pink.
      */
-    public Color getTransparentTileErrorColor() {
-        return ColorParser.toColor(this.transparentTileErrorColor);
+    public final String getTransparentTileErrorColor() {
+        return this.transparentTileErrorColor;
     }
 
     /**
      * Color used for tiles in error on opaque layers.
      * @param opaqueTileErrorColor The color
      */
-    public void setOpaqueTileErrorColor(final String opaqueTileErrorColor) {
+    public final void setOpaqueTileErrorColor(final String opaqueTileErrorColor) {
         this.opaqueTileErrorColor = opaqueTileErrorColor;
     }
 
     /**
      * Get the color used to draw the other tiles error default: pink.
      */
-    public Color getOpaqueTileErrorColor() {
-        return ColorParser.toColor(this.opaqueTileErrorColor);
+    public final String getOpaqueTileErrorColor() {
+        return this.opaqueTileErrorColor;
     }
 }
