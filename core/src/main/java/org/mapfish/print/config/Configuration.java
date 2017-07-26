@@ -95,6 +95,7 @@ public class Configuration {
     private CertificateStore certificateStore;
     private OldApiConfig oldApi = new OldApiConfig();
     private String outputFilename;
+    private String resourceBundle;
     private boolean defaultToSvg = false;
     private Set<String> jdbcDrivers = Sets.newHashSet();
     private Map<String, Style> namedStyles = Maps.newHashMap();
@@ -636,5 +637,20 @@ public class Configuration {
      */
     public Color getOpaqueTileErrorColor() {
         return ColorParser.toColor(this.opaqueTileErrorColor);
+    }
+
+    /**
+     * Get the resource bundle name.
+     */
+    public final String getResourceBundle() {
+        return this.resourceBundle;
+    }
+
+    /**
+     * Set the resource bundle name.
+     * @param resourceBundle the resource bundle name
+     */
+    public final void setResourceBundle(final String resourceBundle) {
+        this.resourceBundle = resourceBundle;
     }
 }
