@@ -48,7 +48,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnegative;
@@ -81,7 +83,8 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
      * @param outputStream the output stream to export to
      * @param print the report
      */
-    protected abstract void doExport(final OutputStream outputStream, final Print print) throws JRException, IOException;
+    protected abstract void doExport(final OutputStream outputStream, final Print print)
+            throws JRException, IOException;
 
     @Override
     public final void print(final PJsonObject requestData, final Configuration config, final File configDir,
@@ -106,7 +109,8 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
      *
      * @param requestData the data from the client, required for writing.
      * @param config the configuration object representing the server side configuration.
-     * @param configDir the directory that contains the configuration, used for resolving resources like images etc...
+     * @param configDir the directory that contains the configuration, used for resolving resources like
+     *                  images etc...
      * @param taskDirectory the temporary directory for this printing task.
      * @return a jasper print object which can be used to generate a PDF or other outputs.
      * @throws ExecutionException
@@ -120,19 +124,21 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         final Template template = config.getTemplate(templateName);
         if (template == null) {
             final String possibleTemplates = config.getTemplates().keySet().toString();
-            throw new IllegalArgumentException("\nThere is no template with the name: " + templateName +
-            ".\nAvailable templates: " + possibleTemplates);
+            throw new IllegalArgumentException(String.format(
+                    "\nThere is no template with the name: %s.\nAvailable templates: %s",
+                    templateName, possibleTemplates));
         }
         final File jasperTemplateFile = new File(configDir, template.getReportTemplate());
         final File jasperTemplateBuild = this.workingDirectories.getBuildFileFor(config, jasperTemplateFile,
                 JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT, LOGGER);
 
-        final Values values = new Values(requestData, template, this.parser, taskDirectory, this.httpRequestFactory,
-                jasperTemplateBuild.getParentFile());
+        final Values values = new Values(requestData, template, this.parser, taskDirectory,
+                this.httpRequestFactory, jasperTemplateBuild.getParentFile());
 
         double maxDpi = maxDpi(values);
 
-        final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(template.getProcessorGraph().createTask(values));
+        final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
+                template.getProcessorGraph().createTask(values));
 
         try {
             taskFuture.get();
@@ -144,6 +150,28 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             throw new CancellationException();
         }
 
+        // Fill the locale
+        String localeRef = requestData.optString("lang");
+        Locale locale = Locale.getDefault();
+        if (localeRef != null) {
+            String[] localeSplit = localeRef.split("_");
+            if (localeSplit.length == 1) {
+                locale = new Locale(localeSplit[0]);
+            } else if (localeSplit.length == 2) {
+                locale = new Locale(localeSplit[0], localeSplit[1]);
+            } else if (localeSplit.length > 2) {
+                locale = new Locale(localeSplit[0], localeSplit[1], localeSplit[2]);
+            }
+        }
+        values.put("REPORT_LOCALE", locale);
+
+        // Fill the resource bundle
+        String resourceBundle = config.getResourceBundle();
+        if (resourceBundle != null) {
+            values.put("REPORT_RESOURCE_BUNDLE", ResourceBundle.getBundle(
+                    resourceBundle, locale, new ResourceBundleClassLoader(configDir)));
+        }
+
         ValuesLogger.log(templateName, template, values);
         JasperFillManager fillManager = getJasperFillManager(config);
 
@@ -153,7 +181,8 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         if (template.getJdbcUrl() != null) {
             Connection connection;
             if (template.getJdbcUser() != null) {
-                connection = DriverManager.getConnection(template.getJdbcUrl(), template.getJdbcUser(), template.getJdbcPassword());
+                connection = DriverManager.getConnection(
+                        template.getJdbcUrl(), template.getJdbcUser(), template.getJdbcPassword());
             } else {
                 connection = DriverManager.getConnection(template.getJdbcUrl());
             }
@@ -179,8 +208,9 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                     Object[] sourceObj = (Object[]) dataSourceObj;
                     dataSource = toJRDataSource(Arrays.asList(sourceObj).iterator());
                 } else {
-                    throw new AssertionError("Objects of type: " + dataSourceObj.getClass() + " cannot be converted to a row in a " +
-                                         "JRDataSource");
+                    throw new AssertionError(
+                            String.format("Objects of type: %s cannot be converted to a row in a " +
+                                    "JRDataSource", dataSourceObj.getClass()));
                 }
             } else {
                 dataSource = new JREmptyDataSource();
@@ -195,7 +225,8 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         return new Print(getLocalJasperReportsContext(config), print, values, maxDpi);
     }
 
-    private void checkRequiredFields(final Configuration configuration, final JRDataSource dataSource, final String reportTemplate) {
+    private void checkRequiredFields(
+            final Configuration configuration, final JRDataSource dataSource, final String reportTemplate) {
         if (dataSource instanceof JRRewindableDataSource) {
             JRRewindableDataSource source = (JRRewindableDataSource) dataSource;
             StringBuilder wrongType = new StringBuilder();
@@ -217,12 +248,15 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                             final String type = param.getAttribute("class");
                             Class<?> clazz = Class.forName(type);
                             if (!clazz.isInstance(record)) {
-                                wrongType.append("\t* ").append(name).append(" : ").append(record.getClass().getName());
+                                wrongType.append("\t* ").append(name).append(" : ")
+                                        .append(record.getClass().getName());
                                 wrongType.append(" expected type: ").append(type).append("\n");
                             }
                         } else {
-                            LOGGER.warn("The field " + name + " in " + reportTemplate + " is not available in at least one of the " +
-                                    "rows in the datasource.  This may not be an error.");
+                            LOGGER.warn(String.format(
+                                    "The field %s in %s is not available in at least one" +
+                                    " of the rows in the datasource.  This may not be an error.",
+                                    name, reportTemplate));
                         }
                     }
                 }
@@ -235,9 +269,10 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
 
             if (wrongType.length() > 0) {
                 finalError.append("The following parameters are declared in ").append(reportTemplate).
-                        append(".  The class attribute in the template xml does not match the class of the actual object.").
-                        append("\nEither change the declaration in the jasper template or update the configuration so that the ").
-                        append("parameters have the correct type.\n\n").
+                        append(".  The class attribute in the template xml does not match the class of the " +
+                                "actual object.").
+                        append("\nEither change the declaration in the jasper template or update the " +
+                                "configuration so that the parameters have the correct type.\n\n").
                         append(wrongType);
             }
 
@@ -247,7 +282,8 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         }
     }
 
-    private void checkRequiredValues(final Configuration configuration, final Values values, final String reportTemplate) {
+    private void checkRequiredValues(
+            final Configuration configuration, final Values values, final String reportTemplate) {
         StringBuilder missing = new StringBuilder();
         StringBuilder wrongType = new StringBuilder();
         try {
@@ -286,9 +322,10 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         }
         if (wrongType.length() > 0) {
             finalError.append("The following parameters are declared in ").append(reportTemplate).
-                    append(".  The class attribute in the template xml does not match the class of the actual object.").
-                    append("\nEither change the declaration in the jasper template or update the configuration so that the ").
-                    append("parameters have the correct type.\n\n").
+                    append(".  The class attribute in the template xml does not match the class of the " +
+                            "actual object.").
+                    append("\nEither change the declaration in the jasper template or update the " +
+                            "configuration so that the parameters have the correct type.\n\n").
                     append(wrongType);
         }
 
@@ -317,7 +354,9 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                 Map<String, ?> map = (Map<String, ?>) next;
                 rows.add(map);
             } else {
-                throw new AssertionError("Objects of type: " + next.getClass() + " cannot be converted to a row in a JRDataSource");
+                throw new AssertionError(String.format(
+                        "Objects of type: %s cannot be converted to a row in a JRDataSource",
+                        next.getClass()));
             }
         }
         return new JRMapCollectionDataSource(rows);

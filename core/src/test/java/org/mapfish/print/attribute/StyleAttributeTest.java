@@ -5,8 +5,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
-import org.mapfish.print.attribute.map.BBoxMapBounds;
-import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
@@ -15,7 +13,6 @@ import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.awt.Dimension;
 import java.io.File;
 
 import static org.junit.Assert.assertNotNull;
