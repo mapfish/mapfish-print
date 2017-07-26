@@ -70,14 +70,16 @@ import java.net.URI;
  */
 public final class RestrictUrisProcessor extends AbstractClientHttpRequestFactoryProcessor {
     @Override
-    public MfClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
-                                                           final MfClientHttpRequestFactory requestFactory) {
+    public MfClientHttpRequestFactory createFactoryWrapper(
+            final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
+            final MfClientHttpRequestFactory requestFactory) {
         return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory, matchers, true) {
             @Override
-            protected ClientHttpRequest createRequest(final URI uri,
-                                                      final HttpMethod httpMethod,
-                                                      final MfClientHttpRequestFactory requestFactory) throws IOException {
-                //Everything is already done by the caller
+            protected ClientHttpRequest createRequest(
+                    final URI uri,
+                    final HttpMethod httpMethod,
+                    final MfClientHttpRequestFactory requestFactory) throws IOException {
+                // Everything is already done by the caller
                 return requestFactory.createRequest(uri, httpMethod);
             }
         };
