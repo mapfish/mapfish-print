@@ -12,6 +12,7 @@ import org.mapfish.print.http.HttpRequestCache;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.image.AbstractSingleImageLayer;
+import org.mapfish.print.map.style.json.ColorParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -113,7 +114,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
         final BufferedImage bufferedImage = new BufferedImage(area.width, area.height, TYPE_INT_ARGB_PRE);
         final Graphics2D graphics = bufferedImage.createGraphics();
         try {
-            graphics.setBackground(this.configuration.getTransparentTileErrorColor());
+            graphics.setBackground(ColorParser.toColor(this.configuration.getTransparentTileErrorColor()));
             graphics.clearRect(0, 0, area.width, area.height);
             return bufferedImage;
         } finally {

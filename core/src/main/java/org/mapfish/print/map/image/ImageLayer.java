@@ -25,6 +25,7 @@ import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.map.geotools.AbstractGridCoverageLayerPlugin;
 import org.mapfish.print.map.geotools.StyleSupplier;
+import org.mapfish.print.map.style.json.ColorParser;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -238,7 +239,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         final BufferedImage bufferedImage = new BufferedImage(area.width, area.height, TYPE_INT_ARGB_PRE);
         final Graphics2D graphics = bufferedImage.createGraphics();
         try {
-            graphics.setBackground(this.configuration.getTransparentTileErrorColor());
+            graphics.setBackground(ColorParser.toColor(this.configuration.getTransparentTileErrorColor()));
 
             graphics.clearRect(0, 0, area.width, area.height);
             return bufferedImage;

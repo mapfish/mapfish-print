@@ -10,6 +10,7 @@ import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.geometry.GeneralEnvelope;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.map.style.json.ColorParser;
 import org.mapfish.print.map.tiled.TilePreparationInfo.SingleTilePreparationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +65,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
         this.errorImage = new BufferedImage(tileSize.width, tileSize.height, BufferedImage.TYPE_4BYTE_ABGR);
         Graphics2D graphics = this.errorImage.createGraphics();
         try {
-            graphics.setBackground(configuration.getOpaqueTileErrorColor());
+            graphics.setBackground(ColorParser.toColor(configuration.getOpaqueTileErrorColor()));
             graphics.clearRect(0, 0, tileSize.width, tileSize.height);
         } finally {
             graphics.dispose();
