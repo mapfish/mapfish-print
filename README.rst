@@ -73,7 +73,7 @@ To list all the commandline options then execute (the current direstory is `./co
 
 .. code::
 
- > ./gradlew print -PprintArgs="-help"
+  > ./gradlew print -PprintArgs="-help"
 
 .. code::
 
@@ -92,7 +92,7 @@ The following command will run mapfish print using gretty/jetty. The default por
 
 .. code::
 
- > ./gradlew jettyRun -PhttpPort=8090
+  > ./gradlew jettyRun -PhttpPort=8090
 
 
 Run in Eclipse
