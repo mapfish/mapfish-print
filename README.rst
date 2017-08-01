@@ -91,8 +91,8 @@ Run using gretty/jettyRun
 The following command will run mapfish print using gretty/jetty. The default port is 8080, but can be changed using -PhttpPort=...
 
 .. code::
-   > ./gradlew jettyRun -PhttpPort=8090
-.. code::
+  > ./gradlew jettyRun -PhttpPort=8090
+
 
 Run in Eclipse
 --------------
