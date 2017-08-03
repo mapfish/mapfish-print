@@ -61,7 +61,7 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
     private class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
         private final URI uri;
         private final HttpMethod httpMethod;
-        private ConfigurableRequest request;
+        private ClientHttpRequest request;
 
 
         ConfigFileResolvingRequest(
@@ -78,8 +78,10 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
             return this.request.getBody();
         }
 
-        private synchronized ConfigurableRequest createRequestFromWrapped(final HttpHeaders headers) throws IOException {
-            final MfClientHttpRequestFactoryImpl requestFactory = ConfigFileResolvingHttpRequestFactory.this.httpRequestFactory;
+        private synchronized ClientHttpRequest createRequestFromWrapped(final HttpHeaders headers)
+                throws IOException {
+            final MfClientHttpRequestFactoryImpl requestFactory =
+                    ConfigFileResolvingHttpRequestFactory.this.httpRequestFactory;
             ConfigurableRequest httpRequest = requestFactory.createRequest(this.uri, this.httpMethod);
             httpRequest.setConfiguration(ConfigFileResolvingHttpRequestFactory.this.config);
 
@@ -112,7 +114,8 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
             return executeCallbacksAndRequest(createRequestFromWrapped(headers));
         }
 
-        private ClientHttpResponse executeCallbacksAndRequest(final ConfigurableRequest requestToExecute) throws IOException {
+        private ClientHttpResponse executeCallbacksAndRequest(final ClientHttpRequest requestToExecute)
+                throws IOException {
             for (RequestConfigurator callback : ConfigFileResolvingHttpRequestFactory.this.callbacks) {
                 callback.configureRequest(requestToExecute);
             }
