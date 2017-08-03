@@ -22,9 +22,10 @@ import java.util.NoSuchElementException;
 import javax.annotation.Nonnull;
 
 /**
- * This request factory will attempt to load resources using {@link org.mapfish.print.config.Configuration#loadFile(String)}
- * and {@link org.mapfish.print.config.Configuration#isAccessible(String)} to load the resources if the http method is GET and
- * will fallback to the normal/wrapped factory to make http requests.
+ * This request factory will attempt to load resources using
+ * {@link org.mapfish.print.config.Configuration#loadFile(String)}
+ * and {@link org.mapfish.print.config.Configuration#isAccessible(String)} to load the resources if the
+ * http method is GET and will fallback to the normal/wrapped factory to make http requests.
  */
 public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttpRequestFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigFileResolvingHttpRequestFactory.class);
@@ -38,8 +39,9 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
      * @param httpRequestFactory basic request factory
      * @param config the template for the current print job.
      */
-    public ConfigFileResolvingHttpRequestFactory(final MfClientHttpRequestFactoryImpl httpRequestFactory,
-                                                 final Configuration config) {
+    public ConfigFileResolvingHttpRequestFactory(
+            final MfClientHttpRequestFactoryImpl httpRequestFactory,
+            final Configuration config) {
         this.httpRequestFactory = httpRequestFactory;
         this.config = config;
     }
@@ -96,8 +98,10 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
                 final Configuration configuration = ConfigFileResolvingHttpRequestFactory.this.config;
                 try {
                     final byte[] bytes = configuration.loadFile(uriString);
-                    final ConfigFileResolverHttpResponse response = new ConfigFileResolverHttpResponse(bytes, headers);
-                    LOGGER.debug("Resolved request: " + uriString + " using mapfish print config file loaders.");
+                    final ConfigFileResolverHttpResponse response =
+                            new ConfigFileResolverHttpResponse(bytes, headers);
+                    LOGGER.debug(String.format(
+                            "Resolved request: %s using mapfish print config file loaders.", uriString));
                     return response;
                 } catch (NoSuchElementException e) {
                     // cannot be loaded by configuration so try http
