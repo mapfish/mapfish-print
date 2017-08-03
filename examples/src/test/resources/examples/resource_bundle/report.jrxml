@@ -21,7 +21,7 @@
 				<textElement textAlignment="Center">
 					<font size="36"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$R{title} + " - " + SimpleDateFormat.getDateInstance(DateFormat.LONG, $P{REPORT_LOCALE}).format(new Date())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$R{title} + " - " + SimpleDateFormat.getDateInstance(DateFormat.LONG, $P{REPORT_LOCALE}).format(new Date(2017, 6, 26))]]></textFieldExpression>
 			</textField>
 			<subreport>
 				<reportElement x="0" y="51" width="780" height="330" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d">
