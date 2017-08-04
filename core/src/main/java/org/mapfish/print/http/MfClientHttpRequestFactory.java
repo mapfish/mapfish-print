@@ -1,5 +1,6 @@
 package org.mapfish.print.http;
 
+import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 /**
@@ -23,6 +24,6 @@ public interface MfClientHttpRequestFactory extends ClientHttpRequestFactory {
          *
          * @param request the request to configure
          */
-        void configureRequest(final ConfigurableRequest request);
+        void configureRequest(final ClientHttpRequest request);
     }
 }

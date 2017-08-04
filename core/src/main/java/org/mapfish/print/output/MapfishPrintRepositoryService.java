@@ -9,9 +9,7 @@ import net.sf.jasperreports.repo.PersistenceService;
 import net.sf.jasperreports.repo.PersistenceUtil;
 import net.sf.jasperreports.repo.Resource;
 import net.sf.jasperreports.repo.StreamRepositoryService;
-import org.mapfish.print.config.Configuration;
-import org.mapfish.print.http.ConfigFileResolvingHttpRequestFactory;
-import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
@@ -31,12 +29,12 @@ import javax.annotation.Nonnull;
 class MapfishPrintRepositoryService implements StreamRepositoryService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MapfishPrintRepositoryService.class);
 
-    private final ConfigFileResolvingHttpRequestFactory httpRequestFactory;
+    private final MfClientHttpRequestFactory httpRequestFactory;
     private JasperReportsContext jasperReportsContext;
 
-    MapfishPrintRepositoryService(@Nonnull final Configuration configuration,
-                                  @Nonnull final MfClientHttpRequestFactoryImpl httpRequestFactory) {
-        this.httpRequestFactory = new ConfigFileResolvingHttpRequestFactory(httpRequestFactory, configuration);
+    MapfishPrintRepositoryService(
+            @Nonnull final MfClientHttpRequestFactory httpRequestFactory) {
+        this.httpRequestFactory = httpRequestFactory;
         this.jasperReportsContext = DefaultJasperReportsContext.getInstance();
     }
 
