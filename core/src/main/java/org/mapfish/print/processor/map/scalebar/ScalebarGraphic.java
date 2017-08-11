@@ -53,7 +53,6 @@ public class ScalebarGraphic {
             final Template template)
             throws IOException, ParserConfigurationException {
         final double dpi = mapContext.getDPI();
-        final double dpiRatio = dpi / PDF_DPI;
 
         // get the map bounds
         final Rectangle paintArea = new Rectangle(mapContext.getMapSize());
@@ -70,28 +69,24 @@ public class ScalebarGraphic {
         }
 
         // adjust scalebar width and height to the DPI value
-        final int maxWidthInPixelAdjusted = (int) (scalebarParams.getSize().width * dpiRatio);
-        final int maxHeightInPixelAdjusted = (int) (scalebarParams.getSize().height * dpiRatio);
-        final int maxLengthInPixelAdjusted = (scalebarParams.getOrientation().isHorizontal()) ?
-                maxWidthInPixelAdjusted : maxHeightInPixelAdjusted;
+        final double maxLengthInPixel = (scalebarParams.getOrientation().isHorizontal()) ?
+                scalebarParams.getSize().width : scalebarParams.getSize().height;
 
-        final double maxIntervalLengthInWorldUnits = DistanceUnit.PX.convertTo(maxLengthInPixelAdjusted, scaleUnit)
+        final double maxIntervalLengthInWorldUnits = DistanceUnit.PX.convertTo(maxLengthInPixel, scaleUnit)
                 * scaleDenominator / scalebarParams.intervals;
         final double niceIntervalLengthInWorldUnits =
                 getNearestNiceValue(maxIntervalLengthInWorldUnits, scaleUnit, scalebarParams.lockUnits);
 
         final ScaleBarRenderSettings settings = new ScaleBarRenderSettings();
         settings.setParams(scalebarParams);
-        settings.setMaxSize(new Dimension(maxWidthInPixelAdjusted, maxHeightInPixelAdjusted));
-        settings.setDpiRatio(dpiRatio);
+        settings.setMaxSize(scalebarParams.getSize());
         settings.setPadding(getPadding(settings));
 
         // start the rendering
         File path = null;
         if (template.getConfiguration().renderAsSvg(scalebarParams.renderAsSvg)) {
             // render scalebar as SVG
-            final SVGGraphics2D graphics2D = CreateMapProcessor.getSvgGraphics(
-                    new Dimension(maxWidthInPixelAdjusted, maxHeightInPixelAdjusted));
+            final SVGGraphics2D graphics2D = CreateMapProcessor.getSvgGraphics(scalebarParams.getSize());
 
             try {
                 tryLayout(graphics2D, scaleUnit, scaleDenominator, niceIntervalLengthInWorldUnits, settings, 0);
@@ -103,8 +98,8 @@ public class ScalebarGraphic {
             }
         } else {
             // render scalebar as raster graphic
-            final BufferedImage bufferedImage = new BufferedImage(maxWidthInPixelAdjusted, maxHeightInPixelAdjusted,
-                    BufferedImage.TYPE_4BYTE_ABGR);
+            final BufferedImage bufferedImage = new BufferedImage(scalebarParams.getSize().width,
+                    scalebarParams.getSize().height, BufferedImage.TYPE_4BYTE_ABGR);
             final Graphics2D graphics2D = bufferedImage.createGraphics();
 
             try {
@@ -374,12 +369,12 @@ public class ScalebarGraphic {
     }
 
     private static int getFontSize(final ScaleBarRenderSettings settings) {
-        return (int) Math.ceil(settings.getParams().fontSize * settings.getDpiRatio());
+        return settings.getParams().fontSize;
     }
 
     private static int getLineWidth(final ScaleBarRenderSettings settings) {
         if (settings.getParams().lineWidth != null) {
-            return (int) Math.ceil(settings.getParams().lineWidth * settings.getDpiRatio());
+            return settings.getParams().lineWidth;
         } else {
             if (settings.getParams().getOrientation().isHorizontal()) {
                 return settings.getMaxSize().width / 150;
@@ -396,7 +391,7 @@ public class ScalebarGraphic {
     @VisibleForTesting
     protected static int getBarSize(final ScaleBarRenderSettings settings) {
         if (settings.getParams().barSize != null) {
-            return (int) Math.ceil(settings.getParams().barSize * settings.getDpiRatio());
+            return settings.getParams().barSize;
         } else {
             if (settings.getParams().getOrientation().isHorizontal()) {
                 return settings.getMaxSize().height / 4;
@@ -413,7 +408,7 @@ public class ScalebarGraphic {
     @VisibleForTesting
     protected static int getLabelDistance(final ScaleBarRenderSettings settings) {
         if (settings.getParams().labelDistance != null) {
-            return (int) Math.ceil(settings.getParams().labelDistance * settings.getDpiRatio());
+            return settings.getParams().labelDistance;
         } else {
             if (settings.getParams().getOrientation().isHorizontal()) {
                 return settings.getMaxSize().width / 40;
@@ -425,7 +420,7 @@ public class ScalebarGraphic {
 
     private static int getPadding(final ScaleBarRenderSettings settings) {
         if (settings.getParams().padding != null) {
-            return (int) Math.ceil(settings.getParams().padding * settings.getDpiRatio());
+            return settings.getParams().padding;
         } else {
             if (settings.getParams().getOrientation().isHorizontal()) {
                 return settings.getMaxSize().width / 40;

@@ -394,7 +394,6 @@ public class ScalebarDrawerTest {
         settings.setLineWidth(2);
         settings.setNumSubIntervals(numSubIntervals);
         settings.setPadding(4);
-        settings.setDpiRatio(1.0);
 
         final Dimension maxLabelSize = ScalebarGraphic.getMaxLabelSize(settings);
         settings.setMaxSize(new Dimension(180, 40));
