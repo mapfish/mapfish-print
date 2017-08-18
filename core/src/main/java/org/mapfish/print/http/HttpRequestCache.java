@@ -218,5 +218,4 @@ public final class HttpRequestCache {
             LOGGER.warn("Attempting to cache twice!");
         }
     }
-
 }

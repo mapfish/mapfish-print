@@ -33,7 +33,6 @@ public class ScaleBarRenderSettings {
     private Dimension maxSize;
     private float topLabelMargin;
     private float bottomLabelMargin;
-    private double dpiRatio;
     private int padding;
 
     public final void setParams(final ScalebarAttributeValues params) {
@@ -170,14 +169,6 @@ public class ScaleBarRenderSettings {
 
     public final Dimension getMaxSize() {
         return this.maxSize;
-    }
-
-    public final void setDpiRatio(final double dpiRatio) {
-        this.dpiRatio = dpiRatio;
-    }
-
-    public final double getDpiRatio() {
-        return this.dpiRatio;
     }
 
     public final void setPadding(final int padding) {

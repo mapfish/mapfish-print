@@ -32,7 +32,8 @@ import javax.annotation.Nullable;
  *               directory: '.'</code></pre>
  * [[examples=verboseExample]]
  */
-public final class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.Input, Void> implements HasConfiguration {
+public final class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.Input, Void>
+        implements HasConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
     /**
      * Extension for Jasper XML Report Template files.
@@ -58,7 +59,8 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
     }
 
     @Override
-    public Void execute(final JasperReportBuilder.Input param, final ExecutionContext context) throws JRException {
+    public Void execute(final JasperReportBuilder.Input param, final ExecutionContext context)
+            throws JRException {
         Timer.Context buildReports = this.metricRegistry.timer(getClass() + "_execute()").time();
         try {
             for (final File jasperFile : jasperXmlFiles()) {
@@ -72,7 +74,8 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
     }
 
     File compileJasperReport(final Configuration config, final File jasperFile) throws JRException {
-        final File buildFile = this.workingDirectories.getBuildFileFor(config, jasperFile, JASPER_REPORT_COMPILED_FILE_EXT, LOGGER);
+        final File buildFile = this.workingDirectories.getBuildFileFor(
+                config, jasperFile, JASPER_REPORT_COMPILED_FILE_EXT, LOGGER);
         return compileJasperReport(buildFile, jasperFile);
     }
 
@@ -84,7 +87,8 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
                 // another thread is reading it, use a temporary file as a target instead and
                 // move it (atomic operation) when done. Worst case: we compile a file twice instead
                 // of once.
-                File tmpBuildFile = File.createTempFile("temp_", JASPER_REPORT_COMPILED_FILE_EXT, buildFile.getParentFile());
+                File tmpBuildFile = File.createTempFile(
+                        "temp_", JASPER_REPORT_COMPILED_FILE_EXT, buildFile.getParentFile());
 
                 LOGGER.info("Building Jasper report: {}", jasperFile.getAbsolutePath());
                 LOGGER.debug("To: {}", buildFile.getAbsolutePath());
@@ -97,11 +101,13 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
                     LOGGER.error("The report '{}' isn't valid.", jasperFile.getAbsolutePath());
                     throw e;
                 } finally {
-                    final long compileTime = TimeUnit.MILLISECONDS.convert(compileJasperReport.stop(), TimeUnit.NANOSECONDS);
+                    final long compileTime = TimeUnit.MILLISECONDS.convert(
+                            compileJasperReport.stop(), TimeUnit.NANOSECONDS);
                     LOGGER.info("Report built in {}ms.", compileTime);
                 }
 
-                java.nio.file.Files.move(tmpBuildFile.toPath(), buildFile.toPath(), StandardCopyOption.ATOMIC_MOVE);
+                java.nio.file.Files.move(
+                        tmpBuildFile.toPath(), buildFile.toPath(), StandardCopyOption.ATOMIC_MOVE);
             } catch (IOException e) {
                 throw new JRException(e);
             }
@@ -118,8 +124,10 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
         }
         final String configurationAbsolutePath = this.configuration.getDirectory().getAbsolutePath();
         if (!directoryToSearch.getAbsolutePath().startsWith(configurationAbsolutePath)) {
-            throw new IllegalArgumentException("All directories and files referenced in the configuration must be in the configuration " +
-                                               "directory: " + directoryToSearch + " is not in " + this.configuration.getDirectory());
+            throw new IllegalArgumentException(String.format(
+                    "All directories and files referenced in the configuration must be in the " +
+                            "configuration directory: %s is not in %s.",
+                    directoryToSearch, this.configuration.getDirectory()));
         }
         final Iterable<File> children = Files.fileTreeTraverser().children(directoryToSearch);
         return Iterables.filter(children, new Predicate<File>() {
@@ -137,22 +145,27 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
     }
 
     /**
-     * Set the directory and test that the directory exists and is contained within the Configuration directory.
+     * Set the directory and test that the directory exists and is contained within the Configuration
+     * directory.
      *
      * @param directory the new directory
      */
     public void setDirectory(final String directory) {
         this.directory = new File(this.configuration.getDirectory(), directory);
         if (!this.directory.exists()) {
-            throw new IllegalArgumentException("Directory does not exist: "
-                                               + this.directory + ".\nConfiguration contained value "
-                                               + directory + " which is supposed to be relative to configuration directory");
+            throw new IllegalArgumentException(String.format(
+                    "Directory does not exist: %s.\n" +
+                            "Configuration contained value %s which is supposed to be relative to " +
+                            "configuration directory.",
+                    this.directory, directory));
         }
 
         if (!this.directory.getAbsolutePath().startsWith(this.configuration.getDirectory().getAbsolutePath())) {
-            throw new IllegalArgumentException("All files and directories must be contained in the configuration directory" +
-                                               " the directory provided in the configuration breaks that contract: " + directory
-                                               + " in config file resolved to " + this.directory);
+            throw new IllegalArgumentException(String.format(
+                    "All files and directories must be contained in the configuration directory the " +
+                            "directory provided in the configuration breaks that contract: %s in config " +
+                            "file resolved to %s.",
+                    directory, this.directory));
         }
     }
 

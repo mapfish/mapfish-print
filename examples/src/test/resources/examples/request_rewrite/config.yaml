@@ -1,0 +1,22 @@
+throwErrorOnExtraParameters: true
+transparentTileErrorColor: "rgba(78, 78, 255, 125)"
+opaqueTileErrorColor: "rgba(255, 155, 155, 0)"
+
+templates:
+  A4 portrait: !template
+    reportTemplate: report.jrxml
+    attributes:
+      map: !map
+        maxWidth: 780
+        maxHeight: 330
+        maxDpi: 400
+    processors:
+    - !reportBuilder
+      directory: '.'
+    - !configureHttpRequests
+        httpProcessors:
+        - !mapUri
+            mapping:
+              (https?)://c2c/(.*): "http://www.camptocamp.com/$2"
+              (https?)://lh/(.*): "http://localhost:8080/$2"
+    - !createMap {}

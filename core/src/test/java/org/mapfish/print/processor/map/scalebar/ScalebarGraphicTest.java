@@ -67,7 +67,6 @@ public class ScalebarGraphicTest {
         params.barSize = 8;
         ScaleBarRenderSettings settings = new ScaleBarRenderSettings();
         settings.setParams(params);
-        settings.setDpiRatio(1.0);
         settings.setIntervalLengthInPixels(40);
         settings.setLeftLabelMargin(3.0f);
         settings.setRightLabelMargin(4.0f);
@@ -159,7 +158,7 @@ public class ScalebarGraphicTest {
         ScalebarGraphic scalebar = new ScalebarGraphic();
         URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);
         new ImageSimilarity(getFile("expected-scalebar-graphic-dpi.png"))
-                .assertSimilarity(new File(file), 340);
+                .assertSimilarity(new File(file), 370);
     }
 
     @Test

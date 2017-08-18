@@ -28,6 +28,7 @@ import org.mapfish.print.config.Template;
 import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
 import org.mapfish.print.parser.MapfishParser;
+import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
@@ -99,8 +100,9 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         doExport(outputStream, print);
     }
 
-    private JasperFillManager getJasperFillManager(@Nonnull final Configuration configuration) {
-        LocalJasperReportsContext ctx = getLocalJasperReportsContext(configuration);
+    private JasperFillManager getJasperFillManager(
+            final MfClientHttpRequestFactoryProvider httpRequestFactoryProvider) {
+        LocalJasperReportsContext ctx = getLocalJasperReportsContext(httpRequestFactoryProvider);
         return JasperFillManager.getInstance(ctx);
     }
 
@@ -173,7 +175,9 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         }
 
         ValuesLogger.log(templateName, template, values);
-        JasperFillManager fillManager = getJasperFillManager(config);
+        JasperFillManager fillManager = getJasperFillManager(
+                values.getObject(
+                        Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, MfClientHttpRequestFactoryProvider.class));
 
         checkRequiredValues(config, values, template.getReportTemplate());
 
@@ -222,7 +226,10 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                     dataSource);
         }
         print.setProperty(Renderable.PROPERTY_IMAGE_DPI, String.valueOf(Math.round(maxDpi)));
-        return new Print(getLocalJasperReportsContext(config), print, values, maxDpi);
+        return new Print(getLocalJasperReportsContext(
+                values.getObject(
+                    Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, MfClientHttpRequestFactoryProvider.class)),
+                print, values, maxDpi);
     }
 
     private void checkRequiredFields(
@@ -334,11 +341,12 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         }
     }
 
-    private LocalJasperReportsContext getLocalJasperReportsContext(final Configuration configuration) {
+    private LocalJasperReportsContext getLocalJasperReportsContext(
+            final MfClientHttpRequestFactoryProvider httpRequestFactoryProvider) {
         LocalJasperReportsContext ctx = new LocalJasperReportsContext(DefaultJasperReportsContext.getInstance());
         ctx.setClassLoader(getClass().getClassLoader());
         ctx.setExtensions(RepositoryService.class,
-                Lists.newArrayList(new MapfishPrintRepositoryService(configuration, this.httpRequestFactory)));
+                Lists.newArrayList(new MapfishPrintRepositoryService(httpRequestFactoryProvider.get())));
         return ctx;
     }
 
