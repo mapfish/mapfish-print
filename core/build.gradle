@@ -235,6 +235,7 @@ gretty {
     classPath = [file("jettyRunExtraFiles")]
     systemProperty "path_to_examples", examplesDir
     systemProperty "org.mortbay.jetty.Request.maxFormContentSize", "1048576"
+    httpPort = project.hasProperty("httpPort") ? project.httpPort as int : 8080
 }
 
 

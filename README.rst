@@ -73,7 +73,7 @@ To list all the commandline options then execute (the current direstory is `./co
 
 .. code::
 
- > ./gradlew print -PprintArgs="-help"
+  > ./gradlew print -PprintArgs="-help"
 
 .. code::
 
@@ -83,6 +83,16 @@ If you want to run in debug mode you can do the following:
 
 .. code::
   > ./gradlew print --debug-jvm -PprintArgs="-config ../examples/config.yaml -spec ../examples/spec.json -output ./output.pdf"
+
+
+Run using gretty/jettyRun
+-------------------------
+
+The following command will run mapfish print using gretty/jetty. The default port is 8080, but can be changed using -PhttpPort="..." parameter.
+
+.. code::
+
+  > ./gradlew jettyRun -PhttpPort=8090
 
 
 Run in Eclipse
