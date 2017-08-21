@@ -184,7 +184,7 @@ dependencies {
     compile ('org.apache.xmlgraphics:batik-codec:1.8')
     providedCompile('com.google.code.findbugs:jsr305:2.0.1')
 
-    providedCompile('javax.servlet:servlet-api:2.5')
+    providedCompile('javax.servlet:javax.servlet-api:3.1.0')
 }
 
 def gitRevision() {
