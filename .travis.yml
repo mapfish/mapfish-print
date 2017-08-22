@@ -16,12 +16,6 @@ services:
 
 jdk:
 - oraclejdk8
-- oraclejdk9
-
-before_install:
-# We have to change the hostname to work around a bug in openjdk7 that crashes when the hostname is
-# too long.
-- export OLD_HOSTNAME=`hostname` && sudo sed -i -e "s/$OLD_HOSTNAME/test/g" /etc/hosts && sudo hostname test
 
 # Don't run eval ./gradlew assemble"
 install:
