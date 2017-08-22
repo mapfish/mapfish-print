@@ -10,10 +10,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 
 import javax.annotation.Nullable;
 
-import jsr166y.ForkJoinPool;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 import net.sf.jasperreports.engine.design.JRDesignField;
 

@@ -1,7 +1,5 @@
 package org.mapfish.print.processor;
 
-import jsr166y.ForkJoinPool;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -21,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 
 import static org.junit.Assert.assertEquals;
 

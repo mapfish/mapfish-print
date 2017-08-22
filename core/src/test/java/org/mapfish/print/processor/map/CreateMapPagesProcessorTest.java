@@ -2,7 +2,6 @@ package org.mapfish.print.processor.map;
 
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
-import jsr166y.ForkJoinPool;
 import net.sf.jasperreports.engine.JasperPrint;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,6 +24,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
+import java.util.concurrent.ForkJoinPool;
 
 import static org.junit.Assert.assertEquals;
 

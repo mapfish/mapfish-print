@@ -172,18 +172,10 @@ dependencies {
     }
     compile (configurations.geotools)
     compile (configurations.jasper)
-
-    // This jsr166 dependendency is here only so long as Java 6 is supported
-    // it is the forkjoin code and can be removed if java 7 is a required library
-    compile ('org.codehaus.jsr166-mirror:jsr166y:1.7.0')
     compile ( 'org.apache.xmlgraphics:xmlgraphics-commons:2.2')
     compile ('org.apache.xmlgraphics:batik-transcoder:1.8')
-//            {
-//                exclude module: 'fop'
-//            }
     compile ('org.apache.xmlgraphics:batik-codec:1.8')
     providedCompile('com.google.code.findbugs:jsr305:2.0.1')
-
     providedCompile('javax.servlet:javax.servlet-api:3.1.0')
 }
 

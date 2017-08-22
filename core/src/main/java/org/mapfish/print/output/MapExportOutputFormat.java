@@ -1,8 +1,5 @@
 package org.mapfish.print.output;
 
-import jsr166y.ForkJoinPool;
-import jsr166y.ForkJoinTask;
-
 import org.apache.commons.io.IOUtils;
 import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;
@@ -20,6 +17,8 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 
 
 /**

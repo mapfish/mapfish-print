@@ -4,7 +4,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.collect.Lists;
 
-import jsr166y.ForkJoinPool;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 import org.mapfish.print.Constants;
@@ -37,11 +36,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
-
 
 /**
  * <p>Create a legend.</p>

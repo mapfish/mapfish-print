@@ -3,7 +3,6 @@ package org.mapfish.print.http;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
-import jsr166y.ForkJoinPool;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +22,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  *

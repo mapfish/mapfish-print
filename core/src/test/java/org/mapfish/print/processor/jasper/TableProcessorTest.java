@@ -3,7 +3,6 @@ package org.mapfish.print.processor.jasper;
 import com.google.common.base.Predicate;
 import com.google.common.io.Resources;
 
-import jsr166y.ForkJoinPool;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 
@@ -31,6 +30,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Map;
+import java.util.concurrent.ForkJoinPool;
 
 import javax.annotation.Nullable;
 

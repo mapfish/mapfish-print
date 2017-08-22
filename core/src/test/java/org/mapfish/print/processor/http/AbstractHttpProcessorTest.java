@@ -1,7 +1,6 @@
 package org.mapfish.print.processor.http;
 
 import com.google.common.base.Predicate;
-import jsr166y.ForkJoinPool;
 import org.json.JSONException;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -24,6 +23,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
+import java.util.concurrent.ForkJoinPool;
 
 import static org.junit.Assert.assertEquals;
 

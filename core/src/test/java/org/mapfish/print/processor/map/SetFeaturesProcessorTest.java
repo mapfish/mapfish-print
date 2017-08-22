@@ -1,6 +1,5 @@
 package org.mapfish.print.processor.map;
 
-import jsr166y.ForkJoinPool;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -17,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 
 import static org.junit.Assert.assertEquals;
 

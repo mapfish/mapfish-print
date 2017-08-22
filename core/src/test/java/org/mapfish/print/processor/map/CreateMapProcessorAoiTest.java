@@ -4,8 +4,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
 
-import jsr166y.ForkJoinPool;
-import jsr166y.ForkJoinTask;
 import org.apache.batik.transcoder.TranscoderException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,6 +29,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

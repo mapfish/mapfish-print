@@ -3,7 +3,6 @@ package org.mapfish.print.map.tiled.wmts;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Multimap;
-import jsr166y.ForkJoinPool;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.URIUtils;
@@ -23,6 +22,7 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.ForkJoinPool;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
