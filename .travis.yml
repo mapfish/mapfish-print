@@ -15,8 +15,8 @@ services:
 - docker
 
 jdk:
-- openjdk7
 - oraclejdk8
+- oraclejdk9
 
 before_install:
 # We have to change the hostname to work around a bug in openjdk7 that crashes when the hostname is
@@ -44,5 +44,5 @@ deploy:
   skip_cleanup: true
   on:
     repo: mapfish/mapfish-print
-    java: openjdk7
+    java: oraclejdk8
     all_branches: true
