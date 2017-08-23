@@ -3,8 +3,6 @@ package org.mapfish.print.map.tiled.osm;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Sets;
 
-import jsr166y.ForkJoinPool;
-
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
@@ -12,6 +10,7 @@ import org.mapfish.print.map.geotools.AbstractGridCoverageLayerPlugin;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Set;
+import java.util.concurrent.ForkJoinPool;
 
 import javax.annotation.Nonnull;
 

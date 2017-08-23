@@ -14,7 +14,6 @@ import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Polygon;
 
-import jsr166y.ForkJoinPool;
 import net.sf.jasperreports.engine.JRException;
 
 import org.apache.batik.svggen.DefaultStyleHandler;
@@ -82,6 +81,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ForkJoinPool;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

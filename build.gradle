@@ -8,10 +8,10 @@ task wrapper(type: Wrapper) {
 allprojects {
     group = 'org.mapfish.print'
     version = '3.11-SNAPSHOT'
-    ext.junitVersion = "4.11"
-    ext.springVersion = "3.2.8.RELEASE"
-    ext.jasperReportVersion = "6.1.1"
-    ext.groovyVersion = "2.3.3"
+    ext.junitVersion = "4.12"
+    ext.springVersion = "4.3.10.RELEASE"
+    ext.jasperReportVersion = "6.4.1"
+    ext.groovyVersion = "2.4.12"
     ext."signing.keyId" = signing_keyId
     ext."signing.secretKeyRingFile" = signing_secretKeyRingFile
     ext."signing.password" = signing_password
@@ -29,7 +29,7 @@ buildscript {
 
 configurations.all {
     resolutionStrategy {
-        force 'xml-apis:xml-apis:1.0.b2'
+        force 'xml-apis:xml-apis:2.0.2'
     }
 }
 
@@ -49,6 +49,7 @@ configure(subprojects.findAll {['core', 'examples', 'docs'].contains(it.name)}) 
         maven {url "http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts"}
         maven {url "http://maven.geo-solutions.it"}
         maven {url "https://jaspersoft.artifactoryonline.com/jaspersoft/jr-ce-releases"}
+        maven {url "https://repository.jboss.org/nexus/content/repositories/thirdparty-releases/"}
     }
 }
 configure(subprojects.findAll {['core', 'examples'].contains(it.name)}) {
@@ -85,15 +86,15 @@ configure(subprojects.findAll {['core', 'examples'].contains(it.name)}) {
     }
     findbugsTest.enabled = false
 
-    sourceCompatibility = 1.6
-    targetCompatibility = 1.6
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 
     compileJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
 
     dependencies {
         testCompile (
                 "junit:junit:${project.junitVersion}",
-                'org.mockito:mockito-core:1.9.5',
+                'org.mockito:mockito-core:2.8.47',
                 "org.springframework:spring-test:${springVersion}"
         )
 

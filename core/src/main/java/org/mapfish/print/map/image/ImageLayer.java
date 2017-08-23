@@ -4,8 +4,6 @@ import com.google.common.collect.Maps;
 import com.google.common.io.Closer;
 import com.vividsolutions.jts.util.Assert;
 
-import jsr166y.ForkJoinPool;
-
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
@@ -44,6 +42,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
 
 import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;

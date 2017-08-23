@@ -3,8 +3,6 @@ package org.mapfish.print.processor;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
-import jsr166y.ForkJoinPool;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 
 import javax.annotation.Nullable;
 

@@ -4,9 +4,9 @@ import com.google.common.base.Predicate;
 import com.google.common.io.Files;
 
 import java.io.File;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 
-import jsr166y.ForkJoinPool;
-import jsr166y.ForkJoinTask;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;

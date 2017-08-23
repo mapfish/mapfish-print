@@ -15,13 +15,7 @@ services:
 - docker
 
 jdk:
-- openjdk7
 - oraclejdk8
-
-before_install:
-# We have to change the hostname to work around a bug in openjdk7 that crashes when the hostname is
-# too long.
-- export OLD_HOSTNAME=`hostname` && sudo sed -i -e "s/$OLD_HOSTNAME/test/g" /etc/hosts && sudo hostname test
 
 # Don't run eval ./gradlew assemble"
 install:
@@ -44,5 +38,5 @@ deploy:
   skip_cleanup: true
   on:
     repo: mapfish/mapfish-print
-    java: openjdk7
+    java: oraclejdk8
     all_branches: true

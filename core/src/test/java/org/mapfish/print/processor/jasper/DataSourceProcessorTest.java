@@ -1,6 +1,5 @@
 package org.mapfish.print.processor.jasper;
 
-import jsr166y.ForkJoinPool;
 import net.sf.jasperreports.engine.JasperPrint;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -22,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ForkJoinPool;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

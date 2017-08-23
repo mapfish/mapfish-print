@@ -1,6 +1,5 @@
 package org.mapfish.print.map.geotools.grid;
 
-import jsr166y.ForkJoinPool;
 import org.geotools.data.FeatureSource;
 import org.geotools.styling.Style;
 import org.mapfish.print.config.Template;
@@ -10,7 +9,9 @@ import org.mapfish.print.map.geotools.FeatureSourceSupplier;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.concurrent.ForkJoinPool;
 import javax.annotation.Nonnull;
+
 
 /**
  * <p>A layer which is a spatial grid of lines on the map.</p>

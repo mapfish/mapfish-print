@@ -3,56 +3,62 @@
     "outputFormat": "pdf",
     "attributes": {
         "title": "Hello",
-        "datasource": [{
-            "features": {
+        "datasource": [
+            {
                 "features": {
-                    "type": "FeatureCollection",
-                    "features": [{
-                        "type": "Feature",
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [-8234500, 4982500]
-                        },
-                        "properties": {
-                            "type": "click"
-                        }
-                    }, {
-                        "type": "Feature",
-                        "geometry": {
-                            "type": "Polygon",
-                            "coordinates": [[[-8235000, 4982000], [-8234000, 4982000], [-8234000, 4983000], [-8235000, 4983000], [-8235000, 4982000]]]
-                        },
-                        "properties": {
-                            "type": "parcel"
-                        }
-                    }]
+                    "features": {
+                        "type": "FeatureCollection",
+                        "features": [
+                            {
+                                "type": "Feature",
+                                "geometry": {
+                                    "type": "Polygon",
+                                    "coordinates": [[[-8235000, 4982000], [-8234000, 4982000], [-8234000, 4983000], [-8235000, 4983000], [-8235000, 4982000]]]
+                                },
+                                "properties": {
+                                    "type": "parcel"
+                                }
+                            },{
+                                "type": "Feature",
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [-8234500, 4982500]
+                                },
+                                "properties": {
+                                    "type": "click"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }, {
+                "features": {
+                    "features": {
+                        "type": "FeatureCollection",
+                        "features": [
+                            {
+                                "type": "Feature",
+                                "geometry": {
+                                    "type": "Polygon",
+                                    "coordinates": [[[-8235200, 4982200], [-8234200, 4982200], [-8234200, 4983200], [-8235200, 4983200], [-8235200, 4982200]]]
+                                },
+                                "properties": {
+                                    "type": "parcel"
+                                }
+                            },{
+                                "type": "Feature",
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [-8234700, 4982700]
+                                },
+                                "properties": {
+                                    "type": "click"
+                                }
+                            }
+                        ]
+                    }
                 }
             }
-        }, {
-            "features": {
-                "features": {
-                    "type": "FeatureCollection",
-                    "features": [{
-                        "type": "Feature",
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [-8234700, 4982700]
-                        },
-                        "properties": {
-                            "type": "click"
-                        }
-                    }, {
-                        "type": "Feature",
-                        "geometry": {
-                            "type": "Polygon",
-                            "coordinates": [[[-8235200, 4982200], [-8234200, 4982200], [-8234200, 4983200], [-8235200, 4983200], [-8235200, 4982200]]]
-                        },
-                        "properties": {
-                            "type": "parcel"
-                        }
-                    }]
-                }
-            }
-        }]
+        ]
     }
 }

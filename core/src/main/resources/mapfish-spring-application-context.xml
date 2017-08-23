@@ -68,14 +68,14 @@
     <bean id="jmxMetricsReporter" class="org.mapfish.print.metrics.JmxMetricsReporter" lazy-init="false"/>
     <bean id="statsDReporterInit" class="org.mapfish.print.metrics.StatsDReporterInit" lazy-init="false"/>
 
-    <bean id="forkJoinPool" class="jsr166y.ForkJoinPool" destroy-method="shutdownNow">
+    <bean id="forkJoinPool" class="java.util.concurrent.ForkJoinPool" destroy-method="shutdownNow">
         <!--
             Thread pool used to run processors.
         -->
         <constructor-arg index="0" value="${threadsParallelProcessors}" />
     </bean>
 
-    <bean id="requestForkJoinPool" class="jsr166y.ForkJoinPool" destroy-method="shutdownNow" autowire-candidate="false">
+    <bean id="requestForkJoinPool" class="java.util.concurrent.ForkJoinPool" destroy-method="shutdownNow" autowire-candidate="false">
         <!--
             Thread pool used for making requests for tile/image layers.
         -->

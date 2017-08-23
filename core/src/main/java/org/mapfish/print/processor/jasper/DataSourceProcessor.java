@@ -2,7 +2,6 @@ package org.mapfish.print.processor.jasper;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import jsr166y.ForkJoinTask;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -33,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ForkJoinTask;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
