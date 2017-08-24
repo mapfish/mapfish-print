@@ -213,10 +213,6 @@ def examplesDir = "${project(':examples').projectDir}/src/test/resources/example
 war {
     baseName = "print-servlet"
     addManifestAttribute(manifest)
-
-    from (fileTree(dir: examplesDir)) {
-        into 'print-apps'
-    }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
