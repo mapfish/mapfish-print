@@ -192,10 +192,11 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
                 LOGGER.debug("\n\t" + this.tileRequest.getMethod() + " -- " + this.tileRequest.getURI());
                 final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
                 response = this.tileRequest.execute();
-                final HttpStatus statusCode = response.getStatusCode();
+                final HttpStatus statusCode =
+                        response != null ? response.getStatusCode() : HttpStatus.INTERNAL_SERVER_ERROR;
                 if (statusCode == HttpStatus.NO_CONTENT || statusCode == HttpStatus.NOT_FOUND) {
                     if (statusCode == HttpStatus.NOT_FOUND) {
-                        LOGGER.info("The request {} returns a not fond status code, we consider it as an " +
+                        LOGGER.info("The request {} returns a not found status code, we consider it as an " +
                                 "empty tile.", this.tileRequest.getURI());
                     }
                     // Empty response, nothing special to do
