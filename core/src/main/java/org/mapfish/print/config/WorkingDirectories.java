@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Date;
 
 import javax.annotation.PostConstruct;
@@ -77,11 +78,7 @@ public class WorkingDirectories {
     public final File getTaskDirectory() {
         createIfMissing(this.working, "Working");
         try {
-            File file = File.createTempFile(TASK_DIR_PREFIX, "tmp", this.working);
-            if (!file.delete() || !file.mkdirs()) {
-                throw new IOException("Unable to make temporary directory: " + file);
-            }
-            return file;
+            return Files.createTempDirectory(this.working.toPath(), TASK_DIR_PREFIX).toFile();
         } catch (IOException e) {
             throw new AssertionError("Unable to create temporary directory in '" + this.working + "'");
         }

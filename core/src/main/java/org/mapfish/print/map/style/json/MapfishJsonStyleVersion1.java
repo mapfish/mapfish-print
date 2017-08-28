@@ -123,10 +123,13 @@ public final class MapfishJsonStyleVersion1 {
                 textRule);
     }
 
-    private Rule createGeometryFilteredRule(final Symbolizer symb,
-                                            final String styleKey,
-                                            final String styleProperty,
-                                            final Class<? extends Geometry>... geomClass) {
+    @SafeVarargs
+    //CHECKSTYLE:OFF
+    private final Rule createGeometryFilteredRule(final Symbolizer symb,
+                                                  final String styleKey,
+                                                  final String styleProperty,
+                                                  final Class<? extends Geometry>... geomClass) {
+        //CHECKSTYLE:ON
         if (symb != null) {
             Expression geomProperty = this.sldStyleBuilder.attributeExpression(this.geometryProperty);
             final Function geometryTypeFunction = this.sldStyleBuilder.getFilterFactory().function("geometryType", geomProperty);
