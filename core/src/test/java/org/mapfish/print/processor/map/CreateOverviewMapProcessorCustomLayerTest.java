@@ -86,7 +86,7 @@ public class CreateOverviewMapProcessorCustomLayerTest extends AbstractMapfishSp
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(),
+        Values values = new Values("test", requestData, template, this.parser, getTaskDirectory(),
                 this.requestFactory, new File("."));
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 

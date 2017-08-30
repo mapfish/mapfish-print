@@ -70,7 +70,7 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
+        Values values = new Values("test", requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final JRTableModelDataSource legend = values.getObject(
@@ -108,7 +108,7 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR_DYNAMIC + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadDynamicJsonRequestData();
-        Values values = new Values(requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
+        Values values = new Values("test", requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final JRTableModelDataSource legend = values.getObject(
@@ -161,7 +161,7 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
         PJsonObject requestData = loadJsonRequestData();
         requestData.getJSONObject("attributes").getJSONObject("legend").getInternalObj().put("classes", new JSONArray());
 
-        Values values = new Values(requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
+        Values values = new Values("test", requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final JRTableModelDataSource legend = values.getObject(

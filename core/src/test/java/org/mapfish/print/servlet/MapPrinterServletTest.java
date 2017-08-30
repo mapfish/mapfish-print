@@ -252,7 +252,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
             }
         });
 
-        doCreateAndPollAndGetReport(new Function<MockHttpServletRequest, MockHttpServletResponse>() {
+        String ref = doCreateAndPollAndGetReport(new Function<MockHttpServletRequest, MockHttpServletResponse>() {
             @Nullable
             @Override
             public MockHttpServletResponse apply(@Nullable MockHttpServletRequest servletCreateRequest) {
@@ -275,8 +275,9 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
             }
         }, false);
 
-        assertEquals(1, request.getHeaders().size());
+        assertEquals(2, request.getHeaders().size());
         assertArrayEquals(new Object[]{"CookieValue", "CookieValue2"}, request.getHeaders().get("Cookies").toArray());
+        assertArrayEquals(new Object[]{ref}, request.getHeaders().get("X-Request-ID").toArray());
     }
 
     @Test

@@ -44,7 +44,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
 
         Template template = config.getTemplates().values().iterator().next();
-        final Values values = new Values(requestData, template, this.parser, new File("tmp"), this.httpRequestFactory, new File("."));
+        final Values values = new Values("test", requestData, template, this.parser, new File("tmp"), this.httpRequestFactory, new File("."));
 
         assertTrue(values.containsKey("title"));
         assertEquals("title", values.getString("title"));
@@ -72,7 +72,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
 
         Template template = config.getTemplates().values().iterator().next();
-        new Values(requestData, template, this.parser, new File("tmp"), this.httpRequestFactory, new File("."));
+        new Values("test", requestData, template, this.parser, new File("tmp"), this.httpRequestFactory, new File("."));
     }
 
     @Test
@@ -85,7 +85,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-defaults.yaml"));
 
         Template template = config.getTemplates().values().iterator().next();
-        final Values values = new Values(requestData, template, this.parser, new File("tmp"), this.httpRequestFactory, new File("."));
+        final Values values = new Values("test", requestData, template, this.parser, new File("tmp"), this.httpRequestFactory, new File("."));
 
         assertTrue(values.containsKey("title"));
         assertEquals("title", values.getString("title"));
@@ -118,6 +118,6 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
 
         Template template = config.getTemplates().values().iterator().next();
-        new Values(requestData, template, this.parser, new File("tmp"), this.httpRequestFactory, new File("."));
+        new Values("test", requestData, template, this.parser, new File("tmp"), this.httpRequestFactory, new File("."));
     }
 }

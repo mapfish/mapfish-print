@@ -14,6 +14,7 @@ import org.mapfish.print.servlet.job.impl.PrintJobResultImpl;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.context.SecurityContext;
@@ -80,6 +81,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
         PJsonObject spec = null;
         MapPrinter mapPrinter = null;
         try {
+            MDC.put("job_id", this.entry.getReferenceId());
             LOGGER.info("Starting print job " + this.entry.getReferenceId());
             spec = this.entry.getRequestData();
             mapPrinter = PrintJob.this.mapPrinterFactory.create(this.entry.getAppId());
@@ -87,7 +89,8 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
             URI reportURI = withOpenOutputStream(new PrintAction() {
                 @Override
                 public void run(final OutputStream outputStream) throws Exception {
-                    finalMapPrinter.print(PrintJob.this.entry.getRequestData(), outputStream);
+                    finalMapPrinter.print(PrintJob.this.entry.getReferenceId(),
+                            PrintJob.this.entry.getRequestData(), outputStream);
                 }
             });
 

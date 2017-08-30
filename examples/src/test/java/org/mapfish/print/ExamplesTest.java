@@ -236,7 +236,7 @@ public class ExamplesTest {
 
                         jsonSpec.getJSONObject(JSON_ATTRIBUTES).getInternalObj().put(
                                 JSON_REQUEST_HEADERS, headersAttribute);
-                        this.mapPrinter.print(jsonSpec, out);
+                        this.mapPrinter.print("main", jsonSpec, out);
 
                         BufferedImage image = ImageIO.read(new ByteArrayInputStream(out.toByteArray()));
 

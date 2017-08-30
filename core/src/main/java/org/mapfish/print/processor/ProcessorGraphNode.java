@@ -11,6 +11,7 @@ import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.output.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
@@ -184,6 +185,7 @@ public final class ProcessorGraphNode<In, Out> {
 
         @Override
         protected Values compute() {
+            MDC.put("job_id", this.execContext.getJobId());
             final Values values = this.execContext.getValues();
 
             final Processor<In, Out> process = this.node.processor;

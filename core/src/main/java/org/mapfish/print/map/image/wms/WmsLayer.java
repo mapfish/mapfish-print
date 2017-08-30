@@ -152,7 +152,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
     public void cacheResources(
             @Nonnull final HttpRequestCache httpRequestCache,
             @Nonnull final MfClientHttpRequestFactory requestFactory,
-            @Nonnull final MapfishMapContext transformer) {
+            @Nonnull final MapfishMapContext transformer, @Nonnull final String jobId) {
         try {
             final MapfishMapContext layerTransformer = getLayerTransformer(transformer);
 

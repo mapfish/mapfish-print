@@ -99,11 +99,13 @@ public interface MapLayer {
      * @param graphics2D the graphics object.
      * @param clientHttpRequestFactory The factory to use for making http requests.
      * @param transformer the map transformer containing the map bounds and size.
+     * @param jobId the job ID
      */
     void render(
             final Graphics2D graphics2D,
             final MfClientHttpRequestFactory clientHttpRequestFactory,
-            final MapfishMapContext transformer);
+            final MapfishMapContext transformer,
+            final String jobId);
 
     /**
      * Indicate if the layer supports native rotation (e.g. WMS layers with
@@ -129,8 +131,10 @@ public interface MapLayer {
      * @param httpRequestCache TODO
      * @param clientHttpRequestFactory client http request factory
      * @param transformer transformer
+     * @param jobId the job ID
      */
     void cacheResources(final HttpRequestCache httpRequestCache,
-            final MfClientHttpRequestFactory clientHttpRequestFactory,
-            final MapfishMapContext transformer);
+                        final MfClientHttpRequestFactory clientHttpRequestFactory,
+                        final MapfishMapContext transformer,
+                        final String jobId);
 }

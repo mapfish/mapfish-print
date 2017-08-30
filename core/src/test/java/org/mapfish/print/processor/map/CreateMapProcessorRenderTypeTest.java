@@ -86,7 +86,7 @@ public class CreateMapProcessorRenderTypeTest extends AbstractMapfishSpringTest 
         final Template template = config.getTemplate("main");
 
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values(requestData, template, this.parser, getTaskDirectory(),
+        Values values = new Values("test", requestData, template, this.parser, getTaskDirectory(),
                 this.requestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(

@@ -34,7 +34,7 @@ public class AbstractJasperReportOutputFormatTest extends AbstractMapfishSpringT
 
         final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
         try {
-            format.getJasperPrint(requestData, config,
+            format.getJasperPrint("test", requestData, config,
                     getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR), getTaskDirectory());
             fail("Expected a " + AssertionFailedException.class);
         } catch (AssertionFailedException e) {
@@ -51,7 +51,7 @@ public class AbstractJasperReportOutputFormatTest extends AbstractMapfishSpringT
 
         final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
         try {
-            format.getJasperPrint(requestData, config,
+            format.getJasperPrint("test", requestData, config,
                     getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR), getTaskDirectory());
             fail("Expected a " + AssertionFailedException.class);
         } catch (AssertionFailedException e) {
@@ -69,7 +69,7 @@ public class AbstractJasperReportOutputFormatTest extends AbstractMapfishSpringT
 
         final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
         try {
-            format.getJasperPrint(requestData, config,
+            format.getJasperPrint("test", requestData, config,
                     getFile(JasperReportOutputFormatSimpleMapTest.class, TABLE_BASE_DIR), getTaskDirectory());
             fail("Expected a " + AssertionFailedException.class);
         } catch (AssertionFailedException e) {

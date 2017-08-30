@@ -44,7 +44,7 @@ public class CustomFontLoaderTest extends AbstractMapfishSpringTest {
         PJsonObject requestData = loadJsonRequestData();
 
         final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
-        JasperPrint print = format.getJasperPrint(requestData, config,
+        JasperPrint print = format.getJasperPrint("test", requestData, config,
                 getFile(CustomFontLoaderTest.class, BASE_DIR), getTaskDirectory()).print;
         ImageSimilarity.exportReportToImage(print, 0);
         // no error, ok

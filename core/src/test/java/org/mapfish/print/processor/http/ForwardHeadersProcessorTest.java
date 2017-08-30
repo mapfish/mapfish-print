@@ -10,7 +10,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
-import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;

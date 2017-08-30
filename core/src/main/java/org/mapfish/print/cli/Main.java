@@ -160,7 +160,7 @@ public final class Main {
 
                 outFile = getOutputStream(cli.output, this.mapPrinter.getOutputFormat(jsonSpec).getFileSuffix());
                 LOGGER.debug("Request Data: \n" + jsonSpec.getInternalObj().toString(2));
-                this.mapPrinter.print(jsonSpec, outFile);
+                this.mapPrinter.print("main", jsonSpec, outFile);
             }
         } finally {
             if (outFile != null) {

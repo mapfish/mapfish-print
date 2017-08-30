@@ -62,6 +62,10 @@ public final class Values {
      */
     public static final String SUBREPORT_DIR_KEY = "SUBREPORT_DIR";
     /**
+     * The key for the reference ID.
+     */
+    public static final String JOB_ID_KEY = "jobId";
+    /**
      * The key for the values object of it self.
      */
     public static final String VALUES_KEY = "values";
@@ -87,6 +91,7 @@ public final class Values {
     /**
      * Construct from the json request body and the associated template.
      *
+     * @param jobId the job ID
      * @param requestData the json request data
      * @param template the template
      * @param parser the parser to use for parsing the request data.
@@ -94,18 +99,20 @@ public final class Values {
      * @param httpRequestFactory a factory for making http requests.
      * @param jasperTemplateBuild the directory where the jasper templates are compiled to
      */
-    public Values(final PJsonObject requestData,
+    public Values(final String jobId,
+                  final PJsonObject requestData,
                   final Template template,
                   final MapfishParser parser,
                   final File taskDirectory,
                   final MfClientHttpRequestFactoryImpl httpRequestFactory,
                   final File jasperTemplateBuild) throws JSONException {
-        this(requestData, template, parser, taskDirectory, httpRequestFactory, jasperTemplateBuild, null);
+        this(jobId, requestData, template, parser, taskDirectory, httpRequestFactory, jasperTemplateBuild, null);
     }
 
     /**
      * Construct from the json request body and the associated template.
      *
+     * @param jobId the job ID
      * @param requestData the json request data
      * @param template the template
      * @param parser the parser to use for parsing the request data.
@@ -114,21 +121,23 @@ public final class Values {
      * @param jasperTemplateBuild the directory where the jasper templates are compiled to
      * @param outputFormat the output format
      */
-    public Values(final PJsonObject requestData,
+    //CHECKSTYLE:OFF
+    public Values(final String jobId,
+                  final PJsonObject requestData,
                   final Template template,
                   final MapfishParser parser,
                   final File taskDirectory,
                   final MfClientHttpRequestFactoryImpl httpRequestFactory,
                   final File jasperTemplateBuild,
                   final String outputFormat) throws JSONException {
-
+        //CHECKSTYLE:ON
         Assert.isTrue(!taskDirectory.mkdirs() || taskDirectory.exists());
 
         // add task dir. to values so that all processors can access it
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
         this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY,
                 new MfClientHttpRequestFactoryProvider(new ConfigFileResolvingHttpRequestFactory(
-                        httpRequestFactory, template.getConfiguration())));
+                        httpRequestFactory, template.getConfiguration(), jobId)));
         this.values.put(TEMPLATE_KEY, template);
         this.values.put(PDF_CONFIG_KEY, template.getPdfConfig());
         if (jasperTemplateBuild != null) {
@@ -142,6 +151,8 @@ public final class Values {
 
         Map<String, Attribute> attributes = Maps.newHashMap(template.getAttributes());
         populateFromAttributes(template, parser, attributes, jsonAttributes);
+
+        this.values.put(JOB_ID_KEY, jobId);
 
         this.values.put(VALUES_KEY, this);
     }
@@ -263,7 +274,7 @@ public final class Values {
                 MfClientHttpRequestFactoryProvider.class);
         Template template = sourceValues.getObject(TEMPLATE_KEY, Template.class);
         PDFConfig pdfConfig = sourceValues.getObject(PDF_CONFIG_KEY, PDFConfig.class);
-        String subReportDir = sourceValues.getObject(SUBREPORT_DIR_KEY, String.class);
+        String subReportDir = sourceValues.getString(SUBREPORT_DIR_KEY);
 
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
         this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY, requestFactoryProvider);
@@ -271,6 +282,7 @@ public final class Values {
         this.values.put(PDF_CONFIG_KEY, pdfConfig);
         this.values.put(SUBREPORT_DIR_KEY, subReportDir);
         this.values.put(VALUES_KEY, this);
+        this.values.put(JOB_ID_KEY, sourceValues.getString(JOB_ID_KEY));
     }
 
     /**
