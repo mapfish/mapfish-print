@@ -51,7 +51,7 @@ farm {
     // configuration to start a server running mfp, geoserver and the web-app
     // containing test data. start with `./gradlew examples:farmRun`
     systemProperty "path_to_examples", examplesDir
-    jvmArgs = ["-Xmx1G", "-XX:MaxPermSize=1G", "-DGEOSERVER_DATA_DIR=$buildDir/geoserver/data"]
+    jvmArgs = ["-Xmx1G", "-DGEOSERVER_DATA_DIR=$buildDir/geoserver/data"]
     scanInterval = 0
 
     webapp "org.geoserver.web:gs-web-app:$geoserverVersion"
