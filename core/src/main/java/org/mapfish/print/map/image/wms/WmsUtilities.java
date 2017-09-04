@@ -4,6 +4,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.geotools.data.wms.request.GetMapRequest;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -15,6 +17,7 @@ import java.awt.Dimension;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,8 +47,24 @@ public final class WmsUtilities {
             final double dpi,
             final double angle,
             final ReferencedEnvelope bounds) throws FactoryException, URISyntaxException, IOException {
+        String[] authority = commonURI.getAuthority().split(":");
+        URL url;
+        if (authority.length == 2) {
+            url = new URL(
+                commonURI.getScheme(),
+                authority[0],
+                Integer.parseInt(authority[1]),
+                commonURI.getPath()
+            );
+        } else {
+            url = new URL(
+                commonURI.getScheme(),
+                authority[0],
+                commonURI.getPath()
+            );
+        }
         final GetMapRequest getMapRequest = WmsVersion.lookup(wmsLayerParam.version).
-                getGetMapRequest(commonURI.toURL());
+                getGetMapRequest(url);
         getMapRequest.setBBox(bounds);
         getMapRequest.setDimensions(imageSize.width, imageSize.height);
         getMapRequest.setFormat(wmsLayerParam.imageFormat);
@@ -62,6 +81,11 @@ public final class WmsUtilities {
         final URI getMapUri = getMapRequest.getFinalURL().toURI();
 
         Multimap<String, String> extraParams = HashMultimap.create();
+        if (commonURI.getQuery() != null) {
+            for (NameValuePair pair: URLEncodedUtils.parse(commonURI, "UTF-8")) {
+                extraParams.put(pair.getName(), pair.getValue());
+            }
+        }
         extraParams.putAll(wmsLayerParam.getMergeableParams());
         extraParams.putAll(wmsLayerParam.getCustomParams());
 
@@ -165,6 +189,7 @@ public final class WmsUtilities {
                     }
                 }
                 extraParams.putAll(key, newValues);
+                return;
             }
         }
     }
