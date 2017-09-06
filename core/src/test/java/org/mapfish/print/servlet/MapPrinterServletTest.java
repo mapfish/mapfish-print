@@ -294,6 +294,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest("POST", "http://localhost:9834/context/print/report.png");
         servletCreateRequest.setContextPath("/print");
         addHeaders(servletCreateRequest);
+        servletCreateRequest.addHeader("X-Request-ID", "totoIs/TheBest");
         final MockHttpServletResponse servletCreateResponse = createReport.apply(servletCreateRequest);
 
         final PJsonObject createResponseJson = parseJSONObjectFromString(servletCreateResponse.getContentAsString());
@@ -306,9 +307,11 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals("/print/status/" + ref + ".json", statusURL);
         assertEquals("/print/report/" + ref, downloadURL);
 
-        final String atHostRefSegment = "@" + this.servletInfo.getServletId();
-        assertTrue(ref.endsWith(atHostRefSegment));
-        assertTrue(ref.indexOf(atHostRefSegment) > 0);
+        // Check the X-Request-ID has been included in the ref
+        final String[] splittedRef = ref.split("@");
+        assertEquals(3, splittedRef.length);
+        assertEquals("totoIs_TheBest", splittedRef[2]);
+        assertEquals(this.servletInfo.getServletId(), splittedRef[1]);
 
         boolean reportReady = false;
         int lastTimeElapsed = 0;
