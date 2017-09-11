@@ -1,0 +1,64 @@
+{
+  "layout": "A4 portrait",
+  "outputFormat": "pdf",
+  "attributes": {
+    "mapDef1": {
+      "longitudeFirst": true,
+      "center": [0, 0],
+      "scale": 50000000,
+      "projection": "EPSG:4326",
+      "dpi": 72,
+      "rotation": 0,
+      "layers": [
+        {
+          "type": "geojson",
+          "geoJson": "file://countries.geojson",
+          "style": {
+            "version": "2",
+            "*": {
+              "symbolizers": [
+                {
+                  "type" : "polygon",
+                  "fillColor": "#5E7F99",
+                  "fillOpacity": 1,
+                  "strokeColor": "#CC1D18",
+                  "strokeOpacity": 1,
+                  "strokeWidth": 1
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "mapDef2": {
+      "longitudeFirst": true,
+      "center": [5, 45],
+      "scale": 50000000,
+      "projection": "EPSG:4326",
+      "dpi": 72,
+      "rotation": 0,
+      "layers": [
+        {
+          "type": "geojson",
+          "geoJson": "file://countries.geojson",
+          "style": {
+            "version": "2",
+            "*": {
+              "symbolizers": [
+                {
+                  "type" : "polygon",
+                  "fillColor": "#5E7F99",
+                  "fillOpacity": 1,
+                  "strokeColor": "#CC1D18",
+                  "strokeOpacity": 1,
+                  "strokeWidth": 1
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}
