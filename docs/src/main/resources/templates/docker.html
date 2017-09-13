@@ -1,0 +1,58 @@
+<h4 id="docker_image">Image <a class="headerlink" href="#docker_image" title="Permalink to this headline">¶</a></h4>
+<p>
+    Docker Hub contains a <a href="https://hub.docker.com/r/camptocamp/mapfish_print/">repository with images</a> that can be used.
+    You can use it directly with a data-only container exporting a <code>VOLUME</code> containing your print apps
+    in <code>/usr/local/tomcat/webapps/ROOT/print-apps</code>.
+</p>
+<p>
+    Or you can derive another image from it and add your own configurations in it with a <code>Dockerfile</code> like that:
+</p>
+<pre>
+FROM camptocamp/mapfish_print:{version}
+ADD {MyApps} ${CATALINA_HOME}/webapps/ROOT/print-apps/
+</pre>
+
+<h4 id="docker_tunings">Tunings <a class="headerlink" href="#docker_tunings" title="Permalink to this headline">¶</a></h4>
+
+The docker image can be tuned with several environment variables:
+<ul>
+    <li><code>CATALINA_OPTS</code>: Java startup parameters.</li>
+    <li><code>DEFAULT_LOG_LEVEL</code>: Set the default log level</li>
+    <li><code>TOMCAT_LOG_LEVEL</code>: Set the tomcat log level</li>
+    <li><code>SENTRY_LOG_LEVEL</code>: Set the Sentry log level</li>
+    <li><code>SENTRY_REPORTING_LOG_LEVEL</code>: Starting from what log level to report to Sentry.</li>
+    <li><code>TOMCAT_LOG_TYPE:</code>:
+        <ul>
+            <li><code>classic</code> (default): The logs are human readable. Access logs are going to stdout
+                and the other logs are going to stderr.</li>
+            <li><code>json</code>: The logs will be formatted in a JSON suitable for logstash. Access logs are
+                going to stdout and the other logs are going to stderr.</li>
+            <li><code>logstash</code>: The logs will be formatted in a JSON suitable for logstash (@cee) and
+                sent by syslog/UDP. The access logs are going to stdout in json format. More variables are
+                available for this mode:
+                <ul>
+                    <li><code>TOMCAT_LOG_HOST</code>: the target host</li>
+                    <li><code>TOMCAT_LOG_PORT</code>: the target port</li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<p>
+If you want to tune properties from
+<a href="https://github.com/mapfish/mapfish-print/blob/master/core/src/main/resources/mapfish-spring.properties">mapfish-spring.properties</a>
+You can override them by adding <code>-D</code> options to the <code>CATALINA_OPTS</code> environment variable.
+</p>
+
+<h4 id="docker_sentry">Sentry integration <a class="headerlink" href="#docker_sentry" title="Permalink to this headline">¶</a></h4>
+
+<p>
+You can enable Sentry crash reports by adding a parameter to the <code>CATALINA_OPTS</code> environment variable with the
+DSN provided by sentry: <code>-Dsentry.dsn=https://public:private@host:port/project_id</code>
+</p>
+
+<p>
+Other parameters are documented here:
+<a href="https://docs.sentry.io/clients/java/config/">https://docs.sentry.io/clients/java/config/</a>
+</p>

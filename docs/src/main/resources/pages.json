@@ -13,6 +13,7 @@
     "jasperreports": "Jasper Reports",
     "api": "Web Protocol",
     "tableimages": "Configuration of tables with HTML images",
-    "download": "Download"
+    "download": "Download",
+    "docker": "Docker"
   }
 }
