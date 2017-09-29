@@ -73,11 +73,11 @@ public class GenericMapAttributeTest {
         final JSONObject suggestions = json.getJSONObject(JSON_CLIENT_INFO);
         assertEquals(5, suggestions.length());
 
-        assertEquals("[72,92.2,128,200.5]", suggestions.getString(GenericMapAttribute.JSON_DPI_SUGGESTIONS).replaceAll("\\s+", ""));
-        assertEquals("[4000,3000,2000,1000]", suggestions.getString(GenericMapAttribute.JSON_ZOOM_LEVEL_SUGGESTIONS).replaceAll("\\s+", ""));
-        assertEquals("300", suggestions.getString(GenericMapAttribute.JSON_MAX_DPI));
-        assertEquals("128", suggestions.getString(GenericMapAttribute.JSON_MAP_WIDTH));
-        assertEquals("60", suggestions.getString(GenericMapAttribute.JSON_MAP_HEIGHT));
+        assertEquals("[72,92.2,128,200.5]", suggestions.get(GenericMapAttribute.JSON_DPI_SUGGESTIONS).toString().replaceAll("\\s+", ""));
+        assertEquals("[4000,3000,2000,1000]", suggestions.get(GenericMapAttribute.JSON_ZOOM_LEVEL_SUGGESTIONS).toString().replaceAll("\\s+", ""));
+        assertEquals(300, suggestions.getInt(GenericMapAttribute.JSON_MAX_DPI));
+        assertEquals(128, suggestions.getInt(GenericMapAttribute.JSON_MAP_WIDTH));
+        assertEquals(60, suggestions.getInt(GenericMapAttribute.JSON_MAP_HEIGHT));
     }
 
     @Test
@@ -109,16 +109,17 @@ public class GenericMapAttributeTest {
     }
 
     private void assertElem(JSONObject required, String elemName, String type, String defaultVal, boolean isArray) throws JSONException {
-        assertEquals(type, required.getJSONObject(elemName).getString(JSON_ATTRIBUTE_TYPE));
+        final JSONObject elem = required.getJSONObject(elemName);
+        assertEquals(type, elem.getString(JSON_ATTRIBUTE_TYPE));
         if (defaultVal != null) {
-            assertEquals(required.toString(2), defaultVal, required.getJSONObject(elemName).getString(JSON_ATTRIBUTE_DEFAULT));
+            assertEquals(required.toString(2), defaultVal, elem.get(JSON_ATTRIBUTE_DEFAULT).toString());
         } else {
-            assertFalse(required.toString(2), required.getJSONObject(elemName).has(JSON_ATTRIBUTE_DEFAULT));
+            assertFalse(required.toString(2), elem.has(JSON_ATTRIBUTE_DEFAULT));
         }
         if (isArray) {
-            assertTrue(required.getJSONObject(elemName).getBoolean(JSON_ATTRIBUTE_IS_ARRAY));
+            assertTrue(elem.getBoolean(JSON_ATTRIBUTE_IS_ARRAY));
         } else {
-            assertFalse(required.getJSONObject(elemName).has(JSON_ATTRIBUTE_IS_ARRAY));
+            assertFalse(elem.has(JSON_ATTRIBUTE_IS_ARRAY));
         }
     }
 
@@ -128,7 +129,7 @@ public class GenericMapAttributeTest {
         assertEquals(hasDefault, embedded.has(JSON_ATTRIBUTE_DEFAULT));
         assertFalse(embedded.has(JSON_ATTRIBUTE_IS_ARRAY));
         if (hasDefault) {
-            assertEquals("null", embedded.getString(JSON_ATTRIBUTE_DEFAULT));
+            assertEquals("null", embedded.get(JSON_ATTRIBUTE_DEFAULT).toString());
         }
         assertEquals(MapfishParser.stringRepresentation(TestMapAttribute.EmbeddedTestAttribute.class), embedded.get(JSON_ATTRIBUTE_TYPE));
         final JSONObject typeDescriptor = embedded.getJSONObject(JSON_ATTRIBUTE_EMBEDDED_TYPE);

@@ -108,7 +108,7 @@ configurations {
 dependencies {
     def springSecurityVersion = "3.2.5.RELEASE"
     def slf4jVersion = '1.7.21'
-    def logbackVersion = '1.1.7'
+    def logbackVersion = '1.2.3'
 
     compile (
             "org.springframework:spring-context:$project.springVersion",
@@ -119,7 +119,7 @@ dependencies {
             "com.thetransactioncompany:cors-filter:2.5",
             //hibernate & postgres
             "org.hibernate:hibernate-core:4.1.7.Final",
-            "org.postgresql:postgresql:9.4-1206-jdbc42",
+            "org.postgresql:postgresql:42.1.4",
             "org.springframework:spring-orm:$project.springVersion",
             "org.springframework:spring-jdbc:$project.springVersion",
             "org.springframework:spring-tx:$project.springVersion"
@@ -134,7 +134,7 @@ dependencies {
             "com.codahale.metrics:metrics-logback:$metricsVersion",
             "com.readytalk:metrics3-statsd:4.1.0"
     )
-    def geotoolsVersion = "17.1"
+    def geotoolsVersion = "17.2"
     geotools (
             "org.geotools:gt-epsg-hsql:$geotoolsVersion",
             "org.geotools:gt-render:$geotoolsVersion",
@@ -155,14 +155,14 @@ dependencies {
     )
     compile fileTree(dir: "$projectDir/libs", include: '*.jar')
     compile (
-            "com.google.guava:guava:16.0.1",
+            "com.google.guava:guava:23.1-jre",
             "org.slf4j:slf4j-api:${slf4jVersion}",
             "org.slf4j:jcl-over-slf4j:${slf4jVersion}",
-            'org.json:json:20080701',
+            'org.json:json:20170516',
             "ch.qos.logback:logback-classic:${logbackVersion}",
-            'org.yaml:snakeyaml:1.13',
-            "com.github.spullara.cli-parser:cli-parser:1.1.1",
-            'org.apache.httpcomponents:httpclient:4.3.3'
+            'org.yaml:snakeyaml:1.18',
+            "com.github.spullara.cli-parser:cli-parser:1.1.2",
+            'org.apache.httpcomponents:httpclient:4.5.3'
     )
 
     compile (configurations.metrics) {

@@ -105,7 +105,6 @@ public class Template implements ConfigurationObject, HasConfiguration {
             Attribute attribute = entry.getValue();
             if (attribute.getClass().getAnnotation(InternalAttribute.class) == null) {
                 json.object();
-                json.key("name").value(entry.getKey());
                 attribute.printClientConfig(json, this);
                 json.endObject();
             }

@@ -17,7 +17,7 @@
           "gridType": "points",
           "numberOfLines": [5,5],
           "renderAsSvg": true,
-          "haloColor" : "#CCFFCC", // most css color definitions supported
+          "haloColor" : "#CCFFCC",
           "labelColor" : "black",
           "labelFormat": "%1.0f %s",
           "indent": 10,

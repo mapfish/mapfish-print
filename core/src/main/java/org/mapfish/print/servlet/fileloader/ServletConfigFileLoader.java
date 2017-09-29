@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.net.URI;
+import java.util.Collections;
 import java.util.Iterator;
 import javax.servlet.ServletContext;
 
@@ -29,11 +30,11 @@ public final class ServletConfigFileLoader extends AbstractFileConfigFileLoader 
             String path = fileURI.toString().substring(PREFIX_LENGTH);
             final String realPath = this.servletContext.getRealPath(path);
             if (realPath == null) {
-                return Iterators.emptyIterator();
+                return Collections.emptyIterator();
             }
             return Iterators.singletonIterator(new File(realPath));
         }
-        return Iterators.emptyIterator();
+        return Collections.emptyIterator();
     }
 
     @Override
