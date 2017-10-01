@@ -42,7 +42,7 @@ public class AbstractWMXLayerParamsTest {
         assertTrue(paramMap.containsEntry("key", "value"));
         assertTrue(paramMap.containsEntry("key2", "value1"));
         assertTrue(paramMap.containsEntry("key2", "value2"));
-        assertTrue(paramMap.containsEntry("key3", "null"));
+        assertTrue(paramMap.containsEntry("key3", ""));
     }
 
     private static class TestParams extends AbstractWMXLayerParams {
