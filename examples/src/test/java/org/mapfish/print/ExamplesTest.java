@@ -213,7 +213,7 @@ public class ExamplesTest {
 
                         testsRan++;
                         String outputFormat = jsonSpec.getInternalObj().getString("outputFormat");
-                        if (!ArrayUtils.contains(new String[]{"png", "jpg", "tiff"}, outputFormat)) {
+                        if (!ArrayUtils.contains(new String[]{"png", "jpeg", "tiff"}, outputFormat)) {
                             jsonSpec.getInternalObj().put("outputFormat", "png");
                             outputFormat = "png";
                         }
@@ -246,7 +246,6 @@ public class ExamplesTest {
                             errors.put(
                                     example.getName() + " (" + requestFile.getName() + ")",
                                     new Exception("File not found: " + expectedOutput.toString()));
-                            continue;
                         }
 
                         int similarity = 50;

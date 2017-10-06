@@ -159,4 +159,9 @@ public final class GridLayer implements MapLayer {
             final MfClientHttpRequestFactory clientHttpRequestFactory, final MapfishMapContext transformer) {
         this.grid.cacheResources(httpRequestCache, clientHttpRequestFactory, transformer);
     }
+
+    @Override
+    public double getOpacity() {
+        return this.params.opacity;
+    }
 }

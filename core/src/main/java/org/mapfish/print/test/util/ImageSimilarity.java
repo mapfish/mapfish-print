@@ -38,7 +38,7 @@ import javax.media.jai.iterator.RandomIterFactory;
 public final class ImageSimilarity {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageSimilarity.class);
 
-    private static final boolean GENERATE_IN_SOURCE = false;
+    private static final boolean GENERATE_IN_SOURCE = true;
 
     private final BufferedImage expectedImage;
     private final File expectedPath;
@@ -47,11 +47,10 @@ public final class ImageSimilarity {
      * The constructor, which creates the GUI and start the image processing task.
      */
     public ImageSimilarity(final File expectedFile) throws IOException {
-        this.expectedImage = ImageIO.read(expectedFile);
+        this.expectedImage = expectedFile.exists() ? ImageIO.read(expectedFile) : null;
         if (GENERATE_IN_SOURCE) {
             this.expectedPath = new File(expectedFile.toString().replaceAll(
-                    "/build/classes/([a-z]+)/",
-                    "/src/$1/resources/"));
+                    "/out/", "/src/"));
         }
         else {
             this.expectedPath = expectedFile;
