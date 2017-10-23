@@ -19,8 +19,8 @@
       "table": {
         "columns": ["icon", "osm_id", "timestamp", "name", "Type"],
         "data": [
-          ["http://localhost:8080/examples/data/www/icons/men-at-work.jpg", "629119177", "2010-02-04T18:42:23Z", "Oh! Liban", "restaurant"],
-          ["http://localhost:8080/examples/data/www/icons/men-at-work.jpg", "1423114737", "2011-09-04T15:05:13Z", "Restaurant Mirabeau", "restaurant"]
+          ["http://localhost:8080/examples/data/www/icons/men-at-work.jpeg", "629119177", "2010-02-04T18:42:23Z", "Oh! Liban", "restaurant"],
+          ["http://localhost:8080/examples/data/www/icons/men-at-work.jpeg", "1423114737", "2011-09-04T15:05:13Z", "Restaurant Mirabeau", "restaurant"]
         ]
       }
     }],

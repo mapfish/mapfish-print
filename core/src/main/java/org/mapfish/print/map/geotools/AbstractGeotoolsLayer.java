@@ -120,6 +120,10 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
         }
     }
 
+    public double getOpacity() {
+        return this.params.opacity;
+    }
+
 
     private void applyTransparency(final List<? extends Layer> layers) {
         final double opacity = this.params.opacity;

@@ -133,4 +133,10 @@ public interface MapLayer {
     void cacheResources(final HttpRequestCache httpRequestCache,
             final MfClientHttpRequestFactory clientHttpRequestFactory,
             final MapfishMapContext transformer);
+
+    /**
+     * Gets the opacity.
+     * @return the opacity
+     */
+    double getOpacity();
 }

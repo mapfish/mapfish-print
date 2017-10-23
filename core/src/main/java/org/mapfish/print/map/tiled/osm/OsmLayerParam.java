@@ -76,7 +76,7 @@ public final class OsmLayerParam extends AbstractTiledLayerParams {
     public Double dpi = null;
 
     /**
-     * The image extension.  for example png, jpg, etc...
+     * The image extension.  for example png, jpeg, etc...
      */
     @HasDefaultValue
     public String imageExtension = "png";

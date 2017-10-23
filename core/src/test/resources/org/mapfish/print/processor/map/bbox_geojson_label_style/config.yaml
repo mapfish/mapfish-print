@@ -7,5 +7,4 @@ templates:
         height: 25
         maxDpi: 400
     processors:
-    - !createMap
-        imageType: TYPE_4BYTE_ABGR
+    - !createMap {}

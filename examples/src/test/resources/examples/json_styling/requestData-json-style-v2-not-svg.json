@@ -60,7 +60,7 @@
             "[NAME = 'Shubert Aly']": {
               "symbolizers": [
                 {
-                  "externalGraphic": "http://localhost:8080/examples/data/www/icons/men-at-work.jpg",
+                  "externalGraphic": "http://localhost:8080/examples/data/www/icons/men-at-work.jpeg",
                   "graphicWidth": 32,
                   "graphicOpacity" : 1.0,
                   "graphicFormat" : "image/jpeg",
