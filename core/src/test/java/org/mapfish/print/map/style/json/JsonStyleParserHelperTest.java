@@ -634,7 +634,7 @@ public class JsonStyleParserHelperTest {
 
     @Test
     public void testGetGraphicFormatDetect() throws Exception {
-        // geotools only accepts formats that are supported by ImageIO. so we can have a problem if the format is image/jpg but
+        // geotools only accepts formats that are supported by ImageIO. so we can have a problem if the format is image/jpeg but
         // ImageIO supports image/jpeg.  The two don't match so the image won't be loaded (even if it could).
         final List<String> strings = Arrays.asList(ImageIO.getReaderMIMETypes());
         PJsonObject styleJson = new PJsonObject(new JSONObject(), "style");
@@ -646,7 +646,7 @@ public class JsonStyleParserHelperTest {
                 }
                 styleJson.getInternalObj().put(JsonStyleParserHelper.JSON_GRAPHIC_FORMAT, mimeType);
                 final String graphicFormat = helper.getGraphicFormat(
-                        "http://somefile.com/file.jpg", styleJson);
+                        "http://somefile.com/file.jpeg", styleJson);
                 assertTrue(graphicFormat + " is not supported", strings.contains(graphicFormat));
             }
         }

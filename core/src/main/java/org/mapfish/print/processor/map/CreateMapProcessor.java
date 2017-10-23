@@ -39,7 +39,6 @@ import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.attribute.map.ZoomLevelSnapStrategy;
 import org.mapfish.print.attribute.map.ZoomToFeatures.ZoomType;
 import org.mapfish.print.config.Configuration;
-import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.http.HttpRequestCache;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.Scale;
@@ -104,40 +103,6 @@ import static org.mapfish.print.Constants.PDF_DPI;
 public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcessor.Input, CreateMapProcessor.Output> {
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateMapProcessor.class);
 
-    enum BufferedImageType {
-        TYPE_4BYTE_ABGR(BufferedImage.TYPE_4BYTE_ABGR, true),
-        TYPE_4BYTE_ABGR_PRE(BufferedImage.TYPE_4BYTE_ABGR_PRE, true),
-        TYPE_3BYTE_BGR(BufferedImage.TYPE_3BYTE_BGR, false),
-        TYPE_BYTE_BINARY(BufferedImage.TYPE_BYTE_BINARY, false),
-        TYPE_BYTE_GRAY(BufferedImage.TYPE_BYTE_GRAY, false),
-        TYPE_BYTE_INDEXED(BufferedImage.TYPE_BYTE_INDEXED, false),
-        TYPE_INT_BGR(BufferedImage.TYPE_INT_BGR, false),
-        TYPE_INT_RGB(BufferedImage.TYPE_INT_RGB, false),
-        TYPE_INT_ARGB(BufferedImage.TYPE_INT_ARGB, true),
-        TYPE_INT_ARGB_PRE(BufferedImage.TYPE_INT_ARGB_PRE, true),
-        TYPE_USHORT_555_RGB(BufferedImage.TYPE_USHORT_555_RGB, false),
-        TYPE_USHORT_565_RGB(BufferedImage.TYPE_USHORT_565_RGB, false),
-        TYPE_USHORT_GRAY(BufferedImage.TYPE_USHORT_GRAY, false);
-        private final int value;
-        private final boolean transparency;
-
-        BufferedImageType(final int value, final boolean transparency) {
-            this.value = value;
-            this.transparency = transparency;
-        }
-
-        static BufferedImageType lookupValue(final String name) {
-            for (BufferedImageType bufferedImageType : values()) {
-                if (bufferedImageType.name().equalsIgnoreCase(name)) {
-                    return bufferedImageType;
-                }
-            }
-
-            throw new IllegalArgumentException("'" + name + "is not a recognized " + BufferedImageType.class.getName() + " enum value");
-
-        }
-    }
-
     @Autowired
     FeatureLayer.Plugin featureLayerPlugin;
 
@@ -146,10 +111,6 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
 
     @Resource(name = "requestForkJoinPool")
     private ForkJoinPool requestForkJoinPool;
-
-    private BufferedImageType imageType = BufferedImageType.TYPE_4BYTE_ABGR;
-
-    private BufferedImageType jpegImageType = BufferedImageType.TYPE_3BYTE_BGR;
 
     /**
      * Constructor.
@@ -189,9 +150,6 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
 
     @Override
     protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
-        if (this.imageType == null) {
-            validationErrors.add(new ConfigurationException("No imageType defined in " + getClass().getName()));
-        }
     }
 
     private URI createMergedGraphic(final File printDirectory,
@@ -225,8 +183,8 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             }
         } else {
             boolean isJpeg = RenderType.fromFileExtension(outputFormat) == RenderType.JPEG;
-            final BufferedImage bufferedImage = new BufferedImage(width, height,
-                    (isJpeg ? this.jpegImageType.value : this.imageType.value));
+            final BufferedImage bufferedImage = new BufferedImage(
+                    width, height, isJpeg ? BufferedImage.TYPE_3BYTE_BGR : BufferedImage.TYPE_4BYTE_ABGR);
             Graphics g = bufferedImage.getGraphics();
             if (isJpeg) {
                 g.setColor(Color.WHITE);
@@ -355,18 +313,17 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                 // render layer as raster graphic
                 warnIfDifferentRenderType(renderType, layer);
                 final double imageBufferScaling = layer.getImageBufferScaling();
-                final BufferedImageType layerImageType =
-                        renderType == RenderType.JPEG ? this.jpegImageType : this.imageType;
+                final boolean opaque = renderType == RenderType.JPEG && layer.getOpacity() == 1.0;
                 final BufferedImage bufferedImage = new BufferedImage(
                         (int) Math.round(mapContext.getMapSize().width * imageBufferScaling),
                         (int) Math.round(mapContext.getMapSize().height * imageBufferScaling),
-                        layerImageType.value
+                        opaque ? BufferedImage.TYPE_3BYTE_BGR : BufferedImage.TYPE_4BYTE_ABGR
                 );
                 Graphics2D graphics2D = createClippedGraphics(
                         mapContext, areaOfInterest,
                         bufferedImage.createGraphics()
                 );
-                if (!layerImageType.transparency) {
+                if (opaque) {
                     // the image is opaque and therefore needs a white background
                     final Color prevColor = graphics2D.getColor();
                     graphics2D.setColor(Color.WHITE);
@@ -394,8 +351,8 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
 
                     path = new File(
                             printDirectory,
-                            mapKey + "_layer_" + i + "." + renderType.toString().toLowerCase());
-                    ImageIO.write(bufferedImage, renderType.toString(), path);
+                            mapKey + "_layer_" + i + (opaque ? ".jpeg" : ".png"));
+                    ImageIO.write(bufferedImage, opaque ? "JPEG" : "PNG", path);
                 } finally {
                     graphics2D.dispose();
                 }
@@ -660,30 +617,6 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         }
 
         return bounds;
-    }
-
-    /**
-     * Set the type of buffered image rendered to.  See {@link org.mapfish.print.processor.map.CreateMapProcessor.BufferedImageType}.
-     * <p></p>
-     * Default is {@link org.mapfish.print.processor.map.CreateMapProcessor.BufferedImageType#TYPE_4BYTE_ABGR}.
-     *
-     * @param imageType one of the {@link org.mapfish.print.processor.map.CreateMapProcessor.BufferedImageType} values.
-     */
-    public void setImageType(final String imageType) {
-        this.imageType = BufferedImageType.lookupValue(imageType);
-    }
-
-    /**
-     * Set the type of buffered image rendered to for JPEG files.
-     * See {@link org.mapfish.print.processor.map.CreateMapProcessor.BufferedImageType}.
-     * <p></p>
-     * Default is {@link org.mapfish.print.processor.map.CreateMapProcessor.BufferedImageType#TYPE_3BYTE_BGR}.
-     *
-     * @param jpegImageType one of the
-     *        {@link org.mapfish.print.processor.map.CreateMapProcessor.BufferedImageType} values.
-     */
-    public void setJpegImageType(final String jpegImageType) {
-        this.jpegImageType = BufferedImageType.lookupValue(jpegImageType);
     }
 
     /**

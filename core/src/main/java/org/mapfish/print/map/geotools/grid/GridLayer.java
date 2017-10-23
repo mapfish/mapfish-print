@@ -161,4 +161,9 @@ public final class GridLayer implements MapLayer {
                                final String jobId) {
         this.grid.cacheResources(httpRequestCache, clientHttpRequestFactory, transformer, jobId);
     }
+
+    @Override
+    public double getOpacity() {
+        return this.params.opacity;
+    }
 }

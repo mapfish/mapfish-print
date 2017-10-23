@@ -5,7 +5,6 @@
 *.pdf binary
 *.png binary
 *.jpeg binary
-*.jpg binary
 *.tiff binary
 *.tif binary
 *.otf binary

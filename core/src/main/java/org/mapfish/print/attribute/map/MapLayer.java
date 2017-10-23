@@ -133,8 +133,15 @@ public interface MapLayer {
      * @param transformer transformer
      * @param jobId the job ID
      */
-    void cacheResources(final HttpRequestCache httpRequestCache,
-                        final MfClientHttpRequestFactory clientHttpRequestFactory,
-                        final MapfishMapContext transformer,
-                        final String jobId);
+    void cacheResources(
+        final HttpRequestCache httpRequestCache,
+        final MfClientHttpRequestFactory clientHttpRequestFactory,
+        final MapfishMapContext transformer,
+        final String jobId);
+
+    /**
+     * Gets the opacity.
+     * @return the opacity
+     */
+    double getOpacity();
 }
