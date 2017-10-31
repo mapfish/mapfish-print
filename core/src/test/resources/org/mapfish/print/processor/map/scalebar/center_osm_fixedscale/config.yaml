@@ -15,6 +15,7 @@ templates:
         height: 40
         default:
           font: Liberation Sans
+          renderAsSvg: false
     processors:
     - !createMap
         outputMapper:

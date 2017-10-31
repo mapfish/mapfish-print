@@ -17,20 +17,22 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.awt.image.BufferedImage.TYPE_4BYTE_ABGR;
 import static org.junit.Assert.assertNotNull;
 
 public class ScalebarDrawerTest {
 
     @Test
     public void testCreate() {
-        assertNotNull(Type.LINE.createDrawer(null, new ScaleBarRenderSettings()));
-        assertNotNull(Type.BAR.createDrawer(null, new ScaleBarRenderSettings()));
-        assertNotNull(Type.BAR_SUB.createDrawer(null, new ScaleBarRenderSettings()));
+        Graphics2D graphics2d = new BufferedImage(1, 1, TYPE_4BYTE_ABGR).createGraphics();
+        assertNotNull(Type.LINE.createDrawer(graphics2d, new ScaleBarRenderSettings()));
+        assertNotNull(Type.BAR.createDrawer(graphics2d, new ScaleBarRenderSettings()));
+        assertNotNull(Type.BAR_SUB.createDrawer(graphics2d, new ScaleBarRenderSettings()));
     }
 
     @Test
     public void testDrawLine() throws Exception {
-        final BufferedImage bufferedImage = new BufferedImage(180, 40, BufferedImage.TYPE_4BYTE_ABGR);
+        final BufferedImage bufferedImage = new BufferedImage(180, 40, TYPE_4BYTE_ABGR);
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
@@ -43,7 +45,7 @@ public class ScalebarDrawerTest {
 
     @Test
     public void testDrawLineLabelRotated() throws Exception {
-        final BufferedImage bufferedImage = new BufferedImage(180, 80, BufferedImage.TYPE_4BYTE_ABGR);
+        final BufferedImage bufferedImage = new BufferedImage(180, 80, TYPE_4BYTE_ABGR);
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
@@ -61,7 +63,7 @@ public class ScalebarDrawerTest {
 
     @Test
     public void testDrawLineLabelRotatedNegative() throws Exception {
-        final BufferedImage bufferedImage = new BufferedImage(180, 80, BufferedImage.TYPE_4BYTE_ABGR);
+        final BufferedImage bufferedImage = new BufferedImage(180, 80, TYPE_4BYTE_ABGR);
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
@@ -79,7 +81,7 @@ public class ScalebarDrawerTest {
 
     @Test
     public void testDrawLineLabelPartiallyRotated() throws Exception {
-        final BufferedImage bufferedImage = new BufferedImage(180, 80, BufferedImage.TYPE_4BYTE_ABGR);
+        final BufferedImage bufferedImage = new BufferedImage(180, 80, TYPE_4BYTE_ABGR);
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
@@ -97,7 +99,7 @@ public class ScalebarDrawerTest {
 
     @Test
     public void testDrawLineLabelsAboveRotated() throws Exception {
-        final BufferedImage bufferedImage = new BufferedImage(180, 80, BufferedImage.TYPE_4BYTE_ABGR);
+        final BufferedImage bufferedImage = new BufferedImage(180, 80, TYPE_4BYTE_ABGR);
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
@@ -116,7 +118,7 @@ public class ScalebarDrawerTest {
 
     @Test
     public void testDrawLineLabelsAbovePartiallyRotated() throws Exception {
-        final BufferedImage bufferedImage = new BufferedImage(180, 80, BufferedImage.TYPE_4BYTE_ABGR);
+        final BufferedImage bufferedImage = new BufferedImage(180, 80, TYPE_4BYTE_ABGR);
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
@@ -135,7 +137,7 @@ public class ScalebarDrawerTest {
 
     @Test
     public void testDrawLineLabelsVerticalLeftRotated() throws Exception {
-        final BufferedImage bufferedImage = new BufferedImage(80, 180, BufferedImage.TYPE_4BYTE_ABGR);
+        final BufferedImage bufferedImage = new BufferedImage(80, 180, TYPE_4BYTE_ABGR);
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
@@ -154,7 +156,7 @@ public class ScalebarDrawerTest {
 
     @Test
     public void testDrawLineLabelsVerticalLeftPartiallyRotated() throws Exception {
-        final BufferedImage bufferedImage = new BufferedImage(80, 180, BufferedImage.TYPE_4BYTE_ABGR);
+        final BufferedImage bufferedImage = new BufferedImage(80, 180, TYPE_4BYTE_ABGR);
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
@@ -173,7 +175,7 @@ public class ScalebarDrawerTest {
 
     @Test
     public void testDrawLineLabelsVerticalRightRotated() throws Exception {
-        final BufferedImage bufferedImage = new BufferedImage(80, 180, BufferedImage.TYPE_4BYTE_ABGR);
+        final BufferedImage bufferedImage = new BufferedImage(80, 180, TYPE_4BYTE_ABGR);
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
@@ -192,7 +194,7 @@ public class ScalebarDrawerTest {
 
     @Test
     public void testDrawLineLabelsVerticalRightPartiallyRotated() throws Exception {
-        final BufferedImage bufferedImage = new BufferedImage(80, 180, BufferedImage.TYPE_4BYTE_ABGR);
+        final BufferedImage bufferedImage = new BufferedImage(80, 180, TYPE_4BYTE_ABGR);
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
@@ -211,7 +213,7 @@ public class ScalebarDrawerTest {
 
     @Test
     public void testDrawLineWithSubIntervals() throws Exception {
-        final BufferedImage bufferedImage = new BufferedImage(180, 40, BufferedImage.TYPE_4BYTE_ABGR);
+        final BufferedImage bufferedImage = new BufferedImage(180, 40, TYPE_4BYTE_ABGR);
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 2);
@@ -224,7 +226,7 @@ public class ScalebarDrawerTest {
 
     @Test
     public void testDrawBar() throws Exception {
-        final BufferedImage bufferedImage = new BufferedImage(180, 40, BufferedImage.TYPE_4BYTE_ABGR);
+        final BufferedImage bufferedImage = new BufferedImage(180, 40, TYPE_4BYTE_ABGR);
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
@@ -237,7 +239,7 @@ public class ScalebarDrawerTest {
 
     @Test
     public void testDrawBarWithSubIntervals() throws Exception {
-        final BufferedImage bufferedImage = new BufferedImage(180, 40, BufferedImage.TYPE_4BYTE_ABGR);
+        final BufferedImage bufferedImage = new BufferedImage(180, 40, TYPE_4BYTE_ABGR);
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 2);
@@ -250,7 +252,7 @@ public class ScalebarDrawerTest {
 
     @Test
     public void testDrawBarWithBackground() throws Exception {
-        final BufferedImage bufferedImage = new BufferedImage(180, 40, BufferedImage.TYPE_4BYTE_ABGR);
+        final BufferedImage bufferedImage = new BufferedImage(180, 40, TYPE_4BYTE_ABGR);
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
@@ -264,7 +266,7 @@ public class ScalebarDrawerTest {
 
     @Test
     public void testDrawBarSub() throws Exception {
-        final BufferedImage bufferedImage = new BufferedImage(180, 40, BufferedImage.TYPE_4BYTE_ABGR);
+        final BufferedImage bufferedImage = new BufferedImage(180, 40, TYPE_4BYTE_ABGR);
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
@@ -277,7 +279,7 @@ public class ScalebarDrawerTest {
 
     @Test
     public void testDrawBarSubWithSubIntervals() throws Exception {
-        final BufferedImage bufferedImage = new BufferedImage(180, 40, BufferedImage.TYPE_4BYTE_ABGR);
+        final BufferedImage bufferedImage = new BufferedImage(180, 40, TYPE_4BYTE_ABGR);
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 2);
@@ -290,7 +292,7 @@ public class ScalebarDrawerTest {
 
     @Test
     public void testDrawBarHorizontalTextAbove() throws Exception {
-        final BufferedImage bufferedImage = new BufferedImage(180, 40, BufferedImage.TYPE_4BYTE_ABGR);
+        final BufferedImage bufferedImage = new BufferedImage(180, 40, TYPE_4BYTE_ABGR);
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
@@ -305,7 +307,7 @@ public class ScalebarDrawerTest {
 
     @Test
     public void testDrawBarVerticalTextLeft() throws Exception {
-        final BufferedImage bufferedImage = new BufferedImage(80, 180, BufferedImage.TYPE_4BYTE_ABGR);
+        final BufferedImage bufferedImage = new BufferedImage(80, 180, TYPE_4BYTE_ABGR);
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
@@ -324,7 +326,7 @@ public class ScalebarDrawerTest {
 
     @Test
     public void testDrawBarVerticalTextRight() throws Exception {
-        final BufferedImage bufferedImage = new BufferedImage(80, 180, BufferedImage.TYPE_4BYTE_ABGR);
+        final BufferedImage bufferedImage = new BufferedImage(80, 180, TYPE_4BYTE_ABGR);
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
@@ -343,7 +345,7 @@ public class ScalebarDrawerTest {
 
     @Test
     public void testDrawBarTopRight() throws Exception {
-        final BufferedImage bufferedImage = new BufferedImage(180, 40, BufferedImage.TYPE_4BYTE_ABGR);
+        final BufferedImage bufferedImage = new BufferedImage(180, 40, TYPE_4BYTE_ABGR);
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
@@ -359,7 +361,7 @@ public class ScalebarDrawerTest {
 
     @Test
     public void testDrawBarMiddleCenter() throws Exception {
-        final BufferedImage bufferedImage = new BufferedImage(180, 40, BufferedImage.TYPE_4BYTE_ABGR);
+        final BufferedImage bufferedImage = new BufferedImage(180, 40, TYPE_4BYTE_ABGR);
         final Graphics2D graphics2d = bufferedImage.createGraphics();
 
         ScaleBarRenderSettings settings = getSettings(graphics2d, 1);
