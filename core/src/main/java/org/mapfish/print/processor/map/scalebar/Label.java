@@ -37,8 +37,10 @@ public class Label {
         this.graphicOffset = graphicOffset;
         this.labelLayout = labelLayout;
         Rectangle bounds = this.labelLayout.getPixelBounds(graphics2D.getFontRenderContext(), 0, 0);
-        this.width = (float) bounds.getWidth();
-        this.height = (float) bounds.getHeight();
+        // Not sure on the impact when tha label are rotated
+        assert graphics2D.getTransform().getScaleX() == graphics2D.getTransform().getScaleY();
+        this.width = (float) (bounds.getWidth() / graphics2D.getTransform().getScaleX());
+        this.height = (float) (bounds.getHeight() / graphics2D.getTransform().getScaleY());
     }
 
     public final float getWidth() {

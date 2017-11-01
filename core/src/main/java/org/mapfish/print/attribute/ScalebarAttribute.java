@@ -264,7 +264,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
          * (will default to {@link org.mapfish.print.config.Configuration#defaultToSvg}).
          */
         @HasDefaultValue
-        public Boolean renderAsSvg;
+        public Boolean renderAsSvg = true;
 
         /**
          * Constructor.
