@@ -15,7 +15,6 @@ services:
 - docker
 
 jdk:
-- openjdk7
 - oraclejdk8
 
 before_install:
