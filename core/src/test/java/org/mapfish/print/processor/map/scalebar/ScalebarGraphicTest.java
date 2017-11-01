@@ -135,6 +135,7 @@ public class ScalebarGraphicTest {
         ScalebarAttributeValues scalebarParams = scalebarAttibute.createValue(null);
         scalebarParams.verticalAlign = VerticalAlign.TOP.getLabel();
         scalebarParams.font = "Liberation Sans";
+        scalebarParams.renderAsSvg = false;
 
         ScalebarGraphic scalebar = new ScalebarGraphic();
         URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);
@@ -154,6 +155,7 @@ public class ScalebarGraphicTest {
         scalebarAttibute.setHeight(40);
         ScalebarAttributeValues scalebarParams = scalebarAttibute.createValue(null);
         scalebarParams.font = "Liberation Sans";
+        scalebarParams.renderAsSvg = false;
 
         ScalebarGraphic scalebar = new ScalebarGraphic();
         URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);

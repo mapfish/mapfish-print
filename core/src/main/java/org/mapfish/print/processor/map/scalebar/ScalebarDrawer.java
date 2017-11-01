@@ -14,6 +14,7 @@ public abstract class ScalebarDrawer {
      * The graphics context.
      */
     private final Graphics2D graphics2d;
+    private final AffineTransform transform;
     /**
      * Parameters for rendering the scalebar.
      */
@@ -30,6 +31,7 @@ public abstract class ScalebarDrawer {
      */
     public ScalebarDrawer(final Graphics2D graphics2d, final ScaleBarRenderSettings settings) {
         this.graphics2d = graphics2d;
+        this.transform = new AffineTransform(graphics2d.getTransform());
         this.settings = settings;
         this.params = settings.getParams();
     }
@@ -38,7 +40,8 @@ public abstract class ScalebarDrawer {
      * Start the rendering of the scalebar.
      */
     public final void draw() {
-        final AffineTransform transform = getAlignmentTransform();
+        AffineTransform transform = new AffineTransform(this.transform);
+        transform.concatenate(getAlignmentTransform());
 
         // draw the background box
         this.graphics2d.setTransform(transform);

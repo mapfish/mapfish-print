@@ -20,6 +20,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +31,7 @@ import javax.imageio.ImageIO;
 import javax.xml.parsers.ParserConfigurationException;
 
 import static org.mapfish.print.Constants.PDF_DPI;
+import static java.awt.image.BufferedImage.TYPE_4BYTE_ABGR;
 
 /**
  * Creates a scalebar graphic.
@@ -89,7 +91,9 @@ public class ScalebarGraphic {
             final SVGGraphics2D graphics2D = CreateMapProcessor.getSvgGraphics(scalebarParams.getSize());
 
             try {
-                tryLayout(graphics2D, scaleUnit, scaleDenominator, niceIntervalLengthInWorldUnits, settings, 0);
+                tryLayout(
+                        graphics2D, scaleUnit, scaleDenominator,
+                        niceIntervalLengthInWorldUnits, settings, 0);
 
                 path = File.createTempFile("scalebar-graphic-", ".svg", tempFolder);
                 CreateMapProcessor.saveSvgFile(graphics2D, path);
@@ -98,15 +102,23 @@ public class ScalebarGraphic {
             }
         } else {
             // render scalebar as raster graphic
-            final BufferedImage bufferedImage = new BufferedImage(scalebarParams.getSize().width,
-                    scalebarParams.getSize().height, BufferedImage.TYPE_4BYTE_ABGR);
+            double dpiRatio = mapContext.getDPI() / PDF_DPI;
+            final BufferedImage bufferedImage = new BufferedImage(
+                    (int) Math.round(scalebarParams.getSize().width * dpiRatio),
+                    (int) Math.round(scalebarParams.getSize().height * dpiRatio),
+                    TYPE_4BYTE_ABGR);
             final Graphics2D graphics2D = bufferedImage.createGraphics();
 
             try {
-                tryLayout(graphics2D, scaleUnit, scaleDenominator, niceIntervalLengthInWorldUnits, settings, 0);
+                AffineTransform saveAF = new AffineTransform(graphics2D.getTransform());
+                graphics2D.scale(dpiRatio, dpiRatio);
+                tryLayout(
+                        graphics2D, scaleUnit, scaleDenominator,
+                        niceIntervalLengthInWorldUnits, settings, 0);
+                graphics2D.setTransform(saveAF);
 
-                path = File.createTempFile("scalebar-graphic-", ".tiff", tempFolder);
-                ImageIO.write(bufferedImage, "tiff", path);
+                path = File.createTempFile("scalebar-graphic-", ".png", tempFolder);
+                ImageIO.write(bufferedImage, "png", path);
             } finally {
                 graphics2D.dispose();
             }
@@ -123,8 +135,10 @@ public class ScalebarGraphic {
     /**
      * Try recursively to find the correct layout.
      */
-    private static void tryLayout(final Graphics2D graphics2D, final DistanceUnit scaleUnit, final double scaleDenominator,
-            final double intervalLengthInWorldUnits, final ScaleBarRenderSettings settings, final int tryNumber) {
+    private static void tryLayout(
+            final Graphics2D graphics2D, final DistanceUnit scaleUnit, final double scaleDenominator,
+            final double intervalLengthInWorldUnits, final ScaleBarRenderSettings settings,
+            final int tryNumber) {
         if (tryNumber > MAX_NUMBER_LAYOUTING_TRIES) {
             // if no good layout can be found, stop. an empty scalebar graphic will be shown.
             LOGGER.error("layouting the scalebar failed (unit: " + scaleUnit.toString()
@@ -190,8 +204,10 @@ public class ScalebarGraphic {
             doLayout(graphics2D, scalebarParams, settings);
         } else {
             //not enough room because of the labels, try a smaller bar
-            double nextIntervalDistance = getNearestNiceValue(intervalLengthInWorldUnits * 0.9, scaleUnit, scalebarParams.lockUnits);
-            tryLayout(graphics2D, scaleUnit, scaleDenominator, nextIntervalDistance, settings, tryNumber + 1);
+            double nextIntervalDistance = getNearestNiceValue(
+                    intervalLengthInWorldUnits * 0.9, scaleUnit, scalebarParams.lockUnits);
+            tryLayout(graphics2D, scaleUnit, scaleDenominator, nextIntervalDistance, settings,
+                    tryNumber + 1);
         }
     }
 
@@ -200,10 +216,12 @@ public class ScalebarGraphic {
             final float rightLabelMargin, final float topLabelMargin,
             final float bottomLabelMargin, final ScaleBarRenderSettings settings) {
         if (scalebarParams.getOrientation().isHorizontal()) {
-            return scalebarParams.intervals * intervalWidthInPixels + leftLabelMargin + rightLabelMargin + 2 * settings.getPadding()
+            return scalebarParams.intervals * intervalWidthInPixels + leftLabelMargin +
+                    rightLabelMargin + 2 * settings.getPadding()
                     <= settings.getMaxSize().width;
         } else {
-            return scalebarParams.intervals * intervalWidthInPixels + topLabelMargin + bottomLabelMargin + 2 * settings.getPadding()
+            return scalebarParams.intervals * intervalWidthInPixels + topLabelMargin +
+                    bottomLabelMargin + 2 * settings.getPadding()
                     <= settings.getMaxSize().height;
         }
     }
@@ -220,7 +238,8 @@ public class ScalebarGraphic {
         int numSubIntervals = 1;
         if (scalebarParams.subIntervals) {
             numSubIntervals = getNbSubIntervals(
-                    settings.getScaleUnit(), settings.getIntervalLengthInWorldUnits(), settings.getIntervalUnit());
+                    settings.getScaleUnit(), settings.getIntervalLengthInWorldUnits(),
+                    settings.getIntervalUnit());
         }
 
         settings.setBarSize(getBarSize(settings));
@@ -287,7 +306,8 @@ public class ScalebarGraphic {
      * @param intervalUnit The scaled unit for the intervals.
      */
     @VisibleForTesting
-    protected static String createLabelText(final DistanceUnit scaleUnit, final double value, final DistanceUnit intervalUnit) {
+    protected static String createLabelText(
+            final DistanceUnit scaleUnit, final double value, final DistanceUnit intervalUnit) {
         double scaledValue = scaleUnit.convertTo(value, intervalUnit);
 
         // assume that there is no interval smaller then 0.0001
@@ -301,7 +321,8 @@ public class ScalebarGraphic {
         }
     }
 
-    private static DistanceUnit bestUnit(final DistanceUnit scaleUnit, final double intervalDistance, final boolean lockUnits) {
+    private static DistanceUnit bestUnit(
+            final DistanceUnit scaleUnit, final double intervalDistance, final boolean lockUnits) {
         if (lockUnits) {
             return scaleUnit;
         } else {
@@ -317,7 +338,8 @@ public class ScalebarGraphic {
      * @param lockUnits if set, the values are not scaled to a "nicer" unit.
      */
     @VisibleForTesting
-    protected static double getNearestNiceValue(final double value, final DistanceUnit scaleUnit, final boolean lockUnits) {
+    protected static double getNearestNiceValue(
+            final double value, final DistanceUnit scaleUnit, final boolean lockUnits) {
         DistanceUnit bestUnit = bestUnit(scaleUnit, value, lockUnits);
         double factor = scaleUnit.convertTo(1.0, bestUnit);
 
@@ -347,7 +369,8 @@ public class ScalebarGraphic {
     /**
      * @return The "nicest" number of sub intervals in function of the interval distance.
      */
-    private static int getNbSubIntervals(final DistanceUnit scaleUnit, final double intervalDistance, final DistanceUnit intervalUnit) {
+    private static int getNbSubIntervals(
+            final DistanceUnit scaleUnit, final double intervalDistance, final DistanceUnit intervalUnit) {
         double value = scaleUnit.convertTo(intervalDistance, intervalUnit);
         int digits = (int) (Math.log(value) / Math.log(10));
         double pow10 = Math.pow(10, digits);
@@ -364,7 +387,8 @@ public class ScalebarGraphic {
             case 10:
                 return 2;
             default:
-                throw new RuntimeException("Invalid interval: " + value + intervalUnit + " (" + firstChar + ")");
+                throw new RuntimeException(
+                        "Invalid interval: " + value + intervalUnit + " (" + firstChar + ")");
         }
     }
 
