@@ -110,6 +110,11 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
         getPagingAttributes(requestData).put("aoiDisplay", "NONE");
         testPrint(config, requestData, "all-none", format, 40);
 
+        getAreaOfInterest(requestData).put("display", "NONE");
+        getPagingAttributes(requestData).put("aoiDisplay", "NONE");
+        getMapAttributes(requestData).put("dpi",254);
+        testPrint(config, requestData, "higher-dpi", format, 40);
+
         config = configurationFactory.getConfig(getFile(BASE_DIR + "config-scalebar.yaml"));
         requestData = loadJsonRequestData();
         testPrint(config, requestData, "scalebar", format, 45);
@@ -142,7 +147,6 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
         assertEquals(7, print.getPages().size());
         for (int i = 0; i < print.getPages().size(); i++) {
             BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, i);
-
             new ImageSimilarity(getFile(String.format("%soutput/%s/expected-page-%s.png",
                     BASE_DIR, testName, i)))
                     .assertSimilarity(reportImage, tolerance);
