@@ -271,7 +271,7 @@ public final class MapAttribute extends GenericMapAttribute {
         public MapAttribute.MapAttributeValues copy(final int width, final int height,
                                                     @Nonnull final Function<MapAttributeValues, Void> updater) {
             MapAttributeValues copy = new MapAttributeValues(getTemplate(), width, height);
-            copy.areaOfInterest = this.areaOfInterest.copy();
+            copy.areaOfInterest = (this.areaOfInterest == null) ? null : this.areaOfInterest.copy();
             copy.bbox = this.bbox;
             copy.center = this.center;
             copy.scale = this.scale;
