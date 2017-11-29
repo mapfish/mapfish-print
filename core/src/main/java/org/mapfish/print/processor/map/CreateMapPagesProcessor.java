@@ -102,6 +102,7 @@ public class CreateMapPagesProcessor
             ReferencedEnvelope mapBBox = map.getMapBounds().toReferencedEnvelope(paintArea);
 
             areaOfInterest.setPolygon(this.geometryFactory.toGeometry(mapBBox));
+
         }
 
         Envelope aoiBBox = areaOfInterest.getArea().getEnvelopeInternal();
@@ -173,6 +174,7 @@ public class CreateMapPagesProcessor
                         @Nullable
                         @Override
                         public Void apply(@Nonnull final MapAttributeValues input) {
+                            input.zoomToFeatures = null;
                             input.center = null;
                             input.bbox = new double[]{
                                     mapsBound.getMinX(),
