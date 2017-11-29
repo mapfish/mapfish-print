@@ -17,6 +17,7 @@ core/gradle/
 
 /build/
 /core/build/
+/core/out/
 /debian/build
 /docs/build
 /examples/build/

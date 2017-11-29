@@ -22,6 +22,7 @@ import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.ProvideAttributes;
 import org.mapfish.print.processor.RequireAttributes;
+import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +101,15 @@ public class CreateMapPagesProcessor
             areaOfInterest = new AreaOfInterest();
             areaOfInterest.display = AreaOfInterest.AoiDisplay.NONE;
             ReferencedEnvelope mapBBox = map.getMapBounds().toReferencedEnvelope(paintArea);
-
+            //case zoomToFeatures only
+            if (map.center == null && map.bbox == null) {
+                mapBBox = CreateMapProcessor.getFeatureBounds(
+                        values.clientHttpRequestFactoryProvider.get(), map,
+                        ()-> {
+                    checkCancelState(context);
+                    return  context; }
+                    );
+            }
             areaOfInterest.setPolygon(this.geometryFactory.toGeometry(mapBBox));
 
         }
@@ -236,6 +245,12 @@ public class CreateMapPagesProcessor
      */
     public static class Input {
         /**
+         * A factory for making http requests.  This is added to the values by the framework and therefore
+         * does not need to be set in configuration
+         */
+        public MfClientHttpRequestFactoryProvider clientHttpRequestFactoryProvider;
+
+        /**
          * The required parameters for the map.
          */
         public MapAttribute.MapAttributeValues map;
@@ -260,4 +275,5 @@ public class CreateMapPagesProcessor
             this.datasource = tableList;
         }
     }
+
 }

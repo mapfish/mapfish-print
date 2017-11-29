@@ -82,6 +82,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ForkJoinPool;
+import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -509,7 +510,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             final MapAttributeValues mapValues,
             final ExecutionContext context) {
         ReferencedEnvelope bounds = getFeatureBounds(clientHttpRequestFactory,
-                mapValues, context);
+                mapValues, ()-> { checkCancelState(context); return  context; });
 
         if (bounds != null && !bounds.isNull()) {
             if (mapValues.zoomToFeatures.zoomType == ZoomType.CENTER) {
@@ -572,17 +573,23 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
     }
 
     /**
-     * Get the bounding-box containing all features of all layers.
+     *
+     *  Get the bounding-box containing all features of all layers.
+     *
+     * @param clientHttpRequestFactory clientHttpRequestFactory
+     * @param mapValues mapValues
+     * @param stateChecker supplier to check the state of the context
+     * @return the enveloppe of the features.
      */
-    private ReferencedEnvelope getFeatureBounds(
+    public static ReferencedEnvelope getFeatureBounds(
             final MfClientHttpRequestFactory clientHttpRequestFactory,
-            final MapAttributeValues mapValues, final ExecutionContext context) {
+            final MapAttributeValues mapValues, final Supplier<ExecutionContext> stateChecker) {
         final MapfishMapContext mapContext = createMapContext(mapValues);
 
         String layerName = mapValues.zoomToFeatures.layer;
         ReferencedEnvelope bounds = null;
         for (MapLayer layer : mapValues.getLayers()) {
-            checkCancelState(context);
+            stateChecker.get();
 
             if ((!Strings.isNullOrEmpty(layerName) && layerName.equals(layer.getName())) ||
                     (Strings.isNullOrEmpty(layerName) && layer instanceof AbstractFeatureSourceLayer &&
