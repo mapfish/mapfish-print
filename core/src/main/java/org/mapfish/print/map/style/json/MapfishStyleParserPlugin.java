@@ -556,14 +556,14 @@ public final class MapfishStyleParserPlugin implements StyleParserPlugin {
             @Nonnull final String styleString,
             @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory)
             throws Throwable {
-        String trimmed = styleString.trim();
+        final String trimmed = styleString.trim();
         if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
             final PJsonObject json = new PJsonObject(new JSONObject(styleString), "style");
 
             final String jsonVersion = json.optString(JSON_VERSION, "1");
-            for (Versions versions : Versions.values()) {
-                if (versions.versionNumber.equals(jsonVersion)) {
-                    return Optional.of(versions.parseStyle(
+            for (Versions version : Versions.values()) {
+                if (version.versionNumber.equals(jsonVersion)) {
+                    return Optional.of(version.parseStyle(
                             json, this.sldStyleBuilder, configuration, clientHttpRequestFactory));
                 }
             }

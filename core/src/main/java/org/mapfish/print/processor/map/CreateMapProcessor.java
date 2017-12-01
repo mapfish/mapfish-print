@@ -268,7 +268,6 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                                           final MapfishMapContext mapContext,
                                           final String jobId)
             throws Exception {
-        LOGGER.warn("XXXXXX jobId={}", jobId);
         // reverse layer list to draw from bottom to top.  normally position 0 is top-most layer.
         final List<MapLayer> layers = Lists.reverse(Lists.newArrayList(mapValues.getLayers()));
 
