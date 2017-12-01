@@ -178,13 +178,13 @@ public class SLDParserPlugin implements StyleParserPlugin {
      */
     public static class ErrorHandler extends DefaultHandler {
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(StyleParser.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(ErrorHandler.class);
 
         /**
          * @param e Exception
          */
         public final void error(final SAXParseException e) throws SAXException {
-            LOGGER.debug(e.getLocalizedMessage());
+            LOGGER.debug("XML error: " + e.getLocalizedMessage());
             super.error(e);
         }
 
@@ -192,7 +192,7 @@ public class SLDParserPlugin implements StyleParserPlugin {
          * @param e Exception
          */
         public final void fatalError(final SAXParseException e) throws SAXException {
-            LOGGER.debug(e.getLocalizedMessage());
+            LOGGER.debug("XML fatal error: " + e.getLocalizedMessage());
             super.fatalError(e);
         }
 

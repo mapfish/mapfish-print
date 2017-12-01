@@ -93,7 +93,7 @@ public final class MapfishJsonStyleVersion2 {
 
         final Iterator<String> keys = this.json.keys();
         while (keys.hasNext()) {
-            String next = keys.next().trim();
+            final String next = keys.next().trim();
             if (isRule(next)) {
                 rules.add(createRule(next));
             }
@@ -109,7 +109,7 @@ public final class MapfishJsonStyleVersion2 {
     }
 
     private Rule createRule(final String jsonKey) {
-        PJsonObject ruleJson = this.json.getJSONObject(jsonKey);
+        final PJsonObject ruleJson = this.json.getJSONObject(jsonKey);
         Filter filter = Filter.INCLUDE;
         if (!jsonKey.equals(JSON_FILTER_INCLUDE)) {
             try {
@@ -119,8 +119,8 @@ public final class MapfishJsonStyleVersion2 {
             }
         }
 
-        PJsonArray symbolizerJsonArray = ruleJson.getJSONArray(JSON_SYMB);
-        Symbolizer[] symbolizers = new Symbolizer[symbolizerJsonArray.size()];
+        final PJsonArray symbolizerJsonArray = ruleJson.getJSONArray(JSON_SYMB);
+        final Symbolizer[] symbolizers = new Symbolizer[symbolizerJsonArray.size()];
 
         for (int i = 0; i < symbolizerJsonArray.size(); i++) {
             final PJsonObject symbolizerJson = symbolizerJsonArray.getJSONObject(i);

@@ -23,8 +23,8 @@ import javax.annotation.Nonnull;
  */
 public final class StyleParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(StyleParser.class);
- @Autowired
- private List<StyleParserPlugin> plugins = Lists.newArrayList();
+    @Autowired
+    private List<StyleParserPlugin> plugins = Lists.newArrayList();
 
     /**
      * Load style using one of the plugins or return Optional.absent().
@@ -36,34 +36,34 @@ public final class StyleParser {
                                                @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
                                                final String styleString) {
         if (styleString != null) {
-        for (StyleParserPlugin plugin : this.plugins) {
-            try {
-                Optional<? extends Style> style = plugin.parseStyle(
-                        configuration, clientHttpRequestFactory, styleString);
-                if (style.isPresent()) {
-                    if (LOGGER.isDebugEnabled()) {
-                        try {
-                            final SLDTransformer transformer = new SLDTransformer();
-                            final StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory();
-                            final UserLayer userLayer = styleFactory.createUserLayer();
-                            userLayer.addUserStyle(style.get());
-                            final StyledLayerDescriptor sld = styleFactory.createStyledLayerDescriptor();
-                            sld.addStyledLayer(userLayer);
-                            if (LOGGER.isDebugEnabled()) {
-                                LOGGER.debug("Loaded style from: \n\n '{}': \n\n{}",
-                                        styleString, transformer.transform(sld));
+            for (StyleParserPlugin plugin : this.plugins) {
+                try {
+                    final Optional<? extends Style> style = plugin.parseStyle(
+                            configuration, clientHttpRequestFactory, styleString);
+                    if (style.isPresent()) {
+                        if (LOGGER.isDebugEnabled()) {
+                            try {
+                                final SLDTransformer transformer = new SLDTransformer();
+                                final StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory();
+                                final UserLayer userLayer = styleFactory.createUserLayer();
+                                userLayer.addUserStyle(style.get());
+                                final StyledLayerDescriptor sld = styleFactory.createStyledLayerDescriptor();
+                                sld.addStyledLayer(userLayer);
+                                if (LOGGER.isDebugEnabled()) {
+                                    LOGGER.debug("Loaded style from: \n\n '{}': \n\n{}",
+                                            styleString, transformer.transform(sld));
+                                }
+                            } catch (Exception e) {
+                                LOGGER.debug(String.format("Loaded style from: \n\n '%s' \n\n<Unable to " +
+                                        "transform it to xml>: %s", styleString, e), e);
                             }
-                        } catch (Exception e) {
-                            LOGGER.debug(String.format("Loaded style from: \n\n '%s' \n\n<Unable to " +
-                                    "transform it to xml>: %s", styleString, e), e);
                         }
+                        return style;
                     }
-                    return style;
+                } catch (Throwable t) {
+                    throw ExceptionUtils.getRuntimeException(t);
                 }
-            } catch (Throwable t) {
-                throw ExceptionUtils.getRuntimeException(t);
             }
-        }
         }
         return Optional.absent();
     }
