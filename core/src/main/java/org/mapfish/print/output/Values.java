@@ -1,6 +1,5 @@
 package org.mapfish.print.output;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import com.vividsolutions.jts.util.Assert;
 import org.json.JSONArray;
@@ -70,7 +69,7 @@ public final class Values {
      */
     public static final String VALUES_KEY = "values";
 
-    private final Map<String, Object> values = new ConcurrentHashMap<String, Object>();
+    private final Map<String, Object> values = new ConcurrentHashMap<>();
 
     /**
      * Constructor.
@@ -226,9 +225,7 @@ public final class Values {
                     throw new IllegalArgumentException("Unsupported attribute type: " + attribute);
                 }
                 put(attributeName, value);
-            } catch (ObjectMissingException e) {
-                throw e;
-            } catch (IllegalArgumentException e) {
+            } catch (ObjectMissingException | IllegalArgumentException e) {
                 throw e;
             } catch (Throwable e) {
                 String templateName = "unknown";
@@ -246,7 +243,8 @@ public final class Values {
                 }
 
                 String errorMsg = "An error occurred when creating a value from the '" + attributeName + "' attribute for the '" +
-                                  templateName + "' template.\n\nThe JSON is: \n" + requestJsonAttributes + defaults;
+                                  templateName + "' template.\n\nThe JSON is: \n" + requestJsonAttributes + defaults + "\n" +
+                                  e.toString();
 
                 throw new AttributeParsingException(errorMsg, e);
             }
@@ -386,19 +384,15 @@ public final class Values {
      */
     @SuppressWarnings("unchecked")
     public <T> Map<String, T> find(final Class<T> valueTypeToFind) {
-        final Map<String, Object> filtered = Maps.filterEntries(this.values, new Predicate<Map.Entry<String, Object>>() {
-            @Override
-            public boolean apply(@Nullable final Map.Entry<String, Object> input) {
-                return input != null && valueTypeToFind.isInstance(input.getValue());
-            }
-        });
+        final Map<String, Object> filtered = Maps.filterEntries(this.values,
+                input -> input != null && valueTypeToFind.isInstance(input.getValue()));
 
         return (Map<String, T>) filtered;
     }
 
     @Override
     public String toString() {
-        Map<String, Object> display = new HashMap<String, Object>(this.values);
+        Map<String, Object> display = new HashMap<>(this.values);
         display.remove(VALUES_KEY);
         return display.toString();
     }

@@ -103,11 +103,13 @@ configurations {
 
     //want to use the slf4j bridge instead
     all*.exclude group: 'commons-logging'
+    //obscure stack trace if we let this dependency: https://stackoverflow.com/a/15808940
+    all*.exclude module: 'xercesImpl'
 }
 
 dependencies {
-    def springSecurityVersion = "3.2.5.RELEASE"
-    def slf4jVersion = '1.7.21'
+    def springSecurityVersion = "3.2.10.RELEASE"
+    def slf4jVersion = '1.7.25'
     def logbackVersion = '1.2.3'
 
     compile (
@@ -116,25 +118,25 @@ dependencies {
             "org.springframework:spring-webmvc:$project.springVersion",
             "org.springframework.security:spring-security-config:$springSecurityVersion",
             "org.springframework.security:spring-security-web:$springSecurityVersion",
-            "com.thetransactioncompany:cors-filter:2.5",
+            "com.thetransactioncompany:cors-filter:2.6",
             //hibernate & postgres
-            "org.hibernate:hibernate-core:4.1.7.Final",
+            "org.hibernate:hibernate-core:4.3.11.Final",
             "org.postgresql:postgresql:42.1.4",
             "org.springframework:spring-orm:$project.springVersion",
             "org.springframework:spring-jdbc:$project.springVersion",
             "org.springframework:spring-tx:$project.springVersion"
     )
-    def metricsVersion = "3.0.2"
+    def metricsVersion = "3.1.5"
     metrics (
-            "com.codahale.metrics:metrics-core:$metricsVersion",
-            "com.codahale.metrics:metrics-servlet:$metricsVersion",
-            "com.codahale.metrics:metrics-httpclient:$metricsVersion",
-            "com.codahale.metrics:metrics-servlets:$metricsVersion",
-            "com.codahale.metrics:metrics-jvm:$metricsVersion",
-            "com.codahale.metrics:metrics-logback:$metricsVersion",
-            "com.readytalk:metrics3-statsd:4.1.0"
+            "io.dropwizard.metrics:metrics-core:$metricsVersion",
+            "io.dropwizard.metrics:metrics-servlet:$metricsVersion",
+            "io.dropwizard.metrics:metrics-httpclient:$metricsVersion",
+            "io.dropwizard.metrics:metrics-servlets:$metricsVersion",
+            "io.dropwizard.metrics:metrics-jvm:$metricsVersion",
+            "io.dropwizard.metrics:metrics-logback:$metricsVersion",
+            "com.readytalk:metrics3-statsd:4.2.0"
     )
-    def geotoolsVersion = "17.2"
+    def geotoolsVersion = "18.1"
     geotools (
             "org.geotools:gt-epsg-hsql:$geotoolsVersion",
             "org.geotools:gt-render:$geotoolsVersion",
@@ -151,14 +153,14 @@ dependencies {
             'ar.com.fdvs:DynamicJasper:5.1.0',
             "net.sf.jasperreports:jasperreports-fonts:6.0.0",
             "net.sf.jasperreports:jasperreports-functions:$project.jasperReportVersion",
-            'joda-time:joda-time:1.6'
+            'joda-time:joda-time:1.6.2'
     )
     compile fileTree(dir: "$projectDir/libs", include: '*.jar')
     compile (
-            "com.google.guava:guava:23.1-jre",
+            "com.google.guava:guava:23.5-jre",
             "org.slf4j:slf4j-api:${slf4jVersion}",
             "org.slf4j:jcl-over-slf4j:${slf4jVersion}",
-            'org.json:json:20170516',
+            'org.json:json:20171018',
             "ch.qos.logback:logback-classic:${logbackVersion}",
             'org.yaml:snakeyaml:1.18',
             "com.github.spullara.cli-parser:cli-parser:1.1.2",

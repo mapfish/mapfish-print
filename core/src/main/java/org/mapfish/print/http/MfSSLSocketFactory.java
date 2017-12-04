@@ -50,8 +50,7 @@ public final class MfSSLSocketFactory implements LayeredConnectionSocketFactory 
             return this.defaultFactory;
         }
         SSLContext context = currentConfiguration.getCertificateStore().getSSLContext();
-        return new SSLConnectionSocketFactory(context,
-                SSLConnectionSocketFactory.BROWSER_COMPATIBLE_HOSTNAME_VERIFIER);
+        return new SSLConnectionSocketFactory(context);
     }
 
 }

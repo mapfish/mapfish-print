@@ -384,7 +384,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
             colHeaderField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
             colHeaderField.setStyle(columnHeaderStyle);
             colHeaderField.setStretchWithOverflow(true);
-            colHeaderField.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+            colHeaderField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
 
             JRDesignExpression headerExpression = new JRDesignExpression();
             headerExpression.setText('"' + columnName + '"');
@@ -464,7 +464,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     private void addElement(final JRDesignBand detailBand,
             final JRDesignElement designElement, final int detailPosX, final int detailPosY,
             final int columnWidth, final int detailHeight, final JRStyle columnDetailStyle) {
-        designElement.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+        designElement.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
         designElement.setX(detailPosX);
         designElement.setY(detailPosY);
         designElement.setWidth(columnWidth);

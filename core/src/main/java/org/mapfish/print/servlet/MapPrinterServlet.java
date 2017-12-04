@@ -719,7 +719,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             for (File child : children) {
                 final String requestDataPrefix = "requestData";
                 if (child.isFile() && child.getName().startsWith(requestDataPrefix) && child.getName().endsWith(".json")) {
-                    String requestData = Files.toString(child, Constants.DEFAULT_CHARSET);
+                    String requestData = Files.asCharSource(child, Constants.DEFAULT_CHARSET).read();
                     try {
                         final JSONObject jsonObject = new JSONObject(requestData);
                         jsonObject.remove(JSON_OUTPUT_FORMAT);
