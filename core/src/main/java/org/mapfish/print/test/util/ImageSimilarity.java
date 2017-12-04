@@ -52,7 +52,7 @@ public final class ImageSimilarity {
         this.expectedImage = expectedFile.exists() ? ImageIO.read(expectedFile) : null;
         if (GENERATE_IN_SOURCE) {
             this.expectedPath = new File(expectedFile.toString().replaceAll(
-                    "/out/", "/src/"));
+                    "/out/", "/src/").replaceAll("/build/classes/test/", "/src/test/resources/"));
         }
         else {
             this.expectedPath = expectedFile;
