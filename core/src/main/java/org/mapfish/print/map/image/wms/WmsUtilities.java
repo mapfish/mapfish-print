@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -82,7 +83,7 @@ public final class WmsUtilities {
 
         Multimap<String, String> extraParams = HashMultimap.create();
         if (commonURI.getQuery() != null) {
-            for (NameValuePair pair: URLEncodedUtils.parse(commonURI, "UTF-8")) {
+            for (NameValuePair pair: URLEncodedUtils.parse(commonURI, Charset.forName("UTF-8"))) {
                 extraParams.put(pair.getName(), pair.getValue());
             }
         }

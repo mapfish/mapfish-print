@@ -143,9 +143,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
                 if (featureCollection != null && featureCollection instanceof SimpleFeatureCollection) {
                     return (SimpleFeatureCollection) featureCollection;
                 }
-            } catch (SAXException e) {
-                // do nothing try to load as gml2
-            } catch (ParserConfigurationException e) {
+            } catch (SAXException | ParserConfigurationException e) {
                 // do nothing try to load as gml2
             }
             return parseGml2(gmlData);
@@ -160,9 +158,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
                 if (featureCollection != null && featureCollection instanceof SimpleFeatureCollection) {
                     return (SimpleFeatureCollection) featureCollection;
                 }
-            } catch (SAXException e) {
-                // do nothing try to load as gml32
-            } catch (ParserConfigurationException e) {
+            } catch (SAXException | ParserConfigurationException e) {
                 // do nothing try to load as gml32
             }
             return parseGml32(gmlData);
@@ -180,9 +176,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
                     throw new RuntimeException("unable to parse gml: \n\n" + gmlData);
                 }
 
-            } catch (SAXException e) {
-                throw ExceptionUtils.getRuntimeException(e);
-            } catch (ParserConfigurationException e) {
+            } catch (SAXException | ParserConfigurationException e) {
                 throw ExceptionUtils.getRuntimeException(e);
             }
         }

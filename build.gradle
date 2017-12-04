@@ -9,8 +9,8 @@ allprojects {
     group = 'org.mapfish.print'
     version = '3.11-SNAPSHOT'
     ext.junitVersion = "4.12"
-    ext.springVersion = "4.3.11.RELEASE"
-    ext.jasperReportVersion = "6.4.1"
+    ext.springVersion = "4.3.13.RELEASE"
+    ext.jasperReportVersion = "6.4.3"
     ext.groovyVersion = "2.4.12"
     ext."signing.keyId" = signing_keyId
     ext."signing.secretKeyRingFile" = signing_secretKeyRingFile

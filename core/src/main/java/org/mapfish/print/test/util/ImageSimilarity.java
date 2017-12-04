@@ -1,6 +1,5 @@
 package org.mapfish.print.test.util;
 
-import com.google.common.collect.FluentIterable;
 import com.google.common.io.Files;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -351,7 +350,7 @@ public final class ImageSimilarity {
     public static void main(final String args[]) throws IOException {
         final String path = "core/src/test/resources/map-data";
         final File root = new File(path);
-        final FluentIterable<File> files = Files.fileTreeTraverser().postOrderTraversal(root);
+        final Iterable<File> files = Files.fileTraverser().depthFirstPostOrder(root);
         for (File file : files) {
             if (Files.getFileExtension(file.getName()).equals("png")) {
                 final BufferedImage img = ImageIO.read(file);
