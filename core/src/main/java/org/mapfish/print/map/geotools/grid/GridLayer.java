@@ -74,7 +74,7 @@ public final class GridLayer implements MapLayer {
     public void render(final Graphics2D graphics, final MfClientHttpRequestFactory clientHttpRequestFactory,
                        final MapfishMapContext transformer, final String jobId) {
         Graphics2D graphics2D = (Graphics2D) graphics.create();
-        int haloRadius = this.params.haloRadius;
+        float haloRadius = (float) this.params.haloRadius;
         double dpiScaling = transformer.getDPI() / Constants.PDF_DPI;
 
         this.grid.render(graphics2D, clientHttpRequestFactory, transformer, jobId);
@@ -109,8 +109,8 @@ public final class GridLayer implements MapLayer {
                             halfCharHeight, textBounds);
             graphics2D.setTransform(transform);
 
-            if (haloRadius > 0) {
-                graphics2D.setStroke(new BasicStroke(2 * haloRadius, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            if (haloRadius > 0.0f) {
+                graphics2D.setStroke(new BasicStroke(2.0f * haloRadius, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
                 graphics2D.setColor(haloColor);
                 graphics2D.draw(textShape);
             }

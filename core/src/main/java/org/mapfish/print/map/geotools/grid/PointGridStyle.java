@@ -15,7 +15,7 @@ import java.util.List;
  */
 public final class PointGridStyle {
 
-    private static final int CROSS_SIZE = 10;
+    private static final double CROSS_SIZE = 10.0;
 
     private PointGridStyle() {
         // do nothing
@@ -25,21 +25,27 @@ public final class PointGridStyle {
      * Create the Grid Point style.
      */
     static Style get(final GridParam params) {
-        StyleBuilder builder = new StyleBuilder();
+        final StyleBuilder builder = new StyleBuilder();
 
-        Symbolizer pointSymbolizer = crossSymbolizer("shape://plus", builder, CROSS_SIZE, ColorParser.toColor(params.gridColor));
-        Symbolizer halo = crossSymbolizer("cross", builder, CROSS_SIZE + params.haloRadius, ColorParser.toColor(params.haloColor));
+        final Symbolizer pointSymbolizer = crossSymbolizer("shape://plus", builder, CROSS_SIZE,
+                params.gridColor);
         final Style style = builder.createStyle(pointSymbolizer);
         final List<Symbolizer> symbolizers = style.featureTypeStyles().get(0).rules().get(0).symbolizers();
-        symbolizers.add(0, halo);
+
+        if (params.haloRadius > 0.0) {
+            Symbolizer halo = crossSymbolizer("cross", builder, CROSS_SIZE + params.haloRadius * 2.0,
+                    params.haloColor);
+            symbolizers.add(0, halo);
+        }
 
         return style;
     }
 
     private static Symbolizer crossSymbolizer(final String name, final StyleBuilder builder,
-                                              final int crossSize, final Color pointColor) {
-        Mark cross = builder.createMark(name, pointColor, pointColor, 1);
-        Graphic graphic = builder.createGraphic(null, cross, null);
+                                              final double crossSize, final String pointColorTxt) {
+        final Color pointColor = ColorParser.toColor(pointColorTxt);
+        final Mark cross = builder.createMark(name, pointColor, pointColor, 1);
+        final Graphic graphic = builder.createGraphic(null, cross, null);
         graphic.setSize(builder.literalExpression(crossSize));
 
         return builder.createPointSymbolizer(graphic);

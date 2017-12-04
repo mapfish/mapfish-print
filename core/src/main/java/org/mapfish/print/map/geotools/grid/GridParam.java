@@ -20,7 +20,7 @@ import java.util.IllegalFormatException;
  */
 public final class GridParam extends AbstractLayerParams {
     private static final int DEFAULT_POINTS_IN_GRID_LINE = 10000;
-    private static final int DEFAULT_HALO_RADIUS = 2;
+    private static final int DEFAULT_HALO_RADIUS = 1;
     private static final int DEFAULT_INDENT = 5;
     private static final String DEFAULT_HALO_COLOR = "#FFF";
     private static final String DEFAULT_LABEL_COLOR = "#444";
@@ -94,7 +94,7 @@ public final class GridParam extends AbstractLayerParams {
      * The size of the halo around the Grid Labels. The default is {@value #DEFAULT_HALO_RADIUS}.
      */
     @HasDefaultValue
-    public int haloRadius = DEFAULT_HALO_RADIUS;
+    public double haloRadius = DEFAULT_HALO_RADIUS;
     /**
      * The color of the halo around grid label text. The color is defined the same as colors in CSS. Default is white
      * ({@value #DEFAULT_HALO_COLOR})
