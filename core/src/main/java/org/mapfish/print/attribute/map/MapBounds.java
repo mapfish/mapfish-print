@@ -10,8 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.Rectangle;
 
-import static org.mapfish.print.Constants.PDF_DPI;
-
 /**
  * Class Represents the bounds of the map in some way.  The implementations will represent the as a bbox or as a center and scale.
  * Created by Jesse on 3/26/14.
@@ -113,7 +111,7 @@ public abstract class MapBounds {
 
         if (geodetic) {
             newScale = new Scale(
-                    result.getScale(unit).getDenominator(PDF_DPI) * scaleRatio,
+                    result.getScale(unit).getDenominator(dpi) * scaleRatio,
                     getProjection(), dpi);
         } else {
             newScale = result.getScale(unit);

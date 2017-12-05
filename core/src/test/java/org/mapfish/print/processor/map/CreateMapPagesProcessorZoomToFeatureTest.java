@@ -3,6 +3,8 @@ package org.mapfish.print.processor.map;
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
 import net.sf.jasperreports.engine.JasperPrint;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -76,9 +78,15 @@ public class CreateMapPagesProcessorZoomToFeatureTest extends AbstractMapfishSpr
         final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat)
                 this.outputFormat.get("pngOutputFormat");
         testPrint(config, requestData, "zoomToFeatures", format, 40);
+        testPrint(config, changeMapDpiAttributes(requestData,254),"highDpi",format,40);
     }
 
-
+    private PJsonObject changeMapDpiAttributes(PJsonObject requestData,int dpi) throws JSONException {
+        final PJsonObject attributes = requestData.getJSONObject("attributes");
+        final JSONObject map =  attributes.getInternalObj().optJSONObject("map");
+        map.put("dpi", dpi);
+        return requestData;
+    }
 
     private void testPrint(Configuration config, PJsonObject requestData, String testName,
                            AbstractJasperReportOutputFormat format, double tolerance) throws Exception {

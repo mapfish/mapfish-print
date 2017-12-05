@@ -9,6 +9,7 @@ import java.awt.Rectangle;
 
 import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
 import static org.junit.Assert.assertEquals;
+import static org.mapfish.print.Constants.PDF_DPI;
 import static org.mapfish.print.attribute.map.CenterScaleMapBoundsTest.CH1903;
 
 public class BBoxMapBoundsTest {
@@ -164,13 +165,13 @@ public class BBoxMapBoundsTest {
         assertEquals(originalBBox.getMedian(1), newBBox.getMedian(1), delta);
 
         assertEquals(20000,
-                newMapBounds.getScale(screen, dpi).getGeodeticDenominator(
-                        SPHERICAL_MERCATOR, dpi, newBBox.centre()),
+                newMapBounds.getScale(screen, PDF_DPI).getGeodeticDenominator(
+                        SPHERICAL_MERCATOR, PDF_DPI, newBBox.centre()),
                 1);
-        assertEquals(26428, newMapBounds.getScale(screen, dpi).getDenominator(dpi), 1);
-        assertEquals(399664, newBBox.getMinX(), 1);
-        assertEquals(4999664, newBBox.getMinY(), 1);
-        assertEquals(400335, newBBox.getMaxX(), 1);
-        assertEquals(5000335, newBBox.getMaxY(), 1);
+        assertEquals(26428, newMapBounds.getScale(screen, PDF_DPI).getDenominator(PDF_DPI), 1);
+        assertEquals(399533, newBBox.getMinX(), 1);
+        assertEquals(4999533,  newBBox.getMinY(), 1);
+        assertEquals(400466, newBBox.getMaxX(), 1);
+        assertEquals(5000466, newBBox.getMaxY(), 1);
     }
 }
