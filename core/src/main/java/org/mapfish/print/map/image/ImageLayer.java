@@ -166,12 +166,12 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         final ReferencedEnvelope envelope = transformer.getBounds().toReferencedEnvelope(paintArea);
         final CoordinateReferenceSystem mapProjection = envelope.getCoordinateReferenceSystem();
 
-        Closer closer = Closer.create();
+        final Closer closer = Closer.create();
         final BufferedImage bufferedImage = new BufferedImage(paintArea.width, paintArea.height,
                 TYPE_INT_ARGB_PRE);
         final Graphics2D graphics = bufferedImage.createGraphics();
-        MapBounds bounds = transformer.getBounds();
-        MapContent content = new MapContent();
+        final MapBounds bounds = transformer.getBounds();
+        final MapContent content = new MapContent();
         try {
             final ClientHttpRequest request = requestFactory.createRequest(commonUri, HttpMethod.GET);
             final ClientHttpResponse httpResponse = closer.register(request.execute());
@@ -231,6 +231,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         } finally {
             graphics.dispose();
             closer.close();
+            content.dispose();
         }
     }
 

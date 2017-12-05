@@ -177,11 +177,12 @@ dependencies {
     compile (configurations.geotools)
     compile (configurations.jasper)
 
-    def batikVersion = '1.8'
+    def batikVersion = '1.9.1'
     compile (
             'org.apache.xmlgraphics:xmlgraphics-commons:2.2',
             "org.apache.xmlgraphics:batik-transcoder:$batikVersion",
             "org.apache.xmlgraphics:batik-bridge:$batikVersion",
+            "org.apache.xmlgraphics:batik-codec:$batikVersion",
             "org.apache.xmlgraphics:batik-svg-dom:$batikVersion"
     )
 

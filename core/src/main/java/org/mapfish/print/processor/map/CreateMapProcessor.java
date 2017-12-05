@@ -231,7 +231,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         return compiledReport.toURI();
     }
 
-    private RenderType getSupportedRenderType(final RenderType renderType) {
+    private static RenderType getSupportedRenderType(final RenderType renderType) {
         if (renderType == RenderType.UNKNOWN || renderType == RenderType.TIFF) {
             return RenderType.PNG;
         } else {
@@ -289,74 +289,64 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         //now we download and cache all images at once
         cache.cache(this.requestForkJoinPool);
 
-        for (int i = 0; i < layers.size(); i++) {
-            MapLayer layer = layers.get(i);
-            checkCancelState(context);
-            final File path;
-            RenderType renderType = getSupportedRenderType(layer.getRenderType());
-            if (layer.getRenderType() == RenderType.SVG) {
-                // render layer as SVG
-                final SVGGraphics2D graphics2D = getSvgGraphics(mapContext.getMapSize());
+        int fileNumber = 0;
+        for (LayerGroup layerGroup: LayerGroup.buildGroups(layers)) {
+            if (layerGroup.renderType == RenderType.SVG) {
+                // render layers as SVG
+                for (MapLayer layer: layerGroup.layers) {
+                    checkCancelState(context);
+                    final SVGGraphics2D graphics2D = getSvgGraphics(mapContext.getMapSize());
 
-                try {
-                    Graphics2D clippedGraphics2D = createClippedGraphics(
-                            mapContext, areaOfInterest, graphics2D);
-                    layer.render(clippedGraphics2D, clientHttpRequestFactory, mapContext, jobId);
+                    try {
+                        Graphics2D clippedGraphics2D = createClippedGraphics(
+                                mapContext, areaOfInterest, graphics2D);
+                        layer.render(clippedGraphics2D, clientHttpRequestFactory, mapContext, jobId);
 
-                    path = new File(printDirectory, mapKey + "_layer_" + i + ".svg");
-                    saveSvgFile(graphics2D, path);
-                } finally {
-                    graphics2D.dispose();
+                        final File path = new File(printDirectory, mapKey + "_layer_" + fileNumber++ + ".svg");
+                        saveSvgFile(graphics2D, path);
+                        graphics.add(path.toURI());
+                    } finally {
+                        graphics2D.dispose();
+                    }
                 }
             } else {
-                // render layer as raster graphic
-                warnIfDifferentRenderType(renderType, layer);
-                final double imageBufferScaling = layer.getImageBufferScaling();
-                final boolean opaque = renderType == RenderType.JPEG && layer.getOpacity() == 1.0;
+                // render layers as raster graphic
                 final BufferedImage bufferedImage = new BufferedImage(
-                        (int) Math.round(mapContext.getMapSize().width * imageBufferScaling),
-                        (int) Math.round(mapContext.getMapSize().height * imageBufferScaling),
-                        opaque ? BufferedImage.TYPE_3BYTE_BGR : BufferedImage.TYPE_4BYTE_ABGR
+                        (int) Math.round(mapContext.getMapSize().width * layerGroup.imageBufferScaling),
+                        (int) Math.round(mapContext.getMapSize().height * layerGroup.imageBufferScaling),
+                        layerGroup.opaque ? BufferedImage.TYPE_3BYTE_BGR : BufferedImage.TYPE_4BYTE_ABGR
                 );
-                Graphics2D graphics2D = createClippedGraphics(
+                final Graphics2D graphics2D = createClippedGraphics(
                         mapContext, areaOfInterest,
                         bufferedImage.createGraphics()
                 );
-                if (opaque) {
-                    // the image is opaque and therefore needs a white background
-                    final Color prevColor = graphics2D.getColor();
-                    graphics2D.setColor(Color.WHITE);
-                    graphics2D.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
-                    graphics2D.setColor(prevColor);
-                }
-
                 try {
-                    MapfishMapContext transformer = getTransformer(mapContext, layer.getImageBufferScaling());
-                    layer.render(graphics2D, clientHttpRequestFactory, transformer, jobId);
-
-                    // Merge consecutive layers of same render type and same buffer scaling (native
-                    // resolution)
-                    while (
-                        i < layers.size() - 1 &&
-                        getSupportedRenderType(layers.get(i + 1).getRenderType()) == renderType &&
-                        imageBufferScaling == layers.get(i + 1).getImageBufferScaling()
-                    ) {
-                        layer = layers.get(++i);
-                        checkCancelState(context);
-                        layer.prepareRender(mapContext);
-                        warnIfDifferentRenderType(renderType, layer);
-                        layer.render(graphics2D, clientHttpRequestFactory, transformer, jobId);
+                    if (layerGroup.opaque) {
+                        // the image is opaque and therefore needs a white background
+                        final Color prevColor = graphics2D.getColor();
+                        graphics2D.setColor(Color.WHITE);
+                        graphics2D.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
+                        graphics2D.setColor(prevColor);
                     }
 
-                    path = new File(
-                            printDirectory,
-                            mapKey + "_layer_" + i + (opaque ? ".jpeg" : ".png"));
-                    ImageIO.write(bufferedImage, opaque ? "JPEG" : "PNG", path);
+                    final MapfishMapContext transformer = getTransformer(mapContext, layerGroup.imageBufferScaling);
+                    for (MapLayer cur: layerGroup.layers) {
+                        checkCancelState(context);
+                        warnIfDifferentRenderType(layerGroup.renderType, cur);
+                        cur.render(graphics2D, clientHttpRequestFactory, transformer, jobId);
+                    }
+
+                    // Try to respect the original format of the layer. But if it needs to be transparent,
+                    // no choice, we need PNG.
+                    final String formatName = layerGroup.opaque && layerGroup.renderType == RenderType.JPEG ? "JPEG" : "PNG";
+                    final File path = new File(printDirectory,
+                            String.format("%s_layer_%d.%s", mapKey, fileNumber++, formatName.toLowerCase()));
+                    ImageIO.write(bufferedImage, formatName, path);
+                    graphics.add(path.toURI());
                 } finally {
                     graphics2D.dispose();
                 }
             }
-            graphics.add(path.toURI());
         }
 
         return graphics;
@@ -707,6 +697,49 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Class that groups together layers that can end up in the same file.
+     */
+    private static final class LayerGroup {
+        public final List<MapLayer> layers = new ArrayList<>();
+        public final RenderType renderType;
+        public final double imageBufferScaling;
+        public boolean opaque = false;
+
+        private LayerGroup(final RenderType renderType, final double imageBufferScaling) {
+            this.renderType = renderType;
+            this.imageBufferScaling = imageBufferScaling;
+        }
+
+        public static List<LayerGroup> buildGroups(final List<MapLayer> layers) {
+            final List<LayerGroup> result = new ArrayList<>();
+            for (int i = 0; i < layers.size();) {
+                final RenderType renderType = getSupportedRenderType(layers.get(i).getRenderType());
+                final double imageBufferScaling = layers.get(i).getImageBufferScaling();
+                final LayerGroup group = new LayerGroup(renderType, imageBufferScaling);
+
+                group.opaque = (i == 0 && renderType == RenderType.JPEG);
+
+                // Merge consecutive layers of same render type and same buffer scaling (native
+                // resolution)
+                while (i < layers.size() &&
+                        getSupportedRenderType(layers.get(i).getRenderType()) == renderType &&
+                        imageBufferScaling == layers.get(i).getImageBufferScaling()) {
+                    // will always go there the first time
+                    final MapLayer toAdd = layers.get(i);
+                    group.layers.add(toAdd);
+                    group.opaque = group.opaque ||
+                            (renderType == RenderType.JPEG && toAdd.getOpacity() == 1.0);
+                    ++i;
+                }
+
+                result.add(group);
+            }
+
+            return result;
         }
     }
 }
