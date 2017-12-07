@@ -9,6 +9,7 @@ import org.apache.batik.util.SVGConstants;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.mapfish.print.FloatingPointUtil;
+import org.mapfish.print.ImageUtils;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.style.json.ColorParser;
 import org.slf4j.Logger;
@@ -160,7 +161,7 @@ public final class NorthArrowGraphic {
             graphics2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
             graphics2d.drawImage(originalImage, deltaX, deltaY, newWidth, newHeight, null);
 
-            ImageIO.write(newImage, "tiff", path);
+            ImageUtils.writeImage(newImage, "tiff", path);
         } finally {
             if (graphics2d != null) {
                 graphics2d.dispose();

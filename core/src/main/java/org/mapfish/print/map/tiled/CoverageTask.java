@@ -112,7 +112,6 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
                     this.tilePreparationInfo.getGridCoverageOrigin().y,
                     this.tilePreparationInfo.getGridCoverageMaxX(),
                     this.tilePreparationInfo.getGridCoverageMaxY());
-//            ImageIO.write(coverageImage, "png", new File(System.getProperty("java.io.tmpdir"), "coverageImage.png"));
             return factory.create(this.tiledLayer.createCommonUrl(), coverageImage, gridEnvelope,
                     null, null, null);
         } catch (Exception e) {

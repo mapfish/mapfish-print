@@ -27,6 +27,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.mapfish.print.Constants;
 import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.ImageUtils;
 import org.mapfish.print.SvgUtil;
 import org.mapfish.print.attribute.map.AreaOfInterest;
 import org.mapfish.print.attribute.map.BBoxMapBounds;
@@ -195,7 +196,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             } finally {
                 g.dispose();
             }
-            ImageIO.write(bufferedImage, outputFormat, mergedGraphic);
+            ImageUtils.writeImage(bufferedImage, outputFormat, mergedGraphic);
         }
 
         return mergedGraphic.toURI();
@@ -341,7 +342,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                     final String formatName = layerGroup.opaque && layerGroup.renderType == RenderType.JPEG ? "JPEG" : "PNG";
                     final File path = new File(printDirectory,
                             String.format("%s_layer_%d.%s", mapKey, fileNumber++, formatName.toLowerCase()));
-                    ImageIO.write(bufferedImage, formatName, path);
+                    ImageUtils.writeImage(bufferedImage, formatName, path);
                     graphics.add(path.toURI());
                 } finally {
                     graphics2D.dispose();

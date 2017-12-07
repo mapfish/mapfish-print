@@ -41,10 +41,14 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
     @Test
     public void testAllOutputFormats() throws Exception {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
-        PJsonObject requestData = loadJsonRequestData();
+        final PJsonObject requestData = loadJsonRequestData();
 
         for (OutputFormat format : this.outputFormat.values()) {
-            OutputStream outputStream = new ByteArrayOutputStream();
+            if (format.getFileSuffix().equals("bmp")) {
+                // BMP does not support transparency
+                continue;
+            }
+            final OutputStream outputStream = new ByteArrayOutputStream();
             format.print("test", requestData, config,
                     getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR),
                     getTaskDirectory(), outputStream);
