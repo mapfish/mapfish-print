@@ -58,6 +58,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
 
     private static CloseableHttpClient createHttpClient(final int maxConnTotal, final int maxConnPerRoute) {
         final HttpClientBuilder httpClientBuilder = HttpClients.custom().
+                disableCookieManagement().
                 setRoutePlanner(new MfRoutePlanner()).
                 setSSLSocketFactory(new MfSSLSocketFactory()).
                 setDefaultCredentialsProvider(new MfCredentialsProvider()).
