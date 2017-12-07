@@ -140,7 +140,6 @@ public final class DataSourceAttribute implements Attribute {
                 Attribute attribute = entry.getValue();
                 if (attribute.getClass().getAnnotation(InternalAttribute.class) == null) {
                     json.object();
-                    json.key("name").value(entry.getKey());
                     attribute.printClientConfig(json, template);
                     json.endObject();
                 }

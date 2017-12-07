@@ -10,6 +10,7 @@ import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -173,7 +174,7 @@ public class ExamplesTest {
                 errorReport.append(exampleName.toString().replaceAll(".", "="));
                 errorReport.append('\n');
                 errorReport.append("Failed with the error:\n");
-                errorReport.append(error.getValue());
+                errorReport.append(ExceptionUtils.getFullStackTrace(error.getValue()));
                 errorReport.append('\n');
             }
             errorReport.append("\n\n");
