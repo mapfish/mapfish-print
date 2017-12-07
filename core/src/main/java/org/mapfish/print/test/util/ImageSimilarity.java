@@ -128,12 +128,13 @@ public final class ImageSimilarity {
                 maskIterator.getPixel(x, y, maskPixel);
                 double squareDist = 0.0;
                 for (int i = 0; i < this.expectedImage.getSampleModel().getNumBands(); i++) {
-                    double colorDist = expectedPixel[i] - actualPixel[i];
-                    squareDist += colorDist * colorDist;
+                    double colorDist = (expectedPixel[i] - actualPixel[i]) * (maskPixel[0] / 255.0);
+                    if (colorDist > 7.0) {  // allow a small color change (JPEG compression, anti-aliasing, ...)
+                        squareDist += colorDist * colorDist;
+                    }
                 }
                 double pxDiff = Math.sqrt(squareDist) /
-                        Math.sqrt(this.expectedImage.getSampleModel().getNumBands()) *
-                        (maskPixel[0] / 255.0);
+                        Math.sqrt(this.expectedImage.getSampleModel().getNumBands());
                 dist += pxDiff / 255;
                 diffGraphics.setColor(new Color((int)Math.round(pxDiff), 0, 0));
                 diffGraphics.drawRect(x, y, 1, 1);

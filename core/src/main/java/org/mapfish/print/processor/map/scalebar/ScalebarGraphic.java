@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.geotools.referencing.GeodeticCalculator;
+import org.mapfish.print.ImageUtils;
 import org.mapfish.print.attribute.ScalebarAttribute.ScalebarAttributeValues;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
@@ -27,7 +28,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import javax.imageio.ImageIO;
 import javax.xml.parsers.ParserConfigurationException;
 
 import static org.mapfish.print.Constants.PDF_DPI;
@@ -118,7 +118,7 @@ public class ScalebarGraphic {
                 graphics2D.setTransform(saveAF);
 
                 path = File.createTempFile("scalebar-graphic-", ".png", tempFolder);
-                ImageIO.write(bufferedImage, "png", path);
+                ImageUtils.writeImage(bufferedImage, "png", path);
             } finally {
                 graphics2D.dispose();
             }

@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 import org.mapfish.print.Constants;
+import org.mapfish.print.ImageUtils;
 import org.mapfish.print.attribute.LegendAttribute.LegendAttributeValue;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
@@ -321,7 +322,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
 
     private URI writeToFile(final BufferedImage image, final File tempTaskDirectory) throws IOException {
         File path = File.createTempFile("legend-", ".png", tempTaskDirectory);
-        ImageIO.write(image, "png", path);
+        ImageUtils.writeImage(image, "png", path);
         return path.toURI();
     }
 

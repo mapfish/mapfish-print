@@ -3,6 +3,7 @@ package org.mapfish.print.output;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
+import org.mapfish.print.ImageUtils;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -12,8 +13,6 @@ import java.awt.Stroke;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
-
-import javax.imageio.ImageIO;
 
 import static org.mapfish.print.Constants.PDF_DPI;
 
@@ -83,7 +82,7 @@ public final class JasperReportImageOutputFormat extends AbstractJasperReportOut
             graphics2D.dispose();
         }
 
-        ImageIO.write(reportImage, getFileSuffix(), outputStream);
+        ImageUtils.writeImage(reportImage, getFileSuffix(), outputStream);
     }
 
     /**
