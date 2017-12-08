@@ -3,6 +3,7 @@ package org.mapfish.print.servlet.job.impl.hibernate;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.LockMode;
+import org.hibernate.PessimisticLockException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -14,6 +15,7 @@ import org.mapfish.print.servlet.job.PrintJobStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -199,7 +201,12 @@ public class PrintJobDao {
         // LOCK but don't wait for release (since this is run continuously
         // anyway, no wait prevents deadlock)
         query.setLockMode("pj", LockMode.UPGRADE_NOWAIT);
-        return (List<PrintJobStatusExtImpl>) query.list();
+        try {
+            return (List<PrintJobStatusExtImpl>) query.list();
+        } catch (PessimisticLockException ex) {
+            // Another process was polling at the same time. We can ignore this error
+            return Collections.emptyList();
+        }
     }
 
     /**
