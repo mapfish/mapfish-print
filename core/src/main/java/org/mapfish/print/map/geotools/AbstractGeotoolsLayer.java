@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.vividsolutions.jts.util.Assert;
 
+import org.apache.batik.svggen.SVGGraphics2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
@@ -74,7 +75,13 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
         MapContent content = new MapContent();
         try {
             List<? extends Layer> layers = getLayers(clientHttpRequestFactory, layerTransformer, jobId);
-            applyTransparency(layers);
+            if (!(graphics2D instanceof SVGGraphics2D)) {
+                // TODO: this test is not OK for the case we have a ConstantClipGraphics2D
+                applyTransparency(layers);
+            } else {
+                // The layer opacity will be applied by the caller directly at the SVG level
+                // TODO: de we have to do that for bitmap targets as well?
+            }
 
             content.addLayers(layers);
 
