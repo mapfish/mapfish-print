@@ -511,7 +511,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         ReferencedEnvelope bounds = getFeatureBounds(clientHttpRequestFactory,
                 mapValues, context);
 
-        if (bounds != null) {
+        if (bounds != null && !bounds.isNull()) {
             if (mapValues.zoomToFeatures.zoomType == ZoomType.CENTER) {
                 // center the map on the center of the feature bounds
                 Coordinate center = bounds.centre();
