@@ -95,7 +95,7 @@ public final class OsmLayer extends AbstractTiledLayer {
             if (commonUrl.contains("{x}") && commonUrl.contains("{z}")
                     && (commonUrl.contains("{y}") || commonUrl.contains("{-y}"))) {
                 String url = commonUrl
-                        .replace("{z}", String.format("%02d", this.resolutionIndex))
+                        .replace("{z}", Integer.toString(this.resolutionIndex))
                         .replace("{x}", Integer.toString(column))
                         .replace("{y}", Integer.toString(row));
                 if (commonUrl.contains("{-y}")) {
@@ -109,7 +109,7 @@ public final class OsmLayer extends AbstractTiledLayer {
                 if (!commonUrl.endsWith("/")) {
                     path.append('/');
                 }
-                path.append(String.format("%02d", this.resolutionIndex));
+                path.append(this.resolutionIndex);
                 path.append('/').append(column);
                 path.append('/').append(row);
                 path.append('.').append(OsmLayer.this.param.imageExtension);
