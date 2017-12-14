@@ -304,7 +304,9 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                 final Element param = (Element) parameters.item(i);
                 final String name = param.getAttribute("name");
                 if (!values.containsKey(name)) {
-                    missing.append("\t* ").append(name).append("\n");
+                    if (param.getElementsByTagName("defaultValueExpression").getLength() == 0) {
+                        missing.append("\t* ").append(name).append("\n");
+                    }
                 } else {
                     final String type = param.getAttribute("class");
                     Class<?> clazz = Class.forName(type);
