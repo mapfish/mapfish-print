@@ -6,6 +6,7 @@ import com.vividsolutions.jts.util.Assert;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.mapfish.print.processor.http.matcher.UriMatchers;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 
@@ -71,6 +72,19 @@ public final class AddHeadersProcessor extends AbstractClientHttpRequestFactoryP
     public MfClientHttpRequestFactory createFactoryWrapper(
             final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
             final MfClientHttpRequestFactory requestFactory) {
+        return createFactoryWrapper(requestFactory, this.matchers, this.headers);
+    }
+
+    /**
+     * Create a MfClientHttpRequestFactory for adding the specified headers.
+     * @param requestFactory the basic request factory.  It should be unmodified and just wrapped with a proxy class.
+     * @param matchers The matchers.
+     * @param headers The headers.
+     * @return
+     */
+    public static MfClientHttpRequestFactory createFactoryWrapper(
+            final MfClientHttpRequestFactory requestFactory,
+            final UriMatchers matchers, final Map<String, List<String>> headers) {
         return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory, matchers, false) {
             @Override
             protected ClientHttpRequest createRequest(
@@ -78,7 +92,7 @@ public final class AddHeadersProcessor extends AbstractClientHttpRequestFactoryP
                     final HttpMethod httpMethod,
                     final MfClientHttpRequestFactory requestFactory) throws IOException {
                 final ClientHttpRequest request = requestFactory.createRequest(uri, httpMethod);
-                request.getHeaders().putAll(AddHeadersProcessor.this.headers);
+                request.getHeaders().putAll(headers);
                 return request;
             }
         };
