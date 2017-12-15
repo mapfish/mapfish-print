@@ -8,6 +8,7 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.http.matcher.URIMatcher;
+import org.mapfish.print.processor.http.matcher.UriMatchers;
 
 import java.util.HashSet;
 import java.util.List;
@@ -39,10 +40,9 @@ public final class ForwardHeadersProcessor
         extends AbstractProcessor<ForwardHeadersProcessor.Param, Void>
         implements HttpProcessor<ForwardHeadersProcessor.Param> {
 
-    private final AddHeadersProcessor addHeadersProcessor = new AddHeadersProcessor();
-
     private Set<String> headerNames = Sets.newHashSet();
     private boolean forwardAll = false;
+    private final UriMatchers matchers = new UriMatchers();
 
     /**
      * Constructor.
@@ -95,7 +95,7 @@ public final class ForwardHeadersProcessor
      * @param matchers the list of matcher to use to check if a url is permitted
      */
     public void setMatchers(final List<? extends URIMatcher> matchers) {
-        this.addHeadersProcessor.setMatchers(matchers);
+        this.matchers.setMatchers(matchers);
     }
 
     /**
@@ -122,7 +122,7 @@ public final class ForwardHeadersProcessor
     public MfClientHttpRequestFactory createFactoryWrapper(
             final Param param,
             final MfClientHttpRequestFactory requestFactory) {
-        Map<String, Object> headers = Maps.newHashMap();
+        Map<String, List<String>> headers = Maps.newHashMap();
 
         for (Map.Entry<String, List<String>> entry : param.requestHeaders.getHeaders().entrySet()) {
             if (ForwardHeadersProcessor.this.forwardAll ||
@@ -130,9 +130,8 @@ public final class ForwardHeadersProcessor
                 headers.put(entry.getKey(), entry.getValue());
             }
         }
-        this.addHeadersProcessor.setHeaders(headers);
 
-        return this.addHeadersProcessor.createFactoryWrapper(param, requestFactory);
+        return AddHeadersProcessor.createFactoryWrapper(requestFactory, this.matchers, headers);
     }
 
     @Nullable
