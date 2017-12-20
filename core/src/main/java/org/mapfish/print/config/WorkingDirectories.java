@@ -33,7 +33,7 @@ public class WorkingDirectories {
 
     @Autowired
     private ServletContext servletContext;
- 
+
     /**
      * Defines what is the root directory used to store every temporary files.
      *
