@@ -101,6 +101,8 @@ public final class MapAttribute extends GenericMapAttribute {
          */
         public double dpi;
 
+        private MapLayer pagingOverviewLayer;
+
         /**
          * Constructor.
          *
@@ -134,6 +136,14 @@ public final class MapAttribute extends GenericMapAttribute {
         @Override
         public void setRawLayers(final PArray newLayers) {
             this.layers = newLayers;
+        }
+
+        public void setPagingOverviewLayer(final MapLayer newPagingOverviewLayer) {
+            this.pagingOverviewLayer = newPagingOverviewLayer;
+        }
+
+        public MapLayer getPagingOverviewLayer() {
+            return this.pagingOverviewLayer;
         }
 
         @Override

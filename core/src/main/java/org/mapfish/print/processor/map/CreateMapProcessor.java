@@ -273,6 +273,11 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
         // reverse layer list to draw from bottom to top.  normally position 0 is top-most layer.
         final List<MapLayer> layers = Lists.reverse(Lists.newArrayList(mapValues.getLayers()));
 
+        //add pagingOverviewLayer if present. this layer is only rendered in the main map.
+        if (mapValues.getPagingOverviewLayer() != null) {
+            layers.add(mapValues.getPagingOverviewLayer());
+        }
+
         final AreaOfInterest areaOfInterest = addAreaOfInterestLayer(mapValues, layers);
 
         final String mapKey = UUID.randomUUID().toString();
@@ -608,6 +613,7 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
                         bounds = features.getBounds();
                     } else {
                         bounds.expandToInclude(features.getBounds());
+
                     }
                 }
             }

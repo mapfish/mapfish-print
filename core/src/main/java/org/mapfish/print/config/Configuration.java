@@ -13,13 +13,18 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Fill;
+import org.geotools.styling.Font;
 import org.geotools.styling.Graphic;
+import org.geotools.styling.Halo;
+import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.Mark;
 import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.Symbolizer;
+import org.geotools.styling.TextSymbolizer;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
@@ -31,7 +36,9 @@ import org.mapfish.print.http.HttpCredential;
 import org.mapfish.print.http.HttpProxy;
 import org.mapfish.print.map.style.StyleParser;
 import org.mapfish.print.map.style.json.ColorParser;
+import org.mapfish.print.processor.map.CreateMapPagesProcessor;
 import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
+import org.opengis.filter.expression.Expression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -80,6 +87,7 @@ public class Configuration {
         map.put("multipoint", Point.class.getSimpleName().toLowerCase());
 
         map.put(Constants.Style.OverviewMap.NAME, Constants.Style.OverviewMap.NAME);
+        map.put(Constants.Style.PagingOverviewLayer.NAME, Constants.Style.PagingOverviewLayer.NAME);
         GEOMETRY_NAME_ALIASES = map;
     }
 
@@ -376,6 +384,8 @@ public class Configuration {
                 symbolizer = builder.createRasterSymbolizer();
             } else if (normalizedGeomName.startsWith(Constants.Style.OverviewMap.NAME)) {
                 symbolizer = createMapOverviewStyle(normalizedGeomName, builder);
+            } else if (normalizedGeomName.startsWith(Constants.Style.PagingOverviewLayer.NAME)) {
+                return createOverviewPagingLayerStyle(builder);
             } else {
                 final Style geomStyle = this.defaultStyle.get(Geometry.class.getSimpleName().toLowerCase());
                 if (geomStyle != null) {
@@ -428,6 +438,23 @@ public class Configuration {
         return builder.createPolygonSymbolizer(stroke, fill);
     }
 
+    private Style createOverviewPagingLayerStyle(@Nonnull final StyleBuilder builder) {
+        Stroke stroke = builder.createStroke(Color.gray, 1.5);
+        LineSymbolizer polygonSymbolizer = builder.createLineSymbolizer(stroke);
+
+        Font[] fonts = new Font[]{builder.createFont("Lucida Sans", 10.0D)};
+        Halo halo = builder.createHalo(Color.white, 1);
+        Expression name = builder.attributeExpression(CreateMapPagesProcessor.OVERVIEW_PAGING_ATTRIBUT_TEXT);
+        Fill fillColor = builder.createFill(Color.black);
+        TextSymbolizer textSymbolizer  = builder.createTextSymbolizer(fillColor, fonts, halo, name, null, null);
+
+        FeatureTypeStyle features = builder.createFeatureTypeStyle(
+                CreateMapPagesProcessor.OVERVIEW_PAGING_FEATURE_NAME, new Symbolizer[]{polygonSymbolizer, textSymbolizer});
+
+        Style s = builder.createStyle();
+        s.featureTypeStyles().add(features);
+        return s;
+    }
     /**
      * Set the default styles.  the case of the keys are not important.  The retrieval will be case
      * insensitive.

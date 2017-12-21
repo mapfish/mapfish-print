@@ -102,5 +102,16 @@ public interface Constants {
              */
             String NAME = "overview-map";
         }
+
+        /**
+         * Default Style for the paging Overview Layer.
+         */
+        interface PagingOverviewLayer {
+
+            /**
+             * The default style name for the polygons representing the pages on the main map.
+             */
+            String NAME = "paging-overview-layer";
+        }
     }
 }

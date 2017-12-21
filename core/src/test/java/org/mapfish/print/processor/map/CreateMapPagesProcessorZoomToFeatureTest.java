@@ -73,12 +73,13 @@ public class CreateMapPagesProcessorZoomToFeatureTest extends AbstractMapfishSpr
     @DirtiesContext
     public void testExecute() throws Exception {
         Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
+        Configuration configStyle = configurationFactory.getConfig(getFile(BASE_DIR + "config-style.yaml"));
         PJsonObject requestData = loadJsonRequestData();
 
         final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat)
                 this.outputFormat.get("pngOutputFormat");
         testPrint(config, requestData, "zoomToFeatures", format, 40);
-        testPrint(config, changeMapDpiAttributes(requestData,254),"highDpi",format,40);
+        testPrint(configStyle, changeMapDpiAttributes(requestData, 254), "highDpi", format, 40);
     }
 
     private PJsonObject changeMapDpiAttributes(PJsonObject requestData,int dpi) throws JSONException {
