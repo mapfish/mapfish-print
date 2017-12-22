@@ -6,12 +6,14 @@ import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.ServletContext;
 
 import static com.google.common.io.Files.getNameWithoutExtension;
 
@@ -29,8 +31,27 @@ public class WorkingDirectories {
     private int maxAgeReport;
     private int maxAgeTaskDir;
 
-    public final void setWorking(final File working) {
-        this.working = working;
+    @Autowired
+    private ServletContext servletContext;
+
+    /**
+     * Defines what is the root directory used to store every temporary files.
+     *
+     * The given path can contain the pattern "{WEBAPP}" and it will replaced by the webapp name.
+     *
+     * @param working The path
+     */
+    public final void setWorking(final String working) {
+        final String webappPath = this.servletContext.getRealPath("/");
+        final String webappName;
+        if (webappPath != null) {
+            webappName = new File(webappPath).getName();
+        } else {
+            webappName = "default";  // left like that only in UTs
+        }
+        this.working = new File(working.replace("{WEBAPP}", webappName));
+        createIfMissing(this.working, "working");
+        LOGGER.debug("Working directory: {}", this.working);
     }
 
     public final File getWorking() {
