@@ -1,7 +1,6 @@
 package org.mapfish.print.processor.jasper;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.io.Files;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.design.JRDesignBand;
@@ -70,16 +69,8 @@ public class ImagesSubReport {
     private void addGraphics(final List<URI> graphics, final JRDesignBand band,
             final Dimension size, final JasperDesign design) {
         for (URI graphicFile : graphics) {
-            String imageExpression;
-
             final String fileName = new File(graphicFile).getAbsolutePath().replace('\\', '/');
-            if (Files.getFileExtension(fileName).equals("svg")) {
-                imageExpression = "net.sf.jasperreports.renderers.BatikRenderer.getInstance(new java.io.File(\""
-                        + fileName + "\"))";
-            } else {
-                imageExpression = "\"" + fileName + "\"";
-            }
-
+            final String imageExpression = "\"" + fileName + "\"";
             band.addElement(getImage(imageExpression, size, design));
         }
     }
