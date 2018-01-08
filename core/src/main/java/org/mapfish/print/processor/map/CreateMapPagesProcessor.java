@@ -180,7 +180,7 @@ public class CreateMapPagesProcessor
                                     mapsBound.getMaxX(),
                                     mapsBound.getMaxY()
                             };
-                            input.dpi = PDF_DPI;
+
                             if (paging.aoiDisplay != null) {
                                 input.areaOfInterest.display = paging.aoiDisplay;
                             }
