@@ -50,9 +50,7 @@ public class MapSubReportTest {
         JRDesignImage image3 = (JRDesignImage) report.getNoData().getChildren().get(3);
         assertEquals(400, image3.getWidth());
         assertEquals(500, image3.getHeight());
-        assertEquals("net.sf.jasperreports.renderers.BatikRenderer.getInstance(new java.io.File(\"" + layer3SVG.getPath().replace('\\',
-                        '/') + "\"))",
-                image3.getExpression().getText());
+        assertEquals("\"" + layer3SVG.getPath().replace('\\', '/') + "\"", image3.getExpression().getText());
 
         File compiledReportFile = folder.newFile();
         subReport.compile(compiledReportFile);
