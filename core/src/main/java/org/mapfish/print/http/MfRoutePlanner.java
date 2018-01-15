@@ -53,11 +53,7 @@ public final class MfRoutePlanner extends DefaultRoutePlanner {
                 if (proxy.matches(MatchInfo.fromUri(uri, method))) {
                     return proxy.getHttpHost();
                 }
-            } catch (SocketException e) {
-                throw new HttpException(e.getMessage(), e);
-            } catch (UnknownHostException e) {
-                throw new HttpException(e.getMessage(), e);
-            } catch (MalformedURLException e) {
+            } catch (SocketException | UnknownHostException | MalformedURLException e) {
                 throw new HttpException(e.getMessage(), e);
             }
         }

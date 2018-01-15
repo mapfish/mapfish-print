@@ -104,11 +104,7 @@ public class HttpCredential implements ConfigurationObject {
             if (!matches(MatchInfo.fromAuthScope(authscope))) {
                 return null;
             }
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        } catch (SocketException e) {
+        } catch (UnknownHostException | MalformedURLException | SocketException e) {
             throw new RuntimeException(e);
         }
         if (this.username == null) {

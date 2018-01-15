@@ -33,7 +33,7 @@ public final class HttpRequestCache {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequestCache.class);
 
-    private final List<CachedClientHttpRequest> requests = new ArrayList<CachedClientHttpRequest>();
+    private final List<CachedClientHttpRequest> requests = new ArrayList<>();
 
     private final File temporaryDirectory;
 
@@ -54,16 +54,10 @@ public final class HttpRequestCache {
             this.status = originalResponse.getRawStatusCode();
             this.statusText = originalResponse.getStatusText();
             this.cachedFile = File.createTempFile("cacheduri", null, HttpRequestCache.this.temporaryDirectory);
-            InputStream is = originalResponse.getBody();
-            try {
-                OutputStream os = new FileOutputStream(this.cachedFile);
-                try {
+            try (InputStream is = originalResponse.getBody()) {
+                try (OutputStream os = new FileOutputStream(this.cachedFile)) {
                     IOUtils.copy(is, os);
-                } finally {
-                    os.close();
                 }
-            } finally {
-                is.close();
             }
         }
 
@@ -81,12 +75,12 @@ public final class HttpRequestCache {
         }
 
         @Override
-        public int getRawStatusCode() throws IOException {
+        public int getRawStatusCode() {
             return this.status;
         }
 
         @Override
-        public String getStatusText() throws IOException {
+        public String getStatusText() {
             return this.statusText;
         }
 
@@ -106,7 +100,7 @@ public final class HttpRequestCache {
         private final ClientHttpRequest originalRequest;
         private CachedClientHttpResponse response;
 
-        public CachedClientHttpRequest(final ClientHttpRequest request) throws IOException {
+        public CachedClientHttpRequest(final ClientHttpRequest request) {
             this.originalRequest = request;
         }
 
@@ -126,13 +120,13 @@ public final class HttpRequestCache {
         }
 
         @Override
-        public OutputStream getBody() throws IOException {
+        public OutputStream getBody() {
             //body should be written before creating this object
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public ClientHttpResponse execute() throws IOException {
+        public ClientHttpResponse execute() {
             if (!HttpRequestCache.this.cached) {
                 LOGGER.warn("Attempting to load cached URI before actual caching: " + this.originalRequest.getURI());
             } else if (this.response == null) {
@@ -187,9 +181,8 @@ public final class HttpRequestCache {
      *
      * @param originalRequest the original request
      * @return the cached http request
-     * @throws IOException
      */
-    public ClientHttpRequest register(final ClientHttpRequest originalRequest) throws IOException {
+    public ClientHttpRequest register(final ClientHttpRequest originalRequest) {
         return save(new CachedClientHttpRequest(originalRequest));
     }
 
@@ -199,7 +192,7 @@ public final class HttpRequestCache {
      * @param factory the request factory
      * @param uri the uri
      * @return the cached http request
-     * @throws IOException
+     * @throws IOException in case of I/O errors
      */
     public ClientHttpRequest register(final MfClientHttpRequestFactory factory, final URI uri) throws IOException {
         return register(factory.createRequest(uri, HttpMethod.GET));

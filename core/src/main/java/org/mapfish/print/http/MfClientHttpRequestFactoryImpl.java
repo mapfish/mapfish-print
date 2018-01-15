@@ -45,7 +45,7 @@ import javax.annotation.Nullable;
  */
 public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequestFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(MfClientHttpRequestFactoryImpl.class);
-    private static final ThreadLocal<Configuration> CURRENT_CONFIGURATION = new InheritableThreadLocal<Configuration>();
+    private static final ThreadLocal<Configuration> CURRENT_CONFIGURATION = new InheritableThreadLocal<>();
 
     @Nullable
     static Configuration getCurrentConfiguration() {
@@ -146,7 +146,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
         }
 
         @Override
-        protected OutputStream getBodyInternal(@Nonnull final HttpHeaders headers) throws IOException {
+        protected OutputStream getBodyInternal(@Nonnull final HttpHeaders headers) {
             return this.outputStream;
         }
 
@@ -166,14 +166,9 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
                 }
             }
             if (this.request instanceof HttpEntityEnclosingRequest) {
-                HttpEntityEnclosingRequest entityEnclosingRequest = (HttpEntityEnclosingRequest) this.request;
-                Closer closer = Closer.create();
-                try {
-                    HttpEntity requestEntity = new ByteArrayEntity(this.outputStream.toByteArray());
-                    entityEnclosingRequest.setEntity(requestEntity);
-                } finally {
-                    closer.close();
-                }
+                final HttpEntityEnclosingRequest entityEnclosingRequest = (HttpEntityEnclosingRequest) this.request;
+                final HttpEntity requestEntity = new ByteArrayEntity(this.outputStream.toByteArray());
+                entityEnclosingRequest.setEntity(requestEntity);
             }
             HttpResponse response = this.client.execute(this.request, this.context);
             LOGGER.debug("Response: " + response.getStatusLine().getStatusCode() + " -- " + this.getURI());
@@ -198,17 +193,17 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
 
 
         @Override
-        public int getRawStatusCode() throws IOException {
+        public int getRawStatusCode() {
             return this.response.getStatusLine().getStatusCode();
         }
 
         @Override
-        public String getStatusText() throws IOException {
+        public String getStatusText() {
             return this.response.getStatusLine().getReasonPhrase();
         }
 
         @Override
-        protected void finalize() throws Throwable {
+        protected void finalize() {
             close();
         }
 
