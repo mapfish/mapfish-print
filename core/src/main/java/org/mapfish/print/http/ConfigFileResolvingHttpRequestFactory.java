@@ -56,7 +56,7 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
 
     @Override
     public ClientHttpRequest createRequest(final URI uri,
-                                           final HttpMethod httpMethod) throws IOException {
+                                           final HttpMethod httpMethod) {
         return new ConfigFileResolvingRequest(uri, httpMethod);
     }
 
@@ -158,17 +158,17 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
             }
 
             @Override
-            public HttpStatus getStatusCode() throws IOException {
+            public HttpStatus getStatusCode() {
                 return HttpStatus.OK;
             }
 
             @Override
-            public int getRawStatusCode() throws IOException {
+            public int getRawStatusCode() {
                 return getStatusCode().value();
             }
 
             @Override
-            public String getStatusText() throws IOException {
+            public String getStatusText() {
                 return "OK";
             }
 
@@ -178,7 +178,7 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
             }
 
             @Override
-            public InputStream getBody() throws IOException {
+            public InputStream getBody() {
                 return new ByteArrayInputStream(this.bytes);
             }
 
