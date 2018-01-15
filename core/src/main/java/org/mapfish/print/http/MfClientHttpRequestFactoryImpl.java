@@ -12,6 +12,7 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.SystemDefaultDnsResolver;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.mapfish.print.config.Configuration;
@@ -28,7 +29,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.URI;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -59,6 +64,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
     private static CloseableHttpClient createHttpClient(final int maxConnTotal, final int maxConnPerRoute) {
         final HttpClientBuilder httpClientBuilder = HttpClients.custom().
                 disableCookieManagement().
+                setDnsResolver(new RandomizingDnsResolver()).
                 setRoutePlanner(new MfRoutePlanner()).
                 setSSLSocketFactory(new MfSSLSocketFactory()).
                 setDefaultCredentialsProvider(new MfCredentialsProvider()).
@@ -74,6 +80,23 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
             @Nonnull final HttpMethod httpMethod) throws IOException {
         HttpRequestBase httpRequest = (HttpRequestBase) createHttpUriRequest(httpMethod, uri);
         return new Request(getHttpClient(), httpRequest, createHttpContext(httpMethod, uri));
+    }
+
+    /**
+     * Randomized order DnsResolver.
+     *
+     * The default DnsResolver is using the results of InetAddress.getAllByName which is cached and returns
+     * the IP addresses always in the same order (think about DNS round robin). The callers always try the
+     * addresses in the order returned by the DnsResolver.
+     * This implementation adds randomizing to it's result.
+     */
+    private static final class RandomizingDnsResolver extends SystemDefaultDnsResolver {
+        @Override
+        public InetAddress[] resolve(final String host) throws UnknownHostException {
+            final List<InetAddress> list = Arrays.asList(super.resolve(host));
+            Collections.shuffle(list);
+            return list.toArray(new InetAddress[list.size()]);
+        }
     }
 
     /**
