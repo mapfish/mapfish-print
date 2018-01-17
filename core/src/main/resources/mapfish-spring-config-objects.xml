@@ -5,6 +5,7 @@
     <bean id="localMatch" class="org.mapfish.print.processor.http.matcher.LocalHostMatcher" scope="prototype" />
     <bean id="ipMatch" class="org.mapfish.print.processor.http.matcher.AddressHostMatcher" scope="prototype" />
     <bean id="dnsMatch" class="org.mapfish.print.processor.http.matcher.DnsHostMatcher" scope="prototype" />
+    <bean id="hostnameMatch" class="org.mapfish.print.processor.http.matcher.HostnameMatcher" scope="prototype" />
     <bean id="acceptAll" class="org.mapfish.print.processor.http.matcher.AcceptAllMatcher" scope="prototype" />
 
     <bean id="template" class="org.mapfish.print.config.Template" scope="prototype" />
