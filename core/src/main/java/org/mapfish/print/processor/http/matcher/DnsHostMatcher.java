@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * Allows to check that a given URL matches a DNS address (textual format). The actual comparison is
- * performed on numerical IP addresses. The configured DNS host address is transformed into numerical IP 
+ * performed on numerical IP addresses. The configured DNS host address is transformed into numerical IP
  * addresses during application startup. The urls to be compared are transformed during the print processing.
  * <p>Example 1: Accept any www.camptocamp.com url</p>
  * <pre><code>

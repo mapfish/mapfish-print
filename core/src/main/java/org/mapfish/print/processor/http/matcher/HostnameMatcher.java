@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * Allows to check that a given URL matches a hostname literally (textual match).
- * 
+ *
  * <p>Example 1: Accept any www.camptocamp.com url</p>
  * <pre><code>
  *     - !hostnameMatch
@@ -110,7 +110,7 @@ public final class HostnameMatcher extends HostMatcher {
         sb.append('}');
         return sb.toString();
     }
-    
+
     /**
      * Set the host.
      * @param host the host

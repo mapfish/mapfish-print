@@ -55,7 +55,7 @@ public class HostnameMatcherTest {
         assertMatch(hostnameHostMatcher, false, new URI("http://localhost:80"), HttpMethod.GET);
         assertMatch(hostnameHostMatcher, false, new URI("http://www.camptocamp.com:80/print"), HttpMethod.GET);
         assertMatch(hostnameHostMatcher, false, new URI("http://www.camptocamp.com:80"), HttpMethod.GET);
-        
+
         hostnameHostMatcher = new HostnameMatcher();
         hostnameHostMatcher.setHost("www.camptocamp.com");
         assertMatch(hostnameHostMatcher, true, new URI("http://www.camptocamp.com:80/print"), HttpMethod.GET);
