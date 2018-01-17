@@ -127,6 +127,7 @@ public final class JsonStyleParserHelper {
     private static final String[] SUPPORTED_MIME_TYPES = ImageIO.getReaderMIMETypes();
     private static final String DEFAULT_POINT_MARK = "circle";
     private static final Pattern VALUE_UNIT_PATTERN = Pattern.compile("^([0-9.]+)([a-z]*)");
+    private static final Pattern DATA_FORMAT_PATTERN = Pattern.compile("^data:([^;,]+)[;,]");
 
     private final Configuration configuration;
     private final ClientHttpRequestFactory requestFactory;
@@ -806,12 +807,19 @@ public final class JsonStyleParserHelper {
         if (!Strings.isNullOrEmpty(styleJson.optString(JSON_GRAPHIC_FORMAT))) {
             mimeType = styleJson.getString(JSON_GRAPHIC_FORMAT);
         } else {
-            int separatorPos = externalGraphicFile.lastIndexOf(".");
-
-            if (separatorPos >= 0) {
-                mimeType = "image/" + externalGraphicFile.substring(separatorPos + 1).toLowerCase();
+            Matcher matcher = DATA_FORMAT_PATTERN.matcher(externalGraphicFile);
+            if (matcher.find()) {
+                mimeType = matcher.group(1);
             }
-            if (mimeType.equals("")) {
+
+            if (mimeType == null) {
+                int separatorPos = externalGraphicFile.lastIndexOf(".");
+                if (separatorPos >= 0) {
+                    mimeType = "image/" + externalGraphicFile.substring(separatorPos + 1).toLowerCase();
+                }
+            }
+
+            if (mimeType == null) {
                 try {
                     URI uri;
                     try {

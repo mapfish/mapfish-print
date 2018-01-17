@@ -652,6 +652,24 @@ public class JsonStyleParserHelperTest {
         }
     }
 
+    @Test
+    public void testGetGraphicFormatDetect2() throws Exception {
+        final List<String> strings = Arrays.asList(ImageIO.getReaderMIMETypes());
+        PJsonObject styleJson = new PJsonObject(new JSONObject(), "style");
+        for (String supportedMimetype : strings) {
+            Set<String> compatibleMimetypes = findCompatibleMimeTypes(supportedMimetype);
+            for (String mimeType : compatibleMimetypes) {
+                if (Strings.isNullOrEmpty(mimeType)) {
+                    continue;
+                }
+                final String gf1 = helper.getGraphicFormat("data:" + mimeType + ",blabla", styleJson);
+                assertTrue(gf1 + " is not supported", strings.contains(gf1));
+                final String gf2 = helper.getGraphicFormat("data:" + mimeType + ";base64,blabla", styleJson);
+                assertTrue(gf2 + " is not supported", strings.contains(gf2));
+            }
+        }
+    }
+
     private Set<String> findCompatibleMimeTypes(String mimeType) {
         for (Set<String> compatibleMimetypes : helper.COMPATIBLE_MIMETYPES) {
             if (compatibleMimetypes.contains(mimeType)) {
