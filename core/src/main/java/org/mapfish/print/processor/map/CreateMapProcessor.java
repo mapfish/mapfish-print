@@ -539,13 +539,15 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
 
                     MapBounds mapBounds = mapValues.getMapBounds();
                     Rectangle paintArea = new Rectangle(mapValues.getMapSize());
-                    // expand the bounds so that they match the ratio of the paint area
-                    mapBounds = mapBounds.adjustedEnvelope(paintArea);
 
                     if (mapValues.zoomToFeatures.minMargin != null) {
                         // add a margin around the feature bounds
-                        mapBounds = ((BBoxMapBounds) mapBounds).expand(mapValues.zoomToFeatures.minMargin, paintArea);
+                        mapBounds = new BBoxMapBounds(mapBounds.toReferencedEnvelope(paintArea)).expand(
+                                mapValues.zoomToFeatures.minMargin, paintArea);
                     }
+
+                    // expand the bounds so that they match the ratio of the paint area
+                    mapBounds = mapBounds.adjustedEnvelope(paintArea);
 
                     final Scale scale = mapBounds.getScale(paintArea, mapValues.getDpi());
                     final Scale minScale = new Scale(mapValues.zoomToFeatures.minScale,
