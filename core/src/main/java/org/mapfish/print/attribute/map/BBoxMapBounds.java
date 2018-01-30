@@ -207,19 +207,27 @@ public final class BBoxMapBounds extends MapBounds {
      * @param paintArea the paint area of the map.
      */
     public MapBounds expand(final int margin, final Rectangle paintArea) {
-        double factorX = 1.0 + (2 * margin) / paintArea.getWidth();
-        double factorY = 1.0 + (2 * margin) / paintArea.getHeight();
+        final double size;
+        if (this.bbox.getHeight() == 0 ||
+                this.bbox.getWidth() / this.bbox.getHeight() > paintArea.getWidth() / paintArea.getHeight()) {
+            // it's the width of the feature that is a limiting factor
+            size = paintArea.getWidth();
+        } else {
+            // it's the height of the feature that is a limiting factor
+            size = paintArea.getHeight();
+        }
+        final double factor = size / (size - 2.0 * margin);
 
-        double destWidth = this.bbox.getWidth() * factorX;
-        double destHeight = this.bbox.getHeight() * factorY;
+        final double destWidth = this.bbox.getWidth() * factor;
+        final double destHeight = this.bbox.getHeight() * factor;
 
-        double centerX = this.bbox.centre().x;
-        double centerY = this.bbox.centre().y;
+        final double centerX = this.bbox.centre().x;
+        final double centerY = this.bbox.centre().y;
 
-        double minGeoX = centerX - destWidth / 2.0;
-        double maxGeoX = centerX + destWidth / 2.0;
-        double minGeoY = centerY - destHeight / 2.0;
-        double maxGeoY = centerY + destHeight / 2.0;
+        final double minGeoX = centerX - destWidth / 2.0;
+        final double maxGeoX = centerX + destWidth / 2.0;
+        final double minGeoY = centerY - destHeight / 2.0;
+        final double maxGeoY = centerY + destHeight / 2.0;
 
         return new BBoxMapBounds(getProjection(),
                 minGeoX, minGeoY, maxGeoX, maxGeoY);

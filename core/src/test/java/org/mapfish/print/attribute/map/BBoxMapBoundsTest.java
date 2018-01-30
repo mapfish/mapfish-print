@@ -173,4 +173,70 @@ public class BBoxMapBoundsTest {
         assertEquals(400335, newBBox.getMaxX(), 1);
         assertEquals(5000335, newBBox.getMaxY(), 1);
     }
+
+    @Test
+    public void testExpandHorizontalFeatureInVerticalMap() {
+        final BBoxMapBounds bounds = new BBoxMapBounds(CH1903, 300000, 500000, 300200, 500100);
+
+        // a margin of 50px on an area of 200*300px should divide by two the scale
+        final Rectangle paintArea = new Rectangle(200, 300);
+        final BBoxMapBounds expandedBounds = (BBoxMapBounds) bounds.expand(50, paintArea);
+
+        assertEquals(2.0, expandedBounds.toReferencedEnvelope(null).getWidth() /
+                expandedBounds.toReferencedEnvelope(null).getHeight(), 0.01);
+
+
+        assertEquals(bounds.toReferencedEnvelope(null).getWidth() * 2.0,
+                expandedBounds.toReferencedEnvelope(null).getWidth(), 0.01);
+
+        assertEquals(bounds.toReferencedEnvelope(null).getHeight() * 2.0,
+                expandedBounds.toReferencedEnvelope(null).getHeight(), 0.01);
+
+        final BBoxMapBounds adjusted = (BBoxMapBounds) expandedBounds.adjustedEnvelope(paintArea);
+
+        assertEquals(expandedBounds.toReferencedEnvelope(paintArea).getWidth(),
+                adjusted.toReferencedEnvelope(paintArea).getWidth(), 0.01);
+
+        assertEquals(adjusted.toReferencedEnvelope(paintArea).getWidth() /
+                        adjusted.toReferencedEnvelope(paintArea).getHeight(),
+                paintArea.getWidth() / paintArea.getHeight(), 0.01);
+    }
+
+    @Test
+    public void testExpandVerticalFeatureInHorizontalMap() {
+        final BBoxMapBounds bounds = new BBoxMapBounds(CH1903, 300000, 500000, 300100, 500200);
+
+        // a margin of 50px on an area of 200*200px should divide by 1.5 the scale
+        final Rectangle paintArea = new Rectangle(300, 200);
+        final BBoxMapBounds expandedBounds = (BBoxMapBounds) bounds.expand(50, paintArea);
+
+        assertEquals(0.5, expandedBounds.toReferencedEnvelope(null).getWidth() /
+                expandedBounds.toReferencedEnvelope(null).getHeight(), 0.01);
+
+        assertEquals(bounds.toReferencedEnvelope(null).getWidth() * 2.0,
+                expandedBounds.toReferencedEnvelope(null).getWidth(), 0.01);
+
+        assertEquals(bounds.toReferencedEnvelope(null).getHeight() * 2.0,
+                expandedBounds.toReferencedEnvelope(null).getHeight(), 0.01);
+
+        final BBoxMapBounds adjusted = (BBoxMapBounds) expandedBounds.adjustedEnvelope(paintArea);
+
+        assertEquals(expandedBounds.toReferencedEnvelope(paintArea).getHeight(),
+                adjusted.toReferencedEnvelope(paintArea).getHeight(), 0.01);
+
+        assertEquals(adjusted.toReferencedEnvelope(paintArea).getWidth() /
+                        adjusted.toReferencedEnvelope(paintArea).getHeight(),
+                paintArea.getWidth() / paintArea.getHeight(), 0.01);
+    }
+
+    @Test
+    public void testExpandPoint() {
+        final BBoxMapBounds bounds = new BBoxMapBounds(CH1903, 300000, 500000, 300000, 500000);
+
+        // a margin of 50px on an area of 200*200px should divide by 1.5 the scale
+        final BBoxMapBounds expandedBounds = (BBoxMapBounds) bounds.expand(50, new Rectangle(200, 200));
+
+        assertEquals(0.0, expandedBounds.toReferencedEnvelope(null).getWidth(), 0.01);
+        assertEquals(0.0, expandedBounds.toReferencedEnvelope(null).getHeight(), 0.01);
+    }
 }
