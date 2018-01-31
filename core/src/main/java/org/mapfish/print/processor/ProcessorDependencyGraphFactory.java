@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -67,9 +66,6 @@ public final class ProcessorDependencyGraphFactory {
         outputTypes.put(Values.JOB_ID_KEY, String.class);
         outputTypes.put(MapPrinterServlet.JSON_REQUEST_HEADERS, HttpRequestHeadersAttribute.Value.class);
 
-        final List<ProcessorGraphNode<Object, Object>> nodes =
-                new ArrayList<ProcessorGraphNode<Object, Object>>(processors.size());
-
         for (Processor processor: processors) {
             final ProcessorGraphNode<Object, Object> node =
                     new ProcessorGraphNode<Object, Object>(processor, this.metricRegistry);
@@ -81,7 +77,7 @@ public final class ProcessorDependencyGraphFactory {
                 if (input.name.equals(Values.VALUES_KEY)) {
                     if (processor instanceof CustomDependencies) {
                         for (String name: ((CustomDependencies) processor).getDependencies()) {
-                            final Class<?> outputType = outputTypes.get(input.name);
+                            final Class<?> outputType = outputTypes.get(name);
                             if (outputType == null) {
                                 throw new IllegalArgumentException(String.format("The Processor '%s' has " +
                                         "no value for the dynamic input '%s'.", processor, name));
@@ -166,7 +162,6 @@ public final class ProcessorDependencyGraphFactory {
                 provideByProcessor.put(outputName, node);
                 outputTypes.put(outputName, value.type);
             }
-            nodes.add(node);
 
             // check input/output value dependencies
             for (InputValue input : inputs) {
@@ -251,13 +246,10 @@ public final class ProcessorDependencyGraphFactory {
                         if (processor instanceof CustomDependencies) {
                             for (String attributeName : ((CustomDependencies) processor).getDependencies()) {
                                 Attribute attribute = currentAttributes.get(attributeName);
-                                if (attribute == null) {
-                                    throw new IllegalArgumentException(String.format("The Processor '%s' " +
-                                            "has no value for the dynamic input '%s'.", processor,
-                                            attributeName));
+                                if (attribute != null) {
+                                    ((RequireAttributes) processor).setAttribute(
+                                            attributeName, currentAttributes.get(attributeName));
                                 }
-                                ((RequireAttributes) processor).setAttribute(
-                                        attributeName, currentAttributes.get(attributeName));
                             }
 
                         } else {

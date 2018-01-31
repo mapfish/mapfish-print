@@ -171,7 +171,15 @@ public final class DataSourceProcessor
     @Nonnull
     @Override
     public Collection<String> getDependencies() {
-        return this.copyAttributes;
+        final ArrayList<String> result = new ArrayList<>(this.copyAttributes);
+        result.add(Values.TASK_DIRECTORY_KEY);
+        result.add(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY);
+        result.add(Values.TEMPLATE_KEY);
+        result.add(Values.PDF_CONFIG_KEY);
+        result.add(Values.SUBREPORT_DIR_KEY);
+        result.add(Values.VALUES_KEY);
+        result.add(Values.JOB_ID_KEY);
+        return result;
     }
 
     /**
@@ -256,6 +264,12 @@ public final class DataSourceProcessor
                                @Nonnull final Values dataSourceValue) throws JSONException {
         dataSourceValue.populateFromAttributes(template, this.parser, this.internalAttributes,
                 new PJsonObject(new JSONObject(), "DataSourceProcessorAttributes"));
+    }
+
+    @Override
+    public void toString(@Nonnull final StringBuilder builder, final int indent, final String parent) {
+        super.toString(builder, indent, parent);
+        this.processorGraph.toString(builder, indent + 1, this.toString());
     }
 
     @Override

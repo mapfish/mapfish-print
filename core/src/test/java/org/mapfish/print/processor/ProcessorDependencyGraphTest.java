@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
 @SuppressWarnings("unchecked")
 public class ProcessorDependencyGraphTest {
     @Test
-    public void testToString() throws Exception {
+    public void testToString() {
         ProcessorDependencyGraph graph = new ProcessorDependencyGraph();
         ProcessorGraphNode root1 = new ProcessorGraphNode(new TestProcessor("root1"), new MetricRegistry());
         ProcessorGraphNode root2 = new ProcessorGraphNode(new TestProcessor("root2"), new MetricRegistry());
@@ -31,15 +31,15 @@ public class ProcessorDependencyGraphTest {
 
         dep11.addDependency(dep11_1);
         dep11.addDependency(dep11_2);
-        assertEquals("dep11_1", dep11_1.toString());
-        assertTrue("dep11\n  +-- dep11_1\n  +-- dep11_2".equals(dep11.toString()) ||
-                "dep11\n  +-- dep11_2\n  +-- dep11_1".equals(dep11.toString()));
-        assertEquals("root2\n  +-- dep21", root2.toString());
+        assertEquals("\"?\" -> \"dep11_1\";\n", dep11_1.toString());
+        assertTrue(dep11.toString(), "\"?\" -> \"dep11\";\n  \"dep11\" -> \"dep11_1\";\n  \"dep11\" -> \"dep11_2\";\n".equals(dep11.toString()) ||
+                "\"?\" -> \"dep11\";\n  \"dep11\" -> \"dep11_2\";\n  \"dep11\" -> \"dep11_1\";\n".equals(dep11.toString()));
+        assertEquals("\"?\" -> \"root2\";\n  \"root2\" -> \"dep21\";\n", root2.toString());
     }
 
 
     @Test
-    public void testCreateTaskAllDependenciesAreSatisfied() throws Exception {
+    public void testCreateTaskAllDependenciesAreSatisfied() {
         Values values = new Values();
         values.put(Values.VALUES_KEY, values);
         values.put("pp", "value");
@@ -62,7 +62,7 @@ public class ProcessorDependencyGraphTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testCreateTaskAllDependenciesAreMissing() throws Exception {
+    public void testCreateTaskAllDependenciesAreMissing() {
         Values values = new Values();
         // this is a misconfiguration prop should be pp thus an exception should be thrown below.
         values.put("prop", "value");
@@ -71,6 +71,7 @@ public class ProcessorDependencyGraphTest {
         processor.getInputMapperBiMap().put("pp", "prop");
 
         final ProcessorDependencyGraph graph = new ProcessorDependencyGraph();
+        //noinspection ConstantConditions
         graph.addRoot(new ProcessorGraphNode(processor, null));
         graph.createTask(values);
     }
@@ -104,7 +105,7 @@ public class ProcessorDependencyGraphTest {
 
         @Nullable
         @Override
-        public Void execute(TestIn values, ExecutionContext context) throws Exception {
+        public Void execute(TestIn values, ExecutionContext context) {
             assertNotNull(values);
             assertNotNull(values.prop);
             assertNotNull(values.values);

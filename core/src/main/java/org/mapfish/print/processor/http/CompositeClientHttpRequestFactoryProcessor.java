@@ -128,6 +128,14 @@ public final class CompositeClientHttpRequestFactoryProcessor
         return null;
     }
 
+    @Override
+    public void toString(final StringBuilder builder, final int indent, final String parent) {
+        super.toString(builder, indent, parent);
+        for (HttpProcessor sub: this.httpProcessors) {
+            sub.toString(builder, indent + 1, this.toString());
+        }
+    }
+
     /**
      * The input.
      */

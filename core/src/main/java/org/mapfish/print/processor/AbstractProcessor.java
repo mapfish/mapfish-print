@@ -86,6 +86,19 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
         return this.outputPrefix == null ? this.prefix : this.outputPrefix;
     }
 
+    @Override
+    public void toString(final StringBuilder builder, final int indent, final String parent) {
+        int spaces = (indent) * 2;
+        for (int i = 0; i < spaces; i++) {
+            builder.append(' ');
+        }
+        builder.append("\"");
+        builder.append(parent.replace("\"", "\\\""));
+        builder.append("\" -> \"");
+        builder.append(toString().replace("\"", "\\\""));
+        builder.append("\";\n");
+    }
+
     /**
      * The input mapper.
      *
@@ -161,7 +174,7 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
     // CHECKSTYLE:OFF
     @Override
     public String toString() {
-        return getClass().getSimpleName();
+        return getClass().getSimpleName() + "@" + System.identityHashCode(this);
     }
     // CHECKSTYLE:ON
 
