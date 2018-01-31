@@ -213,14 +213,15 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
                     String errorMessage = String.format("Error making tile request: %s\n\t" +
                             "Status: %s\n" +
                             "\toutMessage: %s",
-                            this.tileRequest.getURI(), statusCode, response.getStatusText());
+                            this.tileRequest.getURI(), statusCode,
+                            response != null ? response.getStatusText() : "-");
                     LOGGER.error(errorMessage);
                     this.registry.counter(baseMetricName + ".error").inc();
                     if (this.failOnError) {
                         throw new RuntimeException(errorMessage);
                     }
                     return new Tile(this.errorImage, getTileIndexX(), getTileIndexY());
-                    }
+                }
 
                 BufferedImage image = ImageIO.read(response.getBody());
                 if (image == null) {
