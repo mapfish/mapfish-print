@@ -47,7 +47,7 @@ public final class ProcessorExecutionContext {
     @SuppressWarnings("unchecked")
     public boolean tryStart(final ProcessorGraphNode processorGraphNode) {
         this.processorLock.lock();
-        boolean canStart = false;
+        final boolean canStart;
         try {
             if (isRunning(processorGraphNode) || isFinished(processorGraphNode) || !allAreFinished(processorGraphNode.getRequirements())) {
                 canStart = false;

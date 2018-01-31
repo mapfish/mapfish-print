@@ -13,9 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import java.util.ArrayList;
 import java.util.IdentityHashMap;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.RecursiveTask;
@@ -32,8 +30,17 @@ import javax.annotation.Nonnull;
 public final class ProcessorGraphNode<In, Out> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessorGraphNode.class);
     private final Processor<In, Out> processor;
+
+    /**
+     * The list of processors that get values from the output of this processor.
+     */
     private final Set<ProcessorGraphNode> dependencies = Sets.newHashSet();
+
+    /**
+     * The list of processors on which this processor gets its values from.
+     */
     private final Set<ProcessorGraphNode> requirements = Sets.newHashSet();
+
     private final MetricRegistry metricRegistry;
 
     /**
@@ -126,30 +133,21 @@ public final class ProcessorGraphNode<In, Out> {
 
     /**
      * Create a string representing this node.
-     *
      * @param builder the builder to add the string to.
      * @param indent the number of steps of indent for this node
+     * @param parent the parent node
      */
-    public void toString(final StringBuilder builder, final int indent) {
-        int spaces = (indent) * 2;
-        for (int i = 0; i < spaces; i++) {
-            builder.append(' ');
-        }
-        if (indent > 0) {
-            builder.append("+-- ");
-        }
-
-        builder.append(this.processor);
+    public void toString(final StringBuilder builder, final int indent, final String parent) {
+        this.processor.toString(builder, indent, parent);
         for (ProcessorGraphNode dependency : this.dependencies) {
-            builder.append('\n');
-            dependency.toString(builder, indent + 1);
+            dependency.toString(builder, indent + 1, this.processor.toString());
         }
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        toString(builder, 0);
+        toString(builder, 0, "?");
         return builder.toString();
     }
 
@@ -194,7 +192,7 @@ public final class ProcessorGraphNode<In, Out> {
                     ProcessorGraphNode.class.getName(), process.getClass());
             Timer.Context timerContext = registry.timer(name).time();
             try {
-                In inputParameter = ProcessorUtils.populateInputParameter(process, values);
+                final In inputParameter = ProcessorUtils.populateInputParameter(process, values);
 
                 Out output;
                 try {
@@ -225,37 +223,9 @@ public final class ProcessorGraphNode<In, Out> {
             if (this.execContext.getContext().isCanceled()) {
                 throw new CancellationException();
             }
-            executeDependencyProcessors();
+            ProcessorDependencyGraph.tryExecuteNodes(this.node.dependencies, this.execContext, true);
 
             return values;
-        }
-
-        private void executeDependencyProcessors() {
-            final Set<ProcessorGraphNode> dependencyNodes = this.node.dependencies;
-
-            List<ProcessorNodeForkJoinTask<?, ?>> tasks = new ArrayList<ProcessorNodeForkJoinTask<?, ?>>(
-                    dependencyNodes.size());
-
-            // fork all but 1 dependencies (the first will be ran in current thread)
-            for (final ProcessorGraphNode<?, ?> depNode : dependencyNodes) {
-                Optional<? extends ProcessorNodeForkJoinTask<?, ?>> task = depNode.createTask(
-                        this.execContext);
-                if (task.isPresent()) {
-                    tasks.add(task.get());
-                    if (tasks.size() > 1) {
-                        task.get().fork();
-                    }
-                }
-            }
-
-            if (!tasks.isEmpty()) {
-                // compute one task in current thread so as not to waste threads
-                tasks.get(0).compute();
-
-                for (ProcessorNodeForkJoinTask task : tasks.subList(1, tasks.size())) {
-                    task.join();
-                }
-            }
         }
     }
 }

@@ -123,6 +123,14 @@ public interface Processor<In, Out> extends ConfigurationObject {
     String getOutputPrefix();
 
     /**
+     * Create a string representing this processor.
+     *  @param builder the builder to add the string to.
+     * @param indent the number of steps of indent for this node
+     * @param parent the parent node's name
+     */
+    void toString(StringBuilder builder, int indent, String parent);
+
+    /**
      * An execution context for a specific print task.
      */
     public interface ExecutionContext {
