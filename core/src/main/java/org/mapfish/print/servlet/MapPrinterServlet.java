@@ -965,7 +965,7 @@ public class MapPrinterServlet extends BaseMapServlet {
         final Optional<String> headerName =
                 REQUEST_ID_HEADERS.stream().filter(h -> request.getHeader(h) != null).findFirst();
         return headerName.map(s ->
-                ref + "@" + request.getHeader(s).replaceAll("[^a-zA-Z0-9._-]", "_")
+                ref + "@" + request.getHeader(s).replaceAll("[^a-zA-Z0-9._:-]", "_")
         ).orElse(
                 ref
         );
