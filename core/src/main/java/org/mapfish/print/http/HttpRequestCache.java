@@ -11,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.client.AbstractClientHttpResponse;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.util.StreamUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -98,7 +99,7 @@ public final class HttpRequestCache {
 
     private class CachedClientHttpRequest implements ClientHttpRequest, Callable<Void> {
         private final ClientHttpRequest originalRequest;
-        private CachedClientHttpResponse response;
+        private ClientHttpResponse response;
 
         public CachedClientHttpRequest(final ClientHttpRequest request) {
             this.originalRequest = request;
@@ -148,6 +149,31 @@ public final class HttpRequestCache {
                 this.response = new CachedClientHttpResponse(originalResponse);
             } catch (IOException e) {
                 LOGGER.error("Request failed " + this.originalRequest.getURI(), e);
+                this.response = new AbstractClientHttpResponse() {
+                    @Override
+                    public HttpHeaders getHeaders() {
+                        return new HttpHeaders();
+                    }
+
+                    @Override
+                    public InputStream getBody() {
+                        return StreamUtils.emptyInput();
+                    }
+
+                    @Override
+                    public int getRawStatusCode() {
+                        return 500;
+                    }
+
+                    @Override
+                    public String getStatusText() {
+                        return e.getMessage();
+                    }
+
+                    @Override
+                    public void close() {
+                    }
+                };
                 HttpRequestCache.this.registry.counter(baseMetricName + ".error").inc();
                 throw e;
             } finally {
