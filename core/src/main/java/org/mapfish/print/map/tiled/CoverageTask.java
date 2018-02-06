@@ -200,8 +200,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
                 LOGGER.debug("\n\t" + this.tileRequest.getMethod() + " -- " + this.tileRequest.getURI());
                 final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
                 response = this.tileRequest.execute();
-                final HttpStatus statusCode =
-                        response != null ? response.getStatusCode() : HttpStatus.INTERNAL_SERVER_ERROR;
+                final HttpStatus statusCode = response.getStatusCode();
                 if (statusCode == HttpStatus.NO_CONTENT || statusCode == HttpStatus.NOT_FOUND) {
                     if (statusCode == HttpStatus.NOT_FOUND) {
                         LOGGER.info("The request {} returns a not found status code, we consider it as an " +
@@ -213,8 +212,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
                     String errorMessage = String.format("Error making tile request: %s\n\t" +
                             "Status: %s\n" +
                             "\toutMessage: %s",
-                            this.tileRequest.getURI(), statusCode,
-                            response != null ? response.getStatusText() : "-");
+                            this.tileRequest.getURI(), statusCode, response.getStatusText());
                     LOGGER.error(errorMessage);
                     this.registry.counter(baseMetricName + ".error").inc();
                     if (this.failOnError) {

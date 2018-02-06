@@ -9,9 +9,9 @@ allprojects {
     group = 'org.mapfish.print'
     version = '3.13-LATEST'
     ext.junitVersion = "4.12"
-    ext.springVersion = "4.3.13.RELEASE"
-    ext.jasperReportVersion = "6.4.3"
-    ext.groovyVersion = "2.4.12"
+    ext.springVersion = "4.3.14.RELEASE"
+    ext.jasperReportVersion = "6.5.1"
+    ext.groovyVersion = "2.4.13"
     ext."signing.keyId" = signing_keyId
     ext."signing.secretKeyRingFile" = signing_secretKeyRingFile
     ext."signing.password" = signing_password
@@ -82,6 +82,12 @@ configure(subprojects.findAll {['core', 'examples'].contains(it.name)}) {
         effort = "max"
         reportLevel = "high"
         excludeFilter = file("$rootProject.projectDir/findbugs-exclude.xml")
+    }
+    tasks.withType(FindBugs) {
+        reports {
+            xml.enabled = false
+            html.enabled = true
+        }
     }
     findbugsTest.enabled = false
 
