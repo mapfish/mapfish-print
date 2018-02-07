@@ -18,6 +18,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 
 /**
@@ -60,9 +61,12 @@ public class PrintJobDao {
      * @param id the id
      * @return
      */
+    @Nullable
     public final PrintJobStatusExtImpl get(final String id) {
         final PrintJobStatusExtImpl result = get(id, false);
-        getSession().evict(result);
+        if (result != null) {
+            getSession().evict(result);
+        }
         return result;
     }
 
@@ -72,8 +76,9 @@ public class PrintJobDao {
      *
      * @param id the id
      * @param lock whether record should be locked for transaction
-     * @return the job status.
+     * @return the job status or null.
      */
+    @Nullable
     public final PrintJobStatusExtImpl get(final String id, final boolean lock) {
         Criteria c = getSession().createCriteria(PrintJobStatusExtImpl.class);
         c.add(Restrictions.idEq(id));
