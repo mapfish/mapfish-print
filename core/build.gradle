@@ -335,7 +335,8 @@ task createDocker(type: Docker, dependsOn: 'unzipWar') {
     //avoid a warning because logback-classic is both in tomcat and in the webapp
     runCommand 'rm ${CATALINA_HOME}/webapps/ROOT/WEB-INF/lib/logback-*.jar ${CATALINA_HOME}/webapps/ROOT/WEB-INF/lib/slf4j-*.jar && ' + \
             'mkdir -p ${CATALINA_HOME}/extlib/classes/org/mapfish/print && ' + \
-            'cp -r ${CATALINA_HOME}/webapps/ROOT/WEB-INF/classes/org/mapfish/print/url ${CATALINA_HOME}/extlib/classes/org/mapfish/print/'
+            'cp -r ${CATALINA_HOME}/webapps/ROOT/WEB-INF/classes/org/mapfish/print/url ${CATALINA_HOME}/extlib/classes/org/mapfish/print/ && ' + \
+            'perl -0777 -i -pe \'s/<Valve className="ch.qos.logback.access.tomcat.LogbackValve" quiet="true"\\/>//s\' ${CATALINA_HOME}/conf/server.xml'
 
     setEnvironment('LOG_LEVEL', 'INFO')
     setEnvironment('SPRING_LOG_LEVEL', 'WARN')
