@@ -55,7 +55,7 @@ import javax.annotation.PostConstruct;
  * The Main Configuration Bean.
  * <p></p>
  */
-public class Configuration {
+public class Configuration implements ConfigurationObject {
     private static final Map<String, String> GEOMETRY_NAME_ALIASES;
 
     static {
@@ -310,6 +310,11 @@ public class Configuration {
         return template;
     }
 
+    /**
+     * Set the configuration of the named template.
+     *
+     * @param templates the templates;
+     */
     public final void setTemplates(final Map<String, Template> templates) {
         this.templates = templates;
     }
@@ -449,15 +454,26 @@ public class Configuration {
     }
 
     /**
-     * If true then if the request JSON has extra parameters exceptions will be thrown.  Otherwise the
-     * information will be logged.
+     * If true and the request JSON has extra parameters in the layers definition, exceptions will be thrown.
+     * Otherwise the information will be logged.
      */
     public final boolean isThrowErrorOnExtraParameters() {
         return this.throwErrorOnExtraParameters;
     }
 
+    /**
+     * If true and the request JSON has extra parameters in the layers definition, exceptions will be thrown.
+     * Otherwise the information will be logged.
+     *
+     * @param throwErrorOnExtraParameters the value
+     */
     public final void setThrowErrorOnExtraParameters(final boolean throwErrorOnExtraParameters) {
         this.throwErrorOnExtraParameters = throwErrorOnExtraParameters;
+    }
+
+    @Override
+    public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
+        validationErrors.addAll(validate());
     }
 
     /**
