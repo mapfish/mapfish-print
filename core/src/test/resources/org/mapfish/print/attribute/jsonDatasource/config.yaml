@@ -1,0 +1,9 @@
+throwErrorOnExtraParameters: true
+templates:
+  main: !template
+    reportTemplate: simple-map.jrxml
+    attributes:
+      json: !jsonDatasource {}
+    processors:
+    - !reportBuilder
+        directory: "."

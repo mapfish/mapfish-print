@@ -19,6 +19,7 @@
     <bean id="scalebar" class="org.mapfish.print.attribute.ScalebarAttribute" scope="prototype" />
     <bean id="datasource" class="org.mapfish.print.attribute.DataSourceAttribute" scope="prototype" />
     <bean id="staticLayers" class="org.mapfish.print.attribute.map.StaticLayersAttribute" scope="prototype" />
+    <bean id="jsonDatasource" class="org.mapfish.print.attribute.JsonDatasourceAttribute" scope="prototype" />
 
     <bean id="zoomLevels" class="org.mapfish.print.attribute.map.ZoomLevels" scope="prototype" />
 

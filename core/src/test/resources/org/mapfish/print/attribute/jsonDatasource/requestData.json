@@ -1,0 +1,7 @@
+{
+  "layout": "main",
+  "outputFormat": "pdf",
+  "attributes": {
+    "json": {"a": {"b": "s1"}}
+  }
+}
