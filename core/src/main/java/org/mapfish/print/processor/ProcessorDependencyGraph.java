@@ -4,7 +4,6 @@ import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-
 import org.mapfish.print.output.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +31,7 @@ public final class ProcessorDependencyGraph {
     private final List<ProcessorGraphNode> roots;
 
     ProcessorDependencyGraph() {
-        this.roots = new ArrayList<ProcessorGraphNode>();
+        this.roots = new ArrayList<>();
     }
 
     /**
@@ -84,7 +83,7 @@ public final class ProcessorDependencyGraph {
             } else if (inputParameter != null) {
                 final Class<?> inputParameterClass = inputParameter.getClass();
                 final Set<String> requiredAttributesDefinedInInputParameter = getAttributeNames(inputParameterClass,
-                        FILTER_ONLY_REQUIRED_ATTRIBUTES);
+                        FILTER_ONLY_REQUIRED_ATTRIBUTES::test);
                 for (String attName : requiredAttributesDefinedInInputParameter) {
                     try {
                         if (inputParameterClass.getField(attName).getType() == Values.class) {
@@ -136,7 +135,7 @@ public final class ProcessorDependencyGraph {
      * Create a set containing all the processors in the graph.
      */
     public Set<Processor<?, ?>> getAllProcessors() {
-        IdentityHashMap<Processor<?, ?>, Void> all = new IdentityHashMap<Processor<?, ?>, Void>();
+        IdentityHashMap<Processor<?, ?>, Void> all = new IdentityHashMap<>();
         for (ProcessorGraphNode<?, ?> root : this.roots) {
             for (Processor p : root.getAllProcessors()) {
                 all.put(p, null);
@@ -173,11 +172,11 @@ public final class ProcessorDependencyGraph {
         protected Values compute() {
             final ProcessorDependencyGraph graph = ProcessorDependencyGraph.this;
             MDC.put("job_id", this.execContext.getJobId());
-            LOGGER.debug("Starting to execute processor graph: \n" + graph);
+            LOGGER.debug("Starting to execute processor graph: \n{}", graph);
             try {
                 tryExecuteNodes(graph.roots, this.execContext, false);
             } finally {
-                LOGGER.debug("Finished executing processor graph: \n" + graph);
+                LOGGER.debug("Finished executing processor graph: \n{}", graph);
             }
             return this.execContext.getValues();
         }
@@ -199,7 +198,7 @@ public final class ProcessorDependencyGraph {
                     task.get().fork();
                 }
             } else if (!notStartedIsOk) {
-                LOGGER.error("Failed to start the processor " + depNode.getProcessor().toString());
+                LOGGER.error("Failed to start the processor {}", depNode.getProcessor());
             }
         }
 

@@ -9,7 +9,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
-import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +38,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
         final Template template = config.getTemplate("main");
         final PJsonObject pJsonObject = parseJSONObjectFromFile(OverviewMapAttributeTest.class, "overviewmap_attributes/requestData-json.json");
 
-        final Values values = new Values("test", pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory,
+        final Values values = new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
                 new File("."));
         final MapAttribute.MapAttributeValues mapValue = values.getObject("map", MapAttribute.MapAttributeValues.class);
         final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue =
@@ -64,7 +63,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
         final Template template = config.getTemplate("main");
         final PJsonObject pJsonObject = parseJSONObjectFromFile(OverviewMapAttributeTest.class, "overviewmap_attributes/requestData-yaml.json");
 
-        final Values values = new Values("test", pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory, new File("."));
+        final Values values = new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory, new File("."));
         final MapAttribute.MapAttributeValues mapValue = values.getObject("map", MapAttribute.MapAttributeValues.class);
         final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue =
                 values.getObject("overviewMap", OverviewMapAttribute.OverviewMapAttributeValues.class);
@@ -89,7 +88,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
         final Template template = config.getTemplate("main");
         final PJsonObject pJsonObject = parseJSONObjectFromFile(OverviewMapAttributeTest.class, "overviewmap_attributes/requestData-json.json");
 
-        final Values values = new Values("test", pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory, new File("."));
+        final Values values = new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory, new File("."));
         final MapAttribute.MapAttributeValues mapValue = values.getObject("map", MapAttribute.MapAttributeValues.class);
         final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue =
                 values.getObject("overviewMap", OverviewMapAttribute.OverviewMapAttributeValues.class);

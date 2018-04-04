@@ -11,7 +11,6 @@ import org.mapfish.print.config.Template;
 import org.mapfish.print.output.AbstractJasperReportOutputFormat;
 import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.output.Values;
-import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +31,6 @@ public class DataSourceProcessorTest extends AbstractMapfishSpringTest {
 
     @Autowired
     private ConfigurationFactory configurationFactory;
-    @Autowired
-    private MapfishParser parser;
     @Autowired
     private ForkJoinPool forkJoinPool;
     @Autowired
@@ -57,7 +54,7 @@ public class DataSourceProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values("test", requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
+        Values values = new Values("test", requestData, template, getTaskDirectory(), this.httpRequestFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final DataSourceAttribute.DataSourceAttributeValue datasource = values.getObject("datasource", DataSourceAttribute.DataSourceAttributeValue.class);

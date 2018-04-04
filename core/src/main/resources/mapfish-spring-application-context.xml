@@ -86,7 +86,6 @@
     <bean id="configuration" class="org.mapfish.print.config.Configuration" scope="prototype"/>
 
     <bean id="styleParser" class="org.mapfish.print.map.style.StyleParser" />
-    <bean id="parser" class="org.mapfish.print.parser.MapfishParser" />
     <bean id="imageIOPluginScanner" class="org.mapfish.print.ImageIOPluginScanner" />
 
     <bean class="org.mapfish.print.ApplicationContextProvider" />

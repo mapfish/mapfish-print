@@ -12,7 +12,6 @@ import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.output.Values;
-import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.processor.map.SetStyleProcessor;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +31,6 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
     @Autowired
     private ConfigurationFactory configurationFactory;
     @Autowired
-    private MapfishParser parser;
-    @Autowired
     private ForkJoinPool forkJoinPool;
     @Autowired
     private TestHttpClientFactory httpClientFactory;
@@ -44,7 +41,7 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = this.configurationFactory.getConfig(getFile(BASE_DIR + "basic/config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = parseJSONObjectFromFile(SetStyleProcessorTest.class, BASE_DIR + "basic/request.json");
-        Values values = new Values("test", requestData, template, parser, this.folder.getRoot(), this.httpClientFactory, new File("."));
+        Values values = new Values("test", requestData, template, this.folder.getRoot(), this.httpClientFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final MapAttribute.MapAttributeValues map = values.getObject("map", MapAttribute.MapAttributeValues.class);

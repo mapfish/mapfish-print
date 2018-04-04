@@ -37,8 +37,6 @@ public class CreateMapProcessorCenterWMSRotationSmallTilesTest extends AbstractM
     private ConfigurationFactory configurationFactory;
     @Autowired
     private TestHttpClientFactory requestFactory;
-    @Autowired
-    private MapfishParser parser;
 
 
     @Test
@@ -69,7 +67,7 @@ public class CreateMapProcessorCenterWMSRotationSmallTilesTest extends AbstractM
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "/config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values("test", requestData, template, parser, getTaskDirectory(),
+        Values values = new Values("test", requestData, template, getTaskDirectory(),
                 this.requestFactory, new File("."));
         template.getProcessorGraph().createTask(values).invoke();
 

@@ -63,8 +63,6 @@ public abstract class GenericMapAttribute
 
     @Autowired
     private ApplicationContext applicationContext;
-    @Autowired
-    private MapfishParser mapfishJsonParser;
 
     private Double maxDpi = null;
     private double[] dpiSuggestions = null;
@@ -388,10 +386,8 @@ public abstract class GenericMapAttribute
                 if (layerApplies) {
                     Object param = layerParser.createParameter();
 
-                    GenericMapAttribute.this.mapfishJsonParser.parse(this.template.getConfiguration()
-                                    .isThrowErrorOnExtraParameters(),
-                            layer, param, TYPE
-                    );
+                    MapfishParser.parse(this.template.getConfiguration().isThrowErrorOnExtraParameters(),
+                            layer, param, TYPE);
 
                     final MapLayer newLayer = layerParser.parse(this.template, param);
                     if (layerList.isEmpty()) {
@@ -548,18 +544,16 @@ public abstract class GenericMapAttribute
      * @param longitudeFirst longitudeFirst
      */
     public static CoordinateReferenceSystem parseProjection(final String projection, final Boolean longitudeFirst) {
-        String epsgCode = projection;
-
         try {
             if (longitudeFirst == null) {
-                return CRS.decode(epsgCode);
+                return CRS.decode(projection);
             } else {
-                return CRS.decode(epsgCode, longitudeFirst);
+                return CRS.decode(projection, longitudeFirst);
             }
         } catch (NoSuchAuthorityCodeException e) {
-            throw new RuntimeException(epsgCode + " was not recognized as a crs code", e);
+            throw new RuntimeException(projection + " was not recognized as a crs code", e);
         } catch (FactoryException e) {
-            throw new RuntimeException("Error occurred while parsing: " + epsgCode, e);
+            throw new RuntimeException("Error occurred while parsing: " + projection, e);
         }
     }
 }

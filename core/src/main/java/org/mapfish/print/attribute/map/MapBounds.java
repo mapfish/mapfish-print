@@ -173,11 +173,7 @@ public abstract class MapBounds {
 
         MapBounds mapBounds = (MapBounds) o;
 
-        if (!projection.equals(mapBounds.projection)) {
-            return false;
-        }
-
-        return true;
+        return projection.equals(mapBounds.projection);
     }
 
     @Override

@@ -2,27 +2,20 @@ package org.mapfish.print.output;
 
 import com.google.common.collect.Maps;
 import com.vividsolutions.jts.util.Assert;
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.mapfish.print.ExtraPropertyException;
 import org.mapfish.print.attribute.Attribute;
-import org.mapfish.print.attribute.DataSourceAttribute;
 import org.mapfish.print.attribute.HttpRequestHeadersAttribute;
-import org.mapfish.print.attribute.PrimitiveAttribute;
 import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.PDFConfig;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.ConfigFileResolvingHttpRequestFactory;
 import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
-import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.wrapper.ObjectMissingException;
 import org.mapfish.print.wrapper.PObject;
-import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
-import org.mapfish.print.wrapper.multi.PMultiObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -93,11 +86,9 @@ public final class Values {
 
     /**
      * Construct from the json request body and the associated template.
-     *
-     * @param jobId the job ID
+     *  @param jobId the job ID
      * @param requestData the json request data
      * @param template the template
-     * @param parser the parser to use for parsing the request data.
      * @param taskDirectory the temporary directory for this printing task.
      * @param httpRequestFactory a factory for making http requests.
      * @param jasperTemplateBuild the directory where the jasper templates are compiled to
@@ -105,20 +96,17 @@ public final class Values {
     public Values(final String jobId,
                   final PJsonObject requestData,
                   final Template template,
-                  final MapfishParser parser,
                   final File taskDirectory,
                   final MfClientHttpRequestFactoryImpl httpRequestFactory,
                   final File jasperTemplateBuild) throws JSONException {
-        this(jobId, requestData, template, parser, taskDirectory, httpRequestFactory, jasperTemplateBuild, null);
+        this(jobId, requestData, template, taskDirectory, httpRequestFactory, jasperTemplateBuild, null);
     }
 
     /**
      * Construct from the json request body and the associated template.
-     *
-     * @param jobId the job ID
+     *  @param jobId the job ID
      * @param requestData the json request data
      * @param template the template
-     * @param parser the parser to use for parsing the request data.
      * @param taskDirectory the temporary directory for this printing task.
      * @param httpRequestFactory a factory for making http requests.
      * @param jasperTemplateBuild the directory where the jasper templates are compiled to
@@ -128,7 +116,6 @@ public final class Values {
     public Values(final String jobId,
                   final PJsonObject requestData,
                   final Template template,
-                  final MapfishParser parser,
                   final File taskDirectory,
                   final MfClientHttpRequestFactoryImpl httpRequestFactory,
                   final File jasperTemplateBuild,
@@ -153,7 +140,7 @@ public final class Values {
         final PJsonObject jsonAttributes = requestData.getJSONObject(MapPrinterServlet.JSON_ATTRIBUTES);
 
         Map<String, Attribute> attributes = Maps.newHashMap(template.getAttributes());
-        populateFromAttributes(template, parser, attributes, jsonAttributes);
+        populateFromAttributes(template, attributes, jsonAttributes);
 
         this.values.put(JOB_ID_KEY, jobId);
 
@@ -164,13 +151,11 @@ public final class Values {
      * Process the requestJsonAttributes using the attributes and the MapfishParser and add all resulting values to this values object.
      *
      * @param template the template of the current request.
-     * @param parser the parser to use for parsing the request data.
      * @param attributes the attributes that will be used to add values to this values object
      * @param requestJsonAttributes the json data for populating the attribute values
      * @throws JSONException
      */
     public void populateFromAttributes(@Nonnull final Template template,
-                                       @Nonnull final MapfishParser parser,
                                        @Nonnull final Map<String, Attribute> attributes,
                                        @Nonnull final PObject requestJsonAttributes) throws JSONException {
         if (requestJsonAttributes.has(JSON_REQUEST_HEADERS) &&
@@ -180,55 +165,8 @@ public final class Values {
         }
         for (String attributeName : attributes.keySet()) {
             final Attribute attribute = attributes.get(attributeName);
-            final Object value;
             try {
-                if (attribute instanceof PrimitiveAttribute) {
-                    PrimitiveAttribute<?> pAtt = (PrimitiveAttribute<?>) attribute;
-                    Object defaultVal = pAtt.getDefault();
-                    PObject jsonToUse = requestJsonAttributes;
-                    if (defaultVal != null) {
-                        final JSONObject obj = new JSONObject();
-                        obj.put(attributeName, defaultVal);
-                        PObject[] pValues = new PObject[]{requestJsonAttributes, new PJsonObject(obj, "default_" + attributeName)};
-                        jsonToUse = new PMultiObject(pValues);
-                    }
-                    value = parser.parsePrimitive(attributeName, pAtt, jsonToUse);
-                } else if (attribute instanceof DataSourceAttribute) {
-                    DataSourceAttribute dsAttribute = (DataSourceAttribute) attribute;
-                    value = dsAttribute.parseAttribute(parser, template, requestJsonAttributes.optArray(attributeName));
-                } else if (attribute instanceof ReflectiveAttribute) {
-                    boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
-                    ReflectiveAttribute<?> rAtt = (ReflectiveAttribute<?>) attribute;
-                    value = rAtt.createValue(template);
-                    PObject pValue = requestJsonAttributes.optObject(attributeName);
-
-                    if (pValue != null) {
-                        PObject[] pValues = new PObject[]{pValue, rAtt.getDefaultValue()};
-                        pValue = new PMultiObject(pValues);
-                    } else {
-                        final Object valueOpt = requestJsonAttributes.opt(attributeName);
-                        if (valueOpt != null) {
-                            String valueAsString;
-                            if (valueOpt instanceof PJsonArray) {
-                                valueAsString = ((PJsonArray) valueOpt).getInternalArray().toString(2);
-                            } else if (valueOpt instanceof JSONArray) {
-                                valueAsString = ((JSONArray) valueOpt).toString(2);
-                            } else {
-                                valueAsString = valueOpt.toString();
-                            }
-                            final String message = "Expected a JSON Object as the value for the element with the path: '" +
-                                                   requestJsonAttributes.getPath(attributeName) + "' but instead "
-                                                   + "got a '" + valueOpt.getClass().toString() +
-                                                   "'.\nThe value is: \n" + valueAsString;
-                            throw new IllegalArgumentException(message);
-                        }
-                        pValue = rAtt.getDefaultValue();
-                    }
-                    parser.parse(errorOnExtraParameters, pValue, value);
-                } else {
-                    throw new IllegalArgumentException("Unsupported attribute type: " + attribute);
-                }
-                put(attributeName, value);
+                put(attributeName, attribute.getValue(template, attributeName, requestJsonAttributes));
             } catch (ObjectMissingException | IllegalArgumentException e) {
                 throw e;
             } catch (Throwable e) {

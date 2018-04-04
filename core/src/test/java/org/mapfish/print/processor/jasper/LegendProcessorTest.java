@@ -25,7 +25,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
-import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -43,8 +42,6 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
 
     @Autowired
     private ConfigurationFactory configurationFactory;
-    @Autowired
-    private MapfishParser parser;
     @Autowired
     private ForkJoinPool forkJoinPool;
     @Autowired
@@ -70,7 +67,7 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values("test", requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
+        Values values = new Values("test", requestData, template, getTaskDirectory(), this.httpRequestFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final JRTableModelDataSource legend = values.getObject(
@@ -108,7 +105,7 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR_DYNAMIC + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadDynamicJsonRequestData();
-        Values values = new Values("test", requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
+        Values values = new Values("test", requestData, template, getTaskDirectory(), this.httpRequestFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final JRTableModelDataSource legend = values.getObject(
@@ -161,7 +158,7 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
         PJsonObject requestData = loadJsonRequestData();
         requestData.getJSONObject("attributes").getJSONObject("legend").getInternalObj().put("classes", new JSONArray());
 
-        Values values = new Values("test", requestData, template, parser, getTaskDirectory(), this.httpRequestFactory, new File("."));
+        Values values = new Values("test", requestData, template, getTaskDirectory(), this.httpRequestFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final JRTableModelDataSource legend = values.getObject(

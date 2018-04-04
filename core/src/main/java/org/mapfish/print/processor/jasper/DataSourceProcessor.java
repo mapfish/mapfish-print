@@ -14,7 +14,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
-import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.CustomDependencies;
 import org.mapfish.print.processor.Processor;
@@ -84,8 +83,6 @@ public final class DataSourceProcessor
     private ProcessorDependencyGraph processorGraph;
     private List<Processor> processors;
     private List<String> copyAttributes = Lists.newArrayList();
-    @Autowired
-    private MapfishParser parser;
     @Autowired
     private JasperReportBuilder jasperReportBuilder;
 
@@ -262,7 +259,7 @@ public final class DataSourceProcessor
 
     private void addAttributes(@Nonnull final Template template,
                                @Nonnull final Values dataSourceValue) throws JSONException {
-        dataSourceValue.populateFromAttributes(template, this.parser, this.internalAttributes,
+        dataSourceValue.populateFromAttributes(template, this.internalAttributes,
                 new PJsonObject(new JSONObject(), "DataSourceProcessorAttributes"));
     }
 

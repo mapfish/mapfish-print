@@ -11,7 +11,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
-import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +36,6 @@ public class CreateMapProcessorWmtsBufferTest extends AbstractMapfishSpringTest 
 
     @Autowired
     private ConfigurationFactory configurationFactory;
-    @Autowired
-    private MapfishParser parser;
     @Autowired
     private TestHttpClientFactory httpRequestFactory;
     @Autowired
@@ -73,7 +70,7 @@ public class CreateMapProcessorWmtsBufferTest extends AbstractMapfishSpringTest 
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "/config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values("test", requestData, template, this.parser, getTaskDirectory(),
+        Values values = new Values("test", requestData, template, getTaskDirectory(),
                 this.httpRequestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(

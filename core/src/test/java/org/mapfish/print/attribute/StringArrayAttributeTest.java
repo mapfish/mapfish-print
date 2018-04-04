@@ -8,7 +8,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
-import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,8 +23,6 @@ public class StringArrayAttributeTest extends AbstractMapfishSpringTest {
     private ConfigurationFactory configurationFactory;
     @Autowired
     private TestHttpClientFactory httpClientFactory;
-    @Autowired
-    private MapfishParser parser;
 
     @Test
     public void testParsableByValues() throws Exception {
@@ -33,7 +30,7 @@ public class StringArrayAttributeTest extends AbstractMapfishSpringTest {
         PJsonObject requestData = loadJsonRequestData();
 
         Template template = config.getTemplate("main");
-        Values values = new Values("test", requestData, template, this.parser, config.getDirectory(), httpClientFactory, config.getDirectory());
+        Values values = new Values("test", requestData, template, config.getDirectory(), httpClientFactory, config.getDirectory());
 
         String[] array = (String[]) values.getObject("stringarray", Object.class);
 
@@ -52,7 +49,7 @@ public class StringArrayAttributeTest extends AbstractMapfishSpringTest {
         requestData.getJSONObject("attributes").getInternalObj().put("stringarray", intArray);
 
         Template template = config.getTemplate("main");
-        Values values = new Values("test", requestData, template, this.parser, config.getDirectory(), httpClientFactory, config.getDirectory());
+        Values values = new Values("test", requestData, template, config.getDirectory(), httpClientFactory, config.getDirectory());
 
         String[] array = (String[]) values.getObject("stringarray", Object.class);
 

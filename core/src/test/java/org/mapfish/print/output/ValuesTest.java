@@ -11,7 +11,6 @@ import org.mapfish.print.attribute.TableAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.wrapper.ObjectMissingException;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +30,6 @@ public class ValuesTest extends AbstractMapfishSpringTest {
     @Autowired
     private ConfigurationFactory configurationFactory;
     @Autowired
-    private MapfishParser parser;
-    @Autowired
     private TestHttpClientFactory httpRequestFactory;
 
     @Test
@@ -44,7 +41,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
 
         Template template = config.getTemplates().values().iterator().next();
-        final Values values = new Values("test", requestData, template, this.parser, new File("tmp"), this.httpRequestFactory, new File("."));
+        final Values values = new Values("test", requestData, template, new File("tmp"), this.httpRequestFactory, new File("."));
 
         assertTrue(values.containsKey("title"));
         assertEquals("title", values.getString("title"));
@@ -72,7 +69,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
 
         Template template = config.getTemplates().values().iterator().next();
-        new Values("test", requestData, template, this.parser, new File("tmp"), this.httpRequestFactory, new File("."));
+        new Values("test", requestData, template, new File("tmp"), this.httpRequestFactory, new File("."));
     }
 
     @Test
@@ -85,7 +82,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-defaults.yaml"));
 
         Template template = config.getTemplates().values().iterator().next();
-        final Values values = new Values("test", requestData, template, this.parser, new File("tmp"), this.httpRequestFactory, new File("."));
+        final Values values = new Values("test", requestData, template, new File("tmp"), this.httpRequestFactory, new File("."));
 
         assertTrue(values.containsKey("title"));
         assertEquals("title", values.getString("title"));
@@ -118,6 +115,6 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
 
         Template template = config.getTemplates().values().iterator().next();
-        new Values("test", requestData, template, this.parser, new File("tmp"), this.httpRequestFactory, new File("."));
+        new Values("test", requestData, template, new File("tmp"), this.httpRequestFactory, new File("."));
     }
 }

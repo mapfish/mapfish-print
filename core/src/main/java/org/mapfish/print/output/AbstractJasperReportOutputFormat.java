@@ -25,7 +25,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
-import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -74,9 +73,6 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
 
     @Autowired
     private MfClientHttpRequestFactoryImpl httpRequestFactory;
-
-    @Autowired
-    private MapfishParser parser;
 
     /**
      * Export the report to the output stream.
@@ -134,7 +130,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         final File jasperTemplateBuild = this.workingDirectories.getBuildFileFor(config, jasperTemplateFile,
                 JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT, LOGGER);
 
-        final Values values = new Values(jobId, requestData, template, this.parser, taskDirectory,
+        final Values values = new Values(jobId, requestData, template, taskDirectory,
                 this.httpRequestFactory, jasperTemplateBuild.getParentFile());
 
         double maxDpi = maxDpi(values);

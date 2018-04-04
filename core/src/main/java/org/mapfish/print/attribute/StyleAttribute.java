@@ -24,8 +24,7 @@ public final class StyleAttribute extends ReflectiveAttribute<StylesAttributeVal
 
     @Override
     public StylesAttributeValues createValue(final Template template) {
-        StylesAttributeValues result = new StylesAttributeValues();
-        return result;
+        return new StylesAttributeValues();
     }
 
     @Override

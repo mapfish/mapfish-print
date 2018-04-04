@@ -36,12 +36,10 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
     @Autowired
     private ConfigurationFactory configurationFactory;
     @Autowired
-    private MapfishParser parser;
-    @Autowired
     private TestHttpClientFactory httpRequestFactory;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         this.configurationFactory.setDoValidation(false);
 
     }
@@ -63,7 +61,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
                         .MapAttributeValues>) template.getAttributes().get("map");
 
         final MapAttribute.MapAttributeValues value = mapAttribute.createValue(template);
-        parser.parse(true, attributesJson.getJSONObject("map"), value);
+        MapfishParser.parse(true, attributesJson.getJSONObject("map"), value);
     }
 
     @Test
@@ -85,7 +83,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
         final PJsonObject pJsonObject = parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-json.json");
-        final Values values = new Values("test", pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory,
+        final Values values = new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
                 new File("."));
         final MapAttribute.MapAttributeValues value = values.getObject("map", MapAttribute.MapAttributeValues.class);
 
@@ -105,7 +103,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
         final PJsonObject pJsonObject = parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-yaml.json");
-        final Values values = new Values("test", pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory, new File("."));
+        final Values values = new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory, new File("."));
         final MapAttribute.MapAttributeValues value = values.getObject("map", MapAttribute.MapAttributeValues.class);
 
         assertEquals(80.0, value.getDpi(), 0.1);
@@ -124,7 +122,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
         final PJsonObject pJsonObject = parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-json.json");
-        final Values values = new Values("test", pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory, new File("."));
+        final Values values = new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory, new File("."));
         final MapAttribute.MapAttributeValues value = values.getObject("map", MapAttribute.MapAttributeValues.class);
 
         assertEquals(90.0, value.getDpi(), 0.1);
@@ -143,7 +141,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
         final PJsonObject pJsonObject = parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-zoomTo.json");
-        final Values values = new Values("test", pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory,
+        final Values values = new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
                 new File("."));
         final MapAttribute.MapAttributeValues value = values.getObject("map", MapAttribute.MapAttributeValues.class);
 
@@ -156,7 +154,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
         final PJsonObject pJsonObject = parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-zoomToCenter.json");
-        final Values values = new Values("test", pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory,
+        final Values values = new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
                 new File("."));
         final MapAttribute.MapAttributeValues value = values.getObject("map", MapAttribute.MapAttributeValues.class);
 

@@ -11,12 +11,14 @@ import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.parser.ParserUtils;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PElement;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
+import org.mapfish.print.wrapper.multi.PMultiObject;
 import org.mapfish.print.wrapper.yaml.PYamlArray;
 import org.mapfish.print.wrapper.yaml.PYamlObject;
 
@@ -26,6 +28,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 
 import static org.mapfish.print.parser.MapfishParser.stringRepresentation;
@@ -375,5 +378,38 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
             typeDescription = stringRepresentation(type);
         }
         return typeDescription;
+    }
+
+    @Override
+    public Object getValue(@Nonnull final Template template,
+                           @Nonnull final String attributeName, @Nonnull final PObject requestJsonAttributes) {
+        boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
+        final Object value = this.createValue(template);
+        PObject pValue = requestJsonAttributes.optObject(attributeName);
+
+        if (pValue != null) {
+            PObject[] pValues = new PObject[]{pValue, this.getDefaultValue()};
+            pValue = new PMultiObject(pValues);
+        } else {
+            final Object valueOpt = requestJsonAttributes.opt(attributeName);
+            if (valueOpt != null) {
+                String valueAsString;
+                if (valueOpt instanceof PJsonArray) {
+                    valueAsString = ((PJsonArray) valueOpt).getInternalArray().toString(2);
+                } else if (valueOpt instanceof JSONArray) {
+                    valueAsString = ((JSONArray) valueOpt).toString(2);
+                } else {
+                    valueAsString = valueOpt.toString();
+                }
+                final String message = "Expected a JSON Object as the value for the element with the path: '" +
+                        requestJsonAttributes.getPath(attributeName) + "' but instead "
+                        + "got a '" + valueOpt.getClass().toString() +
+                        "'.\nThe value is: \n" + valueAsString;
+                throw new IllegalArgumentException(message);
+            }
+            pValue = this.getDefaultValue();
+        }
+        MapfishParser.parse(errorOnExtraParameters, pValue, value);
+        return value;
     }
 }

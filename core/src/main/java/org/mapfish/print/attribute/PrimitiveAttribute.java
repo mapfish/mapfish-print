@@ -1,11 +1,17 @@
 package org.mapfish.print.attribute;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.parser.MapfishParser;
+import org.mapfish.print.wrapper.PObject;
+import org.mapfish.print.wrapper.json.PJsonObject;
+import org.mapfish.print.wrapper.multi.PMultiObject;
 
 import java.util.List;
+import javax.annotation.Nonnull;
 
 /**
  * A type of attribute whose value is a primitive type.
@@ -81,5 +87,20 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
      */
     protected String clientConfigTypeDescription() {
         return this.valueClass.getSimpleName();
+    }
+
+    @Override
+    public Object getValue(@Nonnull final Template template,
+                           @Nonnull final String attributeName,
+                           @Nonnull final PObject requestJsonAttributes) {
+        final Object defaultVal = getDefault();
+        PObject jsonToUse = requestJsonAttributes;
+        if (defaultVal != null) {
+            final JSONObject obj = new JSONObject();
+            obj.put(attributeName, defaultVal);
+            final PObject[] pValues = new PObject[]{requestJsonAttributes, new PJsonObject(obj, "default_" + attributeName)};
+            jsonToUse = new PMultiObject(pValues);
+        }
+        return MapfishParser.parsePrimitive(attributeName, this, jsonToUse);
     }
 }

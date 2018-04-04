@@ -1,9 +1,7 @@
 package org.mapfish.print.parser;
 
-import com.google.common.base.Predicates;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.ExtraPropertyException;
 import org.mapfish.print.MissingPropertyException;
@@ -30,7 +28,8 @@ import static org.mapfish.print.parser.ParserUtils.getAllAttributeNames;
 import static org.mapfish.print.parser.ParserUtils.getAttributeNames;
 
 /**
- * This class parses json parameter objects into the parameter object taken by {@link org.mapfish.print.map.MapLayerFactoryPlugin}
+ * This class parses json parameter objects into the parameter object taken by
+ * {@link org.mapfish.print.map.MapLayerFactoryPlugin}
  * instances and into {@link org.mapfish.print.attribute.ReflectiveAttribute} value objects
  * <p></p>
  * Essentially it maps the keys in the json object to public fields in the object obtained from the
@@ -46,6 +45,8 @@ public final class MapfishParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(MapfishParser.class);
     private static final String POST_CONSTRUCT_METHOD_NAME = "postConstruct";
 
+    private MapfishParser() { }
+
     /**
      * Populate the param object by obtaining the values from the like names values in the request data object.
      *
@@ -57,7 +58,7 @@ public final class MapfishParser {
      *                               the property has to be there for {@link org.mapfish.print.attribute.map.MapAttribute} to
      *                               be able to choose the correct plugin.
      */
-    public void parse(final boolean errorOnExtraProperties, final PObject requestData, final Object objectToPopulate,
+    public static void parse(final boolean errorOnExtraProperties, final PObject requestData, final Object objectToPopulate,
                       final String... extraPropertyToIgnore) {
         checkForExtraProperties(errorOnExtraProperties, objectToPopulate.getClass(), requestData, extraPropertyToIgnore);
 
@@ -134,10 +135,10 @@ public final class MapfishParser {
         }
     }
 
-    private void checkForExtraProperties(final boolean errorOnExtraProperties, final Class<?> paramClass,
+    private static void checkForExtraProperties(final boolean errorOnExtraProperties, final Class<?> paramClass,
                                          final PObject layer, final String[] extraPropertyToIgnore) {
         final Collection<String> acceptableKeyValues = Sets.newHashSet();
-        for (String name : getAttributeNames(paramClass, FILTER_NON_FINAL_FIELDS)) {
+        for (String name : getAttributeNames(paramClass, FILTER_NON_FINAL_FIELDS::test)) {
             acceptableKeyValues.add(name.toLowerCase());
         }
         if (extraPropertyToIgnore != null) {
@@ -158,7 +159,7 @@ public final class MapfishParser {
         if (!extraProperties.isEmpty()) {
             String msg = "Extra properties were found in the request data at: " + layer.getCurrentPath() + ": ";
             ExtraPropertyException exception = new ExtraPropertyException(msg, extraProperties, getAttributeNames(paramClass,
-                    Predicates.<Field>alwaysTrue()));
+                    field -> true));
             if (errorOnExtraProperties) {
                 throw exception;
             } else {
@@ -168,7 +169,7 @@ public final class MapfishParser {
     }
 
 
-    private Object parseValue(final boolean errorOnExtraProperties, final String[] extraPropertyToIgnore, final Class<?> type,
+    private static Object parseValue(final boolean errorOnExtraProperties, final String[] extraPropertyToIgnore, final Class<?> type,
                               final String fieldName, final PObject layer) throws
             UnsupportedTypeException {
         String name = fieldName;
@@ -228,8 +229,8 @@ public final class MapfishParser {
     }
 
     @SuppressWarnings("unchecked")
-    private Object parseEnum(final Class<?> type, final String path, final String enumString) {
-        // not the name, maybe the ordinal;
+    private static Object parseEnum(final Class<?> type, final String path, final String enumString) {
+        // not the name, maybe the ordinal
         try {
             int ordinal = Integer.parseInt(enumString);
             final Object[] enumConstants = type.getEnumConstants();
@@ -251,12 +252,12 @@ public final class MapfishParser {
         }
     }
 
-    private IllegalArgumentException enumError(final Object[] enumConstants, final String path, final String enumString) {
+    private static IllegalArgumentException enumError(final Object[] enumConstants, final String path, final String enumString) {
         return new IllegalArgumentException(path + " should be an enumeration value or ordinal " +
                                             "but was: " + enumString + "\nEnum constants are: " + Arrays.toString(enumConstants));
     }
 
-    private Object parseArrayValue(final boolean errorOnExtraProperties, final String[] extraPropertyToIgnore, final Class<?> type,
+    private static Object parseArrayValue(final boolean errorOnExtraProperties, final String[] extraPropertyToIgnore, final Class<?> type,
                                    final int i, final PArray array) throws UnsupportedTypeException {
 
         Object value;
@@ -306,7 +307,7 @@ public final class MapfishParser {
      * @param pAtt the primitive attribute.
      * @param requestData the data to retrieve the value from.
      */
-    public Object parsePrimitive(final String fieldName, final PrimitiveAttribute<?> pAtt, final PObject requestData) {
+    public static Object parsePrimitive(final String fieldName, final PrimitiveAttribute<?> pAtt, final PObject requestData) {
         Class<?> valueClass = pAtt.getValueClass();
         Object value;
         try {
@@ -331,7 +332,7 @@ public final class MapfishParser {
      *
      * @param aClass the class to inspect
      */
-    public static String stringRepresentation(final Class<? extends Object> aClass) {
+    public static String stringRepresentation(final Class<?> aClass) {
         return aClass.getSimpleName();
     }
 
