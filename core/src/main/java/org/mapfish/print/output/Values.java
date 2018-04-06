@@ -5,6 +5,7 @@ import com.vividsolutions.jts.util.Assert;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.mapfish.print.ExtraPropertyException;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.attribute.DataSourceAttribute;
 import org.mapfish.print.attribute.HttpRequestHeadersAttribute;
@@ -24,7 +25,10 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.mapfish.print.wrapper.multi.PMultiObject;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
@@ -247,6 +251,21 @@ public final class Values {
                                   e.toString();
 
                 throw new AttributeParsingException(errorMsg, e);
+            }
+        }
+
+        if (template.getConfiguration().isThrowErrorOnExtraParameters()) {
+            final List<String> extraProperties = new ArrayList<>();
+            for (Iterator<String> it = requestJsonAttributes.keys(); it.hasNext();) {
+                final String attributeName = it.next();
+                if (!attributes.containsKey(attributeName)) {
+                    extraProperties.add(attributeName);
+                }
+            }
+
+            if (!extraProperties.isEmpty()) {
+                throw new ExtraPropertyException("Extra properties found in the request attributes",
+                        extraProperties, attributes.keySet());
             }
         }
     }

@@ -1,5 +1,11 @@
 # Known breaking changes
 
+## Version 3.13
+
+- If throwErrorOnExtraParameters is set to true and the JSON contains extra attributes,
+  the print job will have now an error.
+
+
 ## Version 3.10
 
 The DB schema in multi-instance mode has been changed. You can drop the
