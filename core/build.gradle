@@ -123,7 +123,7 @@ dependencies {
             "com.thetransactioncompany:cors-filter:2.6",
             //hibernate & postgres
             "org.hibernate:hibernate-core:4.3.11.Final",
-            "org.postgresql:postgresql:42.1.4",
+            "org.postgresql:postgresql:42.2.2",
             "org.springframework:spring-orm:$project.springVersion",
             "org.springframework:spring-jdbc:$project.springVersion",
             "org.springframework:spring-tx:$project.springVersion"
@@ -138,7 +138,7 @@ dependencies {
             "io.dropwizard.metrics:metrics-logback:$metricsVersion",
             "com.readytalk:metrics3-statsd:4.2.0"
     )
-    def geotoolsVersion = "18.2"
+    def geotoolsVersion = "19.0"
     geotools (
             "org.geotools:gt-epsg-hsql:$geotoolsVersion",
             "org.geotools:gt-render:$geotoolsVersion",
@@ -159,7 +159,7 @@ dependencies {
     )
     compile fileTree(dir: "$projectDir/libs", include: '*.jar')
     compile (
-            "com.google.guava:guava:24.0-jre",
+            "com.google.guava:guava:24.1-jre",
             "org.slf4j:slf4j-api:${slf4jVersion}",
             "org.slf4j:jcl-over-slf4j:${slf4jVersion}",
             'org.json:json:20180130',
