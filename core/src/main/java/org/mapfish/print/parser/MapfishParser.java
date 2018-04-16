@@ -138,7 +138,7 @@ public final class MapfishParser {
     private static void checkForExtraProperties(final boolean errorOnExtraProperties, final Class<?> paramClass,
                                          final PObject layer, final String[] extraPropertyToIgnore) {
         final Collection<String> acceptableKeyValues = Sets.newHashSet();
-        for (String name : getAttributeNames(paramClass, FILTER_NON_FINAL_FIELDS::test)) {
+        for (String name : getAttributeNames(paramClass, FILTER_NON_FINAL_FIELDS)) {
             acceptableKeyValues.add(name.toLowerCase());
         }
         if (extraPropertyToIgnore != null) {

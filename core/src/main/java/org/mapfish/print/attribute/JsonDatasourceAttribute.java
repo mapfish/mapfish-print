@@ -75,7 +75,7 @@ public class JsonDatasourceAttribute implements Attribute {
             return result;
         } catch (JRException e) {
             throw new RuntimeException("Error while parsing " +
-                    requestJsonAttributes.getPath(attributeName) + "as json", e);
+                    requestJsonAttributes.getPath(attributeName) + " as json", e);
         }
     }
 

@@ -86,7 +86,7 @@ public final class Values {
 
     /**
      * Construct from the json request body and the associated template.
-     *  @param jobId the job ID
+     * @param jobId the job ID
      * @param requestData the json request data
      * @param template the template
      * @param taskDirectory the temporary directory for this printing task.
@@ -104,7 +104,7 @@ public final class Values {
 
     /**
      * Construct from the json request body and the associated template.
-     *  @param jobId the job ID
+     * @param jobId the job ID
      * @param requestData the json request data
      * @param template the template
      * @param taskDirectory the temporary directory for this printing task.
