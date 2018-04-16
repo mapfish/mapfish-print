@@ -10,7 +10,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
-import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +39,6 @@ public class CreateMapProcessorFixedScaleCenterGridFixedNumlinesTest extends Abs
     @Autowired
     private TestHttpClientFactory requestFactory;
     @Autowired
-    private MapfishParser parser;
-    @Autowired
     private ForkJoinPool forkJoinPool;
 
     @Test
@@ -70,7 +67,7 @@ public class CreateMapProcessorFixedScaleCenterGridFixedNumlinesTest extends Abs
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values("test", requestData, template, this.parser, getTaskDirectory(), this.requestFactory, new File("."));
+        Values values = new Values("test", requestData, template, getTaskDirectory(), this.requestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));

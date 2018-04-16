@@ -6,7 +6,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
-import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,8 +18,6 @@ import static org.junit.Assert.assertTrue;
 public class DataSourceAttributeTest extends AbstractMapfishSpringTest {
 
     @Autowired
-    private MapfishParser parser;
-    @Autowired
     private ConfigurationFactory configurationFactory;
 
     @Test
@@ -32,7 +29,7 @@ public class DataSourceAttributeTest extends AbstractMapfishSpringTest {
 
         PJsonObject jsonData = parseJSONObjectFromFile(DataSourceAttributeTest.class, "datasource/requestData.json");
         final Values values = new Values();
-        values.populateFromAttributes(template, parser, attributes, jsonData);
+        values.populateFromAttributes(template, attributes, jsonData);
 
         final Class<DataSourceAttribute.DataSourceAttributeValue> type = DataSourceAttribute.DataSourceAttributeValue.class;
         final DataSourceAttribute.DataSourceAttributeValue value = values.getObject("datasource", type);

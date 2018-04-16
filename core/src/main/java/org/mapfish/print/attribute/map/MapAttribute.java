@@ -393,7 +393,7 @@ public final class MapAttribute extends GenericMapAttribute {
         @Override
         public final List<MapLayer> getLayers() {
             // return the layers together with a layer for the bbox rectangle of the map
-            List<MapLayer> layers = new ArrayList<MapLayer>();
+            List<MapLayer> layers = new ArrayList<>();
             if (this.mapExtentLayer != null) {
                 layers.add(this.mapExtentLayer);
             }

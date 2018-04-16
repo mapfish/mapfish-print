@@ -3,7 +3,6 @@ package org.mapfish.print.parser;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
 
@@ -78,7 +77,7 @@ public final class ParserUtils {
      */
     public static Collection<Field> getAllAttributes(final Class<?> classToInspect) {
         Set<Field> allFields = Sets.newHashSet();
-        getAllAttributes(classToInspect, allFields, Functions.<Field>identity(), Predicates.<Field>alwaysTrue());
+        getAllAttributes(classToInspect, allFields, Functions.<Field>identity(), field -> true);
         return allFields;
     }
 
@@ -90,15 +89,15 @@ public final class ParserUtils {
      */
     public static Collection<Field> getAttributes(final Class<?> classToInspect, final Predicate<Field> filter) {
         Set<Field> allFields = Sets.newHashSet();
-        getAllAttributes(classToInspect, allFields, Functions.<Field>identity(), filter);
+        getAllAttributes(classToInspect, allFields, Functions.<Field>identity(), filter::test);
         return allFields;
     }
 
     private static<V> void getAllAttributes(final Class<?> classToInspect, final Set<V> results,
-                                            final Function<Field, V> map, final Predicate<Field> filter) {
+                                            final Function<Field, V> map, final java.util.function.Predicate<Field> filter) {
 
         if (classToInspect != null && classToInspect != Void.class) {
-            Collection<Field> filteredResults = Collections2.filter(Arrays.asList(classToInspect.getFields()), filter);
+            Collection<Field> filteredResults = Collections2.filter(Arrays.asList(classToInspect.getFields()), filter::test);
             Collection<? extends V> resultsForClass = Collections2.transform(filteredResults, map);
             results.addAll(resultsForClass);
             if (classToInspect.getSuperclass() != null) {
@@ -114,7 +113,7 @@ public final class ParserUtils {
      */
     public static Set<String> getAllAttributeNames(final Class<?> classToInspect) {
         Set<String> allFields = Sets.newHashSet();
-        getAllAttributes(classToInspect, allFields, FIELD_TO_NAME, Predicates.<Field>alwaysTrue());
+        getAllAttributes(classToInspect, allFields, FIELD_TO_NAME, field -> true);
         return allFields;
     }
     /**
@@ -123,7 +122,7 @@ public final class ParserUtils {
      * @param classToInspect the class to inspect
      * @param filter a predicate that returns true when a attribute should be kept in resulting collection.
      */
-    public static Set<String> getAttributeNames(final Class<?> classToInspect, final Predicate<Field> filter) {
+    public static Set<String> getAttributeNames(final Class<?> classToInspect, final java.util.function.Predicate<Field> filter) {
         Set<String> allFields = Sets.newHashSet();
         getAllAttributes(classToInspect, allFields, FIELD_TO_NAME, filter);
         return allFields;

@@ -5,7 +5,6 @@ import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
-import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.map.CreateMapProcessor;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -37,9 +36,6 @@ public class MapExportOutputFormat implements OutputFormat {
 
     @Autowired
     private MfClientHttpRequestFactoryImpl httpRequestFactory;
-
-    @Autowired
-    private MapfishParser parser;
 
     private String fileSuffix;
 
@@ -91,7 +87,7 @@ public class MapExportOutputFormat implements OutputFormat {
             ".\nAvailable templates: " + possibleTemplates);
         }
 
-        final Values values = new Values(jobId, spec, template, this.parser, taskDirectory, this.httpRequestFactory, null,
+        final Values values = new Values(jobId, spec, template, taskDirectory, this.httpRequestFactory, null,
                 this.fileSuffix);
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(template.getProcessorGraph().createTask(values));

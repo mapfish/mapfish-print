@@ -10,7 +10,7 @@ public class StringArrayAttribute extends PrimitiveAttribute<String[]> {
      */
     @SuppressWarnings("unchecked")
     public StringArrayAttribute() {
-        super((Class<String[]>) new String[0].getClass());
+        super(String[].class);
     }
 
     /**

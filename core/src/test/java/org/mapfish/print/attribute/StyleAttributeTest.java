@@ -9,7 +9,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
-import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,7 +31,7 @@ public class StyleAttributeTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
         final PJsonObject pJsonObject = parseJSONObjectFromFile(StyleAttributeTest.class, "style_attributes/request.json");
-        final Values values = new Values("test", pJsonObject, template, new MapfishParser(), this.folder.getRoot(),
+        final Values values = new Values("test", pJsonObject, template, this.folder.getRoot(),
                 this.clientHttpRequestFactory, new File("."));
         final StyleAttribute.StylesAttributeValues value = values.getObject("styleDef", StyleAttribute.StylesAttributeValues.class);
 

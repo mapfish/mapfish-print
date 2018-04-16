@@ -128,7 +128,7 @@ public final class BBoxMapBounds extends MapBounds {
             return this;
         }
 
-        /**
+        /*
          * When a rotation is set, the map is rotated around the center of the
          * original bbox. This means that the bbox might has to be expanded, so
          * that all visible parts are rendered.

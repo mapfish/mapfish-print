@@ -4,6 +4,9 @@ import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.config.ConfigurationObject;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.wrapper.PObject;
+
+import javax.annotation.Nonnull;
 
 /**
  * Represents an attribute passed in from a web-client to be used to populate the report.  It reads a value from the request data
@@ -32,4 +35,15 @@ public interface Attribute extends ConfigurationObject {
      * @return the value class
      */
     Class getValueType();
+
+    /**
+     * Get the attribute value.
+     *
+     * @param template the template of the current request.
+     * @param attributeName the name of the attribute
+     * @param requestJsonAttributes the json data for populating the attribute values
+     * @return the value
+     */
+    Object getValue(@Nonnull final Template template,
+                    @Nonnull String attributeName, @Nonnull final PObject requestJsonAttributes);
 }

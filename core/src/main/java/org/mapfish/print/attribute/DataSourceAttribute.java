@@ -7,7 +7,6 @@ import org.mapfish.print.PrintException;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
-import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.yaml.PYamlArray;
@@ -108,7 +107,7 @@ public final class DataSourceAttribute implements Attribute {
             Object attribute = entry.getValue();
             if (!(attribute instanceof Attribute)) {
                 final String msg = "Attribute: '" + entry.getKey() + "' is not an attribute. It is a: " + attribute;
-                LOGGER.error("Error setting the Attributes: " + msg);
+                LOGGER.error("Error setting the Attributes: {}", msg);
                 throw new IllegalArgumentException(msg);
             } else {
                 ((Attribute) attribute).setConfigName(entry.getKey());
@@ -165,14 +164,11 @@ public final class DataSourceAttribute implements Attribute {
     }
 
     /**
-     * Parser the attributes into the value object.
-     * @param parser the parser
      * @param template the containing template
      * @param jsonValue the json
      */
     @SuppressWarnings("unchecked")
-    public DataSourceAttributeValue parseAttribute(@Nonnull final MapfishParser parser,
-                                                   @Nonnull final Template template,
+    public DataSourceAttributeValue parseAttribute(@Nonnull final Template template,
                                                    @Nullable final PArray jsonValue) throws JSONException {
         final PArray pValue;
 
@@ -191,7 +187,7 @@ public final class DataSourceAttribute implements Attribute {
         for (int i = 0; i < pValue.size(); i++) {
             PObject rowData = pValue.getObject(i);
             final Values valuesForParsing = new Values();
-            valuesForParsing.populateFromAttributes(template, parser, this.attributes, rowData);
+            valuesForParsing.populateFromAttributes(template, this.attributes, rowData);
             value.attributesValues[i] = valuesForParsing.asMap();
         }
 
@@ -201,6 +197,12 @@ public final class DataSourceAttribute implements Attribute {
     @Override
     public Class getValueType() {
         return DataSourceAttributeValue.class;
+    }
+
+    @Override
+    public Object getValue(@Nonnull final Template template,
+                           @Nonnull final String attributeName, @Nonnull final PObject requestJsonAttributes) {
+        return this.parseAttribute(template, requestJsonAttributes.optArray(attributeName));
     }
 
     /**

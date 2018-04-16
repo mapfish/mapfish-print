@@ -10,7 +10,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
-import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.processor.map.scalebar.Type;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +81,7 @@ public class ScalebarAttributeTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
         final PJsonObject pJsonObject = parseJSONObjectFromFile(ScalebarAttributeTest.class, "scalebar/requestData.json");
-        final Values values = new Values("test", pJsonObject, template, new MapfishParser(), getTaskDirectory(), this.httpRequestFactory,
+        final Values values = new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
                 new File("."));
         final ScalebarAttribute.ScalebarAttributeValues value = values.getObject("scalebar", ScalebarAttribute.ScalebarAttributeValues.class);
 

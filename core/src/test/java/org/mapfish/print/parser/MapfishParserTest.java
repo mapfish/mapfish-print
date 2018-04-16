@@ -25,166 +25,164 @@ import static org.junit.Assert.fail;
 import static org.mapfish.print.AbstractMapfishSpringTest.parseJSONObjectFromFile;
 
 public class MapfishParserTest {
-    private final MapfishParser mapfishJsonParser = new MapfishParser();
-
     @Test
-    public void testNullOptionalArray() throws Exception {
+    public void testNullOptionalArray() {
         OptionalArrayParam p = new OptionalArrayParam();
 
         final PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"sa\":null}");
 
-        this.mapfishJsonParser.parse(true, json, p, "toIgnore");
+        MapfishParser.parse(true, json, p, "toIgnore");
         assertNull(p.sa);
     }
 
     @Test
-    public void testEnum() throws Exception {
+    public void testEnum() {
         TestEnumParam p = new TestEnumParam();
 
         final PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"e1\":\"VAL1\", \"e2\": [1, \"VAL2\"]}");
 
-        this.mapfishJsonParser.parse(true, json, p, "toIgnore");
+        MapfishParser.parse(true, json, p, "toIgnore");
         assertEquals(TestEnum.DEF, p.def2);
         assertEquals(TestEnum.VAL1, p.e1);
         assertArrayEquals(new TestEnum[]{TestEnum.VAL2, TestEnum.VAL2}, p.e2);
     }
 
     @Test
-    public void testChoice() throws Exception {
+    public void testChoice() {
         TestChoiceClass p = new TestChoiceClass();
         PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"choiceA\":1}");
 
         String[] ignore = null; // done this way to remove compiler warning.
-        this.mapfishJsonParser.parse(true, json, p, ignore);
+        MapfishParser.parse(true, json, p, ignore);
         assertEquals(1, p.choiceA);
         assertEquals(0.0, p.choiceB, 0.0000000001);
         assertEquals(0, p.choiceC);
 
         p = new TestChoiceClass();
         json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"choiceB\":2.0}");
-        this.mapfishJsonParser.parse(true, json, p);
+        MapfishParser.parse(true, json, p);
         assertEquals(0, p.choiceA);
         assertEquals(2.0, p.choiceB, 0.0000000001);
         assertEquals(0, p.choiceC);
 
         p = new TestChoiceClass();
         json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"choiceC\":2}");
-        this.mapfishJsonParser.parse(true, json, p);
+        MapfishParser.parse(true, json, p);
         assertEquals(0, p.choiceA);
         assertEquals(0.0, p.choiceB, 0.0000000001);
         assertEquals(2, p.choiceC, 0.0000000001);
 
         p = new TestChoiceClass();
         json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"choiceA\":3,\"choiceC\":2}");
-        this.mapfishJsonParser.parse(true, json, p);
+        MapfishParser.parse(true, json, p);
         assertEquals(3, p.choiceA);
         assertEquals(0.0, p.choiceB, 0.0000000001);
         assertEquals(2, p.choiceC, 0.0000000001);
 
         p = new TestChoiceClass();
         json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"choiceB\":3.0,\"choiceC\":2}");
-        this.mapfishJsonParser.parse(true, json, p);
+        MapfishParser.parse(true, json, p);
         assertEquals(0, p.choiceA);
         assertEquals(3.0, p.choiceB, 0.0000000001);
         assertEquals(2, p.choiceC, 0.0000000001);
     }
 
     @Test(expected = AssertionFailedException.class)
-    public void testBothOneOfChoices() throws Exception {
+    public void testBothOneOfChoices() {
         TestChoiceClass p = new TestChoiceClass();
         PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"choiceA\":1,\"choiceB\":2.0}");
-        this.mapfishJsonParser.parse(true, json, p);
+        MapfishParser.parse(true, json, p);
     }
 
     @Test(expected = AssertionFailedException.class)
-    public void testBothOneOfChoicesAndCanSatisfyOneOf() throws Exception {
+    public void testBothOneOfChoicesAndCanSatisfyOneOf() {
         TestChoiceClass p = new TestChoiceClass();
         PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"choiceA\":1,\"choiceB\":2.0,\"choiceC\":3.0}");
-        this.mapfishJsonParser.parse(true, json, p);
+        MapfishParser.parse(true, json, p);
     }
 
     @Test(expected = AssertionFailedException.class)
-    public void testMissingOneOfChoices() throws Exception {
+    public void testMissingOneOfChoices() {
         TestChoiceClass p = new TestChoiceClass();
         PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{}");
-        this.mapfishJsonParser.parse(true, json, p);
+        MapfishParser.parse(true, json, p);
     }
 
     @Test
-    public void testRequireDependantNotDefined() throws Exception {
+    public void testRequireDependantNotDefined() {
         TestRequireClass p = new TestRequireClass();
         PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{}");
-        this.mapfishJsonParser.parse(true, json, p);
+        MapfishParser.parse(true, json, p);
         assertNull(p.i);
         assertNull(p.b);
         assertNull(p.c);
     }
 
     @Test
-    public void testRequirementSatisfied() throws Exception {
+    public void testRequirementSatisfied() {
         TestRequireClass p = new TestRequireClass();
         PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"i\":1, \"b\":true, \"c\":true}");
-        this.mapfishJsonParser.parse(true, json, p);
+        MapfishParser.parse(true, json, p);
         assertEquals(1, p.i.intValue());
         assertTrue(p.b);
         assertTrue(p.c);
     }
 
     @Test
-    public void testOnlyRequirementDefinedNotDependant() throws Exception {
+    public void testOnlyRequirementDefinedNotDependant() {
         TestRequireClass p = new TestRequireClass();
         PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"b\":true}");
-        this.mapfishJsonParser.parse(true, json, p);
+        MapfishParser.parse(true, json, p);
         assertNull(p.i);
         assertTrue(p.b);
         assertNull(p.c);
     }
 
     @Test(expected = AssertionFailedException.class)
-    public void testMissingBothRequirements() throws Exception {
+    public void testMissingBothRequirements() {
         TestRequireClass p = new TestRequireClass();
         PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"i\":1}");
-        this.mapfishJsonParser.parse(true, json, p);
+        MapfishParser.parse(true, json, p);
     }
 
     @Test(expected = AssertionFailedException.class)
-    public void testMissingOneOfTwoRequirements() throws Exception {
+    public void testMissingOneOfTwoRequirements() {
         TestRequireClass p = new TestRequireClass();
         PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"i\":1, \"b\":true}");
-        this.mapfishJsonParser.parse(true, json, p);
+        MapfishParser.parse(true, json, p);
     }
 
     @Test
-    public void testFinalPublic() throws Exception {
+    public void testFinalPublic() {
         TestFinalClass p = new TestFinalClass();
         PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{}");
-        this.mapfishJsonParser.parse(true, json, p);
+        MapfishParser.parse(true, json, p);
         assertEquals(100, p.i.intValue());
 
     }
 
     @Test(expected = ExtraPropertyException.class)
-    public void testFinalFieldMustNotBeInJson() throws Exception {
+    public void testFinalFieldMustNotBeInJson() {
         TestFinalClass p = new TestFinalClass();
         PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"i\":1}");
-        this.mapfishJsonParser.parse(true, json, p);
+        MapfishParser.parse(true, json, p);
     }
 
     @Test (expected = IllegalArgumentException.class)
-    public void testEnumIllegalVal() throws Exception {
+    public void testEnumIllegalVal() {
         TestEnumParam p = new TestEnumParam();
 
         final PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"e1\":\"foo\", \"e2\": [2, \"VAL2\"]}");
 
-        this.mapfishJsonParser.parse(true, json, p, "toIgnore");
+        MapfishParser.parse(true, json, p, "toIgnore");
     }
 
     @Test
-    public void testPopulateLayerParam() throws Exception {
+    public void testPopulateLayerParam() throws IOException {
         final TestParam param = new TestParam();
         final PJsonObject json = parseJSONObjectFromFile(MapfishParserTest.class, "mapAttributeTest.json");
 
-        this.mapfishJsonParser.parse(true, json, param, "toIgnore");
+        MapfishParser.parse(true, json, param, "toIgnore");
 
         assertEquals("string", param.s);
         assertEquals("newValue", param.defS);
@@ -234,11 +232,11 @@ public class MapfishParserTest {
     }
 
     @Test
-    public void testPopulateLayerParam_MissingParam() throws Exception {
+    public void testPopulateLayerParam_MissingParam() {
         final TestParam param = new TestParam();
 
         try {
-            this.mapfishJsonParser.parse(true, new PJsonObject(new JSONObject(), "spec"), param);
+            MapfishParser.parse(true, new PJsonObject(new JSONObject(), "spec"), param);
             fail("Expected an exception to be raised");
         } catch (MissingPropertyException e) {
             final Matcher missingParameterMatcher = Pattern.compile("\\*.+?").matcher(e.getMessage());
@@ -255,13 +253,13 @@ public class MapfishParserTest {
 
     }
     @Test
-    public void testPopulateLayerParam_TooManyParams() throws Exception {
+    public void testPopulateLayerParam_TooManyParams() throws IOException {
         final TestParam param = new TestParam();
         final PJsonObject json = parseJSONObjectFromFile(MapfishParserTest.class, "mapAttributeTest.json");
         json.getInternalObj().put("extraProperty", "value");
         json.getInternalObj().put("extraProperty2", "value2");
         try {
-            this.mapfishJsonParser.parse(true, json, param, "toIgnore");
+            MapfishParser.parse(true, json, param, "toIgnore");
         } catch (ExtraPropertyException e) {
             final Matcher missingParameterMatcher = Pattern.compile("\\*.+?").matcher(e.getMessage());
             int errorCount = 0;
@@ -278,7 +276,7 @@ public class MapfishParserTest {
     }
 
     @Test(expected = ExtraPropertyException.class)
-    public void testDoesntMap() throws Exception {
+    public void testDoesntMap() {
         String legendAtts = "{\n"
                      + "    \"extra\": \"\",\n"
                      + "    \"classes\": [{\n"
@@ -289,13 +287,13 @@ public class MapfishParserTest {
                      + "}\n";
         PObject requestData = new PJsonObject(new JSONObject(legendAtts), "legend");
         LegendAttribute.LegendAttributeValue param = new LegendAttribute.LegendAttributeValue();
-        new MapfishParser().parse(true, requestData, param);
+        MapfishParser.parse(true, requestData, param);
 
     }
 
     public static void populateLayerParam(PObject requestData, Object param, String... extraNamesToIgnore)
             throws IOException, JSONException {
-        new MapfishParser().parse(true, requestData, param, extraNamesToIgnore);
+        MapfishParser.parse(true, requestData, param, extraNamesToIgnore);
     }
 
     static class TestParam {

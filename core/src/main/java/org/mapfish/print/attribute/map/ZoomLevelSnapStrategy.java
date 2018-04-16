@@ -168,10 +168,7 @@ public enum ZoomLevelSnapStrategy {
 
             SearchResult that = (SearchResult) o;
 
-            if (zoomLevel != that.zoomLevel) return false;
-            if (!zoomLevels.equals(that.zoomLevels)) return false;
-
-            return true;
+            return zoomLevel == that.zoomLevel && zoomLevels.equals(that.zoomLevels);
         }
 
         @Override

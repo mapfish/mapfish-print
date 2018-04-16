@@ -12,7 +12,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
-import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +39,6 @@ public class CreateMapProcessorScaleBBoxNativeRotationWms1_3_0Test extends Abstr
     private ConfigurationFactory configurationFactory;
     @Autowired
     private TestHttpClientFactory requestFactory;
-    @Autowired
-    private MapfishParser parser;
 
     @Autowired
     private ForkJoinPool forkJoinPool;
@@ -96,7 +93,7 @@ public class CreateMapProcessorScaleBBoxNativeRotationWms1_3_0Test extends Abstr
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values("test", requestData, template, this.parser, getTaskDirectory(),
+        Values values = new Values("test", requestData, template, getTaskDirectory(),
                 this.requestFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 

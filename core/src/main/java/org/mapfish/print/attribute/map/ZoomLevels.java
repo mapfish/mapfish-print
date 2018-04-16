@@ -88,9 +88,7 @@ public final class ZoomLevels implements ConfigurationObject {
 
         ZoomLevels that = (ZoomLevels) o;
 
-        if (!Arrays.equals(scaleDenominators, that.scaleDenominators)) return false;
-
-        return true;
+        return Arrays.equals(scaleDenominators, that.scaleDenominators);
     }
 
     @Override
