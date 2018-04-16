@@ -39,7 +39,7 @@ public final class OldAPIRequestConverter {
 
     private static final Set<String> NON_CUSTOM_PARAMS = Sets.newHashSet(
             "units", "srs", "layout", "dpi", "layers", "pages", "legends",
-            "geodetic", "outputFilename", "outputFormat");
+            "geodetic", "outputFilename", "outputFormat", "app");
 
     private OldAPIRequestConverter() { }
 

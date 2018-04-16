@@ -3,6 +3,7 @@ package org.mapfish.print.output;
 import com.vividsolutions.jts.util.AssertionFailedException;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.ExtraPropertyException;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -53,9 +54,9 @@ public class AbstractJasperReportOutputFormatTest extends AbstractMapfishSpringT
         try {
             format.getJasperPrint("test", requestData, config,
                     getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR), getTaskDirectory());
-            fail("Expected a " + AssertionFailedException.class);
-        } catch (AssertionFailedException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains("but are not output values of processors or attributes"));
+            fail("Expected a " + ExtraPropertyException.class);
+        } catch (ExtraPropertyException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("Extra properties found in the request attributes"));
         }
     }
 
