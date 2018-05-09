@@ -8,7 +8,6 @@ import org.mapfish.print.MapPrinterFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.OutputFormat;
-import org.mapfish.print.servlet.NoSuchAppException;
 import org.mapfish.print.servlet.job.impl.PrintJobEntryImpl;
 import org.mapfish.print.servlet.job.impl.PrintJobResultImpl;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -77,26 +76,22 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     @Override
     public final PrintJobResult call() throws Exception {
         SecurityContextHolder.setContext(this.securityContext);
-        Timer.Context timer = this.metricRegistry.timer(getClass().getName() + " call()").time();
-        PJsonObject spec = null;
-        MapPrinter mapPrinter = null;
+        Timer.Context timer = this.metricRegistry.timer(getClass().getName() + ".call").time();
         try {
             MDC.put("job_id", this.entry.getReferenceId());
-            LOGGER.info("Starting print job " + this.entry.getReferenceId());
-            spec = this.entry.getRequestData();
-            mapPrinter = PrintJob.this.mapPrinterFactory.create(this.entry.getAppId());
-            final MapPrinter finalMapPrinter = mapPrinter;
+            LOGGER.info("Starting print job {}", this.entry.getReferenceId());
+            final PJsonObject spec = this.entry.getRequestData();
+            final MapPrinter mapPrinter = PrintJob.this.mapPrinterFactory.create(this.entry.getAppId());
             URI reportURI = withOpenOutputStream(new PrintAction() {
                 @Override
                 public void run(final OutputStream outputStream) throws Exception {
-                    finalMapPrinter.print(PrintJob.this.entry.getReferenceId(),
+                    mapPrinter.print(PrintJob.this.entry.getReferenceId(),
                             PrintJob.this.entry.getRequestData(), outputStream);
                 }
             });
 
-            this.metricRegistry.counter(getClass().getName() + "success").inc();
-            LOGGER.info("Successfully completed print job " + this.entry.getReferenceId());
-            LOGGER.debug("Job " + this.entry.getReferenceId() + "\n" + this.entry.getRequestData());
+            LOGGER.info("Successfully completed print job {}", this.entry.getReferenceId());
+            LOGGER.debug("Job {}\n{}", this.entry.getReferenceId(), this.entry.getRequestData());
             String fileName = getFileName(mapPrinter, spec);
 
             String mimeType = null;
@@ -111,13 +106,15 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
             String canceledText = "";
             if (Thread.currentThread().isInterrupted()) {
                 canceledText = "(canceled) ";
+                this.metricRegistry.counter(getClass().getName() + ".canceled").inc();
+            } else {
+                this.metricRegistry.counter(getClass().getName() + ".error").inc();
             }
             LOGGER.info("Error executing print job " + canceledText + this.entry.getReferenceId() + "\n" + this.entry.getRequestData(), e);
-            this.metricRegistry.counter(getClass().getName() + "failure").inc();
             throw e;
         } finally {
             final long stop = TimeUnit.MILLISECONDS.convert(timer.stop(), TimeUnit.NANOSECONDS);
-            LOGGER.debug("Print Job " + this.entry.getReferenceId() + " completed in " + stop + "ms");
+            LOGGER.debug("Print Job {} completed in {}ms", this.entry.getReferenceId(), stop);
         }
     }
 
@@ -162,7 +159,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
         this.metricRegistry = context.getBean(MetricRegistry.class);
         this.mapPrinterFactory = new MapPrinterFactory() {
             @Override
-            public MapPrinter create(final String app) throws NoSuchAppException {
+            public MapPrinter create(final String app) {
                 return null;
             }
 

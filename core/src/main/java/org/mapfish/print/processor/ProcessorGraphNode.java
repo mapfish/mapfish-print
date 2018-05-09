@@ -188,8 +188,8 @@ public final class ProcessorGraphNode<In, Out> {
 
             final Processor<In, Out> process = this.node.processor;
             final MetricRegistry registry = this.node.metricRegistry;
-            final String name = String.format("%s.compute(): %s",
-                    ProcessorGraphNode.class.getName(), process.getClass());
+            final String name = String.format("%s.compute.%s",
+                    ProcessorGraphNode.class.getName(), process.getClass().getName());
             Timer.Context timerContext = registry.timer(name).time();
             try {
                 final In inputParameter = ProcessorUtils.populateInputParameter(process, values);
@@ -205,6 +205,7 @@ public final class ProcessorGraphNode<In, Out> {
                         throw new CancellationException();
                     } else {
                         LOGGER.error("Error while executing process: " + process, e);
+                        registry.counter(name + ".error").inc();
                         throw ExceptionUtils.getRuntimeException(e);
                     }
                 }

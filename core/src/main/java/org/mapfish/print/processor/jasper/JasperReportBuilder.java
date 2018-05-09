@@ -61,16 +61,11 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
     @Override
     public Void execute(final JasperReportBuilder.Input param, final ExecutionContext context)
             throws JRException {
-        Timer.Context buildReports = this.metricRegistry.timer(getClass() + "_execute()").time();
-        try {
-            for (final File jasperFile : jasperXmlFiles()) {
-                checkCancelState(context);
-                compileJasperReport(this.configuration, jasperFile);
-            }
-            return null;
-        } finally {
-            buildReports.stop();
+        for (final File jasperFile : jasperXmlFiles()) {
+            checkCancelState(context);
+            compileJasperReport(this.configuration, jasperFile);
         }
+        return null;
     }
 
     File compileJasperReport(final Configuration config, final File jasperFile) throws JRException {
@@ -92,8 +87,8 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
 
                 LOGGER.info("Building Jasper report: {}", jasperFile.getAbsolutePath());
                 LOGGER.debug("To: {}", buildFile.getAbsolutePath());
-                final Timer.Context compileJasperReport = this.metricRegistry.timer(
-                        "compile_" + jasperFile).time();
+                final Timer.Context compileJasperReport = this.metricRegistry.timer(getClass().getName() +
+                        ".compile." + jasperFile).time();
                 try {
                     JasperCompileManager.compileReportToFile(jasperFile.getAbsolutePath(),
                             tmpBuildFile.getAbsolutePath());
