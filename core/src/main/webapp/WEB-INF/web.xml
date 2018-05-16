@@ -78,7 +78,7 @@
         <filter-class>com.thetransactioncompany.cors.CORSFilter</filter-class>
         <init-param>
             <param-name>cors.supportedMethods</param-name>
-            <param-value>GET, POST, HEAD, OPTIONS</param-value>
+            <param-value>GET, POST, DELETE, HEAD, OPTIONS</param-value>
         </init-param>
         <init-param>
             <param-name>cors.maxAge</param-name>
