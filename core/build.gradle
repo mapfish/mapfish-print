@@ -138,7 +138,7 @@ dependencies {
             "io.dropwizard.metrics:metrics-logback:$metricsVersion",
             "com.readytalk:metrics3-statsd:4.2.0"
     )
-    def geotoolsVersion = "19.0"
+    def geotoolsVersion = "19.1"
     geotools (
             "org.geotools:gt-epsg-hsql:$geotoolsVersion",
             "org.geotools:gt-render:$geotoolsVersion",

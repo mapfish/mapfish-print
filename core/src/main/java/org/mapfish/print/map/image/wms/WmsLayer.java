@@ -164,7 +164,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
             URI uri = WmsUtilities.makeWmsGetLayerRequest(wmsLayerParam, commonUri, paintArea.getSize(),
                     layerTransformer.getDPI(), layerTransformer.getRotation(), envelope);
 
-            this.imageRequest = httpRequestCache.register(requestFactory, uri);
+            this.imageRequest = WmsUtilities.createWmsRequest(requestFactory, uri, this.params.method);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

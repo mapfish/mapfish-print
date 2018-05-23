@@ -6,6 +6,7 @@ import org.mapfish.print.map.tiled.AbstractWMXLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpMethod;
 
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -24,7 +25,7 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
     /**
      * The wms layer to request in the GetMap request.  The order is important.  It is the order that they
      * will appear in the request.
-     *
+     * <p></p>
      * As with the WMS specification, the first layer will be the first layer drawn on the map (the
      * bottom/base layer) of the map.  This means that layer at position 0 in the array will covered by
      * layer 1 (where not transparent) and so on.
@@ -65,6 +66,15 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
     @HasDefaultValue
     public String imageFormat = "image/png";
 
+    /**
+     * The HTTP verb to use for fetching the images. Can be either "GET" (the default) or "POST".
+     * <p></p>
+     * In case of "POST", the parameters are send in the body of the request using an
+     * "application/x-www-form-urlencoded" content type. This can be used when the parameters are too long.
+     * Tested only with GeoServer.
+     */
+    @HasDefaultValue
+    public HttpMethod method = HttpMethod.GET;
 
     @Override
     public final String getBaseUrl() {
@@ -91,10 +101,14 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
                     String.format("If styles are defined then there must be one for each layer.  Number of" +
                             " layers: %s\nStyles: %s", this.layers.length, Arrays.toString(this.styles)));
         }
+
         if (this.imageFormat.indexOf('/') < 0) {
             LOGGER.warn("The format should be a mime type");
             this.imageFormat = "image/" + this.imageFormat;
         }
+
+        Assert.isTrue(this.method == HttpMethod.GET || this.method == HttpMethod.POST,
+                String.format("Unsupported method %s for WMS layer", this.method.toString()));
     }
 
     /**

@@ -7,10 +7,10 @@ import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.StyleSupplier;
+import org.mapfish.print.map.image.wms.WmsUtilities;
 import org.mapfish.print.map.tiled.AbstractTiledLayer;
 import org.mapfish.print.map.tiled.TileCacheInformation;
 import org.opengis.referencing.FactoryException;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 
 import java.awt.Dimension;
@@ -20,8 +20,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.ForkJoinPool;
 import javax.annotation.Nonnull;
-
-import static org.mapfish.print.map.image.wms.WmsUtilities.makeWmsGetLayerRequest;
 
 /**
  * Strategy object for rendering WMS based layers .
@@ -81,9 +79,10 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
                 final int row)
                 throws IOException, URISyntaxException, FactoryException {
 
-            URI uri = makeWmsGetLayerRequest(TiledWmsLayer.this.param, new URI(commonUrl),
+            final URI uri = WmsUtilities.makeWmsGetLayerRequest(TiledWmsLayer.this.param, new URI(commonUrl),
                     tileSizeOnScreen, this.dpi, 0.0, tileBounds);
-            return httpRequestFactory.createRequest(uri, HttpMethod.GET);
+
+            return WmsUtilities.createWmsRequest(httpRequestFactory, uri, TiledWmsLayer.this.param.method);
         }
 
         @Override
