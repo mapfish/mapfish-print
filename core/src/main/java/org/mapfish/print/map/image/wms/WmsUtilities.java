@@ -10,8 +10,11 @@ import org.geotools.data.wms.request.GetMapRequest;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.mapfish.print.URIUtils;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.image.wms.WmsLayerParam.ServerType;
 import org.opengis.referencing.FactoryException;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.client.ClientHttpRequest;
 
 import java.awt.Dimension;
 import java.io.IOException;
@@ -19,6 +22,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -182,7 +186,7 @@ public final class WmsUtilities {
         for (String key : extraParams.keys()) {
             if (key.equalsIgnoreCase(searchKey)) {
                 Collection<String> values = extraParams.removeAll(key);
-                List<String> newValues = new ArrayList<String>();
+                List<String> newValues = new ArrayList<>();
                 for (String value : values) {
                     if (!Strings.isNullOrEmpty(value)) {
                         value += ";dpi:" + Integer.toString(dpi);
@@ -192,6 +196,41 @@ public final class WmsUtilities {
                 extraParams.putAll(key, newValues);
                 return;
             }
+        }
+    }
+
+    /**
+     * Create a WMS request putting the params in the URL (GET) or in the body (POST).
+     * @param httpRequestFactory the request factory
+     * @param uri the URI, including the parameters
+     * @param method the HTTP method
+     * @return The request
+     * @throws IOException
+     */
+    public static ClientHttpRequest createWmsRequest(
+            final MfClientHttpRequestFactory httpRequestFactory, final URI uri,
+            final HttpMethod method) throws IOException {
+        switch (method) {
+            case GET:
+                return httpRequestFactory.createRequest(uri, method);
+            case POST:
+                final String params = uri.getQuery();
+                final URI paramlessUri;
+                try {
+                    paramlessUri = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(),
+                            uri.getPort(), uri.getPath(), null, null);
+                } catch (URISyntaxException e) {
+                    throw new RuntimeException(e);
+                }
+                final ClientHttpRequest request = httpRequestFactory.createRequest(paramlessUri, method);
+                final byte[] encodedParams = params.getBytes(StandardCharsets.UTF_8);
+                request.getHeaders().set("Content-Type", "application/x-www-form-urlencoded");
+                request.getHeaders().set("Charset", "utf-8");
+                request.getHeaders().set("Content-Length", Integer.toString(encodedParams.length));
+                request.getBody().write(encodedParams);
+                return request;
+            default:
+                throw new RuntimeException("Unsupported WMS request method: " + method);
         }
     }
 }
