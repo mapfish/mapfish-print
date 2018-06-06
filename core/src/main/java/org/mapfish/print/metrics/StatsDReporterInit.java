@@ -6,8 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -16,7 +18,7 @@ import javax.annotation.PreDestroy;
  * Will start a StatsD reporter if configured.
  * Using those environment variables or Java system properties:
  * - STATSD_ADDRESS: the address:port of the statsd daemon (if not set, the feature is disabled)
- * - STATSD_PREFIX: the prefix to set (defaults to mapfish-print)
+ * - STATSD_PREFIX: the prefix to set (defaults to mapfish-print). Can use %h to insert the hostname.
  * - STATSD_PERIOD: the reporting period in seconds (defaults to 10)
  */
 public class StatsDReporterInit {
@@ -47,7 +49,7 @@ public class StatsDReporterInit {
         final String address = getConfig(ADDRESS, null);
         if (address != null) {
             final URI uri = new URI("udp://" + address);
-            final String prefix = getConfig(PREFIX, "mapfish-print");
+            final String prefix = getConfig(PREFIX, "mapfish-print").replace("%h", getHostname());
             final int period = Integer.parseInt(getConfig(PERIOD, "10"));
             LOGGER.info("Starting a StatsD reporter targeting {} with prefix {} and period {}s",
                     uri, prefix, period);
@@ -56,6 +58,22 @@ public class StatsDReporterInit {
                     .build(uri.getHost(), uri.getPort());
             this.reporter.start(period, TimeUnit.SECONDS);
         }
+    }
+
+    private static String getHostname() {
+        String hostname = System.getenv("HOSTNAME");  // should work on Unix
+        if (hostname == null) {
+            hostname = System.getenv("COMPUTERNAME");  // should work on Windows
+        }
+        if (hostname == null) {
+            try {
+                // last resort
+                hostname = InetAddress.getLocalHost().getHostName();
+            } catch (UnknownHostException e) {
+                hostname = "unknown";  // fallback
+            }
+        }
+        return hostname.toLowerCase();
     }
 
     /**
