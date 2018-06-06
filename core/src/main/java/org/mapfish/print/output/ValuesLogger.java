@@ -39,8 +39,11 @@ public final class ValuesLogger {
         if (!LOGGER.isInfoEnabled()) {
             return;
         }
+        if (this.builder.length() > 0) {
+            this.builder.append("\n");
+        }
 
-        this.builder.append("\nThis log message details the parameters available for use in the Jasper templates ");
+        this.builder.append("This log message details the parameters available for use in the Jasper templates ");
         this.builder.append("for\n  Mapfish Template: ").append(templateName).append("\n");
         this.builder.append("  Jasper Template name: ").append(template.getReportTemplate()).append('\n');
         this.builder.append("  The following parameters are available for use in the templates: \n");
