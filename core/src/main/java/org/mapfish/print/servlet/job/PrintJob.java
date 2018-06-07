@@ -90,6 +90,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
                 }
             });
 
+            this.metricRegistry.counter(getClass().getName() + ".success").inc();
             LOGGER.info("Successfully completed print job {}", this.entry.getReferenceId());
             LOGGER.debug("Job {}\n{}", this.entry.getReferenceId(), this.entry.getRequestData());
             String fileName = getFileName(mapPrinter, spec);
