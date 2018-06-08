@@ -14,13 +14,20 @@ ADD {MyApps} ${CATALINA_HOME}/webapps/ROOT/print-apps/
 
 <h4 id="docker_tunings">Tunings <a class="headerlink" href="#docker_tunings" title="Permalink to this headline">¶</a></h4>
 
+<p>
 The docker image can be tuned with several environment variables:
+</p>
 <ul>
     <li><code>CATALINA_OPTS</code>: Java startup parameters.</li>
-    <li><code>DEFAULT_LOG_LEVEL</code>: Set the default log level</li>
-    <li><code>TOMCAT_LOG_LEVEL</code>: Set the tomcat log level</li>
-    <li><code>SENTRY_LOG_LEVEL</code>: Set the Sentry log level</li>
-    <li><code>SENTRY_REPORTING_LOG_LEVEL</code>: Starting from what log level to report to Sentry.</li>
+    <li><code>DEFAULT_LOG_LEVEL</code>: Set the default log level (defaults to INFO)</li>
+    <li><code>TOMCAT_LOG_LEVEL</code>: Set the tomcat log level (defaults to INFO)</li>
+    <li><code>LOG_LEVEL</code>: Set the mapfish print log level (defaults to INFO)</li>
+    <li><code>SPRING_LOG_LEVEL</code>: Set the Spring log level (defaults to WARN)</li>
+    <li><code>JASPER_LOG_LEVEL</code>: Set the JasperReports log level (defaults to WARN)</li>
+    <li><code>APACHE_LOG_LEVEL</code>: Set the Apache log level (defaults to WARN)</li>
+    <li><code>SQL_LOG_LEVEL</code>: Set the SQL (Hibernate) log level (defaults to WARN)</li>
+    <li><code>SENTRY_LOG_LEVEL</code>: Set the Sentry log level (defaults to ERROR)</li>
+    <li><code>SENTRY_REPORTING_LOG_LEVEL</code>: Starting from what log level to report to Sentry (defaults to WARN)</li>
     <li><code>TOMCAT_LOG_TYPE:</code>:
         <ul>
             <li><code>classic</code> (default): The logs are human readable. Access logs are going to stdout
@@ -55,4 +62,20 @@ DSN provided by sentry: <code>-Dsentry.dsn=https://public:private@host:port/proj
 <p>
 Other parameters are documented here:
 <a href="https://docs.sentry.io/clients/java/config/">https://docs.sentry.io/clients/java/config/</a>
+</p>
+
+<h4 id="multi">Multi-instance <a class="headerlink" href="#multi" title="Permalink to this headline">¶</a></h4>
+
+<p>
+You can enable multi-instance by adding those to CATALINA_OPTS:
+</p>
+<ul>
+    <li><code>-Ddb.username=...</code>: The PostgresQL username</li>
+    <li><code>-Ddb.password=...</code>: The PostgresQL password</li>
+    <li><code>-Ddb.host=...</code>: The PostgresQL host name</li>
+    <li><code>-Ddb.name=...</code>: The PostgresQL database name</li>
+</ul>
+
+<p>
+The container will then automatically wait on the DB to be up before starting tomcat.
 </p>
