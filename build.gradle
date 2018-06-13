@@ -7,7 +7,7 @@ task wrapper(type: Wrapper) {
 
 allprojects {
     group = 'org.mapfish.print'
-    version = '3.15-LATEST'
+    version = '3.14.1'
     ext.junitVersion = "4.12"
     ext.springVersion = "4.3.15.RELEASE"
     ext.jasperReportVersion = "6.5.1"
