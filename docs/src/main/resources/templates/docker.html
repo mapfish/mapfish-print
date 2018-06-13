@@ -79,3 +79,11 @@ You can enable multi-instance by adding those to CATALINA_OPTS:
 <p>
 The container will then automatically wait on the DB to be up before starting tomcat.
 </p>
+
+<p>The DB polling can be tuned with those two environment variables:</p>
+<ul>
+    <li><code>PRINT_CANCEL_OLD_POLL_INTERVAL</code>: How often in seconds the DB is polled for jobs to be
+        cancelled (default=60s)</li>
+    <li><code>PRINT_POLL_INTERVAL</code>: How often in seconds the DB is polled for new jobs (default=0.5s)
+    </li>
+</ul>
