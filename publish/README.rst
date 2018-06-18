@@ -75,3 +75,9 @@ Publish Workflow
 14. Push the commit and the tag to github
 
 More information about the release procedure on Sonatype can be found here: http://central.sonatype.org/pages/releasing-the-deployment.html
+
+Docker daily build
+------------------
+
+1. Create a branch for the new version x.y
+2. Activate the daily build in Travis for this branch: https://travis-ci.org/mapfish/mapfish-print/settings
