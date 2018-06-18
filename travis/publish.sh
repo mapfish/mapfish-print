@@ -27,9 +27,9 @@ then
 elif [ ! -z "${TRAVIS_TAG}" ]
 then
   publish "${TRAVIS_TAG}"
-#elif [ ! -z "${TRAVIS_BRANCH}" ]
-#then
-#  publish "${TRAVIS_BRANCH}"
+elif [ ! -z "${TRAVIS_BRANCH}" ]
+then
+  publish "${TRAVIS_BRANCH}"
 else
   echo "Not deploying image"
 fi
