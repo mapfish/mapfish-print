@@ -22,19 +22,18 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class PrintJobEntryImpl implements PrintJobEntry {
 
-    private static final int LENGTH_JSON = 1024;
-
     @Column(insertable = false, updatable = false)
+    @Type(type = "org.hibernate.type.TextType")
     private String referenceId;
 
-    @Column(length = LENGTH_JSON)
+    @Column()
     @Type(type = "org.mapfish.print.servlet.job.impl.hibernate.PJsonObjectUserType")
     private PJsonObject requestData;
 
     @Column
     private long startTime;
 
-    @Column(length = LENGTH_JSON)
+    @Column()
     @Type(type = "org.mapfish.print.servlet.job.impl.hibernate.AccessAssertionUserType")
     private AccessAssertion access;
 
