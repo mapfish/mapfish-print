@@ -2,6 +2,7 @@ package org.mapfish.print.servlet.job.impl;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.Type;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.servlet.job.PrintJobResult;
 import org.mapfish.print.servlet.job.PrintJobStatus;
@@ -25,17 +26,20 @@ import javax.persistence.Table;
 @Table(name = "print_job_results")
 public class PrintJobResultImpl implements PrintJobResult {
 
-    @Column
     @Id
+    @Type(type = "org.hibernate.type.TextType")
     private final String reportURI;
 
     @Column
+    @Type(type = "org.hibernate.type.TextType")
     private final String mimeType;
 
     @Column
+    @Type(type = "org.hibernate.type.TextType")
     private final String fileExtension;
 
     @Column
+    @Type(type = "org.hibernate.type.TextType")
     private final String fileName;
 
     @OneToOne(targetEntity = PrintJobStatusImpl.class, fetch = FetchType.LAZY)
@@ -44,6 +48,7 @@ public class PrintJobResultImpl implements PrintJobResult {
     private PrintJobStatus status = null;
 
     @Column(insertable = true, updatable = true)
+    @Type(type = "org.hibernate.type.TextType")
     private String referenceId;
 
     /**

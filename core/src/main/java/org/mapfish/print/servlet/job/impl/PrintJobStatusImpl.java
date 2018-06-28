@@ -1,6 +1,7 @@
 package org.mapfish.print.servlet.job.impl;
 
 import org.hibernate.annotations.Target;
+import org.hibernate.annotations.Type;
 import org.mapfish.print.config.access.AccessAssertion;
 import org.mapfish.print.servlet.job.PrintJobEntry;
 import org.mapfish.print.servlet.job.PrintJobResult;
@@ -25,10 +26,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "print_job_statuses")
 public class PrintJobStatusImpl implements PrintJobStatus {
-
-    private static final int LENGTH_ERROR = 1024;
-
     @Id
+    @Type(type = "org.hibernate.type.TextType")
     private String referenceId;
 
     @Embedded
@@ -45,7 +44,7 @@ public class PrintJobStatusImpl implements PrintJobStatus {
     @Column
     private long requestCount;
 
-    @Column(length = LENGTH_ERROR)
+    @Type(type = "org.hibernate.type.TextType")
     private String error;
 
     @OneToOne(targetEntity = PrintJobResultImpl.class, cascade = CascadeType.ALL, mappedBy = "status")
