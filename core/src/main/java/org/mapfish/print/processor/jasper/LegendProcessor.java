@@ -155,15 +155,17 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     private class IconTask implements Callable<Object[]> {
 
         private URL icon;
+        private double iconDPI;
         private ExecutionContext context;
         private MfClientHttpRequestFactory clientHttpRequestFactory;
         private int level;
         private File tempTaskDirectory;
 
-        public IconTask(final URL icon, final ExecutionContext context,
+        public IconTask(final URL icon, final double iconDPI, final ExecutionContext context,
                 final int level, final File tempTaskDirectory,
                 final MfClientHttpRequestFactory clientHttpRequestFactory) {
             this.icon = icon;
+            this.iconDPI = iconDPI;
             this.context = context;
             this.level = level;
             this.clientHttpRequestFactory = clientHttpRequestFactory;
@@ -211,7 +213,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
             String report = null;
             if (LegendProcessor.this.maxWidth != null) {
                 // if a max width is given, create a sub-report containing the cropped graphic
-                report = createSubReport(image, this.tempTaskDirectory).toString();
+                report = createSubReport(image, this.iconDPI, this.tempTaskDirectory).toString();
             }
             return new Object[] {null, image, report, this.level};
         }
@@ -239,9 +241,11 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
                             final int level, final List<Callable<Object[]>> tasks) {
         int insertNameIndex = tasks.size();
         final URL[] icons = legendAttributes.icons;
+        final double dpi = legendAttributes.dpi != null ? legendAttributes.dpi : this.dpi;
         if (icons != null && icons.length > 0) {
             for (URL icon : icons) {
-                tasks.add(new IconTask(icon, context, level, tempTaskDirectory, clientHttpRequestFactory));
+                tasks.add(new IconTask(icon, dpi, context, level, tempTaskDirectory,
+                        clientHttpRequestFactory));
             }
         }
         if (legendAttributes.classes != null) {
@@ -271,11 +275,11 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     }
 
     private URI createSubReport(
-            final BufferedImage originalImage, final File tempTaskDirectory)
+            final BufferedImage originalImage, final double originalImageDPI, final File tempTaskDirectory)
             throws IOException, JRException {
         assert this.maxWidth != null;
 
-        double scaleFactor = getScaleFactor();
+        double scaleFactor = Constants.PDF_DPI / originalImageDPI;
         BufferedImage image = originalImage;
         if (image.getWidth() * scaleFactor > this.maxWidth) {
             if (this.scaled) {
@@ -314,10 +318,6 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         at.scale(factor, factor);
         AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
         return scaleOp.filter(image, result);
-    }
-
-    private double getScaleFactor() {
-        return Constants.PDF_DPI / this.dpi;
     }
 
     private URI writeToFile(final BufferedImage image, final File tempTaskDirectory) throws IOException {
