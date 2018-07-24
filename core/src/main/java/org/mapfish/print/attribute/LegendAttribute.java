@@ -41,6 +41,12 @@ public final class LegendAttribute extends ReflectiveAttribute<LegendAttribute.L
         public String name;
 
         /**
+         * DPI of the legend icons.
+         */
+        @HasDefaultValue
+        public Double dpi;
+
+        /**
          * Urls for downloading icons for each legend row.
          */
         @HasDefaultValue
