@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.servlet.job.impl.PrintJobEntryImpl;
 import org.mapfish.print.servlet.job.impl.ThreadPoolJobManager;
@@ -15,6 +16,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.net.URI;
+import java.util.AbstractMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertEquals;
@@ -50,7 +52,7 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
 
         printJob = new TestPrintJob() {
             @Override
-            protected URI withOpenOutputStream(PrintAction function) throws Exception {
+            protected PrintResult withOpenOutputStream(PrintAction function) throws Exception {
                 while (!finishFlag.get()) {
                     Thread.sleep(100);
                 }
@@ -115,14 +117,14 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
         }
 
         @Override
-        protected URI withOpenOutputStream(PrintAction function) throws Exception {
-            return new URI("file://123.com");
+        protected PrintResult withOpenOutputStream(PrintAction function) throws Exception {
+            return new PrintResult(new URI("file://123.com"), 42, new AbstractProcessor.Context());
         }
     }
 
     private class FailingPrintJob extends TestPrintJob {
         @Override
-        protected URI withOpenOutputStream(PrintAction function) throws Exception {
+        protected PrintResult withOpenOutputStream(PrintAction function) {
             throw new RuntimeException("failure");
         }
     }

@@ -8,6 +8,7 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.output.OutputFormat;
+import org.mapfish.print.processor.Processor;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,13 +118,13 @@ public class MapPrinter {
      * @param specJson the client json request.
      * @param out the stream to write to.
      */
-    public final void print(final String jobId, final PJsonObject specJson, final OutputStream out)
+    public final Processor.ExecutionContext print(final String jobId, final PJsonObject specJson, final OutputStream out)
             throws Exception {
         final OutputFormat format = getOutputFormat(specJson);
         final File taskDirectory = this.workingDirectories.getTaskDirectory();
 
         try {
-            format.print(jobId, specJson, getConfiguration(), this.configFile.getParentFile(), taskDirectory, out);
+            return format.print(jobId, specJson, getConfiguration(), this.configFile.getParentFile(), taskDirectory, out);
         } finally {
             this.workingDirectories.removeDirectory(taskDirectory);
         }

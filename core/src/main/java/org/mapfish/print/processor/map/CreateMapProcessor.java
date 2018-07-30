@@ -146,6 +146,8 @@ public final class CreateMapProcessor extends AbstractProcessor<CreateMapProcess
             mapSubReport = createMapSubReport(param.tempTaskDirectory, mapValues.getMapSize(), graphics, mapValues.getDpi());
         }
 
+        context.getStats().addMapStats(mapContext, mapValues);
+
         return new Output(graphics, mapSubReport.toString(), mapContext);
     }
 

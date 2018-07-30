@@ -8,6 +8,7 @@ import org.mapfish.print.MapPrinterFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.OutputFormat;
+import org.mapfish.print.processor.Processor;
 import org.mapfish.print.servlet.job.impl.PrintJobEntryImpl;
 import org.mapfish.print.servlet.job.impl.PrintJobResultImpl;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -24,6 +25,7 @@ import java.net.URI;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -38,6 +40,8 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     private MapPrinterFactory mapPrinterFactory;
     @Autowired
     private MetricRegistry metricRegistry;
+    @Autowired
+    private Accounting accounting;
 
     private SecurityContext securityContext;
 
@@ -53,9 +57,9 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
      * Open an OutputStream and execute the function using the OutputStream.
      *
      * @param function the function to execute
-     * @return the
+     * @return the URI and the file size
      */
-    protected abstract URI withOpenOutputStream(PrintAction function) throws Exception;
+    protected abstract PrintResult withOpenOutputStream(PrintAction function) throws Exception;
 
     /**
      * Create Print Job Result.
@@ -77,20 +81,22 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     public final PrintJobResult call() throws Exception {
         SecurityContextHolder.setContext(this.securityContext);
         Timer.Context timer = this.metricRegistry.timer(getClass().getName() + ".call").time();
+        MDC.put("job_id", this.entry.getReferenceId());
+        LOGGER.info("Starting print job {}", this.entry.getReferenceId());
+        final MapPrinter mapPrinter = PrintJob.this.mapPrinterFactory.create(this.entry.getAppId());
+        final Accounting.JobTracker jobTracker = this.accounting.startJob(this.entry, mapPrinter.getConfiguration());
         try {
-            MDC.put("job_id", this.entry.getReferenceId());
-            LOGGER.info("Starting print job {}", this.entry.getReferenceId());
             final PJsonObject spec = this.entry.getRequestData();
-            final MapPrinter mapPrinter = PrintJob.this.mapPrinterFactory.create(this.entry.getAppId());
-            URI reportURI = withOpenOutputStream(new PrintAction() {
+            PrintResult report = withOpenOutputStream(new PrintAction() {
                 @Override
-                public void run(final OutputStream outputStream) throws Exception {
-                    mapPrinter.print(PrintJob.this.entry.getReferenceId(),
+                public Processor.ExecutionContext run(final OutputStream outputStream) throws Exception {
+                    return mapPrinter.print(PrintJob.this.entry.getReferenceId(),
                             PrintJob.this.entry.getRequestData(), outputStream);
                 }
             });
 
             this.metricRegistry.counter(getClass().getName() + ".success").inc();
+            jobTracker.onJobSuccess(report);
             LOGGER.info("Successfully completed print job {}", this.entry.getReferenceId());
             LOGGER.debug("Job {}\n{}", this.entry.getReferenceId(), this.entry.getRequestData());
             String fileName = getFileName(mapPrinter, spec);
@@ -102,14 +108,16 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
                 mimeType = outputFormat.getContentType();
                 fileExtension = outputFormat.getFileSuffix();
             }
-            return createResult(reportURI, fileName, fileExtension, mimeType, this.entry.getReferenceId());
+            return createResult(report.uri, fileName, fileExtension, mimeType, this.entry.getReferenceId());
         } catch (Exception e) {
             String canceledText = "";
             if (Thread.currentThread().isInterrupted()) {
                 canceledText = "(canceled) ";
                 this.metricRegistry.counter(getClass().getName() + ".canceled").inc();
+                jobTracker.onJobCancel();
             } else {
                 this.metricRegistry.counter(getClass().getName() + ".error").inc();
+                jobTracker.onJobError();
             }
             LOGGER.info("Error executing print job " + canceledText + this.entry.getReferenceId() + "\n" + this.entry.getRequestData(), e);
             throw e;
@@ -181,6 +189,40 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
          *
          * @param outputStream the output stream to write the report to.
          */
-        void run(OutputStream outputStream) throws Exception;
+        Processor.ExecutionContext run(OutputStream outputStream) throws Exception;
+    }
+
+    /**
+     * Holds the info that goes with the result of a print.
+     */
+    public class PrintResult {
+        /**
+         * The URI to get the result.
+         */
+        @Nonnull public final URI uri;
+
+        /**
+         * The result size in bytes.
+         */
+        public final long fileSize;
+
+        /**
+         * The execution context used during the computation.
+         */
+        @Nonnull public final Processor.ExecutionContext executionContext;
+
+        /**
+         * Constructor.
+         *
+         * @param uri the
+         * @param fileSize the
+         * @param executionContext the
+         */
+        public PrintResult(final URI uri, final long fileSize,
+                           final Processor.ExecutionContext executionContext) {
+            this.uri = uri;
+            this.fileSize = fileSize;
+            this.executionContext = executionContext;
+        }
     }
 }

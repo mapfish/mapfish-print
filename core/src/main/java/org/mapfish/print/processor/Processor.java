@@ -138,5 +138,10 @@ public interface Processor<In, Out> extends ConfigurationObject {
          * @return Was the print task canceled?
          */
         boolean isCanceled();
+
+        /**
+         * @return The ExecutionStats object
+         */
+        ExecutionStats getStats();
     }
 }

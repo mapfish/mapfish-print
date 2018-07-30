@@ -26,5 +26,5 @@
     <!-- Use hibernate to read and write print job results  -->
     <bean id="printJobPrototype" class="org.mapfish.print.servlet.job.impl.hibernate.HibernatePrintJob" scope="prototype"/>
     <bean id="fileReportLoader" class="org.mapfish.print.servlet.job.impl.hibernate.HibernateReportLoader"/>
-
+    <bean id="accounting" class="org.mapfish.print.servlet.job.HibernateAccounting" lazy-init="false"/>
 </beans>

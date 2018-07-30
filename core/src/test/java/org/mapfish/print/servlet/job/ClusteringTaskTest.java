@@ -6,10 +6,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.access.AlwaysAllowAssertion;
+import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.servlet.ClusteredMapPrinterServletTest;
 import org.mapfish.print.servlet.MapPrinterServlet;
-import org.mapfish.print.servlet.job.PrintJob;
-import org.mapfish.print.servlet.job.PrintJobEntry;
 import org.mapfish.print.servlet.job.impl.PrintJobEntryImpl;
 import org.mapfish.print.servlet.job.impl.ThreadPoolJobManager;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -22,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
+import java.util.AbstractMap;
 
 @ContextConfiguration(locations = {
         ClusteredMapPrinterServletTest.CLUSTERED_CONTEXT
@@ -49,11 +49,11 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
         protected PrintJob createJob(final PrintJobEntry entry) {
             PrintJob job = new PrintJob() {
                 @Override
-                protected URI withOpenOutputStream(PrintAction function) throws Exception {
+                protected PrintResult withOpenOutputStream(PrintAction function) throws Exception {
                     System.out.println(getEntry().getReferenceId() + " is being run by jobman " + name);
                     TestJobManager.this.jobsRun++;
                     Thread.sleep(1000);
-                    return new URI("oh:well:whatever:nevermind");
+                    return new PrintResult(new URI("oh:well:whatever:nevermind"), 42, new AbstractProcessor.Context());
                 }
 
             };
